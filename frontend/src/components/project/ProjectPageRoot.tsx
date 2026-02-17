@@ -2,7 +2,7 @@ import { Container, Tab, Tabs, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { useLongPress } from "use-long-press";
@@ -103,6 +103,8 @@ export default function ProjectPageRoot({
   handleJoinRequest,
   hubSupporters,
   hubPage,
+  siblingProjects,
+  isWasseraktionswochenEnabled,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -150,7 +152,7 @@ export default function ProjectPageRoot({
   const projectTabsRef = useRef(null);
 
   const messageButtonIsVisible = ElementOnScreen({ el: contactProjectCreatorButtonRef.current });
-
+  const router = useRouter();
   const handleClickContact = async (event) => {
     event.preventDefault();
 
@@ -163,7 +165,7 @@ export default function ProjectPageRoot({
       });
     }
     const chat = await startPrivateChat(creator, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    router.push("/chat/" + chat.chat_uuid + "/");
   };
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
   const user_permission =
@@ -477,6 +479,7 @@ export default function ProjectPageRoot({
         toggleShowFollowers={toggleShowFollowers}
         toggleShowLikes={toggleShowLikes}
         hubUrl={hubPage}
+        isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -577,6 +580,8 @@ export default function ProjectPageRoot({
               locale={locale}
               hubSupporters={hubSupporters}
               hubName={hubPage}
+              siblingProjects={siblingProjects}
+              isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
             />
           </>
         )}

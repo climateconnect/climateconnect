@@ -1,13 +1,12 @@
 import { Button, Container, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme, useTheme } from "@mui/material/styles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import AccountPage from "../account/AccountPage";
 import LoginNudge from "../general/LoginNudge";
-import IdeaPreviews from "../ideas/IdeaPreviews";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import ProjectPreviews from "../project/ProjectPreviews";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
@@ -93,7 +92,6 @@ export default function ProfileRoot({
   profile,
   projects,
   organizations,
-  ideas,
   infoMetadata,
   user,
   token,
@@ -105,11 +103,12 @@ export default function ProfileRoot({
   const classes = useStyles();
   const theme = useTheme();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
+  const router = useRouter();
   const handleConnectBtn = async (e) => {
     e.preventDefault();
     try {
       const chat = await startPrivateChat(profile, token, locale);
-      Router.push({
+      router.push({
         pathname: "/chat/" + chat.chat_uuid + "/",
       });
     } catch (e) {
@@ -196,24 +195,6 @@ export default function ProfileRoot({
           </Typography>
         )}
       </Container>
-      {(isOwnAccount || (ideas && ideas.length > 0)) && (
-        <Container className={classes.container} ref={ideasRef}>
-          <div className={classes.sectionHeadlineWithButtonContainer}>
-            <h2 className={classes.title}>
-              {isOwnAccount ? texts.your_ideas : texts.this_users_ideas}
-            </h2>
-          </div>
-          {ideas && ideas.length ? (
-            <IdeaPreviews ideas={ideas} noCreateCard sendToIdeaPageOnClick />
-          ) : (
-            <Typography>
-              {(isOwnAccount ? texts.you_are : texts.user_name_is) +
-                " " +
-                texts.not_involved_in_any_ideas_yet}
-            </Typography>
-          )}
-        </Container>
-      )}
       <Container className={classes.container} ref={organizationsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <h2 className={classes.title}>

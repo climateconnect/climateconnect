@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
-import PropTypes from "prop-types";
+import { string, func, bool } from "prop-types";
 import React, { PropsWithChildren } from "react";
 import theme from "../../themes/theme";
 
@@ -219,10 +219,10 @@ export default function GenericDialog({
 }
 
 GenericDialog.propTypes = {
-  applyText: PropTypes.string,
-  onApply: PropTypes.func,
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  title: PropTypes.string.isRequired,
-  useApplyButton: PropTypes.bool,
+  applyText: string,
+  onApply: func,
+  onClose: func.isRequired,
+  open: bool.isRequired,
+  title: string.isRequired,
+  useApplyButton: bool,
 };

@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+import { instanceOf, string } from "prop-types";
 import React, { useContext } from "react";
 // TODO upgrade react-timeago to latest version when possible
 import TimeAgo from "react-timeago";
@@ -30,18 +30,19 @@ export default function DateDisplay({ date, className, short = false }) {
   };
   const formatter = buildFormatter(formatters[locale]);
   const olderThanOneWeek = new Date().getTime() - date > ONE_WEEK_IN_MILLISECONDS;
+  const TimeAgoComponent = TimeAgo as any;
   return (
     <span className={className ? className : {}}>
       {olderThanOneWeek ? (
         new Intl.DateTimeFormat(locale).format(date)
       ) : (
-        <TimeAgo date={date} formatter={formatter} />
+        <TimeAgoComponent date={date} formatter={formatter} />
       )}
     </span>
   );
 }
 
 DateDisplay.propTypes = {
-  date: PropTypes.instanceOf(Date).isRequired,
-  className: PropTypes.string,
+  date: instanceOf(Date).isRequired,
+  className: string,
 };

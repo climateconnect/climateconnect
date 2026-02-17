@@ -14,6 +14,7 @@
     "gcp-build": "IS_BUILDING_ON_GOOGLE_CLOUD=1 yarn build",
     "lint:watch": "esw --cache --watch --color --fix",
     "lint": "eslint .",
+    "prepare": "cd .. && git config core.hooksPath .husky",
     "pretest": "yarn lint",
     "start": "NODE_ENV=production node server.js",
     "test:watch": "jest --watch",
@@ -34,7 +35,7 @@
     "@types/node": "^18.11.18",
     "@webflow/webflow-cli": "^1.6.13",
     "@zeit/next-css": "^1.0.1",
-    "axios": "^0.21.2",
+    "axios": "^1.13.5",
     "babel-plugin-lodash": "^3.3.4",
     "browser-image-compression": "^1.0.12",
     "cheerio": "^1.0.0-rc.10",
@@ -56,7 +57,6 @@
     "react-ga": "^3.2.0",
     "react-ga4": "^2.0.0",
     "react-google-charts": "^3.0.15",
-    "react-infinite-scroller": "^1.2.4",
     "react-linkify": "^1.0.0-alpha",
     "react-loader-spinner": "^3.1.14",
     "react-mentions": "^4.3.0",
@@ -85,7 +85,6 @@
     "@types/react": "^18.0.25",
     "@types/react-avatar-editor": "^13.0.0",
     "@types/react-beautiful-dnd": "^13.1.2",
-    "@types/react-infinite-scroller": "^1.2.3",
     "@types/react-linkify": "^1.0.1",
     "@types/react-mentions": "^4.1.8",
     "@types/react-timeago": "^4.1.3",
@@ -98,10 +97,21 @@
     "eslint-plugin-react": "^7.16.0",
     "eslint-watch": "^7.0.0",
     "globals": "^16.5.0",
+    "husky": "^9.1.7",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
+    "lint-staged": "^16.2.7",
     "next-compose-plugins": "^2.2.0",
     "prettier": "2.2.0",
     "ts-node": "^10.9.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }

@@ -14,11 +14,10 @@ import { nullifyUndefinedValues } from "../public/lib/profileOperations";
 import BrowseContent from "../src/components/browse/BrowseContent";
 import UserContext from "../src/components/context/UserContext";
 import TopOfPage from "../src/components/hooks/TopOfPage";
-import HubsSubHeader from "../src/components/indexPage/hubsSubHeader/HubsSubHeader";
-import MainHeadingContainerMobile from "../src/components/indexPage/MainHeadingContainerMobile";
 import WideLayout from "../src/components/layouts/WideLayout";
 import BrowseContext from "../src/components/context/BrowseContext";
 import { FilterProvider } from "../src/components/provider/FilterProvider";
+import { isWasseraktionswochenEnabled } from "../public/data/wasseraktionswochen_config.js";
 
 export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
@@ -45,11 +44,18 @@ export async function getServerSideProps(ctx) {
       hubs: hubs,
       initialLocationFilter: location_filtered_by,
       projectTypes: projectTypes,
+      showWasseraktionswochen: isWasseraktionswochenEnabled(),
     }),
   };
 }
 
-export default function Browse({ filterChoices, hubs, initialLocationFilter, projectTypes }) {
+export default function Browse({
+  filterChoices,
+  hubs,
+  initialLocationFilter,
+  projectTypes,
+  showWasseraktionswochen,
+}) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const { locale } = useContext(UserContext);
@@ -67,20 +73,19 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
 
   return (
     <>
-      <WideLayout
-        showOnScrollUp={showOnScrollUp}
-        showDonationGoal={true}
-        subHeader={<HubsSubHeader hubs={hubs} />}
-      >
+      <WideLayout showOnScrollUp={showOnScrollUp} showDonationGoal={true}>
         <BrowseContext.Provider value={contextValues}>
-          <MainHeadingContainerMobile />
           <FilterProvider
             filterChoices={filterChoices}
             initialLocationFilter={initialLocationFilter}
             locale={locale}
             token={token}
           >
-            <BrowseContent filterChoices={filterChoices} />
+            <BrowseContent
+              filterChoices={filterChoices}
+              allHubs={hubs}
+              showWasseraktionswochen={showWasseraktionswochen}
+            />
           </FilterProvider>
         </BrowseContext.Provider>
       </WideLayout>

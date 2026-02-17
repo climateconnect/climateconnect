@@ -33,7 +33,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
-
 urls = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("admin/", admin.site.urls),

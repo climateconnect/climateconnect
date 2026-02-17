@@ -27,6 +27,8 @@ import UserContext from "../context/UserContext";
 import { Project } from "../../types";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
+import WasseraktionswochenLink from "../hub/WasseraktionswochenLink";
+import { isWasseraktionswochenSubEvent } from "../../../public/data/wasseraktionswochen_config.js";
 
 type StyleProps = { hasAdminPermissions?: boolean };
 
@@ -147,6 +149,9 @@ type Props = {
   toggleShowFollowers: Function; //merge like & follow?
   toggleShowLikes: Function; //merge like & follow?
   hubUrl?: string;
+  parentProjectName?: string; // Name of the parent project
+  parentProjectSlug?: string; // Slug of the parent project
+  isWasseraktionswochenEnabled: boolean;
 };
 
 export default function ProjectOverview({
@@ -173,6 +178,7 @@ export default function ProjectOverview({
   toggleShowFollowers,
   toggleShowLikes,
   hubUrl,
+  isWasseraktionswochenEnabled,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);
@@ -194,6 +200,7 @@ export default function ProjectOverview({
     project: project,
     screenSize: screenSize,
     hubUrl: hubUrl,
+    isWasseraktionswochenEnabled: isWasseraktionswochenEnabled,
   };
 
   return (
@@ -216,6 +223,7 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
           numberOfFollowers={numberOfFollowers}
+          isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
         />
       )}
 
@@ -248,15 +256,21 @@ export default function ProjectOverview({
   );
 }
 
-function ShortProjectInfo({ project }) {
+function ShortProjectInfo({ project, isWasseraktionswochenEnabled }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+
   return (
     <>
       <Typography component="div" className={classes.shortDescription}>
         <MessageContent content={project.short_description} />
       </Typography>
+      {isWasseraktionswochenEnabled && isWasseraktionswochenSubEvent(project) && (
+        <div style={{ marginTop: "16px", marginBottom: "8px" }}>
+          <WasseraktionswochenLink />
+        </div>
+      )}
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.location}>
@@ -301,7 +315,13 @@ function ShortProjectInfo({ project }) {
   );
 }
 
-function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
+function SmallScreenOverview({
+  screenSize,
+  project,
+  projectAdmin,
+  hubUrl,
+  isWasseraktionswochenEnabled,
+}) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -315,6 +335,7 @@ function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
             texts={texts}
             tinyScreen={screenSize.belowTiny}
             locale={locale}
+            project={project}
           />
         )}
         <ProjectSocialMediaShareButton
@@ -333,7 +354,10 @@ function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}
         </Typography>
-        <ShortProjectInfo project={project} />
+        <ShortProjectInfo
+          project={project}
+          isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+        />
       </div>
     </>
   );
@@ -356,6 +380,7 @@ function LargeScreenOverview({
   toggleShowFollowers,
   followingChangePending,
   numberOfFollowers,
+  isWasseraktionswochenEnabled,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   const { locale, user } = useContext(UserContext);
@@ -381,7 +406,10 @@ function LargeScreenOverview({
           >
             {texts.summary}
           </Typography>
-          <ShortProjectInfo project={project} />
+          <ShortProjectInfo
+            project={project}
+            isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+          />
           <div className={classes.infoBottomBar}>
             <LikeButton
               texts={texts}

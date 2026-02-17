@@ -9,7 +9,6 @@ from climate_match.models import (
     AnswerTranslation,
 )
 
-
 admin.site.register(Question, admin.ModelAdmin)
 admin.site.register(Answer, admin.ModelAdmin)
 admin.site.register(AnswerMetaData, admin.ModelAdmin)

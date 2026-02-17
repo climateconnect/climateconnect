@@ -1,19 +1,18 @@
 # Python imports
-from ideas.models.ideas import Idea
-from typing import Optional
+# Logging
+import logging
 import uuid
 from datetime import datetime, timedelta
+from typing import Optional
 
 # Django/Django REST imports
 from django.contrib.auth.models import User
 from django.db.models import QuerySet
-
-from climateconnect_api.models import UserProfile, Role, Notification, UserNotification
-from chat_messages.models import MessageParticipants, Participant, MessageReceiver
 from django.utils.translation import gettext as _
 
-# Logging
-import logging
+from chat_messages.models import MessageParticipants, MessageReceiver, Participant
+from climateconnect_api.models import Notification, Role, UserNotification, UserProfile
+from ideas.models.ideas import Idea
 
 logger = logging.getLogger(__name__)
 

@@ -118,19 +118,16 @@ export default function LocationSearchBar({
 
     (async () => {
       if (searchValue) {
-        const config = {
-          method: "GET",
-          mode: "no-cors",
-          referrerPolicy: "origin",
-        };
         const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           : searchValue;
-        let url = `https://nominatim.openstreetmap.org/search?q=${searchParam}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`;
+        let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          searchParam
+        )}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`;
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
-        const response = await axios(url, config as any);
+        const response = await axios.get(url);
         const bannedClasses = [
           "tourism",
           "railway",

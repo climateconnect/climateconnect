@@ -4,6 +4,19 @@ import { getLocalePrefix } from "../lib/apiOperations";
 
 export default function getProjectTexts({ project, user, url_slug, locale, creator, hubName }) {
   return {
+    // Project type translations (based on type_id)
+    project_type_idea: {
+      en: "Idea",
+      de: "Idee",
+    },
+    project_type_event: {
+      en: "Event",
+      de: "Event",
+    },
+    project_type_project: {
+      en: "Project",
+      de: "Projekt",
+    },
     please_log_in_to_edit_project: {
       en: "Please Log In to Edit a project.",
       de: "Bitte logge dich ein, um ein Projekt zu bearbeiten ",
@@ -259,6 +272,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     total_duration: {
       en: "Total duration",
       de: "Gesamte Laufzeit",
+    },
+    this_event_is_part_of: {
+      en: "This event is part of",
+      de: "Dieses Event ist Teil von",
+    },
+    this_idea_is_part_of: {
+      en: "This idea is part of",
+      de: "Diese Idee ist Teil von",
+    },
+    this_project_is_part_of: {
+      en: "This project is part of",
+      de: "Dieses Projekt ist Teil von",
     },
     project_description: {
       en: `${project?.project_type?.name ? project.project_type.name : "Project"} Description`,
@@ -549,6 +574,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     show_all_projects: {
       en: "Show all projects",
       de: "Alle Projekte anzeigen",
+    },
+    events_in_this_series: {
+      en: "Events in this series",
+      de: "Events in dieser Reihe",
+    },
+    show_all_events: {
+      en: "Show all events",
+      de: "Alle Events anzeigen",
     },
     please_touch_on_the_following_points_in_your_project_description: {
       en: "Please touch on the following points in your project description",

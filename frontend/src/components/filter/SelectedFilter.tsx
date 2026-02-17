@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme) => {
       display: "inline-flex",
       alignItems: "center",
       marginBottom: theme.spacing(1),
+      marginTop: theme.spacing(1),
       flexWrap: "wrap",
     },
     selectedToolTip: {
@@ -16,6 +17,9 @@ const useStyles = makeStyles((theme) => {
     },
     selectedChip: {
       margin: theme.spacing(1),
+      "&:first-child": {
+        marginLeft: 0,
+      },
     },
     selectedChipIcon: {
       width: 20,

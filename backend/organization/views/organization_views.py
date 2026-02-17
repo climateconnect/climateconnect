@@ -21,7 +21,6 @@ from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.common import create_unique_slug
 
-
 # Django imports
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
@@ -82,7 +81,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound
 from django.db import transaction
-
 
 logger = logging.getLogger(__name__)
 

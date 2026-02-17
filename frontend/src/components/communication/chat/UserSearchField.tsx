@@ -8,7 +8,7 @@ import { apiRequest } from "../../../../public/lib/apiOperations";
 import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import Cookies from "universal-cookie";
-import Router from "next/router";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -42,6 +42,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
   const texts = getTexts({ page: "chat", locale: locale });
   const [newChatMembers, setNewChatMembers] = useState<any[]>([]);
   const [groupName, setGroupName] = useState("");
+  const router = useRouter();
 
   const handleAddNewChatMember = (member) => {
     setNewChatMembers([...newChatMembers, member]);
@@ -96,8 +97,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
       })
         .then(async function (response) {
           console.log(response);
-          Router.push("/chat/" + response.data.chat_uuid + "/");
-          //Router.push(getLocalePrefix(locale) + "/chat/c8012911-7189-4f05-b115-2d30d9b9c1ad/");
+          router.push("/chat/" + response.data.chat_uuid + "/");
         })
         .catch(function (error) {
           console.log(error.response.data.message);
