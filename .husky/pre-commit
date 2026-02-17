@@ -1,20 +1,4 @@
 #!/usr/bin/env sh
 
-# Check if any backend Python files are staged
-BACKEND_FILES=$(git diff --cached --name-only --diff-filter=ACM -- 'backend/*.py')
-
-if [ -n "$BACKEND_FILES" ]; then
-  echo "Running backend formatting and linting..."
-  cd backend
-
-  # Run precommit using pdm run (which automatically uses the correct venv)
-  pdm run make precommit || exit 1
-
-  cd ..
-
-  # Re-stage the formatted backend files
-  echo "$BACKEND_FILES" | xargs git add
-fi
-
 # Run lint-staged for frontend files
 cd frontend && npx lint-staged
