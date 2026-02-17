@@ -129,18 +129,16 @@ CORS_ORIGIN_WHITELIST = [
 
 
 # Custom validator for Azure internal IPs
-class AzureInternalIPValidator:
+def azure_internal_ip_validator(host):
     """Validator to allow Azure's internal IP range (169.254.x.x)"""
-
-    def __call__(self, host):
-        # Strip port if present
-        host_without_port = host.split(":")[0]
-        # Check if it's in Azure's internal range (169.254.x.x)
-        return host_without_port.startswith("169.254.")
+    # Strip port if present
+    host_without_port = host.split(":")[0]
+    # Check if it's in Azure's internal range (169.254.x.x)
+    return host_without_port.startswith("169.254.")
 
 
 # Add Azure internal IP validator to ALLOWED_HOSTS
-ALLOWED_HOSTS.append(AzureInternalIPValidator())
+ALLOWED_HOSTS.append(azure_internal_ip_validator)
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
