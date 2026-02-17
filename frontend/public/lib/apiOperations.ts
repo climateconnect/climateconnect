@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, Method } from "axios";
-import router from "next/router";
+import { default as router } from "next/router";
 import { CcLocale } from "../../src/types";
 import tokenConfig from "../config/tokenConfig";
 import type { UrlObject } from "url";
