@@ -7,7 +7,6 @@ import {
   TextField,
   Theme,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
