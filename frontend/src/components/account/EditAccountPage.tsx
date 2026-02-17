@@ -884,6 +884,11 @@ export default function EditAccountPage({
         ratio={3}
         loading={isLoading}
         loadingText={texts.processing_image_please_wait}
+        PaperProps={{
+          sx: {
+            maxHeight: "none",
+          },
+        }}
       />
       {possibleAccountTypes && (
         <SelectDialog

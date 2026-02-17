@@ -605,8 +605,8 @@ const InputImage = ({
         loadingText={texts.processing_image_please_wait}
         PaperProps={{
           sx: {
-            maxHeight: 'none',
-          }
+            maxHeight: "none",
+          },
         }}
       />
     </>
