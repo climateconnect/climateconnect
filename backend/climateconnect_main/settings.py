@@ -89,6 +89,7 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 SECURITY_MIDDLEWARE = [
+    "climateconnect_main.middleware.AzureHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
 ]
 
@@ -128,10 +129,6 @@ CORS_ORIGIN_WHITELIST = [
     "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
 ]
 
-
-# Note: Azure uses internal IPs in the 169.254.x.x range for health checks.
-# The leading dot allows any subdomain under azurewebsites.net.
-ALLOWED_HOSTS.append(".azurewebsites.net")
 
 APPEND_SLASH = False
 
