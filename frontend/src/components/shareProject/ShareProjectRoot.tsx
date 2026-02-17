@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -131,11 +131,11 @@ export default function ShareProjectRoot({
   const [finished, setFinished] = useState(false);
 
   // TODO: Allow changing sourceLanguage, targetLanguage
-
+  const router = useRouter();
   useEffect(() => {
     if (window) {
       const location = window.location.href;
-      Router.beforePopState(({ as }) => {
+      router.beforePopState(({ as }) => {
         if (location.includes("/share") && as != "/share") {
           const result = window.confirm(
             texts.are_you_sure_you_want_to_leave_you_will_lose_your_project

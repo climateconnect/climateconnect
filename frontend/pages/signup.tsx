@@ -1,4 +1,4 @@
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
 import {
@@ -41,6 +41,7 @@ export async function getServerSideProps(ctx) {
 
 export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
   const { ReactGA } = useContext(UserContext);
+  const router = useRouter();
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
@@ -152,7 +153,7 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
           category: "User",
           action: "Created an Account",
         });
-        Router.push(args);
+        router.push(args);
       })
       .catch(function (error) {
         console.log(error);

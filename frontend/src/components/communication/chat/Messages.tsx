@@ -1,5 +1,5 @@
 import makeStyles from "@mui/styles/makeStyles";
-import PropTypes from "prop-types";
+import { array, object, string, func, bool } from "prop-types";
 import React, { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import { useChatScroll } from "../../hooks/useChatScroll";
@@ -173,15 +173,15 @@ const Messages = ({
 };
 
 Messages.propTypes = {
-  messages: PropTypes.array.isRequired,
-  chatting_partner: PropTypes.object,
-  className: PropTypes.string.isRequired,
-  loadFunc: PropTypes.func.isRequired,
-  hasMore: PropTypes.bool.isRequired,
-  title: PropTypes.string,
-  isPrivateChat: PropTypes.bool.isRequired,
-  texts: PropTypes.object,
-  relatedIdea: PropTypes.object,
+  messages: array.isRequired,
+  chatting_partner: object,
+  className: string.isRequired,
+  loadFunc: func.isRequired,
+  hasMore: bool.isRequired,
+  title: string,
+  isPrivateChat: bool.isRequired,
+  texts: object,
+  relatedIdea: object,
 };
 
 export default Messages;
