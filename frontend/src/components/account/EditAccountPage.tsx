@@ -214,7 +214,6 @@ export default function EditAccountPage({
   const closeIconRef = useRef<SVGSVGElement | null>(null);
   const [editedAccount, setEditedAccount] = useState({ ...account });
   const isOrganization = type === "organization";
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
   const [tempImages, setTempImages] = useState({
