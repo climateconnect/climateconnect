@@ -3,7 +3,7 @@ import { Snackbar, SnackbarContent, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { ThemeProvider } from "@mui/material/styles";
 import Head from "next/head";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
@@ -78,8 +78,8 @@ export default function LayoutWrapper({
   const [loading, setLoading] = useState(true);
   const [bannerOpen, setBannerOpen] = useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
+  const router = useRouter();
   const texts = getTexts({ page: "general", locale: locale });
-
   const handleUpdateHash = (newHash) => {
     setSnackbarProps({ ...snackbarProps, hash: newHash });
   };
@@ -92,15 +92,23 @@ export default function LayoutWrapper({
   };
 
   const closeBanner = () => setBannerOpen(false);
-  Router.events.on("routeChangeStart", () => {
-    setLoading(true);
-  });
-  Router.events.on("routeChangeComplete", () => {
-    setLoading(false);
-  });
-  Router.events.on("routeChangeError", () => {
-    setLoading(false);
-  });
+
+  useEffect(() => {
+    const handleRouteChangeStart = () => setLoading(true);
+    const handleRouteChangeComplete = () => setLoading(false);
+    const handleRouteChangeError = () => setLoading(false);
+
+    router.events.on("routeChangeStart", handleRouteChangeStart);
+    router.events.on("routeChangeComplete", handleRouteChangeComplete);
+    router.events.on("routeChangeError", handleRouteChangeError);
+
+    // Clean up the listeners when component unmounts
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChangeStart);
+      router.events.off("routeChangeComplete", handleRouteChangeComplete);
+      router.events.off("routeChangeError", handleRouteChangeError);
+    };
+  }, [router.events]);
 
   useEffect(function () {
     if (!initialized) setInitialized(true);
@@ -142,7 +150,7 @@ export default function LayoutWrapper({
     }
 
     const excludedPaths = ["/privacy", "/terms", "/imprint"];
-    return !excludedPaths.some((path) => Router.pathname.includes(path));
+    return !excludedPaths.some((path) => router.pathname.includes(path));
   };
 
   return (

@@ -42,5 +42,6 @@ media/
 frontend/devlink/
 
 /CLAUDE.md
+.kilocode/
 
 private*
