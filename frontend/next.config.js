@@ -110,4 +110,7 @@ module.exports = withBundleAnalyzer({
     });
     return config;
   },
+  experimental: {
+    appDir: true, // Enable App Router
+  },
 });
