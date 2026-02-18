@@ -32,6 +32,11 @@ from knox import views as knox_views
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+import django
+
+# Customize admin site to show Django version
+admin.site.site_header = f"Climate Connect Administration (Django {django.get_version()})"
+admin.site.site_title = "Climate Connect Admin"
 
 urls = [
     path("__debug__/", include("debug_toolbar.urls")),

@@ -138,6 +138,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://climateconnect.earth",
     "https://test3425.climateconnect.earth",
     "https://www.climateconnect.earth",
+    "https://api.climateconnect.earth",
     "https://www.cc-test-domain.com",
     "https://cc-test-domain.com",
     "http://cc-test-domain.com",
