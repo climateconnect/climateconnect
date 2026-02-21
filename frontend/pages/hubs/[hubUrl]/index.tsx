@@ -60,9 +60,10 @@ export async function getServerSideProps(ctx: any) {
 
   const hubData = await getHubData(hubUrl, ctx.locale);
   if (!hubData?.landing_page_component) {
+    const localeString = (ctx.locale != "en") ? `/${ctx.locale}` : "";
     return {
       redirect: {
-        destination: `/hubs/${hubUrl}/browse`,
+        destination: `${localeString}/hubs/${hubUrl}/browse`,
         // redirect is based on current hub data, and that might change in the future so permanent: false,
         permanent: false,
       },
