@@ -331,10 +331,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "This project is open to collaborators.",
       de: "Dieses Projekt ist offen für Mitwirkende.",
     },
-    helpful_skills_for_collaborating: {
-      en: "Helpful skills for collaborating",
-      de: "Hilfreiche Fähigkeiten, um mitzuwirken",
-    },
     connections_to_these_organizations_could_help_the_project: {
       en: "Connections to these organisations could help the project",
       de: "Connections zu diesen Organisationen könnten dem Projekt helfen",
@@ -366,14 +362,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     are_you_looking_for_people_to_help_with_the_event: {
       en: "Are you looking for people to help organizing the event?",
       de: "Suchst du noch Unterstützer:innen, um das Event zu organisieren?",
-    },
-    add_skills_that_would_be_beneficial_for_collaborators_to_have: {
-      en: "Add skills that would be beneficial for collaborators to have",
-      de: "Füge Fähigkeiten hinzu, die Unterstützende möglichst haben sollten",
-    },
-    add_skills_that_would_be_beneficial_for_collaborators_to_have_idea: {
-      en: "Add skills that would be beneficial for collaborators to have",
-      de: "Füge Fähigkeiten hinzu, die Mitstreiter:innen möglichst haben sollten",
     },
     add_connections_that_would_be_beneficial_for_collaborators_to_have: {
       en: "Connections to which organisations would be helpful for the project?",
@@ -674,12 +662,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         "Select if you are would be open to accept help and work with other climate protectors on your project.",
       de:
         "Wähle aus, ob du offen bist, Hilfe anzunehmen und mit anderen Klimaschützer*innen an deinem Projekt zu arbeiten.",
-    },
-    add_skills_helptext: {
-      en:
-        "If you are looking for someone with specific skills to help you with your project, select these here.",
-      de:
-        "Wenn du jemanden mit bestimmten Fähigkeiten suchst, der*die dich bei deinem Projekt unterstützt, wähle diese hier aus.",
     },
     add_connections_helptext: {
       en:

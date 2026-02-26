@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => {
 
 type Props = {
   project: Project;
-  skillsOptions: any;
   userOrganizations: any;
   handleSetProject: any;
   oldProject: Project;
@@ -59,7 +58,6 @@ type Props = {
 
 export default function EditProjectRoot({
   project,
-  skillsOptions,
   userOrganizations,
   handleSetProject,
   oldProject,
@@ -355,7 +353,6 @@ export default function EditProjectRoot({
             project={project}
             handleSetProject={handleSetProject}
             userOrganizations={userOrganizations}
-            skillsOptions={skillsOptions}
             user_role={user_role}
             deleteProject={deleteProject}
             errors={errors}
@@ -417,7 +414,6 @@ const parseProjectForRequest = async (project, translationChanges) => {
   if (project.loc) ret.loc = parseLocation(project.loc, true);
   if (project.thumbnail_image)
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
-  if (project.skills) ret.skills = project.skills.map((s) => s.id);
   if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
   if (project.sectors) ret.sectors = ret.sectors.map((s) => s.key);
   if (project.project_parents && project.project_parents.parent_organization)
