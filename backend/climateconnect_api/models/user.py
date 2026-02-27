@@ -1,10 +1,15 @@
+import logging
+
+from django.core.cache import cache
+from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 from climateconnect_api.models.common import Availability, Skill
 from climateconnect_api.models.language import Language
-from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.core.cache import cache
 from location.models import Location
+
+logger = logging.getLogger(__name__)
 
 
 def profile_image_path(instance, filename):
@@ -368,8 +373,13 @@ class UserProfile(models.Model):
 @receiver(post_save, sender=UserProfile)
 def remove_cache_keys(sender, instance, created, **kwargs):
     if created:
-        member_keys = cache.keys("*LIST_MEMBERS*")
-        cache.delete_many(member_keys)
+        if hasattr(cache, "keys"):
+            member_keys = cache.keys("*LIST_MEMBERS*")
+            cache.delete_many(member_keys)
+        else:
+            logger.debug(
+                "Cache backend does not support keys() – skipping member list cache invalidation."
+            )
 
 
 class UserProfileTranslation(models.Model):
