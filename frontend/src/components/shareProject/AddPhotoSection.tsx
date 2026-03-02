@@ -157,6 +157,11 @@ export default function AddPhotoSection({
         ratio={16 / 9}
         loading={isLoading}
         loadingText={texts.processing_image_please_wait}
+        PaperProps={{
+          sx: {
+            maxHeight: "none",
+          },
+        }}
       />
     </>
   );
