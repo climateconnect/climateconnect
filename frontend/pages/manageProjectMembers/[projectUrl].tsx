@@ -201,7 +201,6 @@ function parseProject(project) {
     start_date: project.start_date,
     end_date: project.end_date,
     creation_date: project.created_at,
-    helpful_skills: project.skills,
     helpful_connections: project.helpful_connections,
     creator: project.project_parents[0].parent_organization
       ? project.project_parents[0].parent_organization

@@ -28,7 +28,6 @@ export type SkillType = {
 
 export type Project = {
   collaborators_welcome: boolean;
-  skills: any[];
   helpful_connections: any[];
   collaborating_organizations: any[];
   loc: any;
