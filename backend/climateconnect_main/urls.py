@@ -35,7 +35,9 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 import django
 
 # Customize admin site to show Django version
-admin.site.site_header = f"Climate Connect Administration (Django {django.get_version()})"
+admin.site.site_header = (
+    f"Climate Connect Administration (Django {django.get_version()})"
+)
 admin.site.site_title = "Climate Connect Admin"
 
 urls = [

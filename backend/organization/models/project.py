@@ -144,6 +144,8 @@ class Project(models.Model):
         default=False,
     )
 
+    # DEPRECATED: Project skills are deprecated. See issue #1785.
+    # This field is kept for backwards compatibility but should not be used.
     skills = models.ManyToManyField(
         Skill,
         related_name="project_skills",
@@ -238,7 +240,6 @@ class Project(models.Model):
             location=self.loc,
             project_id=self.id,
             project_manually_set_rating=self.rating,
-            total_skills=self.skills.count(),
             project_type=self.project_type,
             start_date=self.start_date,
             end_date=self.end_date,
