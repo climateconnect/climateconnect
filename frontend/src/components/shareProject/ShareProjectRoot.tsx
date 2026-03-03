@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
-import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
@@ -425,6 +424,7 @@ const getDefaultProjectValues = (
 };
 
 const formatProjectForRequest = async (project, translations) => {
+  const { blobFromObjectUrl } = await import("../../../public/lib/imageOperations");
   return {
     ...project,
     loc: parseLocation(project.loc, true),

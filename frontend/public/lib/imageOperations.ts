@@ -1,5 +1,3 @@
-import imageCompression from "browser-image-compression";
-
 const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT!);
 
 export function getImageUrl(url) {
@@ -138,10 +136,16 @@ export async function blobFromObjectUrl(objectUrl: string): Promise<string> {
 
     const options = {
       maxSizeMB: 0.5,
-      useWebWorker: true,
+      useWebWorker: false, // Web workers can fail with dynamic imports in Next.js
     };
 
+    const imageCompressionModule = await import("browser-image-compression");
+    const imageCompression = imageCompressionModule.default
+      ? imageCompressionModule.default
+      : imageCompressionModule;
+
     // imageCompression accepts Blob despite its TypeScript definition requiring File
+    // @ts-ignore
     const compressedBlob = await imageCompression(originalBlob as File, options);
 
     // Convert compressed blob to base64 data URL
