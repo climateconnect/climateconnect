@@ -150,7 +150,6 @@ export async function blobFromObjectUrl(objectUrl: string): Promise<string> {
       : imageCompressionModule;
 
     // imageCompression accepts Blob despite its TypeScript definition requiring File
-    // @ts-ignore
     const compressedBlob = await imageCompression(originalBlob as File, options);
 
     // Convert compressed blob to base64 data URL
