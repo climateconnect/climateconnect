@@ -132,11 +132,16 @@ const drawImageOnCanvas = (image, canvas) => {
 export async function blobFromObjectUrl(objectUrl: string): Promise<string> {
   try {
     const response = await fetch(objectUrl);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    }
+
     const originalBlob = await response.blob();
 
     const options = {
       maxSizeMB: 0.5,
-      useWebWorker: false, // Web workers can fail with dynamic imports in Next.js
+      useWebWorker: true,
     };
 
     const imageCompressionModule = await import("browser-image-compression");
