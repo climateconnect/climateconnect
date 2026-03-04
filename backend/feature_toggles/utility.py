@@ -186,5 +186,7 @@ def invalidate_all_feature_toggle_caches():
                 cache_key = get_cache_key(toggle_name, env)
                 cache.delete(cache_key)
     except Exception as e:
-        logger.warning(f"Could not query feature toggles to invalidate individual caches: {e}")
+        logger.warning(
+            f"Could not query feature toggles to invalidate individual caches: {e}"
+        )
     logger.debug(f"Invalidated all feature toggle caches")

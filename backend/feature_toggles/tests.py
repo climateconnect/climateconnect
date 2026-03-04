@@ -23,13 +23,17 @@ class TestFeatureToggleAPI(APITestCase):
 
     def test_get_feature_toggles_invalid_environment(self):
         """Test that invalid environment values are rejected."""
-        response = self.client.get(self.FEATURE_TOGGLES_URL, {"environment": "invalid"}, format="json")
+        response = self.client.get(
+            self.FEATURE_TOGGLES_URL, {"environment": "invalid"}, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("Invalid environment", response.data["error"])
 
     def test_get_feature_toggles_empty_for_unknown_env(self):
         """Test that unknown environments return empty dict."""
-        response = self.client.get(self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json")
+        response = self.client.get(
+            self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {})
 
@@ -44,7 +48,9 @@ class TestFeatureToggleAPI(APITestCase):
         )
 
         # Test production environment
-        response = self.client.get(self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json")
+        response = self.client.get(
+            self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["TEST_FEATURE"], True)
 
@@ -58,7 +64,9 @@ class TestFeatureToggleAPI(APITestCase):
             development_is_active=False,
         )
 
-        response = self.client.get(self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json")
+        response = self.client.get(
+            self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["INACTIVE_FEATURE"], False)
 
@@ -73,12 +81,16 @@ class TestFeatureToggleAPI(APITestCase):
         )
 
         # Test production - should be False
-        response = self.client.get(self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json")
+        response = self.client.get(
+            self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["STAGING_ONLY_FEATURE"], False)
 
         # Test staging - should be True
-        response = self.client.get(self.FEATURE_TOGGLES_URL, {"environment": "staging"}, format="json")
+        response = self.client.get(
+            self.FEATURE_TOGGLES_URL, {"environment": "staging"}, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["STAGING_ONLY_FEATURE"], True)
 
@@ -98,7 +110,9 @@ class TestFeatureToggleAPI(APITestCase):
             development_is_active=False,
         )
 
-        response = self.client.get(self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json")
+        response = self.client.get(
+            self.FEATURE_TOGGLES_URL, {"environment": "production"}, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["FEATURE_A"], True)
         self.assertEqual(response.data["FEATURE_B"], False)
@@ -113,7 +127,9 @@ class TestFeatureToggleAPI(APITestCase):
         )
 
         for env in ["production", "staging", "development"]:
-            response = self.client.get(self.FEATURE_TOGGLES_URL, {"environment": env}, format="json")
+            response = self.client.get(
+                self.FEATURE_TOGGLES_URL, {"environment": env}, format="json"
+            )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(response.data["ALL_ENV_FEATURE"], True)
 
