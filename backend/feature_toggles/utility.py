@@ -6,7 +6,6 @@ caching to minimize database queries.
 """
 
 import logging
-from typing import Optional
 
 from django.core.cache import cache
 
