@@ -139,8 +139,36 @@ export async function blobFromObjectUrl(objectUrl: string): Promise<string> {
 
     const originalBlob = await response.blob();
 
+    const mimeType = originalBlob.type || "image/jpeg";
+
+    // Derive a reasonable filename from the URL and/or MIME type
+    let fileName = "image";
+    try {
+      const url = new URL(objectUrl);
+      const lastSegment = url.pathname.split("/").pop();
+      if (lastSegment) {
+        fileName = lastSegment;
+      }
+    } catch {
+      // objectUrl might be a blob: URL or otherwise not parseable by URL; fall back to default name
+    }
+
+    if (!fileName.includes(".")) {
+      let extension = "jpg";
+      if (mimeType === "image/png") {
+        extension = "png";
+      } else if (mimeType === "image/webp") {
+        extension = "webp";
+      } else if (mimeType === "image/gif") {
+        extension = "gif";
+      } else if (mimeType === "image/jpeg" || mimeType === "image/jpg") {
+        extension = "jpg";
+      }
+      fileName = `${fileName}.${extension}`;
+    }
+
     // Convert Blob to File to ensure all File properties (like name) exist
-    const file = new File([originalBlob], "image.jpg", { type: originalBlob.type || "image/jpeg" });
+    const file = new File([originalBlob], fileName, { type: mimeType });
 
     const options = {
       maxSizeMB: 0.5,
