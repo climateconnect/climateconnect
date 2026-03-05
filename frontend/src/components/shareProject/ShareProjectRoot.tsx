@@ -213,6 +213,7 @@ export default function ShareProjectRoot({
 
     try {
       const payload = await formatProjectForRequest({ ...project, is_draft: true }, translations);
+      payload.sectors = project.sectors?.map((sector) => sector.key);
 
       const response = await apiRequest({
         method: "post",
