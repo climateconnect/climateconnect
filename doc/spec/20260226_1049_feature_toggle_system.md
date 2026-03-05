@@ -56,7 +56,7 @@ As an admin and developer, I want to use feature toggles in the frontend and bac
 ### API
 A new API endpoint will be created for the frontend to fetch the current state of all feature toggles for a **specific environment provided by the client**. This endpoint will be heavily cached.
 
-- `GET /api/v1/feature-toggles/?environment=<env>`
+- `GET /api/feature_toggles/?environment=<env>`
   - **Parameter**: `environment` (string, required) - e.g., 'production', 'staging', 'development'.
   - **Behavior**: The backend uses the provided `environment` parameter to return only the toggles active for that specific environment. If the parameter is missing, it should return an error or an empty set.
   - **Response**: A JSON object with key-value pairs, where the key is the toggle name and the value is its boolean state. `{"FEATURE_A": true, "FEATURE_B": false}`
@@ -66,7 +66,7 @@ A new API endpoint will be created for the frontend to fetch the current state o
 - This app will contain the `FeatureToggle` model. The `FeatureToggle` model will include a boolean field per environment (`production_is_active`, `staging_is_active`, `development_is_active`).
 - The model will be registered with the Django Admin for management.
 - When a `FeatureToggle` is created or updated via the admin, a log entry will be written using Django's standard logging framework to capture the change (e.g., in the `save_model` method of the `ModelAdmin`).
-- The API view for `GET /api/v1/feature-toggles/` will require the `environment` query parameter.
+- The API view for `GET /api/feature_toggles/` will require the `environment` query parameter.
 - The utility service/function (e.g., `is_feature_enabled('MY_FEATURE', environment)`) for use within Django will accept the environment as an argument. It will:
   1. Query the `FeatureToggle` model for the given feature name.
   2. Return `true` only if the corresponding environment-specific boolean (e.g., `production_is_active`) is `true`.
@@ -83,7 +83,7 @@ A new API endpoint will be created for the frontend to fetch the current state o
   - On the **client-side**: Use `window.location.hostname` to detect if the request is to the staging slot (e.g., hostname contains 'staging' or 'slot1').
   - On the **server-side** (SSR): Use the request headers.
   - Default to `'production'` if the hostname does not match a known staging or local pattern.
-- It will call the API with the correct environment: `GET /api/v1/feature-toggles/?environment=production`.
+- It will call the API with the correct environment: `GET /api/feature_toggles/?environment=production`.
 - It will provide a simple function for components to check if a feature is enabled, e.g., `isFeatureEnabled('FEATURE_A')`.
 - It needs to work with server side and client side next.js code.
 - It needs to handle a fallback value if the API is not available or returns an error, e.g., `isFeatureEnabled('FEATURE_A', true)`.
