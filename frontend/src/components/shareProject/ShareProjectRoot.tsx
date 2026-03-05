@@ -13,7 +13,7 @@ import AddTeam from "./AddTeam";
 import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import ShareProject from "./ShareProject";
-import { Project, SkillType, Role, Organization, Sector } from "../../types";
+import { Project, Role, Organization, Sector } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import SelectSectors from "./SelectSectors";
 
@@ -73,7 +73,6 @@ type availabilityOptionsProps = {
 type ShareProjectRootProps = {
   availabilityOptions: availabilityOptionsProps[];
   userOrganizations: Organization[];
-  skillsOptions: SkillType[];
   rolesOptions: Role[];
   user: any;
   token: string;
@@ -87,7 +86,6 @@ type ShareProjectRootProps = {
 export default function ShareProjectRoot({
   availabilityOptions,
   userOrganizations,
-  skillsOptions,
   rolesOptions,
   user,
   token,
@@ -336,7 +334,6 @@ export default function ShareProjectRoot({
               handleSetProjectData={handleSetProject}
               goToNextStep={goToNextStep}
               goToPreviousStep={goToPreviousStep}
-              skillsOptions={skillsOptions}
               setMessage={setMessage}
             />
           )}
@@ -411,7 +408,6 @@ const getDefaultProjectValues = (
 ): Project => {
   return {
     collaborators_welcome: true,
-    skills: [],
     helpful_connections: [],
     collaborating_organizations: [],
     loc: {},
@@ -433,7 +429,6 @@ const formatProjectForRequest = async (project, translations) => {
   return {
     ...project,
     loc: parseLocation(project.loc, true),
-    skills: project.skills.map((s) => s.key),
     team_members: project.team_members.map((m) => ({
       url_slug: m.url_slug,
       role: m.role.id,
