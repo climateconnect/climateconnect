@@ -10,7 +10,6 @@ import ProjectTimeAndPlaceSectionAndCustomHub from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
-import CollaborateSection from "./CollaborateSection";
 import ProjectNameSection from "./ProjectNameSection";
 import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
@@ -275,20 +274,6 @@ export default function EnterDetails({
               color={backgroundContrastColor}
             />
           </div>
-          {projectData.collaborators_welcome && (
-            <CollaborateSection
-              projectData={projectData}
-              handleSetProjectData={handleSetProjectData}
-              blockClassName={classes.block}
-              subHeaderClassName={classes.subHeader}
-              toolTipClassName={classes.tooltip}
-              helpTexts={helpTexts}
-              ToolTipIcon={HelpOutlineIcon}
-              open={open}
-              handleSetOpen={handleSetOpen}
-              collaborationTexts={collaborationTexts}
-            />
-          )}
           <NavigationButtons
             className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
