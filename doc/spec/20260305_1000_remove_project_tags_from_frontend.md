@@ -39,6 +39,10 @@ The backend serializer (`ProjectSerializer`) already carries a `# TODO (Karol): 
 | `frontend/pages/editProject/[projectUrl].tsx` | Line 237 | `tags: project.tags.map((t) => t.project_tag),` — the `parseProject` helper maps the API's `tags` array into a local `tags` property on the project state. Once the backend stops returning `tags`, this will throw. Even before that it is dead weight. |
 | `frontend/pages/manageProjectMembers/[projectUrl].tsx` | Line 209 | `tags: project.tags.map((t) => t.project_tag.name),` — the `parseProject`-equivalent helper in this page also reads `project.tags`. The resulting `tags` array is set on the component state but never used in the render tree (confirmed by grep — no component in `ManageProjectMembers` or its children reads `project.tags`). |
 | `frontend/src/types.ts` | Line 46 | `tags?: any[];` — optional `tags` property on the `Project` type should be removed. |
+| `frontend/public/lib/getOptions.ts` | Lines 26–42 | `getProjectTagsOptions()` — a complete exported function that fetches `/api/projecttags/`. It is **never imported anywhere** in the codebase and can be deleted entirely. |
+
+**i18n / translations check:**
+No frontend text keys (`public/texts/`) or backend Django `.po` translation strings referencing project tags were found. There is nothing to clean up in i18n.
 
 **Verification step:**
 After implementing the changes, run:
@@ -56,7 +60,7 @@ The backend `ProjectSerializer` in `backend/organization/serializers/project.py`
 
 ## System impact
 
-[To be filled by @mosy-system-architect]
+- only removing obsolete code
 
 ## Technical Solution Overview
 
