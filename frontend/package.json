@@ -17,6 +17,7 @@
     "prepare": "cd .. && git config core.hooksPath .husky",
     "pretest": "yarn lint",
     "start": "NODE_ENV=production node server.js",
+    "start:local": "PORT=3000 NODE_ENV=production node server.js",
     "test:watch": "jest --watch",
     "test": "jest",
     "check-types": "tsc --noEmit"
