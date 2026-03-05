@@ -181,10 +181,11 @@ export default function ShareProjectRoot({
   const submitProject = async (event) => {
     event.preventDefault();
     setLoadingSubmit(true);
-    const payload = await formatProjectForRequest(project, translations);
-    payload.sectors = project.sectors?.map((sector) => sector.key);
 
     try {
+      const payload = await formatProjectForRequest(project, translations);
+      payload.sectors = project.sectors?.map((sector) => sector.key);
+
       const resp = await apiRequest({
         method: "post",
         url: "/api/create_project/",
@@ -209,25 +210,28 @@ export default function ShareProjectRoot({
   const saveAsDraft = async (event) => {
     event.preventDefault();
     setLoadingSubmitDraft(true);
-    apiRequest({
-      method: "post",
-      url: "/api/create_project/",
-      payload: await formatProjectForRequest({ ...project, is_draft: true }, translations),
-      token: token,
-      locale: locale,
-    })
-      .then(function (response) {
-        setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
-        setLoadingSubmitDraft(false);
-        setFinished(true);
-      })
-      .catch(function (error) {
-        console.log(error);
-        setErrorDialogOpen(true);
-        setProject({ ...project, error: true });
-        setLoadingSubmitDraft(false);
-        if (error) console.log(error.response);
+
+    try {
+      const payload = await formatProjectForRequest({ ...project, is_draft: true }, translations);
+
+      const response = await apiRequest({
+        method: "post",
+        url: "/api/create_project/",
+        payload: payload,
+        token: token,
+        locale: locale,
       });
+
+      setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
+      setLoadingSubmitDraft(false);
+      setFinished(true);
+    } catch (error: any) {
+      console.log(error);
+      setErrorDialogOpen(true);
+      setProject({ ...project, error: true });
+      setLoadingSubmitDraft(false);
+      if (error?.response) console.log(error.response);
+    }
   };
 
   const handleSetProject = (newProjectData) => {
