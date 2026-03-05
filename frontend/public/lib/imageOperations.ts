@@ -139,18 +139,18 @@ export async function blobFromObjectUrl(objectUrl: string): Promise<string> {
 
     const originalBlob = await response.blob();
 
+    // Convert Blob to File to ensure all File properties (like name) exist
+    const file = new File([originalBlob], "image.jpg", { type: originalBlob.type || "image/jpeg" });
+
     const options = {
       maxSizeMB: 0.5,
       useWebWorker: true,
     };
 
-    const imageCompressionModule = await import("browser-image-compression");
-    const imageCompression = imageCompressionModule.default
-      ? imageCompressionModule.default
-      : imageCompressionModule;
+    // Import the default export from browser-image-compression
+    const { default: imageCompression } = await import("browser-image-compression");
 
-    // imageCompression accepts Blob despite its TypeScript definition requiring File
-    const compressedBlob = await imageCompression(originalBlob as File, options);
+    const compressedBlob = await imageCompression(file, options);
 
     // Convert compressed blob to base64 data URL
     return new Promise((resolve, reject) => {
