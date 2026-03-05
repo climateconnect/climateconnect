@@ -73,20 +73,22 @@ const getSearchFilter = () => {
 
 const getIdeasFilters = (filterChoices, texts) => [...getLocationFilters(texts)];
 
-const getMembersFilters = (filterChoices, texts) => [
-  getSearchFilter(),
-  ...getLocationFilters(texts),
-  {
-    icon: CreateIcon,
-    iconName: "CreateIcon",
-    title: texts.skills,
-    type: "openMultiSelectDialogButton",
-    key: "skills",
-    itemType: "skills",
-    options: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
-    tooltipText: texts.skills_tooltip,
-  },
-];
+const getMembersFilters = (filterChoices, texts) => {
+  return [
+    getSearchFilter(),
+    ...getLocationFilters(texts),
+    {
+      icon: CreateIcon,
+      iconName: "CreateIcon",
+      title: texts.skills,
+      type: "openMultiSelectDialogButton",
+      key: "skills",
+      itemType: "skills",
+      options: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
+      tooltipText: texts.skills_tooltip,
+    },
+  ];
+};
 
 const getOrganizationsFilters = (filterChoices, texts) => [
   getSearchFilter(),
