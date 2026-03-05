@@ -43,7 +43,6 @@ export type Project = {
   url_slug?: string;
   name?: string;
   project_parents?: any[];
-  tags?: any[];
   project_type: ProjectType | any;
   start_date?: Date | Dayjs | null;
   end_date?: Date | Dayjs | null;
