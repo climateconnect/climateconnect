@@ -104,6 +104,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "parent_project_slug",
             "has_children",
             "child_projects_count",
+            "is_online",
         )
         read_only_fields = ["url_slug"]
 
