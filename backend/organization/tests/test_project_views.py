@@ -365,11 +365,8 @@ class TestCreateProjectsViews(APITestCase):
             name="Test Location", city="Berlin", country="Germany", place_id=1
         )
 
-        self.default_language = Language.objects.create(
-            name="Test English",
-            native_name="English",
-            language_code="en",
-        )
+        # Get the language that was created globally
+        self.default_language = Language.objects.get(language_code="en")
 
         self.default_location_data = {
             "place_id": 1,
@@ -604,11 +601,8 @@ class TestProjectApi(APITestCase):
             has_start_date=False,
         )
 
-        self.default_language = Language.objects.create(
-            name="Test English",
-            native_name="English",
-            language_code="en",
-        )
+        # Get the language that was created globally
+        self.default_language = Language.objects.get(id=1)
 
         self.project = Project.objects.create(
             name="Test Project",
