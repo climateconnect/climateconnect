@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
-import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
@@ -180,10 +179,11 @@ export default function ShareProjectRoot({
   const submitProject = async (event) => {
     event.preventDefault();
     setLoadingSubmit(true);
-    const payload = await formatProjectForRequest(project, translations);
-    payload.sectors = project.sectors?.map((sector) => sector.key);
 
     try {
+      const payload = await formatProjectForRequest(project, translations);
+      payload.sectors = project.sectors?.map((sector) => sector.key);
+
       const resp = await apiRequest({
         method: "post",
         url: "/api/create_project/",
@@ -208,25 +208,29 @@ export default function ShareProjectRoot({
   const saveAsDraft = async (event) => {
     event.preventDefault();
     setLoadingSubmitDraft(true);
-    apiRequest({
-      method: "post",
-      url: "/api/create_project/",
-      payload: await formatProjectForRequest({ ...project, is_draft: true }, translations),
-      token: token,
-      locale: locale,
-    })
-      .then(function (response) {
-        setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
-        setLoadingSubmitDraft(false);
-        setFinished(true);
-      })
-      .catch(function (error) {
-        console.log(error);
-        setErrorDialogOpen(true);
-        setProject({ ...project, error: true });
-        setLoadingSubmitDraft(false);
-        if (error) console.log(error.response);
+
+    try {
+      const payload = await formatProjectForRequest({ ...project, is_draft: true }, translations);
+      payload.sectors = project.sectors?.map((sector) => sector.key);
+
+      const response = await apiRequest({
+        method: "post",
+        url: "/api/create_project/",
+        payload: payload,
+        token: token,
+        locale: locale,
       });
+
+      setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
+      setLoadingSubmitDraft(false);
+      setFinished(true);
+    } catch (error: any) {
+      console.log(error);
+      setErrorDialogOpen(true);
+      setProject({ ...project, error: true });
+      setLoadingSubmitDraft(false);
+      if (error?.response) console.log(error.response);
+    }
   };
 
   const handleSetProject = (newProjectData) => {
@@ -421,6 +425,7 @@ const getDefaultProjectValues = (
 };
 
 const formatProjectForRequest = async (project, translations) => {
+  const { blobFromObjectUrl } = await import("../../../public/lib/imageOperations");
   return {
     ...project,
     loc: parseLocation(project.loc, true),
