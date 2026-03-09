@@ -57,6 +57,7 @@ export type Project = {
   thumbnail_image?: string;
   sectors?: Sector[];
   has_children?: boolean; // Indicates if project has child projects (e.g., festival with sub-events)
+  is_online?: boolean; // Indicates if the project/event/idea takes place online
   parent_project_id?: number; // ID of parent project (detail view only)
   parent_project_name?: string; // Name of parent project (detail view only)
   parent_project_slug?: string; // URL slug of parent project (detail view only)

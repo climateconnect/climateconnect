@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Project } from "../../types";
 import ProjectDateSection from "./ProjectDateSection";
 import makeStyles from "@mui/styles/makeStyles";
 import ProjectLocationSearchBar from "./ProjectLocationSearchBar";
-import { Theme } from "@mui/material";
+import { FormControlLabel, Switch, Theme, Typography } from "@mui/material";
 import CustomHubSelection from "../project/CustomHubSelection";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles<Theme>((theme) => {
   return {
@@ -19,6 +21,11 @@ const useStyles = makeStyles<Theme>((theme) => {
       display: "flex",
       flexDirection: "column",
       alignItems: "left",
+    },
+    subHeader: {
+      fontSize: 20,
+      color: theme.palette.background.default_contrastText,
+      marginBottom: theme.spacing(1),
     },
   };
 });
@@ -41,10 +48,26 @@ export default function ProjectTimeAndPlaceSectionAndCustomHub({
   errors,
 }: Args) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale: locale });
 
   function handleUpdateSelectedHub(hubName: string) {
     handleSetProjectData({ hubName: hubName });
   }
+
+  const locationSubHeaderByType = {
+    event: texts.event_location_section,
+    idea: texts.idea_location,
+    project: texts.project_location,
+  };
+
+  const onlineLabelByType = {
+    event: texts.this_event_takes_place_online,
+    idea: texts.this_idea_takes_place_online,
+    project: texts.this_project_takes_place_online,
+  };
+
+  const typeId = projectData.project_type?.type_id ?? "project";
 
   return (
     <div className={classes.root}>
@@ -54,6 +77,26 @@ export default function ProjectTimeAndPlaceSectionAndCustomHub({
         errors={errors}
       />
       <div className={classes.verticalFlex}>
+        <Typography
+          component="h2"
+          variant="subtitle2"
+          color="primary"
+          className={classes.subHeader}
+        >
+          {locationSubHeaderByType[typeId] ?? texts.project_location}
+        </Typography>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={projectData.is_online ?? false}
+              onChange={() =>
+                handleSetProjectData({ ...projectData, is_online: !projectData.is_online })
+              }
+              color="primary"
+            />
+          }
+          label={onlineLabelByType[typeId] ?? texts.this_project_takes_place_online}
+        />
         <ProjectLocationSearchBar
           projectData={projectData}
           handleSetProjectData={handleSetProjectData}

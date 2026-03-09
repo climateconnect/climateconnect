@@ -421,6 +421,7 @@ const getDefaultProjectValues = (
     project_type: projectTypeOptions.find((t) => t.type_id === "project"),
     hubName: hubName,
     sectors: [],
+    is_online: false,
   };
 };
 
