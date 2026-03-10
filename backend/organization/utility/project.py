@@ -1,7 +1,6 @@
 import logging
 from typing import Dict, Union
 
-from climateconnect_api.models import Skill
 from climateconnect_api.models.language import Language
 from climateconnect_api.utility.translation import get_translations
 from climateconnect_main.utility.general import get_image_from_data_url
@@ -67,14 +66,6 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
 
     project.url_slug = create_unique_slug(project.name, project.id, Project.objects)
 
-    if "skills" in data:
-        for skill_id in data["skills"]:
-            try:
-                skill = Skill.objects.get(id=int(skill_id))
-                project.skills.add(skill)
-            except Skill.DoesNotExist:
-                logger.error("Passed skill ID {} does not exists".format(skill_id))
-                continue
     project.save()
     return project
 
@@ -251,20 +242,10 @@ def get_similar_projects(url_slug: str, return_count=5):
         "city",
         "project_parent__id",
         "tag_project",
-        "skills",
         "language",
-    )  # project_parent__id 'tag_project' 'skills'
+    )  # project_parent__id 'tag_project'
 
     df = pd.DataFrame.from_dict(target_projects)
-
-    # calcaulte skills match %
-    # since skills are 1 to Many to projects, we need to group the skills in a list
-    skills_df = df.groupby(["url_slug"]).agg({"skills": set})
-    source_skills = skills_df.loc[url_slug].iloc[0]
-    skills_df["source_skills"] = [source_skills for i in range(0, len(skills_df))]
-    skills_df["skills_match"] = skills_df.apply(
-        lambda x: sets_match(x["source_skills"], x["skills"]), axis=1
-    )
 
     # calcualte tags match %
     # since tags are 1 to Many to projects, we need to group the tags in a list
@@ -282,11 +263,7 @@ def get_similar_projects(url_slug: str, return_count=5):
     source_proj_language = df.loc[df.url_slug == url_slug].language.iloc[0]
     source_proj_parent_id = df.loc[df.url_slug == url_slug].project_parent__id.iloc[0]
 
-    df = (
-        df.drop(["skills", "tag_project"], axis=1)
-        .drop_duplicates()
-        .set_index("url_slug")
-    )
+    df = df.drop(["tag_project"], axis=1).drop_duplicates().set_index("url_slug")
 
     df["is_same_parent"] = df.project_parent__id.apply(
         lambda x: 1 if x == source_proj_parent_id else 0
@@ -319,7 +296,6 @@ def get_similar_projects(url_slug: str, return_count=5):
                     "is_same_country",
                 ]
             ],
-            skills_df[["skills_match"]],
             tags_df[["tags_match"]],
         ],
         axis=1,
@@ -332,7 +308,6 @@ def get_similar_projects(url_slug: str, return_count=5):
         "is_same_city": 2,
         "is_same_language": 2,
         "is_same_country": 1,
-        "skills_match": 3,
         "tags_match": 3,
     }
     total_weights = sum(weights_mapping.values())
