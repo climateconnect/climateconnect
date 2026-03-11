@@ -318,12 +318,6 @@ export default function EditProjectRoot({
       rows: 15,
       headlineTextKey: "project_description",
     },
-    {
-      textKey: "helpful_connections",
-      rows: 1,
-      headlineTextKey: "helpful_connections",
-      isArray: true,
-    },
   ];
 
   return (

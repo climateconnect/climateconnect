@@ -1,13 +1,4 @@
-import {
-  Button,
-  Chip,
-  List,
-  Switch,
-  TextField,
-  Typography,
-  useMediaQuery,
-  Theme,
-} from "@mui/material";
+import { Switch, TextField, Typography, useMediaQuery, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { RefObject, useContext, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
@@ -15,7 +6,6 @@ import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
-import EnterTextDialog from "../dialogs/EnterTextDialog";
 import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
@@ -23,7 +13,6 @@ import DeleteProjectButton from "./DeleteProjectButton";
 import { Project, Role } from "../../types";
 import { EditProjectTypeSelector } from "./EditProjectTypeSelector";
 import ProjectDateSection from "../shareProject/ProjectDateSection";
-import AddIcon from "@mui/icons-material/Add";
 
 const useStyles = makeStyles<Theme>((theme) => ({
   select: {
@@ -116,7 +105,7 @@ export default function EditProjectContent({
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const collaborationTexts = getCollaborationTexts(texts);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const [open, setOpen] = useState({ connections: false, delete: false });
+  const [open, setOpen] = useState({ delete: false });
 
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
@@ -132,30 +121,6 @@ export default function EditProjectContent({
       ...project,
       ...newData,
     });
-  };
-
-  const onClickConnectionsDialogOpen = () => {
-    setOpen({ ...open, connections: true });
-  };
-
-  const handleConnectionDelete = (connection) => {
-    handleSetProject({
-      ...project,
-      helpful_connections: project.helpful_connections.filter((c) => c != connection),
-    });
-  };
-
-  const handleConnectionsDialogClose = (connection) => {
-    if (project.helpful_connections && project.helpful_connections.includes(connection))
-      alert(texts.you_can_not_add_the_same_connection_twice);
-    else {
-      if (connection)
-        handleSetProject({
-          ...project,
-          helpful_connections: [...project.helpful_connections, connection],
-        });
-      setOpen({ ...open, connections: false });
-    }
   };
 
   const handleClickDeleteProjectPopup = () => {
@@ -296,36 +261,6 @@ export default function EditProjectContent({
         </div>
         {project.collaborators_welcome && (
           <>
-            <div className={classes.block}>
-              <Typography
-                component="h2"
-                variant="subtitle2"
-                color="primary"
-                className={classes.subHeader}
-              >
-                {collaborationTexts.connections[project.project_type.type_id]}
-              </Typography>
-              {project.helpful_connections?.length > 0 && (
-                <List className={classes.flexContainer}>
-                  {project.helpful_connections.map((connection) => (
-                    <Chip
-                      key={connection}
-                      label={connection}
-                      className={classes.skill}
-                      onDelete={() => handleConnectionDelete(connection)}
-                    />
-                  ))}
-                </List>
-              )}
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={onClickConnectionsDialogOpen}
-                className={classes.addButton}
-              >
-                {texts.add_connections}
-              </Button>
-            </div>
             {isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
               <div className={classes.block}>
                 <Typography
@@ -346,15 +281,6 @@ export default function EditProjectContent({
           </>
         )}
       </div>
-      <EnterTextDialog
-        open={open.connections}
-        onClose={handleConnectionsDialogClose}
-        maxLength={25}
-        applyText={texts.add}
-        applyIcon={{ icon: AddIcon }}
-        inputLabel={texts.connection}
-        title={texts.add_a_helpful_connection}
-      />
       <ConfirmDialog
         open={open.delete}
         onClose={handleDeleteProjectDialogClose}

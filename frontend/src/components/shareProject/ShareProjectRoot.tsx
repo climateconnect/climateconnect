@@ -260,12 +260,6 @@ export default function ShareProjectRoot({
       rows: 15,
       headlineTextKey: "description",
     },
-    {
-      textKey: "helpful_connections",
-      rows: 1,
-      headlineTextKey: "helpful_connections",
-      isArray: true,
-    },
   ];
 
   const onSelectNewSector = (event) => {
@@ -363,7 +357,7 @@ export default function ShareProjectRoot({
               targetLanguage={targetLanguage}
               pageName="project"
               textsToTranslate={textsToTranslate}
-              arrayTranslationKeys={["helpful_connections"]}
+              arrayTranslationKeys={[]}
               introTextKey="translate_project_intro"
               submitButtonText={texts.submit}
               saveAsDraft={saveAsDraft}
@@ -408,7 +402,6 @@ const getDefaultProjectValues = (
 ): Project => {
   return {
     collaborators_welcome: true,
-    helpful_connections: [],
     collaborating_organizations: [],
     loc: {},
     parent_organization: userOrganizations ? userOrganizations[0] : null,

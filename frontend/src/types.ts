@@ -28,7 +28,6 @@ export type SkillType = {
 
 export type Project = {
   collaborators_welcome: boolean;
-  helpful_connections: any[];
   collaborating_organizations: any[];
   loc: any;
   location?: any; //TODO: merge loc and location (loc used to post, location used when getting data from the backend currently)
