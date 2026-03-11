@@ -1,95 +1,25 @@
-import axios from "axios";
+import type { IncomingMessage } from "http";
 
-import type { FeatureToggles, FeatureToggleEnvironment } from "./types/featureToggle";
+import type { FeatureToggles } from "./types/featureToggle";
+import { detectEnvironmentFromRequest } from "../../public/lib/environmentOperations";
+import type { CcEnvironment } from "../../public/lib/environmentOperations";
 
 const API_URL = process.env.API_URL || "http://127.0.0.1:8000";
 
 /**
- * Detect the current environment based on hostname.
- * This is used to determine which feature toggles to fetch on the client side.
- */
-export function detectEnvironment(): FeatureToggleEnvironment {
-  if (typeof window === "undefined") {
-    // Server-side: this should not be called on server
-    // Use detectEnvironmentFromHeaders for SSR
-    console.warn("detectEnvironment called on server - use detectEnvironmentFromHeaders");
-    return "production";
-  }
-
-  const hostname = window.location.hostname;
-
-  // Check for staging environments
-  if (hostname.includes("slot2") || hostname.includes("staging")) {
-    return "staging";
-  }
-
-  // Check for local development
-  if (hostname === "localhost" || hostname === "127.0.0.1") {
-    return "development";
-  }
-
-  // Default to production
-  return "production";
-}
-
-/**
- * Detect environment from request headers (for SSR).
- * Uses the host header to determine the environment.
- */
-export function detectEnvironmentFromHeaders(host: string | undefined): FeatureToggleEnvironment {
-  if (!host) {
-    return "production";
-  }
-
-  // Check for staging environments
-  if (host.includes("slot2") || host.includes("staging")) {
-    return "staging";
-  }
-
-  // Check for local development
-  if (host.includes("localhost") || host.includes("127.0.0.1")) {
-    return "development";
-  }
-
-  return "production";
-}
-
-/**
- * Fetch all feature toggles for a specific environment (client-side).
+ * Fetch all feature toggles for a specific environment.
+ * Works both client-side and server-side (Node.js 18+).
  *
  * @param environment - The environment to fetch toggles for (production, staging, development)
  * @returns Promise resolving to a record of feature toggle names to boolean values
  */
-export async function getFeatureToggles(
-  environment: FeatureToggleEnvironment
-): Promise<FeatureToggles> {
+export async function getFeatureToggles(environment: CcEnvironment): Promise<FeatureToggles> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 3000);
   try {
-    const response = await axios.get<FeatureToggles>(`${API_URL}/api/feature_toggles/`, {
-      params: { environment },
+    const response = await fetch(`${API_URL}/api/feature_toggles/?environment=${environment}`, {
+      signal: controller.signal,
     });
-    return response.data;
-  } catch (error) {
-    console.error("Failed to fetch feature toggles:", error);
-    // Return empty object on error - callers should use fallback values
-    return {};
-  }
-}
-
-/**
- * Fetch all feature toggles for server-side rendering.
- * Uses the API_URL from environment variables.
- *
- * @param environment - The environment to fetch toggles for
- * @returns Promise resolving to a record of feature toggle names to boolean values
- */
-export async function getFeatureTogglesServer(
-  environment: FeatureToggleEnvironment
-): Promise<FeatureToggles> {
-  const url = `${API_URL}/api/feature_toggles/`;
-
-  try {
-    // Use fetch instead of axios for server-side (no need for axios config)
-    const response = await fetch(`${url}?environment=${environment}`);
     if (!response.ok) {
       console.error("Failed to fetch feature toggles:", response.statusText);
       return {};
@@ -97,8 +27,37 @@ export async function getFeatureTogglesServer(
     return await response.json();
   } catch (error) {
     console.error("Failed to fetch feature toggles:", error);
+    // Return empty object on error - callers should use fallback values
     return {};
+  } finally {
+    clearTimeout(timeoutId);
   }
+}
+
+/**
+ * Convenience helper for use inside `getServerSideProps`.
+ *
+ * Reads the environment from the middleware-injected request header and fetches
+ * the corresponding feature toggles. Pages that need feature toggles during SSR
+ * should call this instead of adding logic to _app.getInitialProps.
+ *
+ * @example
+ * ```ts
+ * export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+ *   const { featureToggles, environment } = await getFeatureTogglesFromRequest(req);
+ *   return { props: { featureToggles, environment } };
+ * };
+ * ```
+ */
+export async function getFeatureTogglesFromRequest(
+  req: IncomingMessage | undefined
+): Promise<{
+  featureToggles: FeatureToggles;
+  environment: CcEnvironment;
+}> {
+  const environment = detectEnvironmentFromRequest(req);
+  const featureToggles = await getFeatureToggles(environment);
+  return { featureToggles, environment };
 }
 
 /**

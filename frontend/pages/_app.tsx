@@ -11,8 +11,8 @@ import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
 import { FeatureToggleProvider } from "../src/components/featureToggle";
-import { getFeatureTogglesServer, detectEnvironmentFromHeaders } from "../src/hooks/featureToggles";
-import { FeatureToggles, FeatureToggleEnvironment } from "../src/hooks/types/featureToggle";
+import { FeatureToggles } from "../src/hooks/types/featureToggle";
+import type { CcEnvironment } from "../public/lib/environmentOperations";
 import theme from "../src/themes/theme";
 import { CcLocale, DonationGoal } from "../src/types";
 import * as Sentry from "@sentry/react";
@@ -45,7 +45,7 @@ export default function MyApp({
   Component: any;
   pageProps: {
     featureToggles?: FeatureToggles;
-    featureToggleEnvironment?: FeatureToggleEnvironment;
+    environment?: CcEnvironment;
     [key: string]: any;
   };
 }) {
@@ -303,9 +303,17 @@ export default function MyApp({
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
+          {/*
+           * Feature toggles are opt-in per page via getServerSideProps.
+           * Pages that need SSR feature toggles should call getFeatureTogglesFromRequest
+           * from src/hooks/featureToggles.ts and return { featureToggles, environment }
+           * as props. FeatureToggleProvider picks them up here via pageProps.
+           * Pages without getServerSideProps will still work but toggles resolve
+           * client-side only (isEnabled returns the fallback value on first render).
+           */}
           <FeatureToggleProvider
             initialToggles={pageProps.featureToggles}
-            environment={pageProps.featureToggleEnvironment}
+            environment={pageProps.environment}
           >
             <UserContext.Provider value={contextValues}>
               <Component {...pageProps} />
@@ -316,18 +324,6 @@ export default function MyApp({
     </>
   );
 }
-
-MyApp.getInitialProps = async ({ ctx }: { ctx: any }) => {
-  const host = ctx.req?.headers?.host as string | undefined;
-  const environment = detectEnvironmentFromHeaders(host);
-  const featureToggles = await getFeatureTogglesServer(environment);
-  return {
-    pageProps: {
-      featureToggles,
-      featureToggleEnvironment: environment,
-    },
-  };
-};
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
   let notifications_to_set_unread: any[] = [];

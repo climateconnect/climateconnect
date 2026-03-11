@@ -1,11 +1,14 @@
+import Cookies from "universal-cookie";
+import { CC_ENVIRONMENT_COOKIE, detectEnvironment } from "./environmentOperations";
+
 const NECESSARY_COOKIES = [
   "acceptedNecessary",
   "acceptedStatistics",
   "csrftoken",
   "auth_token",
   "hideInfo",
+  CC_ENVIRONMENT_COOKIE,
 ];
-import Cookies from "universal-cookie";
 
 export function removeUnnecesaryCookies() {
   const cookies = new Cookies();
@@ -19,7 +22,8 @@ export function removeUnnecesaryCookies() {
 }
 
 export function getCookieProps(expiry) {
-  const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT as string);
+  const environment = detectEnvironment();
+  const develop = environment === "development";
   //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
   const cookieProps = {
     path: "/",
@@ -29,7 +33,9 @@ export function getCookieProps(expiry) {
     domain: undefined as string | undefined,
   };
 
-  if (!develop) {
+  if (environment === "production") {
+    // Set domain only in production to support subdomain cookie sharing.
+    // Staging and development don't need cross-subdomain cookies.
     cookieProps.domain = "." + process.env.BASE_URL_HOST;
   }
   return cookieProps;

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
-import { detectEnvironment, getFeatureToggles, isFeatureEnabled } from "../../hooks/featureToggles";
+import { getFeatureToggles, isFeatureEnabled } from "../../hooks/featureToggles";
+import { detectEnvironment } from "../../../public/lib/environmentOperations";
 import { FeatureToggles } from "../../hooks/types/featureToggle";
 
 export type FeatureToggleContextType = {

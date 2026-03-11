@@ -1,10 +1,25 @@
+import { GetServerSideProps } from "next";
 import { useFeatureToggles } from "../../src/components/featureToggle";
+import { getFeatureTogglesFromRequest } from "../../src/hooks/featureToggles";
+import { FeatureToggles } from "../../src/hooks/types/featureToggle";
+import type { CcEnvironment } from "../../public/lib/environmentOperations";
 
 // Demo page to showcase the Feature Toggle System
-// This demonstrates both server-side and client-side toggle checking
+// This demonstrates both server-side and client-side toggle checking.
+//
+// Server-side: feature toggles are fetched in getServerSideProps using
+// getFeatureTogglesFromRequest, which reads the environment from the
+// x-cc-environment header set by Next.js middleware (middleware.ts).
+// The toggles are passed as pageProps to FeatureToggleProvider in _app.tsx.
+//
+// Client-side: the useFeatureToggles hook reads from the same FeatureToggleProvider.
 
-// Note: The FeatureToggleProvider is already set up in _app.tsx, so you can just
-// use the useFeatureToggles hook anywhere in your app without any setup!
+type Props = {
+  featureToggles: FeatureToggles;
+  environment: CcEnvironment;
+  serverRenderedAt: string;
+  serverDemoEnabled: boolean;
+};
 
 // Component that demonstrates client-side toggle checking
 function ClientSideDemo() {
@@ -30,7 +45,7 @@ function ClientSideDemo() {
 }
 
 // The main page component
-function FeatureToggleDemoPage() {
+function FeatureToggleDemoPage({ serverRenderedAt, serverDemoEnabled }: Props) {
   const { isEnabled } = useFeatureToggles();
 
   return (
@@ -39,8 +54,9 @@ function FeatureToggleDemoPage() {
 
       <p>
         This page demonstrates the Climate Connect Feature Toggle System. The FeatureToggleProvider
-        is already set up in <code>_app.tsx</code>, so you can just use the{" "}
-        <code>useFeatureToggles</code> hook on any page!
+        is set up in <code>_app.tsx</code> and receives initial toggle values from{" "}
+        <code>getServerSideProps</code> on pages that opt-in. You can use the{" "}
+        <code>useFeatureToggles</code> hook on any page.
       </p>
 
       <div
@@ -52,15 +68,18 @@ function FeatureToggleDemoPage() {
           backgroundColor: "#f5f5f5",
         }}
       >
-        <h3>Current Toggle Values</h3>
+        <h3>Server-Side Toggle Values (from getServerSideProps)</h3>
+        <p>
+          <em>Rendered at: {serverRenderedAt}</em>
+        </p>
         <ul>
           <li>
-            <strong>DEMO_SERVER:</strong> {isEnabled("DEMO_SERVER") ? "✅ Enabled" : "❌ Disabled"}{" "}
-            (from database)
+            <strong>DEMO_SERVER:</strong> {serverDemoEnabled ? "✅ Enabled" : "❌ Disabled"}{" "}
+            (resolved on server)
           </li>
           <li>
             <strong>DEMO_CLIENT:</strong> {isEnabled("DEMO_CLIENT") ? "✅ Enabled" : "❌ Disabled"}{" "}
-            (from database)
+            (from provider)
           </li>
         </ul>
         <p>
@@ -72,7 +91,7 @@ function FeatureToggleDemoPage() {
       <ClientSideDemo />
 
       <div style={{ marginTop: "2rem" }}>
-        <h3>How to use feature toggles</h3>
+        <h3>How to use feature toggles on a page with SSR</h3>
         <pre
           style={{
             backgroundColor: "#f4f4f4",
@@ -81,10 +100,18 @@ function FeatureToggleDemoPage() {
             overflow: "auto",
           }}
         >
-          {`// In any component (no setup needed - provider is in _app.tsx)
+          {`import { GetServerSideProps } from 'next';
+import { getFeatureTogglesFromRequest } from '@/hooks/featureToggles';
 import { useFeatureToggles } from '@/components/featureToggle';
 
-function MyComponent() {
+// 1. Fetch toggles in getServerSideProps (opt-in per page)
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const { featureToggles, environment } = await getFeatureTogglesFromRequest(req);
+  return { props: { featureToggles, environment } };
+};
+
+// 2. Use the hook in your component (reads from FeatureToggleProvider in _app.tsx)
+function MyPage() {
   const { isEnabled } = useFeatureToggles();
 
   if (isEnabled('MY_FEATURE')) {
@@ -121,5 +148,21 @@ if (isEnabled('MY_FEATURE', true)) {
     </div>
   );
 }
+
+// Opt-in to SSR feature toggles for this page.
+// The featureToggles and environment props are picked up by
+// FeatureToggleProvider in _app.tsx via pageProps.
+export const getServerSideProps: GetServerSideProps<Props> = async ({ req }) => {
+  const { featureToggles, environment } = await getFeatureTogglesFromRequest(req);
+
+  return {
+    props: {
+      featureToggles,
+      environment,
+      serverRenderedAt: new Date().toISOString(),
+      serverDemoEnabled: featureToggles["DEMO_SERVER"] ?? false,
+    },
+  };
+};
 
 export default FeatureToggleDemoPage;
