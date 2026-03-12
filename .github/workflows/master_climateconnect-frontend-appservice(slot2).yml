@@ -106,3 +106,4 @@ jobs:
           app-name: 'climateconnect-frontend-appservice'
           slot-name: 'slot2'
           package: .
+          clean: true
