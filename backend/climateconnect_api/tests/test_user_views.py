@@ -5,7 +5,6 @@ from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.test import TransactionTestCase, override_settings, tag
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 
 from climateconnect_api.models import UserProfile
 from hubs.models import Hub
