@@ -3,7 +3,7 @@
 > **Mission**: Build beautiful, responsive React components that enable climate activists to collaborate effectively.
 
 ## Frontend Tech Stack
-- **Framework**: Next.js 12 (React 17)
+- **Framework**: Next.js 14 (React 18)
 - **Language**: JavaScript (partial TypeScript migration in progress)
 - **UI Library**: Material-UI v5 (@mui/material)
 - **Styling**: Emotion (@emotion/react, @emotion/styled)

@@ -3,7 +3,7 @@
 > **Mission**: Build robust Django APIs and services that power the climate action platform.
 
 ## Backend Tech Stack
-- **Framework**: Django 3.2 + Django REST Framework
+- **Framework**: Django 4.2 + Django REST Framework
 - **Language**: Python 3.11
 - **Database**: PostgreSQL with PostGIS extension (geospatial data)
 - **Caching/Message Broker**: Redis
