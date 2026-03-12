@@ -271,9 +271,7 @@ class ListMemberProfilesView(ListAPIView):
                         hub_location_ids = hub_locations.values_list("id", flat=True)
 
                         aggregated_geometry = hub_locations.annotate(
-                            geom_as_geometry=Cast(
-                                "multi_polygon", GeometryField()
-                            )
+                            geom_as_geometry=Cast("multi_polygon", GeometryField())
                         ).aggregate(combined=Union("geom_as_geometry"))["combined"]
 
                         country_filter = Q(
@@ -285,9 +283,7 @@ class ListMemberProfilesView(ListAPIView):
 
                         if aggregated_geometry:
                             by_geometry = country_filter & (
-                                Q(
-                                    location__centre_point__coveredby=aggregated_geometry
-                                )
+                                Q(location__centre_point__coveredby=aggregated_geometry)
                                 | Q(
                                     location__multi_polygon__coveredby=aggregated_geometry
                                 )

@@ -108,9 +108,7 @@ class MemberLocationHubFilterTest(TransactionTestCase):
         """
         # The post_save signal on UserProfile calls cache.keys() which is a
         # django-redis extension not present on DummyCache. Patch it directly.
-        self._cache_patcher = patch(
-            "climateconnect_api.models.user.cache", MagicMock()
-        )
+        self._cache_patcher = patch("climateconnect_api.models.user.cache", MagicMock())
         self._cache_patcher.start()
 
         self.url = reverse("member-profiles-api")
