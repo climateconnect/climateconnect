@@ -15,6 +15,7 @@ import "@testing-library/jest-dom";
 // Import after mocking
 import { FeatureToggleProvider, useFeatureToggles, FeatureToggleContext } from "../featureToggle";
 import { FeatureToggles } from "../../hooks/types/featureToggle";
+import { CcEnvironments } from "../../../public/lib/environmentOperations";
 
 // Test component that uses feature toggles via hook
 function TestComponentWithHook() {
@@ -76,7 +77,10 @@ describe("Feature Toggle System", () => {
       };
 
       render(
-        <FeatureToggleProvider initialToggles={initialToggles} environment="development">
+        <FeatureToggleProvider
+          initialToggles={initialToggles}
+          environment={CcEnvironments.Development}
+        >
           <TestComponentWithHook />
         </FeatureToggleProvider>
       );

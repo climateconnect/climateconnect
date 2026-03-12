@@ -5,6 +5,7 @@ import {
   detectEnvironmentFromHost,
   CC_ENVIRONMENT_HEADER,
   CC_ENVIRONMENT_COOKIE,
+  CcEnvironments,
 } from "./public/lib/environmentOperations";
 
 export function middleware(request: NextRequest) {
@@ -27,7 +28,7 @@ export function middleware(request: NextRequest) {
     path: "/",
     sameSite: "lax",
     httpOnly: false,
-    secure: environment !== "development",
+    secure: environment !== CcEnvironments.Development,
     // No maxAge — session cookie; refreshed on every request by middleware
   });
 

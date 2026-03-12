@@ -1,5 +1,5 @@
 import Cookies from "universal-cookie";
-import { CC_ENVIRONMENT_COOKIE, detectEnvironment } from "./environmentOperations";
+import { CC_ENVIRONMENT_COOKIE, detectEnvironment, CcEnvironments } from "./environmentOperations";
 
 const NECESSARY_COOKIES = [
   "acceptedNecessary",
@@ -23,7 +23,7 @@ export function removeUnnecesaryCookies() {
 
 export function getCookieProps(expiry) {
   const environment = detectEnvironment();
-  const develop = environment === "development";
+  const develop = environment === CcEnvironments.Development;
   //TODO: set httpOnly=true to make cookie only accessible by server and sameSite=true
   const cookieProps = {
     path: "/",
@@ -33,7 +33,7 @@ export function getCookieProps(expiry) {
     domain: undefined as string | undefined,
   };
 
-  if (environment === "production") {
+  if (environment === CcEnvironments.Production) {
     // Set domain only in production to support subdomain cookie sharing.
     // Staging and development don't need cross-subdomain cookies.
     cookieProps.domain = "." + process.env.BASE_URL_HOST;

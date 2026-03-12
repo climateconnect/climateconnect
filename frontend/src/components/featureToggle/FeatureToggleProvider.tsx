@@ -1,7 +1,11 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 import { getFeatureToggles, isFeatureEnabled } from "../../hooks/featureToggles";
-import { detectEnvironment } from "../../../public/lib/environmentOperations";
+import {
+  detectEnvironment,
+  CcEnvironment,
+  CcEnvironments,
+} from "../../../public/lib/environmentOperations";
 import { FeatureToggles } from "../../hooks/types/featureToggle";
 
 export type FeatureToggleContextType = {
@@ -10,7 +14,7 @@ export type FeatureToggleContextType = {
   isEnabled: (_feature: string, _fallback?: boolean) => boolean;
   isLoading: boolean;
   error: Error | null;
-  environment: "production" | "staging" | "development";
+  environment: CcEnvironment;
 };
 
 const initialState = {
@@ -19,7 +23,7 @@ const initialState = {
   isEnabled: (_feature: string, _fallback?: boolean): boolean => false,
   isLoading: true,
   error: null,
-  environment: "production",
+  environment: CcEnvironments.Production,
 } as FeatureToggleContextType;
 
 export const FeatureToggleContext = createContext<FeatureToggleContextType>(initialState);
@@ -29,7 +33,7 @@ export type FeatureToggleProviderProps = {
   // Optional initial toggles for server-side rendering
   initialToggles?: FeatureToggles;
   // Optional environment override (for testing or SSR)
-  environment?: "production" | "staging" | "development";
+  environment?: CcEnvironment;
 };
 
 export function FeatureToggleProvider({
@@ -38,9 +42,10 @@ export function FeatureToggleProvider({
   environment: environmentOverride,
 }: FeatureToggleProviderProps) {
   // Determine environment at startup
-  const [environment, setEnvironment] = useState<"production" | "staging" | "development">(
+  const [environment, setEnvironment] = useState<CcEnvironment>(
     () =>
-      environmentOverride || (typeof window !== "undefined" ? detectEnvironment() : "production")
+      environmentOverride ||
+      (typeof window !== "undefined" ? detectEnvironment() : CcEnvironments.Production)
   );
 
   const [toggles, setToggles] = useState<FeatureToggles>(() => initialToggles || {});

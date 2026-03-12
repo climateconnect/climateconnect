@@ -12,19 +12,33 @@ import Cookies from "universal-cookie";
 export const CC_ENVIRONMENT_COOKIE = "cc-environment";
 export const CC_ENVIRONMENT_HEADER = "x-cc-environment";
 
-export type CcEnvironment = "production" | "staging" | "development";
+/**
+ * Enum-like const object for the three supported runtime environments.
+ * Use `CcEnvironments.Production` instead of the plain string `"production"`.
+ */
+export const CcEnvironments = {
+  Production: "production",
+  Staging: "staging",
+  Development: "development",
+} as const;
 
-const VALID_ENVIRONMENTS: CcEnvironment[] = ["production", "staging", "development"];
+export type CcEnvironment = typeof CcEnvironments[keyof typeof CcEnvironments];
+
+const VALID_ENVIRONMENTS: CcEnvironment[] = [
+  CcEnvironments.Production,
+  CcEnvironments.Staging,
+  CcEnvironments.Development,
+];
 
 export function isValidEnvironment(value: string): value is CcEnvironment {
   return (VALID_ENVIRONMENTS as string[]).includes(value);
 }
 
 export function detectEnvironmentFromHost(host: string | null): CcEnvironment {
-  if (!host) return "production";
-  if (host.includes("slot2") || host.includes("staging")) return "staging";
-  if (host.includes("localhost") || host.includes("127.0.0.1")) return "development";
-  return "production";
+  if (!host) return CcEnvironments.Production;
+  if (host.includes("climateconnect-frontend-slot2")) return CcEnvironments.Staging; // add any slot2 custom domains here
+  if (host.includes("localhost") || host.includes("127.0.0.1")) return CcEnvironments.Development;
+  return CcEnvironments.Production;
 }
 
 /**
@@ -52,7 +66,7 @@ export function detectEnvironment(): CcEnvironment {
     return detectEnvironmentFromHost(window.location.hostname);
   }
 
-  return "production";
+  return CcEnvironments.Production;
 }
 
 /**
@@ -62,7 +76,7 @@ export function detectEnvironment(): CcEnvironment {
  * host-based detection.
  */
 export function detectEnvironmentFromRequest(req: IncomingMessage | undefined): CcEnvironment {
-  if (!req) return "production";
+  if (!req) return CcEnvironments.Production;
 
   // Prefer the header set by middleware
   const headerValue = req.headers[CC_ENVIRONMENT_HEADER];
