@@ -43,7 +43,8 @@ jobs:
       - name: yarn install, pull webflow files and build
         run: |
           cd frontend
-          yarn --production
+          corepack enable
+          yarn install --immutable
           npx webflow devlink sync --no-input
           yarn build
         env:
