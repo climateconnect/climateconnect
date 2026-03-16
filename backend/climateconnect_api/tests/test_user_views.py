@@ -86,10 +86,6 @@ class MemberLocationHubFilterTest(TransactionTestCase):
     Tests the code in user_views.py that handles filtering member profiles
     by location hubs with aggregated geometry.
 
-    The current implementation only uses `current_hub.location.first()` instead
-    of aggregating all hub locations — these tests are expected to FAIL until
-    that bug is fixed.
-
     Uses TransactionTestCase to ensure complete database isolation and cleanup.
     """
 
