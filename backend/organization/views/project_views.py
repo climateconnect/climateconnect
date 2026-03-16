@@ -551,6 +551,10 @@ class CreateProjectView(APIView):
                         )
                         if "description" in texts:
                             translation.description_translation = texts["description"]
+                        if "helpful_connections" in texts:
+                            translation.helpful_connections_translation = texts[
+                                "helpful_connections"
+                            ]
                         translation.save()
                     except Language.DoesNotExist:
                         logger.error(
@@ -740,6 +744,7 @@ class ProjectAPIView(APIView):
             "collaborators_welcome",
             "additional_loc_info",
             "description",
+            "helpful_connections",
             "short_description",
             "website",
         ]
@@ -893,6 +898,10 @@ class ProjectAPIView(APIView):
                 "translation_key": "short_description_translation",
             },
             {"key": "description", "translation_key": "description_translation"},
+            {
+                "key": "helpful_connections",
+                "translation_key": "helpful_connections_translation",
+            },
         ]
         if "translations" in request.data:
             edit_translations(items_to_translate, request.data, project, "project")

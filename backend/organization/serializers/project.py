@@ -35,6 +35,7 @@ from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
 from organization.utility.project import (
     get_project_description,
+    get_project_helpful_connections,
     get_project_name,
     get_project_short_description,
 )
@@ -56,6 +57,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     number_of_likes = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     loc = serializers.SerializerMethodField()
+    helpful_connections = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
 
@@ -84,6 +86,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "loc",
             "location",
             "collaborators_welcome",
+            "helpful_connections",
             "project_parents",
             "sectors",
             "tags",  # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
@@ -152,6 +155,9 @@ class ProjectSerializer(serializers.ModelSerializer):
             return None
         return obj.loc.name
 
+    def get_helpful_connections(self, obj):
+        return get_project_helpful_connections(obj, get_language())
+
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
         return serializer.data["name"]
@@ -189,6 +195,7 @@ class EditProjectSerializer(ProjectSerializer):
     translations = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    helpful_connections = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     related_hubs = serializers.SerializerMethodField()
 
@@ -216,6 +223,9 @@ class EditProjectSerializer(ProjectSerializer):
 
     def get_description(self, obj):
         return obj.description
+
+    def get_helpful_connections(self, obj):
+        return obj.helpful_connections
 
     def get_related_hubs(self, obj):
         return [hub.url_slug for hub in obj.related_hubs.all()]

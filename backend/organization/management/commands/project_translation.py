@@ -16,6 +16,8 @@ def translate_project(project: Project) -> None:
 
     if project.description:
         data["description"] = project.description
+    if project.helpful_connections:
+        data["helpful_connections"] = project.helpful_connections
     try:
         translations = get_project_translations(data)
     except ValueError:
@@ -35,6 +37,10 @@ def translate_project(project: Project) -> None:
 
             if "description" in texts:
                 translation.description_translation = texts["description"]
+            if "helpful_connections" in texts:
+                translation.helpful_connections_translation = texts[
+                    "helpful_connections"
+                ]
 
             translation.save()
             print(

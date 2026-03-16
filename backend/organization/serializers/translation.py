@@ -34,6 +34,7 @@ class ProjectTranslationSerializer(serializers.ModelSerializer):
             "name_translation",
             "is_manual_translation",
             "description_translation",
+            "helpful_connections_translation",
         )
 
     def get_language(self, obj):
