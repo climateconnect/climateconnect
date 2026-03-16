@@ -90,7 +90,65 @@ A new API endpoint will be created for the frontend to fetch the current state o
 - Needs to support unit tests, e.g. offering a mock implementation for testing purposes.
 
 ## Technical Solution Overview
-[To be filled by a development agent]
+
+### Frontend Data Flow
+
+The frontend implementation follows an opt-in, SSR-first pattern built around a single React context provider.
+
+#### Key files
+
+| File | Role |
+|---|---|
+| [`frontend/middleware.ts`](../../frontend/middleware.ts) | Injects `x-cc-environment` request header based on hostname |
+| [`frontend/public/lib/environmentOperations.ts`](../../frontend/public/lib/environmentOperations.ts) | `detectEnvironment()` (client) and `detectEnvironmentFromRequest()` (server) |
+| [`frontend/src/hooks/featureToggles.ts`](../../frontend/src/hooks/featureToggles.ts) | `getFeatureToggles(env)`, `getFeatureTogglesFromRequest(req)`, `isFeatureEnabled()` |
+| [`frontend/src/hooks/types/featureToggle.ts`](../../frontend/src/hooks/types/featureToggle.ts) | `FeatureToggles` type (`Record<string, boolean>`) |
+| [`frontend/src/components/featureToggle/FeatureToggleProvider.tsx`](../../frontend/src/components/featureToggle/FeatureToggleProvider.tsx) | React context provider + `useFeatureToggles()` hook |
+| [`frontend/pages/_app.tsx`](../../frontend/pages/_app.tsx) | Mounts `FeatureToggleProvider` globally; bridges SSR props into context |
+
+#### Data flow (SSR pages)
+
+```
+middleware.ts
+  → sets x-cc-environment header
+    → getServerSideProps (per page, opt-in)
+      → getFeatureTogglesFromRequest(req)
+        → detectEnvironmentFromRequest(req)   reads x-cc-environment header
+        → getFeatureToggles(env)              fetches GET /api/feature_toggles/?environment=<env>
+      → returns { featureToggles, environment } as pageProps
+        → _app.tsx FeatureToggleProvider initialToggles={pageProps.featureToggles} environment={pageProps.environment}
+          → useFeatureToggles() hook available in every component
+```
+
+#### Pages without `getServerSideProps`
+
+When a page does not opt in to SSR toggles, `pageProps.featureToggles` is `undefined`. The `FeatureToggleProvider` then fetches toggles client-side in a `useEffect` using `detectEnvironment()` (hostname-based). The `isEnabled()` call returns the provided fallback value (`false` by default) on the first render until the client fetch completes.
+
+#### Why `_app.tsx` changes are required
+
+- **`FeatureToggleProvider` wrapper**: The `useFeatureToggles()` hook reads from `FeatureToggleContext`. Without the provider wrapping every page in `_app.tsx`, calling the hook throws `"useFeatureToggles must be used within a FeatureToggleProvider"`.
+- **`initialToggles={pageProps.featureToggles}`**: Delivers SSR-fetched toggles into the React context on initial render, avoiding a client-side refetch and preventing a loading flash.
+- **`environment={pageProps.environment}`**: Passes the server-detected environment so the provider does not re-detect it client-side, keeping SSR and CSR in sync.
+- **`pageProps` type annotation** (`featureToggles?: FeatureToggles; environment?: CcEnvironment`): Both properties are optional so pages that do not return them are not broken.
+
+#### Using feature toggles in a page
+
+```tsx
+// 1. Opt-in to SSR toggles (optional but recommended)
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const { featureToggles, environment } = await getFeatureTogglesFromRequest(req);
+  return { props: { featureToggles, environment } };
+};
+
+// 2. Use the hook – works on any page because FeatureToggleProvider is in _app.tsx
+function MyPage() {
+  const { isEnabled } = useFeatureToggles();
+  return isEnabled('MY_FEATURE') ? <NewFeature /> : <OldFeature />;
+}
+
+// With explicit fallback (used when toggle may not exist or API is unavailable)
+if (isEnabled('MY_FEATURE', true)) { /* defaults to true */ }
+```
 
 ## Log
 - 2026-02-26 10:49 - Task created.

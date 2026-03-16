@@ -81,7 +81,7 @@ Response:
 The frontend detects the environment based on hostname:
 
 - **Production**: `climateconnect.earth`, `www.climateconnect.earth`
-- **Staging**: Hostnames containing `staging` or `slot2`
+- **Staging**: `climateconnect-frontend-slot2`
 - **Development**: `localhost`, `127.0.0.1`
 
 ## Caching
