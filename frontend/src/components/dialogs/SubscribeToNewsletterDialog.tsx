@@ -1,6 +1,6 @@
 import { Button, TextField, Typography, useMediaQuery, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
@@ -48,10 +48,10 @@ export default function SubscribeToNewsletterDialog({ onClose, open }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
-  const [emailAddress, setEmailAddress] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const handleSubscribe = async (e) => {
     e.preventDefault();
     console.log("subscribing!");

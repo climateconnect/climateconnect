@@ -1,7 +1,7 @@
 import { IconButton, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ShareIcon from "@mui/icons-material/Share";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import SocialMediaShareDialog from "./SocialMediaShareDialog";
 import UserContext from "../context/UserContext";
@@ -51,12 +51,12 @@ export default function SocialMediaShareButton({
   const token = cookies.get("token");
   const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-  const [showSocials, setShowSocials] = React.useState(false);
+  const [showSocials, setShowSocials] = useState(false);
   const toggleShowSocials = (value) => {
     setShowSocials(value);
   };
 
-  const [linkShared, setLinkShared] = React.useState(false);
+  const [linkShared, setLinkShared] = useState(false);
   const createShareRecord = (sharedVia) => {
     if (sharedVia === SHARE_OPTIONS.link && linkShared) return; //only create a share-record for the link once per session
     apiRequest({

@@ -2,8 +2,7 @@ import { Avatar, Button, CircularProgress, Link, Theme, Tooltip, Typography } fr
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import React, { useContext, useState } from "react";
-import Truncate from "react-truncate";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -69,6 +68,12 @@ const useStyles = makeStyles<Theme, { preview?: boolean }>((theme) => ({
   deleteButton: {
     color: theme.palette.background.default_contrastText,
   },
+  truncatedContent: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+  },
 }));
 
 export default function Post({
@@ -103,19 +108,19 @@ export default function Post({
   };
 
   const [isTextExpanded, setIsTextExpanded] = useState(false);
-  const [isTextTruncated, setisTextTruncated] = useState(false);
+  const [isTextTruncated, setIsTextTruncated] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (type !== "preview" && contentRef.current) {
+      const element = contentRef.current;
+      const isTruncated = element.scrollHeight > element.clientHeight;
+      setIsTextTruncated(isTruncated);
+    }
+  }, [post.content, type]);
 
   const handleExpandText = () => {
     setIsTextExpanded(!isTextExpanded);
-  };
-
-  const handleTruncate = (truncated) => {
-    if (isTextTruncated === true) {
-      // keeps the button for comments that had originally been truncated.
-      //Pressing show more will cause
-      return; // a rerender and unmarks them as untruncated
-    }
-    setisTextTruncated(truncated);
   };
 
   const toggleDeleteDialogOpen = () => setOpen(!open);
@@ -190,21 +195,20 @@ export default function Post({
               </Typography>
             </div>
             {type === "preview" ? (
-              <Typography>
-                <Truncate lines={truncate} ellipsis={"..."}>
-                  <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
-                </Truncate>
+              <Typography
+                className={classes.truncatedContent}
+                style={{ WebkitLineClamp: truncate }}
+              >
+                <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
               </Typography>
             ) : (
               <div>
-                <Typography>
-                  <Truncate
-                    lines={!isTextExpanded && 3}
-                    ellipsis={"..."}
-                    onTruncate={handleTruncate}
-                  >
-                    <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
-                  </Truncate>
+                <Typography
+                  ref={contentRef}
+                  className={!isTextExpanded ? classes.truncatedContent : undefined}
+                  style={!isTextExpanded ? { WebkitLineClamp: 3 } : undefined}
+                >
+                  <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
                 </Typography>
 
                 {isTextTruncated && (

@@ -1,4 +1,5 @@
 import { Dayjs } from "dayjs";
+import type { PaletteColorOptions } from "@mui/material/styles";
 
 export type User = {
   id: string;
@@ -27,9 +28,6 @@ export type SkillType = {
 
 export type Project = {
   collaborators_welcome: boolean;
-  status: string;
-  skills: any[];
-  helpful_connections: any[];
   collaborating_organizations: any[];
   loc: any;
   location?: any; //TODO: merge loc and location (loc used to post, location used when getting data from the backend currently)
@@ -44,7 +42,6 @@ export type Project = {
   url_slug?: string;
   name?: string;
   project_parents?: any[];
-  tags?: any[];
   project_type: ProjectType | any;
   start_date?: Date | Dayjs | null;
   end_date?: Date | Dayjs | null;
@@ -56,7 +53,11 @@ export type Project = {
   related_hubs?: any[];
   hubUrl?: string;
   thumbnail_image?: string;
-  sectors?: SectorOptionType[];
+  sectors?: Sector[];
+  has_children?: boolean; // Indicates if project has child projects (e.g., festival with sub-events)
+  parent_project_id?: number; // ID of parent project (detail view only)
+  parent_project_name?: string; // Name of parent project (detail view only)
+  parent_project_slug?: string; // URL slug of parent project (detail view only)
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
@@ -73,21 +74,62 @@ export type CcLocale = "en" | "de";
 
 declare module "@mui/material/styles/createPalette" {
   // augment theme type with climateconnect custom properties
+  // eslint-disable-next-line no-unused-vars
   interface Palette {
     yellow: PaletteColor;
-    contrast: PaletteColor;
+    contrast: {
+      main: string;
+      contrastText: string;
+    };
   }
+  // eslint-disable-next-line no-unused-vars
   interface PaletteOptions {
     yellow: PaletteColorOptions;
-    contrast: PaletteColorOptions;
+    contrast: ContrastColor;
   }
+  // eslint-disable-next-line no-unused-vars
   interface PaletteColor {
     extraLight?: string;
     // lightHover?: string;
   }
+  // eslint-disable-next-line no-unused-vars
   interface SimplePaletteColorOptions {
     lightHover?: string;
     extraLight?: string;
+  }
+
+  interface ContrastColor {
+    main: string;
+    contrastText: string;
+  }
+}
+
+declare module "@mui/material/TextField" {
+  // eslint-disable-next-line no-unused-vars
+  interface TextFieldPropsColorOverrides {
+    contrast: true;
+  }
+}
+
+declare module "@mui/material/Button" {
+  // eslint-disable-next-line no-unused-vars
+  interface ButtonPropsColorOverrides {
+    grey: true;
+    contrast: true;
+  }
+}
+
+declare module "@mui/material/Checkbox" {
+  // eslint-disable-next-line no-unused-vars
+  interface CheckboxPropsColorOverrides {
+    contrast: true;
+  }
+}
+
+declare module "@mui/material/Switch" {
+  // eslint-disable-next-line no-unused-vars
+  interface SwitchPropsColorOverrides {
+    contrast: true;
   }
 }
 
@@ -99,14 +141,15 @@ export type Supporter = {
   organization_url_slug: string;
 };
 
-export type SectorOptionType = {
-  icon?: string;
+export type Sector = {
   id: number;
   name: string;
   key: string;
+  icon?: string;
   original_name?: string;
-  thumbnail_image?: string;
+  image?: string;
 };
+
 export type LinkedHub = {
   hubName: string;
   hubUrl: string;
@@ -121,3 +164,14 @@ export interface HubData {
   hub_type: string;
   [key: string]: any;
 }
+
+export type DonationGoal = {
+  goal_name: string | undefined;
+  goal_start: string | undefined;
+  goal_end: string | undefined;
+  goal_amount: number | undefined;
+  current_amount: number | undefined;
+  hub: string | undefined;
+  call_to_action_text: string | undefined;
+  call_to_action_link: string | undefined;
+};

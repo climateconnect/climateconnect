@@ -1,13 +1,14 @@
-name: Python linting
+name: Backend CI (Linting & Tests)
 on: [pull_request]
 
 jobs:
-  build:
+  lint:
+    name: Lint Backend Code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Install dependencies
@@ -23,45 +24,8 @@ jobs:
       # Include `--format=github` to enable automatic inline annotations.
       - name: Run Ruff
         run: ruff check --format=github backend
-  # run_tests:
-  #   name: Run Backend Tests (Django, Django REST Framework)
-  #   workdirectory: backend
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   services:
-  #     postgres:
-  #       image: postgres/postgres:16.9
-  #       ports:
-  #         - 5432:5432
-  #       env:
-  #         POSTGRES_DB: test_db
-  #         POSTGRES_USER: user
-  #         POSTGRES_PASSWORD: password
-  #       options: >-
-  #         --health-cmd="pg_isready -U user"
-  #         --health-interval=10s
-  #         --health-timeout=5s
-  #         --health-retries=5
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Wait for DB
-  #       run: |
-  #         echo "Waiting for PostgreSQL to be ready..."
-  #         while ! pg_isready -h localhost -p 5432 -U user; do
-  #           sleep 1
-  #         done
-  #         echo "PostgreSQL is ready."
-  #     - name: Install Test PostGis to the testdatabase
-  #       run: |
-  #         psql -h localhost -U user -d testdb -c "CREATE EXTENSION postgis;"
-  #       env:
-  #         PGPASSWORD: password
-  #         PGUSER: user
-  #     - name: Install Python
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: "3.11"
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         cd backend
+
+  test:
+    name: Run Django Tests
+    needs: lint
+    uses: ./.github/workflows/backend_tests.yml

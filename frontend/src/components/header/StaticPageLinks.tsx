@@ -92,6 +92,9 @@ export default function StaticPageLinks({ isCustomHub }) {
 //Contains the links that are directly shown without having to open the dropdownbutton
 function DirectlyDisplayedLinks({ links, isNarrowScreen }) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const localePrefix = getLocalePrefix(locale);
+
   //On narrow screen we're only displaying 2 links anyways. Just display them.
   if (isNarrowScreen) {
     return (
@@ -103,8 +106,6 @@ function DirectlyDisplayedLinks({ links, isNarrowScreen }) {
     );
   } else {
     const parentLinks = links.filter((link) => !link.parent_item);
-    const { locale } = useContext(UserContext);
-    const localePrefix = getLocalePrefix(locale);
     return (
       <>
         {parentLinks.map((link, index) => {
@@ -115,6 +116,7 @@ function DirectlyDisplayedLinks({ links, isNarrowScreen }) {
             return (
               //TODO: Work on dropdown button so that you can click it for the link it has
               <DropDownButton
+                key={index}
                 options={[link, ...children]}
                 href={localePrefix + link.href}
                 buttonProps={{

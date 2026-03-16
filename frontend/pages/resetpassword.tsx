@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import { apiRequest, redirect } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
@@ -33,7 +33,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function ResetPassword({ hubUrl, hubThemeData }) {
-  const [errorMessage, setErrorMessage] = React.useState(null as string | null);
+  const [errorMessage, setErrorMessage] = useState(null as string | null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
   const classes = useStyles();

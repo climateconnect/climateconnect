@@ -1,7 +1,7 @@
 import { Container, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getRolesOptions, sendToLogin } from "../../public/lib/apiOperations";
@@ -34,12 +34,18 @@ export async function getServerSideProps(ctx) {
     return sendToLogin(ctx, message);
   }
   const organizationUrl = encodeURI(ctx.query.organizationUrl);
-  const [organization, members, rolesOptions, availabilityOptions, hubThemeData] = await Promise.all([
+  const [
+    organization,
+    members,
+    rolesOptions,
+    availabilityOptions,
+    hubThemeData,
+  ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale),
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
     getAvailabilityOptions(auth_token, ctx.locale),
-    getHubTheme(hubUrl)
+    getHubTheme(hubUrl),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -54,7 +60,7 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function manageOrganizationMembers({
+export default function ManageOrganizationMembersPage({
   organization,
   members,
   availabilityOptions,
@@ -66,7 +72,7 @@ export default function manageOrganizationMembers({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   const classes = useStyles();
-  const [currentMembers, setCurrentMembers] = React.useState(
+  const [currentMembers, setCurrentMembers] = useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
   );
 

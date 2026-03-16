@@ -1,10 +1,9 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
-import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
@@ -14,11 +13,9 @@ import AddTeam from "./AddTeam";
 import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import ShareProject from "./ShareProject";
-import { Project, SkillType, Role, Organization, SectorOptionType } from "../../types";
+import { Project, Role, Organization, Sector } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import SelectSectors from "./SelectSectors";
-
-const DEFAULT_STATUS = 2;
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -76,24 +73,21 @@ type availabilityOptionsProps = {
 type ShareProjectRootProps = {
   availabilityOptions: availabilityOptionsProps[];
   userOrganizations: Organization[];
-  skillsOptions: SkillType[];
   rolesOptions: Role[];
   user: any;
-  statusOptions: any[];
   token: string;
+  // eslint-disable-next-line no-unused-vars
   setMessage: (message: string) => void;
   projectTypeOptions: any[];
   hubName?: string;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 export default function ShareProjectRoot({
   availabilityOptions,
   userOrganizations,
-  skillsOptions,
   rolesOptions,
   user,
-  statusOptions,
   token,
   setMessage,
   projectTypeOptions,
@@ -105,14 +99,13 @@ export default function ShareProjectRoot({
   const texts = getTexts({ page: "project", locale: locale });
   const steps = getSteps(texts);
 
-  const [project, setProject] = React.useState(
+  const [project, setProject] = useState(
     getDefaultProjectValues(
       {
         ...user,
         role: rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type),
         role_in_project: "",
       },
-      statusOptions,
       projectTypeOptions,
       userOrganizations,
       locale,
@@ -145,16 +138,16 @@ export default function ShareProjectRoot({
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const targetLanguage = locales.find((l) => l !== locale);
-  const [translations, setTranslations] = React.useState({});
-  const [curStep, setCurStep] = React.useState(getStep(0));
-  const [finished, setFinished] = React.useState(false);
+  const [translations, setTranslations] = useState({});
+  const [curStep, setCurStep] = useState(getStep(0));
+  const [finished, setFinished] = useState(false);
 
   // TODO: Allow changing sourceLanguage, targetLanguage
-
+  const router = useRouter();
   useEffect(() => {
     if (window) {
       const location = window.location.href;
-      Router.beforePopState(({ as }) => {
+      router.beforePopState(({ as }) => {
         if (location.includes("/share") && as != "/share") {
           const result = window.confirm(
             texts.are_you_sure_you_want_to_leave_you_will_lose_your_project
@@ -196,13 +189,16 @@ export default function ShareProjectRoot({
     window.scrollTo(0, 0);
   };
 
+  // TODO: save as draft and submit project
+  // share a lot of logic, can be refactored
   const submitProject = async (event) => {
     event.preventDefault();
     setLoadingSubmit(true);
-    const payload = await formatProjectForRequest(project, translations);
-    payload.sectors = project.sectors?.map((sector) => sector.key);
 
     try {
+      const payload = await formatProjectForRequest(project, translations);
+      payload.sectors = project.sectors?.map((sector) => sector.key);
+
       const resp = await apiRequest({
         method: "post",
         url: "/api/create_project/",
@@ -229,27 +225,29 @@ export default function ShareProjectRoot({
   const saveAsDraft = async (event) => {
     event.preventDefault();
     setLoadingSubmitDraft(true);
-    const payload = await formatProjectForRequest({ ...project, is_draft: true }, translations);
-    apiRequest({
-      method: "post",
-      url: "/api/create_project/",
-      payload: payload,
-      token: token,
-      locale: locale,
-    })
-      .then(function (response) {
-        setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
-        setLoadingSubmitDraft(false);
-        setFormSaved(true);
-        setFinished(true);
-      })
-      .catch(function (error) {
-        console.log(error);
-        setErrorDialogOpen(true);
-        setProject({ ...project, error: true });
-        setLoadingSubmitDraft(false);
-        if (error) console.log(error.response);
+
+    try {
+      const payload = await formatProjectForRequest({ ...project, is_draft: true }, translations);
+      payload.sectors = project.sectors?.map((sector) => sector.key);
+
+      const response = await apiRequest({
+        method: "post",
+        url: "/api/create_project/",
+        payload: payload,
+        token: token,
+        locale: locale,
       });
+
+      setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
+      setLoadingSubmitDraft(false);
+      setFinished(true);
+    } catch (error: any) {
+      console.log(error);
+      setErrorDialogOpen(true);
+      setProject({ ...project, error: true });
+      setLoadingSubmitDraft(false);
+      if (error?.response) console.log(error.response);
+    }
   };
 
   const handleSetProject = (newProjectData) => {
@@ -278,12 +276,6 @@ export default function ShareProjectRoot({
       textKey: "description",
       rows: 15,
       headlineTextKey: "description",
-    },
-    {
-      textKey: "helpful_connections",
-      rows: 1,
-      headlineTextKey: "helpful_connections",
-      isArray: true,
     },
   ];
 
@@ -353,7 +345,6 @@ export default function ShareProjectRoot({
               handleSetProjectData={handleSetProject}
               goToNextStep={goToNextStep}
               goToPreviousStep={goToPreviousStep}
-              skillsOptions={skillsOptions}
               setMessage={setMessage}
               saveAsDraft={saveAsDraft}
               loadingSubmit={loadingSubmit}
@@ -386,7 +377,7 @@ export default function ShareProjectRoot({
               targetLanguage={targetLanguage}
               pageName="project"
               textsToTranslate={textsToTranslate}
-              arrayTranslationKeys={["helpful_connections"]}
+              arrayTranslationKeys={[]}
               introTextKey="translate_project_intro"
               submitButtonText={texts.submit}
               saveAsDraft={saveAsDraft}
@@ -424,7 +415,6 @@ export default function ShareProjectRoot({
 //TODO: remove some of these default values as they are just for testing
 const getDefaultProjectValues = (
   loggedInUser,
-  statusOptions,
   projectTypeOptions,
   userOrganizations,
   locale,
@@ -432,9 +422,6 @@ const getDefaultProjectValues = (
 ): Project => {
   return {
     collaborators_welcome: true,
-    status: statusOptions.find((s) => s.id === DEFAULT_STATUS),
-    skills: [],
-    helpful_connections: [],
     collaborating_organizations: [],
     loc: {},
     parent_organization: userOrganizations ? userOrganizations[0] : null,
@@ -451,10 +438,10 @@ const getDefaultProjectValues = (
 };
 
 const formatProjectForRequest = async (project, translations) => {
-  const formattedProject = {
+  const { blobFromObjectUrl } = await import("../../../public/lib/imageOperations");
+  return {
     ...project,
-    status: project.status.id,
-    skills: project.skills.map((s) => s.key),
+    loc: parseLocation(project.loc, true),
     team_members: project.team_members.map((m) => ({
       url_slug: m.url_slug,
       role: m.role.id,
@@ -462,20 +449,11 @@ const formatProjectForRequest = async (project, translations) => {
       id: m.id,
       role_in_project: m.role_in_project,
     })),
-    project_tags: project?.project_tags?.map((s) => s.key),
     parent_organization: project?.parent_organization?.id,
     collaborating_organizations: project.collaborating_organizations.map((o) => o.id),
+    image: await blobFromObjectUrl(project.image),
+    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
     source_language: project.language,
     translations: translations ? translations : {},
   };
-  if (project.loc && Object.keys(project.loc).length > 0) {
-    formattedProject.loc = parseLocation(project.loc, true);
-  }
-  if (project.image) {
-    formattedProject.image = await blobFromObjectUrl(project.image);
-  }
-  if (project.thumbnail_image) {
-    formattedProject.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
-  }
-  return formattedProject;
 };

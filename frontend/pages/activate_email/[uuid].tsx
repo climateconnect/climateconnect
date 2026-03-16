@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import cookies from "next-cookies";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -56,7 +56,7 @@ async function newEmailVerification(uuid, token, locale) {
 }
 
 export default function ActivateEmail({ uuid, token }) {
-  const [sentRequest, setSentRequest] = React.useState(false);
+  const [sentRequest, setSentRequest] = useState(false);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
   useEffect(function () {

@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import PropTypes from "prop-types";
+import { string } from "prop-types";
 import React, { useContext } from "react";
 import Linkify from "react-linkify";
 import YouTube from "react-youtube";
@@ -53,20 +53,25 @@ export default function MessageContent({ content, renderYoutubeVideos = false, r
     const allLines = content.split("\n");
     const youtubeLines = allLines
       .filter((w) => w.length > 0 && youtubeRegex().test(w))
-      .map((line) => {
+      .map((line, lineIndex) => {
         const words = line.split(" ");
-        const enrichedLine = words.map((w) => {
+        const enrichedLine = words.map((w, wordIndex) => {
+          const uniqueKey = `${lineIndex}-${wordIndex}`;
           if (youtubeRegex().test(w)) {
             let video_id = YouTubeGetID(w);
             const ampersandPosition = video_id.indexOf("&");
             if (ampersandPosition !== -1) video_id = video_id.substring(0, ampersandPosition);
             return (
-              <div className={classes.youtubeWrapper}>
+              <div key={uniqueKey} className={classes.youtubeWrapper}>
                 <YouTube videoId={video_id} opts={opts as any} />
               </div>
             );
           } else {
-            return <Linkify componentDecorator={componentDecorator}>{w + " "}</Linkify>;
+            return (
+              <Linkify key={uniqueKey} componentDecorator={componentDecorator}>
+                {w + " "}
+              </Linkify>
+            );
           }
         });
         return {
@@ -118,5 +123,5 @@ export default function MessageContent({ content, renderYoutubeVideos = false, r
 }
 
 MessageContent.propTypes = {
-  content: PropTypes.string.isRequired,
+  content: string.isRequired,
 };

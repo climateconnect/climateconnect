@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { FilterContext } from "../context/FilterContext";
 import { applyNewFilters, getInitialFilters } from "../../../public/lib/filterOperations";
 
@@ -22,7 +22,7 @@ export function FilterProvider({
   token,
   hubUrl,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   initialLocationFilter: any;
   filterChoices: any;
   locale: any;

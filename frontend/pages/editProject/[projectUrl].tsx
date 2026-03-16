@@ -1,15 +1,10 @@
 import { Link, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import NextCookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
-import {
-  getProjectTypeOptions,
-  getSkillsOptions,
-  getStatusOptions,
-  getSectorOptions,
-} from "../../public/lib/getOptions";
+import { getProjectTypeOptions, getSectorOptions } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
@@ -20,7 +15,7 @@ import Layout from "../../src/components/layouts/layout";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
-import { Project, SectorOptionType } from "../../src/types";
+import { Project, Sector } from "../../src/types";
 import theme from "../../src/themes/theme";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,18 +40,14 @@ export async function getServerSideProps(ctx) {
   const [
     project,
     members,
-    skillsOptions,
     userOrganizations,
-    statusOptions,
     projectTypeOptions,
     hubThemeData,
     sectorOptions,
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
-    getSkillsOptions(ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
-    getStatusOptions(ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
     getSectorOptions(ctx.locale),
@@ -65,9 +56,7 @@ export async function getServerSideProps(ctx) {
     props: nullifyUndefinedValues({
       project: project,
       members: members,
-      skillsOptions: skillsOptions,
       userOrganizations: userOrganizations,
-      statusOptions: statusOptions,
       projectTypeOptions: projectTypeOptions,
       hubThemeData: hubThemeData,
       hubUrl: hubUrl,
@@ -79,9 +68,7 @@ export async function getServerSideProps(ctx) {
 export default function EditProjectPage({
   project,
   members,
-  skillsOptions,
   userOrganizations,
-  statusOptions,
   projectTypeOptions,
   hubThemeData,
   hubUrl,
@@ -89,18 +76,15 @@ export default function EditProjectPage({
 }: {
   project: Project;
   members: any[];
-  skillsOptions: any[];
   userOrganizations: any[];
-  statusOptions: any[];
   projectTypeOptions: any[];
   hubThemeData: any;
   hubUrl: string;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 }) {
   const classes = useStyles();
-  const [curProject, setCurProject] = React.useState({
+  const [curProject, setCurProject] = useState({
     ...project,
-    status: statusOptions.find((s) => s.name === project?.status),
     hubUrl: project?.related_hubs?.length ? project.related_hubs[0] : null,
   });
 
@@ -122,9 +106,8 @@ export default function EditProjectPage({
 
   project = {
     ...project,
-    status: statusOptions.find((s) => s.name === project?.status),
   };
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
@@ -215,9 +198,7 @@ export default function EditProjectPage({
         <EditProjectRoot
           oldProject={project}
           project={curProject}
-          skillsOptions={skillsOptions}
           userOrganizations={userOrganizations}
-          statusOptions={statusOptions}
           handleSetProject={handleSetProject}
           sectorOptions={sectorOptions}
           user_role={user_role}
@@ -253,10 +234,8 @@ async function getProjectByIdIfExists(projectUrl, token, locale) {
 const parseProject = (project) => ({
   ...project,
   image: getImageUrl(project.image),
-  tags: project.tags.map((t) => t.project_tag),
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
-  skills: project.skills.map((s) => ({ ...s, key: s.id })),
   sectors: project.sectors.map((item) => ({ ...item.sector, order: item.order })),
 });
 

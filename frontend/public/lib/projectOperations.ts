@@ -1,4 +1,4 @@
-import { CcLocale, User } from "../../src/types";
+import { CcLocale } from "../../src/types";
 import { apiRequest } from "./apiOperations";
 
 /**
@@ -10,17 +10,13 @@ import { apiRequest } from "./apiOperations";
  * (with corresponding request ID), and the users themselves.
  */
 export async function getMembershipRequests(url_slug: string, locale: CcLocale, token: string) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: `/api/projects/${url_slug}/requesters/`,
-      locale: locale,
-      token: token,
-    });
+  const resp = await apiRequest({
+    method: "get",
+    url: `/api/projects/${url_slug}/requesters/`,
+    locale: locale,
+    token: token,
+  });
 
-    // TODO: we should probably have an associated timestamp with each request too.
-    return resp.data.results;
-  } catch (e) {
-    throw e;
-  }
+  // TODO: we should probably have an associated timestamp with each request too.
+  return resp.data.results;
 }

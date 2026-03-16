@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 
@@ -35,6 +35,7 @@ export default function EditAccountRoot({
   setErrorMessage,
   availabilityOptions,
   hubUrl,
+  allSectors,
 }) {
   const { locale, locales } = useContext(UserContext);
   const cookies = new Cookies();
@@ -43,29 +44,24 @@ export default function EditAccountRoot({
   const [translations, setTranslations] = useState(
     initialTranslations ? getTranslationsFromObject(initialTranslations, "user_profile") : {}
   );
-  const [sourceLanguage, setSourceLanguage] = useState(profile.language);
-  const [targetLanguage, setTargetLanguage] = useState(locales.find((l) => l !== sourceLanguage)!);
+  const [sourceLanguage] = useState(profile.language);
+  const [targetLanguage] = useState(locales.find((l) => l !== sourceLanguage)!);
   const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const [editedProfile, setEditedProfile] = useState({ ...profile });
   const STEPS = ["edit_profile", "edit_translations"];
   const [step, setStep] = useState(STEPS[0]);
   const texts = getTexts({ page: "profile", locale: locale });
-
+  const router = useRouter();
   const handleSetEditedProfile = (newProfileData) => {
     setEditedProfile({ ...editedProfile, ...newProfileData });
   };
 
   const handleCancel = () => {
-    Router.push(`/profiles/${profile.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
+    router.push(`/profiles/${profile.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleGoToPreviousStep = () => {
     setStep(STEPS[STEPS.indexOf(step) - 1]);
-  };
-
-  const changeTranslationLanguages = ({ newLanguagesObject }) => {
-    if (newLanguagesObject.sourceLanguage) setSourceLanguage(newLanguagesObject.sourceLanguage);
-    if (newLanguagesObject.targetLanguage) setTargetLanguage(newLanguagesObject.targetLanguage);
   };
 
   const handleChangeTranslations = (locale, newTranslations, isManualChange) => {
@@ -93,13 +89,13 @@ export default function EditAccountRoot({
     editedAccount.language = sourceLanguage;
     const parsedProfile = parseProfileForRequest(editedAccount, availabilityOptions, user);
     const payload = await getProfileWithoutRedundantOptions(user, parsedProfile);
-
     payload.translations = parseTranslationsForRequest(
       getTranslationsWithoutRedundantKeys(
         getTranslationsFromObject(initialTranslations, "user_profile"),
         translations
       )
     );
+
     apiRequest({
       method: "post",
       url: "/api/edit_profile/",
@@ -108,7 +104,7 @@ export default function EditAccountRoot({
       locale: locale,
     })
       .then(function (response) {
-        Router.push({
+        router.push({
           pathname: `/profiles/${response.data.url_slug}`,
           query: {
             message: texts.you_have_successfully_updated_your_profile,
@@ -155,6 +151,8 @@ export default function EditAccountRoot({
             splitName
             /*TODO(unused) type="profile" */
             onClickCheckTranslations={onClickCheckTranslations}
+            allSectors={allSectors}
+            sectorsTitle={texts.area_of_interest}
           />
         ) : (
           <>
@@ -181,7 +179,6 @@ export default function EditAccountRoot({
                   showCharacterCounter: true,
                 },
               ]}
-              /*TODO(unused) changeTranslationLanguages={changeTranslationLanguages} */
             />
           </>
         )
@@ -210,6 +207,7 @@ const parseProfileForRequest = (profile, availabilityOptions, user) => {
     availability: availability ? availability.id : user.availability ? user.availability.id : null,
     skills: profile.info.skills.map((s) => s.id),
     website: profile.info.website,
+    sectors: profile.info.sectors.map((s) => s.key),
   };
 };
 
@@ -221,6 +219,7 @@ const getProfileWithoutRedundantOptions = async (user, newProfile) => {
     thumbnail_image: getImageUrl(user.thumbnail_image),
     background_image: getImageUrl(user.background_image),
     availability: user.availability && user.availability.id,
+    sectors: user.sectors.map((s) => s.key),
   };
 
   const finalProfile: any = {};

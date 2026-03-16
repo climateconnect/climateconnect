@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { MouseEventHandler, useContext } from "react";
+import React, { MouseEventHandler, useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
@@ -84,7 +84,7 @@ export default function NavigationButtons({
   fixedOnMobile,
 }: Args) {
   const classes = useStyles({ position: position, fixedOnMobile: fixedOnMobile });
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);

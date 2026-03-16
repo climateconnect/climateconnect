@@ -1,6 +1,5 @@
-import { Container, IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import { Container, IconButton, TextField, Tooltip, Typography, Switch } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Switch from "@mui/material/Switch";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
@@ -11,7 +10,6 @@ import ProjectTimeAndPlaceSectionAndCustomHub from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
-import CollaborateSection from "./CollaborateSection";
 import ProjectNameSection from "./ProjectNameSection";
 import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
@@ -74,8 +72,6 @@ const getHelpTexts = (texts) => ({
   short_description: texts.short_description_helptext,
   description: texts.description_helptext,
   collaboration: texts.collaboration_helptext,
-  addSkills: texts.add_skills_helptext,
-  addConnections: texts.add_connections_helptext,
 });
 
 export default function EnterDetails({
@@ -83,7 +79,6 @@ export default function EnterDetails({
   handleSetProjectData,
   goToNextStep,
   goToPreviousStep,
-  skillsOptions,
   setMessage,
   saveAsDraft,
   loadingSubmit,
@@ -91,15 +86,13 @@ export default function EnterDetails({
 }) {
   const [open, setOpen] = useState({
     avatarDialog: false,
-    skillsDialog: false,
-    connectionsDialog: false,
   });
   const [errors, setErrors] = useState({
     start_date: "",
     end_date: "",
   });
   const locationInputRef = useRef(null);
-  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
@@ -229,7 +222,7 @@ export default function EnterDetails({
                 </IconButton>
               </Tooltip>
             </Typography>
-            <ProjectDescriptionHelp project_type={projectData.project_type} />
+            <ProjectDescriptionHelp />
             <TextField
               variant="outlined"
               color={backgroundContrastColor}
@@ -281,21 +274,6 @@ export default function EnterDetails({
               color={backgroundContrastColor}
             />
           </div>
-          {projectData.collaborators_welcome && (
-            <CollaborateSection
-              projectData={projectData}
-              handleSetProjectData={handleSetProjectData}
-              blockClassName={classes.block}
-              subHeaderClassName={classes.subHeader}
-              toolTipClassName={classes.tooltip}
-              helpTexts={helpTexts}
-              ToolTipIcon={HelpOutlineIcon}
-              open={open}
-              handleSetOpen={handleSetOpen}
-              skillsOptions={skillsOptions}
-              collaborationTexts={collaborationTexts}
-            />
-          )}
           {/* The Draft button appears after the project name is filled out */}
           {projectData.name ? (
             <NavigationButtons

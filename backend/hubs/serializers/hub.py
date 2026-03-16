@@ -1,22 +1,23 @@
-from climateconnect_api.utility.translation import get_attribute_in_correct_language
-from location.serializers import LocationSerializer
 from django.utils.translation import get_language
+from rest_framework import serializers
+
+from climateconnect_api.models import UserProfile
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from climateconnect_api.utility.translation import get_attribute_in_correct_language
+from hubs.models import (
+    Hub,
+    HubAmbassador,
+    HubStat,
+    HubSupporter,
+    HubTheme,
+    HubThemeColor,
+)
 from hubs.utility.hub import (
     get_hub_attribute,
     get_hub_stat_attribute,
     get_hub_supporter_attribute,
 )
-from rest_framework import serializers
-from hubs.models import (
-    Hub,
-    HubStat,
-    HubAmbassador,
-    HubSupporter,
-    HubThemeColor,
-    HubTheme,
-)
-from climateconnect_api.serializers.user import UserProfileStubSerializer
-from climateconnect_api.models import UserProfile
+from location.serializers import LocationSerializer
 
 
 class HubSerializer(serializers.ModelSerializer):
@@ -108,17 +109,23 @@ class HubSerializer(serializers.ModelSerializer):
 class HubAmbassadorSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     custom_message = serializers.SerializerMethodField()
+    custom_ambassador_box_text = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
 
     class Meta:
         model = HubAmbassador
-        fields = ("title", "custom_message", "user")
+        fields = ("title", "custom_message", "custom_ambassador_box_text", "user")
 
     def get_title(self, obj):
         return get_attribute_in_correct_language(obj, "title", get_language())
 
     def get_custom_message(self, obj):
         return get_attribute_in_correct_language(obj, "custom_message", get_language())
+
+    def get_custom_ambassador_box_text(self, obj):
+        return get_attribute_in_correct_language(
+            obj, "custom_ambassador_box_text", get_language()
+        )
 
     def get_user(self, obj):
         user = UserProfile.objects.filter(user_id=obj.user.id)
@@ -206,7 +213,14 @@ class HubSupporterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HubSupporter
-        fields = ("name", "subtitle", "logo", "importance", "organization_url_slug")
+        fields = (
+            "name",
+            "subtitle",
+            "logo",
+            "importance",
+            "organization_url_slug",
+            "standalone_image",
+        )
 
     def get_name(self, obj):
         return get_hub_supporter_attribute(obj, "name", get_language())

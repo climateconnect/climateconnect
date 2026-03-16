@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { CcLocale, User } from "../../types";
+import { CcLocale, DonationGoal, User } from "../../types";
 
 const UserContext = createContext<{
   user: User | null;
@@ -10,7 +10,7 @@ const UserContext = createContext<{
   pathName: string;
   acceptedNecessary?: boolean;
   socketConnectionState?: any;
-  donationGoal?: any;
+  donationGoals: DonationGoal[];
   chatSocket?: any;
   signIn?: any;
   refreshNotifications?: any;
@@ -27,6 +27,7 @@ const UserContext = createContext<{
   stopLoading?: any;
   hideNotification?: any;
   LOCATION_HUBS?: any;
+  hubUrl: string;
 }>(null!);
 
 export default UserContext;

@@ -1,7 +1,6 @@
 import { Checkbox, ListItemText, MenuItem, TextField } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import { string } from "prop-types";
 import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -31,6 +30,7 @@ type Props = {
   size?: "small" | "medium";
   values?;
   color?;
+  sx?: any;
 };
 export default function SelectField({
   className,
@@ -48,6 +48,7 @@ export default function SelectField({
   size,
   values,
   color = "primary",
+  sx,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -109,6 +110,7 @@ export default function SelectField({
         multiple: multiple,
         renderValue: (!multiple ? null : () => texts.select_more) as any,
         MenuProps: MenuProps as any,
+        ...(sx && { sx }),
       }}
       size={size}
       color={color}

@@ -4,8 +4,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import NextCookies from "next-cookies";
-import Router from "next/router";
-import React, { useContext } from "react";
+import { useRouter } from "next/router";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
@@ -28,6 +28,7 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
+import { parseProjectStubs } from "../../public/lib/parsingOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -123,11 +124,9 @@ export default function OrganizationPage({
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   // l. 105-137 handles following Organizations
-  const [numberOfFollowers, setNumberOfFollowers] = React.useState(
-    organization?.number_of_followers
-  );
-  const [isUserFollowing, setIsUserFollowing] = React.useState(following);
-  const [followingChangePending, setFollowingChangePending] = React.useState(false);
+  const [numberOfFollowers, setNumberOfFollowers] = useState(organization?.number_of_followers);
+  const [isUserFollowing, setIsUserFollowing] = useState(following);
+  const [followingChangePending, setFollowingChangePending] = useState(false);
 
   const handleWindowClose = (e) => {
     if (followingChangePending) {
@@ -148,7 +147,7 @@ export default function OrganizationPage({
     setFollowingChangePending(pending);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener("beforeunload", handleWindowClose);
 
     return () => {
@@ -167,6 +166,7 @@ export default function OrganizationPage({
         customTheme ? customTheme?.palette?.header.background : theme.palette.background.default
       }
       hubUrl={hubUrl}
+      showDonationGoal={true}
     >
       {organization ? (
         <OrganizationLayout
@@ -209,6 +209,7 @@ function OrganizationLayout({
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
+  const router = useRouter();
 
   const getRoleName = (permission) => {
     const permission_to_show = permission === "all" ? "read write" : permission;
@@ -245,7 +246,7 @@ function OrganizationLayout({
     const token = cookies.get("auth_token");
     const creator = members.filter((m) => m.isCreator === true)[0];
     const chat = await startPrivateChat(creator, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    router.push("/chat/" + chat.chat_uuid + "/");
   };
   const canEdit =
     user &&
@@ -379,6 +380,7 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubU
       token: token,
       locale: locale,
     });
+
     return parseOrganization(resp.data);
   } catch (err) {
     console.log(err);
@@ -445,16 +447,6 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
 
 async function getOrganizationTypes() {
   return [];
-}
-
-function parseProjectStubs(projects) {
-  return projects.map((p) => {
-    const project = p.project;
-    return {
-      ...project,
-      location: project.location,
-    };
-  });
 }
 
 function parseOrganizationMembers(members) {

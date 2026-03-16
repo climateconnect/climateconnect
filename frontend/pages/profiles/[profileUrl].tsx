@@ -14,16 +14,16 @@ import UserContext from "./../../src/components/context/UserContext";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import theme from "../../src/themes/theme";
+import { parseProjectStubs } from "../../public/lib/parsingOperations";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
   const hubUrl = ctx.query.hub;
-  const [profile, organizations, projects, ideas, projectTypes, hubThemeData] = await Promise.all([
+  const [profile, organizations, projects, projectTypes, hubThemeData] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, auth_token, ctx.locale),
     getOrganizationsByUser(profileUrl, auth_token, ctx.locale),
     getProjectsByUser(profileUrl, auth_token, ctx.locale),
-    getIdeasByUser(profileUrl, auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
   ]);
@@ -32,7 +32,6 @@ export async function getServerSideProps(ctx) {
       profile: profile,
       organizations: organizations,
       projects: projects,
-      ideas: ideas,
       projectTypes: projectTypes,
       hubUrl: hubUrl,
       hubThemeData: hubThemeData,
@@ -44,7 +43,6 @@ export default function ProfilePage({
   profile,
   projects,
   organizations,
-  ideas,
   projectTypes,
   hubUrl,
   hubThemeData,
@@ -69,6 +67,7 @@ export default function ProfilePage({
         (profile.info.bio ? " | " + profile.info.bio : "")
       }
       hubUrl={hubUrl}
+      showDonationGoal={true}
       customTheme={customTheme}
       headerBackground={
         customTheme ? customTheme.palette.header.background : theme.palette.background.default
@@ -85,7 +84,6 @@ export default function ProfilePage({
             token={token}
             texts={texts}
             locale={locale}
-            ideas={ideas}
             hubUrl={hubUrl}
           />
         </BrowseContext.Provider>
@@ -104,30 +102,12 @@ async function getProfileByUrlIfExists(profileUrl, token, locale) {
       token: token,
       locale: locale,
     });
+
     return parseProfile(resp.data, false);
   } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     console.log("error!");
     console.log(err);
-    return null;
-  }
-}
-
-async function getIdeasByUser(profileUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/member/" + profileUrl + "/ideas/",
-      token: token,
-      locale: locale,
-    });
-    if (!resp.data) return null;
-    else {
-      return resp.data.results.map((r) => r.idea);
-    }
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
 }
@@ -168,16 +148,6 @@ async function getOrganizationsByUser(profileUrl, token, locale) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-function parseProjectStubs(projects) {
-  return projects.map((p) => {
-    const project = p.project;
-    return {
-      ...project,
-      location: project.location,
-    };
-  });
 }
 
 function parseOrganizationStubs(organizations) {

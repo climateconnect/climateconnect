@@ -110,7 +110,6 @@ const getLinkedHubsData = async (url_slug: string) => {
     const ret: LinkedHub[] = arr.filter((hub) => {
       return !!hub;
     });
-
     return ret;
   } catch (err: any) {
     if (err.response && err.response.data) {

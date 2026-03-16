@@ -1,37 +1,35 @@
 from django.contrib import admin
 
-
 from organization.models import (
-    Organization,
-    OrganizationTags,
-    OrganizationTagging,
-    Project,
-    ProjectTags,
-    ProjectTagging,
-    Post,
     Comment,
-    PostComment,
-    ProjectComment,
-    ProjectMember,
-    OrganizationMember,
-    ProjectParents,
-    ProjectStatus,
-    ProjectCollaborators,
-    ProjectFollower,
-    OrganizationFieldTagging,
-    ProjectTranslation,
-    OrganizationTranslation,
-    PostTranslation,
     CommentTranslation,
-    ProjectLike,
+    Organization,
+    OrganizationFieldTagging,
     OrganizationFollower,
-    OrgProjectPublished,
-    Sector,
-    ProjectSectorMapping,
+    OrganizationMember,
     OrganizationSectorMapping,
+    OrganizationTagging,
+    OrganizationTags,
+    OrganizationTranslation,
+    OrgProjectPublished,
+    Post,
+    PostComment,
+    PostTranslation,
+    Project,
+    ProjectCollaborators,
+    ProjectComment,
+    ProjectFollower,
+    ProjectLike,
+    ProjectMember,
+    ProjectParents,
+    ProjectSectorMapping,
+    ProjectStatus,
+    ProjectTagging,
+    ProjectTags,
+    ProjectTranslation,
+    Sector,
+    UserProfileSectorMapping,
 )
-
-
 from organization.models.members import MembershipRequests
 
 pass_through_models = (
@@ -56,6 +54,7 @@ pass_through_models = (
     Sector,
     ProjectSectorMapping,
     OrganizationSectorMapping,
+    UserProfileSectorMapping,
 )
 
 for model in pass_through_models:
@@ -63,7 +62,7 @@ for model in pass_through_models:
 
 
 class OrganizationAdmin(admin.ModelAdmin):
-    search_fields = ("name", "country", "state", "city", "url-slug")
+    search_fields = ("name", "country", "state", "city", "url_slug")
 
 
 admin.site.register(Organization, OrganizationAdmin)
@@ -77,8 +76,50 @@ class ProjectAdmin(admin.ModelAdmin):
         "loc__city",
         "loc__state",
         "loc__country",
+        "parent_project__name",
+        "parent_project__url_slug",
+        "project_parent__parent_user__username",
+        "project_parent__parent_user__email",
+        "project_parent__parent_user__user_profile__name",
+        "project_parent__parent_organization__name",
     )
-    list_filter = ("status",)
+    list_filter = ("status", "has_children", "project_type")
+    list_display = (
+        "name",
+        "url_slug",
+        "status",
+        "get_owner",
+        "parent_project",
+        "has_children",
+        "project_type",
+        "created_at",
+    )
+    raw_id_fields = ("parent_project",)  # Better UX for selecting parent project
+    readonly_fields = (
+        "has_children",
+    )  # Managed by signals, should not be manually edited
+    exclude = ("skills",)
+
+    def get_owner(self, obj):
+        """Display the project owner (organization or user)."""
+        try:
+            project_parent = obj.project_parent.first()
+            if project_parent:
+                if project_parent.parent_organization:
+                    return project_parent.parent_organization.name
+                elif project_parent.parent_user:
+                    # Try to get the user's profile name, fallback to username
+                    if (
+                        hasattr(project_parent.parent_user, "user_profile")
+                        and project_parent.parent_user.user_profile
+                    ):
+                        return project_parent.parent_user.user_profile.name
+                    return project_parent.parent_user.username
+        except Exception:
+            pass
+        return "-"
+
+    get_owner.short_description = "Owner"
 
 
 admin.site.register(Project, ProjectAdmin)

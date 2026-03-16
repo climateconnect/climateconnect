@@ -1,9 +1,6 @@
-import { PaletteColorOptions } from "@mui/material/styles";
-import { TextFieldProps } from "@mui/material/TextField";
-import { SwitchProps } from "@mui/material/Switch";
-
 // allow contrast for Switch
 declare module "@mui/material/Switch" {
+  // eslint-disable-next-line no-unused-vars
   interface SwitchPropsColorOverrides {
     contrast: true;
   }
@@ -11,6 +8,7 @@ declare module "@mui/material/Switch" {
 
 // allow contrast for Checkbox
 declare module "@mui/material/Checkbox" {
+  // eslint-disable-next-line no-unused-vars
   interface CheckboxPropsColorOverrides {
     contrast: true;
   }
@@ -18,6 +16,7 @@ declare module "@mui/material/Checkbox" {
 
 // allow contrast for TextField
 declare module "@mui/material/TextField" {
+  // eslint-disable-next-line no-unused-vars
   interface TextFieldPropsColorOverrides {
     contrast: true;
   }

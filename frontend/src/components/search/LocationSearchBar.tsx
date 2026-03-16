@@ -3,10 +3,10 @@ import Autocomplete from "@mui/material/Autocomplete";
 import makeStyles from "@mui/styles/makeStyles";
 import axios from "axios";
 import { debounce } from "lodash";
-import React, { useContext, useEffect } from "react";
+import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import {
-  getNameFromLocation,
-  getNameFromExactLocation,
+  getDisplayLocationFromLocation,
+  getDisplayLocationFromExactLocation,
   isExactLocation,
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
@@ -17,9 +17,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginTop: props.hideHelperText ? 0 : theme.spacing(2),
   }),
-  formHelperText: {
-    marginTop: theme.spacing(-2),
-  },
 }));
 
 type Props = {
@@ -46,6 +43,7 @@ type Props = {
   filterMode?: boolean;
   color?: TextFieldProps["color"];
 };
+
 export default function LocationSearchBar({
   label,
   required,
@@ -70,7 +68,7 @@ export default function LocationSearchBar({
   filterMode = false, //Are we filtering any content by this location?
   color,
 }: Props) {
-  const { locale } = useContext(UserContext);
+  const { locale, hubUrl } = useContext(UserContext);
   const classes = useStyles({ hideHelperText: hideHelperText });
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
@@ -78,21 +76,20 @@ export default function LocationSearchBar({
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
       if (enableExactLocation) {
-        const nameObj = getNameFromExactLocation(newValue);
-        return nameObj === "" ? nameObj : nameObj.name;
+        return getDisplayLocationFromExactLocation(newValue).name;
       } else {
-        return newValue.name ? newValue.name : newValue.simple_name;
+        return newValue.simple_name ? newValue.simple_name : newValue.name;
       }
     } else {
       return newValue;
     }
   };
 
-  const [options, setOptions] = React.useState<{ simple_name: string }[]>([]);
+  const [options, setOptions] = useState<{ simple_name: string }[]>([]);
   // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState(getValue(value ? value : initialValue, ""));
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [inputValue, setInputValue] = useState(getValue(value ? value : initialValue, ""));
   useEffect(
     function () {
       if (inputValue?.length > 0 && value?.length === 0) {
@@ -103,21 +100,31 @@ export default function LocationSearchBar({
     },
     [value]
   );
-  const [loading, setLoading] = React.useState(false);
-  React.useEffect(() => {
+  const [loading, setLoading] = useState(false);
+  const HUB_COUNTRY_RESTRICTIONS = {
+    perth: "gb",
+  };
+  //For some locations the official name differs from the "word of mouth name".
+  //If people type in the "word of mouth name" we will instead look for the official name
+  const ALIAS_FOR_SEARCH = {
+    perthshire: "Perth and Kinross",
+  };
+
+  useEffect(() => {
     let active = true;
 
     (async () => {
       if (searchValue) {
-        const config = {
-          method: "GET",
-          mode: "no-cors",
-          referrerPolicy: "origin",
-        };
-        const response = await axios(
-          `https://nominatim.openstreetmap.org/search?q=${searchValue}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`,
-          config as any
-        );
+        const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
+          ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
+          : searchValue;
+        let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          searchParam
+        )}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`;
+        if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
+          url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
+        }
+        const response = await axios.get(url);
         const bannedClasses = [
           "tourism",
           "railway",
@@ -181,18 +188,20 @@ export default function LocationSearchBar({
               data.push(option);
             }
           }
-          const options = data.map((o) => {
-            const nameObj = getNameFromExactLocation(o);
-            return {
-              ...o,
-              simple_name: enableExactLocation
-                ? nameObj === ""
-                  ? nameObj
-                  : nameObj.name
-                : getNameFromLocation(o).name,
-              key: o.place_id,
-            };
-          });
+
+          const getSimpleName = (location, enableExactLocation: boolean = false): string => {
+            if (!enableExactLocation) {
+              return getDisplayLocationFromLocation(location).name;
+            }
+
+            return getDisplayLocationFromExactLocation(location).name;
+          };
+
+          const options = data.map((option) => ({
+            ...option,
+            simple_name: getSimpleName(option, enableExactLocation),
+            key: option.place_id,
+          }));
           setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);
         }
@@ -259,7 +268,7 @@ export default function LocationSearchBar({
     setSearchValueThrottled(event.target.value);
   };
 
-  const setSearchValueThrottled = React.useMemo(
+  const setSearchValueThrottled = useMemo(
     () =>
       debounce((value) => {
         setSearchValue(value);
@@ -318,16 +327,12 @@ export default function LocationSearchBar({
             helperText={helperText}
             size={smallInput && "small"}
             inputRef={locationInputRef}
+            // @ts-ignore - contrast is a custom color defined in theme
             color={color || "contrast"}
             InputProps={{
               ...params.InputProps,
-              endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
+              endAdornment: <Fragment>{params.InputProps.endAdornment}</Fragment>,
               className: `${textFieldClassName}`,
-            }}
-            FormHelperTextProps={{
-              classes: {
-                root: classes.formHelperText,
-              },
             }}
           />
         )}
@@ -335,6 +340,7 @@ export default function LocationSearchBar({
       {enableAdditionalInfo && (
         <TextField
           label={texts.additional_infos_for_location}
+          // @ts-ignore - contrast is a custom color defined in theme
           color={color || "contrast"}
           className={classes.additionalInfos}
           value={additionalInfoText}

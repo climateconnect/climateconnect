@@ -1,9 +1,9 @@
-import { Slider, Theme } from "@mui/material";
+import { Slider, Theme, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import { func, bool, object, string, number, oneOfType } from "prop-types";
+import React, { useContext, useState } from "react";
 //Package AvatarEditor returns an object {default: defaultFunction} instead of a function which triggers a warning. This is why we use <AvatarEditor.default> in the exported function.
 import AvatarEditor from "react-avatar-editor";
 import getTexts from "../../../public/texts/texts";
@@ -27,6 +27,12 @@ const useStyles = makeStyles((theme) => ({
   dialog: {
     position: "relative",
   },
+  titleText: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    fontSize: 20,
+    color: theme.palette.text.primary,
+  },
 }));
 
 type Props = {
@@ -39,6 +45,8 @@ type Props = {
   mobileHeight?;
   mediumHeight?;
   loading?;
+  loadingText?;
+  PaperProps?;
 };
 
 export default function UploadImageDialog({
@@ -51,6 +59,8 @@ export default function UploadImageDialog({
   mobileHeight,
   mediumHeight,
   loading,
+  loadingText,
+  PaperProps,
 }: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -61,8 +71,8 @@ export default function UploadImageDialog({
   const mediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const smallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
-  const [scale, setScale] = React.useState(1);
-  const [editor, setEditor] = React.useState<any>(null);
+  const [scale, setScale] = useState(1);
+  const [editor, setEditor] = useState<any>(null);
 
   const handleClose = () => {
     setScale(1);
@@ -102,7 +112,7 @@ export default function UploadImageDialog({
       : height * ratio + 100;
 
   const backgroundContrastColor = getBackgroundContrastColor(theme);
-
+  const AvatarEditorComponent = AvatarEditor as any;
   return (
     <GenericDialog
       /*TODO(undefined) className={classes.dialog} */
@@ -114,12 +124,20 @@ export default function UploadImageDialog({
       useApplyButton={true}
       applyText={texts.apply}
       onApply={applyImage}
+      PaperProps={PaperProps}
     >
       {loading ? (
-        <LoadingSpinner className={classes.loadingSpinner} isLoading />
+        <>
+          <LoadingSpinner className={classes.loadingSpinner} isLoading />
+          {loadingText && (
+            <Typography component="p" className={classes.titleText}>
+              {loadingText}
+            </Typography>
+          )}
+        </>
       ) : (
         <div /*TODO(undefined) className={classes.dialogContent} */>
-          <AvatarEditor
+          <AvatarEditorComponent
             className={classes.avatarEditor}
             image={imageUrl}
             ref={setEditorRef}
@@ -146,11 +164,11 @@ export default function UploadImageDialog({
 }
 
 UploadImageDialog.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  imageUrl: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-  ratio: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
-  mobileHeight: PropTypes.number,
-  mediumHeight: PropTypes.number,
+  onClose: func.isRequired,
+  open: bool.isRequired,
+  imageUrl: oneOfType([object, string]),
+  ratio: number.isRequired,
+  height: number.isRequired,
+  mobileHeight: number,
+  mediumHeight: number,
 };

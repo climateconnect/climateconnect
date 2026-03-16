@@ -38,8 +38,9 @@ import {
 import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
 import { HubDescription } from "./description/HubDescription";
 import { FabShareButton } from "./FabShareButton";
+import { isWasseraktionswochenEnabled } from "../../../public/data/wasseraktionswochen_config.js";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   content: {
     position: "relative",
   },
@@ -68,11 +69,12 @@ export interface HubBrowsePageProps {
   projectTypes: any[];
   hubThemeData: any;
   linkedHubs: any[];
+  showWasseraktionswochen: boolean;
 }
 
 export async function getHubBrowseServerSideProps(ctx) {
   let hubUrl = ctx.query.hubUrl;
-  let { subHub } = extractHubUrlsFromContext(ctx);
+  const { subHub } = extractHubUrlsFromContext(ctx);
 
   if (subHub) {
     hubUrl = subHub;
@@ -131,6 +133,7 @@ export async function getHubBrowseServerSideProps(ctx) {
       projectTypes: projectTypes,
       hubThemeData: hubThemeData,
       linkedHubs: linkedHubs || [],
+      showWasseraktionswochen: isWasseraktionswochenEnabled(),
     },
   };
 }
@@ -158,9 +161,10 @@ export default function HubBrowsePage({
   projectTypes,
   hubThemeData,
   linkedHubs,
+  showWasseraktionswochen,
 }: HubBrowsePageProps) {
   // donationGoal was removed in PR #1560?
-  const { locale, CUSTOM_HUB_URLS, donationGoal } = useContext(UserContext);
+  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
@@ -169,7 +173,7 @@ export default function HubBrowsePage({
   const [hubSupporters, setHubSupporters] = useState(null);
   const contentRef = useRef<HTMLDivElement>(null);
   // Do we need this? this line was removed on PR ##1560
-  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
+
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   useEffect(() => {
@@ -189,6 +193,7 @@ export default function HubBrowsePage({
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   //Refs and state for tutorial
+  // eslint-disable-next-line no-unused-vars
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
   const navRequested = (tabKey) => {
@@ -244,7 +249,7 @@ export default function HubBrowsePage({
       >
         <div className={classes.content}>
           {/* donationGoalActive was removed on PR #1560  */}
-          {donationGoalActive && <DonationCampaignInformation />}
+          <DonationCampaignInformation hubUrl={hubUrl} />
           {!isLocationHub && (
             <NavigationSubHeader
               type={"hub"}
@@ -312,6 +317,8 @@ export default function HubBrowsePage({
                 hubSupporters={hubSupporters}
                 linkedHubs={linkedHubs}
                 isLocationHub={isLocationHub}
+                fromPage="hub"
+                showWasseraktionswochen={showWasseraktionswochen}
               />
             </FilterProvider>
           </BrowseContext.Provider>

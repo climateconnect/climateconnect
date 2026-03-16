@@ -16,7 +16,6 @@ from organization.serializers.project import ProjectRequesterSerializer
 from climateconnect_api.models import (
     Availability,
     Role,
-    Skill,
     UserProfile,
 )
 from climateconnect_api.models.language import Language
@@ -143,6 +142,18 @@ class ProjectsOrderingFilter(OrderingFilter):
                 queryset = queryset.order_by("id")
         return queryset
 
+    def get_schema_operation_parameters(self, view):
+        """Return schema parameters for OpenAPI documentation."""
+        return [
+            {
+                "name": "sort_by",
+                "required": False,
+                "in": "query",
+                "description": "Sort projects by newest or oldest",
+                "schema": {"type": "string", "enum": ["newest", "oldest"]},
+            }
+        ]
+
 
 class ListProjectsView(ListAPIView):
     permission_classes = [AllowAny]
@@ -182,7 +193,6 @@ class ListProjectsView(ListAPIView):
             Project.objects.filter(is_draft=False, is_active=True)
             .select_related("loc", "language", "status")
             .prefetch_related(
-                "skills",
                 "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
                     "project_comment",
@@ -204,6 +214,19 @@ class ListProjectsView(ListAPIView):
                 ),
             )
         )
+
+        # Conditionally select_related parent_project for detail views or when filtering by parent
+        # This avoids unnecessary JOINs in list views
+        # Check if self.action exists (ViewSets) or if we're filtering by parent (APIViews)
+        if (
+            (
+                hasattr(self, "action") and self.action == "retrieve"
+            )  # Detail view in ViewSet
+            or "parent_project" in self.request.query_params
+            or "parent_project_slug" in self.request.query_params
+        ):
+            projects = projects.select_related("parent_project")
+
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
         if "sectors" in self.request.query_params:
@@ -282,14 +305,6 @@ class ListProjectsView(ListAPIView):
             statuses = self.request.query_params.get("status").split(",")
             projects = projects.filter(status__name__in=statuses)
 
-        if "skills" in self.request.query_params:
-            skill_names = self.request.query_params.get("skills").split(",")
-            skills = Skill.objects.filter(name__in=skill_names)
-            # Use .distinct to dedupe selected rows.
-            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
-            # We then sort by rating, to show most relevant results
-            projects = projects.filter(skills__in=skills).distinct()
-
         if "organization_type" in self.request.query_params:
             organization_type_names = self.request.query_params.get(
                 "organization_type"
@@ -304,6 +319,28 @@ class ListProjectsView(ListAPIView):
                 parent_organization__tag_organization__in=organization_taggings
             )
             projects = projects.filter(project_parent__in=project_parents)
+
+        # Filter by parent project ID
+        if "parent_project" in self.request.query_params:
+            parent_id = self.request.query_params.get("parent_project")
+            try:
+                projects = projects.filter(parent_project_id=int(parent_id))
+            except (ValueError, TypeError):
+                # Invalid parent_project ID, return empty queryset
+                return projects.none()
+
+        # Filter by parent project slug (preferred Climate Connect pattern)
+        if "parent_project_slug" in self.request.query_params:
+            parent_slug = self.request.query_params.get("parent_project_slug")
+            projects = projects.filter(parent_project__url_slug=parent_slug)
+
+        # Filter by has_children flag (find all parent events)
+        if "has_children" in self.request.query_params:
+            has_children_param = self.request.query_params.get("has_children").lower()
+            if has_children_param == "true":
+                projects = projects.filter(has_children=True)
+            elif has_children_param == "false":
+                projects = projects.filter(has_children=False)
 
         if "place" in self.request.query_params and "osm" in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
@@ -331,7 +368,10 @@ class ListProjectsView(ListAPIView):
                 .order_by("distance")
             )
 
-        if "country" and "city" in self.request.query_params:
+        if (
+            "country" in self.request.query_params
+            and "city" in self.request.query_params
+        ):
             location_ids = Location.objects.filter(
                 country=self.request.query_params.get("country"),
                 city=self.request.query_params.get("city"),
@@ -412,6 +452,11 @@ class CreateProjectView(APIView):
 
     @transaction.atomic()
     def post(self, request):
+        # Temporary fix: there is no project status anymore within the frontend
+        # therefore we "overwrite" the status to published until project status
+        # is fully removed from the backend, too.
+        request.data["status"] = 2  # ProjectStatus.DEFAULT_TYPE
+
         if "parent_organization" in request.data:
             organization = check_organization(int(request.data["parent_organization"]))
         else:
@@ -512,10 +557,6 @@ class CreateProjectView(APIView):
                             ]
                         if "description" in texts:
                             translation.description_translation = texts["description"]
-                        if "helpful_connections" in texts:
-                            translation.helpful_connections_translation = texts[
-                                "helpful_connections"
-                            ]
                         translation.save()
                     except Language.DoesNotExist:
                         logger.error(
@@ -705,7 +746,6 @@ class ProjectAPIView(APIView):
             "collaborators_welcome",
             "additional_loc_info",
             "description",
-            "helpful_connections",
             "short_description",
             "website",
         ]
@@ -718,18 +758,6 @@ class ProjectAPIView(APIView):
 
         if "project_type" in request.data:
             project.project_type = ProjectTypesChoices[request.data["project_type"]]
-
-        if "skills" in request.data:
-            for skill in project.skills.all():
-                if skill.id not in request.data["skills"]:
-                    logger.error("this skill needs to be deleted: " + skill.name)
-                    project.skills.remove(skill)
-            for skill_id in request.data["skills"]:
-                try:
-                    skill = Skill.objects.get(id=skill_id)
-                    project.skills.add(skill)
-                except Skill.DoesNotExist:
-                    logger.error("Passed skill id {} does not exists")
 
         # TODO: remove the project_taggings
         old_project_taggings = ProjectTagging.objects.filter(project=project)
@@ -871,10 +899,6 @@ class ProjectAPIView(APIView):
                 "translation_key": "short_description_translation",
             },
             {"key": "description", "translation_key": "description_translation"},
-            {
-                "key": "helpful_connections",
-                "translation_key": "helpful_connections_translation",
-            },
         ]
         if "translations" in request.data:
             edit_translations(items_to_translate, request.data, project, "project")

@@ -2,14 +2,14 @@ import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
 import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
-import { getAllSectors } from "../../public/lib/sectorOperations";
+import { getSectorOptions, getOrganizationTagsOptions } from "../../public/lib/getOptions";
+
 import { parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
 import EditOrganizationRoot from "../../src/components/organization/EditOrganizationRoot";
-import { getOrganizationTagsOptions } from "./../../public/lib/getOptions";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import { SectorOptionType } from "../../src/types";
@@ -26,7 +26,7 @@ export async function getServerSideProps(ctx) {
   const [organization, tagOptions, allSectors, hubThemeData] = await Promise.all([
     getOrganizationByUrlIfExists(url, auth_token, ctx.locale, hubUrl),
     getOrganizationTagsOptions(ctx.locale),
-    getAllSectors(ctx.locale),
+    getSectorOptions(ctx.locale, hubUrl),
     getHubTheme(hubUrl),
   ]);
 

@@ -1,16 +1,16 @@
 import { Button, IconButton, Theme, Tooltip, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import React, { useContext } from "react";
-import { getImageDialogHeight } from "../../../public/lib/imageOperations";
+import React, { useContext, useRef, useState } from "react";
+import {
+  getImageDialogHeight,
+  convertToJPGWithAspectRatio,
+  getResizedImage,
+  whitenTransparentPixels,
+} from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
-import {
-  getCompressedJPG,
-  getResizedImage,
-  whitenTransparentPixels,
-} from "./../../../public/lib/imageOperations";
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const useStyles = makeStyles<Theme, { image?: string }>((theme) => {
@@ -63,8 +63,9 @@ export default function AddPhotoSection({
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const [tempImage, setTempImage] = React.useState(projectData.image);
-  const inputFileRef = React.useRef(null as HTMLInputElement | null);
+  const [tempImage, setTempImage] = useState(projectData.image);
+  const [isLoading, setIsLoading] = useState(false);
+  const inputFileRef = useRef(null as HTMLInputElement | null);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   const handleDialogClickOpen = (dialogName) => {
@@ -73,11 +74,20 @@ export default function AddPhotoSection({
 
   const onImageChange = async (event) => {
     const file = event.target.files[0];
-    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       alert(texts.please_upload_either_a_png_or_a_jpg_file);
-    const image = await getCompressedJPG(file, 0.5);
-    setTempImage(image);
-    handleDialogClickOpen("avatarDialog");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      handleDialogClickOpen("avatarDialog");
+      const image = await convertToJPGWithAspectRatio(file);
+      setTempImage(image);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const onUploadImageClick = (event) => {
@@ -145,6 +155,13 @@ export default function AddPhotoSection({
         borderRadius={0}
         height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 300}
         ratio={16 / 9}
+        loading={isLoading}
+        loadingText={texts.processing_image_please_wait}
+        PaperProps={{
+          sx: {
+            maxHeight: "none",
+          },
+        }}
       />
     </>
   );

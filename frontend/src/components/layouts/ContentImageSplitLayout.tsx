@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC, ReactNode } from "react";
 import { Grid, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 
@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface ContentImageSplitViewProps {
-  content: React.ReactNode;
-  image: React.ReactNode;
+  content: ReactNode;
+  image: ReactNode;
   leftGridSizes?: {
     xs?: "auto" | number;
     md?: "auto" | number;
@@ -29,7 +29,7 @@ interface ContentImageSplitViewProps {
   direction?: "row" | "row-reverse" | "column" | "column-reverse";
 }
 
-const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
+const ContentImageSplitView: FC<ContentImageSplitViewProps> = ({
   content,
   image,
   leftGridSizes,

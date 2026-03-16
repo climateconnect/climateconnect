@@ -1,11 +1,10 @@
-import { Avatar, Theme, useMediaQuery } from "@mui/material";
-import React, { useContext, useRef, useState } from "react";
+import { Avatar, Theme } from "@mui/material";
+import React, { ReactElement, useContext, useRef, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import CloseIcon from "@mui/icons-material/Close";
 import {
-  getCompressedJPG,
-  getImageDialogHeight,
+  convertToJPGWithAspectRatio,
   getResizedImage,
   whitenTransparentPixels,
 } from "../../../public/lib/imageOperations";
@@ -24,6 +23,7 @@ interface UserAvatarProps {
   imageUrl?: string;
   thumbnailImageUrl?: string;
   alternativeText?: string;
+  // eslint-disable-next-line no-unused-vars
   onAvatarChanged?: (image?: AvatarImage) => void;
 }
 
@@ -60,10 +60,9 @@ const useStyles = makeStyles<Theme, { avatarImage?: string }>((theme) => ({
   },
 }));
 
-export function UserAvatar(props: UserAvatarProps): JSX.Element {
+export function UserAvatar(props: UserAvatarProps): ReactElement {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "account", locale: locale });
-  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const closeIconRef = useRef<SVGSVGElement | null>(null);
@@ -80,16 +79,19 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
   });
 
   const classes = useStyles({ avatarImage: avatarImage.imageUrl });
-
+  const [isLoading, setIsLoading] = useState(false);
   const onImageChanged = async (avatarEvent) => {
     const file = avatarEvent.target.files[0];
     if (file && file.type) {
       try {
-        const compressedImage = await getCompressedJPG(file, 0.5);
-        setTempImage(() => compressedImage);
+        setIsLoading(true);
         setDialogStates({ ...dialogStates, uploadOpen: true });
+        const compressedImage = await convertToJPGWithAspectRatio(file);
+        setTempImage(() => compressedImage);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -139,7 +141,7 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
         alt={props.alternativeText}
         src={avatarImage.imageUrl}
       />
-      {props.mode === "edit" && <div className={classes.imageOverlay}></div>}
+      {props.mode === "edit" && <div className={classes.imageOverlay} />}
 
       {props.mode === "edit" && (
         <div
@@ -177,8 +179,10 @@ export function UserAvatar(props: UserAvatarProps): JSX.Element {
         open={dialogStates.uploadOpen}
         imageUrl={tempImage}
         borderRadius={10000}
-        height={isNarrowScreen ? getImageDialogHeight(window.innerWidth) : 200}
+        height={200}
         ratio={1}
+        loading={isLoading}
+        loadingText={texts.processing_image_please_wait}
       />
 
       <ConfirmDialog

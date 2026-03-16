@@ -23,44 +23,7 @@ export async function getSkillsOptions(locale, parentSkillsOnly?: boolean) {
   }
 }
 
-export async function getStatusOptions(locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/projectstatus/",
-      locale: locale,
-    });
-    if (resp.data.results.length === 0) return null;
-    else {
-      return resp.data.results;
-    }
-  } catch (err: any) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
-export async function getProjectTagsOptions(hub, locale) {
-  const url = hub ? `/api/projecttags/?hub=${hub}` : `/api/projecttags/`;
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: url,
-      locale: locale,
-    });
-    if (resp.data.results.length === 0) return null;
-    else {
-      return parseOptions(resp.data.results, "parent_tag");
-    }
-  } catch (err: any) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
 export async function getSectorOptions(locale, hubUrl?: string) {
-  //TODO: duplicated code with sectorOperations.ts > getAllSectors?
   const query = hubUrl ? `?hub=${hubUrl}` : "";
   try {
     const resp = await apiRequest({
@@ -70,7 +33,7 @@ export async function getSectorOptions(locale, hubUrl?: string) {
     });
     if (resp?.data?.results.length === 0) return null;
     else {
-      let sectorOptions = parseSectorOptions(resp.data.results);
+      const sectorOptions = parseSectorOptions(resp.data.results);
       return sectorOptions;
     }
   } catch (err: any) {

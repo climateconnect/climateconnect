@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { ComponentType, FC, useContext, useEffect, useState } from "react";
 import UserContext from "../../../src/components/context/UserContext";
 import DevlinkPage from "../../../src/components/devlink/DevlinkPage";
 import WideLayout from "../../../src/components/layouts/WideLayout";
@@ -9,9 +9,10 @@ import LoadingSpinner from "../../../src/components/general/LoadingSpinner";
 import theme from "../../../src/themes/theme";
 import { HubData } from "../../../src/types";
 import { getHubData } from "../../../public/lib/getHubData";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 //Types
-type DevlinkComponentType = React.ComponentType<any> | null;
+type DevlinkComponentType = ComponentType<any> | null;
 
 interface TextsType {
   [key: string]: string;
@@ -28,7 +29,7 @@ interface LandingPageProps {
   hubUrl?: string;
 }
 
-const NotFoundPage: React.FC<NotFoundPageProps> = ({ texts, link, showHeader }) => {
+const NotFoundPage: FC<NotFoundPageProps> = ({ texts, link, showHeader }) => {
   return (
     <>
       {showHeader ? (
@@ -48,6 +49,7 @@ const NotFoundPage: React.FC<NotFoundPageProps> = ({ texts, link, showHeader }) 
 
 export async function getServerSideProps(ctx: any) {
   const hubUrl = ctx?.params?.hubUrl as string | undefined;
+  const locale = ctx?.locale;
 
   if (!hubUrl) {
     return {
@@ -58,11 +60,12 @@ export async function getServerSideProps(ctx: any) {
     };
   }
 
-  const hubData = await getHubData(hubUrl, ctx.locale);
+  const hubData = await getHubData(hubUrl, locale);
   if (!hubData?.landing_page_component) {
+    const localePrefix = getLocalePrefix(locale);
     return {
       redirect: {
-        destination: `/hubs/${hubUrl}/browse`,
+        destination: `${localePrefix}/hubs/${hubUrl}/browse`,
         // redirect is based on current hub data, and that might change in the future so permanent: false,
         permanent: false,
       },
@@ -76,9 +79,8 @@ export async function getServerSideProps(ctx: any) {
   };
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
-  const { locale, donationGoal } = useContext(UserContext);
-  const donationGoalActive = donationGoal && donationGoal.hub === hubUrl;
+const LandingPage: FC<LandingPageProps> = ({ hubData, hubUrl }) => {
+  const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "landing_page", locale: locale }) as TextsType;
   const [DevlinkComponent, setDevlinkComponent] = useState<DevlinkComponentType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -149,7 +151,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ hubData, hubUrl }) => {
       isLocationHub={isLocationHubLikeHub(hubData?.hub_type)}
       isLandingPage={true}
       headerBackground={theme.palette.primary.main}
-      showDonationGoal={donationGoalActive}
+      showDonationGoal={true}
     >
       {DevlinkComponent ? (
         <DevlinkComponent />

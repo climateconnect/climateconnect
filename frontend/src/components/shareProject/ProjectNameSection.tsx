@@ -22,6 +22,11 @@ const useStyles = makeStyles((theme) => ({
   input: {
     fontWeight: 600,
   },
+  inputLabel: {
+    "&:not(.MuiInputLabel-shrink)": {
+      fontSize: 20,
+    },
+  },
 }));
 
 export default function ProjectNameSection({ projectData, handleSetProjectData }) {
@@ -51,7 +56,7 @@ export default function ProjectNameSection({ projectData, handleSetProjectData }
         }}
         InputLabelProps={{
           classes: {
-            root: classes.resize,
+            root: classes.inputLabel,
           },
         }}
         value={projectData.name}

@@ -1,7 +1,7 @@
 import { Container, Divider, Typography, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 
@@ -18,7 +18,7 @@ import {
   getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
-import { Project, Role, SectorOptionType } from "../../types";
+import { Project, Role, Sector } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
@@ -45,9 +45,7 @@ const useStyles = makeStyles((theme) => {
 
 type Props = {
   project: Project;
-  skillsOptions: any;
   userOrganizations: any;
-  statusOptions: any;
   handleSetProject: any;
   oldProject: Project;
   user_role: Role;
@@ -55,12 +53,11 @@ type Props = {
   initialTranslations: any;
   projectTypeOptions: any;
   hubUrl: string;
-  sectorOptions?: SectorOptionType[];
+  sectorOptions?: Sector[];
 };
 
 export default function EditProjectRoot({
   project,
-  skillsOptions,
   userOrganizations,
   handleSetProject,
   oldProject,
@@ -72,11 +69,12 @@ export default function EditProjectRoot({
   sectorOptions,
 }: Props) {
   const classes = useStyles();
+  const router = useRouter();
   const token = new Cookies().get("auth_token");
   const { locale, locales, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
-  const [locationOptionsOpen, setLocationOptionsOpen] = React.useState(false);
+  const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const draftReqiredProperties = {
     name: texts.project_name,
   };
@@ -159,15 +157,11 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
-        const query: { message: string; hub?: string } = {
-          message: texts.you_have_successfully_edited_your_project,
-        };
-        if (hubUrl) {
-          query.hub = hubUrl;
-        }
-        Router.push({
+        router.push({
           pathname: "/profiles/" + user.url_slug,
-          query,
+          query: {
+            message: texts.you_have_successfully_edited_your_project,
+          },
         });
       })
       .catch(function (error) {
@@ -200,7 +194,7 @@ export default function EditProjectRoot({
   }
 
   const handleCancel = () => {
-    Router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
+    router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleSubmit = async (event) => {
@@ -239,7 +233,7 @@ export default function EditProjectRoot({
         if (hubUrl) {
           query.hub = hubUrl;
         }
-        Router.push({
+        router.push({
           pathname: "/projects/" + response.data.url_slug,
           query,
         });
@@ -265,7 +259,7 @@ export default function EditProjectRoot({
           if (hubUrl) {
             query.hub = hubUrl;
           }
-          Router.push({
+          router.push({
             pathname: "/profiles/" + user.url_slug,
             query,
           });
@@ -323,12 +317,6 @@ export default function EditProjectRoot({
       rows: 15,
       headlineTextKey: "project_description",
     },
-    {
-      textKey: "helpful_connections",
-      rows: 1,
-      headlineTextKey: "helpful_connections",
-      isArray: true,
-    },
   ];
 
   return (
@@ -352,13 +340,12 @@ export default function EditProjectRoot({
             locationOptionsOpen={locationOptionsOpen}
             handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
             locationInputRef={locationInputRef}
-            sectorOptions={sectorOptions}
+            sectorOptions={sectorOptions ?? []}
           />
           <EditProjectContent
             project={project}
             handleSetProject={handleSetProject}
             userOrganizations={userOrganizations}
-            skillsOptions={skillsOptions}
             user_role={user_role}
             deleteProject={deleteProject}
             errors={errors}
@@ -420,10 +407,7 @@ const parseProjectForRequest = async (project, translationChanges) => {
   if (project.loc) ret.loc = parseLocation(project.loc, true);
   if (project.thumbnail_image)
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
-  if (project.skills) ret.skills = project.skills.map((s) => s.id);
-  if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
   if (project.sectors) ret.sectors = ret.sectors.map((s) => s.key);
-  if (project.status) ret.status = project.status.id;
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;
   return ret;

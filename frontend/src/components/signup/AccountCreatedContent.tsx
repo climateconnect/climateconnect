@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
 import makeStyles from "@mui/styles/makeStyles";
-import { Typography } from "@mui/material";
+import { Typography, Card } from "@mui/material";
 import ContentImageSplitView from "../layouts/ContentImageSplitLayout";
-import { Card } from "@mui/material";
 import AccountCreatedIcon from "../../../public/images/sign_up/success-factors-pana.svg";
 import UserContext from "../context/UserContext";
 import getTexts from "../../../public/texts/texts";
@@ -73,6 +72,6 @@ export default function AccountCreatedContent({ isSmallScreen, hubUrl }) {
         </Card>
       }
       image={<AccountCreatedIcon className={classes.icon} />}
-    ></ContentImageSplitView>
+    />
   );
 }

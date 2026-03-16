@@ -1,4 +1,4 @@
-import Router from "next/router";
+import router from "next/router";
 import getTexts from "../texts/texts";
 import { getImageUrl } from "./imageOperations";
 
@@ -7,6 +7,9 @@ export function parseProfile(profile, detailledSkills, keepOldProps = false) {
   if (keepOldProps) {
     user.first_name = profile.first_name;
   }
+  const sectors = {
+    sectors: profile?.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector),
+  };
   user = {
     ...user,
     badges: profile.badges,
@@ -24,6 +27,7 @@ export function parseProfile(profile, detailledSkills, keepOldProps = false) {
       skills: profile.skills && profile.skills.map((s) => s.name),
       availability: profile.availability && profile.availability.name,
       website: profile.website,
+      ...sectors,
     },
   };
   user = convertUndefinedToNull(user);
@@ -53,7 +57,7 @@ export function redirectOnLogin(user, redirectUrl, locale) {
   const hub = urlParams.get("hub");
 
   if (user.has_logged_in < 2) {
-    Router.push({
+    router.push({
       pathname: "/editprofile",
       query: {
         message: SIGN_UP_MESSAGE,
@@ -63,7 +67,7 @@ export function redirectOnLogin(user, redirectUrl, locale) {
   } else if (redirectUrl) {
     if (redirectUrl[0] === "/") redirectUrl = redirectUrl.substring(1, redirectUrl.length);
     window.location.replace(window.location.origin + "/" + redirectUrl);
-  } else Router.push("/browse");
+  } else router.push("/browse");
 }
 
 export function nullifyUndefinedValues(obj) {

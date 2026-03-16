@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
@@ -54,7 +54,7 @@ export async function getServerSideProps(ctx) {
   };
 }
 
-export default function manageProjectMembers({
+export default function ManageProjectMembersPage({
   project,
   members,
   availabilityOptions,
@@ -66,7 +66,7 @@ export default function manageProjectMembers({
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const classes = useStyles();
-  const [currentMembers, setCurrentMembers] = React.useState(
+  const [currentMembers, setCurrentMembers] = useState(
     members ? [...members.sort((a, b) => b.role.role_type - a.role.role_type)] : []
   );
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
@@ -187,13 +187,13 @@ function parseProjectMembers(members) {
   });
 }
 
+// TODO duplicated code? projects/[projectId.tsx] also has this function
 function parseProject(project) {
   return {
     name: project.name,
     id: project.id,
     url_slug: project.url_slug,
     image: project.image,
-    status: project.status,
     location: project.location,
     description: project.description,
     short_description: project.short_description,
@@ -201,13 +201,10 @@ function parseProject(project) {
     start_date: project.start_date,
     end_date: project.end_date,
     creation_date: project.created_at,
-    helpful_skills: project.skills,
-    helpful_connections: project.helpful_connections,
     creator: project.project_parents[0].parent_organization
       ? project.project_parents[0].parent_organization
       : project.project_parents[0].parent_user,
     isPersonalProject: !project.project_parents[0].parent_organization,
-    tags: project.tags.map((t) => t.project_tag.name),
     collaborating_organizations: project.collaborating_organizations.map(
       (o) => o.collaborating_organization
     ),

@@ -1,7 +1,7 @@
 import { Button, TextField } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import PropTypes from "prop-types";
-import React, { useContext } from "react";
+import { array, string, func, bool } from "prop-types";
+import React, { useContext, useState } from "react";
 
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -40,8 +40,8 @@ export default function SelectDialog({
   className,
 }) {
   const classes = useStyles();
-  const [element, setElement] = React.useState<any>(null);
-  const [additionalInfo, setAdditionalInfo] = React.useState<any[]>([]);
+  const [element, setElement] = useState<any>(null);
+  const [additionalInfo, setAdditionalInfo] = useState<any[]>([]);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 
@@ -117,11 +117,11 @@ export default function SelectDialog({
 }
 
 SelectDialog.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  title: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  values: PropTypes.array.isRequired,
-  supportAdditionalInfo: PropTypes.bool.isRequired,
-  className: PropTypes.string,
+  onClose: func.isRequired,
+  open: bool.isRequired,
+  title: string.isRequired,
+  label: string.isRequired,
+  values: array.isRequired,
+  supportAdditionalInfo: bool.isRequired,
+  className: string,
 };

@@ -1,7 +1,9 @@
 import { alpha, createTheme } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
+import "../types.ts";
 
 declare module "@mui/material" {
+  // eslint-disable-next-line no-unused-vars
   interface Color {
     main: string;
     dark: string;
@@ -10,12 +12,15 @@ declare module "@mui/material" {
 }
 
 declare module "@mui/material/Button" {
+  // eslint-disable-next-line no-unused-vars
   interface ButtonPropsColorOverrides {
     grey: true;
+    contrast: true;
   }
 }
 
 declare module "@mui/material/styles" {
+  // eslint-disable-next-line no-unused-vars
   interface TypeBackground {
     default_contrastText?: string;
     main?: string;
@@ -75,10 +80,6 @@ export const coreTheme = createTheme({
     button: {
       fontWeight: 600,
     },
-    /* TOOD: climateMatch: {
-          fontFamily: "flood-std, sans-serif",
-          fontWeight: 300,
-        },*/
   },
 });
 

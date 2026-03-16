@@ -1,8 +1,7 @@
-import { Card, IconButton, Link, Theme, Typography } from "@mui/material";
+import { Card, IconButton, Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -23,6 +22,9 @@ const useStyles = makeStyles<Theme, any>((theme) => ({
     "-ms-user-select": "none",
     userSelect: "none",
     position: "relative",
+    borderRadius: 4,
+    padding: 0,
+    boxShadow: "none",
   },
   textContainer: {
     boxShadow: "3px 3px 6px #00000017",
@@ -102,6 +104,7 @@ export default function MiniSectorPreview({
         <img
           src={createMode ? "/images/mini_hub_preview_background.jpg" : getImageUrl(sector?.image)}
           className={classes.placeholderImage}
+          alt="mini sector preview"
         />
       </div>
       <div className={classes.textContainer}>
@@ -115,7 +118,13 @@ export default function MiniSectorPreview({
           />
         ) : (
           <Typography color="text" className={classes.sectorName}>
-            {sector.icon && <img src={getImageUrl(sector.icon)} className={classes.sectorIcon} />}
+            {sector.icon && (
+              <img
+                src={getImageUrl(sector.icon)}
+                className={classes.sectorIcon}
+                alt="sector icon"
+              />
+            )}
             {sector?.name}
           </Typography>
         )}

@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, Method } from "axios";
-import Router from "next/router";
+import { default as router } from "next/router";
 import { CcLocale } from "../../src/types";
 import tokenConfig from "../config/tokenConfig";
 import type { UrlObject } from "url";
@@ -46,8 +46,10 @@ const config: AxiosRequestConfig = {
 
 export const resendEmail = async <T = any>(
   email: string,
+  /* eslint-disable no-unused-vars */
   onSuccess: (resp: AxiosResponse<T>) => void,
   onError: (err: AxiosError) => void
+  /* eslint-enable no-unused-vars */
 ) => {
   axios
     .post<T>(process.env.API_URL + "/api/resend_verification_email/", { email }, config)
@@ -69,7 +71,7 @@ export const redirect = (
     hash,
   };
 
-  Router.push(payload);
+  router.push(payload);
 };
 
 export const sendToLogin = async (
@@ -118,3 +120,13 @@ export const getRolesOptions = async (token: string | undefined, locale: CcLocal
     }
   }
 };
+
+export function getRedirectUrl(locale: string): string {
+  let redirectUrl = window.location.href
+    .replace(window.location.origin, "")
+    .replace(`/${locale}/`, "");
+  if (redirectUrl && redirectUrl[0] === "/") {
+    redirectUrl = redirectUrl.slice(1);
+  }
+  return redirectUrl;
+}

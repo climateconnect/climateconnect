@@ -2,12 +2,11 @@ import { Button, Chip, Container, List, TextField, Grid } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
-import React, { useContext } from "react";
+import React, { RefObject, useContext, useRef, useState } from "react";
 import SelectField from "../general/SelectField";
 // Relative imports
 import {
-  getCompressedJPG,
-  getImageDialogHeight,
+  convertToJPGWithAspectRatio,
   getImageUrl,
   getResizedImage,
   whitenTransparentPixels,
@@ -17,7 +16,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
-import { Project, SectorOptionType } from "../../types";
+import { Project, Sector } from "../../types";
 import CustomHubSelection from "../project/CustomHubSelection";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
@@ -83,13 +82,15 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
 
 type Args = {
   project: Project;
+  // eslint-disable-next-line no-unused-vars
   handleSetProject: (project: Project) => void;
   smallScreen: boolean;
   overviewInputsRef: any;
   locationOptionsOpen: boolean;
+  // eslint-disable-next-line no-unused-vars
   handleSetLocationOptionsOpen: (open: boolean) => void;
   locationInputRef: any;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 //TODO: Allow changing project type?!
@@ -107,6 +108,12 @@ export default function EditProjectOverview({
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+
+  // Lift image dialog state to parent component
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [tempImage, setTempImage] = useState(project.image ? getImageUrl(project.image) : null);
+  const [isImgLoading, setIsImgLoading] = useState(false);
+
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
   };
@@ -128,6 +135,13 @@ export default function EditProjectOverview({
     locationInputRef: locationInputRef,
     texts: texts,
     sectorOptions: sectorOptions,
+    // Add image dialog props
+    imageDialogOpen: imageDialogOpen,
+    setImageDialogOpen: setImageDialogOpen,
+    tempImage: tempImage,
+    setTempImage: setTempImage,
+    isImgLoading: isImgLoading,
+    setIsImgLoading: setIsImgLoading,
   };
 
   return (
@@ -143,15 +157,24 @@ export default function EditProjectOverview({
 
 type ScreenOverviewProps = {
   project: Project;
+  /* eslint-disable no-unused-vars */
   handleChangeProject: (newValue: any, key: string) => void;
   handleChangeImage: (newImage: any, newThumbnailImage: any) => void;
-  overviewInputsRef: React.RefObject<HTMLInputElement>;
   handleSetProject: (project: Project) => void;
-  locationInputRef: React.RefObject<HTMLInputElement>;
-  locationOptionsOpen: boolean;
   handleSetLocationOptionsOpen: (open: boolean) => void;
+  /* eslint-disable no-unused-vars */
+  overviewInputsRef: RefObject<HTMLInputElement>;
+  locationInputRef: RefObject<HTMLInputElement>;
+  locationOptionsOpen: boolean;
   texts: Record<string, string>;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
+  // Add image dialog props
+  imageDialogOpen: boolean;
+  setImageDialogOpen: (open: boolean) => void;
+  tempImage: string | null;
+  setTempImage: (image: string | null) => void;
+  isImgLoading: boolean;
+  setIsImgLoading: (loading: boolean) => void;
 };
 
 function SmallScreenOverview({
@@ -165,6 +188,12 @@ function SmallScreenOverview({
   handleSetLocationOptionsOpen,
   texts,
   sectorOptions,
+  imageDialogOpen,
+  setImageDialogOpen,
+  tempImage,
+  setTempImage,
+  isImgLoading,
+  setIsImgLoading,
 }: ScreenOverviewProps) {
   const classes = useStyles({});
   return (
@@ -174,6 +203,12 @@ function SmallScreenOverview({
         screenSize="small"
         handleChangeImage={handleChangeImage}
         texts={texts}
+        imageDialogOpen={imageDialogOpen}
+        setImageDialogOpen={setImageDialogOpen}
+        tempImage={tempImage}
+        setTempImage={setTempImage}
+        isImgLoading={isImgLoading}
+        setIsImgLoading={setIsImgLoading}
       />
       <div className={classes.blockProjectInfo} ref={overviewInputsRef}>
         <InputName
@@ -219,6 +254,12 @@ function LargeScreenOverview({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   sectorOptions,
+  imageDialogOpen,
+  setImageDialogOpen,
+  tempImage,
+  setTempImage,
+  isImgLoading,
+  setIsImgLoading,
 }: ScreenOverviewProps) {
   const classes = useStyles({});
   function handleUpdateSelectedHub(hubUrl: string) {
@@ -243,6 +284,12 @@ function LargeScreenOverview({
             screenSize="large"
             handleChangeImage={handleChangeImage}
             texts={texts}
+            imageDialogOpen={imageDialogOpen}
+            setImageDialogOpen={setImageDialogOpen}
+            tempImage={tempImage}
+            setTempImage={setTempImage}
+            isImgLoading={isImgLoading}
+            setIsImgLoading={setIsImgLoading}
           />
         </div>
         <div className={classes.inlineProjectInfo} ref={overviewInputsRef}>
@@ -391,7 +438,7 @@ type InputSectorsProps = {
   project: Project;
   handleChangeProject: (newValue: any, key: string) => void;
   texts: Record<string, string>;
-  sectorOptions: SectorOptionType[];
+  sectorOptions: Sector[];
 };
 
 const InputSectors = ({
@@ -464,22 +511,37 @@ const InputName = ({ project, screenSize, handleChangeProject, texts }: InputNam
   );
 };
 
-const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
+const InputImage = ({
+  project,
+  screenSize,
+  handleChangeImage,
+  texts,
+  imageDialogOpen,
+  setImageDialogOpen,
+  tempImage,
+  setTempImage,
+  isImgLoading,
+  setIsImgLoading,
+}) => {
   const classes = useStyles(project);
-
-  const inputFileRef = React.useRef(null as HTMLInputElement | null);
-  const [open, setOpen] = React.useState(false);
-  const [tempImage, setTempImage] = React.useState(
-    project.image ? getImageUrl(project.image) : null
-  );
+  const inputFileRef = useRef(null as HTMLInputElement | null);
 
   const onImageChange = async (event) => {
     const file = event.target.files[0];
-    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type))
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       alert(texts.please_upload_either_a_png_or_a_jpg_file);
-    const image = await getCompressedJPG(file, 0.5);
-    setTempImage(image);
-    setOpen(true);
+      return;
+    }
+    try {
+      setIsImgLoading(true);
+      setImageDialogOpen(true);
+      const image = await convertToJPGWithAspectRatio(file);
+      setTempImage(image);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsImgLoading(false);
+    }
   };
 
   const onUploadImageClick = (event) => {
@@ -488,7 +550,7 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
   };
 
   const handleImageDialogClose = async (image) => {
-    setOpen(false);
+    setImageDialogOpen(false);
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
       image.toBlob(async function (blob) {
@@ -534,11 +596,18 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
       </label>
       <UploadImageDialog
         onClose={handleImageDialogClose}
-        open={open}
+        open={imageDialogOpen}
         imageUrl={tempImage}
         borderRadius={0}
-        height={screenSize === "small" ? getImageDialogHeight(window.innerWidth) : 300}
+        height={screenSize === "small" ? 200 : 300}
         ratio={16 / 9}
+        loading={isImgLoading}
+        loadingText={texts.processing_image_please_wait}
+        PaperProps={{
+          sx: {
+            maxHeight: "none",
+          },
+        }}
       />
     </>
   );

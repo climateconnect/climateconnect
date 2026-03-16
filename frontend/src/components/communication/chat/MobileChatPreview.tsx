@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function MobileChatPreview({ chat, isFirstChat }) {
+export default function MobileChatPreview({ chat, isFirstChat, forwardedRef }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const isGroupChat = !chat.chatting_partner && !!chat.name;
@@ -44,6 +44,7 @@ export default function MobileChatPreview({ chat, isFirstChat }) {
     <>
       {isFirstChat && <Divider component="li" />}
       <ListItem
+        ref={forwardedRef}
         button
         component="a"
         href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid}

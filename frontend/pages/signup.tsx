@@ -1,8 +1,6 @@
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../public/lib/apiOperations";
-import { getParams } from "../public/lib/generalOperations";
 import {
   getLocationValue,
   indicateWrongLocation,
@@ -22,24 +20,29 @@ import { Container, Theme, useMediaQuery } from "@mui/material";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import CustomAuthImage from "../src/components/hub/CustomAuthImage";
+import AddInterestArea from "./../src/components/signup/AddInterestArea";
+import { getSectorOptions } from "../public/lib/getOptions";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
 
-  const hubThemeData = await getHubTheme(hubUrl);
-
+  const [hubThemeData, sectorOptions] = await Promise.all([
+    getHubTheme(hubUrl),
+    getSectorOptions(ctx.locale),
+  ]);
   return {
     props: {
       hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
       hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+      sectorOptions: sectorOptions || null,
     },
   };
 }
 
-export default function Signup({ hubUrl, hubThemeData }) {
+export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
   const { ReactGA } = useContext(UserContext);
-
-  const [userInfo, setUserInfo] = React.useState({
+  const router = useRouter();
+  const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
     repeatpassword: "",
@@ -48,13 +51,14 @@ export default function Signup({ hubUrl, hubThemeData }) {
     location: {},
     newsletter: "",
     sendNewsletter: undefined,
+    sectors: [],
   });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
-  const steps = ["basicinfo", "personalinfo"];
+  const steps = ["basicinfo", "personalinfo", "interestAreaInfo"];
   const [curStep, setCurStep] = useState(steps[0]);
   const [errorMessage, setErrorMessage] = useState("");
   const locationInputRef = useRef(null);
@@ -93,7 +97,6 @@ export default function Signup({ hubUrl, hubThemeData }) {
 
   const handleAddInfoSubmit = (event, values) => {
     event.preventDefault();
-    const params = getParams(window?.location?.href);
     if (!isLocationValid(values.location)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setErrorMessage, texts);
       return;
@@ -106,16 +109,22 @@ export default function Signup({ hubUrl, hubThemeData }) {
       location: location,
       sendNewsletter: values.sendNewsletter,
     });
+    setCurStep(steps[2]);
+  };
+
+  const handleAddInterestAreaSubmit = (event, values) => {
+    event.preventDefault();
 
     const payload = {
       email: userInfo.email.trim().toLowerCase(),
       password: userInfo.password,
-      first_name: values.first_name.trim(),
-      last_name: values.last_name.trim(),
-      location: parseLocation(location),
-      send_newsletter: values.sendNewsletter,
+      first_name: userInfo.first_name.trim(),
+      last_name: userInfo.last_name.trim(),
+      location: parseLocation(userInfo.location),
+      send_newsletter: userInfo.sendNewsletter,
       source_language: locale,
       hub: hubUrl,
+      sectors: values.sectors,
     };
 
     const headers = {
@@ -144,7 +153,7 @@ export default function Signup({ hubUrl, hubThemeData }) {
           category: "User",
           action: "Created an Account",
         });
-        Router.push(args);
+        router.push(args);
       })
       .catch(function (error) {
         console.log(error);
@@ -164,6 +173,13 @@ export default function Signup({ hubUrl, hubThemeData }) {
       location: getLocationValue(values, "location"),
     });
     setCurStep(steps[0]);
+  };
+  const handleGoBackFromAddInterestArea = (event, values) => {
+    setUserInfo({
+      ...userInfo,
+      sectors: values,
+    });
+    setCurStep(steps[1]);
   };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
@@ -199,25 +215,33 @@ export default function Signup({ hubUrl, hubThemeData }) {
                   texts={texts}
                   hub={hubUrl}
                 />
+              ) : curStep === "personalinfo" ? (
+                <AddInfo
+                  values={userInfo}
+                  handleSubmit={handleAddInfoSubmit}
+                  errorMessage={errorMessages[steps[1]]}
+                  handleGoBack={handleGoBackFromAddInfo}
+                  locationInputRef={locationInputRef}
+                  locationOptionsOpen={locationOptionsOpen}
+                  handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                  isSmallScreen={isSmallScreen}
+                />
               ) : (
-                curStep === "personalinfo" && (
-                  <AddInfo
+                curStep === "interestAreaInfo" && (
+                  <AddInterestArea
                     values={userInfo}
-                    handleSubmit={handleAddInfoSubmit}
-                    errorMessage={errorMessages[steps[1]]}
-                    handleGoBack={handleGoBackFromAddInfo}
-                    locationInputRef={locationInputRef}
-                    locationOptionsOpen={locationOptionsOpen}
-                    handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+                    handleSubmit={handleAddInterestAreaSubmit}
+                    handleGoBack={handleGoBackFromAddInterestArea}
                     isSmallScreen={isSmallScreen}
+                    sectorOptions={sectorOptions}
                   />
                 )
               )
             }
             leftGridSizes={{ md: 7 }}
             rightGridSizes={{ md: 5 }}
-            image={<CustomAuthImage hubUrl={hubUrl} texts={texts} />}
-          ></ContentImageSplitView>
+            image={<CustomAuthImage hubUrl={hubUrl} texts={texts} authStep={curStep} />}
+          />
         </ThemeProvider>
       </Container>
     </WideLayout>

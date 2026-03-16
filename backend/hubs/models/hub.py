@@ -1,12 +1,13 @@
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models import Q
 from django.forms import ValidationError
+
 from climateconnect_api.models.language import Language
 from location.models import Location
-from organization.models.tags import ProjectTags
 from organization.models import Sector
-from django.db import models
-from django.contrib.auth.models import User
 from organization.models.organization import Organization
-from django.db.models import Q
+from organization.models.tags import ProjectTags
 
 
 def hub_image_path(instance, filename):
@@ -19,6 +20,10 @@ def hub_footer_image_path(instance, filename):
 
 def hub_supporter_logo_path(instance, filename):
     return "hub_supporter_logo/{}/{}".format(instance.id, filename)
+
+
+def hub_supporter_standalone_image_path(instance, filename):
+    return "hub_supporter_standalone_image/{}/{}".format(instance.id, filename)
 
 
 class HubStat(models.Model):
@@ -354,6 +359,20 @@ class HubAmbassador(models.Model):
         null=True,
         blank=True,
     )
+    custom_ambassador_box_text = models.CharField(
+        help_text="Custom text showing up in the box displaying the ambassador. Default: <First name> is responsible for the ClimateHub <Hubname> and is there for you.",
+        verbose_name="Custom box text",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+    custom_ambassador_box_text_de = models.CharField(
+        help_text="German translation for custom ambassador box text",
+        verbose_name="Custom box text",
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
     custom_message = models.CharField(
         help_text="Custom message motivating users to contact the ambassador",
         verbose_name="Custom message",
@@ -417,7 +436,7 @@ class HubSupporter(models.Model):
         blank=True,
     )
     logo = models.ImageField(
-        help_text="Supporter logo",
+        help_text="Supporter logo (Square)",
         verbose_name="Logo",
         null=True,
         blank=True,
@@ -454,6 +473,14 @@ class HubSupporter(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+    )
+
+    standalone_image = models.ImageField(
+        help_text="If you add a standalone image, it will be shown stretching through the whole supporters box. Logo will just be used for the supporters preview on mobile",
+        verbose_name="Standalone Image",
+        null=True,
+        blank=True,
+        upload_to=hub_supporter_standalone_image_path,
     )
 
     class Meta:

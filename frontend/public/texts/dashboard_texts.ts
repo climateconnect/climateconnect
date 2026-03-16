@@ -25,7 +25,7 @@ export default function getDashboardTexts({ user, location }) {
       de: "Ein Projekt teilen",
     },
     create_organization: {
-      en: "Create an organization",
+      en: "Create an organisation",
       de: "Eine Organisation erstellen",
     },
     profile: {

@@ -1,6 +1,5 @@
 import CssBaseline from "@mui/material/CssBaseline";
-import { Theme, StyledEngineProvider } from "@mui/material/styles";
-import { ThemeProvider } from "@mui/material/styles";
+import { Theme, StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import ReactGA from "react-ga4";
@@ -11,10 +10,14 @@ import { apiRequest } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
+import { FeatureToggleProvider } from "../src/components/featureToggle";
+import { FeatureToggles } from "../src/hooks/types/featureToggle";
+import type { CcEnvironment } from "../public/lib/environmentOperations";
 import theme from "../src/themes/theme";
-import { CcLocale } from "../src/types";
+import { CcLocale, DonationGoal } from "../src/types";
 import * as Sentry from "@sentry/react";
 import "../devlink/global.css";
+import { getHubslugFromUrl } from "../public/lib/hubOperations";
 
 // initialize sentry
 
@@ -29,13 +32,23 @@ Sentry.init({
 });
 
 declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line no-unused-vars
   interface DefaultTheme extends Theme {}
 }
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default function MyApp({ Component, pageProps = {} }) {
+export default function MyApp({
+  Component,
+  pageProps = {},
+}: {
+  Component: any;
+  pageProps: {
+    featureToggles?: FeatureToggles;
+    environment?: CcEnvironment;
+    [key: string]: any;
+  };
+}) {
   const router = useRouter();
   // Cookies
   const cookies = new Cookies();
@@ -78,7 +91,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   const [state, setState] = useState({
     user: token ? {} : (null as any),
     notifications: [] as any[],
-    donationGoal: null as any,
+    donationGoals: [] as DonationGoal[],
   });
 
   const [webSocketClient, setWebSocketClient] = useState<WebSocket | null | undefined>(null);
@@ -138,8 +151,7 @@ export default function MyApp({ Component, pageProps = {} }) {
 
     cookies.set("auth_token", token, cookieProps);
     const user = await getLoggedInUser(
-      cookies.get("auth_token") ? cookies.get("auth_token") : token,
-      cookies
+      cookies.get("auth_token") ? cookies.get("auth_token") : token
     );
     setState({
       ...state,
@@ -154,11 +166,13 @@ export default function MyApp({ Component, pageProps = {} }) {
       if (jssStyles) {
         jssStyles.parentElement.removeChild(jssStyles);
       }
-      let [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
-        getDonationGoalData(locale),
-        getLoggedInUser(token, cookies),
+      const [fetchedDonationGoals, userResult, fetchedNotifications] = await Promise.all([
+        getDonationGoalsData(locale),
+        getLoggedInUser(token),
         getNotifications(token, locale),
       ]);
+      let fetchedUser = userResult;
+
       if (fetchedUser?.error === "invalid token") {
         const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT!);
         const cookieProps: any = {
@@ -174,7 +188,7 @@ export default function MyApp({ Component, pageProps = {} }) {
         ...state,
         user: fetchedUser,
         notifications: fetchedNotifications,
-        donationGoal: fetchedDonationGoal,
+        donationGoals: fetchedDonationGoals,
       });
       setLoading(false);
     })();
@@ -268,10 +282,11 @@ export default function MyApp({ Component, pageProps = {} }) {
     CUSTOM_HUB_URLS: CUSTOM_HUB_URLS,
     setNotificationsRead: setNotificationsRead,
     pathName: pathName,
+    hubUrl: getHubslugFromUrl(router.query),
     ReactGA: ReactGA,
     updateCookies: updateCookies,
     socketConnectionState: socketConnectionState,
-    donationGoal: state.donationGoal,
+    donationGoals: state.donationGoals,
     acceptedNecessary: acceptedNecessary,
     locale: locale as CcLocale,
     locales: locales as CcLocale[],
@@ -288,9 +303,22 @@ export default function MyApp({ Component, pageProps = {} }) {
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
-          <UserContext.Provider value={contextValues}>
-            <Component {...pageProps} />
-          </UserContext.Provider>
+          {/*
+           * Feature toggles are opt-in per page via getServerSideProps.
+           * Pages that need SSR feature toggles should call getFeatureTogglesFromRequest
+           * from src/hooks/featureToggles.ts and return { featureToggles, environment }
+           * as props. FeatureToggleProvider picks them up here via pageProps.
+           * Pages without getServerSideProps will still work but toggles resolve
+           * client-side only (isEnabled returns the fallback value on first render).
+           */}
+          <FeatureToggleProvider
+            initialToggles={pageProps.featureToggles}
+            environment={pageProps.environment}
+          >
+            <UserContext.Provider value={contextValues}>
+              <Component {...pageProps} />
+            </UserContext.Provider>
+          </FeatureToggleProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </>
@@ -346,7 +374,7 @@ const setNotificationsRead = async (token, notifications, locale) => {
   } else return null;
 };
 
-async function getLoggedInUser(token, cookies) {
+async function getLoggedInUser(token) {
   if (token) {
     try {
       const resp = await apiRequest({
@@ -397,26 +425,26 @@ async function getNotifications(token, locale) {
   }
 }
 
-async function getDonationGoalData(locale) {
+async function getDonationGoalsData(locale): Promise<DonationGoal[]> {
   if (process.env.DONATION_CAMPAIGN_RUNNING !== "true") {
-    return null;
+    return [];
   }
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/donation_goal_progress/",
+      url: "/api/donation_goals_progresses/",
       locale: locale,
     });
-    const ret = {
-      goal_name: resp?.data?.name,
-      goal_start: resp?.data?.start_date,
-      goal_end: resp?.data?.end_date,
-      goal_amount: resp?.data?.goal_amount,
-      current_amount: resp?.data?.current_amount,
-      hub: resp?.data?.hub?.url_slug,
-      call_to_action_text: resp?.data?.call_to_action_text,
-      call_to_action_link: resp?.data?.call_to_action_link,
-    };
+    const ret: DonationGoal[] = resp?.data?.map((goal) => ({
+      goal_name: goal?.name,
+      goal_start: goal?.start_date,
+      goal_end: goal?.end_date,
+      goal_amount: goal?.goal_amount,
+      current_amount: goal?.current_amount,
+      hub: goal?.hub?.url_slug,
+      call_to_action_text: goal?.call_to_action_text,
+      call_to_action_link: goal?.call_to_action_link,
+    }));
     console.log(ret);
     return ret;
   } catch (err: any) {
@@ -424,6 +452,6 @@ async function getDonationGoalData(locale) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else console.log(err);
-    return null;
+    return [];
   }
 }

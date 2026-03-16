@@ -2,7 +2,6 @@ import Grid from "@mui/material/Unstable_Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import MiniSectorPreview from "./MiniSectorPreview";
-import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
   reset: {
@@ -26,18 +25,21 @@ export default function SectorsPreview({
   onClickRemoveSector,
 }) {
   const classes = useStyles();
+
   return (
     <Grid container component="ul" spacing={2} className={`${classes.reset} ${classes.root}`}>
-      {sectors.map((sector) => (
+      {sectors &&
+        sectors.map((sector) => (
+          <GridItem
+            sector={sector}
+            key={sector.key}
+            editMode={editMode}
+            onClickRemoveSector={onClickRemoveSector}
+          />
+        ))}
+      {allowCreate && (maxSelectedNumber == -1 || sectors?.length < maxSelectedNumber) && (
         <GridItem
-          sector={sector}
-          key={sector.key}
-          editMode={editMode}
-          onClickRemoveSector={onClickRemoveSector}
-        />
-      ))}
-      {allowCreate && (maxSelectedNumber == -1 || sectors.length < maxSelectedNumber) && (
-        <GridItem
+          key={`create-${sectorsToSelectFrom?.length || 0}`}
           createMode
           sectorsToSelectFrom={sectorsToSelectFrom}
           onSelectNewSector={onSelectNewSector}

@@ -1,4 +1,3 @@
-import { HPlusMobiledata } from "@mui/icons-material";
 import { Avatar, Button, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { redirect } from "../../../public/lib/apiOperations";
@@ -8,7 +7,7 @@ import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Cookies from "universal-cookie";
-import Router from "next/router";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,20 +60,33 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
     hubAmbassador: hubAmbassador,
     hubName: hubData.name,
   });
+  const router = useRouter();
   const handleClickContact = async (e) => {
     e.preventDefault();
 
     if (!user) {
       return redirect("/signup", {
-        redirect: window.location.pathname + window.location.search,
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_the_ambassador,
-        hub: hubData.url_slug,
       });
     }
 
     const chat = await startPrivateChat(hubAmbassador?.user, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    router.push("/chat/" + chat.chat_uuid + "/");
   };
+
+  const parseTextWithCustomVariables = (m) => {
+    return m.replaceAll("${ambassador.first_name}", hubAmbassador?.user?.first_name);
+  };
+
+  function getAmbassadorBoxText() {
+    if (hubAmbassador?.custom_ambassador_box_text) {
+      return parseTextWithCustomVariables(hubAmbassador.custom_ambassador_box_text);
+    } else {
+      return texts.local_ambassador_is_there_for_you;
+    }
+  }
+  //allow for custom variables
+  const ambassadorBoxText = getAmbassadorBoxText();
   return (
     <div className={classes.root}>
       {!hubSupportersExists && (
@@ -85,7 +97,7 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
           >
             {texts.do_you_need_support}
           </Typography>
-          <Typography>{texts.local_ambassador_is_there_for_you}</Typography>
+          <Typography>{ambassadorBoxText}</Typography>
         </div>
       )}
       <div className={classes.lowerSection}>

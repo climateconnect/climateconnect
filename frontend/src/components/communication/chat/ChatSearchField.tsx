@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../../../src/components/context/UserContext";
@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => {
 
 export default function ChatSearchField({ cancelChatSearch, applyFilterToChats }) {
   const classes = useStyles();
-  const { locale } = React.useContext(UserContext);
+  const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
 
   return (

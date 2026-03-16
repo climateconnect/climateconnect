@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import NextCookies from "next-cookies";
 import React, { useEffect, useState, useContext } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, sendToLogin, redirect } from "../public/lib/apiOperations";
+import { apiRequest, sendToLogin, redirect, getRedirectUrl } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import ChatPreviews from "../src/components/communication/chat/ChatPreviews";
 import UserContext from "../src/components/context/UserContext";
@@ -90,6 +90,7 @@ export default function Inbox({ chatData, initialNextPage }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchingOpen, setSearchingOpen] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const applyFilterToChats = async (filter) => {
     try {
@@ -130,6 +131,7 @@ export default function Inbox({ chatData, initialNextPage }) {
 
       const parsedChatData = parseChatData(response.data.results);
       const parsedChats = parseChats(parsedChatData, texts);
+
       setSearchedChatsState({
         ...searchedChatsState,
         nextPage: response.data.next ? searchedChatsState.nextPage! + 1 : null,
@@ -169,19 +171,29 @@ export default function Inbox({ chatData, initialNextPage }) {
   };
 
   const loadMoreChats = async () => {
-    const newChatData: any = await getChatsOfLoggedInUser(token, chatsState.nextPage, locale);
-    const newChats = newChatData.chats;
-    setChatsState({
-      ...chatsState,
-      nextPage: newChatData.nextPage,
-      chats: [...chatsState.chats, ...parseChats(newChats, texts)],
-    });
+    if (isFetchingMore) return; // Prevent multiple simultaneous requests
+
+    try {
+      setIsFetchingMore(true);
+      const newChatData: any = await getChatsOfLoggedInUser(token, chatsState.nextPage, locale);
+      const newChats = newChatData.chats;
+      setChatsState({
+        ...chatsState,
+        nextPage: newChatData.nextPage,
+        chats: [...chatsState.chats, ...parseChats(newChats, texts)],
+      });
+    } catch (error) {
+      console.error("Error loading more chats:", error);
+    } finally {
+      setIsFetchingMore(false);
+    }
   };
 
   useEffect(() => {
+    const redirectUrl = getRedirectUrl(locale);
     if (!user)
       redirect("/signin", {
-        redirect: window.location.pathname + window.location.search,
+        redirect: redirectUrl,
         message: texts.login_required,
       });
   }, [user]);
@@ -211,8 +223,8 @@ export default function Inbox({ chatData, initialNextPage }) {
                       chatSearchEnabled={chatSearchEnabled}
                       loadFunc={loadMoreChats}
                       chats={chatsState.chats}
-                      // TODO(unused) user={user}
                       hasMore={!!chatsState.nextPage}
+                      isLoading={isFetchingMore}
                     />
                   </span>
                 );
@@ -230,8 +242,8 @@ export default function Inbox({ chatData, initialNextPage }) {
                         chatSearchEnabled={chatSearchEnabled}
                         loadFunc={loadMoreChats}
                         chats={chatsState.chats}
-                        // TODO(unused) user={user}
                         hasMore={!!chatsState.nextPage}
+                        isLoading={isFetchingMore}
                       />
                     ) : (
                       [
@@ -240,8 +252,8 @@ export default function Inbox({ chatData, initialNextPage }) {
                             chatSearchEnabled={chatSearchEnabled}
                             loadFunc={loadMoreFilteredChats}
                             chats={searchedChatsState.chats}
-                            // TODO(unused) user={user}
                             hasMore={!!searchedChatsState.nextPage}
+                            isLoading={isFetchingMore}
                           />
                         ) : (
                           <LoadingSpinner isLoading />
@@ -275,8 +287,8 @@ export default function Inbox({ chatData, initialNextPage }) {
                       chatSearchEnabled={chatSearchEnabled}
                       loadFunc={loadMoreChats}
                       chats={chatsState.chats}
-                      //TODO(unused) user={user}
                       hasMore={!!chatsState.nextPage}
+                      isLoading={isFetchingMore}
                     />
                   </span>
                 );

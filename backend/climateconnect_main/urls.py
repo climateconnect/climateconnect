@@ -31,11 +31,25 @@ from climateconnect_api.views import (
 from knox import views as knox_views
 from django.conf import settings
 from django.conf.urls.static import static
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+import django
 
+# Customize admin site to show Django version
+admin.site.site_header = (
+    f"Climate Connect Administration (Django {django.get_version()})"
+)
+admin.site.site_title = "Climate Connect Admin"
 
 urls = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("admin/", admin.site.urls),
+    # OpenAPI Schema and Documentation
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
     path("ping/", status_views.PingPongView.as_view(), name="ping-pong-api"),
     # User views
     path("login/", user_views.LoginView.as_view(), name="login-api"),
@@ -144,6 +158,11 @@ urls = [
         name="get-donations-this-month",
     ),
     path(
+        "api/donation_goals_progresses/",
+        donation_views.GetDonationGoalsProgresses.as_view(),
+        name="get-donations-this-month",
+    ),
+    path(
         "api/translate/",
         translation_views.TranslateTextView.as_view(),
         name="translate-testing-api",
@@ -174,6 +193,8 @@ urls = [
     path("api/", include("ideas.urls")),
     # Climate match APIs
     path("api/", include("climate_match.urls")),
+    # Feature toggle APIs
+    path("api/", include("feature_toggles.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls

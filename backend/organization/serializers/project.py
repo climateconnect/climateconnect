@@ -9,7 +9,6 @@ from climateconnect_api.models import UserProfile
 from climateconnect_api.models.role import Role
 from climateconnect_api.serializers.common import (
     AvailabilitySerializer,
-    SkillSerializer,
 )
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
@@ -36,7 +35,6 @@ from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
 from organization.utility.project import (
     get_project_description,
-    get_project_helpful_connections,
     get_project_name,
     get_project_short_description,
 )
@@ -47,7 +45,6 @@ class ProjectSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     sectors = serializers.SerializerMethodField()
 
@@ -59,9 +56,18 @@ class ProjectSerializer(serializers.ModelSerializer):
     number_of_likes = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     loc = serializers.SerializerMethodField()
-    helpful_connections = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
+
+    # Parent/child relationship fields (detail view)
+    parent_project_id = serializers.IntegerField(
+        source="parent_project.id", read_only=True, allow_null=True
+    )
+    parent_project_name = serializers.SerializerMethodField()
+    parent_project_slug = serializers.CharField(
+        source="parent_project.url_slug", read_only=True, allow_null=True
+    )
+    child_projects_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -78,8 +84,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "loc",
             "location",
             "collaborators_welcome",
-            "skills",
-            "helpful_connections",
             "project_parents",
             "sectors",
             "tags",  # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
@@ -92,6 +96,11 @@ class ProjectSerializer(serializers.ModelSerializer):
             "language",
             "project_type",
             "additional_loc_info",
+            "parent_project_id",
+            "parent_project_name",
+            "parent_project_slug",
+            "has_children",
+            "child_projects_count",
         )
         read_only_fields = ["url_slug"]
 
@@ -106,10 +115,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
-        return serializer.data
-
-    def get_skills(self, obj):
-        serializer = SkillSerializer(obj.skills, many=True)
         return serializer.data
 
     def get_project_parents(self, obj):
@@ -147,9 +152,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             return None
         return obj.loc.name
 
-    def get_helpful_connections(self, obj):
-        return get_project_helpful_connections(obj, get_language())
-
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
         return serializer.data["name"]
@@ -169,13 +171,24 @@ class ProjectSerializer(serializers.ModelSerializer):
         serializer = ProjectTypesSerializer(project_type, many=False)
         return serializer.data
 
+    def get_parent_project_name(self, obj):
+        """Get parent project name with translation support."""
+        if obj.parent_project:
+            return get_project_name(obj.parent_project, get_language())
+        return None
+
+    def get_child_projects_count(self, obj):
+        """Get count of child projects (only in detail view)."""
+        if hasattr(obj, "child_projects"):
+            return obj.child_projects.count()
+        return 0
+
 
 class EditProjectSerializer(ProjectSerializer):
     loc = serializers.SerializerMethodField()
     translations = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
-    helpful_connections = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     related_hubs = serializers.SerializerMethodField()
 
@@ -203,9 +216,6 @@ class EditProjectSerializer(ProjectSerializer):
 
     def get_description(self, obj):
         return obj.description
-
-    def get_helpful_connections(self, obj):
-        return obj.helpful_connections
 
     def get_related_hubs(self, obj):
         return [hub.url_slug for hub in obj.related_hubs.all()]
@@ -242,7 +252,6 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 
 
 class ProjectMinimalSerializer(serializers.ModelSerializer):
-    skills = SkillSerializer(many=True)
     project_parents = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -253,7 +262,6 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "url_slug",
-            "skills",
             "image",
             "status",
             "location",
@@ -312,6 +320,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "collaborating_organizations",
             "start_date",
             "end_date",
+            "has_children",
         )
 
     def get_name(self, obj):

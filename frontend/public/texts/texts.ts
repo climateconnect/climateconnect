@@ -4,7 +4,6 @@ import getAboutTexts from "./about_texts";
 import account_texts from "./account_texts.json";
 import activate_email from "./activate_email.json";
 import chat_texts from "./chat_texts.json";
-import getClimatematchTexts from "./climatematch_texts";
 import getCommunicationTexts from "./communication_texts";
 import cookie_texts from "./cookie_texts.json";
 import getDashboardTexts from "./dashboard_texts";
@@ -28,7 +27,6 @@ type Page =
   | "account"
   | "activate_email"
   | "chat"
-  | "climatematch"
   | "cookie"
   | "communication"
   | "dashboard"
@@ -60,7 +58,6 @@ type Args<P extends Page> = {
   project?: Project;
   url_slug?: string;
   user?: User;
-  climateMatchQuestion?: string;
   hubAmbassador?: string;
   creator?: string;
 };
@@ -80,7 +77,6 @@ export default function getTexts<P extends Page>({
   project,
   url_slug,
   user,
-  climateMatchQuestion,
   hubAmbassador,
   creator,
 }: Args<P>) {
@@ -91,7 +87,6 @@ export default function getTexts<P extends Page>({
     account: account_texts,
     activate_email: activate_email,
     chat: chat_texts,
-    climatematch: getClimatematchTexts({ location: location, question: climateMatchQuestion }),
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
     dashboard: getDashboardTexts({ user: user, location: location }),

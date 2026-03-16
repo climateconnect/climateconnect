@@ -29,7 +29,7 @@ export default function IconWrapper({ src, noPadding }: Props) {
   return (
     <div className={classes.leftWrapper}>
       <div className={classes.iconContainer}>
-        <img className={classes.icon} src={src} />
+        <img className={classes.icon} src={src} alt="icon" />
       </div>
     </div>
   );

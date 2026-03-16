@@ -23,7 +23,6 @@ from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
 import django.conf
 
-
 load_dotenv(find_dotenv(".backend_env"))
 
 
@@ -63,6 +62,7 @@ CUSTOM_APPS = [
     "location",
     "ideas",
     "climate_match",
+    "feature_toggles",
 ]
 
 LIBRARY_APPS = [
@@ -73,6 +73,7 @@ LIBRARY_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "drf_spectacular",
     "knox",
     "corsheaders",
     "channels",
@@ -89,6 +90,7 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 SECURITY_MIDDLEWARE = [
+    "climateconnect_main.middleware.AzureHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
 ]
 
@@ -124,7 +126,29 @@ CORS_ORIGIN_WHITELIST = [
     "http://cc-test-domain.com",
     "https://test-climateconnect-frontend.azurewebsites.net",
     "https://climateconnect-frontend-slot2.azurewebsites.net",
+    "https://climateconnect-frontend-slot2-b4ege4evbjeeabeb.germanywestcentral-01.azurewebsites.net",
+    "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
 ]
+
+# Django 4.x requires CSRF_TRUSTED_ORIGINS for cross-origin POST requests.
+# Must include scheme (https://) - this was not required in Django 3.x.
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
+    "https://alpha.climateconnect.earth",
+    "https://climateconnect.earth",
+    "https://test3425.climateconnect.earth",
+    "https://www.climateconnect.earth",
+    "https://api.climateconnect.earth",
+    "https://www.cc-test-domain.com",
+    "https://cc-test-domain.com",
+    "http://cc-test-domain.com",
+    "https://test-climateconnect-frontend.azurewebsites.net",
+    "https://climateconnect-frontend-slot2.azurewebsites.net",
+    "https://climateconnect-frontend-slot2-b4ege4evbjeeabeb.germanywestcentral-01.azurewebsites.net",
+    "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
+]
+
 APPEND_SLASH = False
 
 ROOT_URLCONF = "climateconnect_main.urls"
@@ -222,6 +246,16 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 200,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "ClimateConnect API",
+    "DESCRIPTION": "API for Climate Connect platform - connecting climate activists, organizations, and projects to solve the climate crisis",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SCHEMA_PATH_PREFIX": r"/api/",
 }
 
 

@@ -48,11 +48,11 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Rolle im Projekt",
     },
     role_in_organization: {
-      en: "Role in organization",
+      en: "Role in organisation",
       de: "Rolle in der Organisation",
     },
     pick_or_describe_role_in_organization: {
-      en: "Pick or describe what the user's role in the organization is.",
+      en: "Pick or describe what the user's role in the organisation is.",
       de: "Wähle oder beschreibe, welche Rolle der/die Benutzer*in in der Organisation hat.",
     },
     pick_or_describe_role_in_project: {
@@ -68,7 +68,7 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Beigetragene Wochenstunden",
     },
     pick_how_many_hours_user_contributes_to_org: {
-      en: "Pick how many hours per week the user contributes to this organization on average.",
+      en: "Pick how many hours per week the user contributes to this organisation on average.",
       de:
         "Wähle aus, wie viele Stunden pro Woche der/die Benutzer*in im Durchschnitt zu dieser Organisation beiträgt.",
     },
@@ -82,7 +82,7 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Willst du wirklich deine Super-Admin-Rechte verlieren?",
     },
     there_is_always_one_org_member_with_creator_privileges: {
-      en: "There is always exactly one organization member with Super Admin privileges.",
+      en: "There is always exactly one organisation member with Super Admin privileges.",
       de: "Es gibt immer genau ein Organisationsmitglied mit Super-Admin-Rechten.",
     },
     there_is_always_one_project_member_with_creator_privileges: {
@@ -102,8 +102,16 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Willst du das wirklich tun?",
     },
     is_a_suborganization_of: {
-      en: "is a suborganization of",
+      en: "is a suborganisation of",
       de: "ist eine Unterorganisation von",
+    },
+    suborganization_of: {
+      en: "Suborganisation of",
+      de: "Unterorganisation von",
+    },
+    suborganizations_of: {
+      en: "Suborganisations of",
+      de: "Unterorganisationen von",
     },
     persons_profile: {
       en: `${profile?.name}'s Profile`,
@@ -139,16 +147,16 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "ist bisher bei keiner Klimaschutzidee dabei!",
     },
     your_organizations: {
-      en: "Your organizations",
+      en: "Your organisations",
       de: "Deine Organisationen",
     },
     this_users_organizations: {
-      en: `${profile?.first_name}'s Organizations`,
+      en: `${profile?.first_name}'s Organisations`,
       de: `Organisationen von ${profile?.first_name}`,
     },
     /*context: You are...*/
     not_involved_in_any_organizations_yet: {
-      en: "not involved in any organizations yet!",
+      en: "not involved in any organisations yet!",
       de: "noch in keiner Organisation engagiert!",
     },
     sign_up_message: {
@@ -317,6 +325,12 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de:
         "Füge deinen Namen und deinen Standort hinzu. So können dich andere finden und wissen, woher du kommst.",
     },
+    signup_step_3_headline: {
+      en:
+        "Let the climate community know what you are already doing or which fields interest you the most. By doing this you can contribute to Projects more easily. Choose up to 3 fields.",
+      de:
+        "Lass die Klima-Community wissen, was du schon machst oder welche Themen dich am meisten interessieren. So kannst du einfacher zu Projekten beitragen. Wähle bis zu 3 Bereiche aus.",
+    },
     repeat_password: {
       en: "Repeat Password",
       de: "Passwort wiederholen",
@@ -341,6 +355,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     user_name_is: {
       en: `${profile?.first_name} is`,
       de: `${profile?.first_name} ist`,
+    },
+    your_area_of_interest: {
+      en: "Your areas of interest",
+      de: "Deine Interessensgebiete",
+    },
+    area_of_interest: {
+      en: "Areas of interest",
+      de: "Interessensgebiete",
     },
   };
 }
