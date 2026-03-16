@@ -10,10 +10,10 @@ Geographic or sector-based community with custom branding, featured content, and
 - **Key Features**: Custom themes, featured projects, location filtering
 
 ### **Project**
-Climate action initiative with members, status tracking, and collaboration features.
+Climate action initiative with members, required skills, status tracking, and collaboration features.
 - **States**: Draft, In Progress, Completed, On Hold
 - **Related Models**: `Project`, `ProjectMember`, `ProjectFollower`, `ProjectComment`
-- **Key Features**: Member management, status updates, timeline
+- **Key Features**: Member management, skill requirements, status updates, timeline
 
 ### **Organization**
 Registered climate organization with membership management, verification status, and project portfolio.

@@ -29,6 +29,7 @@ class ProjectRanking:
             "total_tags": 0.2,
             "location": 0.2,
             "description": 10,
+            "total_skills": 0.2,
             "created_at": 5,
         }
 
@@ -118,6 +119,7 @@ class ProjectRanking:
         location: Optional[int],
         project_id: int,
         project_manually_set_rating: int,
+        total_skills: int,
         project_type: ProjectTypesChoices,
         start_date: Optional[datetime.datetime],
         end_date: Optional[datetime.datetime],
@@ -221,6 +223,7 @@ class ProjectRanking:
             "total_tags": ProjectTagging.objects.filter(project_id=project_id).count(),
             "location": 1 if location else 0,
             "description": 1 if description and len(description) > 0 else 0,
+            "total_skills": total_skills,
             "created_at": get_created_at_factor(),
         }
 

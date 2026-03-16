@@ -9,6 +9,7 @@ from climateconnect_api.models import UserProfile
 from climateconnect_api.models.role import Role
 from climateconnect_api.serializers.common import (
     AvailabilitySerializer,
+    SkillSerializer,
 )
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
@@ -46,6 +47,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     sectors = serializers.SerializerMethodField()
 
@@ -86,6 +88,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "loc",
             "location",
             "collaborators_welcome",
+            "skills",
             "helpful_connections",
             "project_parents",
             "sectors",
@@ -118,6 +121,10 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
+        return serializer.data
+
+    def get_skills(self, obj):
+        serializer = SkillSerializer(obj.skills, many=True)
         return serializer.data
 
     def get_project_parents(self, obj):
@@ -262,6 +269,7 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 
 
 class ProjectMinimalSerializer(serializers.ModelSerializer):
+    skills = SkillSerializer(many=True)
     project_parents = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -272,6 +280,7 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "url_slug",
+            "skills",
             "image",
             "status",
             "location",

@@ -166,17 +166,18 @@ This document provides comprehensive documentation of the main domain entities i
 
 **Summary**: Climate action projects, events, and initiatives.
 
-**Description**: Core entity representing climate projects with three types: project (ongoing work), event (time-bound activities), and idea (proposals). Projects have lifecycle status (idea, in-progress, finished, cancelled, recurring), location, hub affiliations, and ranking for discovery. Can have parent organization or user, collaborating organizations, members, followers, and tagged categorization.
+**Description**: Core entity representing climate projects with three types: project (ongoing work), event (time-bound activities), and idea (proposals). Projects have lifecycle status (idea, in-progress, finished, cancelled, recurring), location, required skills, hub affiliations, and ranking for discovery. Can have parent organization or user, collaborating organizations, members, followers, and tagged categorization.
 
 **Key features**:
 - Ranking algorithm for visibility
+- Skill requirements for matching
 - Geographic and hub-based discovery
 - Collaborative memberships with roles
 - Engagement tracking (followers, likes)
 
 **Relationships**:
 - **ForeignKey**: `ProjectStatus`, `Location`, `Language`
-- **ManyToMany**: `Hub` (related_hubs)
+- **ManyToMany**: `Skill` (required skills), `Hub` (related_hubs)
 - **Referenced by**: `ProjectTranslation`, `ProjectParents`, `ProjectMember`, `ProjectCollaborators`, `ProjectTagging`, `ProjectSectorMapping`, `ProjectComment`, `Post`, `ProjectFollower`, `ProjectLike`, `OrgProjectPublished`, `ContentShares`
 
 ---

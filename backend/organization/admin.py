@@ -98,7 +98,6 @@ class ProjectAdmin(admin.ModelAdmin):
     readonly_fields = (
         "has_children",
     )  # Managed by signals, should not be manually edited
-    exclude = ("skills",)
 
     def get_owner(self, obj):
         """Display the project owner (organization or user)."""
