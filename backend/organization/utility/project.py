@@ -49,8 +49,6 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         project.description = data["description"]
     if "end_date" in data:
         project.end_date = data["end_date"]
-    if "helpful_connections" in data:
-        project.helpful_connections = data["helpful_connections"]
     if "is_draft" in data:
         project.is_draft = data["is_draft"]
     if "is_online" in data:
@@ -70,20 +68,6 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
 
     project.save()
     return project
-
-
-def get_project_helpful_connections(project: Project, language_code: str) -> str:
-    if (
-        language_code != project.language.language_code
-        and project.translation_project.filter(
-            language__language_code=language_code
-        ).exists()
-    ):
-        return project.translation_project.get(
-            language__language_code=language_code
-        ).helpful_connections_translation
-
-    return project.helpful_connections
 
 
 def get_project_name(project: Project, language_code: str) -> str:
@@ -145,8 +129,6 @@ def get_project_translations(data: Dict):
     texts = {"name": data["name"], "short_description": data["short_description"]}
     if "description" in data:
         texts["description"] = data["description"]
-    if "helpful_connections" in data:
-        texts["helpful_connections"] = data["helpful_connections"]
     try:
         return get_translations(texts, data["translations"], data["source_language"])
     except ValueError:

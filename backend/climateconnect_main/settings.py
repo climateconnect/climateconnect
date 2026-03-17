@@ -62,6 +62,7 @@ CUSTOM_APPS = [
     "location",
     "ideas",
     "climate_match",
+    "feature_toggles",
 ]
 
 LIBRARY_APPS = [

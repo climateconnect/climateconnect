@@ -234,7 +234,6 @@ async function getProjectByIdIfExists(projectUrl, token, locale) {
 const parseProject = (project) => ({
   ...project,
   image: getImageUrl(project.image),
-  tags: project.tags.map((t) => t.project_tag),
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
   sectors: project.sectors.map((item) => ({ ...item.sector, order: item.order })),

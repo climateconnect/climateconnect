@@ -20,7 +20,6 @@ The backend serializer (`ProjectSerializer`) already carries a `# TODO (Karol): 
 2. Ensure no regression is introduced in the project create (`/share`), project edit (`/editProject/[projectUrl]`), and manage-members (`/manageProjectMembers/[projectUrl]`) flows.
 3. Remove the `tags` property from the `Project` TypeScript type in `src/types.ts`.
 4. The clean-up must be verifiable — i.e. after the change, searching the source tree for `project_tag`, `project_tags`, and `\.tags` (on a project object) should return zero hits outside of `OrganizationTagging`-related files (which are unrelated to this task).
-5. Produce a clear summary of every file changed so the backend team can confidently proceed with removing the backend models.
 
 ### Non Functional Requirements
 

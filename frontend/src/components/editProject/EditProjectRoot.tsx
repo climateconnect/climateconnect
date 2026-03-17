@@ -318,12 +318,6 @@ export default function EditProjectRoot({
       rows: 15,
       headlineTextKey: "project_description",
     },
-    {
-      textKey: "helpful_connections",
-      rows: 1,
-      headlineTextKey: "helpful_connections",
-      isArray: true,
-    },
   ];
 
   return (
@@ -414,7 +408,6 @@ const parseProjectForRequest = async (project, translationChanges) => {
   if (project.loc) ret.loc = parseLocation(project.loc, true);
   if (project.thumbnail_image)
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
-  if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
   if (project.sectors) ret.sectors = ret.sectors.map((s) => s.key);
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;

@@ -551,10 +551,6 @@ class CreateProjectView(APIView):
                         )
                         if "description" in texts:
                             translation.description_translation = texts["description"]
-                        if "helpful_connections" in texts:
-                            translation.helpful_connections_translation = texts[
-                                "helpful_connections"
-                            ]
                         translation.save()
                     except Language.DoesNotExist:
                         logger.error(
@@ -745,7 +741,6 @@ class ProjectAPIView(APIView):
             "additional_loc_info",
             "description",
             "helpful_connections",
-            "is_online",
             "short_description",
             "website",
         ]
