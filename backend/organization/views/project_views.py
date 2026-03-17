@@ -16,7 +16,6 @@ from organization.serializers.project import ProjectRequesterSerializer
 from climateconnect_api.models import (
     Availability,
     Role,
-    Skill,
     UserProfile,
 )
 from climateconnect_api.models.language import Language
@@ -196,7 +195,6 @@ class ListProjectsView(ListAPIView):
             Project.objects.filter(is_draft=False, is_active=True)
             .select_related("loc", "language", "status")
             .prefetch_related(
-                "skills",
                 "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
                     "project_comment",
@@ -332,14 +330,6 @@ class ListProjectsView(ListAPIView):
         if "status" in self.request.query_params:
             statuses = self.request.query_params.get("status").split(",")
             projects = projects.filter(status__name__in=statuses)
-
-        if "skills" in self.request.query_params:
-            skill_names = self.request.query_params.get("skills").split(",")
-            skills = Skill.objects.filter(name__in=skill_names)
-            # Use .distinct to dedupe selected rows.
-            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
-            # We then sort by rating, to show most relevant results
-            projects = projects.filter(skills__in=skills).distinct()
 
         if "organization_type" in self.request.query_params:
             organization_type_names = self.request.query_params.get(
@@ -587,10 +577,6 @@ class CreateProjectView(APIView):
                         )
                         if "description" in texts:
                             translation.description_translation = texts["description"]
-                        if "helpful_connections" in texts:
-                            translation.helpful_connections_translation = texts[
-                                "helpful_connections"
-                            ]
                         translation.save()
                     except Language.DoesNotExist:
                         logger.error(
@@ -793,18 +779,6 @@ class ProjectAPIView(APIView):
 
         if "project_type" in request.data:
             project.project_type = ProjectTypesChoices[request.data["project_type"]]
-
-        if "skills" in request.data:
-            for skill in project.skills.all():
-                if skill.id not in request.data["skills"]:
-                    logger.error("this skill needs to be deleted: " + skill.name)
-                    project.skills.remove(skill)
-            for skill_id in request.data["skills"]:
-                try:
-                    skill = Skill.objects.get(id=skill_id)
-                    project.skills.add(skill)
-                except Skill.DoesNotExist:
-                    logger.error("Passed skill id {} does not exists")
 
         # TODO: remove the project_taggings
         old_project_taggings = ProjectTagging.objects.filter(project=project)

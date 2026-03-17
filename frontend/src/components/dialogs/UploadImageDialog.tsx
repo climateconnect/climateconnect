@@ -2,7 +2,7 @@ import { Slider, Theme, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import PropTypes from "prop-types";
+import { func, bool, object, string, number, oneOfType } from "prop-types";
 import React, { useContext, useState } from "react";
 //Package AvatarEditor returns an object {default: defaultFunction} instead of a function which triggers a warning. This is why we use <AvatarEditor.default> in the exported function.
 import AvatarEditor from "react-avatar-editor";
@@ -46,6 +46,7 @@ type Props = {
   mediumHeight?;
   loading?;
   loadingText?;
+  PaperProps?;
 };
 
 export default function UploadImageDialog({
@@ -59,6 +60,7 @@ export default function UploadImageDialog({
   mediumHeight,
   loading,
   loadingText,
+  PaperProps,
 }: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
@@ -122,6 +124,7 @@ export default function UploadImageDialog({
       useApplyButton={true}
       applyText={texts.apply}
       onApply={applyImage}
+      PaperProps={PaperProps}
     >
       {loading ? (
         <>
@@ -161,11 +164,11 @@ export default function UploadImageDialog({
 }
 
 UploadImageDialog.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  imageUrl: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
-  ratio: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
-  mobileHeight: PropTypes.number,
-  mediumHeight: PropTypes.number,
+  onClose: func.isRequired,
+  open: bool.isRequired,
+  imageUrl: oneOfType([object, string]),
+  ratio: number.isRequired,
+  height: number.isRequired,
+  mobileHeight: number,
+  mediumHeight: number,
 };

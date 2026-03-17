@@ -1,7 +1,7 @@
 import { Container, Divider, Typography, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 
@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => {
 
 type Props = {
   project: Project;
-  skillsOptions: any;
   userOrganizations: any;
   handleSetProject: any;
   oldProject: Project;
@@ -59,7 +58,6 @@ type Props = {
 
 export default function EditProjectRoot({
   project,
-  skillsOptions,
   userOrganizations,
   handleSetProject,
   oldProject,
@@ -71,6 +69,7 @@ export default function EditProjectRoot({
   sectorOptions,
 }: Props) {
   const classes = useStyles();
+  const router = useRouter();
   const token = new Cookies().get("auth_token");
   const { locale, locales, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -159,7 +158,7 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
-        Router.push({
+        router.push({
           pathname: "/profiles/" + user.url_slug,
           query: {
             message: texts.you_have_successfully_edited_your_project,
@@ -196,7 +195,7 @@ export default function EditProjectRoot({
   }
 
   const handleCancel = () => {
-    Router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
+    router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleSubmit = async (event) => {
@@ -235,7 +234,7 @@ export default function EditProjectRoot({
         if (hubUrl) {
           query.hub = hubUrl;
         }
-        Router.push({
+        router.push({
           pathname: "/projects/" + response.data.url_slug,
           query,
         });
@@ -261,7 +260,7 @@ export default function EditProjectRoot({
           if (hubUrl) {
             query.hub = hubUrl;
           }
-          Router.push({
+          router.push({
             pathname: "/profiles/" + user.url_slug,
             query,
           });
@@ -319,12 +318,6 @@ export default function EditProjectRoot({
       rows: 15,
       headlineTextKey: "project_description",
     },
-    {
-      textKey: "helpful_connections",
-      rows: 1,
-      headlineTextKey: "helpful_connections",
-      isArray: true,
-    },
   ];
 
   return (
@@ -354,7 +347,6 @@ export default function EditProjectRoot({
             project={project}
             handleSetProject={handleSetProject}
             userOrganizations={userOrganizations}
-            skillsOptions={skillsOptions}
             user_role={user_role}
             deleteProject={deleteProject}
             errors={errors}
@@ -416,8 +408,6 @@ const parseProjectForRequest = async (project, translationChanges) => {
   if (project.loc) ret.loc = parseLocation(project.loc, true);
   if (project.thumbnail_image)
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
-  if (project.skills) ret.skills = project.skills.map((s) => s.id);
-  if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
   if (project.sectors) ret.sectors = ret.sectors.map((s) => s.key);
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;

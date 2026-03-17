@@ -10,7 +10,6 @@ import ProjectTimeAndPlaceSectionAndCustomHub from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
-import CollaborateSection from "./CollaborateSection";
 import ProjectNameSection from "./ProjectNameSection";
 import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
@@ -73,8 +72,6 @@ const getHelpTexts = (texts) => ({
   short_description: texts.short_description_helptext,
   description: texts.description_helptext,
   collaboration: texts.collaboration_helptext,
-  addSkills: texts.add_skills_helptext,
-  addConnections: texts.add_connections_helptext,
 });
 
 export default function EnterDetails({
@@ -82,13 +79,10 @@ export default function EnterDetails({
   handleSetProjectData,
   goToNextStep,
   goToPreviousStep,
-  skillsOptions,
   setMessage,
 }) {
   const [open, setOpen] = useState({
     avatarDialog: false,
-    skillsDialog: false,
-    connectionsDialog: false,
   });
   const [errors, setErrors] = useState({
     start_date: "",
@@ -278,21 +272,6 @@ export default function EnterDetails({
               color={backgroundContrastColor}
             />
           </div>
-          {projectData.collaborators_welcome && (
-            <CollaborateSection
-              projectData={projectData}
-              handleSetProjectData={handleSetProjectData}
-              blockClassName={classes.block}
-              subHeaderClassName={classes.subHeader}
-              toolTipClassName={classes.tooltip}
-              helpTexts={helpTexts}
-              ToolTipIcon={HelpOutlineIcon}
-              open={open}
-              handleSetOpen={handleSetOpen}
-              skillsOptions={skillsOptions}
-              collaborationTexts={collaborationTexts}
-            />
-          )}
           <NavigationButtons
             className={classes.block}
             onClickPreviousStep={onClickPreviousStep}

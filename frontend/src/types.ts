@@ -28,8 +28,6 @@ export type SkillType = {
 
 export type Project = {
   collaborators_welcome: boolean;
-  skills: any[];
-  helpful_connections: any[];
   collaborating_organizations: any[];
   loc: any;
   location?: any; //TODO: merge loc and location (loc used to post, location used when getting data from the backend currently)
@@ -44,7 +42,6 @@ export type Project = {
   url_slug?: string;
   name?: string;
   project_parents?: any[];
-  tags?: any[];
   project_type: ProjectType | any;
   start_date?: Date | Dayjs | null;
   end_date?: Date | Dayjs | null;

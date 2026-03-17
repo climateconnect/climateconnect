@@ -1,5 +1,3 @@
-import imageCompression from "browser-image-compression";
-
 const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT!);
 
 export function getImageUrl(url) {
@@ -134,15 +132,53 @@ const drawImageOnCanvas = (image, canvas) => {
 export async function blobFromObjectUrl(objectUrl: string): Promise<string> {
   try {
     const response = await fetch(objectUrl);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    }
+
     const originalBlob = await response.blob();
+
+    const mimeType = originalBlob.type || "image/jpeg";
+
+    // Derive a reasonable filename from the URL and/or MIME type
+    let fileName = "image";
+    try {
+      const url = new URL(objectUrl);
+      const lastSegment = url.pathname.split("/").pop();
+      if (lastSegment) {
+        fileName = lastSegment;
+      }
+    } catch {
+      // objectUrl might be a blob: URL or otherwise not parseable by URL; fall back to default name
+    }
+
+    if (!fileName.includes(".")) {
+      let extension = "jpg";
+      if (mimeType === "image/png") {
+        extension = "png";
+      } else if (mimeType === "image/webp") {
+        extension = "webp";
+      } else if (mimeType === "image/gif") {
+        extension = "gif";
+      } else if (mimeType === "image/jpeg" || mimeType === "image/jpg") {
+        extension = "jpg";
+      }
+      fileName = `${fileName}.${extension}`;
+    }
+
+    // Convert Blob to File to ensure all File properties (like name) exist
+    const file = new File([originalBlob], fileName, { type: mimeType });
 
     const options = {
       maxSizeMB: 0.5,
       useWebWorker: true,
     };
 
-    // imageCompression accepts Blob despite its TypeScript definition requiring File
-    const compressedBlob = await imageCompression(originalBlob as File, options);
+    // Import the default export from browser-image-compression
+    const { default: imageCompression } = await import("browser-image-compression");
+
+    const compressedBlob = await imageCompression(file, options);
 
     // Convert compressed blob to base64 data URL
     return new Promise((resolve, reject) => {

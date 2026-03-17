@@ -9,7 +9,6 @@ from climateconnect_api.models import UserProfile
 from climateconnect_api.models.role import Role
 from climateconnect_api.serializers.common import (
     AvailabilitySerializer,
-    SkillSerializer,
 )
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
@@ -36,7 +35,6 @@ from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
 from organization.utility.project import (
     get_project_description,
-    get_project_helpful_connections,
     get_project_name,
     get_project_short_description,
 )
@@ -47,7 +45,6 @@ class ProjectSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     sectors = serializers.SerializerMethodField()
 
@@ -59,7 +56,6 @@ class ProjectSerializer(serializers.ModelSerializer):
     number_of_likes = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     loc = serializers.SerializerMethodField()
-    helpful_connections = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
 
@@ -88,8 +84,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "loc",
             "location",
             "collaborators_welcome",
-            "skills",
-            "helpful_connections",
             "project_parents",
             "sectors",
             "tags",  # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
@@ -107,6 +101,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "parent_project_slug",
             "has_children",
             "child_projects_count",
+            "is_online",
         )
         read_only_fields = ["url_slug"]
 
@@ -121,10 +116,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
-        return serializer.data
-
-    def get_skills(self, obj):
-        serializer = SkillSerializer(obj.skills, many=True)
         return serializer.data
 
     def get_project_parents(self, obj):
@@ -161,9 +152,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         if obj.loc is None:
             return None
         return obj.loc.name
-
-    def get_helpful_connections(self, obj):
-        return get_project_helpful_connections(obj, get_language())
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
@@ -202,7 +190,6 @@ class EditProjectSerializer(ProjectSerializer):
     translations = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
-    helpful_connections = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     related_hubs = serializers.SerializerMethodField()
 
@@ -230,9 +217,6 @@ class EditProjectSerializer(ProjectSerializer):
 
     def get_description(self, obj):
         return obj.description
-
-    def get_helpful_connections(self, obj):
-        return obj.helpful_connections
 
     def get_related_hubs(self, obj):
         return [hub.url_slug for hub in obj.related_hubs.all()]
@@ -269,7 +253,6 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 
 
 class ProjectMinimalSerializer(serializers.ModelSerializer):
-    skills = SkillSerializer(many=True)
     project_parents = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -280,7 +263,6 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "url_slug",
-            "skills",
             "image",
             "status",
             "location",
@@ -340,6 +322,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "has_children",
+            "is_online",
         )
 
     def get_name(self, obj):

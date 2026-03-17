@@ -1059,6 +1059,93 @@ class TestProjectApi(APITestCase):
             0,
         )
 
+    # -------------------------------------------------------
+    # Tests for the is_online field
+
+    @tag("projects")
+    def test_get_project_includes_is_online_field(self):
+        # act
+        response = self.client.get(self.url)
+        res = response.json()
+
+        # assert
+        self.assertIn("is_online", res)
+
+    @tag("projects")
+    def test_get_project_is_online_defaults_to_false(self):
+        # act
+        response = self.client.get(self.url)
+        res = response.json()
+
+        # assert
+        self.assertFalse(res["is_online"])
+
+    @tag("projects")
+    def test_get_project_is_online_true_when_set(self):
+        # arrange
+        self.project.is_online = True
+        self.project.save()
+
+        # act
+        response = self.client.get(self.url)
+        res = response.json()
+
+        # assert
+        self.assertTrue(res["is_online"])
+
+    @tag("projects")
+    def test_patch_project_set_is_online_to_true(self):
+        # arrange
+        self.client.login(username="testuser", password="testpassword")
+        data = {"is_online": True}
+
+        # act
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.project.refresh_from_db()
+        self.assertTrue(self.project.is_online)
+
+    @tag("projects")
+    def test_patch_project_set_is_online_to_false(self):
+        # arrange
+        self.project.is_online = True
+        self.project.save()
+        self.client.login(username="testuser", password="testpassword")
+        data = {"is_online": False}
+
+        # act
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.project.refresh_from_db()
+        self.assertFalse(self.project.is_online)
+
+    @tag("projects")
+    def test_patch_project_without_is_online_does_not_change_default(self):
+        # arrange — project starts with is_online=False (default)
+        self.client.login(username="testuser", password="testpassword")
+        data = {"website": "https://example.com"}
+
+        # act
+        response = self.client.patch(self.url, data, format="json")
+
+        # assert
+        self.assertContains(response, "successfully updated")
+        self.project.refresh_from_db()
+        self.assertFalse(self.project.is_online)
+
+    @tag("projects")
+    def test_get_project_edit_view_includes_is_online_field(self):
+        # act
+        response = self.client.get(self.edit_view_url)
+        res = response.json()
+
+        # assert
+        self.assertIn("is_online", res)
+
 
 class ProjectLocationHubFilterTest(TransactionTestCase):
     """

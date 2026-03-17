@@ -2,7 +2,7 @@ import { Container, Tab, Tabs, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { useLongPress } from "use-long-press";
@@ -152,7 +152,7 @@ export default function ProjectPageRoot({
   const projectTabsRef = useRef(null);
 
   const messageButtonIsVisible = ElementOnScreen({ el: contactProjectCreatorButtonRef.current });
-
+  const router = useRouter();
   const handleClickContact = async (event) => {
     event.preventDefault();
 
@@ -165,7 +165,7 @@ export default function ProjectPageRoot({
       });
     }
     const chat = await startPrivateChat(creator, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    router.push("/chat/" + chat.chat_uuid + "/");
   };
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
   const user_permission =

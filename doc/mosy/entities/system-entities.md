@@ -156,3 +156,18 @@ This document defines the core system entities for Climate Connect, serving as t
   - `osm_id`: String (OpenStreetMap reference)
   - `city`, `country`: String
 - **Relationships**: Referenced by almost all core entities (`Project`, `User`, `Hub`).
+
+## 8. Platform Configuration
+
+### FeatureToggle
+- **Definition**: A feature flag system for enabling/disabling features across environments.
+- **Properties**:
+  - `name`: String (Unique, uppercase with underscores, e.g., "NEW_DASHBOARD")
+  - `description`: Text (Description of what this feature controls)
+  - `production_is_active`: Boolean
+  - `staging_is_active`: Boolean
+  - `development_is_active`: Boolean
+  - `created_at`: DateTime
+  - `updated_at`: DateTime
+- **Relationships**: None (standalone configuration entity)
+- **Usage**: Used to control feature availability without deployment. Supports environment-specific toggling (production, staging, development).

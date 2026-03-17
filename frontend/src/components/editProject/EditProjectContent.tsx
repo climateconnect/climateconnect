@@ -1,13 +1,4 @@
-import {
-  Button,
-  Chip,
-  List,
-  Switch,
-  TextField,
-  Typography,
-  useMediaQuery,
-  Theme,
-} from "@mui/material";
+import { Switch, TextField, Typography, useMediaQuery, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { RefObject, useContext, useState } from "react";
 import getCollaborationTexts from "../../../public/data/collaborationTexts";
@@ -15,8 +6,6 @@ import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
-import EnterTextDialog from "../dialogs/EnterTextDialog";
-import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
@@ -24,7 +13,6 @@ import DeleteProjectButton from "./DeleteProjectButton";
 import { Project, Role } from "../../types";
 import { EditProjectTypeSelector } from "./EditProjectTypeSelector";
 import ProjectDateSection from "../shareProject/ProjectDateSection";
-import AddIcon from "@mui/icons-material/Add";
 
 const useStyles = makeStyles<Theme>((theme) => ({
   select: {
@@ -96,7 +84,6 @@ type Args = {
   handleSetProject: Function;
   userOrganizations: any;
   user_role: Role;
-  skillsOptions: any;
   deleteProject: Function;
   errors: any;
   contentRef?: RefObject<any>;
@@ -107,7 +94,6 @@ export default function EditProjectContent({
   project,
   handleSetProject,
   userOrganizations,
-  skillsOptions,
   user_role,
   deleteProject,
   errors,
@@ -118,9 +104,8 @@ export default function EditProjectContent({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const collaborationTexts = getCollaborationTexts(texts);
-  const [selectedItems, setSelectedItems] = useState(project.skills ? [...project.skills] : []);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const [open, setOpen] = useState({ skills: false, connections: false, delete: false });
+  const [open, setOpen] = useState({ delete: false });
 
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
@@ -128,7 +113,7 @@ export default function EditProjectContent({
 
   /*
     This is a helper function just for <ProjectDateSection>
-    It's a bit of a hack to be able to use the same code even though handleSetProject 
+    It's a bit of a hack to be able to use the same code even though handleSetProject
     is implemented differently in EditProject and ShareProject
   */
   const handleSetProjectData = (newData) => {
@@ -136,51 +121,6 @@ export default function EditProjectContent({
       ...project,
       ...newData,
     });
-  };
-
-  const onClickSkillsDialogOpen = () => {
-    setOpen({ ...open, skills: true });
-  };
-
-  const handleSkillsDialogClose = () => {
-    setOpen({ ...open, skills: false });
-  };
-
-  const handleSkillDelete = (skill) => {
-    handleSetProject({
-      ...project,
-      skills: project.skills.filter((s) => s.id !== skill.id),
-    });
-    setSelectedItems(project.skills.filter((s) => s.id !== skill.id));
-  };
-
-  const handleSkillsDialogSave = (skills) => {
-    if (skills) handleSetProject({ ...project, skills: skills });
-    setOpen({ ...open, skills: false });
-  };
-
-  const onClickConnectionsDialogOpen = () => {
-    setOpen({ ...open, connections: true });
-  };
-
-  const handleConnectionDelete = (connection) => {
-    handleSetProject({
-      ...project,
-      helpful_connections: project.helpful_connections.filter((c) => c != connection),
-    });
-  };
-
-  const handleConnectionsDialogClose = (connection) => {
-    if (project.helpful_connections && project.helpful_connections.includes(connection))
-      alert(texts.you_can_not_add_the_same_connection_twice);
-    else {
-      if (connection)
-        handleSetProject({
-          ...project,
-          helpful_connections: [...project.helpful_connections, connection],
-        });
-      setOpen({ ...open, connections: false });
-    }
   };
 
   const handleClickDeleteProjectPopup = () => {
@@ -321,70 +261,6 @@ export default function EditProjectContent({
         </div>
         {project.collaborators_welcome && (
           <>
-            <div className={classes.block}>
-              <Typography
-                component="h2"
-                variant="subtitle2"
-                color="primary"
-                className={classes.subHeader}
-              >
-                {collaborationTexts.skills[project.project_type.type_id]}
-              </Typography>
-              <div>
-                {project.skills?.length > 0 && (
-                  <List className={classes.flexContainer}>
-                    {project.skills.map((skill) => (
-                      <Chip
-                        key={skill.id}
-                        label={skill.name}
-                        className={classes.skill}
-                        onDelete={() => handleSkillDelete(skill)}
-                      />
-                    ))}
-                  </List>
-                )}
-                <div className={classes.buttonsContainer}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={onClickSkillsDialogOpen}
-                    className={classes.addButton}
-                  >
-                    {project.skills && project.skills.length ? texts.edit_skills : texts.add_skills}
-                  </Button>
-                </div>
-              </div>
-            </div>
-            <div className={classes.block}>
-              <Typography
-                component="h2"
-                variant="subtitle2"
-                color="primary"
-                className={classes.subHeader}
-              >
-                {collaborationTexts.connections[project.project_type.type_id]}
-              </Typography>
-              {project.helpful_connections?.length > 0 && (
-                <List className={classes.flexContainer}>
-                  {project.helpful_connections.map((connection) => (
-                    <Chip
-                      key={connection}
-                      label={connection}
-                      className={classes.skill}
-                      onDelete={() => handleConnectionDelete(connection)}
-                    />
-                  ))}
-                </List>
-              )}
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={onClickConnectionsDialogOpen}
-                className={classes.addButton}
-              >
-                {texts.add_connections}
-              </Button>
-            </div>
             {isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
               <div className={classes.block}>
                 <Typography
@@ -405,25 +281,6 @@ export default function EditProjectContent({
           </>
         )}
       </div>
-      <MultiLevelSelectDialog
-        open={open.skills}
-        onClose={handleSkillsDialogClose}
-        onSave={handleSkillsDialogSave}
-        type="skills"
-        options={skillsOptions}
-        items={project.skills}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-      />
-      <EnterTextDialog
-        open={open.connections}
-        onClose={handleConnectionsDialogClose}
-        maxLength={25}
-        applyText={texts.add}
-        applyIcon={{ icon: AddIcon }}
-        inputLabel={texts.connection}
-        title={texts.add_a_helpful_connection}
-      />
       <ConfirmDialog
         open={open.delete}
         onClose={handleDeleteProjectDialogClose}

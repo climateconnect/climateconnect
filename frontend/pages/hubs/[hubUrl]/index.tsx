@@ -9,6 +9,7 @@ import LoadingSpinner from "../../../src/components/general/LoadingSpinner";
 import theme from "../../../src/themes/theme";
 import { HubData } from "../../../src/types";
 import { getHubData } from "../../../public/lib/getHubData";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 
 //Types
 type DevlinkComponentType = ComponentType<any> | null;
@@ -48,6 +49,7 @@ const NotFoundPage: FC<NotFoundPageProps> = ({ texts, link, showHeader }) => {
 
 export async function getServerSideProps(ctx: any) {
   const hubUrl = ctx?.params?.hubUrl as string | undefined;
+  const locale = ctx?.locale;
 
   if (!hubUrl) {
     return {
@@ -58,11 +60,12 @@ export async function getServerSideProps(ctx: any) {
     };
   }
 
-  const hubData = await getHubData(hubUrl, ctx.locale);
+  const hubData = await getHubData(hubUrl, locale);
   if (!hubData?.landing_page_component) {
+    const localePrefix = getLocalePrefix(locale);
     return {
       redirect: {
-        destination: `/hubs/${hubUrl}/browse`,
+        destination: `${localePrefix}/hubs/${hubUrl}/browse`,
         // redirect is based on current hub data, and that might change in the future so permanent: false,
         permanent: false,
       },
