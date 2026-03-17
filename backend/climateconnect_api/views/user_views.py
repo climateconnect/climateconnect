@@ -2,6 +2,27 @@ import logging
 import uuid
 from datetime import datetime, timedelta
 
+from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models import GeometryField, Union
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import Count, Q
+from django.db.models.functions import Cast
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
+from django.views.decorators.cache import cache_page
+from django_filters.rest_framework import DjangoFilterBackend
+from knox.views import LoginView as KnoxLoginView
+from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from climateconnect_api.models import Availability, Skill, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination, MembersSitemapPagination
@@ -14,44 +35,24 @@ from climateconnect_api.serializers.user import (
     UserProfileSitemapEntrySerializer,
     UserProfileStubSerializer,
 )
+from climateconnect_api.utility.common import create_unique_slug
 from climateconnect_api.utility.email_setup import (
     send_password_link,
     send_user_verification_email,
 )
 from climateconnect_api.utility.translation import edit_translations
-from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.user import get_user_profile_hub_slug
-from django.conf import settings
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from django.contrib.gis.db.models.functions import Distance
-from django.db.models import Count, Q
-from django.utils import timezone
-from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
-from climateconnect_api.utility.common import create_unique_slug
-
-from django.views.decorators.cache import cache_page
-from django_filters.rest_framework import DjangoFilterBackend
+from climateconnect_main.utility.general import get_image_from_data_url
 from hubs.models.hub import Hub
 from ideas.models.support import IdeaSupporter
 from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
-from knox.views import LoginView as KnoxLoginView
 from location.models import Location
 from location.utility import get_location, get_location_with_range
+from organization.models import Sector, UserProfileSectorMapping
 from organization.models.members import OrganizationMember, ProjectMember
 from organization.serializers.organization import OrganizationsFromOrganizationMember
 from organization.serializers.project import ProjectFromProjectMemberSerializer
-from rest_framework import status
-from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from organization.models import Sector
 from organization.utility.sector import sanitize_sector_inputs
-from organization.models import UserProfileSectorMapping
 
 logger = logging.getLogger(__name__)
 
@@ -263,26 +264,39 @@ class ListMemberProfilesView(ListAPIView):
             for current_hub in hubs:
                 user_filter |= Q(related_hubs=current_hub)
 
-                if current_hub.location.exists():
-                    location = current_hub.location.first()
-                    location_multipolygon = location.multi_polygon
+                if current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    hub_locations = current_hub.location.all()
 
-                    if location_multipolygon:
-                        location_filter = Q(location__country=location.country) & (
-                            Q(location__multi_polygon__coveredby=location_multipolygon)
-                            | Q(location__centre_point__coveredby=location_multipolygon)
+                    if hub_locations.exists():
+                        hub_location_ids = hub_locations.values_list("id", flat=True)
+
+                        aggregated_geometry = hub_locations.annotate(
+                            geom_as_geometry=Cast("multi_polygon", GeometryField())
+                        ).aggregate(combined=Union("geom_as_geometry"))["combined"]
+
+                        country_filter = Q(
+                            location__country=hub_locations.first().country
                         )
-                        user_filter |= (
-                            location_filter  # Combine with related_hubs filter
+                        by_location_id = country_filter & Q(
+                            location__id__in=hub_location_ids
                         )
 
-                # Optionally annotate distance
-                if current_hub.location.exists() and location_multipolygon:
-                    user_profiles = user_profiles.annotate(
-                        distance=Distance(
-                            "location__centre_point", location_multipolygon
-                        )
-                    )
+                        if aggregated_geometry:
+                            by_geometry = country_filter & (
+                                Q(location__centre_point__coveredby=aggregated_geometry)
+                                | Q(
+                                    location__multi_polygon__coveredby=aggregated_geometry
+                                )
+                            )
+                            user_filter |= by_location_id | by_geometry
+
+                            user_profiles = user_profiles.annotate(
+                                distance=Distance(
+                                    "location__centre_point", aggregated_geometry
+                                )
+                            )
+                        else:
+                            user_filter |= by_location_id
             # apply combined filters of all hubs
             user_profiles = user_profiles.filter(user_filter).distinct()
 

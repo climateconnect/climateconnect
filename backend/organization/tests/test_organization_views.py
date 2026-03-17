@@ -1,26 +1,24 @@
-from rest_framework.test import APITestCase
-
-from django.urls import reverse
-from django.test import tag
+import io
 import unittest
-
-from rest_framework import status
+from base64 import b64encode
 
 from django.contrib.auth.models import User
-from climateconnect_api.models import Role, Language, UserProfile
+from django.contrib.gis.geos import MultiPolygon, Point, Polygon
+from django.test import TransactionTestCase, tag
+from django.urls import reverse
+from PIL import Image
+from rest_framework import status
+from rest_framework.test import APITestCase
+
+from climateconnect_api.models import Language, Role, UserProfile
+from hubs.models import Hub
 from location.models import Location
 from organization.models import (
-    Sector,
     Organization,
-    OrganizationSectorMapping,
     OrganizationMember,
+    OrganizationSectorMapping,
+    Sector,
 )
-from hubs.models import Hub
-
-
-from PIL import Image
-from base64 import b64encode
-import io
 
 NUMBER_OF_ORGANIZATIONS = 5
 
@@ -967,3 +965,401 @@ class TestOrganizationAPIView(APITestCase):
             ).first()
             self.assertIsNotNone(mapping)
             self.assertEqual(mapping.order, ordering[sector.key])
+
+
+class OrganizationLocationHubFilterTest(TransactionTestCase):
+    """
+    Test case for filtering organizations by location hubs.
+    Tests the code in organization_views.py that handles filtering organizations
+    by location hubs with aggregated geometry.
+    Uses TransactionTestCase to ensure complete database isolation and cleanup.
+    """
+
+    def setUp(self):
+        """
+        Set up test data for each test method.
+        Creates locations, hubs, and organizations for testing.
+
+        Test data structure:
+        - 1 Hub "Erlangen" with 3 locations: Erlangen, Bubenreuth, Spardorf
+        - 10 Organizations total:
+          - 3 with exact hub locations (Erlangen, Bubenreuth, Spardorf)
+          - 3 with addresses in Erlangen, Bubenreuth, Spardorf
+          - 2 in Nürnberg (location + address) - negative test cases
+          - 2 in Paris (location + address) - negative test cases
+        """
+        self.url = reverse("organization:list-organizations-api-view")
+
+        # ===== Hub Locations (3 locations for Erlangen Hub) =====
+        # Erlangen city (general area)
+        self.location_erlangen = Location.objects.create(
+            name="Erlangen, Germany",
+            city="Erlangen",
+            country="Germany",
+            centre_point=Point(11.0050, 49.5975),  # Erlangen coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (10.95, 49.55),
+                        (11.06, 49.55),
+                        (11.06, 49.64),
+                        (10.95, 49.64),
+                        (10.95, 49.55),
+                    )
+                )
+            ),
+        )
+
+        # Bubenreuth (suburb/village north of Erlangen)
+        self.location_bubenreuth = Location.objects.create(
+            name="Bubenreuth, Germany",
+            city="Bubenreuth",
+            country="Germany",
+            centre_point=Point(11.0200, 49.6300),  # Bubenreuth coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (11.00, 49.62),
+                        (11.04, 49.62),
+                        (11.04, 49.64),
+                        (11.00, 49.64),
+                        (11.00, 49.62),
+                    )
+                )
+            ),
+        )
+
+        # Spardorf (suburb/village east of Erlangen)
+        self.location_spardorf = Location.objects.create(
+            name="Spardorf, Germany",
+            city="Spardorf",
+            country="Germany",
+            centre_point=Point(11.0600, 49.5900),  # Spardorf coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (11.05, 49.58),
+                        (11.07, 49.58),
+                        (11.07, 49.60),
+                        (11.05, 49.60),
+                        (11.05, 49.58),
+                    )
+                )
+            ),
+        )
+
+        # ===== Hub for Erlangen with 3 locations =====
+        self.hub_erlangen = Hub.objects.create(
+            name="Erlangen Hub",
+            url_slug="erlangen-hub",
+            hub_type=Hub.LOCATION_HUB_TYPE,
+            image="/media/hub_images/default.jpg",
+        )
+        self.hub_erlangen.location.add(self.location_erlangen)
+        self.hub_erlangen.location.add(self.location_bubenreuth)
+        self.hub_erlangen.location.add(self.location_spardorf)
+
+        # ===== Address Locations within hub area =====
+        self.location_erlangen_address = Location.objects.create(
+            name="Goethestraße 1, Erlangen, Germany",
+            city="Erlangen",
+            country="Germany",
+            centre_point=Point(11.0020, 49.5985),  # Address in Erlangen
+            multi_polygon=None,
+        )
+
+        self.location_bubenreuth_address = Location.objects.create(
+            name="Bussardstraße 21, Bubenreuth, Germany",
+            city="Bubenreuth",
+            country="Germany",
+            centre_point=Point(11.0210, 49.6310),  # Address in Bubenreuth
+            multi_polygon=None,
+        )
+
+        self.location_spardorf_address = Location.objects.create(
+            name="Eisenstraße, Spardorf, Germany",
+            city="Spardorf",
+            country="Germany",
+            centre_point=Point(11.0610, 49.5910),  # Address in Spardorf
+            multi_polygon=None,
+        )
+
+        # ===== Negative Test Locations (Nuremberg & Paris) =====
+        self.location_nuremberg = Location.objects.create(
+            name="Nuremberg, Germany",
+            city="Nuremberg",
+            country="Germany",
+            centre_point=Point(11.0767, 49.4521),  # Nuremberg coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (10.95, 49.40),
+                        (11.20, 49.40),
+                        (11.20, 49.50),
+                        (10.95, 49.50),
+                        (10.95, 49.40),
+                    )
+                )
+            ),
+        )
+
+        self.location_nuremberg_address = Location.objects.create(
+            name="Narrenschiff, Plobenhofstraße 1-9, Nuremberg, Germany",
+            city="Nuremberg",
+            country="Germany",
+            centre_point=Point(11.0780, 49.4530),  # Address in Nuremberg
+            multi_polygon=None,
+        )
+
+        self.location_paris = Location.objects.create(
+            name="Paris, France",
+            city="Paris",
+            country="France",
+            centre_point=Point(2.3522, 48.8566),  # Paris coordinates
+            multi_polygon=MultiPolygon(
+                Polygon(
+                    (
+                        (2.20, 48.80),
+                        (2.50, 48.80),
+                        (2.50, 49.00),
+                        (2.20, 49.00),
+                        (2.20, 48.80),
+                    )
+                )
+            ),
+        )
+
+        self.location_paris_address = Location.objects.create(
+            name="Hotel de Ville, 5 Rue de Lobau, Paris, France",
+            city="Paris",
+            country="France",
+            centre_point=Point(2.3530, 48.8570),  # Address in Paris
+            multi_polygon=None,
+        )
+
+        # ===== Create 10 Organizations =====
+        # Organizations with exact hub locations (3)
+        self.org_erlangen_location = Organization.objects.create(
+            name="Erlangen Location Org",
+            url_slug="erlangen-location-org",
+            location=self.location_erlangen,
+        )
+
+        self.org_bubenreuth_location = Organization.objects.create(
+            name="Bubenreuth Location Org",
+            url_slug="bubenreuth-location-org",
+            location=self.location_bubenreuth,
+        )
+
+        self.org_spardorf_location = Organization.objects.create(
+            name="Spardorf Location Org",
+            url_slug="spardorf-location-org",
+            location=self.location_spardorf,
+        )
+
+        # Organizations with addresses in hub locations (3)
+        self.org_erlangen_address = Organization.objects.create(
+            name="Erlangen Address Org",
+            url_slug="erlangen-address-org",
+            location=self.location_erlangen_address,
+        )
+
+        self.org_bubenreuth_address = Organization.objects.create(
+            name="Bubenreuth Address Org",
+            url_slug="bubenreuth-address-org",
+            location=self.location_bubenreuth_address,
+        )
+
+        self.org_spardorf_address = Organization.objects.create(
+            name="Spardorf Address Org",
+            url_slug="spardorf-address-org",
+            location=self.location_spardorf_address,
+        )
+
+        # Negative test organizations - Nuremberg
+        self.org_nuremberg_location = Organization.objects.create(
+            name="Nuremberg Location Org",
+            url_slug="nuremberg-location-org",
+            location=self.location_nuremberg,
+        )
+
+        self.org_nuremberg_address = Organization.objects.create(
+            name="Nuremberg Address Org",
+            url_slug="nuremberg-address-org",
+            location=self.location_nuremberg_address,
+        )
+
+        # Negative test organizations - Paris
+        self.org_paris_location = Organization.objects.create(
+            name="Paris Location Org",
+            url_slug="paris-location-org",
+            location=self.location_paris,
+        )
+
+        self.org_paris_address = Organization.objects.create(
+            name="Paris Address Org",
+            url_slug="paris-address-org",
+            location=self.location_paris_address,
+        )
+
+    def tearDown(self):
+        """
+        Clean up after each test.
+        TransactionTestCase automatically clears the database, but
+        we explicitly clear for clarity.
+        """
+        Organization.objects.all().delete()
+        Hub.objects.all().delete()
+        Location.objects.all().delete()
+
+    @tag("location_hub", "organizations")
+    def test_filter_organizations_by_multi_location_hub(self):
+        """
+        Test filtering organizations by the Erlangen hub with 3 locations.
+        Should return all 6 organizations within Erlangen, Bubenreuth, and Spardorf.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        org_slugs = [o["url_slug"] for o in results]
+
+        self.assertIn("erlangen-location-org", org_slugs)
+        self.assertIn("bubenreuth-location-org", org_slugs)
+        self.assertIn("spardorf-location-org", org_slugs)
+        self.assertIn("erlangen-address-org", org_slugs)
+        self.assertIn("bubenreuth-address-org", org_slugs)
+        self.assertIn("spardorf-address-org", org_slugs)
+
+        self.assertEqual(len(results), 6)
+
+        self.assertNotIn("nuremberg-location-org", org_slugs)
+        self.assertNotIn("nuremberg-address-org", org_slugs)
+        self.assertNotIn("paris-location-org", org_slugs)
+        self.assertNotIn("paris-address-org", org_slugs)
+
+    @tag("location_hub", "organizations")
+    def test_aggregated_geometry_with_multiple_hub_locations(self):
+        """
+        Test the aggregated geometry functionality (Union of geometries).
+        Verifies that organizations within any of the 3 hub locations are returned.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        org_slugs = [o["url_slug"] for o in results]
+
+        self.assertIn("erlangen-location-org", org_slugs)
+        self.assertIn("bubenreuth-location-org", org_slugs)
+        self.assertIn("spardorf-location-org", org_slugs)
+
+        self.assertIn("erlangen-address-org", org_slugs)
+        self.assertIn("bubenreuth-address-org", org_slugs)
+        self.assertIn("spardorf-address-org", org_slugs)
+
+    @tag("location_hub", "organizations")
+    def test_filter_organizations_by_hub_filters_by_country(self):
+        """
+        Test that location hub filtering correctly filters by country first.
+        Paris organizations should not appear.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        for org in results:
+            org_obj = Organization.objects.get(url_slug=org["url_slug"])
+            self.assertEqual(org_obj.location.country, "Germany")
+
+        org_slugs = [o["url_slug"] for o in results]
+        self.assertNotIn("paris-location-org", org_slugs)
+        self.assertNotIn("paris-address-org", org_slugs)
+
+    @tag("location_hub", "organizations")
+    def test_filter_excludes_organizations_outside_hub_geometry(self):
+        """
+        Test that organizations outside the hub's geometry are excluded.
+        Nuremberg organizations should not be included even though they're in Germany.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        org_slugs = [o["url_slug"] for o in results]
+
+        self.assertNotIn("nuremberg-location-org", org_slugs)
+        self.assertNotIn("nuremberg-address-org", org_slugs)
+
+        self.assertEqual(len(results), 6)
+
+    @tag("location_hub", "organizations")
+    def test_filter_organizations_by_nonexistent_hub(self):
+        """
+        Test filtering by a hub that doesn't exist.
+        Should return no results.
+        """
+        response = self.client.get(self.url, {"hub": "nonexistent-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        self.assertEqual(len(results), 0)
+
+    @tag("location_hub", "organizations")
+    def test_filter_organizations_without_hub_parameter(self):
+        """
+        Test that without hub parameter, all organizations are returned.
+        Should return all 10 organizations.
+        """
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        self.assertEqual(len(results), 10)
+
+    @tag("location_hub", "organizations")
+    def test_address_locations_within_hub_geometry(self):
+        """
+        Test that address-based locations (null multi_polygon) are correctly matched.
+        All 3 address organizations should be included as their centre_points are within
+        the hub's aggregated geometry.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        org_slugs = [o["url_slug"] for o in results]
+
+        self.assertIn("erlangen-address-org", org_slugs)
+        self.assertIn("bubenreuth-address-org", org_slugs)
+        self.assertIn("spardorf-address-org", org_slugs)
+
+        for slug in [
+            "erlangen-address-org",
+            "bubenreuth-address-org",
+            "spardorf-address-org",
+        ]:
+            org = Organization.objects.get(url_slug=slug)
+            self.assertIsNone(org.location.multi_polygon)
+
+    @tag("location_hub", "organizations")
+    def test_distinct_results_when_multiple_filters_match(self):
+        """
+        Test that results are distinct even when an organization matches multiple filter criteria.
+        Tests the .distinct() call in the code.
+        """
+        response = self.client.get(self.url, {"hub": "erlangen-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+
+        org_ids = [o["id"] for o in results]
+        self.assertEqual(
+            len(org_ids),
+            len(set(org_ids)),
+            "Results should be distinct (no duplicates)",
+        )
+
+        self.assertEqual(len(org_ids), 6)
