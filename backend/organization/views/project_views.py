@@ -767,6 +767,7 @@ class ProjectAPIView(APIView):
             "additional_loc_info",
             "description",
             "helpful_connections",
+            "is_online",
             "short_description",
             "website",
         ]
