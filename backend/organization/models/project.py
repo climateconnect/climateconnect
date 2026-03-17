@@ -223,6 +223,12 @@ class Project(models.Model):
         db_index=True,
     )
 
+    is_online = models.BooleanField(
+        help_text="Whether the project takes place online",
+        verbose_name="Is Online",
+        default=False,
+    )
+
     @property
     def cached_ranking(self) -> int:
         """Carful with this property, it might trigger an N+1 query problem"""
