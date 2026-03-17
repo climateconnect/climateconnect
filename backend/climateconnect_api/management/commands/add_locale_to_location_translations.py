@@ -194,6 +194,10 @@ def translate_locations(locs: list["Location"], locale: str):
                 "state_translation": address.get("state"),
                 "country_translation": address.get("country"),
             }
+            # this is for the locations in palestine (id=2667, localname = None,
+            # the only address tag that is provided is "disputed")
+            if translation_data["name_translation"] is None:
+                translation_data["name_translation"] = address.get("disputed")
 
             for loc in matching_locations:
                 name = translation_data["name_translation"]
