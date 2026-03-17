@@ -190,7 +190,6 @@ def is_part_of_project(user, project):
     return ProjectMember.objects.filter(project=project, user=user).count() > 0
 
 
-# TODO (Karol): update this function to use the sectors instead of tags
 def get_similar_projects(url_slug: str, return_count=5):
     """Returns a list of similar projects to the given project input
     Arguments:
@@ -218,51 +217,47 @@ def get_similar_projects(url_slug: str, return_count=5):
 
         return matching_elements / source_set_count
 
-    target_projects = Project.objects.filter(is_active=True).values(
+    target_projects = Project.objects.filter(
+        is_active=True, is_draft=False, rating__gte=49
+    ).values(
         "url_slug",
-        "country",
-        "city",
         "project_parent__id",
-        "tag_project",
+        "project_sector_mapping__sector_id",
         "language",
-    )  # project_parent__id 'tag_project'
+    )
 
     df = pd.DataFrame.from_dict(target_projects)
 
-    # calcualte tags match %
-    # since tags are 1 to Many to projects, we need to group the tags in a list
-    tags_df = df.groupby(["url_slug"]).agg({"tag_project": set})
-    source_tags = tags_df.loc[url_slug].iloc[0]
+    # calculate sectors match %
+    # since sectors are 1 to Many to projects, we need to group the sector ids in a set per project
+    sectors_df = df.groupby(["url_slug"]).agg(
+        {"project_sector_mapping__sector_id": set}
+    )
+    source_sectors = sectors_df.loc[url_slug].iloc[0]
 
-    tags_df["source_tag_project"] = [source_tags for i in range(0, len(tags_df))]
-    tags_df["tags_match"] = tags_df.apply(
-        lambda x: sets_match(x["source_tag_project"], x["tag_project"]), axis=1
+    sectors_df["source_sectors"] = [source_sectors for i in range(0, len(sectors_df))]
+    sectors_df["sectors_match"] = sectors_df.apply(
+        lambda x: sets_match(
+            x["source_sectors"], x["project_sector_mapping__sector_id"]
+        ),
+        axis=1,
     )
 
-    # calculate parent/country/city/language similarity. It is a binary evaluation where 1 means a match and 0 no match
-    source_proj_country = df.loc[df.url_slug == url_slug].country.iloc[0]
-    source_proj_city = df.loc[df.url_slug == url_slug].city.iloc[0]
+    # calculate parent/language similarity. It is a binary evaluation where 1 means a match and 0 no match
     source_proj_language = df.loc[df.url_slug == url_slug].language.iloc[0]
     source_proj_parent_id = df.loc[df.url_slug == url_slug].project_parent__id.iloc[0]
 
-    df = df.drop(["tag_project"], axis=1).drop_duplicates().set_index("url_slug")
+    df = (
+        df.drop(["project_sector_mapping__sector_id"], axis=1)
+        .drop_duplicates()
+        .set_index("url_slug")
+    )
 
     df["is_same_parent"] = df.project_parent__id.apply(
         lambda x: 1 if x == source_proj_parent_id else 0
     )
-    df["is_same_city"] = df.apply(
-        lambda x: (
-            1
-            if x["city"] == source_proj_city and x["country"] == source_proj_country
-            else 0
-        ),
-        axis=1,
-    )
     df["is_same_language"] = df.language.apply(
         lambda x: 1 if x == source_proj_language else 0
-    )
-    df["is_same_country"] = df.country.apply(
-        lambda x: 1 if x == source_proj_country else 0
     )
 
     # calculate similarity score based on the above calculated features
@@ -270,27 +265,18 @@ def get_similar_projects(url_slug: str, return_count=5):
     # join the dataframes from above on url_slug index and drop the source project
     df = pd.concat(
         [
-            df[
-                [
-                    "is_same_parent",
-                    "is_same_city",
-                    "is_same_language",
-                    "is_same_country",
-                ]
-            ],
-            tags_df[["tags_match"]],
+            df[["is_same_parent", "is_same_language"]],
+            sectors_df[["sectors_match"]],
         ],
         axis=1,
     )
 
     df = df.drop(url_slug)
-    # weights given to each factor. Increase the integer value to strenghten the weight of a particular factor
+    # weights given to each factor. Increase the integer value to strengthen the weight of a particular factor
     weights_mapping = {
         "is_same_parent": 3,
-        "is_same_city": 2,
         "is_same_language": 2,
-        "is_same_country": 1,
-        "tags_match": 3,
+        "sectors_match": 3,
     }
     total_weights = sum(weights_mapping.values())
     factors = weights_mapping.keys()
