@@ -101,6 +101,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "parent_project_slug",
             "has_children",
             "child_projects_count",
+            "is_online",
         )
         read_only_fields = ["url_slug"]
 
@@ -321,6 +322,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "has_children",
+            "is_online",
         )
 
     def get_name(self, obj):

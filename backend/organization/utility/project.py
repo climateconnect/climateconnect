@@ -49,6 +49,8 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         project.end_date = data["end_date"]
     if "is_draft" in data:
         project.is_draft = data["is_draft"]
+    if "is_online" in data:
+        project.is_online = data["is_online"]
     if "website" in data:
         project.website = data["website"]
     if "additional_loc_info" in data:

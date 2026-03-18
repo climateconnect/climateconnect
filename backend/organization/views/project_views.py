@@ -736,6 +736,7 @@ class ProjectAPIView(APIView):
             "collaborators_welcome",
             "additional_loc_info",
             "description",
+            "helpful_connections",
             "short_description",
             "website",
         ]
@@ -889,6 +890,10 @@ class ProjectAPIView(APIView):
                 "translation_key": "short_description_translation",
             },
             {"key": "description", "translation_key": "description_translation"},
+            {
+                "key": "helpful_connections",
+                "translation_key": "helpful_connections_translation",
+            },
         ]
         if "translations" in request.data:
             edit_translations(items_to_translate, request.data, project, "project")
