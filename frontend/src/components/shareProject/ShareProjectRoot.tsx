@@ -248,6 +248,7 @@ export default function ShareProjectRoot({
 
       setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
       setLoadingSubmitDraft(false);
+      setFormSaved(true);
       setFinished(true);
     } catch (error: any) {
       console.log(error);
