@@ -131,16 +131,26 @@ export default function ShareProjectRoot({
 
   //show error message if the user tries to leave the page without saving
   useEffect(() => {
+    // Do not attach the beforeunload handler once the form is saved or the flow is finished
+    if (formSaved || finished) {
+      return;
+    }
+
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (!formSaved) {
+      if (!formSaved && !finished) {
+        const confirmationMessage =
+          texts.are_you_sure_you_want_to_leave_you_will_lose_your_project ??
+          "";
         event.preventDefault();
+        event.returnValue = confirmationMessage;
       }
     };
+
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [formSaved]);
+  }, [formSaved, finished, texts]);
 
   // TODO: Allow changing sourceLanguage, targetLanguage
   const router = useRouter();
