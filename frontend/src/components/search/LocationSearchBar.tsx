@@ -13,10 +13,10 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme) => ({
-  additionalInfos: (props: any) => ({
+  additionalInfos: {
     width: "100%",
-    marginTop: props.hideHelperText ? 0 : theme.spacing(2),
-  }),
+    marginTop: theme.spacing(2),
+  },
 }));
 
 type Props = {
