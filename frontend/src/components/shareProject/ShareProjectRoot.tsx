@@ -127,31 +127,6 @@ export default function ShareProjectRoot({
   const [curStep, setCurStep] = useState(getStep(0));
   const [finished, setFinished] = useState(false);
 
-  const [formSaved, setFormSaved] = useState(false);
-
-  //show error message if the user tries to leave the page without saving
-  useEffect(() => {
-    // Do not attach the beforeunload handler once the form is saved or the flow is finished
-    if (formSaved || finished) {
-      return;
-    }
-
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (!formSaved && !finished) {
-        const confirmationMessage =
-          texts.are_you_sure_you_want_to_leave_you_will_lose_your_project ??
-          "";
-        event.preventDefault();
-        event.returnValue = confirmationMessage;
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [formSaved, finished, texts]);
-
   // TODO: Allow changing sourceLanguage, targetLanguage
   const router = useRouter();
   useEffect(() => {
@@ -218,7 +193,6 @@ export default function ShareProjectRoot({
       });
       setProject({ ...project, error: false, url_slug: resp.data.url_slug });
       setLoadingSubmit(false);
-      setFormSaved(true);
       setFinished(true);
     } catch (error: any) {
       console.log(error?.response?.data);
@@ -248,7 +222,6 @@ export default function ShareProjectRoot({
 
       setProject({ ...project, url_slug: response.data.url_slug, is_draft: true });
       setLoadingSubmitDraft(false);
-      setFormSaved(true);
       setFinished(true);
     } catch (error: any) {
       console.log(error);
