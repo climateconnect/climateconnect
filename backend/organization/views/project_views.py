@@ -1,17 +1,25 @@
 import logging
 import traceback
-from django.db.models import Case, When, Prefetch
 
-from organization.utility.sector import (
-    create_context_for_hub_specific_sector,
-    sanitize_sector_inputs,
+from dateutil.parser import parse
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.core.cache import cache
+from django.db import transaction
+from django.db.models import Case, Prefetch, Q, When
+from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
+from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import (
+    ListAPIView,
+    RetrieveUpdateAPIView,
+    RetrieveUpdateDestroyAPIView,
 )
-from organization.utility.cache import generate_project_ranking_cache_key
-from organization.utility.follow import (
-    get_list_of_project_followers,
-    set_user_following_project,
-)
-from organization.serializers.project import ProjectRequesterSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from climateconnect_api.models import (
     Availability,
@@ -19,24 +27,12 @@ from climateconnect_api.models import (
     UserProfile,
 )
 from climateconnect_api.models.language import Language
+from climateconnect_api.tasks import calculate_project_rankings
+from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_api.utility.translation import (
     edit_translations,
 )
-from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
-
-from dateutil.parser import parse
-
-from django.conf import settings
-
-from django.core.cache import cache
-
-from django.contrib.auth.models import User
-from django.contrib.gis.db.models.functions import Distance
-from django.db import transaction
-from django.db.models import Q
-from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
-
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
@@ -44,6 +40,7 @@ from location.utility import get_location, get_location_with_range
 # Organization models
 from organization.models import (
     Organization,
+    OrganizationFollower,
     OrganizationTagging,
     OrganizationTags,
     Post,
@@ -51,23 +48,18 @@ from organization.models import (
     ProjectCollaborators,
     ProjectComment,
     ProjectFollower,
+    ProjectLike,
     ProjectMember,
     ProjectParents,
+    ProjectSectorMapping,
     ProjectStatus,
     ProjectTagging,
     ProjectTags,
-    ProjectLike,
-    OrganizationFollower,
     Sector,
-    ProjectSectorMapping,
 )
-
-from organization.models.type import PROJECT_TYPES
-from organization.serializers.status import ProjectTypesSerializer
-
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
-
+from organization.models.type import PROJECT_TYPES, ProjectTypesChoices
 from organization.pagination import (
     MembersPagination,
     ProjectPostPagination,
@@ -86,14 +78,24 @@ from organization.serializers.project import (
     EditProjectSerializer,
     InsertProjectMemberSerializer,
     ProjectFollowerSerializer,
+    ProjectLikeSerializer,
     ProjectMemberSerializer,
+    ProjectRequesterSerializer,
     ProjectSerializer,
     ProjectSitemapEntrySerializer,
     ProjectStubSerializer,
-    ProjectLikeSerializer,
 )
-from organization.serializers.status import ProjectStatusSerializer
+from organization.serializers.status import (
+    ProjectStatusSerializer,
+    ProjectTypesSerializer,
+)
 from organization.serializers.tags import ProjectTagsSerializer
+from organization.utility import MembershipTarget
+from organization.utility.cache import generate_project_ranking_cache_key
+from organization.utility.follow import (
+    get_list_of_project_followers,
+    set_user_following_project,
+)
 from organization.utility.notification import (
     create_comment_mention_notification,
     create_organization_project_published_notification,
@@ -104,30 +106,18 @@ from organization.utility.notification import (
     create_project_like_notification,
     get_mentions,
 )
-
 from organization.utility.organization import check_organization
 from organization.utility.project import (
     create_new_project,
-    get_project_translations,
     get_project_admin_creators,
+    get_project_translations,
     get_similar_projects,
 )
-from rest_framework import status
-from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import (
-    ListAPIView,
-    RetrieveUpdateAPIView,
-    RetrieveUpdateDestroyAPIView,
-)
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from organization.utility.requests import MembershipRequestsManager
-from organization.utility import MembershipTarget
-from organization.models.type import ProjectTypesChoices
-from climateconnect_api.tasks import calculate_project_rankings
+from organization.utility.sector import (
+    create_context_for_hub_specific_sector,
+    sanitize_sector_inputs,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -462,19 +452,22 @@ class CreateProjectView(APIView):
         else:
             organization = None
 
-        required_params = [
-            "name",
-            "status",
-            "short_description",
-            "collaborators_welcome",
-            "team_members",
-            "loc",
-            "sectors",
-            "image",
-            "source_language",
-            "translations",
-            "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
-        ]
+        required_params = ["name"]
+        # If 'is_draft' is not set or is set to a falsy value then run the code in this if block
+        if not request.data.get("is_draft", False):
+            required_params += [
+                "status",
+                "short_description",
+                "collaborators_welcome",
+                "team_members",
+                "project_tags",
+                "loc",
+                "image",
+                "source_language",
+                "translations",
+                "sectors",
+                "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
+            ]
         for param in required_params:
             if param not in request.data:
                 logger.error(
@@ -547,8 +540,11 @@ class CreateProjectView(APIView):
                             project=project,
                             language=language_object,
                             name_translation=texts["name"],
-                            short_description_translation=texts["short_description"],
                         )
+                        if "short_description" in texts:
+                            translation.short_description_translation = texts[
+                                "short_description"
+                            ]
                         if "description" in texts:
                             translation.description_translation = texts["description"]
                         translation.save()

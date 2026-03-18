@@ -127,6 +127,21 @@ export default function ShareProjectRoot({
   const [curStep, setCurStep] = useState(getStep(0));
   const [finished, setFinished] = useState(false);
 
+  const [formSaved, setFormSaved] = useState(false);
+
+  //show error message if the user tries to leave the page without saving
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!formSaved) {
+        event.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [formSaved]);
+
   // TODO: Allow changing sourceLanguage, targetLanguage
   const router = useRouter();
   useEffect(() => {
@@ -193,6 +208,7 @@ export default function ShareProjectRoot({
       });
       setProject({ ...project, error: false, url_slug: resp.data.url_slug });
       setLoadingSubmit(false);
+      setFormSaved(true);
       setFinished(true);
     } catch (error: any) {
       console.log(error?.response?.data);
@@ -212,7 +228,6 @@ export default function ShareProjectRoot({
     try {
       const payload = await formatProjectForRequest({ ...project, is_draft: true }, translations);
       payload.sectors = project.sectors?.map((sector) => sector.key);
-
       const response = await apiRequest({
         method: "post",
         url: "/api/create_project/",
@@ -329,6 +344,9 @@ export default function ShareProjectRoot({
               goToNextStep={goToNextStep}
               goToPreviousStep={goToPreviousStep}
               setMessage={setMessage}
+              saveAsDraft={saveAsDraft}
+              loadingSubmit={loadingSubmit}
+              loadingSubmitDraft={loadingSubmitDraft}
             />
           )}
           {curStep.key === "addTeam" && (
@@ -419,9 +437,10 @@ const getDefaultProjectValues = (
 
 const formatProjectForRequest = async (project, translations) => {
   const { blobFromObjectUrl } = await import("../../../public/lib/imageOperations");
+  const hasLocation = project.loc && Object.keys(project.loc).length > 0;
   return {
     ...project,
-    loc: parseLocation(project.loc, true),
+    loc: hasLocation ? parseLocation(project.loc, true) : undefined,
     team_members: project.team_members.map((m) => ({
       url_slug: m.url_slug,
       role: m.role.id,
@@ -431,9 +450,12 @@ const formatProjectForRequest = async (project, translations) => {
     })),
     parent_organization: project?.parent_organization?.id,
     collaborating_organizations: project.collaborating_organizations.map((o) => o.id),
-    image: await blobFromObjectUrl(project.image),
-    thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
+    image: project.image ? await blobFromObjectUrl(project.image) : undefined,
+    thumbnail_image: project.thumbnail_image
+      ? await blobFromObjectUrl(project.thumbnail_image)
+      : undefined,
     source_language: project.language,
     translations: translations ? translations : {},
+    // is_online: false, //TODO: add online/offline option in the form
   };
 };

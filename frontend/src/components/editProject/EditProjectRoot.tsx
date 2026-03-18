@@ -114,7 +114,7 @@ export default function EditProjectRoot({
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage, texts);
       return false;
     }
-    const projectDatesValid = checkProjectDatesValid(project, texts);
+    const projectDatesValid = checkProjectDatesValid(project, texts, isDraft);
     if (projectDatesValid.error) {
       setErrors({
         ...errors,
