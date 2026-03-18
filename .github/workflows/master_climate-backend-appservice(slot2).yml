@@ -86,3 +86,5 @@ jobs:
         with:
           app-name: 'climate-backend-appservice'
           slot-name: 'slot2'
+          package: .
+          clean: true

@@ -193,6 +193,8 @@ urls = [
     path("api/", include("ideas.urls")),
     # Climate match APIs
     path("api/", include("climate_match.urls")),
+    # Feature toggle APIs
+    path("api/", include("feature_toggles.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls

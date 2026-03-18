@@ -3,7 +3,7 @@
 > **Mission**: Build robust Django APIs and services that power the climate action platform.
 
 ## Backend Tech Stack
-- **Framework**: Django 3.2 + Django REST Framework
+- **Framework**: Django 4.2 + Django REST Framework
 - **Language**: Python 3.11
 - **Database**: PostgreSQL with PostGIS extension (geospatial data)
 - **Caching/Message Broker**: Redis
@@ -43,10 +43,11 @@ app_name/
 ### Formatting & Linting
 - **Formatting**: Use `black` for code formatting (configured in pyproject.toml)
 - **Linting**: Follow PEP 8
-- **Commands**: 
-  - Run `make format` before committing
+- **Commands**:
+  - Run `make format` (or `black .`) before committing
   - Use `make start` to start the development server
   - Use `python manage.py <command>` for Django management commands
+  - **Important**: Always activate the PDM virtual environment first with `pdm venv activate django4` before running any Python commands
 
 ### Models
 - Use explicit `related_name` for relationships
@@ -86,7 +87,7 @@ app_name/
 - `python manage.py makemigrations` - Create migrations
 - `python manage.py migrate` - Apply migrations
 - `python manage.py createsuperuser` - Create admin user
-- `python manage.py test` - Run tests
+- Run tests by activating the PDM virtual environment first: `pdm venv activate django4`, then run `python manage.py test`
 
 ### Background Tasks
 - `celery -A climateconnect_main worker -l info` - Start Celery worker

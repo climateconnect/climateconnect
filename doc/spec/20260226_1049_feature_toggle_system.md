@@ -56,7 +56,7 @@ As an admin and developer, I want to use feature toggles in the frontend and bac
 ### API
 A new API endpoint will be created for the frontend to fetch the current state of all feature toggles for a **specific environment provided by the client**. This endpoint will be heavily cached.
 
-- `GET /api/v1/feature-toggles/?environment=<env>`
+- `GET /api/feature_toggles/?environment=<env>`
   - **Parameter**: `environment` (string, required) - e.g., 'production', 'staging', 'development'.
   - **Behavior**: The backend uses the provided `environment` parameter to return only the toggles active for that specific environment. If the parameter is missing, it should return an error or an empty set.
   - **Response**: A JSON object with key-value pairs, where the key is the toggle name and the value is its boolean state. `{"FEATURE_A": true, "FEATURE_B": false}`
@@ -66,7 +66,7 @@ A new API endpoint will be created for the frontend to fetch the current state o
 - This app will contain the `FeatureToggle` model. The `FeatureToggle` model will include a boolean field per environment (`production_is_active`, `staging_is_active`, `development_is_active`).
 - The model will be registered with the Django Admin for management.
 - When a `FeatureToggle` is created or updated via the admin, a log entry will be written using Django's standard logging framework to capture the change (e.g., in the `save_model` method of the `ModelAdmin`).
-- The API view for `GET /api/v1/feature-toggles/` will require the `environment` query parameter.
+- The API view for `GET /api/feature_toggles/` will require the `environment` query parameter.
 - The utility service/function (e.g., `is_feature_enabled('MY_FEATURE', environment)`) for use within Django will accept the environment as an argument. It will:
   1. Query the `FeatureToggle` model for the given feature name.
   2. Return `true` only if the corresponding environment-specific boolean (e.g., `production_is_active`) is `true`.
@@ -83,14 +83,72 @@ A new API endpoint will be created for the frontend to fetch the current state o
   - On the **client-side**: Use `window.location.hostname` to detect if the request is to the staging slot (e.g., hostname contains 'staging' or 'slot1').
   - On the **server-side** (SSR): Use the request headers.
   - Default to `'production'` if the hostname does not match a known staging or local pattern.
-- It will call the API with the correct environment: `GET /api/v1/feature-toggles/?environment=production`.
+- It will call the API with the correct environment: `GET /api/feature_toggles/?environment=production`.
 - It will provide a simple function for components to check if a feature is enabled, e.g., `isFeatureEnabled('FEATURE_A')`.
 - It needs to work with server side and client side next.js code.
 - It needs to handle a fallback value if the API is not available or returns an error, e.g., `isFeatureEnabled('FEATURE_A', true)`.
 - Needs to support unit tests, e.g. offering a mock implementation for testing purposes.
 
 ## Technical Solution Overview
-[To be filled by a development agent]
+
+### Frontend Data Flow
+
+The frontend implementation follows an opt-in, SSR-first pattern built around a single React context provider.
+
+#### Key files
+
+| File | Role |
+|---|---|
+| [`frontend/middleware.ts`](../../frontend/middleware.ts) | Injects `x-cc-environment` request header based on hostname |
+| [`frontend/public/lib/environmentOperations.ts`](../../frontend/public/lib/environmentOperations.ts) | `detectEnvironment()` (client) and `detectEnvironmentFromRequest()` (server) |
+| [`frontend/src/hooks/featureToggles.ts`](../../frontend/src/hooks/featureToggles.ts) | `getFeatureToggles(env)`, `getFeatureTogglesFromRequest(req)`, `isFeatureEnabled()` |
+| [`frontend/src/hooks/types/featureToggle.ts`](../../frontend/src/hooks/types/featureToggle.ts) | `FeatureToggles` type (`Record<string, boolean>`) |
+| [`frontend/src/components/featureToggle/FeatureToggleProvider.tsx`](../../frontend/src/components/featureToggle/FeatureToggleProvider.tsx) | React context provider + `useFeatureToggles()` hook |
+| [`frontend/pages/_app.tsx`](../../frontend/pages/_app.tsx) | Mounts `FeatureToggleProvider` globally; bridges SSR props into context |
+
+#### Data flow (SSR pages)
+
+```
+middleware.ts
+  → sets x-cc-environment header
+    → getServerSideProps (per page, opt-in)
+      → getFeatureTogglesFromRequest(req)
+        → detectEnvironmentFromRequest(req)   reads x-cc-environment header
+        → getFeatureToggles(env)              fetches GET /api/feature_toggles/?environment=<env>
+      → returns { featureToggles, environment } as pageProps
+        → _app.tsx FeatureToggleProvider initialToggles={pageProps.featureToggles} environment={pageProps.environment}
+          → useFeatureToggles() hook available in every component
+```
+
+#### Pages without `getServerSideProps`
+
+When a page does not opt in to SSR toggles, `pageProps.featureToggles` is `undefined`. The `FeatureToggleProvider` then fetches toggles client-side in a `useEffect` using `detectEnvironment()` (hostname-based). The `isEnabled()` call returns the provided fallback value (`false` by default) on the first render until the client fetch completes.
+
+#### Why `_app.tsx` changes are required
+
+- **`FeatureToggleProvider` wrapper**: The `useFeatureToggles()` hook reads from `FeatureToggleContext`. Without the provider wrapping every page in `_app.tsx`, calling the hook throws `"useFeatureToggles must be used within a FeatureToggleProvider"`.
+- **`initialToggles={pageProps.featureToggles}`**: Delivers SSR-fetched toggles into the React context on initial render, avoiding a client-side refetch and preventing a loading flash.
+- **`environment={pageProps.environment}`**: Passes the server-detected environment so the provider does not re-detect it client-side, keeping SSR and CSR in sync.
+- **`pageProps` type annotation** (`featureToggles?: FeatureToggles; environment?: CcEnvironment`): Both properties are optional so pages that do not return them are not broken.
+
+#### Using feature toggles in a page
+
+```tsx
+// 1. Opt-in to SSR toggles (optional but recommended)
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const { featureToggles, environment } = await getFeatureTogglesFromRequest(req);
+  return { props: { featureToggles, environment } };
+};
+
+// 2. Use the hook – works on any page because FeatureToggleProvider is in _app.tsx
+function MyPage() {
+  const { isEnabled } = useFeatureToggles();
+  return isEnabled('MY_FEATURE') ? <NewFeature /> : <OldFeature />;
+}
+
+// With explicit fallback (used when toggle may not exist or API is unavailable)
+if (isEnabled('MY_FEATURE', true)) { /* defaults to true */ }
+```
 
 ## Log
 - 2026-02-26 10:49 - Task created.
