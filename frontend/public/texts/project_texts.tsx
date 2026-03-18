@@ -1000,6 +1000,34 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Gib die genaue Adresse an, damit Interessierte deine Veranstaltung finden können. Bei Online-Events einfach die Stadt, in der du wohnst.",
     },
+    this_project_takes_place_online: {
+      en: "This project takes place online",
+      de: "Dieses Projekt findet online statt",
+    },
+    this_event_takes_place_online: {
+      en: "This event takes place online",
+      de: "Dieses Event findet online statt",
+    },
+    this_idea_takes_place_online: {
+      en: "This idea takes place online",
+      de: "Diese Idee findet online statt",
+    },
+    online: {
+      en: "Online",
+      de: "Online",
+    },
+    project_location: {
+      en: "Project location",
+      de: "Projektstandort",
+    },
+    event_location_section: {
+      en: "Event location",
+      de: "Veranstaltungsort",
+    },
+    idea_location: {
+      en: "Idea location",
+      de: "Ideenstandort",
+    },
     share_your_climate_project: {
       en: "Share Your Climate Project",
       de: "Teile dein Klimaprojekt",

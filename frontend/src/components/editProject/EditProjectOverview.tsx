@@ -1,4 +1,13 @@
-import { Button, Chip, Container, List, TextField, Grid } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Container,
+  FormControlLabel,
+  List,
+  Switch,
+  TextField,
+  Grid,
+} from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
@@ -390,6 +399,16 @@ const InputLocation = ({
   }
   return (
     <div /*TODO(undefined) className={classes.projectInfoEl}*/>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={project.is_online ?? false}
+            onChange={(e) => handleChangeProject(e.target.checked, "is_online")}
+            color="primary"
+          />
+        }
+        label={texts.online}
+      />
       {/*<LocationSearchBar
         label={texts.location}
         required

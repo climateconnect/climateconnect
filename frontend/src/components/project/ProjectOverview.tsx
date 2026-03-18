@@ -276,6 +276,7 @@ function ShortProjectInfo({ project, isWasseraktionswochenEnabled }) {
           <Tooltip title={texts.location}>
             <PlaceIcon className={classes.icon} />
           </Tooltip>{" "}
+          {project.is_online && <>{texts.online} · </>}
           {project.location}
           {project.additional_loc_info && <> - {project.additional_loc_info}</>}
         </Typography>
