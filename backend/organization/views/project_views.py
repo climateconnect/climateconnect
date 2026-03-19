@@ -97,8 +97,6 @@ from organization.serializers.project import (
 )
 from organization.serializers.status import ProjectStatusSerializer
 from organization.serializers.tags import ProjectTagsSerializer
-from organization.serializers.status import ProjectStatusSerializer
-from organization.serializers.tags import ProjectTagsSerializer
 from organization.utility.notification import (
     create_comment_mention_notification,
     create_organization_project_published_notification,

@@ -256,9 +256,9 @@ class EventRegistrationAdmin(admin.ModelAdmin):
     search_fields = ("project__name", "project__url_slug")
     list_display = (
         "project",
-        "status",
         "max_participants",
         "registration_end_date",
+        "status",
         "created_at",
     )
     list_filter = ("status", "registration_end_date")
