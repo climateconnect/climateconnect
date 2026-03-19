@@ -1,9 +1,9 @@
 # Create an Event with Basic Registration
 
-**Status**: IMPLEMENTATION (Reference: [`task-based-development.md`](../guides/task-based-development.md))
+**Status**: DONE
 **Type**: Feature
 **Date and time created**: 2026-03-05 10:00
-**Date Completed**: TBD
+**Date Completed**: 2026-03-19
 **Related GitHub Issue**: #43 - [STORY] Create an event with basic registration
 **Related Specs**:
 - [`docs/mosy/architecture_overview.md`](../mosy/architecture_overview.md)
@@ -37,6 +37,7 @@ When creating a new event on the platform, a member should be able to enable bas
 - When the registration toggle is disabled (after having been enabled), any values entered in the registration settings fields are discarded — the fields are cleared and not submitted.
 - Align `registration_end_date` timezone handling with how `Project.start_date` / `end_date` are currently stored and handled (timezone-aware TIMESTAMPTZ vs. naive datetime). The date-time picker UI and the `≤ end_date` validation must be consistent with the existing event date fields. Document the outcome in the Technical Solution Overview. (browser uses timezone of the vistor, backend stores in UTC)
 - Implement behind a feature toggle in the frontend to allow gradual rollout along with related features and testing.
+- **Draft mode**: when a project is saved with `is_draft=true`, required-field validation and `event_registration` constraint validation are skipped entirely. All validations are enforced only when `is_draft=false` (publishing). The backend must correctly distinguish truthy values for `is_draft` (`true`, `"true"`, `"True"`, `"1"`, `1`).
 
 ### AI Agent Insights and Additions
 
@@ -62,7 +63,7 @@ None.
 
 Extended existing project create endpoint only. No new endpoints.
 
-- `POST /api/projects/` — request body gains an optional nested `event_registration` object:
+  - `POST /api/projects/` — request body gains an optional nested `event_registration` object:
   ```json
   "event_registration": {
     "max_participants": 100,
@@ -70,9 +71,10 @@ Extended existing project create endpoint only. No new endpoints.
   }
   ```
   - Only valid when project `type` is `event`. Must be ignored (or rejected with 400) for other project types.
-  - When `event_registration` is present, both `max_participants` and `registration_end_date` are required.
-  - `registration_end_date` must be ≤ `end_date` of the project (validated server-side).
+  - When `event_registration` is present, both `max_participants` and `registration_end_date` are required — **unless `is_draft` is `true`** (see draft-mode note below).
+  - `registration_end_date` must be ≤ `end_date` of the project (validated server-side) — **skipped when `is_draft` is `true`**.
   - When `event_registration` is absent (toggle off), no `EventRegistration` record is created.
+  - **Draft mode**: when `is_draft=true` is included in the request, all field-presence and cross-field validation (required params and `event_registration` constraints) is skipped. The project is saved as-is. Validation is enforced only when `is_draft` is `false` (i.e. on publish).
 - `GET /api/projects/{slug}/` — response gains `event_registration: object | null` in the project payload.
 - `GET /api/projects/` (list) — `event_registration` included in each item (null for non-events or events without registration).
 
@@ -125,7 +127,32 @@ None. No async events are triggered by this change.
 None.
 
 ## Technical Solution Overview
-[To be filled by a development agent]
+
+### Timezone handling (`registration_end_date`)
+
+`USE_TZ = True` is set in Django settings (`TIME_ZONE = "UTC"`). This means all `DateTimeField` values are stored as **TIMESTAMPTZ** (timezone-aware) in PostgreSQL and Django keeps them in UTC internally.
+
+`EventRegistration.registration_end_date` is a plain `DateTimeField()` — exactly the same declaration as `Project.start_date` and `Project.end_date`. All three are therefore TIMESTAMPTZ columns.
+
+- The **frontend** sends ISO 8601 strings with an explicit timezone offset or `Z` suffix (e.g. `"2026-06-01T23:59:00Z"`). The browser is responsible for converting the user's local time to UTC before submitting.  
+- The **backend** receives the string and parses it with `dateutil.parser.parse()`, which preserves the timezone information. The resulting timezone-aware datetime is stored in UTC.  
+- The **`≤ end_date` validation** compares two timezone-aware datetimes (both parsed from the request), so no naïve/aware mixing issues arise.
+
+### Key implementation decisions
+
+| Concern | Decision |
+|---|---|
+| Model location | New file `organization/models/event_registration.py`, imported in `organization/models/__init__.py` |
+| Presence = enabled | An `EventRegistration` row existing is the sole source of truth; no boolean flag on `Project` |
+| Validation position | `event_registration` input is validated **before** the existing `ProjectStatus` existence check, ensuring early 400 responses independent of DB state |
+| Serializer | `EventRegistrationSerializer` in its own file `organization/serializers/event_registration.py`. Used for both read (nested in `ProjectSerializer` and `ProjectStubSerializer`) and write (validation via `validate()` with context). No separate read/write serializers needed. |
+| Validation approach | All type coercion (`str→int`, `str→datetime`), range checks (`min_value=1`), cross-field rules, and draft/publish required-field enforcement live in `EventRegistrationSerializer.validate()` via serializer context (`is_event_type`, `is_draft`, `event_end_date`, `existing_er`). The view passes `validated_data` directly to `objects.create()` — no manual `int()` / `parse()` calls. |
+| Validation utility | `organization/utility/event_registration.py` deleted — logic superseded by the serializer. |
+| Query optimisation | `select_related("event_registration")` added to `ListProjectsView.get_queryset()` and `ProjectAPIView.get()` to avoid N+1 queries |
+| Feature toggle | A `FeatureToggle` record named `EVENT_REGISTRATION` is created via data migration (`feature_toggles/migrations/0002_add_event_registration_toggle.py`). It is **enabled in development and staging**, disabled in production, to allow gradual rollout. The backend API is always additive; the frontend toggle controls whether the new UI is rendered. |
+| Draft mode | When `is_draft=true` is sent, the required-params check and the entire `event_registration` validation block are skipped. The project is saved as an incomplete draft. Validation runs when `is_draft=false` (publish). The `is_draft` flag is resolved from multiple truthy representations (`True`, `"true"`, `"True"`, `"1"`, `1`). |
+| DB migration | Additive migration `organization/migrations/0119_add_event_registration.py` creates `organization_eventregistration` table; no existing data is affected |
+| Registration status | `RegistrationStatus` enum (`open` / `closed` / `full`) added to `EventRegistration`. `open` is the default. Organiser may set `open` or `closed` via the API. `full` is reserved for the system: it will be set atomically (same transaction + `select_for_update`) when the last available slot is taken, and reverted to `open` on cancellation. Keeping `full` as an explicit DB state avoids a `COUNT(*)` query on every signup check — O(1) read. Migration `0121_add_eventregistration_status.py`. **Edge case when organiser changes `max_participants`**: if the new value raises capacity above the current signup count and status is `full`, transition to `open`; if the new value lowers capacity to ≤ the current count and status is `open`, transition to `full`. Both transitions must happen atomically (same transaction + `select_for_update` on the count). Deferred until the Registrations (signup) feature is built; a `TODO` comment marks the exact spot in the PATCH handler (`project_views.py`). |
 
 ## Log
 - 2026-03-05 10:00 - Task created from GitHub issue #43. Branch: `create_event_with_basic_registration`. Handing off for system impact analysis.
@@ -133,6 +160,10 @@ None.
 - 2026-03-05 10:30 - Archie: System impact analysis complete. New `EventRegistration` entity (1-to-1 with `Project`) chosen over nullable fields on `Project`. Nested `event_registration` object on existing project API (no new endpoints). Flow 2 extended for event type. Entity model and core-flows updated. Awaiting user review before updating system specs.
 - 2026-03-05 10:45 - Timezone handling not documented in system specs. Open question added to NFRs, Data section, and acceptance criteria — developer to align `registration_end_date` with existing `Project.end_date` timezone approach and document the outcome.
 - 2026-03-05 11:00 - Task approved. Status promoted to IMPLEMENTATION.
+- 2026-03-18 - Draft-mode corner case identified: required-field and `event_registration` validation must be skipped when `is_draft=true`. Backend view updated (`CreateProjectView.post`) and spec updated to reflect this behaviour (NFRs, API contract, implementation decisions, acceptance criteria).
+- 2026-03-19 - Backend validation refactored: manual `isinstance`, `int()`, `parse()` type coercions and `validate_event_registration()` utility removed from the view. All validation (type coercion, range checks, cross-field rules, draft/publish required-field enforcement) moved into `EventRegistrationSerializer.validate()` using DRF serializer context. `EventRegistrationSerializer` extracted to its own file (`organization/serializers/event_registration.py`) to give it room to grow. `organization/utility/event_registration.py` deleted (logic now lives in the serializer). Documentation updated: `doc/domain-entities.md`, `doc/api-documentation.md`.
+- 2026-03-19 - Added `RegistrationStatus` enum (`open`/`closed`/`full`) and `status` field to `EventRegistration`. Enables use case: organiser manually closes registration before the end date (`closed`). Prepares for use case: system auto-closes when capacity is reached (`full` — deferred to registrations feature). `full` cannot be set via the API; validated in `EventRegistrationSerializer.validate_status()`. Migration `0121_add_eventregistration_status.py`. 6 new tests added (`TestEventRegistrationStatus`). Documentation updated.
+- 2026-03-19 - Documented edge case: when an organiser changes `max_participants` via PATCH, the `status` field must be re-evaluated against the current signup count (`new_max > count AND status==full → open`; `new_max <= count AND status==open → full`). Deferred until the Registrations feature is built. `TODO` comment added to the PATCH persist block in `project_views.py`. `RegistrationStatus` docstring and spec updated.
 
 ## Acceptance Criteria
 
@@ -154,4 +185,6 @@ None.
 - [ ] Code review approved
 - [ ] Documentation updated and current
 - [ ] The feature is hidden behind a feature toggle and can be tested locally and on staging.
+- [ ] When `is_draft=true` is set on the create request, required field validation and `event_registration` constraints are skipped and the project is saved as a draft.
+- [ ] When `is_draft=false` (or omitted), all required field and `event_registration` validations are enforced as normal.
 

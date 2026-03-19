@@ -29,3 +29,43 @@ Always run `make format` before committing and ensure tests pass.
 - **Package Manager**: PDM (pyproject.toml)
 - **Storage**: Azure Blob Storage (media files)
 - **Testing**: Django test framework + Factory Boy + Faker
+
+## Validation Pattern
+
+Django + DRF handle validation across three layers. Always rely on this pipeline and **do not duplicate validation manually** unless adding business logic.
+
+- **Layer 1 — DRF Serializer** (runs automatically): type coercion, `required`, `max_length`, `null`, `choices`, `unique`. Put custom rules in `validate_<field>()` or `validate()`.
+- **Layer 2 — Model `clean()`** (NOT called automatically by DRF): if business rules live in `clean()`, call `instance.full_clean()` explicitly inside `validate()`. Prefer serializer validation to keep the API contract clear.
+- **Layer 3 — DB constraints** (last resort): PostgreSQL raises `IntegrityError`, which is not automatically a 400. Rely on layers 1–2 to catch errors before hitting the DB.
+
+| Constraint | Enforced by |
+|---|---|
+| Field type, max_length, required, blank, null | DRF serializer (auto from ModelSerializer) |
+| choices | DRF serializer (auto) |
+| unique, unique_together | DRF serializer (auto) |
+| Cross-field business rules | `validate()` in serializer |
+| Model `clean()` logic | Must call `full_clean()` explicitly |
+| DB-level integrity | PostgreSQL (catch with try/except if needed) |
+
+## Documentation Maintenance
+
+Documentation updates are **part of every task**, not an afterthought.
+
+| Change type | Doc to update |
+|---|---|
+| New or modified model / relationship | `doc/domain-entities.md` |
+| New or modified API endpoint | `doc/api-documentation.md` |
+| Significant architecture change | `doc/architecture.md` |
+| New environment variable | `doc/environment-variables.md` |
+| Major new feature | `doc/spec/` (optional, for reference) |
+
+## Definition of Done
+
+A task is **not complete** until all of the following are done:
+
+- [ ] Code is formatted (`make format`)
+- [ ] Tests written and passing
+- [ ] **Documentation updated** (see table above for which files)
+
+> Documentation debt is real debt. If a model, endpoint, or architecture decision changed and the docs were not updated, the task is not done.
+

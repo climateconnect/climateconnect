@@ -3,6 +3,7 @@ from django.contrib import admin
 from organization.models import (
     Comment,
     CommentTranslation,
+    EventRegistration,
     Organization,
     OrganizationFieldTagging,
     OrganizationFollower,
@@ -249,3 +250,19 @@ class OrganizationTranslationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(OrganizationTranslation, OrganizationTranslationAdmin)
+
+
+class EventRegistrationAdmin(admin.ModelAdmin):
+    search_fields = ("project__name", "project__url_slug")
+    list_display = (
+        "project",
+        "status",
+        "max_participants",
+        "registration_end_date",
+        "created_at",
+    )
+    list_filter = ("status", "registration_end_date")
+    raw_id_fields = ("project",)
+
+
+admin.site.register(EventRegistration, EventRegistrationAdmin)
