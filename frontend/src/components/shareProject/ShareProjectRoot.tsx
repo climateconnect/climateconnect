@@ -16,6 +16,9 @@ import ShareProject from "./ShareProject";
 import { Project, Role, Organization, Sector } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import SelectSectors from "./SelectSectors";
+import EventRegistrationStep from "./EventRegistrationStep";
+import { useFeatureToggles } from "../featureToggle";
+import dayjs from "dayjs";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -31,8 +34,8 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getSteps = (texts) => {
-  const steps = [
+const getSteps = (texts, showRegistrationStep: boolean = false) => {
+  const steps: Array<{ key: string; text: any; headline?: any }> = [
     {
       key: "share",
       text: texts.basic_info,
@@ -43,16 +46,29 @@ const getSteps = (texts) => {
       text: texts.project_category,
       headline: texts.select_1_to_3_sectors_that_fit_your_project,
     },
+  ];
+
+  if (showRegistrationStep) {
+    steps.push({
+      key: "registration",
+      text: texts.registration,
+      headline: texts.registration,
+    });
+  }
+
+  steps.push(
     {
       key: "enterDetails",
       text: texts.project_details,
+      headline: undefined,
     },
     {
       key: "addTeam",
       text: texts.add_team,
       headline: texts.add_your_team,
-    },
-  ];
+    }
+  );
+
   /*if (sourceLocale === "de") {
     steps.push({
       key: "translate",
@@ -97,7 +113,10 @@ export default function ShareProjectRoot({
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const steps = getSteps(texts);
+
+  // Feature toggle for event registration
+  const { isEnabled } = useFeatureToggles();
+  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
 
   const [project, setProject] = useState(
     getDefaultProjectValues(
@@ -112,6 +131,11 @@ export default function ShareProjectRoot({
       hubName
     )
   );
+
+  // Dynamic steps: include registration step only for events when feature toggle is on
+  const isEvent = project.project_type?.type_id === "event";
+  const showRegistrationStep = isEvent && isEventRegistrationEnabled;
+  const steps = getSteps(texts, showRegistrationStep);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
 
@@ -159,7 +183,14 @@ export default function ShareProjectRoot({
   };
 
   const goToNextStep = () => {
-    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key)!);
+    const curStepIndex = steps.findIndex((s) => s.key === curStep.key);
+    if (curStepIndex === -1) {
+      // Current step no longer in steps (e.g. project type changed) — go to first step
+      setCurStep(getStep(0));
+      setMessage("");
+      window.scrollTo(0, 0);
+      return;
+    }
     setCurStep(getStep(curStepIndex + 1));
     setMessage("");
     //scroll to top when navigating to another step
@@ -167,7 +198,13 @@ export default function ShareProjectRoot({
   };
 
   const goToPreviousStep = () => {
-    const curStepIndex = steps.indexOf(steps.find((s) => s.key === curStep.key)!);
+    const curStepIndex = steps.findIndex((s) => s.key === curStep.key);
+    if (curStepIndex === -1) {
+      setCurStep(getStep(0));
+      setMessage("");
+      window.scrollTo(0, 0);
+      return;
+    }
     setCurStep(getStep(curStepIndex - 1));
     setMessage("");
     //scroll to top when navigating to another step
@@ -322,6 +359,14 @@ export default function ShareProjectRoot({
               onClickRemoveSector={onClickRemoveSector}
             />
           )}
+          {curStep.key === "registration" && showRegistrationStep && (
+            <EventRegistrationStep
+              projectData={project}
+              handleSetProjectData={handleSetProject}
+              goToNextStep={goToNextStep}
+              goToPreviousStep={goToPreviousStep}
+            />
+          )}
           {curStep.key === "enterDetails" && (
             <EnterDetails
               projectData={project}
@@ -415,13 +460,19 @@ const getDefaultProjectValues = (
     hubName: hubName,
     sectors: [],
     is_online: false,
+    // Event registration defaults
+    registrationEnabled: false,
+    max_participants: null,
+    registration_end_date: null,
   };
 };
 
 const formatProjectForRequest = async (project, translations) => {
   const { blobFromObjectUrl } = await import("../../../public/lib/imageOperations");
+  // Destructure UI-only registration fields to exclude from the spread
+  const { registrationEnabled, max_participants, registration_end_date, ...projectRest } = project;
   return {
-    ...project,
+    ...projectRest,
     loc: parseLocation(project.loc, true),
     team_members: project.team_members.map((m) => ({
       url_slug: m.url_slug,
@@ -436,5 +487,15 @@ const formatProjectForRequest = async (project, translations) => {
     thumbnail_image: await blobFromObjectUrl(project.thumbnail_image),
     source_language: project.language,
     translations: translations ? translations : {},
+    // Include event_registration only when toggle is on and both fields are present
+    event_registration:
+      registrationEnabled && project.project_type?.type_id === "event"
+        ? {
+            max_participants: max_participants ? Number(max_participants) : undefined,
+            registration_end_date: registration_end_date
+              ? dayjs(registration_end_date).toISOString()
+              : undefined,
+          }
+        : undefined,
   };
 };

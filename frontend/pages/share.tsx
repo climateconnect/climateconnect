@@ -12,6 +12,7 @@ import ShareProjectRoot from "../src/components/shareProject/ShareProjectRoot";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import theme from "../src/themes/theme";
+import { getFeatureTogglesFromRequest } from "../src/hooks/featureToggles";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
@@ -29,6 +30,7 @@ export async function getServerSideProps(ctx) {
     projectTypeOptions,
     hubThemeData,
     sectorOptions,
+    { featureToggles, environment },
   ] = await Promise.all([
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
@@ -36,6 +38,7 @@ export async function getServerSideProps(ctx) {
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
     getSectorOptions(ctx.locale, hubUrl),
+    getFeatureTogglesFromRequest(ctx.req),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -46,6 +49,8 @@ export async function getServerSideProps(ctx) {
       hubUrl: hubUrl ?? undefined,
       hubThemeData: hubThemeData ?? undefined,
       sectorOptions: sectorOptions ?? undefined,
+      featureToggles: featureToggles,
+      environment: environment,
     }),
   };
 }

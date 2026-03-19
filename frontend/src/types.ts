@@ -59,6 +59,10 @@ export type Project = {
   parent_project_id?: number; // ID of parent project (detail view only)
   parent_project_name?: string; // Name of parent project (detail view only)
   parent_project_slug?: string; // URL slug of parent project (detail view only)
+  // Event registration fields (UI state for the create/edit form)
+  registrationEnabled?: boolean;
+  max_participants?: number | null;
+  registration_end_date?: Dayjs | null;
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";

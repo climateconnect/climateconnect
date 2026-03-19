@@ -15,6 +15,8 @@ import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
 import { useTheme } from "@mui/styles";
+import dayjs from "dayjs";
+import EventRegistrationSection from "./EventRegistrationSection";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -87,6 +89,8 @@ export default function EnterDetails({
   const [errors, setErrors] = useState({
     start_date: "",
     end_date: "",
+    max_participants: "",
+    registration_end_date: "",
   });
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
@@ -158,6 +162,33 @@ export default function EnterDetails({
     if (!isLocationValid(project.loc)) {
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
       return false;
+    }
+    // Validate event registration settings when enabled
+    if (project.registrationEnabled && project.project_type?.type_id === "event") {
+      if (!project.max_participants || Number(project.max_participants) <= 0) {
+        setErrors((prev) => ({
+          ...prev,
+          max_participants: texts.max_participants_must_be_greater_than_0,
+        }));
+        return false;
+      }
+      if (!project.registration_end_date || !dayjs(project.registration_end_date).isValid()) {
+        setErrors((prev) => ({
+          ...prev,
+          registration_end_date: `${texts.please_fill_out_this_field}: ${texts.registration_end_date}`,
+        }));
+        return false;
+      }
+      if (
+        project.end_date &&
+        dayjs(project.registration_end_date).isAfter(dayjs(project.end_date))
+      ) {
+        setErrors((prev) => ({
+          ...prev,
+          registration_end_date: texts.registration_end_date_must_be_before_event_end_date,
+        }));
+        return false;
+      }
     }
     return true;
   };
@@ -250,6 +281,18 @@ export default function EnterDetails({
               helperText={texts.if_your_project_has_a_website_you_can_enter_it_here}
             />
           </div>
+          {projectData.registrationEnabled && projectData.project_type?.type_id === "event" && (
+            <div className={classes.block}>
+              <EventRegistrationSection
+                projectData={projectData}
+                handleSetProjectData={handleSetProjectData}
+                errors={{
+                  max_participants: errors.max_participants,
+                  registration_end_date: errors.registration_end_date,
+                }}
+              />
+            </div>
+          )}
           <div className={classes.block}>
             <Typography
               component="h2"
