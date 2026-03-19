@@ -1054,11 +1054,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     registration: {
       en: "Registration",
-      de: "Registrierung",
+      de: "Anmeldung",
     },
     registration_settings: {
       en: "Registration settings",
-      de: "Registrierungseinstellungen",
+      de: "Eventanmeldung einrichten",
     },
     allow_online_registration: {
       en: "Allow members to register online for the event",
@@ -1066,11 +1066,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     registration_enabled_help_text: {
       en: "In the next step you can configure the event registration.",
-      de: "Im nächsten Schritt kannst du die Eventregistrierung konfigurieren.",
+      de: "Im nächsten Schritt kannst du die Eventanmeldung konfigurieren.",
     },
     max_participants: {
-      en: "Maximum number of guests",
-      de: "Max. Anzahl an Teilnehmenden",
+      en: "Max. number of guests",
+      de: "Max. Anzahl Teilnehmende",
     },
     max_participants_must_be_greater_than_0: {
       en: "Maximum number of guests must be greater than 0",
@@ -1078,7 +1078,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     registration_end_date: {
       en: "End of registration",
-      de: "Anmeldeende",
+      de: "Ende der Anmeldung",
     },
     registration_end_date_must_be_before_event_end_date: {
       en: "Registration end date must be before or equal to the event end date",

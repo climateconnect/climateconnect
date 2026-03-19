@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { TextField, Typography } from "@mui/material";
+import { Box, TextField, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useTheme } from "@mui/styles";
 import dayjs, { Dayjs } from "dayjs";
@@ -19,10 +19,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 0,
     display: "block",
     width: "100%",
-    marginBottom: theme.spacing(2),
-  },
-  field: {
-    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -62,29 +58,36 @@ export default function EventRegistrationSection({
       <Typography component="h2" variant="subtitle2" color="primary" className={classes.subHeader}>
         {texts.registration_settings}
       </Typography>
-      <div className={classes.field}>
-        <TextField
-          variant="outlined"
-          color={backgroundContrastColor}
-          type="number"
-          label={texts.max_participants}
-          value={projectData.max_participants ?? ""}
-          onChange={handleMaxParticipantsChange}
-          inputProps={{ min: 1 }}
-          error={!!errors.max_participants}
-          helperText={errors.max_participants}
-          required
-        />
-      </div>
-      <DatePicker
-        className={classes.datePicker}
-        label={texts.registration_end_date}
-        enableTime={true}
-        handleChange={handleRegistrationEndDateChange}
-        date={projectData.registration_end_date ? dayjs(projectData.registration_end_date) : null}
-        maxDate={projectData.end_date ? dayjs(projectData.end_date) : undefined}
-        error={errors.registration_end_date as any}
-      />
+      <Box sx={{ display: "flex", flexWrap: { xs: "wrap", md: "nowrap" }, gap: 2 }}>
+        <Box sx={{ width: { xs: "100%", md: 240 } }}>
+          <TextField
+            variant="outlined"
+            color={backgroundContrastColor}
+            type="number"
+            label={texts.max_participants}
+            value={projectData.max_participants ?? ""}
+            onChange={handleMaxParticipantsChange}
+            inputProps={{ min: 1 }}
+            error={!!errors.max_participants}
+            helperText={errors.max_participants}
+            required
+          />
+        </Box>
+        <Box sx={{ width: { xs: "100%", md: 240 } }}>
+          <DatePicker
+            required
+            className={classes.datePicker}
+            label={texts.registration_end_date}
+            enableTime={true}
+            handleChange={handleRegistrationEndDateChange}
+            date={
+              projectData.registration_end_date ? dayjs(projectData.registration_end_date) : null
+            }
+            maxDate={projectData.end_date ? dayjs(projectData.end_date) : undefined}
+            error={errors.registration_end_date as any}
+          />
+        </Box>
+      </Box>
     </>
   );
 }
