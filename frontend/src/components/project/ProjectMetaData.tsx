@@ -125,6 +125,7 @@ const WithDescription = ({
   hovering,
   project,
   main_project_sector,
+  texts,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -138,7 +139,7 @@ const WithDescription = ({
           <LocationDisplay
             textClassName={classes.metadataText}
             iconClassName={classes.cardIcon}
-            location={project.location}
+            location={project.is_online ? texts.online : project.location}
           />
           {/* Defer to MUI's best guess on height calculation for timeout: https://material-ui.com/api/collapse/ */}
           <Collapse in={hovering} timeout="auto">
@@ -187,7 +188,9 @@ const WithOutDescription = ({
           <Tooltip title={texts.location}>
             <PlaceIcon className={classes.cardIcon} />
           </Tooltip>
-          <Typography className={classes.metadataText}>{project.location}</Typography>
+          <Typography className={classes.metadataText}>
+            {project.is_online ? texts.online : project.location}
+          </Typography>
           <ProjectSectorsDisplay
             main_project_sector={main_project_sector}
             projectSectorClassName={classes.metadataText}
