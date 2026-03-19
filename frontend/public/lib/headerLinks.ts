@@ -30,9 +30,9 @@ const COMMON_LINKS = {
   },
   SHARE: {
     href: "/share",
-    mediumScreenText: "share",
     iconForDrawer: AddCircleIcon,
     icon: AddCircleOutlineIcon,
+    hideDesktopIconUnderSm: true,
     isFilledInHeader: true,
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,

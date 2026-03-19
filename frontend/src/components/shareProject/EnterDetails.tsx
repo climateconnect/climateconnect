@@ -2,7 +2,7 @@ import { Container, IconButton, TextField, Tooltip, Typography, Switch } from "@
 import makeStyles from "@mui/styles/makeStyles";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import getCollaborationTexts from "../../../public/data/collaborationTexts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
@@ -67,11 +67,11 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getHelpTexts = (texts) => ({
-  addPhoto: texts.add_photo_helptext,
-  short_description: texts.short_description_helptext,
-  description: texts.description_helptext,
-  collaboration: texts.collaboration_helptext,
+const getHelpTexts = (projectTypeTexts, typeId) => ({
+  addPhoto: projectTypeTexts.addPhoto[typeId],
+  shortDescription: projectTypeTexts.shortDescription[typeId],
+  description: projectTypeTexts.description[typeId],
+  collaboration: projectTypeTexts.collaboration[typeId],
 });
 
 export default function EnterDetails({
@@ -93,8 +93,8 @@ export default function EnterDetails({
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
-  const collaborationTexts = getCollaborationTexts(texts);
-  const helpTexts = getHelpTexts(texts);
+  const projectTypeTexts = getProjectTypeTexts(texts);
+  const helpTexts = getHelpTexts(projectTypeTexts, projectData.project_type.type_id);
   const topRef = useRef<null | HTMLFormElement>(null);
   const theme = useTheme();
 
@@ -131,7 +131,7 @@ export default function EnterDetails({
       maxLength: 4000,
     },
     website: {
-      name: texts.website,
+      name: projectTypeTexts.website[projectData.project_type.type_id],
       maxLength: 256,
     },
   };
@@ -239,15 +239,15 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              {texts.project_website}
+              {projectTypeTexts.website[projectData.project_type.type_id]}
             </Typography>
             <TextField
               variant="outlined"
               color={backgroundContrastColor}
               onChange={(event) => onTextChange(event, "website")}
-              placeholder={texts.project_website}
+              placeholder={projectTypeTexts.website[projectData.project_type.type_id]}
               value={projectData.website}
-              helperText={texts.if_your_project_has_a_website_you_can_enter_it_here}
+              helperText={projectTypeTexts.website_helper[projectData.project_type.type_id]}
             />
           </div>
           <div className={classes.block}>
@@ -257,7 +257,7 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              {collaborationTexts.allow[projectData.project_type.type_id]}
+              {projectTypeTexts.allow[projectData.project_type.type_id]}
               <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
                 <IconButton size="large">
                   <HelpOutlineIcon />

@@ -122,8 +122,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: ", um die vollständigen Informationen dieses/dieser Benutzer*in zu sehen",
     },
     your_projects: {
-      en: "Your climate projects",
-      de: "Deine Klimaschutzprojekte",
+      en: "Your climate projects, ideas and event",
+      de: "Deine Projekte, Ideen und Events",
     },
     this_users_projects: {
       en: `${profile?.first_name}'s Climate Projects`,
