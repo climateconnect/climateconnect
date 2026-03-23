@@ -452,6 +452,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Delete Project",
       de: "Projekt löschen",
     },
+    delete_idea: {
+      en: "Delete Idea",
+      de: "Idee löschen",
+    },
+    delete_event: {
+      en: "Delete Event",
+      de: "Event löschen",
+    },
     you_can_not_add_the_same_connection_twice: {
       en: "You can not add the same connection twice.",
       de: "Du kannst die gleiche Connection nicht zweimal hinzufügen.",
@@ -660,6 +668,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     use_the_search_bar_to_add_members_to_your_project: {
       en: "Use the search bar to add members to your project.",
       de: "Benutze die Suchleiste, um Mitglieder zu deinem Projekt hinzuzufügen.",
+    },
+    use_the_search_bar_to_add_members_to_your_idea: {
+      en: "Use the search bar to add members to your idea.",
+      de: "Benutze die Suchleiste, um Mitglieder zu deiner Idee hinzuzufügen.",
+    },
+    use_the_search_bar_to_add_members_to_your_event: {
+      en: "Use the search bar to add supporters to your event.",
+      de: "Benutze die Suchleiste, um Mitglieder zu deinem Event hinzuzufügen.",
     },
     summarize_your_project: {
       en: "Short Summary Of Your Project",
@@ -1169,8 +1185,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Veranstaltung organisiert von",
     },
     project_type: {
-      en: "Project Type",
-      de: "Projekttyp",
+      en: "Type",
+      de: "Typ",
     },
     end_date_must_be_after_start_date: {
       en: "End date must be after start date",

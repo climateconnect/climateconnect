@@ -104,6 +104,7 @@ export default function EditProjectContent({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const projectTypeTexts = getProjectTypeTexts(texts);
+  const typeId = project.project_type?.type_id ?? "project";
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const [open, setOpen] = useState({ delete: false });
 
@@ -163,7 +164,7 @@ export default function EditProjectContent({
       <div className={classes.block}>
         <div className={classes.block}>
           <Typography component="span">
-            {isNarrowScreen ? texts.personal : texts.personal_project}
+            {isNarrowScreen ? texts.personal : projectTypeTexts.personal[typeId]}
           </Typography>
           <Switch
             checked={!project.is_personal_project}
@@ -172,7 +173,7 @@ export default function EditProjectContent({
             inputProps={{ "aria-label": "secondary checkbox" }}
             color="primary"
           />
-          <Typography component="span">{texts.organizations_project}</Typography>
+          <Typography component="span">{projectTypeTexts.organizations[typeId]}</Typography>
         </div>
         {!isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
           <DeleteProjectButton
@@ -231,7 +232,7 @@ export default function EditProjectContent({
           />
         </div>
         <div className={classes.block}>
-          <ProjectDescriptionHelp />
+          <ProjectDescriptionHelp typeId={project.project_type.type_id} />
           <div className={classes.spacer} />
           <TextField
             variant="outlined"

@@ -75,5 +75,15 @@ export default function getProjectTypeTexts(texts) {
       idea: texts.if_you_want_to_include_a_video_in_your_idea_description,
       event: texts.if_you_want_to_include_a_video_in_your_event_description,
     },
+    searchMembers: {
+      project: texts.use_the_search_bar_to_add_members_to_your_project,
+      idea: texts.use_the_search_bar_to_add_members_to_your_idea,
+      event: texts.use_the_search_bar_to_add_members_to_your_event,
+    },
+    deleteProject: {
+      project: texts.delete_project,
+      idea: texts.delete_idea,
+      event: texts.delete_event,
+    },
   };
 }
