@@ -486,7 +486,6 @@ class CreateProjectView(APIView):
                 "short_description",
                 "collaborators_welcome",
                 "team_members",
-                "project_tags",
                 "loc",
                 "image",
                 "source_language",
