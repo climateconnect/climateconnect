@@ -107,6 +107,7 @@ export default function ProjectTimeAndPlaceSectionAndCustomHub({
         <CustomHubSelection
           currentHubName={projectData.hubName ?? ""}
           handleUpdateSelectedHub={handleUpdateSelectedHub}
+          typeId={typeId}
         />
       </div>
     </div>

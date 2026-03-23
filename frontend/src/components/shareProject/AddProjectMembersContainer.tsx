@@ -4,6 +4,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import React, { useContext } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import MiniProfileInput from "../profile/MiniProfileInput";
 
@@ -41,6 +42,8 @@ export default function AddProjectMembersContainer({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+  const projectTypeTexts = getProjectTypeTexts(texts);
+  const typeId = projectData.project_type?.type_id ?? "project";
 
   const handleChangeMember = (m) => {
     handleSetProjectData({
@@ -56,8 +59,7 @@ export default function AddProjectMembersContainer({
   return (
     <div className={blockClassName}>
       <Typography className={classes.info}>
-        <InfoOutlinedIcon className={classes.infoIcon} />{" "}
-        {texts.use_the_search_bar_to_add_members_to_your_project}
+        <InfoOutlinedIcon className={classes.infoIcon} /> {projectTypeTexts.searchMembers[typeId]}
       </Typography>
       <div className={classes.memberContainer}>
         {projectData.team_members.map((m, index) => {
@@ -73,6 +75,7 @@ export default function AddProjectMembersContainer({
                 onChange={handleChangeMember}
                 creatorRole={rolesOptions.find((r) => r.role_type === ROLE_TYPES.all_type)}
                 fullRolesOptions={rolesOptions}
+                typeId={typeId}
               />
             );
         })}

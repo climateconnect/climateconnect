@@ -393,6 +393,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en:
         "PRIO1 is the young climate network. find out more at prio1-klima.net. If you select this option, your project will also be displayed in the PRIO1 Hub.",
     },
+    my_idea_is_part_of_the_prio1_project: {
+      de: "Meine Idee ist Teil des PRIO1 Hubs",
+      en: "My idea is part of the PRIO1 hub",
+    },
+    tooltip_my_idea_is_part_of_the_prio1_project: {
+      de:
+        "PRIO1 ist das junge Klima-Netzwerk. erfahre mehr unter prio1-klima.net. Wenn du diese Option auswählst, wird deine Idee auch im PRIO1 Hub angezeigt.",
+      en:
+        "PRIO1 is the young climate network. find out more at prio1-klima.net. If you select this option, your idea will also be displayed in the PRIO1 Hub.",
+    },
+    my_event_is_part_of_the_prio1_project: {
+      de: "Meine Veranstaltung ist Teil des PRIO1 Hubs",
+      en: "My event is part of the PRIO1 hub",
+    },
+    tooltip_my_event_is_part_of_the_prio1_project: {
+      de:
+        "PRIO1 ist das junge Klima-Netzwerk. erfahre mehr unter prio1-klima.net. Wenn du diese Option auswählst, wird deine Veranstaltung auch im PRIO1 Hub angezeigt.",
+      en:
+        "PRIO1 is the young climate network. find out more at prio1-klima.net. If you select this option, your event will also be displayed in the PRIO1 Hub.",
+    },
 
     // This is for project join requests
     requesters_of: {
@@ -432,6 +452,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Delete Project",
       de: "Projekt löschen",
     },
+    delete_idea: {
+      en: "Delete Idea",
+      de: "Idee löschen",
+    },
+    delete_event: {
+      en: "Delete Event",
+      de: "Event löschen",
+    },
     you_can_not_add_the_same_connection_twice: {
       en: "You can not add the same connection twice.",
       de: "Du kannst die gleiche Connection nicht zweimal hinzufügen.",
@@ -447,6 +475,22 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     organizations_project: {
       en: "Organisation's project",
       de: "Projekt einer Organisation",
+    },
+    personal_idea: {
+      en: "Personal idea",
+      de: "Persönliche Idee",
+    },
+    organizations_idea: {
+      en: "Organisation's idea",
+      de: "Idee einer Organisation",
+    },
+    personal_event: {
+      en: "Personal event",
+      de: "Persönliche Veranstaltung",
+    },
+    organizations_event: {
+      en: "Organisation's event",
+      de: "Veranstaltung einer Organisation",
     },
     created_by: {
       en: "Created by",
@@ -502,6 +546,22 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "If your project has a website, you can enter it here.",
       de: "Falls dein Projekt eine Webseite hat, kannst du sie hier eintragen",
     },
+    idea_website: {
+      en: "Idea website",
+      de: "Webseite der Idee",
+    },
+    if_your_idea_has_a_website_you_can_enter_it_here: {
+      en: "If your idea has a website, you can enter it here.",
+      de: "Falls deine Idee eine Webseite hat, kannst du sie hier eintragen",
+    },
+    event_website: {
+      en: "Event website",
+      de: "Webseite der Veranstaltung",
+    },
+    if_your_event_has_a_website_you_can_enter_it_here: {
+      en: "If your event has a website, you can enter it here.",
+      de: "Falls deine Veranstaltung eine Webseite hat, kannst du sie hier eintragen",
+    },
     edit_sectors: {
       en: "Edit topics",
       de: "Themenfelder bearbeiten",
@@ -513,6 +573,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     project_name: {
       en: "Project name",
       de: "Projekttitel",
+    },
+    idea_name: {
+      en: "Idea name",
+      de: "Ideentitel",
+    },
+    event_name: {
+      en: "Event name",
+      de: "Veranstaltungsname",
     },
     your_project_draft_is_missing_the_following_reqired_property: {
       en: "Your project draft is missing the following reqired property:",
@@ -581,6 +649,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: `Wenn du ein Video einbinden möchtest: Der erste YouTube-Link wird in ein eingebettetes
       Video auf deiner Projektseite umgewandelt.`,
     },
+    if_you_want_to_include_a_video_in_your_idea_description: {
+      en: `If you want to include a video: the first YouTube link will be converted to an embedded
+      video on your idea page.`,
+      de: `Wenn du ein Video einbinden möchtest: Der erste YouTube-Link wird in ein eingebettetes
+      Video auf deiner Ideenseite umgewandelt.`,
+    },
+    if_you_want_to_include_a_video_in_your_event_description: {
+      en: `If you want to include a video: the first YouTube link will be converted to an embedded
+      video on your event page.`,
+      de: `Wenn du ein Video einbinden möchtest: Der erste YouTube-Link wird in ein eingebettetes
+      Video auf deiner Veranstaltungsseite umgewandelt.`,
+    },
     role_in_project: {
       en: "Role in project",
       de: "Funktion/Aufgabe im Projekt",
@@ -588,6 +668,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     use_the_search_bar_to_add_members_to_your_project: {
       en: "Use the search bar to add members to your project.",
       de: "Benutze die Suchleiste, um Mitglieder zu deinem Projekt hinzuzufügen.",
+    },
+    use_the_search_bar_to_add_members_to_your_idea: {
+      en: "Use the search bar to add members to your idea.",
+      de: "Benutze die Suchleiste, um Mitglieder zu deiner Idee hinzuzufügen.",
+    },
+    use_the_search_bar_to_add_members_to_your_event: {
+      en: "Use the search bar to add supporters to your event.",
+      de: "Benutze die Suchleiste, um Mitglieder zu deinem Event hinzuzufügen.",
     },
     summarize_your_project: {
       en: "Short Summary Of Your Project",
@@ -639,29 +727,76 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Your project is",
       de: "Dein Projekt ist",
     },
-    add_photo_helptext: {
+    add_photo_helptext_project: {
       en:
         "Upload a photo that represents your project. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format.",
       de:
         "Lade ein Foto hoch, das dein Projekt repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deinem Projekt geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
     },
-    short_description_helptext: {
+    add_photo_helptext_idea: {
+      en:
+        "Upload a photo that represents your idea. This way other climate protectors can see at a glance what your idea is about. It is recommended to use a non-transparent image in 16:9 format.",
+      de:
+        "Lade ein Foto hoch, das deine Idee repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deiner Idee geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
+    },
+    add_photo_helptext_event: {
+      en:
+        "Upload a photo that represents your event. This way other climate protectors can see at a glance what your event is about. It is recommended to use a non-transparent image in 16:9 format.",
+      de:
+        "Lade ein Foto hoch, das deine Veranstaltung repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deiner Veranstaltung geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
+    },
+    short_description_helptext_project: {
       en:
         "Summarize your project in fewer than 280 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
       de:
         "Fasse dein Projekt in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
     },
-    description_helptext: {
+    short_description_helptext_idea: {
+      en:
+        "Summarize your idea in fewer than 280 characters. Other climate protectors should be able to grasp what your idea wants to achieve.",
+      de:
+        "Fasse deine Idee in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was deine Idee erreichen will.",
+    },
+    short_description_helptext_event: {
+      en:
+        "Summarize your event in fewer than 280 characters. Other climate protectors should be able to grasp what your event is about.",
+      de:
+        "Fasse dein Veranstaltung in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, worum es bei der Veranstaltung geht.",
+    },
+    description_helptext_project: {
       en:
         "Describe your project in more detail. What are you exactly doing? What is the climate impact of your project?",
       de:
         "Beschreibe dein Projekt genauer. Was machst du genau? Was ist die Klimawirkung deines Projekts?",
     },
-    collaboration_helptext: {
+    description_helptext_idea: {
+      en:
+        "Describe your idea in more detail. What do you want to do? What is the climate impact of your idea?",
+      de: "Beschreibe deine Idee genauer. Was hast du vor? Was ist die Klimawirkung deiner Idee?",
+    },
+    description_helptext_event: {
+      en:
+        "Describe your event in more detail. What are you exactly doing and what can guests expect? What is the climate impact of your event?",
+      de:
+        "Beschreibe deine Veranstaltung genauer. Was machst du genau und was können Gäste erwarten? Was ist die Klimawirkung deiner Veranstaltung?",
+    },
+    collaboration_helptext_project: {
       en:
         "Select if you are would be open to accept help and work with other climate protectors on your project.",
       de:
         "Wähle aus, ob du offen bist, Hilfe anzunehmen und mit anderen Klimaschützer*innen an deinem Projekt zu arbeiten.",
+    },
+    collaboration_helptext_idea: {
+      en:
+        "Select if you are would be open to accept help and work with other climate protectors on your idea.",
+      de:
+        "Wähle aus, ob du offen bist, Hilfe anzunehmen und mit anderen Klimaschützer*innen an deiner Idee zu arbeiten.",
+    },
+    collaboration_helptext_event: {
+      en:
+        "Select if you are would be open to accept help and work with other climate protectors on your event.",
+      de:
+        "Wähle aus, ob du offen bist, Hilfe anzunehmen und mit anderen Klimaschützer*innen deine Veranstaltung zu organisieren.",
     },
     add_connections_helptext: {
       en:
@@ -787,6 +922,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Select 1-3 topics that fit your project",
       de: "Wähle 1-3 Themenfelder, die zu deinem Projekt passen",
     },
+    select_1_to_3_sectors_that_fit_your_idea: {
+      en: "Select 1-3 topics that fit your idea",
+      de: "Wähle 1-3 Themenfelder, die zu deiner Idee passen",
+    },
+    select_1_to_3_sectors_that_fit_your_event: {
+      en: "Select 1-3 topics that fit your event",
+      de: "Wähle 1-3 Themenfelder, die zu deiner Veranstaltung passen",
+    },
     add_a_sector_where_you_are_active: {
       en: "Add a Topic",
       de: "Füge ein Themenfeld hinzu",
@@ -882,8 +1025,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Übersicht",
     },
     project_category: {
-      en: "Choose category",
-      de: "Kategorie auswählen",
+      en: "Choose topics",
+      de: "Themenfelder auswählen",
     },
     allow_collaboration: {
       en: "Allow collaboration",
@@ -1029,8 +1172,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Ideenstandort",
     },
     share_your_climate_project: {
-      en: "Share Your Climate Project",
-      de: "Teile dein Klimaprojekt",
+      en: "What would you like to create?",
+      de: "Was möchtest du erstellen?",
     },
     shared: {
       en: "Shared",
@@ -1041,8 +1184,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Veranstaltung organisiert von",
     },
     project_type: {
-      en: "Project Type",
-      de: "Projekttyp",
+      en: "Type",
+      de: "Typ",
     },
     end_date_must_be_after_start_date: {
       en: "End date must be after start date",
