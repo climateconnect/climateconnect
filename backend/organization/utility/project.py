@@ -20,13 +20,19 @@ logger = logging.getLogger(__name__)
 
 
 def create_new_project(data: Dict, source_language: Language) -> Project:
-    project_type = ProjectTypesChoices[data["project_type"]["type_id"]]
-    project = Project.objects.create(
-        name=data["name"],
-        collaborators_welcome=data["collaborators_welcome"],
-        status_id=data["status"],
-        project_type=project_type,
-    )
+    project_kwargs = {
+        "name": data["name"],
+    }
+
+    if "collaborators_welcome" in data:
+        project_kwargs["collaborators_welcome"] = data["collaborators_welcome"]
+    if "status" in data:
+        project_kwargs["status_id"] = data["status"]
+    project_type_data = data.get("project_type")
+    if project_type_data and "type_id" in project_type_data:
+        project_kwargs["project_type"] = ProjectTypesChoices[project_type_data["type_id"]]
+
+    project = Project.objects.create(**project_kwargs)
     # Add all non required parameters if they exists in the request.
     if "short_description"  in data:
         project.short_description = data["short_description"]
@@ -56,9 +62,11 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
     if "additional_loc_info" in data:
         project.additional_loc_info = data["additional_loc_info"]
 
-    hub = Hub.objects.filter(url_slug=data["hubName"]).first()
-    if hub:
-        project.related_hubs.add(hub)
+    hub_name = data.get("hubName")
+    if hub_name:
+        hub = Hub.objects.filter(url_slug=hub_name).first()
+        if hub:
+            project.related_hubs.add(hub)
 
     project.language = source_language
 
