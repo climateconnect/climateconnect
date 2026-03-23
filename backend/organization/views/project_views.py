@@ -533,19 +533,16 @@ class CreateProjectView(APIView):
                     )
                 }
             )
-        translations_failed = False
-
         translations_object = None
         # Only process translations if both source_language and translations are provided
         if "source_language" in request.data and "translations" in request.data:
             try:
                 translations_object = get_project_translations(request.data)
             except ValueError:
-                translations_failed = True
-
-            # If we still don't have a translations object, then skip this
-            if not translations_object:
-                translations_failed = True
+                # Translation parsing failed, but continue without translations
+                logger.warning(
+                    "Failed to parse translations for project creation"
+                )
 
         source_language = None
         translations = None
@@ -557,7 +554,7 @@ class CreateProjectView(APIView):
 
         project = create_new_project(request.data, source_language)
 
-        if not translations_failed:
+        if translations_object and translations and source_language:
             for language in translations:
                 if not language == source_language.language_code:
                     texts = translations[language]
