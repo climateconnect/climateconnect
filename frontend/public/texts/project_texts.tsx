@@ -394,7 +394,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         "PRIO1 is the young climate network. find out more at prio1-klima.net. If you select this option, your project will also be displayed in the PRIO1 Hub.",
     },
     my_idea_is_part_of_the_prio1_project: {
-      de: "Mein Idee ist Teil des PRIO1 Hubs",
+      de: "Meine Idee ist Teil des PRIO1 Hubs",
       en: "My idea is part of the PRIO1 hub",
     },
     tooltip_my_idea_is_part_of_the_prio1_project: {
@@ -735,15 +735,15 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     add_photo_helptext_idea: {
       en:
-        "Upload a photo that represents your idea. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format.",
+        "Upload a photo that represents your idea. This way other climate protectors can see at a glance what your idea is about. It is recommended to use a non-transparent image in 16:9 format.",
       de:
         "Lade ein Foto hoch, das deine Idee repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deiner Idee geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
     },
     add_photo_helptext_event: {
       en:
-        "Upload a photo that represents your event. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format.",
+        "Upload a photo that represents your event. This way other climate protectors can see at a glance what your event is about. It is recommended to use a non-transparent image in 16:9 format.",
       de:
-        "Lade ein Foto hoch, das deine Veranstaltung repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deiner Idee geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
+        "Lade ein Foto hoch, das deine Veranstaltung repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deiner Veranstaltung geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
     },
     short_description_helptext_project: {
       en:
@@ -771,9 +771,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     description_helptext_idea: {
       en:
-        "Describe your idea in more detail. What are you exactly doing? What is the climate impact of your idea?",
-      de:
-        "Beschreibe dein Projekt genauer. Was machst du genau? Was ist die Klimawirkung deines Projekts?",
+        "Describe your idea in more detail. What do you want to do? What is the climate impact of your idea?",
+      de: "Beschreibe deine Idee genauer. Was hast du vor? Was ist die Klimawirkung deiner Idee?",
     },
     description_helptext_event: {
       en:
