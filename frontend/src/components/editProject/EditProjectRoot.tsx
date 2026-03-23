@@ -77,7 +77,6 @@ export default function EditProjectRoot({
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const draftReqiredProperties = {
     name: texts.project_name,
-    loc: texts.location,
   };
   const overviewInputsRef = useRef(null as HTMLInputElement | null);
   const locationInputRef = useRef(null as HTMLInputElement | null);
@@ -109,6 +108,10 @@ export default function EditProjectRoot({
     setLocationOptionsOpen(bool);
   };
   const checkIfProjectValid = (isDraft) => {
+    if (!isDraft && !project.image) {
+      alert(texts.please_add_an_image);
+      return false;
+    }
     if (project?.loc && oldProject?.loc !== project.loc && !isLocationValid(project.loc)) {
       overviewInputsRef.current!.scrollIntoView();
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage, texts);
