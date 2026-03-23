@@ -45,6 +45,7 @@ jobs:
           cd frontend
           yarn --production
           npx webflow devlink sync --no-input
+          node scripts/fix-devlink.js
           yarn build
         env:
           API_HOST: ${{ secrets.API_HOST }}
