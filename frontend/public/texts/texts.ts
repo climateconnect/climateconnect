@@ -51,7 +51,6 @@ type Args<P extends Page> = {
   idea?: any;
   isNarrowScreen?: boolean;
   locale: CcLocale;
-  location?: string;
   organization?: string;
   page: P;
   profile?: string;
@@ -70,7 +69,6 @@ export default function getTexts<P extends Page>({
   idea,
   isNarrowScreen,
   locale,
-  location,
   organization,
   page,
   profile,
@@ -89,7 +87,7 @@ export default function getTexts<P extends Page>({
     chat: chat_texts,
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
-    dashboard: getDashboardTexts({ user: user, location: location }),
+    dashboard: getDashboardTexts({ user: user, hubName: hubName }),
     donate: getDonateTexts({ classes: classes, goal: goal /*locale*/ }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
     filter_and_search: getFilterAndSearchTexts({

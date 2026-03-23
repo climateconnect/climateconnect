@@ -29,6 +29,9 @@ jobs:
           WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
           WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID }}
 
+      - name: Fix devlink conflicting exports
+        run: node scripts/fix-devlink.js
+
       - name: Lint frontend
         run: yarn lint
       - name: Format-check frontend

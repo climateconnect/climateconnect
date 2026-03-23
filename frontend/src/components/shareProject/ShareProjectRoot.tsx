@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useState } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
 import TranslateTexts from "../general/TranslateTexts";
@@ -31,7 +32,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getSteps = (texts) => {
+const getSteps = (texts, project, projectTypeTexts) => {
   const steps = [
     {
       key: "share",
@@ -41,7 +42,7 @@ const getSteps = (texts) => {
     {
       key: "selectSector",
       text: texts.project_category,
-      headline: texts.select_1_to_3_sectors_that_fit_your_project,
+      headline: projectTypeTexts.selectSector[project?.project_type?.type_id],
     },
     {
       key: "enterDetails",
@@ -97,7 +98,7 @@ export default function ShareProjectRoot({
   const classes = useStyles();
   const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const steps = getSteps(texts);
+  const projectTypeTexts = getProjectTypeTexts(texts);
 
   const [project, setProject] = useState(
     getDefaultProjectValues(
@@ -112,6 +113,7 @@ export default function ShareProjectRoot({
       hubName
     )
   );
+  const steps = getSteps(texts, project, projectTypeTexts);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
 
@@ -416,6 +418,7 @@ const getDefaultProjectValues = (
     project_type: projectTypeOptions.find((t) => t.type_id === "project"),
     hubName: hubName,
     sectors: [],
+    is_online: false,
   };
 };
 
