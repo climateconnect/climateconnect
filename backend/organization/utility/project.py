@@ -23,7 +23,7 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
     project_type = ProjectTypesChoices[data["project_type"]["type_id"]]
     project = Project.objects.create(
         name=data["name"],
-        collaborators_welcome=data["collaborators_welcome"],
+        collaborators_welcome=data.get("collaborators_welcome", False),
         status_id=data["status"],
         project_type=project_type,
     )
@@ -56,11 +56,13 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
     if "additional_loc_info" in data:
         project.additional_loc_info = data["additional_loc_info"]
 
-    hub = Hub.objects.filter(url_slug=data["hubName"]).first()
-    if hub:
-        project.related_hubs.add(hub)
+    if "hubName" in data:
+        hub = Hub.objects.filter(url_slug=data["hubName"]).first()
+        if hub:
+            project.related_hubs.add(hub)
 
-    project.language = source_language
+    if source_language:
+        project.language = source_language
 
     project.url_slug = create_unique_slug(project.name, project.id, Project.objects)
 

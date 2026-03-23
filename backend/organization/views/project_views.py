@@ -511,14 +511,16 @@ class CreateProjectView(APIView):
         translations_failed = False
 
         translations_object = None
-        try:
-            translations_object = get_project_translations(request.data)
-        except ValueError:
-            translations_failed = True
+        # Only process translations if both source_language and translations are provided
+        if "source_language" in request.data and "translations" in request.data:
+            try:
+                translations_object = get_project_translations(request.data)
+            except ValueError:
+                translations_failed = True
 
-        # If we still don't have a translations object, then skip this
-        if not translations_object:
-            translations_failed = True
+            # If we still don't have a translations object, then skip this
+            if not translations_object:
+                translations_failed = True
 
         source_language = None
         translations = None
@@ -582,7 +584,7 @@ class CreateProjectView(APIView):
 
         # There are only certain roles user can have. So get all the roles first.
         roles = Role.objects.all()
-        team_members = request.data["team_members"]
+        team_members = request.data.get("team_members", [])
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
