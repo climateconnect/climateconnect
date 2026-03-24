@@ -478,9 +478,11 @@ class CreateProjectView(APIView):
         else:
             organization = None
 
+        is_draft_input = request.data.get("is_draft", False)
+        is_draft = is_draft_input in (True, "true", "True", "1", 1)
         required_params = ["name"]
         # If 'is_draft' is not set or is set to a falsy value then run the code in this if block
-        if not request.data.get("is_draft", False):
+        if not is_draft:
             required_params += [
                 "status",
                 "short_description",
