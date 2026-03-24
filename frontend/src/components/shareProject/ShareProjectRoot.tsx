@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useState } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
 import TranslateTexts from "../general/TranslateTexts";
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getSteps = (texts, showRegistrationStep: boolean = false) => {
+const getSteps = (texts, project, projectTypeTexts, showRegistrationStep: boolean = false) => {
   const steps: Array<{ key: string; text: any; headline?: any }> = [
     {
       key: "share",
@@ -44,7 +45,7 @@ const getSteps = (texts, showRegistrationStep: boolean = false) => {
     {
       key: "selectSector",
       text: texts.project_category,
-      headline: texts.select_1_to_3_sectors_that_fit_your_project,
+      headline: projectTypeTexts.selectSector[project?.project_type?.type_id],
     },
   ];
 
@@ -117,6 +118,7 @@ export default function ShareProjectRoot({
   // Feature toggle for event registration
   const { isEnabled } = useFeatureToggles();
   const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
+  const projectTypeTexts = getProjectTypeTexts(texts);
 
   const [project, setProject] = useState(
     getDefaultProjectValues(
@@ -135,7 +137,7 @@ export default function ShareProjectRoot({
   // Dynamic steps: include registration step only for events when feature toggle is on
   const isEvent = project.project_type?.type_id === "event";
   const showRegistrationStep = isEvent && isEventRegistrationEnabled;
-  const steps = getSteps(texts, showRegistrationStep);
+  const steps = getSteps(texts, project, projectTypeTexts, showRegistrationStep);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);
 

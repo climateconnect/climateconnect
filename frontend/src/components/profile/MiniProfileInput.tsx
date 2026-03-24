@@ -72,7 +72,9 @@ export default function MiniProfileInput({
   creatorRole,
   fullRolesOptions,
   dontPickRole,
+  typeId,
 }: any) {
+  const type = typeId || "project";
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const { locale } = useContext(UserContext);
@@ -177,11 +179,21 @@ export default function MiniProfileInput({
       {!dontPickRole && (
         <>
           <Typography className={classes.fieldLabel}>
-            {isOrganization ? texts.role_in_organization : texts.role_in_project}
+            {isOrganization
+              ? texts.role_in_organization
+              : type === "idea"
+              ? texts.role_in_idea
+              : type === "event"
+              ? texts.role_in_event
+              : texts.role_in_project}
             <Tooltip
               title={
                 isOrganization
                   ? texts.pick_or_describe_role_in_organization
+                  : type === "idea"
+                  ? texts.pick_or_describe_role_in_idea
+                  : type === "event"
+                  ? texts.pick_or_describe_role_in_event
                   : texts.pick_or_describe_role_in_project
               }
             >

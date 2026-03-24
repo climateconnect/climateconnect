@@ -27,6 +27,7 @@ import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
 import { Project, Sector } from "../../types";
 import CustomHubSelection from "../project/CustomHubSelection";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
@@ -326,6 +327,7 @@ function LargeScreenOverview({
           <CustomHubSelection
             currentHubName={project.hubUrl ?? ""}
             handleUpdateSelectedHub={handleUpdateSelectedHub}
+            typeId={project.project_type.type_id}
           />
         </div>
       </div>
@@ -517,9 +519,11 @@ type InputNameArgs = {
 
 const InputName = ({ project, screenSize, handleChangeProject, texts }: InputNameArgs) => {
   const classes = useStyles({});
+  const typeId = project.project_type?.type_id ?? "project";
+  const projectTypeTexts = getProjectTypeTexts(texts);
   return (
     <TextField
-      label={texts.project_name}
+      label={projectTypeTexts.name[typeId]}
       value={project.name}
       className={classes.projectTitleInput}
       inputProps={screenSize === "large" ? { className: classes.largeProjectTitleInput } : {}}

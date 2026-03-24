@@ -6,6 +6,7 @@
   "scripts": {
     "analyze-bundle": "ANALYZE=true yarn build",
     "build": "next build",
+    "devlink-sync": "npx webflow devlink sync --no-input && node scripts/fix-devlink.js",
     "deploy": "yarn build && yarn export",
     "dev": "next dev",
     "export": "next export",

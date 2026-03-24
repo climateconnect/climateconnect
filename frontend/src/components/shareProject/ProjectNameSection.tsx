@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { TextField } from "@mui/material";
 import getTexts from "../../../public/texts/texts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
@@ -32,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ProjectNameSection({ projectData, handleSetProjectData }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+  const projectTypeTexts = getProjectTypeTexts(texts);
   const theme = useTheme();
   const classes = useStyles();
 
@@ -46,7 +48,7 @@ export default function ProjectNameSection({ projectData, handleSetProjectData }
   return (
     <div className={classes.root}>
       <TextField
-        label={texts.project_name}
+        label={projectTypeTexts.name[projectData.project_type?.type_id]}
         className={classes.textField}
         required
         color={color}
