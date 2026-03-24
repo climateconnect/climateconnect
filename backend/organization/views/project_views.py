@@ -888,6 +888,7 @@ class ProjectAPIView(APIView):
             location = get_location(request.data["loc"])
             project.loc = location
         if "is_draft" in request.data:
+            # One way transition: draft → published, never back
             project.is_draft = False
         if "is_personal_project" in request.data:
             if request.data["is_personal_project"] is True:
