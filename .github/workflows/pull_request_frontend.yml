@@ -24,10 +24,11 @@ jobs:
         run: yarn --immutable
 
       - name: Run webflow devlink sync
-        run: npx webflow devlink sync --no-input
+        run: yarn devlink-sync
         env:
           WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
           WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID }}
+
 
       - name: Lint frontend
         run: yarn lint

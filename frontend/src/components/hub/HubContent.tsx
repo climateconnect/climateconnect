@@ -142,7 +142,6 @@ export default function HubContent({
   isLocationHub,
   hubAmbassador,
   hubSupporters,
-  location,
   hubData,
   hubUrl,
   image,
@@ -188,7 +187,7 @@ export default function HubContent({
                     {!isNarrowScreen && (
                       <Dashboard
                         hubUrl={hubUrl}
-                        location={location}
+                        hubName={hubData?.name}
                         welcomeMessageLoggedIn={welcomeMessageLoggedIn}
                         welcomeMessageLoggedOut={welcomeMessageLoggedOut}
                       />

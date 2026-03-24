@@ -79,8 +79,8 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       }finden, die deinen Filtern entsprechen.`,
     },
     additional_infos_for_location: {
-      en: "Additional info (e.g. room, ...)",
-      de: "Zusätzliche Infos (z.B. Raum, ...)",
+      en: "Additional info (e.g. room, meeting link, ...)",
+      de: "Zusätzliche Infos (z.B. Raum, Meeting-Link,...)",
     },
     sectors_tooltip: {
       en: "Topics",

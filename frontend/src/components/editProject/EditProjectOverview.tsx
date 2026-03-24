@@ -1,4 +1,13 @@
-import { Button, Chip, Container, List, TextField, Grid } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Container,
+  FormControlLabel,
+  List,
+  Switch,
+  TextField,
+  Grid,
+} from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
@@ -18,6 +27,7 @@ import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
 import { Project, Sector } from "../../types";
 import CustomHubSelection from "../project/CustomHubSelection";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
@@ -317,6 +327,7 @@ function LargeScreenOverview({
           <CustomHubSelection
             currentHubName={project.hubUrl ?? ""}
             handleUpdateSelectedHub={handleUpdateSelectedHub}
+            typeId={project.project_type.type_id}
           />
         </div>
       </div>
@@ -390,6 +401,16 @@ const InputLocation = ({
   }
   return (
     <div /*TODO(undefined) className={classes.projectInfoEl}*/>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={project.is_online ?? false}
+            onChange={(e) => handleChangeProject(e.target.checked, "is_online")}
+            color="primary"
+          />
+        }
+        label={texts.online}
+      />
       {/*<LocationSearchBar
         label={texts.location}
         required
@@ -498,9 +519,11 @@ type InputNameArgs = {
 
 const InputName = ({ project, screenSize, handleChangeProject, texts }: InputNameArgs) => {
   const classes = useStyles({});
+  const typeId = project.project_type?.type_id ?? "project";
+  const projectTypeTexts = getProjectTypeTexts(texts);
   return (
     <TextField
-      label={texts.project_name}
+      label={projectTypeTexts.name[typeId]}
       value={project.name}
       className={classes.projectTitleInput}
       inputProps={screenSize === "large" ? { className: classes.largeProjectTitleInput } : {}}

@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import { Project, Organization } from "../../types";
 import ProjectTypeSelector from "./ProjectTypeSelector";
 import getTexts from "../../../public/texts/texts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import Switcher from "../general/Switcher";
 import SelectField from "../general/SelectField";
@@ -67,6 +68,7 @@ export default function Share({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, hubName: hubName });
+  const projectTypeTexts = getProjectTypeTexts(texts);
   const theme = useTheme();
 
   const onChangeSwitch = () => {
@@ -99,10 +101,9 @@ export default function Share({
 
   return (
     <div className={classes.form}>
-      {locale === "en" && <PleaseOnlyUseEnglishAppeal />}
       <Switcher
-        trueLabel={texts.organizations_project}
-        falseLabel={texts.personal_project}
+        trueLabel={projectTypeTexts.organizations[project.project_type?.type_id]}
+        falseLabel={projectTypeTexts.personal[project.project_type?.type_id]}
         value={project.is_organization_project}
         required={false}
         className={classes.field}
@@ -143,22 +144,3 @@ export default function Share({
     </div>
   );
 }
-
-const PleaseOnlyUseEnglishAppeal = () => {
-  const classes = useStyles();
-  return (
-    <div className={classes.appealBox}>
-      <Typography color="secondary" className={classes.appealText}>
-        Please make sure to{" "}
-        <Typography component="span" className={classes.bold}>
-          only use English when sharing a project
-        </Typography>
-        .
-      </Typography>
-      <Typography className={classes.appealText}>
-        This enables more people to contribute to your ideas and experiences to fight climate change
-        together!
-      </Typography>
-    </div>
-  );
-};

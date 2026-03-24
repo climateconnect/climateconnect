@@ -101,6 +101,7 @@ None.
 ## Log
 - 2026-03-05 08:00 - Task created from GitHub issue #42. Branch: `allow_online_location_for_project`. Handing off for system impact analysis.
 - 2026-03-05 09:00 - System impact analysis complete. `Project` entity extended with `is_online: Boolean (default: false)`. Flow 2 updated in `core-flows.md`. Existing project REST endpoints extended additively — no new endpoints, no breaking changes. Edit form implementation blocked on pending design.
+- 2026-03-09 11:21 - Implemented backend changes. 
 
 ## Acceptance Criteria
 

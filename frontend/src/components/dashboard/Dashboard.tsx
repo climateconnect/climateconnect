@@ -196,7 +196,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
 type Props = {
   hubUrl?: string;
   className?: any;
-  location?: any;
+  hubName?: string;
   welcomeMessageLoggedIn?: string;
   welcomeMessageLoggedOut?: string;
 };
@@ -204,7 +204,7 @@ type Props = {
 export default function Dashboard({
   hubUrl,
   className,
-  location,
+  hubName,
   welcomeMessageLoggedIn,
   welcomeMessageLoggedOut,
 }: Props) {
@@ -214,7 +214,7 @@ export default function Dashboard({
     page: "dashboard",
     locale: locale,
     user: user || undefined,
-    location: location,
+    hubName: hubName,
   });
   const [userOrganizations, setUserOrganizations] = useState(null);
   const token = new Cookies().get("auth_token");

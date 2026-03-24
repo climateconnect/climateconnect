@@ -74,7 +74,7 @@ jobs:
 
 
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_133C8292DDC0414CB6E553F785F6B07D }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E2678D2F6F234573A28809CEDF101351 }}
@@ -86,3 +86,5 @@ jobs:
         with:
           app-name: 'climate-backend-appservice'
           slot-name: 'slot2'
+          package: .
+          clean: true

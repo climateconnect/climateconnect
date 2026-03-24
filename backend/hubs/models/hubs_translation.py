@@ -46,7 +46,7 @@ class HubTranslation(models.Model):
     )
 
     welcome_message_logged_in_translation = models.CharField(
-        help_text='Displayed on the dashboard on location hubs when logged in. Starts with "Hi $user.name"',
+        help_text='Displayed on the dashboard on location hubs when logged in. First name can be personalised using ${user.first_name}."',
         verbose_name="Translation of welcome message (logged in)",
         max_length=2048,
         null=True,

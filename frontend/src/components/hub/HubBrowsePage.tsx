@@ -63,7 +63,6 @@ export interface HubBrowsePageProps {
   initialLocationFilter: any;
   filterChoices: any;
   allHubs: any[];
-  hubLocation: any;
   hubData: any;
   hubDescription: any;
   projectTypes: any[];
@@ -120,7 +119,6 @@ export async function getHubBrowseServerSideProps(ctx) {
       stats: hubData?.stats ?? null,
       statBoxTitle: hubData?.stat_box_title ?? null,
       image_attribution: hubData?.image_attribution ?? null,
-      hubLocation: hubData?.location?.length > 0 ? hubData?.location[0] : null,
       filterChoices: {
         sectors: sectorOptions,
         organization_types: organization_types,
@@ -155,7 +153,6 @@ export default function HubBrowsePage({
   initialLocationFilter,
   filterChoices,
   allHubs,
-  hubLocation,
   hubData,
   hubDescription,
   projectTypes,
@@ -290,7 +287,6 @@ export default function HubBrowsePage({
             welcomeMessageLoggedIn={welcomeMessageLoggedIn}
             welcomeMessageLoggedOut={welcomeMessageLoggedOut}
             isLocationHub={isLocationHub}
-            location={hubLocation}
             hubData={hubData}
             image={getImageUrl(image)}
           />
