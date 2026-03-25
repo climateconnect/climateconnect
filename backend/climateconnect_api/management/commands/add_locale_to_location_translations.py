@@ -20,7 +20,6 @@ from location.models import Location, LocationTranslation
 from location.utility import format_location_name
 from location.utility import format_translation_data
 
-
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
 CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 MAPPING_TABLE_PATH = Path(__file__).parent / "osm_lookup_tables" / "mapping.csv"
