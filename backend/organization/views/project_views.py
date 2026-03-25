@@ -3,7 +3,6 @@ import traceback
 
 from dateutil.parser import parse
 from django.conf import settings
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models import GeometryField, Union
 from django.contrib.gis.db.models.functions import Distance
