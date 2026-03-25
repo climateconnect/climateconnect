@@ -3,6 +3,90 @@ import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
 export default function getProjectTexts({ project, user, url_slug, locale, creator, hubName }) {
+  // Helper function to generate draft text for different project types
+  const getDraftText = (type: "project" | "idea" | "event") => {
+    const typeConfig = {
+      project: {
+        enText: "project drafts",
+        deText: "Projektentwürfe",
+        enSection: "in the my projects section",
+        deSection: "Meine Projekte",
+        anchor: "#projects",
+      },
+      idea: {
+        enText: "idea drafts",
+        deText: "Ideentwürfe",
+        enSection: "in the my ideas section",
+        deSection: "Meine Ideen",
+        anchor: "#ideas",
+      },
+      event: {
+        enText: "event drafts",
+        deText: "Veranstaltungentwürfe",
+        enSection: "in the my events section",
+        deSection: "Meine Veranstaltungen",
+        anchor: "#events",
+      },
+    };
+
+    const config = typeConfig[type];
+    const profileUrl = `${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
+      hubName ? `?hub=${hubName}` : ""
+    }${config.anchor}`;
+
+    return {
+      en: (
+        <>
+          You can view, edit and publish your {config.enText}{" "}
+          <Link href={profileUrl}>{config.enSection}</Link> of your profile
+        </>
+      ),
+      de: (
+        <>
+          Du kannst deine {config.deText}{" "}
+          <Link href={profileUrl}>im Bereich {config.deSection}</Link> deines Profils ansehen,
+          bearbeiten und veröffentlichen
+        </>
+      ),
+    };
+  };
+
+  // Helper function to generate "view your X here" text
+  const getViewHereText = (type: "project" | "idea" | "event") => {
+    const typeConfig = {
+      project: {
+        enText: "project",
+        deText: "Projekt",
+      },
+      idea: {
+        enText: "idea",
+        deText: "Idee",
+      },
+      event: {
+        enText: "event",
+        deText: "Veranstaltung",
+      },
+    };
+
+    const config = typeConfig[type];
+    const viewUrl =
+      getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "");
+
+    return {
+      en: (
+        <>
+          You can view your {config.enText} <Link href={viewUrl}>here</Link>
+        </>
+      ),
+      de: (
+        <>
+          Du kannst dein{config.enText === "event" ? "e" : ""} {config.deText}{" "}
+          <Link href={viewUrl}>hier</Link> ansehen
+        </>
+      ),
+    };
+  };
+
   return {
     // Project type translations (based on type_id)
     project_type_idea: {
@@ -847,73 +931,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Beim Versuch dein Projekt zu veröffentlichen, ist ein Fehler aufgetreten. Prüfen die console für weitere Informationen.",
     },
-    your_project_has_saved_as_a_draft: {
-      en: "Your project has saved as a draft!",
-      de: "Dein Projekt wurde als Entwurf gespeichert!",
-    },
-    you_can_view_edit_and_publish_your_project_drafts_in_the: {
-      en: (
-        <>
-          You can view, edit and publish your project drafts{" "}
-          <Link
-            href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
-              hubName ? `?hub=${hubName}` : ""
-            }#projects`}
-          >
-            in the my projects section
-          </Link>{" "}
-          of your profile
-        </>
-      ),
-      de: (
-        <>
-          Du kannst deine Projektentwürfe{" "}
-          <Link
-            href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
-              hubName ? `?hub=${hubName}` : ""
-            }#projects`}
-          >
-            im Bereich {"Meine Projekte"}
-          </Link>{" "}
-          deines Profils ansehen, bearbeiten und veröffentlichen
-        </>
-      ),
-    },
-    congratulations_your_project_has_been_published: {
-      en: "Congratulations! Your project has been published!",
-      de: "Glückwunsch! Dein Projekt ist veröffentlicht worden!",
-    },
     we_are_really_happy_that_you_inspire_the_global_climate_action_community: {
       en: "We are really happy that you inspire the global climate action community!",
       de: "Wir freuen uns sehr, dass du die globale Klimaschutz-Community inspirierst!",
     },
-    you_can_view_your_project_here: {
-      en: (
-        <>
-          You can view your project{" "}
-          <Link
-            href={
-              getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "")
-            }
-          >
-            here
-          </Link>
-        </>
-      ),
-      de: (
-        <>
-          Du kannst dein Projekt{" "}
-          <Link
-            href={
-              getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "")
-            }
-          >
-            hier
-          </Link>{" "}
-          ansehen
-        </>
-      ),
-    },
+    you_can_view_your_project_here: getViewHereText("project"),
+    you_can_view_your_idea_here: getViewHereText("idea"),
+    you_can_view_your_event_here: getViewHereText("event"),
+
     add_sectors_that_fit: {
       en: "Add topics which fit:",
       de: "Füge Themenfelder hinzu, die passen:",
@@ -1194,6 +1219,33 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     do_you_want_to_delete_your_project: {
       en: "Do you want to delete this project?",
       de: "Möchtest Du dieses Projekt löschen?",
+    },
+    your_project_has_been_saved_as_a_draft: {
+      en: "Your project has been saved as a draft!",
+      de: "Dein Projekt wurde als Entwurf gespeichert!",
+    },
+    your_idea_has_been_saved_as_a_draft: {
+      en: "Your idea has been saved as a draft!",
+      de: "Deine Idee wurde als Entwurf gespeichert!",
+    },
+    your_event_has_been_saved_as_a_draft: {
+      en: "Your event has been saved as a draft!",
+      de: "Deine Veranstaltung wurde als Entwurf gespeichert!",
+    },
+    you_can_view_edit_and_publish_your_project_drafts_in_the: getDraftText("project"),
+    you_can_view_edit_and_publish_your_idea_drafts_in_the: getDraftText("idea"),
+    you_can_view_edit_and_publish_your_event_drafts_in_the: getDraftText("event"),
+    congratulations_your_project_has_been_published: {
+      en: "Congratulations! Your project has been published!",
+      de: "Glückwunsch! Dein Projekt ist veröffentlicht worden!",
+    },
+    congratulations_your_idea_has_been_published: {
+      en: "Congratulations! Your idea has been published!",
+      de: "Glückwunsch! Deine Idee ist veröffentlicht worden!",
+    },
+    congratulations_your_event_has_been_published: {
+      en: "Congratulations! Your event has been published!",
+      de: "Glückwunsch! Deine Veranstaltung ist veröffentlicht worden!",
     },
   };
 }
