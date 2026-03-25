@@ -75,7 +75,7 @@ export default function EditProjectRoot({
   const texts = getTexts({ page: "project", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-  const draftReqiredProperties = {
+  const draftRequiredProperties = {
     name: texts.project_name,
   };
   const overviewInputsRef = useRef(null as HTMLInputElement | null);
@@ -125,18 +125,32 @@ export default function EditProjectRoot({
       });
       return false;
     }
-    if (isDraft && Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0) {
-      Object.keys(draftReqiredProperties).map((key) => {
+    if (isDraft && Object.keys(draftRequiredProperties).filter((key) => !project[key]).length > 0) {
+      Object.keys(draftRequiredProperties).map((key) => {
         if (!project[key]) {
           alert(
             texts.your_project_draft_is_missing_the_following_reqired_property +
               " " +
-              draftReqiredProperties[key]
+              draftRequiredProperties[key]
           );
           return false;
         }
       });
     }
+
+    if (isDraft) {
+      const missingKey = Object.keys(draftRequiredProperties).filter((key) => !project[key]);
+      if (missingKey.length > 0) {
+        const firstMissing = missingKey[0];
+        alert(
+          texts.your_project_draft_is_missing_the_following_reqired_property +
+            " " +
+            draftRequiredProperties[firstMissing]
+        );
+        return false;
+      }
+    }
+
     return true;
   };
 

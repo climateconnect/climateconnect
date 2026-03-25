@@ -89,6 +89,16 @@ export function checkProjectDatesValid(project, texts, isDraft = false) {
     }
 
     if (PROJECT_TYPE_OPTIONS[project.project_type.type_id].enableEndDate) {
+      // Validate End Date exists (if not draft)
+      if (!isDraft && !project.end_date) {
+        return {
+          valid: false,
+          error: {
+            key: "end_date",
+            value: `${texts.please_fill_out_this_field}: ${texts.end_date}`,
+          },
+        };
+      }
       // If end_date is present, it must be valid (regardless of draft status)
       if (project.end_date && !dayjs(project.end_date).isValid()) {
         return {

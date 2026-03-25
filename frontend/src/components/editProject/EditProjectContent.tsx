@@ -111,7 +111,6 @@ export default function EditProjectContent({
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
   };
-
   /*
     This is a helper function just for <ProjectDateSection>
     It's a bit of a hack to be able to use the same code even though handleSetProject
