@@ -11,28 +11,25 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         deText: "Projektentwürfe",
         enSection: "in the my projects section",
         deSection: "Meine Projekte",
-        anchor: "#projects",
       },
       idea: {
         enText: "idea drafts",
         deText: "Ideentwürfe",
         enSection: "in the my ideas section",
         deSection: "Meine Ideen",
-        anchor: "#projects",
       },
       event: {
         enText: "event drafts",
         deText: "Veranstaltungentwürfe",
         enSection: "in the my events section",
         deSection: "Meine Veranstaltungen",
-        anchor: "#projects",
       },
     };
 
     const config = typeConfig[type];
     const profileUrl = `${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
       hubName ? `?hub=${hubName}` : ""
-    }${config.anchor}`;
+    }#projects`;
 
     return {
       en: (
