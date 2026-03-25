@@ -85,5 +85,25 @@ export default function getProjectTypeTexts(texts) {
       idea: texts.delete_idea,
       event: texts.delete_event,
     },
+    draftProject: {
+      project: texts.your_project_has_been_saved_as_a_draft,
+      idea: texts.your_idea_has_been_saved_as_a_draft,
+      event: texts.your_event_has_been_saved_as_a_draft,
+    },
+    editAndPublishDraftProject: {
+      project: texts.you_can_view_edit_and_publish_your_project_drafts_in_the,
+      idea: texts.you_can_view_edit_and_publish_your_idea_drafts_in_the,
+      event: texts.you_can_view_edit_and_publish_your_event_drafts_in_the,
+    },
+    publishProject: {
+      project: texts.congratulations_your_project_has_been_published,
+      idea: texts.congratulations_your_idea_has_been_published,
+      event: texts.congratulations_your_event_has_been_published,
+    },
+    viewProject: {
+      project: texts.you_can_view_your_project_here,
+      idea: texts.you_can_view_your_idea_here,
+      event: texts.you_can_view_your_event_here,
+    },
   };
 }
