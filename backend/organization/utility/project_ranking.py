@@ -178,7 +178,11 @@ class ProjectRanking:
                 if is_past_event:
                     return -99
                 # The event is currently ongoing. Increase its score the closer it its end it is (this is especially relevant for multi-week-projects)
-                elif start_date and end_date and start_date.timestamp() < timezone.now().timestamp():
+                elif (
+                    start_date
+                    and end_date
+                    and start_date.timestamp() < timezone.now().timestamp()
+                ):
                     return self._recency_score(
                         timedelta=end_date.timestamp() - timezone.now().timestamp(),
                         base_score_timeframe=end_date.timestamp()

@@ -573,9 +573,7 @@ class CreateProjectView(APIView):
                 translations_object = get_project_translations(request.data)
             except ValueError:
                 # Translation parsing failed, but continue without translations
-                logger.warning(
-                    "Failed to parse translations for project creation"
-                )
+                logger.warning("Failed to parse translations for project creation")
 
         source_language = None
         translations = None
