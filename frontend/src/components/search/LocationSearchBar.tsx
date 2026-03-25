@@ -148,6 +148,10 @@ export default function LocationSearchBar({
             state: "",
             place_id: 1,
             osm_id: -1,
+            osm_type: "relation",
+            class: "global",
+            osm_class: "global",
+            osm_class_type: "global",
             lon: -1,
             lat: -1,
           },
@@ -200,7 +204,7 @@ export default function LocationSearchBar({
           const options = data.map((option) => ({
             ...option,
             simple_name: getSimpleName(option, enableExactLocation),
-            key: option.place_id,
+            key: `${option.osm_id || "na"}-${option.osm_type}-${option.osm_class || "na"}`,
           }));
           setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);

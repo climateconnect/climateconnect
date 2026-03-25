@@ -1,7 +1,13 @@
 from django.test import TestCase, override_settings
 
 from location.models import Location
-from location.utility import _osm_type_char, format_location_name, get_location
+from location.utility import (
+    _get_newest_location_by_osm_composite,
+    _osm_type_char,
+    format_location_name,
+    get_global_location,
+    get_location,
+)
 
 
 class TestFormatLocationName(TestCase):
@@ -230,6 +236,69 @@ class TestGetLocation(TestCase):
         self.assertEqual(location.state, "")
         self.assertEqual(location.place_name, "")
         self.assertEqual(location.exact_address, "")
+
+    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    def test_returns_newest_for_duplicate_osm_composite(self):
+        """When duplicates exist for one OSM composite key, newest (highest id) is returned."""
+        older = Location.objects.create(
+            name="Berlin Older",
+            city="Berlin",
+            country="Germany",
+            osm_id=62422,
+            osm_type="R",
+            osm_class="boundary",
+            place_id=100,
+        )
+        newer = Location.objects.create(
+            name="Berlin Newer",
+            city="Berlin",
+            country="Germany",
+            osm_id=62422,
+            osm_type="R",
+            osm_class="boundary",
+            place_id=101,
+        )
+
+        result = _get_newest_location_by_osm_composite(62422, "relation", "boundary")
+
+        self.assertEqual(result.id, newer.id)
+        self.assertNotEqual(result.id, older.id)
+
+    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    def test_get_location_prefers_osm_composite_over_place_id(self):
+        """OSM composite lookup must take precedence when both OSM and place_id are available."""
+        Location.objects.create(
+            name="Legacy Place Match",
+            city="Berlin",
+            country="Germany",
+            place_id=12345,
+            osm_id=1,
+            osm_type="R",
+            osm_class="old",
+        )
+
+        expected = Location.objects.create(
+            name="OSM Match",
+            city="Berlin",
+            country="Germany",
+            place_id=99999,
+            osm_id=62422,
+            osm_type="R",
+            osm_class="boundary",
+        )
+
+        result = get_location(self.valid_location_object)
+        self.assertEqual(result.id, expected.id)
+
+    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    def test_global_location_has_synthetic_osm_fields(self):
+        global_location = get_global_location()
+
+        self.assertEqual(global_location.name, "Global")
+        self.assertEqual(global_location.osm_id, -1)
+        self.assertEqual(global_location.osm_type, "R")
+        self.assertEqual(global_location.osm_class, "global")
+        self.assertEqual(global_location.osm_class_type, "global")
 
     @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="True")
     def test_legacy_location_format(self):

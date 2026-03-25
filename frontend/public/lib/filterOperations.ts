@@ -7,9 +7,11 @@ import { getInfoMetadataByType, getReducedPossibleFilters } from "./parsingOpera
 import { encodeQueryParamsFromFilters } from "./urlOperations";
 
 const getLocationFilterUrl = (location) => {
-  /*Pass place id. If the place id is found in our db we can use it's polygon,
+  /*Pass osm_id, osm_type and osm_class. If they are found in our db we can use their polygon,
   otherwise make a request to the location API with the backend */
-  return `place=${location.place_id}&osm=${location.osm_id}&loc_type=${location.osm_type}&`;
+  const osmType = location.osm_type;
+  const osmClass = location.osm_class;
+  return `place_id=${location.place_id}&osm_id=${location.osm_id}&osm_type=${osmType}&osm_class=${osmClass}&`;
 };
 
 export function buildUrlEndingFromFilters(filters) {
