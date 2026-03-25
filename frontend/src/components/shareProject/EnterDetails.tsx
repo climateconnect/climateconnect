@@ -15,6 +15,8 @@ import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
 import { useTheme } from "@mui/styles";
+import dayjs from "dayjs";
+import EventRegistrationSection from "./EventRegistrationSection";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -90,6 +92,8 @@ export default function EnterDetails({
   const [errors, setErrors] = useState({
     start_date: "",
     end_date: "",
+    max_participants: "",
+    registration_end_date: "",
   });
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
@@ -110,6 +114,70 @@ export default function EnterDetails({
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
+  };
+
+  // Validates event registration fields.
+  // isDraft=false: required fields must be present and valid.
+  // isDraft=true:  only validates fields that have a value (skips required checks).
+  // Returns true when valid, false and sets inline errors when invalid.
+  const validateRegistrationFields = (project, isDraft = false): boolean => {
+    if (!project.registrationEnabled || project.project_type?.type_id !== "event") {
+      return true;
+    }
+
+    const hasParticipants =
+      project.max_participants !== null &&
+      project.max_participants !== undefined &&
+      project.max_participants !== "";
+
+    if (
+      isDraft
+        ? hasParticipants && Number(project.max_participants) < 1
+        : !project.max_participants || Number(project.max_participants) <= 0
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        max_participants: texts.max_participants_must_be_greater_than_0,
+      }));
+      return false;
+    }
+
+    const hasEndDate = !!project.registration_end_date;
+
+    if (
+      isDraft
+        ? hasEndDate && !dayjs(project.registration_end_date).isValid()
+        : !hasEndDate || !dayjs(project.registration_end_date).isValid()
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        registration_end_date: isDraft
+          ? `${texts.invalid_value}: ${texts.registration_end_date}`
+          : `${texts.please_fill_out_this_field}: ${texts.registration_end_date}`,
+      }));
+      return false;
+    }
+
+    if (
+      project.end_date &&
+      hasEndDate &&
+      dayjs(project.registration_end_date).isAfter(dayjs(project.end_date))
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        registration_end_date: texts.registration_end_date_must_be_before_event_end_date,
+      }));
+      return false;
+    }
+
+    return true;
+  };
+
+  // Validate registration fields for draft saves:
+  // required fields are skipped, but if a value was entered it must be valid.
+  const handleSaveAsDraft = (event) => {
+    if (!validateRegistrationFields(projectData, true)) return;
+    saveAsDraft(event);
   };
 
   const onClickNextStep = (event) => {
@@ -162,6 +230,8 @@ export default function EnterDetails({
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
       return false;
     }
+    // Validate event registration settings when enabled
+    if (!validateRegistrationFields(project)) return false;
     return true;
   };
 
@@ -253,6 +323,18 @@ export default function EnterDetails({
               helperText={projectTypeTexts.website_helper[projectData.project_type.type_id]}
             />
           </div>
+          {projectData.registrationEnabled && projectData.project_type?.type_id === "event" && (
+            <div className={classes.block}>
+              <EventRegistrationSection
+                projectData={projectData}
+                handleSetProjectData={handleSetProjectData}
+                errors={{
+                  max_participants: errors.max_participants,
+                  registration_end_date: errors.registration_end_date,
+                }}
+              />
+            </div>
+          )}
           <div className={classes.block}>
             <Typography
               component="h2"
@@ -280,7 +362,7 @@ export default function EnterDetails({
             className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
-            saveAsDraft={projectData.name ? saveAsDraft : undefined}
+            saveAsDraft={projectData.name ? handleSaveAsDraft : undefined}
             loadingSubmit={loadingSubmit}
             loadingSubmitDraft={loadingSubmitDraft}
             position="bottom"

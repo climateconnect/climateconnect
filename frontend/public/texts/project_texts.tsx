@@ -1217,6 +1217,38 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Do you want to delete this project?",
       de: "Möchtest Du dieses Projekt löschen?",
     },
+    registration: {
+      en: "Registration",
+      de: "Anmeldung",
+    },
+    registration_settings: {
+      en: "Registration settings",
+      de: "Eventanmeldung einrichten",
+    },
+    allow_online_registration: {
+      en: "Allow members to register online for the event",
+      de: "Mitgliedern erlauben, sich online für das Event anzumelden",
+    },
+    registration_enabled_help_text: {
+      en: "In the next step you can configure the event registration.",
+      de: "Im nächsten Schritt kannst du die Eventanmeldung konfigurieren.",
+    },
+    max_participants: {
+      en: "Max. number of guests",
+      de: "Max. Anzahl Teilnehmende",
+    },
+    max_participants_must_be_greater_than_0: {
+      en: "Maximum number of guests must be greater than 0",
+      de: "Die maximale Anzahl an Teilnehmenden muss größer als 0 sein",
+    },
+    registration_end_date: {
+      en: "End of registration",
+      de: "Ende der Anmeldung",
+    },
+    registration_end_date_must_be_before_event_end_date: {
+      en: "Registration end date must be before or equal to the event end date",
+      de: "Das Anmeldeende muss vor oder gleich dem Ende des Events liegen",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",

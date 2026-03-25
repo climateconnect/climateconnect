@@ -39,3 +39,5 @@ from organization.models.sector import (
     OrganizationSectorMapping,
     UserProfileSectorMapping,
 )
+
+from organization.models.event_registration import EventRegistration, RegistrationStatus

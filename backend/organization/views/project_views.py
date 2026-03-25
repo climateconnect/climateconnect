@@ -61,6 +61,7 @@ from organization.models import (
 )
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
+from organization.models.event_registration import EventRegistration
 from organization.models.type import PROJECT_TYPES, ProjectTypesChoices
 from organization.pagination import (
     MembersPagination,
@@ -76,6 +77,7 @@ from organization.permissions import (
     ReadWriteSensibleProjectDataPermission,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
+from organization.serializers.event_registration import EventRegistrationSerializer
 from organization.serializers.project import (
     EditProjectSerializer,
     InsertProjectMemberSerializer,
@@ -183,7 +185,7 @@ class ListProjectsView(ListAPIView):
         # Get project ranking
         projects = (
             Project.objects.filter(is_draft=False, is_active=True)
-            .select_related("loc", "language", "status")
+            .select_related("loc", "language", "status", "event_registration")
             .prefetch_related(
                 "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
@@ -478,8 +480,8 @@ class CreateProjectView(APIView):
         else:
             organization = None
 
-        is_draft_input = request.data.get("is_draft", False)
-        is_draft = is_draft_input in (True, "true", "True", "1", 1)
+        is_draft = request.data.get("is_draft", False) in (True, "true", "True", "1", 1)
+
         required_params = ["name"]
         # If 'is_draft' is not set or is set to a falsy value then run the code in this if block
         if not is_draft:
@@ -525,6 +527,32 @@ class CreateProjectView(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+
+        # --- event_registration pre-creation validation ---
+        # Run before the status check so invalid data is rejected early.
+        # Type coercion (str→int, str→datetime) and business rules are handled
+        # by EventRegistrationSerializer — no manual int()/parse() needed.
+        er_data = request.data.get("event_registration")
+        er_serializer = None
+        if er_data is not None:
+            project_type_id = (request.data.get("project_type") or {}).get(
+                "type_id", ""
+            )
+            end_date_raw = request.data.get("end_date")
+            er_serializer = EventRegistrationSerializer(
+                data=er_data,
+                context={
+                    "is_event_type": project_type_id == "event",
+                    "is_draft": is_draft,
+                    "event_end_date": parse(end_date_raw) if end_date_raw else None,
+                },
+            )
+            if not er_serializer.is_valid():
+                return Response(
+                    er_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                )
+        # --- end event_registration validation ---
+
         try:
             ProjectStatus.objects.get(id=int(request.data["status"]))
         except ProjectStatus.DoesNotExist:
@@ -535,6 +563,7 @@ class CreateProjectView(APIView):
                     )
                 }
             )
+
         translations_object = None
         # Only process translations if both source_language and translations are provided
         if "source_language" in request.data and "translations" in request.data:
@@ -542,9 +571,7 @@ class CreateProjectView(APIView):
                 translations_object = get_project_translations(request.data)
             except ValueError:
                 # Translation parsing failed, but continue without translations
-                logger.warning(
-                    "Failed to parse translations for project creation"
-                )
+                logger.warning("Failed to parse translations for project creation")
 
         source_language = None
         translations = None
@@ -555,6 +582,16 @@ class CreateProjectView(APIView):
             translations = translations_object["translations"]
 
         project = create_new_project(request.data, source_language)
+
+        # Create EventRegistration whenever the key is present in the payload.
+        # validated_data already contains correctly typed Python values —
+        # no int()/parse() conversions needed here.
+        if er_serializer is not None:
+            EventRegistration.objects.create(
+                project=project,
+                **er_serializer.validated_data,
+            )
+            logger.info("EventRegistration created for project %s", project.url_slug)
 
         if translations_object and translations and source_language:
             for language in translations:
@@ -731,7 +768,9 @@ class ProjectAPIView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(url_slug=str(url_slug))
+            project = Project.objects.select_related("event_registration").get(
+                url_slug=str(url_slug)
+            )
         except Project.DoesNotExist:
             return Response(
                 {"message": "Project not found: {}".format(url_slug)},
@@ -909,6 +948,75 @@ class ProjectAPIView(APIView):
 
             project_parents.parent_organization = organization
             project_parents.save()
+
+        # --- event_registration update handling ---
+        # The key must be explicitly present in the payload to trigger any action,
+        # so callers that don't mention event_registration at all leave it untouched.
+        # None means the field was not touched by the frontend — skip entirely.
+        if "event_registration" in request.data:
+            er_patch = request.data["event_registration"]
+
+            # project.is_draft was already updated earlier in this method
+            # (if "is_draft" in request.data: project.is_draft = False), so
+            # reading it here gives the correct post-save draft state.
+            will_be_draft = project.is_draft
+
+            if er_patch is not None:
+                # Fetch existing ER once — used by validation (merged-state
+                # required-field check) and the persist step below.
+                existing_er = EventRegistration.objects.filter(project=project).first()
+
+                # partial=True: only provided fields appear in validated_data,
+                # so unmentioned fields on existing_er are left untouched.
+                # Type coercion (str→int, str→datetime) and business rules are
+                # handled by EventRegistrationSerializer — no manual int()/parse() needed.
+                er_serializer = EventRegistrationSerializer(
+                    data=er_patch,
+                    partial=True,
+                    context={
+                        # project_type cannot change via the frontend.
+                        "is_event_type": project.project_type
+                        == ProjectTypesChoices.event,
+                        "is_draft": will_be_draft,
+                        "event_end_date": project.end_date,
+                        "existing_er": existing_er,
+                    },
+                )
+                if not er_serializer.is_valid():
+                    return Response(
+                        er_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                # --- persist ---
+                if existing_er is None:
+                    EventRegistration.objects.create(
+                        project=project,
+                        **er_serializer.validated_data,
+                    )
+                    logger.info(
+                        "EventRegistration created via PATCH for project %s",
+                        project.url_slug,
+                    )
+                else:
+                    for attr, value in er_serializer.validated_data.items():
+                        setattr(existing_er, attr, value)
+                    # TODO (registrations feature): after setattr loop, re-evaluate
+                    # status when max_participants has changed:
+                    #   new_max = existing_er.max_participants  (already set above)
+                    #   current_count = existing_er.registrations.select_for_update()
+                    #                                           .count()
+                    #   if new_max > current_count and existing_er.status == FULL:
+                    #       existing_er.status = OPEN   # capacity raised
+                    #   elif new_max <= current_count and existing_er.status == OPEN:
+                    #       existing_er.status = FULL   # capacity lowered below signups
+                    # Wrap this block + existing_er.save() in @transaction.atomic.
+                    existing_er.save()
+                    logger.info(
+                        "EventRegistration updated via PATCH for project %s",
+                        project.url_slug,
+                    )
+        # --- end event_registration update handling ---
+
         project.save()
 
         items_to_translate = [

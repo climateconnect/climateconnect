@@ -30,7 +30,9 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         project_kwargs["status_id"] = data["status"]
     project_type_data = data.get("project_type")
     if project_type_data and "type_id" in project_type_data:
-        project_kwargs["project_type"] = ProjectTypesChoices[project_type_data["type_id"]]
+        project_kwargs["project_type"] = ProjectTypesChoices[
+            project_type_data["type_id"]
+        ]
 
     project = Project.objects.create(**project_kwargs)
     # Add all non required parameters if they exists in the request.

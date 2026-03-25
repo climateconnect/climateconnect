@@ -177,7 +177,7 @@ This document provides comprehensive documentation of the main domain entities i
 **Relationships**:
 - **ForeignKey**: `ProjectStatus`, `Location`, `Language`
 - **ManyToMany**: `Hub` (related_hubs)
-- **Referenced by**: `ProjectTranslation`, `ProjectParents`, `ProjectMember`, `ProjectCollaborators`, `ProjectTagging`, `ProjectSectorMapping`, `ProjectComment`, `Post`, `ProjectFollower`, `ProjectLike`, `OrgProjectPublished`, `ContentShares`
+- **Referenced by**: `ProjectTranslation`, `ProjectParents`, `ProjectMember`, `ProjectCollaborators`, `ProjectTagging`, `ProjectSectorMapping`, `ProjectComment`, `Post`, `ProjectFollower`, `ProjectLike`, `OrgProjectPublished`, `ContentShares`, `EventRegistration`
 
 ---
 
@@ -315,6 +315,47 @@ This document provides comprehensive documentation of the main domain entities i
   - **ForeignKey**: `Project`, `Organization` (nullable), `User` (nullable)
 - **ProjectCollaborators**:
   - **ForeignKey**: `Project`, `Organization`
+
+---
+
+### EventRegistration
+
+**Summary**: Online registration settings for event-type projects.
+
+**Description**: Stores registration configuration for a `Project` of type `event`. The presence of an `EventRegistration` row is the sole source of truth for whether online registration is enabled — no separate boolean flag on `Project` is needed. Both `max_participants` and `registration_end_date` are nullable to support draft events where settings have not yet been finalised; all constraints are enforced on publish (`is_draft=false`).
+
+**Key rules**:
+- Only valid for projects of type `event`; rejected with 400 for other project types
+- `registration_end_date` must be ≤ the event's `end_date`
+- `max_participants` must be > 0
+- Required fields (`max_participants`, `registration_end_date`) are enforced on publish; skipped when saving as draft
+- `status` controls the explicit registration lifecycle (see table below); organiser may set `open` or `closed`; `full` is reserved for the system when capacity is reached
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `project` | OneToOneField | FK → `Project`, CASCADE delete |
+| `max_participants` | PositiveIntegerField | Nullable (draft allowed); must be > 0 |
+| `registration_end_date` | DateTimeField (TIMESTAMPTZ) | Nullable (draft allowed); must be ≤ event `end_date`; stored in UTC |
+| `status` | CharField (enum) | `open` (default) / `closed` / `full` — see status table below |
+| `created_at` | DateTimeField | Auto-set on creation |
+| `updated_at` | DateTimeField | Auto-updated on save |
+
+**Registration status values** (`RegistrationStatus`):
+| Value | Set by | Meaning |
+|---|---|---|
+| `open` | Default / organiser | Accepting sign-ups (subject to `registration_end_date` and `max_participants`) |
+| `closed` | Organiser (via API) | Manually closed before the end date; organiser can re-open |
+| `full` | System (future: on last accepted signup, same transaction) | Capacity reached; blocked until a cancellation drops count below `max_participants` |
+
+**Effective "accepting signups?" check**: `status == open AND now() < registration_end_date`
+
+**Relationships**:
+- **OneToOne**: `Project` (related_name: `event_registration`, CASCADE delete)
+
+**Model location**: `organization/models/event_registration.py`
+
+**Serializer location**: `organization/serializers/event_registration.py`
 
 ---
 
@@ -637,7 +678,8 @@ Project
 ├── Posts (updates)
 ├── Comments (ProjectComment)
 ├── Followers (ProjectFollower)
-└── Likes (ProjectLike)
+├── Likes (ProjectLike)
+└── EventRegistration (OneToOne - event type only, nullable)
 
 Hub
 ├── Parent Hub (ForeignKey Self)
@@ -710,3 +752,5 @@ This architecture supports a comprehensive climate action platform with social n
 ## Version History
 
 - **2025-11-27**: Initial documentation
+- **2026-03-19**: Added `EventRegistration` entity (GitHub issue #43). New 1-to-1 relationship on `Project` (event type only) for online registration settings (`max_participants`, `registration_end_date`). Updated `Project` relationships and Entity Relationship Summary tree.
+- **2026-03-19**: Added `status` field to `EventRegistration` (`RegistrationStatus` enum: `open`/`closed`/`full`). Prepares for use cases: organiser manually closing registration and system auto-closing when capacity is reached.

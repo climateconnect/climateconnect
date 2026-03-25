@@ -94,6 +94,7 @@
            SECRET_KEY: "test-secret-key-for-ci"
            DEBUG: "true"
            ALLOWED_HOSTS: "localhost,127.0.0.1"
+           MEDIA_ROOT: "${{ github.workspace }}/backend/media"
          run: |
            pdm run python manage.py migrate --noinput
 
@@ -110,6 +111,7 @@
            SECRET_KEY: "test-secret-key-for-ci"
            DEBUG: "true"
            ALLOWED_HOSTS: "localhost,127.0.0.1"
+           MEDIA_ROOT: "${{ github.workspace }}/backend/media"
          run: |
            pdm run python manage.py test --keepdb
 

@@ -21,6 +21,7 @@ type Props = {
   maxDate?: Date | Dayjs | null;
   enableTime?: boolean;
   error?: "string";
+  required?: boolean;
 };
 export default function DatePicker({
   label,
@@ -31,6 +32,7 @@ export default function DatePicker({
   maxDate,
   enableTime,
   error,
+  required,
 }: Props) {
   const { locale } = useContext(UserContext);
   const theme = useTheme();
@@ -49,6 +51,7 @@ export default function DatePicker({
       textField: {
         helperText: error,
         error: !!error,
+        required: required,
       },
     },
   };

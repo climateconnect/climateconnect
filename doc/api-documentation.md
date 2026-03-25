@@ -309,8 +309,59 @@ In Swagger UI, endpoints with a 🔒 lock icon require authentication.
 | `/api/projects/` | GET | No | List all projects |
 | `/api/projects/` | POST | Yes | Create a new project |
 | `/api/projects/{slug}/` | GET | No | Get project details |
-| `/api/projects/{slug}/` | PUT | Yes | Update a project |
+| `/api/projects/{slug}/` | PATCH | Yes | Update a project |
 | `/api/projects/{slug}/members/` | GET | No | List project members |
+
+#### Event Registration (`event_registration`)
+
+Event-type projects expose an optional nested `event_registration` object on all project endpoints. For non-event projects the field is always `null`.
+
+**Response shape** (`GET /api/projects/` and `GET /api/projects/{slug}/`):
+```json
+{
+  "event_registration": {
+    "max_participants": 100,
+    "registration_end_date": "2026-06-01T23:59:00Z",
+    "status": "open"
+  }
+}
+```
+Returns `null` when registration is not enabled.
+
+**Request body** (`POST /api/projects/` and `PATCH /api/projects/{slug}/`):
+```json
+{
+  "event_registration": {
+    "max_participants": 100,
+    "registration_end_date": "2026-06-01T23:59:00Z",
+    "status": "closed"
+  }
+}
+```
+Omitting the `event_registration` key entirely on `PATCH` leaves existing settings untouched.
+
+**Validation rules**:
+| Rule | Enforced when |
+|---|---|
+| Only allowed for `project_type = event` | Always |
+| `max_participants` must be > 0 | Always (when value is provided) |
+| `registration_end_date` must be ≤ event `end_date` | Always (when both are present) |
+| Both fields are required | On publish (`is_draft=false`) only |
+| Both fields are optional / nullable | When saving as draft (`is_draft=true`) |
+| `status` must be `open` or `closed` (not `full`) | Always on write |
+
+**Registration status** (`status` field):
+| Value | Who sets it | Meaning |
+|---|---|---|
+| `open` | Default / organiser | Accepting sign-ups (subject to `registration_end_date` and `max_participants`) |
+| `closed` | Organiser via `PATCH` | Manually closed before the end date; can be re-opened with `"status": "open"` |
+| `full` | System only (future) | Capacity reached — cannot be set via the API directly |
+
+Effective "accepting signups?" check: `status == "open" AND now() < registration_end_date`
+
+**Timezone**: `registration_end_date` follows the same convention as `Project.start_date` / `end_date`. Send ISO 8601 strings with an explicit offset or `Z` suffix (e.g. `"2026-06-01T23:59:00Z"`); the backend stores and compares in UTC.
+
+**Feature toggle**: The registration UI is gated behind the `EVENT_REGISTRATION` feature toggle. The API fields are always present (additive, no breaking changes).
 
 ### Organizations
 
@@ -416,5 +467,5 @@ If you encounter issues or have questions about the API:
 
 ---
 
-**Last Updated**: January 14, 2026
+**Last Updated**: March 19, 2026 — Added `status` field to `event_registration` (`open`/`closed`/`full` enum; `full` is system-managed). Added registration status table and validation rule. Previous: Added `event_registration` nested object to project endpoints (issue #43)
 
