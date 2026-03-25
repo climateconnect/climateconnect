@@ -168,6 +168,9 @@ export default function AddTeam({
             className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
+            saveAsDraft={projectData.name ? saveAsDraft : undefined}
+            loadingSubmit={loadingSubmit}
+            loadingSubmitDraft={loadingSubmitDraft}
             position="bottom"
           />
         )}
