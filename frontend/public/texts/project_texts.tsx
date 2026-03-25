@@ -18,14 +18,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         deText: "Ideentwürfe",
         enSection: "in the my ideas section",
         deSection: "Meine Ideen",
-        anchor: "#ideas",
+        anchor: "#projects",
       },
       event: {
         enText: "event drafts",
         deText: "Veranstaltungentwürfe",
         enSection: "in the my events section",
         deSection: "Meine Veranstaltungen",
-        anchor: "#events",
+        anchor: "#projects",
       },
     };
 
