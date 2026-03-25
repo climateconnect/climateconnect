@@ -235,7 +235,7 @@ STATIC_URL = (
 STATIC_ROOT = (
     env("STATIC_ROOT") if env("ENVIRONMENT") in ("development", "test") else "static/"
 )
-MEDIA_ROOT = env("MEDIA_ROOT")
+MEDIA_ROOT = env("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
