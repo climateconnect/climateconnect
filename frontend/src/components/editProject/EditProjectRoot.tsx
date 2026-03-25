@@ -1,7 +1,7 @@
 import { Container, Divider, Typography, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 
@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => {
 
 type Props = {
   project: Project;
-  skillsOptions: any;
   userOrganizations: any;
   handleSetProject: any;
   oldProject: Project;
@@ -59,7 +58,6 @@ type Props = {
 
 export default function EditProjectRoot({
   project,
-  skillsOptions,
   userOrganizations,
   handleSetProject,
   oldProject,
@@ -71,14 +69,14 @@ export default function EditProjectRoot({
   sectorOptions,
 }: Props) {
   const classes = useStyles();
+  const router = useRouter();
   const token = new Cookies().get("auth_token");
   const { locale, locales, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
-  const draftReqiredProperties = {
+  const draftRequiredProperties = {
     name: texts.project_name,
-    loc: texts.location,
   };
   const overviewInputsRef = useRef(null as HTMLInputElement | null);
   const locationInputRef = useRef(null as HTMLInputElement | null);
@@ -110,12 +108,16 @@ export default function EditProjectRoot({
     setLocationOptionsOpen(bool);
   };
   const checkIfProjectValid = (isDraft) => {
+    if (!isDraft && !project.image) {
+      alert(texts.please_add_an_image);
+      return false;
+    }
     if (project?.loc && oldProject?.loc !== project.loc && !isLocationValid(project.loc)) {
       overviewInputsRef.current!.scrollIntoView();
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, handleSetErrorMessage, texts);
       return false;
     }
-    const projectDatesValid = checkProjectDatesValid(project, texts);
+    const projectDatesValid = checkProjectDatesValid(project, texts, isDraft);
     if (projectDatesValid.error) {
       setErrors({
         ...errors,
@@ -123,18 +125,32 @@ export default function EditProjectRoot({
       });
       return false;
     }
-    if (isDraft && Object.keys(draftReqiredProperties).filter((key) => !project[key]).length > 0) {
-      Object.keys(draftReqiredProperties).map((key) => {
+    if (isDraft && Object.keys(draftRequiredProperties).filter((key) => !project[key]).length > 0) {
+      Object.keys(draftRequiredProperties).map((key) => {
         if (!project[key]) {
           alert(
             texts.your_project_draft_is_missing_the_following_reqired_property +
               " " +
-              draftReqiredProperties[key]
+              draftRequiredProperties[key]
           );
           return false;
         }
       });
     }
+
+    if (isDraft) {
+      const missingKey = Object.keys(draftRequiredProperties).filter((key) => !project[key]);
+      if (missingKey.length > 0) {
+        const firstMissing = missingKey[0];
+        alert(
+          texts.your_project_draft_is_missing_the_following_reqired_property +
+            " " +
+            draftRequiredProperties[firstMissing]
+        );
+        return false;
+      }
+    }
+
     return true;
   };
 
@@ -159,7 +175,7 @@ export default function EditProjectRoot({
       locale: locale,
     })
       .then(function () {
-        Router.push({
+        router.push({
           pathname: "/profiles/" + user.url_slug,
           query: {
             message: texts.you_have_successfully_edited_your_project,
@@ -196,7 +212,7 @@ export default function EditProjectRoot({
   }
 
   const handleCancel = () => {
-    Router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
+    router.push(`/projects/${project.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleSubmit = async (event) => {
@@ -235,7 +251,7 @@ export default function EditProjectRoot({
         if (hubUrl) {
           query.hub = hubUrl;
         }
-        Router.push({
+        router.push({
           pathname: "/projects/" + response.data.url_slug,
           query,
         });
@@ -261,7 +277,7 @@ export default function EditProjectRoot({
           if (hubUrl) {
             query.hub = hubUrl;
           }
-          Router.push({
+          router.push({
             pathname: "/profiles/" + user.url_slug,
             query,
           });
@@ -319,12 +335,6 @@ export default function EditProjectRoot({
       rows: 15,
       headlineTextKey: "project_description",
     },
-    {
-      textKey: "helpful_connections",
-      rows: 1,
-      headlineTextKey: "helpful_connections",
-      isArray: true,
-    },
   ];
 
   return (
@@ -354,7 +364,6 @@ export default function EditProjectRoot({
             project={project}
             handleSetProject={handleSetProject}
             userOrganizations={userOrganizations}
-            skillsOptions={skillsOptions}
             user_role={user_role}
             deleteProject={deleteProject}
             errors={errors}
@@ -416,8 +425,6 @@ const parseProjectForRequest = async (project, translationChanges) => {
   if (project.loc) ret.loc = parseLocation(project.loc, true);
   if (project.thumbnail_image)
     ret.thumbnail_image = await blobFromObjectUrl(project.thumbnail_image);
-  if (project.skills) ret.skills = project.skills.map((s) => s.id);
-  if (project.tags) ret.project_tags = project.tags.map((t) => t.id);
   if (project.sectors) ret.sectors = ret.sectors.map((s) => s.key);
   if (project.project_parents && project.project_parents.parent_organization)
     ret.parent_organization = project.project_parents.parent_organization.id;

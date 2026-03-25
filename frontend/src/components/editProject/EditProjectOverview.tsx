@@ -1,4 +1,13 @@
-import { Button, Chip, Container, List, TextField, Grid } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Container,
+  FormControlLabel,
+  List,
+  Switch,
+  TextField,
+  Grid,
+} from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
@@ -7,7 +16,6 @@ import SelectField from "../general/SelectField";
 // Relative imports
 import {
   convertToJPGWithAspectRatio,
-  getImageDialogHeight,
   getImageUrl,
   getResizedImage,
   whitenTransparentPixels,
@@ -19,6 +27,7 @@ import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
 import { Project, Sector } from "../../types";
 import CustomHubSelection from "../project/CustomHubSelection";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
@@ -109,6 +118,12 @@ export default function EditProjectOverview({
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+
+  // Lift image dialog state to parent component
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [tempImage, setTempImage] = useState(project.image ? getImageUrl(project.image) : null);
+  const [isImgLoading, setIsImgLoading] = useState(false);
+
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
   };
@@ -130,6 +145,13 @@ export default function EditProjectOverview({
     locationInputRef: locationInputRef,
     texts: texts,
     sectorOptions: sectorOptions,
+    // Add image dialog props
+    imageDialogOpen: imageDialogOpen,
+    setImageDialogOpen: setImageDialogOpen,
+    tempImage: tempImage,
+    setTempImage: setTempImage,
+    isImgLoading: isImgLoading,
+    setIsImgLoading: setIsImgLoading,
   };
 
   return (
@@ -156,6 +178,13 @@ type ScreenOverviewProps = {
   locationOptionsOpen: boolean;
   texts: Record<string, string>;
   sectorOptions: Sector[];
+  // Add image dialog props
+  imageDialogOpen: boolean;
+  setImageDialogOpen: (open: boolean) => void;
+  tempImage: string | null;
+  setTempImage: (image: string | null) => void;
+  isImgLoading: boolean;
+  setIsImgLoading: (loading: boolean) => void;
 };
 
 function SmallScreenOverview({
@@ -169,6 +198,12 @@ function SmallScreenOverview({
   handleSetLocationOptionsOpen,
   texts,
   sectorOptions,
+  imageDialogOpen,
+  setImageDialogOpen,
+  tempImage,
+  setTempImage,
+  isImgLoading,
+  setIsImgLoading,
 }: ScreenOverviewProps) {
   const classes = useStyles({});
   return (
@@ -178,6 +213,12 @@ function SmallScreenOverview({
         screenSize="small"
         handleChangeImage={handleChangeImage}
         texts={texts}
+        imageDialogOpen={imageDialogOpen}
+        setImageDialogOpen={setImageDialogOpen}
+        tempImage={tempImage}
+        setTempImage={setTempImage}
+        isImgLoading={isImgLoading}
+        setIsImgLoading={setIsImgLoading}
       />
       <div className={classes.blockProjectInfo} ref={overviewInputsRef}>
         <InputName
@@ -223,6 +264,12 @@ function LargeScreenOverview({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   sectorOptions,
+  imageDialogOpen,
+  setImageDialogOpen,
+  tempImage,
+  setTempImage,
+  isImgLoading,
+  setIsImgLoading,
 }: ScreenOverviewProps) {
   const classes = useStyles({});
   function handleUpdateSelectedHub(hubUrl: string) {
@@ -247,6 +294,12 @@ function LargeScreenOverview({
             screenSize="large"
             handleChangeImage={handleChangeImage}
             texts={texts}
+            imageDialogOpen={imageDialogOpen}
+            setImageDialogOpen={setImageDialogOpen}
+            tempImage={tempImage}
+            setTempImage={setTempImage}
+            isImgLoading={isImgLoading}
+            setIsImgLoading={setIsImgLoading}
           />
         </div>
         <div className={classes.inlineProjectInfo} ref={overviewInputsRef}>
@@ -274,6 +327,7 @@ function LargeScreenOverview({
           <CustomHubSelection
             currentHubName={project.hubUrl ?? ""}
             handleUpdateSelectedHub={handleUpdateSelectedHub}
+            typeId={project.project_type.type_id}
           />
         </div>
       </div>
@@ -347,6 +401,16 @@ const InputLocation = ({
   }
   return (
     <div /*TODO(undefined) className={classes.projectInfoEl}*/>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={project.is_online ?? false}
+            onChange={(e) => handleChangeProject(e.target.checked, "is_online")}
+            color="primary"
+          />
+        }
+        label={texts.online}
+      />
       {/*<LocationSearchBar
         label={texts.location}
         required
@@ -455,9 +519,11 @@ type InputNameArgs = {
 
 const InputName = ({ project, screenSize, handleChangeProject, texts }: InputNameArgs) => {
   const classes = useStyles({});
+  const typeId = project.project_type?.type_id ?? "project";
+  const projectTypeTexts = getProjectTypeTexts(texts);
   return (
     <TextField
-      label={texts.project_name}
+      label={projectTypeTexts.name[typeId]}
       value={project.name}
       className={classes.projectTitleInput}
       inputProps={screenSize === "large" ? { className: classes.largeProjectTitleInput } : {}}
@@ -468,13 +534,21 @@ const InputName = ({ project, screenSize, handleChangeProject, texts }: InputNam
   );
 };
 
-const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
+const InputImage = ({
+  project,
+  screenSize,
+  handleChangeImage,
+  texts,
+  imageDialogOpen,
+  setImageDialogOpen,
+  tempImage,
+  setTempImage,
+  isImgLoading,
+  setIsImgLoading,
+}) => {
   const classes = useStyles(project);
-
   const inputFileRef = useRef(null as HTMLInputElement | null);
-  const [open, setOpen] = useState(false);
-  const [tempImage, setTempImage] = useState(project.image ? getImageUrl(project.image) : null);
-  const [isImgLoading, setIsImgLoading] = useState(false);
+
   const onImageChange = async (event) => {
     const file = event.target.files[0];
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
@@ -483,7 +557,7 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
     }
     try {
       setIsImgLoading(true);
-      setOpen(true);
+      setImageDialogOpen(true);
       const image = await convertToJPGWithAspectRatio(file);
       setTempImage(image);
     } catch (error) {
@@ -499,7 +573,7 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
   };
 
   const handleImageDialogClose = async (image) => {
-    setOpen(false);
+    setImageDialogOpen(false);
     if (image && image instanceof HTMLCanvasElement) {
       whitenTransparentPixels(image);
       image.toBlob(async function (blob) {
@@ -545,13 +619,18 @@ const InputImage = ({ project, screenSize, handleChangeImage, texts }) => {
       </label>
       <UploadImageDialog
         onClose={handleImageDialogClose}
-        open={open}
+        open={imageDialogOpen}
         imageUrl={tempImage}
         borderRadius={0}
-        height={screenSize === "small" ? getImageDialogHeight(window.innerWidth) : 300}
+        height={screenSize === "small" ? 200 : 300}
         ratio={16 / 9}
         loading={isImgLoading}
         loadingText={texts.processing_image_please_wait}
+        PaperProps={{
+          sx: {
+            maxHeight: "none",
+          },
+        }}
       />
     </>
   );

@@ -51,6 +51,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "Role in organisation",
       de: "Rolle in der Organisation",
     },
+    role_in_idea: {
+      en: "Role in idea",
+      de: "Rolle bei der Idee",
+    },
+    role_in_event: {
+      en: "Role in event",
+      de: "Rolle beim Event",
+    },
     pick_or_describe_role_in_organization: {
       en: "Pick or describe what the user's role in the organisation is.",
       de: "Wähle oder beschreibe, welche Rolle der/die Benutzer*in in der Organisation hat.",
@@ -58,6 +66,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     pick_or_describe_role_in_project: {
       en: "Pick or describe what the user's role in the project is.",
       de: "Wähle oder beschreibe, welche Rolle der/die Benutzer*in im Projekt hat.",
+    },
+    pick_or_describe_role_in_idea: {
+      en: "Pick or describe what the user's role in the idea is.",
+      de: "Wähle oder beschreibe, welche Rolle der/die Benutzer*in bei der Idee hat.",
+    },
+    pick_or_describe_role_in_event: {
+      en: "Pick or describe what the user's role in the event is.",
+      de: "Wähle oder beschreibe, welche Rolle der/die Benutzer*in beim Event hat.",
     },
     pick_or_type_users_role: {
       en: "Pick or type user's role",
@@ -122,8 +138,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: ", um die vollständigen Informationen dieses/dieser Benutzer*in zu sehen",
     },
     your_projects: {
-      en: "Your climate projects",
-      de: "Deine Klimaschutzprojekte",
+      en: "Your climate projects, ideas and events",
+      de: "Deine Projekte, Ideen und Events",
     },
     this_users_projects: {
       en: `${profile?.first_name}'s Climate Projects`,

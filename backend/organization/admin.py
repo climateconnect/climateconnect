@@ -97,7 +97,73 @@ class ProjectAdmin(admin.ModelAdmin):
     raw_id_fields = ("parent_project",)  # Better UX for selecting parent project
     readonly_fields = (
         "has_children",
-    )  # Managed by signals, should not be manually edited
+        "created_at",
+        "updated_at",
+    )  # Managed by signals/auto fields
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "name",
+                    "url_slug",
+                    "status",
+                    "project_type",
+                    "short_description",
+                    "description",
+                    "image",
+                    "thumbnail_image",
+                    "website",
+                    "language",
+                )
+            },
+        ),
+        (
+            "Location",
+            {
+                "fields": (
+                    "is_online",
+                    "loc",
+                    "additional_loc_info",
+                    "country",
+                    "city",
+                )
+            },
+        ),
+        (
+            "Dates & Status",
+            {
+                "fields": (
+                    "start_date",
+                    "end_date",
+                    "created_at",
+                    "updated_at",
+                    "is_draft",
+                    "is_active",
+                )
+            },
+        ),
+        (
+            "Collaboration",
+            {
+                "fields": (
+                    "collaborators_welcome",
+                    "helpful_connections",
+                    "related_hubs",
+                    "rating",
+                )
+            },
+        ),
+        (
+            "Hierarchy",
+            {
+                "fields": (
+                    "parent_project",
+                    "has_children",
+                )
+            },
+        ),
+    )
 
     def get_owner(self, obj):
         """Display the project owner (organization or user)."""

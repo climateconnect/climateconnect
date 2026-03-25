@@ -21,6 +21,7 @@ def hub_footer_image_path(instance, filename):
 def hub_supporter_logo_path(instance, filename):
     return "hub_supporter_logo/{}/{}".format(instance.id, filename)
 
+
 def hub_supporter_standalone_image_path(instance, filename):
     return "hub_supporter_standalone_image/{}/{}".format(instance.id, filename)
 
@@ -120,7 +121,7 @@ class Hub(models.Model):
     )
 
     welcome_message_logged_in = models.CharField(
-        help_text='Displayed on the dashboard on location hubs when logged in. Starts with "Hi $user.name"',
+        help_text='Displayed on the dashboard on location hubs when logged in. First name can be personalised using ${user.first_name}."',
         verbose_name="Welcome message (logged in)",
         max_length=2048,
         null=True,

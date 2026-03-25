@@ -1,4 +1,4 @@
-import { Button, Typography, useTheme } from "@mui/material";
+import { Button, Link, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -44,6 +44,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.grey[800],
     cursor: "pointer",
     breakWord: "break-word",
+  },
+  parentProjectName: {
+    display: "inline-block",
+    color: theme.palette.grey[800],
+    fontWeight: 600,
+    cursor: "pointer",
+    wordBreak: "break-word",
   },
   creatorImage: {
     height: 24,
@@ -258,6 +265,24 @@ export default function ProjectContent({
                 ))}
               </div>
             )}
+            {project.parent_project_id &&
+              project.parent_project_name &&
+              project.parent_project_slug && (
+                <div>
+                  {(() => {
+                    const type = project.project_type?.type_id;
+                    if (type === "event") return texts.this_event_is_part_of;
+                    if (type === "idea") return texts.this_idea_is_part_of;
+                    return texts.this_project_is_part_of;
+                  })()}{" "}
+                  <Link href={`/projects/${project.parent_project_slug}`}>
+                    {" "}
+                    <Typography className={classes.parentProjectName}>
+                      {project.parent_project_name}
+                    </Typography>
+                  </Link>
+                </div>
+              )}
           </div>
           {project.end_date && (
             <Typography>
@@ -363,7 +388,7 @@ export default function ProjectContent({
   );
 }
 
-function CollaborateContent({ project, texts }) {
+function CollaborateContent({ texts }) {
   const classes = useStyles();
   return (
     <>
@@ -373,33 +398,6 @@ function CollaborateContent({ project, texts }) {
       <Typography className={classes.openToCollabBool}>
         {texts.this_project_is_open_to_collaborators}
       </Typography>
-      <div className={classes.collabSectionContainer}>
-        {project.helpful_skills && project.helpful_skills.length > 0 && (
-          <div className={classes.collabSection}>
-            <Typography component="h3" color="primary" className={classes.subSubHeader}>
-              {texts.helpful_skills_for_collaborating}:
-            </Typography>
-            <ul className={classes.collabList}>
-              {project.helpful_skills.length > 0 &&
-                project.helpful_skills.map((skill) => {
-                  return <li key={skill.id}>{skill.name}</li>;
-                })}
-            </ul>
-          </div>
-        )}
-        {project.helpful_connections && project.helpful_connections.length > 0 && (
-          <div className={classes.collabSection}>
-            <Typography component="h3" color="primary" className={classes.subSubHeader}>
-              {texts.connections_to_these_organizations_could_help_the_project}:
-            </Typography>
-            <ul className={classes.collabList}>
-              {project.helpful_connections.map((connection, index) => {
-                return <li key={index}>{connection}</li>;
-              })}
-            </ul>
-          </div>
-        )}
-      </div>
     </>
   );
 }

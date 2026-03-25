@@ -56,15 +56,12 @@ export default function ProjectLocationSearchBar({
 
   const propsByProjectType = {
     event: {
-      label: texts.event_location,
       helperText: texts.event_location_helper_text,
     },
     idea: {
-      label: texts.location,
       helperText: "",
     },
     project: {
-      label: texts.location,
       helperText: "",
     },
   };
@@ -80,7 +77,7 @@ export default function ProjectLocationSearchBar({
   return (
     <LocationSearchBar
       className={className}
-      label={propsByProjectType[projectData.project_type.type_id]?.label}
+      label={texts.location}
       helperText={
         hideHelperText ? null : propsByProjectType[projectData.project_type.type_id]?.helperText
       }

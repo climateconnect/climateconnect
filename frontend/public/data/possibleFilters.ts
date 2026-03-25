@@ -1,5 +1,6 @@
 import CreateIcon from "@mui/icons-material/Create";
 import GroupIcon from "@mui/icons-material/Group";
+import ExploreIcon from "@mui/icons-material/Explore";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import getTexts from "../texts/texts";
 
@@ -72,24 +73,26 @@ const getSearchFilter = () => {
 
 const getIdeasFilters = (filterChoices, texts) => [...getLocationFilters(texts)];
 
-const getMembersFilters = (filterChoices, texts) => [
-  ...getLocationFilters(texts),
-  getSearchFilter(),
-  {
-    icon: CreateIcon,
-    iconName: "CreateIcon",
-    title: texts.skills,
-    type: "openMultiSelectDialogButton",
-    key: "skills",
-    itemType: "skills",
-    options: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
-    tooltipText: texts.skills_tooltip,
-  },
-];
+const getMembersFilters = (filterChoices, texts) => {
+  return [
+    getSearchFilter(),
+    ...getLocationFilters(texts),
+    {
+      icon: CreateIcon,
+      iconName: "CreateIcon",
+      title: texts.skills,
+      type: "openMultiSelectDialogButton",
+      key: "skills",
+      itemType: "skills",
+      options: filterChoices?.skills?.map((s) => ({ ...s, key: s.id })),
+      tooltipText: texts.skills_tooltip,
+    },
+  ];
+};
 
 const getOrganizationsFilters = (filterChoices, texts) => [
-  ...getLocationFilters(texts),
   getSearchFilter(),
+  ...getLocationFilters(texts),
   {
     icon: GroupIcon,
     iconName: "GroupIcon",
@@ -102,8 +105,8 @@ const getOrganizationsFilters = (filterChoices, texts) => [
 ];
 
 const getProjectsFilters = (filterChoices, texts) => [
-  ...getLocationFilters(texts),
   getSearchFilter(),
+  ...getLocationFilters(texts),
   {
     icon: GroupIcon,
     iconName: "GroupIcon",
@@ -115,8 +118,8 @@ const getProjectsFilters = (filterChoices, texts) => [
     tooltipText: texts.organization_type_tooltip,
   },
   {
-    icon: GroupIcon,
-    iconName: "GroupIcon",
+    icon: ExploreIcon,
+    iconName: "ExploreIcon",
     // A hack: need an extra space character to create some horizontal space between the icon and text
     title: " " + texts.sectors,
     type: "multiselect",

@@ -4,7 +4,6 @@ import Cookies from "universal-cookie";
 import { apiRequest, sendToLogin } from "../public/lib/apiOperations";
 import { getProjectTypeOptions, getSectorOptions } from "../public/lib/getOptions";
 import { nullifyUndefinedValues } from "../public/lib/profileOperations";
-import { parseOptions } from "../public/lib/selectOptionsOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import LoginNudge from "../src/components/general/LoginNudge";
@@ -26,7 +25,6 @@ export async function getServerSideProps(ctx) {
   const [
     availabilityOptions,
     userOrganizations,
-    skillsOptions,
     rolesOptions,
     projectTypeOptions,
     hubThemeData,
@@ -34,7 +32,6 @@ export async function getServerSideProps(ctx) {
   ] = await Promise.all([
     getAvailabilityOptions(auth_token, ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
-    getSkillsOptions(auth_token, ctx.locale),
     getRolesOptions(auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
@@ -44,7 +41,6 @@ export async function getServerSideProps(ctx) {
     props: nullifyUndefinedValues({
       availabilityOptions: availabilityOptions,
       userOrganizations: userOrganizations,
-      skillsOptions: skillsOptions,
       rolesOptions: rolesOptions,
       projectTypeOptions: projectTypeOptions,
       hubUrl: hubUrl ?? undefined,
@@ -57,7 +53,6 @@ export async function getServerSideProps(ctx) {
 export default function Share({
   availabilityOptions,
   userOrganizations,
-  skillsOptions,
   rolesOptions,
   projectTypeOptions,
   hubUrl,
@@ -97,7 +92,6 @@ export default function Share({
         <ShareProjectRoot
           availabilityOptions={availabilityOptions}
           userOrganizations={userOrganizations}
-          skillsOptions={skillsOptions}
           rolesOptions={rolesOptions}
           user={user}
           token={token}
@@ -122,25 +116,6 @@ const getAvailabilityOptions = async (token, locale) => {
     if (resp.data.results.length === 0) return null;
     else {
       return resp.data.results;
-    }
-  } catch (err: any) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-};
-
-const getSkillsOptions = async (token, locale) => {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/skills/",
-      token: token,
-      locale: locale,
-    });
-    if (resp.data.results.length === 0) return null;
-    else {
-      return parseOptions(resp.data.results, "parent_skill");
     }
   } catch (err: any) {
     console.log(err);

@@ -4,11 +4,7 @@ import NextCookies from "next-cookies";
 import React, { useContext, useState } from "react";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
-import {
-  getProjectTypeOptions,
-  getSkillsOptions,
-  getSectorOptions,
-} from "../../public/lib/getOptions";
+import { getProjectTypeOptions, getSectorOptions } from "../../public/lib/getOptions";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
@@ -44,7 +40,6 @@ export async function getServerSideProps(ctx) {
   const [
     project,
     members,
-    skillsOptions,
     userOrganizations,
     projectTypeOptions,
     hubThemeData,
@@ -52,7 +47,6 @@ export async function getServerSideProps(ctx) {
   ] = await Promise.all([
     getProjectByIdIfExists(projectUrl, auth_token, ctx.locale),
     getMembersByProject(projectUrl, auth_token, ctx.locale),
-    getSkillsOptions(ctx.locale),
     getUserOrganizations(auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
@@ -62,7 +56,6 @@ export async function getServerSideProps(ctx) {
     props: nullifyUndefinedValues({
       project: project,
       members: members,
-      skillsOptions: skillsOptions,
       userOrganizations: userOrganizations,
       projectTypeOptions: projectTypeOptions,
       hubThemeData: hubThemeData,
@@ -75,7 +68,6 @@ export async function getServerSideProps(ctx) {
 export default function EditProjectPage({
   project,
   members,
-  skillsOptions,
   userOrganizations,
   projectTypeOptions,
   hubThemeData,
@@ -84,7 +76,6 @@ export default function EditProjectPage({
 }: {
   project: Project;
   members: any[];
-  skillsOptions: any[];
   userOrganizations: any[];
   projectTypeOptions: any[];
   hubThemeData: any;
@@ -207,7 +198,6 @@ export default function EditProjectPage({
         <EditProjectRoot
           oldProject={project}
           project={curProject}
-          skillsOptions={skillsOptions}
           userOrganizations={userOrganizations}
           handleSetProject={handleSetProject}
           sectorOptions={sectorOptions}
@@ -244,10 +234,8 @@ async function getProjectByIdIfExists(projectUrl, token, locale) {
 const parseProject = (project) => ({
   ...project,
   image: getImageUrl(project.image),
-  tags: project.tags.map((t) => t.project_tag),
   project_parents: project.project_parents[0],
   is_personal_project: !project.project_parents[0].parent_organization,
-  skills: project.skills.map((s) => ({ ...s, key: s.id })),
   sectors: project.sectors.map((item) => ({ ...item.sector, order: item.order })),
 });
 

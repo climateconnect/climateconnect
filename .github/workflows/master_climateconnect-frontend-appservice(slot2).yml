@@ -30,7 +30,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v6
         with:
-          node-version: '20.x'
+          node-version: '22.x'
 
       - name: Cache node modules
         uses: actions/cache@v5
@@ -43,8 +43,9 @@ jobs:
       - name: yarn install, pull webflow files and build
         run: |
           cd frontend
-          yarn --production
-          npx webflow devlink sync --no-input
+          corepack enable
+          yarn install --immutable
+          yarn devlink-sync
           yarn build
         env:
           API_HOST: ${{ secrets.API_HOST }}
@@ -59,6 +60,7 @@ jobs:
           LETS_ENCRYPT_FILE_CONTENT: ${{ secrets.LETS_ENCRYPT_FILE_CONTENT }}
           LOCATION_HUBS: ${{ secrets.LOCATION_HUBS }}
           SOCKET_URL: ${{ secrets.SOCKET_URL }}
+          WASSERAKTIONSWOCHEN_FEATURE: ${{ secrets.WASSERAKTIONSWOCHEN_FEATURE }}
           WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
           WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID}}
 
@@ -67,7 +69,7 @@ jobs:
         run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: node-app
           path: release.zip
@@ -84,7 +86,7 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: node-app
 
@@ -92,7 +94,7 @@ jobs:
         run: unzip release.zip
 
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4872F38E7EC34E84A6DC4282AD368DAE }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_03DE6874FBFC4E709867040CB9136FD8 }}
@@ -105,3 +107,4 @@ jobs:
           app-name: 'climateconnect-frontend-appservice'
           slot-name: 'slot2'
           package: .
+          clean: true

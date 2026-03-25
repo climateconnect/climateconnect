@@ -135,7 +135,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
       underline="hover"
     >
       <div className={classes.wrapper}>
-        {projectType.type_id === "event" && (
+        {projectType.type_id === "event" && project.start_date && project.end_date && (
           <EventDateIndicator project={project} hubUrl={hubUrl} />
         )}
         <Card

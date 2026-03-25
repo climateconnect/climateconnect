@@ -2,7 +2,6 @@ import { Theme } from "@emotion/react";
 import { Container, Link, Tab, Tabs, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useMemo, useState } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -10,6 +9,7 @@ import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { getCustomHubData } from "../../../public/data/customHubData";
 import HubLinks from "../indexPage/hubsSubHeader/HubLinks";
+import WasseraktionswochenLink from "./WasseraktionswochenLink";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,7 +69,28 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.contrastText,
     fontWeight: 600,
     paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
+    paddingRight: theme.spacing(4),
+  },
+  wasseraktionsButton: {
+    backgroundColor: "#D5F1FF",
+    color: theme.palette.primary.main,
+    borderRadius: theme.spacing(3),
+    padding: theme.spacing(0.75, 2),
+    fontWeight: 600,
+    marginLeft: theme.spacing(1.5),
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    columnGap: theme.spacing(1),
+    "&:hover": {
+      backgroundColor: "#C0E6FF",
+      textDecoration: "none",
+    },
+  },
+  wasseraktionsIcon: {
+    width: 20,
+    height: 20,
+    flexShrink: 0,
   },
   linksAndTabsWrapper: {
     display: "flex",
@@ -93,10 +114,12 @@ export default function HubTabsNavigation({
   className,
   allHubs,
   fromPage,
+  showWasseraktionswochen,
 }) {
-  const { locale, user, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const isMediumScreen = useMediaQuery("(max-width:1040px)");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Computed values
@@ -114,11 +137,6 @@ export default function HubTabsNavigation({
     hubUrl,
     texts,
   ]);
-
-  // Don't show navigation if logged out on mobile
-  if (!user && isNarrowScreen) {
-    return null;
-  }
 
   // Dropdown handlers
   const handleOpen = () => setDropdownOpen(true);
@@ -167,15 +185,6 @@ export default function HubTabsNavigation({
             {hubTabLink.text}
           </Link>
         )}
-        {isHubPage && (
-          <Link
-            className={classes.climateMatchLink}
-            href={`${getLocalePrefix(locale)}/browse`}
-            underline="hover"
-          >
-            {texts.projects_worldwide}
-          </Link>
-        )}
       </>
     );
   };
@@ -219,13 +228,18 @@ export default function HubTabsNavigation({
         <div className={classes.linksAndTabsWrapper}>
           {renderTabs()}
           {isEmmendingenHub && (
-            <Link
-              className={classes.climateMatchLink}
-              href="https://climatehub.earth/burgerenergie-em"
-              underline="hover"
-            >
-              {texts.emmerdingen_buergerenergie}
-            </Link>
+            <>
+              {((!isNarrowScreen && !isMediumScreen) || !showWasseraktionswochen) && (
+                <Link
+                  className={classes.climateMatchLink}
+                  href="https://climatehub.earth/burgerenergie-em"
+                  underline="hover"
+                >
+                  {texts.emmerdingen_buergerenergie}
+                </Link>
+              )}
+              {showWasseraktionswochen && <WasseraktionswochenLink />}
+            </>
           )}
           {renderNarrowScreenLinks()}
         </div>

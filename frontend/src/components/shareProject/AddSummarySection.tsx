@@ -53,7 +53,7 @@ export default function AddSummarySection({
     <div className={className}>
       <Typography component="h2" variant="subtitle2" color="primary" className={subHeaderClassname}>
         {texts["summarize_your_" + projectData.project_type.type_id]}*
-        <Tooltip title={helpTexts.short_description} className={toolTipClassName}>
+        <Tooltip title={helpTexts.shortDescription} className={toolTipClassName}>
           <IconButton size="large">
             <ToolTipIcon />
           </IconButton>

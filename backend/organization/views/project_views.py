@@ -1,43 +1,40 @@
 import logging
 import traceback
-from django.db.models import Case, When, Prefetch
 
-from organization.utility.sector import (
-    create_context_for_hub_specific_sector,
-    sanitize_sector_inputs,
+from dateutil.parser import parse
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models import GeometryField, Union
+from django.contrib.gis.db.models.functions import Distance
+from django.core.cache import cache
+from django.db import transaction
+from django.db.models import Case, Prefetch, Q, When
+from django.db.models.functions import Cast
+from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
+from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import (
+    ListAPIView,
+    RetrieveUpdateAPIView,
+    RetrieveUpdateDestroyAPIView,
 )
-from organization.utility.cache import generate_project_ranking_cache_key
-from organization.utility.follow import (
-    get_list_of_project_followers,
-    set_user_following_project,
-)
-from organization.serializers.project import ProjectRequesterSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from climateconnect_api.models import (
     Availability,
     Role,
-    Skill,
     UserProfile,
 )
 from climateconnect_api.models.language import Language
+from climateconnect_api.tasks import calculate_project_rankings
+from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_api.utility.translation import (
     edit_translations,
 )
-from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_main.utility.general import get_image_from_data_url
-
-from dateutil.parser import parse
-
-from django.conf import settings
-
-from django.core.cache import cache
-
-from django.contrib.auth.models import User
-from django.contrib.gis.db.models.functions import Distance
-from django.db import transaction
-from django.db.models import Q
-from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
-
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
@@ -45,6 +42,7 @@ from location.utility import get_location, get_location_with_range
 # Organization models
 from organization.models import (
     Organization,
+    OrganizationFollower,
     OrganizationTagging,
     OrganizationTags,
     Post,
@@ -52,23 +50,18 @@ from organization.models import (
     ProjectCollaborators,
     ProjectComment,
     ProjectFollower,
+    ProjectLike,
     ProjectMember,
     ProjectParents,
+    ProjectSectorMapping,
     ProjectStatus,
     ProjectTagging,
     ProjectTags,
-    ProjectLike,
-    OrganizationFollower,
     Sector,
-    ProjectSectorMapping,
 )
-
-from organization.models.type import PROJECT_TYPES
-from organization.serializers.status import ProjectTypesSerializer
-
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
-
+from organization.models.type import PROJECT_TYPES, ProjectTypesChoices
 from organization.pagination import (
     MembersPagination,
     ProjectPostPagination,
@@ -87,14 +80,24 @@ from organization.serializers.project import (
     EditProjectSerializer,
     InsertProjectMemberSerializer,
     ProjectFollowerSerializer,
+    ProjectLikeSerializer,
     ProjectMemberSerializer,
+    ProjectRequesterSerializer,
     ProjectSerializer,
     ProjectSitemapEntrySerializer,
     ProjectStubSerializer,
-    ProjectLikeSerializer,
 )
-from organization.serializers.status import ProjectStatusSerializer
+from organization.serializers.status import (
+    ProjectStatusSerializer,
+    ProjectTypesSerializer,
+)
 from organization.serializers.tags import ProjectTagsSerializer
+from organization.utility import MembershipTarget
+from organization.utility.cache import generate_project_ranking_cache_key
+from organization.utility.follow import (
+    get_list_of_project_followers,
+    set_user_following_project,
+)
 from organization.utility.notification import (
     create_comment_mention_notification,
     create_organization_project_published_notification,
@@ -105,30 +108,18 @@ from organization.utility.notification import (
     create_project_like_notification,
     get_mentions,
 )
-
 from organization.utility.organization import check_organization
 from organization.utility.project import (
     create_new_project,
-    get_project_translations,
     get_project_admin_creators,
+    get_project_translations,
     get_similar_projects,
 )
-from rest_framework import status
-from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import (
-    ListAPIView,
-    RetrieveUpdateAPIView,
-    RetrieveUpdateDestroyAPIView,
-)
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from organization.utility.requests import MembershipRequestsManager
-from organization.utility import MembershipTarget
-from organization.models.type import ProjectTypesChoices
-from climateconnect_api.tasks import calculate_project_rankings
+from organization.utility.sector import (
+    create_context_for_hub_specific_sector,
+    sanitize_sector_inputs,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -194,7 +185,6 @@ class ListProjectsView(ListAPIView):
             Project.objects.filter(is_draft=False, is_active=True)
             .select_related("loc", "language", "status")
             .prefetch_related(
-                "skills",
                 "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
                     "project_comment",
@@ -270,18 +260,42 @@ class ListProjectsView(ListAPIView):
                     ).distinct()
 
                 elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = current_hub.location.all()[0]
-                    location_multipolygon = location.multi_polygon
-                    projects = projects.filter(Q(loc__country=location.country))
-                    if location_multipolygon:
+                    hub_locations = current_hub.location.all()
+
+                    if not hub_locations.exists():
+                        projects = projects.none()
+                    else:
+                        hub_location_ids = hub_locations.values_list("id", flat=True)
+
+                        aggregated_geometry = hub_locations.annotate(
+                            geom_as_geometry=Cast("multi_polygon", GeometryField())
+                        ).aggregate(combined=Union("geom_as_geometry"))["combined"]
+
                         projects = projects.filter(
-                            Q(loc__multi_polygon__coveredby=(location_multipolygon))
-                            | Q(loc__centre_point__coveredby=(location_multipolygon))
-                        ).annotate(
-                            distance=Distance(
-                                "loc__centre_point", location_multipolygon
-                            )
+                            Q(loc__country=hub_locations.first().country)
                         )
+
+                        projects_by_location_id = projects.filter(
+                            loc__id__in=hub_location_ids
+                        )
+
+                        if aggregated_geometry:
+                            projects_by_geometry = projects.filter(
+                                Q(loc__centre_point__coveredby=(aggregated_geometry))
+                                | Q(loc__multi_polygon__coveredby=(aggregated_geometry))
+                            )
+
+                            projects = (
+                                (projects_by_location_id | projects_by_geometry)
+                                .annotate(
+                                    distance=Distance(
+                                        "loc__centre_point", aggregated_geometry
+                                    )
+                                )
+                                .distinct()
+                            )
+                        else:
+                            projects = projects_by_location_id.distinct()
 
                 elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
                     projects = projects.filter(related_hubs=current_hub)
@@ -306,14 +320,6 @@ class ListProjectsView(ListAPIView):
         if "status" in self.request.query_params:
             statuses = self.request.query_params.get("status").split(",")
             projects = projects.filter(status__name__in=statuses)
-
-        if "skills" in self.request.query_params:
-            skill_names = self.request.query_params.get("skills").split(",")
-            skills = Skill.objects.filter(name__in=skill_names)
-            # Use .distinct to dedupe selected rows.
-            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
-            # We then sort by rating, to show most relevant results
-            projects = projects.filter(skills__in=skills).distinct()
 
         if "organization_type" in self.request.query_params:
             organization_type_names = self.request.query_params.get(
@@ -472,19 +478,23 @@ class CreateProjectView(APIView):
         else:
             organization = None
 
-        required_params = [
-            "name",
-            "status",
-            "short_description",
-            "collaborators_welcome",
-            "team_members",
-            "loc",
-            "sectors",
-            "image",
-            "source_language",
-            "translations",
-            "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
-        ]
+        is_draft_input = request.data.get("is_draft", False)
+        is_draft = is_draft_input in (True, "true", "True", "1", 1)
+        required_params = ["name"]
+        # If 'is_draft' is not set or is set to a falsy value then run the code in this if block
+        if not is_draft:
+            required_params += [
+                "status",
+                "short_description",
+                "collaborators_welcome",
+                "team_members",
+                "loc",
+                "image",
+                "source_language",
+                "translations",
+                "sectors",
+                "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
+            ]
         for param in required_params:
             if param not in request.data:
                 logger.error(
@@ -525,17 +535,16 @@ class CreateProjectView(APIView):
                     )
                 }
             )
-        translations_failed = False
-
         translations_object = None
-        try:
-            translations_object = get_project_translations(request.data)
-        except ValueError:
-            translations_failed = True
-
-        # If we still don't have a translations object, then skip this
-        if not translations_object:
-            translations_failed = True
+        # Only process translations if both source_language and translations are provided
+        if "source_language" in request.data and "translations" in request.data:
+            try:
+                translations_object = get_project_translations(request.data)
+            except ValueError:
+                # Translation parsing failed, but continue without translations
+                logger.warning(
+                    "Failed to parse translations for project creation"
+                )
 
         source_language = None
         translations = None
@@ -547,7 +556,7 @@ class CreateProjectView(APIView):
 
         project = create_new_project(request.data, source_language)
 
-        if not translations_failed:
+        if translations_object and translations and source_language:
             for language in translations:
                 if not language == source_language.language_code:
                     texts = translations[language]
@@ -557,14 +566,13 @@ class CreateProjectView(APIView):
                             project=project,
                             language=language_object,
                             name_translation=texts["name"],
-                            short_description_translation=texts["short_description"],
                         )
+                        if "short_description" in texts:
+                            translation.short_description_translation = texts[
+                                "short_description"
+                            ]
                         if "description" in texts:
                             translation.description_translation = texts["description"]
-                        if "helpful_connections" in texts:
-                            translation.helpful_connections_translation = texts[
-                                "helpful_connections"
-                            ]
                         translation.save()
                     except Language.DoesNotExist:
                         logger.error(
@@ -600,7 +608,7 @@ class CreateProjectView(APIView):
 
         # There are only certain roles user can have. So get all the roles first.
         roles = Role.objects.all()
-        team_members = request.data["team_members"]
+        team_members = request.data.get("team_members", [])
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
@@ -755,6 +763,7 @@ class ProjectAPIView(APIView):
             "additional_loc_info",
             "description",
             "helpful_connections",
+            "is_online",
             "short_description",
             "website",
         ]
@@ -767,18 +776,6 @@ class ProjectAPIView(APIView):
 
         if "project_type" in request.data:
             project.project_type = ProjectTypesChoices[request.data["project_type"]]
-
-        if "skills" in request.data:
-            for skill in project.skills.all():
-                if skill.id not in request.data["skills"]:
-                    logger.error("this skill needs to be deleted: " + skill.name)
-                    project.skills.remove(skill)
-            for skill_id in request.data["skills"]:
-                try:
-                    skill = Skill.objects.get(id=skill_id)
-                    project.skills.add(skill)
-                except Skill.DoesNotExist:
-                    logger.error("Passed skill id {} does not exists")
 
         # TODO: remove the project_taggings
         old_project_taggings = ProjectTagging.objects.filter(project=project)
@@ -893,6 +890,7 @@ class ProjectAPIView(APIView):
             location = get_location(request.data["loc"])
             project.loc = location
         if "is_draft" in request.data:
+            # One way transition: draft → published, never back
             project.is_draft = False
         if "is_personal_project" in request.data:
             if request.data["is_personal_project"] is True:

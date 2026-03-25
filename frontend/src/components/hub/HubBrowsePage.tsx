@@ -38,6 +38,7 @@ import {
 import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
 import { HubDescription } from "./description/HubDescription";
 import { FabShareButton } from "./FabShareButton";
+import { isWasseraktionswochenEnabled } from "../../../public/data/wasseraktionswochen_config.js";
 
 const useStyles = makeStyles(() => ({
   content: {
@@ -62,12 +63,12 @@ export interface HubBrowsePageProps {
   initialLocationFilter: any;
   filterChoices: any;
   allHubs: any[];
-  hubLocation: any;
   hubData: any;
   hubDescription: any;
   projectTypes: any[];
   hubThemeData: any;
   linkedHubs: any[];
+  showWasseraktionswochen: boolean;
 }
 
 export async function getHubBrowseServerSideProps(ctx) {
@@ -118,7 +119,6 @@ export async function getHubBrowseServerSideProps(ctx) {
       stats: hubData?.stats ?? null,
       statBoxTitle: hubData?.stat_box_title ?? null,
       image_attribution: hubData?.image_attribution ?? null,
-      hubLocation: hubData?.location?.length > 0 ? hubData?.location[0] : null,
       filterChoices: {
         sectors: sectorOptions,
         organization_types: organization_types,
@@ -131,6 +131,7 @@ export async function getHubBrowseServerSideProps(ctx) {
       projectTypes: projectTypes,
       hubThemeData: hubThemeData,
       linkedHubs: linkedHubs || [],
+      showWasseraktionswochen: isWasseraktionswochenEnabled(),
     },
   };
 }
@@ -152,12 +153,12 @@ export default function HubBrowsePage({
   initialLocationFilter,
   filterChoices,
   allHubs,
-  hubLocation,
   hubData,
   hubDescription,
   projectTypes,
   hubThemeData,
   linkedHubs,
+  showWasseraktionswochen,
 }: HubBrowsePageProps) {
   // donationGoal was removed in PR #1560?
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
@@ -286,7 +287,6 @@ export default function HubBrowsePage({
             welcomeMessageLoggedIn={welcomeMessageLoggedIn}
             welcomeMessageLoggedOut={welcomeMessageLoggedOut}
             isLocationHub={isLocationHub}
-            location={hubLocation}
             hubData={hubData}
             image={getImageUrl(image)}
           />
@@ -314,6 +314,7 @@ export default function HubBrowsePage({
                 linkedHubs={linkedHubs}
                 isLocationHub={isLocationHub}
                 fromPage="hub"
+                showWasseraktionswochen={showWasseraktionswochen}
               />
             </FilterProvider>
           </BrowseContext.Provider>

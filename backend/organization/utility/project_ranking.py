@@ -1,11 +1,13 @@
 import datetime
 import random
+from typing import Dict, Optional
+
 from django.core.cache import cache
 from django.utils import timezone
-from typing import Dict, Optional
+
+from climateconnect_api.models.user import UserProfile
 from organization.models.type import ProjectTypesChoices
 from organization.utility.cache import generate_project_ranking_cache_key
-from climateconnect_api.models.user import UserProfile
 
 
 class ProjectRanking:
@@ -29,7 +31,6 @@ class ProjectRanking:
             "total_tags": 0.2,
             "location": 0.2,
             "description": 10,
-            "total_skills": 0.2,
             "created_at": 5,
         }
 
@@ -119,7 +120,6 @@ class ProjectRanking:
         location: Optional[int],
         project_id: int,
         project_manually_set_rating: int,
-        total_skills: int,
         project_type: ProjectTypesChoices,
         start_date: Optional[datetime.datetime],
         end_date: Optional[datetime.datetime],
@@ -127,9 +127,9 @@ class ProjectRanking:
     ) -> int:
         from organization.models import (
             ProjectComment,
+            ProjectFollower,
             ProjectLike,
             ProjectTagging,
-            ProjectFollower,
         )
 
         cache_key = generate_project_ranking_cache_key(project_id=project_id)
@@ -167,6 +167,7 @@ class ProjectRanking:
 
         is_past_event = (
             project_type == ProjectTypesChoices.event
+            and end_date is not None
             and end_date.timestamp() < timezone.now().timestamp()
         )
 
@@ -177,14 +178,14 @@ class ProjectRanking:
                 if is_past_event:
                     return -99
                 # The event is currently ongoing. Increase its score the closer it its end it is (this is especially relevant for multi-week-projects)
-                elif start_date.timestamp() < timezone.now().timestamp():
+                elif start_date and end_date and start_date.timestamp() < timezone.now().timestamp():
                     return self._recency_score(
                         timedelta=end_date.timestamp() - timezone.now().timestamp(),
                         base_score_timeframe=end_date.timestamp()
                         - start_date.timestamp(),
                     )
                 # The event is in the future -> take into account how soon the event is coming up
-                else:
+                elif start_date:
                     created_at_score = self.calculate_recency_of_interaction(
                         last_interaction_timestamp=created_at.timestamp(), max_boost=5
                     )
@@ -223,7 +224,6 @@ class ProjectRanking:
             "total_tags": ProjectTagging.objects.filter(project_id=project_id).count(),
             "location": 1 if location else 0,
             "description": 1 if description and len(description) > 0 else 0,
-            "total_skills": total_skills,
             "created_at": get_created_at_factor(),
         }
 

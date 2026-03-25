@@ -29,12 +29,11 @@ import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { BrowseTab, LinkedHub } from "../../types";
 import { FilterContext } from "../context/FilterContext";
 import HubLinkButton from "../hub/HubLinkButton";
-const FilterSection = lazy(() => import("../indexPage/FilterSection"));
 const OrganizationPreviews = lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = lazy(() => import("../profile/ProfilePreviews"));
 const ProjectPreviews = lazy(() => import("../project/ProjectPreviews"));
 const TabContentWrapper = lazy(() => import("./TabContentWrapper"));
-
+const FilterSection = lazy(() => import("../indexPage/FilterSection"));
 const useStyles = makeStyles((theme) => {
   return {
     contentRefContainer: {
@@ -92,6 +91,7 @@ type BrowseContentProps = {
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
   fromPage?: "hub";
+  showWasseraktionswochen?: boolean;
 };
 
 export default function BrowseContent({
@@ -113,6 +113,7 @@ export default function BrowseContent({
   isLocationHub,
   linkedHubs,
   fromPage,
+  showWasseraktionswochen,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -136,6 +137,7 @@ export default function BrowseContent({
 
   const token = new Cookies().get("auth_token");
   const isLocationHubFlag = isLocationHub || isLocationHubLikeHub(hubData?.hub_type);
+
   const {
     filters,
     handleUpdateFilterValues,
@@ -157,6 +159,8 @@ export default function BrowseContent({
   const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -458,6 +462,7 @@ export default function BrowseContent({
       locale: locale,
       nonFilterParams: nonFilterParams,
     });
+
     const res = await applyNewFilters({
       type: type,
       newFilters: newFilters,
@@ -482,7 +487,7 @@ export default function BrowseContent({
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
-    filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
+    filtersExpanded: isSmallScreen ? filtersExandedOnMobile : filtersExpanded,
     handleApplyNewFilters: handleApplyNewFilters,
     handleUpdateFilterValues: handleUpdateFilterValues,
     errorMessage: errorMessage,
@@ -501,6 +506,7 @@ export default function BrowseContent({
     nonFilterParams: nonFilterParams,
     linkedHubs: linkedHubs || [],
     isFetchingMoreData: isFetchingMoreData,
+    handleSearchSubmit: handleSearchSubmit,
   };
   return (
     <LoadingContext.Provider
@@ -517,6 +523,7 @@ export default function BrowseContent({
         className={classes.hubsTabNavigation}
         allHubs={allHubs}
         fromPage={fromPage}
+        showWasseraktionswochen={showWasseraktionswochen}
       />
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         {isNarrowScreen && hubSupporters && hubName && (
@@ -530,26 +537,26 @@ export default function BrowseContent({
             ))}
           </div>
         )}
-        <Suspense fallback={null}>
-          <FilterSection
-            filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
-            onSubmit={handleSearchSubmit}
-            setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
-            type={TYPES_BY_TAB_VALUE[tabValue]}
-            customSearchBarLabels={customSearchBarLabels}
-            hideFilterButton={false}
-            applyBackgroundColor={isLocationHubFlag}
-          />
-        </Suspense>
 
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
+        {isSmallScreen && (
+          <Suspense fallback={null}>
+            <FilterSection
+              filtersExpanded={filtersExandedOnMobile}
+              onSubmit={handleSearchSubmit}
+              setFiltersExpanded={isSmallScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+              type={TYPES_BY_TAB_VALUE[tabValue]}
+              customSearchBarLabels={customSearchBarLabels}
+              applyBackgroundColor={isLocationHubFlag}
+            />
+          </Suspense>
+        )}
         {isNarrowScreen && (
           <MobileBottomMenu
             tabValue={tabValue}
             handleTabChange={handleTabChange}
             TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-            //TODO(unused) type_names={type_names}
             hubAmbassador={hubAmbassador}
             hubUrl={hubUrl}
           />

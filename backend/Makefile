@@ -58,4 +58,6 @@ test-data:
 
 all: format ruff start
 
-precommit: format ruff test
+precommit: format ruff
+
+precommit-full: format ruff test
