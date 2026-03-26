@@ -1,6 +1,6 @@
 # Event Organizer Can Close Registration Before the End Date
 
-**Status**: IMPLEMENTATION (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
+**Status**: READY (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
 **Type**: Feature
 **Date and time created**: 2026-03-24 09:00
 **Date Completed**: TBD
