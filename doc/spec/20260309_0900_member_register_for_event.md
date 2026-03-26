@@ -1,4 +1,4 @@
-1# Member Can Register for an Event
+# Member Can Register for an Event
 
 **Status**: READY FOR IMPLEMENTATION (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
 **Type**: Feature
