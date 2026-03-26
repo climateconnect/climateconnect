@@ -54,7 +54,7 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 | Organiser edits registration settings | [#1848](https://github.com/climateconnect/climateconnect/issues/1848) | [`20260325_0900_...`](./20260325_0900_organizer_edit_event_registration.md) | 🔵 Ready |
 | Organiser exports / prints registered guests | — | — | ⚪ Not started |
 | Organiser sends email to all registered guests | — | — | ⚪ Not started |
-| Organiser closes / reopens registration | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | [`20260324_0900_...`](./20260324_0900_organizer_close_event_registration.md) | 🔵 Ready |
+| Organiser closes / reopens registration | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | [`20260324_0900_...`](./20260324_0900_organizer_close_event_registration.md) | ?? Ready |
 | Organiser cancels an individual guest registration | — | — | ⚪ Not started |
 
 ### 🔭 Phase 3 — Advanced Registration (next goal after Phase 2 ships)
@@ -127,7 +127,8 @@ Where `effective_status` is computed lazily by `EventRegistrationSerializer`:
 | `POST /api/projects/` | POST | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Accepts `event_registration` nested object on create |
 | `GET /api/projects/{slug}/` | GET | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Returns `event_registration` object (including `status`) |
 | `GET /api/projects/` | GET | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Returns `event_registration` per list item |
-| `PATCH /api/projects/{slug}/` | PATCH | [#1848](https://github.com/climateconnect/climateconnect/issues/1848) | `event_registration` object becomes writable for existing records |
+| `PATCH /api/projects/{slug}/` | PATCH | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Accepts `event_registration` nested object on create only — read-only in update context |
+| `PATCH /api/projects/{slug}/registration/` | PATCH | [#1848](https://github.com/climateconnect/climateconnect/issues/1848) | Dedicated endpoint to update `max_participants` and `registration_end_date` |
 | `POST /api/projects/{slug}/register/` | POST | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) | Member registers for an event |
 | `DELETE /api/projects/{slug}/register/` | DELETE | [#1850](https://github.com/climateconnect/climateconnect/issues/1850) | Member cancels registration (soft delete — sets `cancelled_at`) |
 | `GET /api/members/me/registered-events/` | GET | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) | Authenticated member's upcoming registered events |
@@ -217,7 +218,7 @@ Consistent across all tasks: when `is_draft=true`, all required-field validation
     │
     ├──▶ #1851 Organiser closes/reopens (IN PROGRESS) — needs status UI; adds "ended" lazy status
     │
-    └──▶ #1848 Organiser edits         (READY)   — writable PATCH for max_participants & end_date
+    └──▶ #1848 Organiser edits         (READY)   — dedicated PATCH /registration/ endpoint; modal UI on detail page
 ```
 
 [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), and [#1848](https://github.com/climateconnect/climateconnect/issues/1848) each depend only on [#1820](https://github.com/climateconnect/climateconnect/issues/1820). [#1849](https://github.com/climateconnect/climateconnect/issues/1849) and [#1850](https://github.com/climateconnect/climateconnect/issues/1850) depend on [#1845](https://github.com/climateconnect/climateconnect/issues/1845) for the `EventParticipant` entity. Note: [#1850](https://github.com/climateconnect/climateconnect/issues/1850) introduces `cancelled_at` which requires retroactive filtering in [#1845](https://github.com/climateconnect/climateconnect/issues/1845) and [#1849](https://github.com/climateconnect/climateconnect/issues/1849) — it is therefore safest to implement [#1845](https://github.com/climateconnect/climateconnect/issues/1845) and [#1850](https://github.com/climateconnect/climateconnect/issues/1850) together or in immediate sequence.
@@ -233,8 +234,8 @@ Consistent across all tasks: when `is_draft=true`, all required-field validation
 | `organization/models/__init__.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) |
 | `organization/serializers/event_registration.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1848](https://github.com/climateconnect/climateconnect/issues/1848) |
 | `organization/serializers/project.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) |
-| `organization/views/project_views.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1848](https://github.com/climateconnect/climateconnect/issues/1848) |
-| `organization/views/event_registration_views.py` *(new in #1845 / #1851)* | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
+| `organization/views/project_views.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) |
+| `organization/views/event_registration_views.py` *(new in #1845 / #1851)* | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
 | `organization/permissions.py` | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
 | `organization/urls.py` | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
 | `organization/models/event_participant.py` *(new in #1845)* | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
