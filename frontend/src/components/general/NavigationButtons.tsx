@@ -18,10 +18,10 @@ const useStyles = makeStyles((theme) => {
           left: 0,
           right: 0,
           display: "flex",
-          flexWrap: "wrap",
+          flexWrap: "nowrap",
           justifyContent: "flex-end",
-          alignItems: "center",
-          rowGap: theme.spacing(1),
+          alignItems: "stretch",
+          columnGap: theme.spacing(1),
           paddingTop: theme.spacing(1.5),
           paddingBottom: theme.spacing(1.5),
           paddingLeft: theme.spacing(2),
@@ -58,11 +58,34 @@ const useStyles = makeStyles((theme) => {
     },
     stickyBackButton: {
       marginRight: "auto",
+      flexShrink: 0,
+    },
+    stickyCompact: {
+      // On very narrow screens reduce button padding so Draft + Next fit side-by-side
+      [theme.breakpoints.down("sm")]: {
+        "& .MuiButton-root": {
+          paddingLeft: theme.spacing(1),
+          paddingRight: theme.spacing(1),
+        },
+      },
     },
     nextStepButtonsContainer: {
       [theme.breakpoints.down("sm")]: {
         display: "flex",
         justifyContent: "space-between",
+      },
+    },
+    stickyNextContainer: {
+      // Fill remaining space so buttons inside have a real width to share
+      flex: 1,
+      display: "flex",
+      flexWrap: "nowrap",
+      alignItems: "stretch",
+      justifyContent: "flex-end",
+      "& .MuiButton-root": {
+        flex: 1,
+        whiteSpace: "normal",
+        maxWidth: 180,
       },
     },
     draftButton: {
@@ -164,12 +187,17 @@ export default function NavigationButtons({
           color="grey"
           className={`${classes.backButton} ${sticky ? classes.stickyBackButton : ""}`}
           onClick={onClickPreviousStep}
+          aria-label={sticky && isMobileScreen ? texts.back : undefined}
         >
-          {texts.back}
+          {sticky && isMobileScreen ? <ArrowBackIcon /> : texts.back}
         </Button>
       )}
       {position === "top" && onClickCancel && <CancelButton />}
-      <div className={classes.nextStepButtonsContainer}>
+      <div
+        className={`${classes.nextStepButtonsContainer} ${
+          sticky ? classes.stickyNextContainer : ""
+        }`}
+      >
         {onClickCancel && position !== "top" && <CancelButton />}
         {additionalButtons &&
           additionalButtons.map((b, index) => (

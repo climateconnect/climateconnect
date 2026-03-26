@@ -337,7 +337,7 @@ export default function ShareProjectRoot({
             {curStep.headline && curStep.headline}
           </Typography>
           {/* paddingBottom reserves space above the sticky navigation bar */}
-          <div style={{ paddingBottom: 120 }}>
+          <div style={{ paddingBottom: 80 }}>
             {curStep.key === "share" && (
               <ShareProject
                 project={project}

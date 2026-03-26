@@ -52,7 +52,7 @@ The create project ("Share Project") flow is a multi-step form wizard. Each step
 
 | File | Change |
 |---|---|
-| `frontend/src/components/general/NavigationButtons.tsx` | Add `sticky?: boolean` prop; sticky CSS returns `position: fixed` at all screen sizes with background and top shadow; add `stickyBackButton` class (`marginRight: auto`); guard `CancelButton` on `position="top"` behind `onClickCancel` check |
+| `frontend/src/components/general/NavigationButtons.tsx` | Add `sticky?: boolean` prop; sticky CSS returns `position: fixed` at all screen sizes with background and top shadow; `flexWrap: "wrap"` for multi-row on narrow screens; `stickyCompact` class reduces button padding on xs; Back button shows `ArrowBackIcon` on xs screens when sticky; add `stickyBackButton` class (`marginRight: auto`); guard `CancelButton` on `position="top"` behind `onClickCancel` check |
 | `frontend/src/components/shareProject/ShareProject.tsx` | Replace standalone `<Button>` with `<NavigationButtons sticky onClickNextStep={...} />` |
 | `frontend/src/components/shareProject/SelectSectors.tsx` | Convert bottom `NavigationButtons` to `sticky` |
 | `frontend/src/components/shareProject/EventRegistrationStep.tsx` | Convert bottom `NavigationButtons` to `sticky` |
@@ -71,8 +71,9 @@ navigationButtonWrapper: (props: any) => {
     return {
       position: "fixed",
       bottom: 0, left: 0, right: 0,
-      display: "flex", flexWrap: "nowrap",
+      display: "flex", flexWrap: "wrap",      // wraps to 2 rows on narrow screens
       justifyContent: "flex-end", alignItems: "center",
+      rowGap: theme.spacing(1),
       padding: `${theme.spacing(1.5)} ${theme.spacing(2)}`,
       background: theme.palette.background.paper,
       boxShadow: "0px -2px 8px rgba(0,0,0,0.12)",
@@ -82,11 +83,31 @@ navigationButtonWrapper: (props: any) => {
   // ... existing non-sticky styles unchanged ...
 },
 stickyBackButton: { marginRight: "auto" },
+stickyCompact: {
+  // Reduces MuiButton horizontal padding on xs so Draft + Next fit side-by-side
+  [theme.breakpoints.down("sm")]: {
+    "& .MuiButton-root": { paddingLeft: theme.spacing(1), paddingRight: theme.spacing(1) },
+  },
+},
 ```
 
-Back button usage:
+Back button — icon on xs screens, text on larger:
 ```tsx
-<Button className={`${classes.backButton} ${sticky ? classes.stickyBackButton : ""}`} ...>
+<Button
+  className={`${classes.backButton} ${sticky ? classes.stickyBackButton : ""}`}
+  onClick={onClickPreviousStep}
+  aria-label={sticky && isMobileScreen ? texts.back : undefined}
+>
+  {sticky && isMobileScreen ? <ArrowBackIcon /> : texts.back}
+</Button>
+```
+
+**Responsive layout on narrow screens (< 600 px, 3-button steps):**
+```
+┌─────────────────────────────────────┐
+│  [←]                                │  row 1 — Back icon, left
+│           [Entwurf] [Nächster Scht] │  row 2 — Draft + Next, right
+└─────────────────────────────────────┘
 ```
 
 #### Usage in step components (all steps)
@@ -106,7 +127,7 @@ Back button usage:
 #### Bottom padding spacer in `ShareProjectRoot`
 
 ```tsx
-<div style={{ paddingBottom: 80 }}>
+<div style={{ paddingBottom: 120 }}>
   {curStep.key === "share" && <ShareProject ... />}
   {curStep.key === "selectSector" && <SelectSectors ... />}
   {/* ... all other steps ... */}
@@ -126,9 +147,10 @@ Back button usage:
 7. On "Enter Details" with a project name, confirm "Save as Draft" in the sticky bar saves a draft.
 8. On "Add Team" (last step), confirm "Publish" submits the project.
 9. Confirm loading spinners and disabled states work correctly during submission.
-10. Confirm the **last form element on each step is not hidden** behind the sticky bar (80 px padding spacer).
-11. Verify on mobile (< 600 px) and tablet (600–960 px) that the bar displays correctly.
-12. Run `yarn lint` — must pass with zero errors.
+10. Confirm the **last form element on each step is not hidden** behind the sticky bar (120 px padding spacer).
+11. On mobile (< 600 px), confirm the Back button shows an **arrow icon** (not text) and has an accessible `aria-label`.
+12. Verify on mobile (< 600 px) and tablet (600–960 px) that the bar displays correctly.
+13. Run `yarn lint` — must pass with zero errors.
 
 ---
 
@@ -140,3 +162,4 @@ Back button usage:
 | 2026-03-26 11:00 | Top navigation approach implemented and reviewed. User feedback: preferred sticky bottom navigation instead. |
 | 2026-03-26 11:30 | Pivoted to sticky bottom navigation. Added `sticky` prop to `NavigationButtons`, converted all share project steps, added padding spacer in `ShareProjectRoot`. Fixed right-alignment of Next button when no Back button is present. |
 | 2026-03-26 12:00 | Implementation approved by user. Spec updated to reflect final solution. Status set to COMPLETED. |
+| 2026-03-26 12:30 | Refinement: Back button replaced with `ArrowBackIcon` on xs screens (< 600 px) when sticky, freeing space for Draft + Next buttons. `aria-label` added for accessibility. Spec updated. |
