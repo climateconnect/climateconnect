@@ -82,10 +82,12 @@ const useStyles = makeStyles((theme) => {
       flexWrap: "nowrap",
       alignItems: "stretch",
       justifyContent: "flex-end",
-      "& .MuiButton-root": {
-        flex: 1,
-        whiteSpace: "normal",
-        maxWidth: 180,
+      [theme.breakpoints.down("sm")]: {
+        "& .MuiButton-root": {
+          flex: 1,
+          whiteSpace: "normal",
+          maxWidth: 180,
+        },
       },
     },
     draftButton: {
