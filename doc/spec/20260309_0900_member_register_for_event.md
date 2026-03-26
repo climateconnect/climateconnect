@@ -4,8 +4,7 @@
 **Type**: Feature
 **Date and time created**: 2026-03-09 09:00
 **Date Completed**: TBD
-**Backlog Issue**: [#44 — Member can register for an event](https://github.com/climateconnect/product-backlog/issues/44)  
-**Implementation Issue**: [#1845](https://github.com/climateconnect/climateconnect/issues/1845)
+**GitHub Issue**: [#1845](https://github.com/climateconnect/climateconnect/issues/1845)
 **Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)  
 **Related Specs**:
 - [`docs/mosy/architecture_overview.md`](../mosy/architecture_overview.md)

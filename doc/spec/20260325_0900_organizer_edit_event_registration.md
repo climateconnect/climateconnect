@@ -4,8 +4,7 @@
 **Type**: Feature
 **Date and time created**: 2026-03-25 09:00
 **Date Completed**: TBD
-**Backlog Issue**: [#59 — Event organizer can edit an event with basic registration](https://github.com/climateconnect/product-backlog/issues/59)  
-**Implementation Issue**: [#1848](https://github.com/climateconnect/climateconnect/issues/1848)
+**GitHub Issue**: [#1848](https://github.com/climateconnect/climateconnect/issues/1848)
 **Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)  
 **Related Specs**:
 - [`docs/mosy/architecture_overview.md`](../mosy/architecture_overview.md)
