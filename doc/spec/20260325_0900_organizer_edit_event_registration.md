@@ -4,7 +4,9 @@
 **Type**: Feature
 **Date and time created**: 2026-03-25 09:00
 **Date Completed**: TBD
-**Related GitHub Issue**: #59 - [STORY] Event organizer can edit an event with basic registration
+**Backlog Issue**: [#59 — Event organizer can edit an event with basic registration](https://github.com/climateconnect/product-backlog/issues/59)  
+**Implementation Issue**: [#1848](https://github.com/climateconnect/climateconnect/issues/1848)
+**Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)  
 **Related Specs**:
 - [`docs/mosy/architecture_overview.md`](../mosy/architecture_overview.md)
 - [`docs/mosy/entities/system-entities.md`](../mosy/entities/system-entities.md)
@@ -92,8 +94,10 @@ None. Registration setting edits are synchronous. No notifications to participan
 ### Frontend
 
 - **Event edit page** (organizer/admin view only):
-  - When the event project has `event_registration` present in the API response, render a **"Registration settings"** section — in the same location used on the Details step of the create flow.
-  - Pre-fill current values:
+  - The **"Registration settings"** section must only be rendered when **both** of the following are true:
+    1. The `EVENT_REGISTRATION` feature toggle is enabled (consistent with the organiser-creation UI in `ShareProjectRoot.tsx` which already checks `isEnabled("EVENT_REGISTRATION")`).
+    2. The event project has `event_registration` present (non-null) in the API response.
+  - When shown, pre-fill current values:
     - `max_participants` field pre-filled with `event_registration.max_participants`.
     - `registration_end_date` picker pre-filled with `event_registration.registration_end_date`.
   - Validation (client-side, mirrored server-side):
@@ -163,9 +167,11 @@ None.
 - 2026-03-25 09:00 — Task created from GitHub issue #59. Builds on task `20260305_1000_create_event_with_basic_registration.md` (issue #43) for the `EventRegistration` entity and edit API patterns. Depends on task `20260309_0900_member_register_for_event.md` (issue #44) for `EventParticipant` count validation and task `20260324_0900_organizer_close_event_registration.md` (issue #56) for `RegistrationStatus` and `status` write-protection. Status: DRAFT — pending user review of problem statement and insights.
 - 2026-03-25 09:30 — User confirmed: (1) `max_participants` lower-bound validation is explicitly deferred — task #44 will not be ready; leave `# TODO` comment only. (2) Draft-mode behaviour confirmed as core requirement: all validations skipped when `is_draft=true`, fully enforced on publish (`is_draft=false`). Draft-mode promoted from AI insights to core requirements. Problem statement approved.
 - 2026-03-25 09:45 — Specs approved. Status promoted to READY FOR IMPLEMENTATION.
+- 2026-03-26 — Frontend section updated: "Registration settings" section in the edit form now explicitly requires the `EVENT_REGISTRATION` feature toggle to be enabled (consistent with `ShareProjectRoot.tsx` pattern and with the member-facing registration UI in task #44). Corresponding acceptance criterion added.
 
 ## Acceptance Criteria
 
+- [ ] The "Registration settings" section in the edit form is only rendered when the `EVENT_REGISTRATION` feature toggle is enabled **and** `event_registration` is non-null in the API response.
 - [ ] When editing an event with registration enabled, the organizer sees a pre-filled "Registration settings" section showing the current `max_participants` and `registration_end_date`.
 - [ ] The organizer can update `max_participants` to any positive integer ≥ the current number of registered participants (if count is available; otherwise ≥ 1).
 - [ ] Attempting to set `max_participants` below the current participant count returns `400 Bad Request` with a descriptive error message (conditional on task #44 availability).

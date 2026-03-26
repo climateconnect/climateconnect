@@ -4,7 +4,9 @@
 **Type**: Feature
 **Date and time created**: 2026-03-24 09:00
 **Date Completed**: TBD
-**Related GitHub Issue**: #56 - [STORY] Event organizer can close the registration before the end date
+**Backlog Issue**: [#56 — Event organizer can close the registration before the end date](https://github.com/climateconnect/product-backlog/issues/56)  
+**Implementation Issue**: — *(not yet created in code repository)*
+**Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)  
 **Related Specs**:
 - [`docs/mosy/architecture_overview.md`](../mosy/architecture_overview.md)
 - [`docs/mosy/entities/system-entities.md`](../mosy/entities/system-entities.md)
