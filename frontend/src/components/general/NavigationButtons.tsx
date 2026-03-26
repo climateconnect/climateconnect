@@ -9,28 +9,55 @@ import SaveIcon from "@mui/icons-material/Save";
 
 const useStyles = makeStyles((theme) => {
   return {
-    navigationButtonWrapper: (props: any) => ({
-      marginTop: props.position !== "top" ? theme.spacing(10) : theme.spacing(6),
-      marginBottom: props.position === "top" ? theme.spacing(4) : 0,
-      display: "flex",
-      flexWrap: "wrap",
-      justifyContent: "space-between",
-      rowGap: theme.spacing(2),
-      [theme.breakpoints.down("md")]: {
-        position: props.fixedOnMobile && "fixed",
-        bottom: props.fixedOnMobile && 0,
-        left: props.fixedOnMobile && 0,
-        right: props.fixedOnMobile && 0,
-        alignItems: props.fixedOnMobile && "center",
-        paddingBottom: props.fixedOnMobile && theme.spacing(1),
-        background: props.fixedOnMobile && theme.palette.grey.light,
-        zIndex: props.fixedOnMobile && 10,
+    navigationButtonWrapper: (props: any) => {
+      // Sticky mode: fixed to the bottom of the viewport at ALL screen sizes
+      if (props.sticky) {
+        return {
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: "flex",
+          flexWrap: "nowrap",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          rowGap: theme.spacing(1),
+          paddingTop: theme.spacing(1.5),
+          paddingBottom: theme.spacing(1.5),
+          paddingLeft: theme.spacing(2),
+          paddingRight: theme.spacing(2),
+          background: theme.palette.background.paper,
+          boxShadow: "0px -2px 8px rgba(0,0,0,0.12)",
+          zIndex: 1100,
+        };
+      }
+      // Default (non-sticky) mode — unchanged
+      return {
+        marginTop: props.position !== "top" ? theme.spacing(10) : theme.spacing(6),
+        marginBottom: props.position === "top" ? theme.spacing(4) : 0,
         display: "flex",
-        justifyContent: "center",
-      },
-    }),
+        flexWrap: "wrap",
+        justifyContent: "space-between",
+        rowGap: theme.spacing(2),
+        [theme.breakpoints.down("md")]: {
+          position: props.fixedOnMobile && "fixed",
+          bottom: props.fixedOnMobile && 0,
+          left: props.fixedOnMobile && 0,
+          right: props.fixedOnMobile && 0,
+          alignItems: props.fixedOnMobile && "center",
+          paddingBottom: props.fixedOnMobile && theme.spacing(1),
+          background: props.fixedOnMobile && theme.palette.grey.light,
+          zIndex: props.fixedOnMobile && 10,
+          display: "flex",
+          justifyContent: "center",
+        },
+      };
+    },
     backButton: {
       color: theme.palette.background.default_contrastText,
+    },
+    stickyBackButton: {
+      marginRight: "auto",
     },
     nextStepButtonsContainer: {
       [theme.breakpoints.down("sm")]: {
@@ -68,6 +95,8 @@ type Args = {
   loadingSubmitDraft?: boolean;
   position?: "top" | "bottom";
   fixedOnMobile?: boolean;
+  /** When true the bar is always fixed at the viewport bottom (all screen sizes). */
+  sticky?: boolean;
 };
 
 export default function NavigationButtons({
@@ -82,8 +111,9 @@ export default function NavigationButtons({
   loadingSubmitDraft,
   position,
   fixedOnMobile,
+  sticky,
 }: Args) {
-  const classes = useStyles({ position: position, fixedOnMobile: fixedOnMobile });
+  const classes = useStyles({ position, fixedOnMobile, sticky });
   const [open, setOpen] = useState(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const isMobileScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -123,18 +153,18 @@ export default function NavigationButtons({
   );
 
   return (
-    <div className={`${classes.navigationButtonWrapper} ${className}`}>
+    <div className={`${classes.navigationButtonWrapper} ${className ?? ""}`}>
       {onClickPreviousStep && (
         <Button
           variant="contained"
           color="grey"
-          className={classes.backButton}
+          className={`${classes.backButton} ${sticky ? classes.stickyBackButton : ""}`}
           onClick={onClickPreviousStep}
         >
           {texts.back}
         </Button>
       )}
-      {position === "top" && <CancelButton />}
+      {position === "top" && onClickCancel && <CancelButton />}
       <div className={classes.nextStepButtonsContainer}>
         {onClickCancel && position !== "top" && <CancelButton />}
         {additionalButtons &&

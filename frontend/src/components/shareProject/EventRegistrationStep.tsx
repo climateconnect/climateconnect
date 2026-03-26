@@ -86,7 +86,7 @@ export default function EventRegistrationStep({
       <NavigationButtons
         onClickPreviousStep={goToPreviousStep as React.MouseEventHandler<HTMLButtonElement>}
         onClickNextStep={handleClickNext as React.MouseEventHandler<HTMLButtonElement>}
-        position="bottom"
+        sticky
       />
     </Container>
   );
