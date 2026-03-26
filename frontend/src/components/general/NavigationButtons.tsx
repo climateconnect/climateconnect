@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => {
           left: 0,
           right: 0,
           display: "flex",
-          flexWrap: "nowrap",
+          flexWrap: "wrap",
           justifyContent: "flex-end",
           alignItems: "center",
           rowGap: theme.spacing(1),
@@ -153,7 +153,11 @@ export default function NavigationButtons({
   );
 
   return (
-    <div className={`${classes.navigationButtonWrapper} ${className ?? ""}`}>
+    <div
+      className={`${classes.navigationButtonWrapper} ${sticky ? classes.stickyCompact : ""} ${
+        className ?? ""
+      }`}
+    >
       {onClickPreviousStep && (
         <Button
           variant="contained"
