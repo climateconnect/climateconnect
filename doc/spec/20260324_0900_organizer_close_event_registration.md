@@ -4,7 +4,7 @@
 **Type**: Feature
 **Date and time created**: 2026-03-24 09:00
 **Date Completed**: TBD
-**GitHub Issue**: — *(not yet created)*
+**GitHub Issue**: [#1851](https://github.com/climateconnect/climateconnect/issues/1851)
 **Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)  
 **Related Specs**:
 - [`docs/mosy/architecture_overview.md`](../mosy/architecture_overview.md)
@@ -29,7 +29,7 @@ An event organizer or team admin can manually close the registration for their e
 **Explicitly Out of Scope (this iteration):**
 - Notifying already-registered participants when registration is closed or reopened.
 - Organizer visibility of cancellations triggered by a manual close.
-- The member-facing "Registration closed" disabled button state is already implemented in task #44 — this task provides the backend mechanism that drives it for the manual case.
+- The member-facing "Registration closed" disabled button state is already implemented in [#1845](https://github.com/climateconnect/climateconnect/issues/1845) — this task provides the backend mechanism that drives it for the manual case.
 
 ### Non Functional Requirements
 
@@ -38,18 +38,18 @@ An event organizer or team admin can manually close the registration for their e
 - `ended` is **never stored in the database**. It is computed lazily in the serializer: when `stored_status == "open" AND registration_end_date <= now`, the API returns `status: "ended"`. This avoids a Celery Beat scheduled job. No additional schema migration is required.
 - The close/reopen action must be **idempotent** — closing an already-closed registration returns `200 OK` (no error, no state change); same for reopening.
 - No breaking changes to existing API contracts. The `status` field exposure is additive.
-- **No schema migration needed**: `RegistrationStatus` enum (`open`/`closed`/`full`) and the `status` field were already added to `EventRegistration` in task #43 (migration `0121_add_eventregistration_status.py`). This task only exposes `status` to organizers via the API and adds the organizer UI.
+- **No schema migration needed**: `RegistrationStatus` enum (`open`/`closed`/`full`) and the `status` field were already added to `EventRegistration` in [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (migration `0121_add_eventregistration_status.py`). This task only exposes `status` to organizers via the API and adds the organizer UI.
 - `full` cannot be set via the API — it is reserved for system use (set atomically when the last seat is taken). `EventRegistrationSerializer.validate_status()` must enforce this.
 
 ### AI Agent Insights and Additions
 
-- **`RegistrationStatus` already exists** from task #43 (migration `0121_add_eventregistration_status.py`) with values `open`, `closed`, and `full`. The `closed` value is exactly the mechanism for this feature — no new field or migration is required.
+- **`RegistrationStatus` already exists** from [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (migration `0121_add_eventregistration_status.py`) with values `open`, `closed`, and `full`. The `closed` value is exactly the mechanism for this feature — no new field or migration is required.
 - **`ended` status (new, lazy)**: a fourth status value is added to `RegistrationStatus` to represent a registration whose deadline has passed naturally. It is **never stored** — the serializer computes it lazily: `if stored_status == "open" AND registration_end_date <= now → return "ended"`. No DB schema change or Celery Beat job required. With `ended` in place, `status` unambiguously describes all possible states.
 - **`is_registration_open` removed from the API**: consumers no longer need a separate boolean — `status == "open"` answers the same question, and the other status values provide the *reason* registration is unavailable (enabling contextual UI messaging). This has a ripple effect on prior tasks:
-  - `POST /api/events/{slug}/register/` (task #44): guard changes from `is_registration_open` check to `effective_status != "open"`.
-  - Event detail `GET /api/projects/{slug}/` (task #44): remove `is_registration_open` from `event_registration` response payload. ⚠️ Breaking change if task #44 is already deployed — coordinate with task #44 spec update.
-  - Event list `GET /api/projects/` (task #44): same removal.
-  - Member profile registered events list (task #46): frontend registration-open indicator switches from `is_registration_open` boolean to `status == "open"` check.
+  - `POST /api/projects/{slug}/register/` ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)): guard changes from `is_registration_open` check to `effective_status != "open"`.
+  - Event detail `GET /api/projects/{slug}/` ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)): remove `is_registration_open` from `event_registration` response payload. ⚠️ Breaking change if [#1845](https://github.com/climateconnect/climateconnect/issues/1845) is already deployed — coordinate with the [#1845](https://github.com/climateconnect/climateconnect/issues/1845) spec update.
+  - Event list `GET /api/projects/` ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)): same removal.
+  - Member profile registered events list ([#1849](https://github.com/climateconnect/climateconnect/issues/1849)): frontend registration-open indicator switches from `is_registration_open` boolean to `status == "open"` check.
 - `full` cannot be set via the API — `EventRegistrationSerializer.validate_status()` must reject it. Only `open` and `closed` are organizer-settable.
 - A **`IsEventOrganizerOrAdmin` permission class** is needed to guard the close/reopen endpoints. Check whether an equivalent already exists in the codebase before creating a new one.
 
@@ -63,7 +63,7 @@ An event organizer or team admin can manually close the registration for their e
   - `Organizer` → `Reopen Event Registration` → `EventRegistration` (set `status = "open"`)
 - **Flows affected**:
   - **New flow — Manage Event Registration Status Flow**: Organizer opens event detail or edit page → triggers close/reopen action → system updates `EventRegistration.status` → all consumers read `status` directly.
-  - **Member Event Registration Flow** (task #44): registration guard and frontend logic switch from `is_registration_open` boolean to `status == "open"` check.
+  - **Member Event Registration Flow** ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)): registration guard and frontend logic switch from `is_registration_open` boolean to `status == "open"` check.
 - **Entity changes needed**: Minimal — `RegistrationStatus` enum gains `ended` as a Python-side value (never stored in DB; computed lazily in the serializer). No new entities, no DB migration.
 - **Flow changes needed**: Yes — new Manage Event Registration Status Flow added; existing Member Event Registration Flow updated.
 - **Integration changes needed**: No.
@@ -77,7 +77,7 @@ Two dedicated action endpoints for close and reopen.
 
 **Close registration (new)**
 ```
-POST /api/events/{slug}/registration/close/
+POST /api/projects/{slug}/registration/close/
 ```
 - Auth required (`401` if unauthenticated).
 - Requires organizer or team admin role on the project (`403` otherwise).
@@ -88,7 +88,7 @@ POST /api/events/{slug}/registration/close/
 
 **Reopen registration (new)**
 ```
-POST /api/events/{slug}/registration/reopen/
+POST /api/projects/{slug}/registration/reopen/
 ```
 - Auth required (`401` if unauthenticated).
 - Requires organizer or team admin role on the project (`403` otherwise).
@@ -105,7 +105,7 @@ GET /api/projects/{slug}/
 ```
 - `event_registration.status: "open" | "closed" | "full" | "ended"` added to the response payload. `ended` is computed lazily (never stored): returned when `stored_status == "open" AND registration_end_date <= now`.
 - `event_registration.is_registration_open` **removed** — consumers use `status` directly. `status == "open"` means registration is active; any other value means it is not, and the value itself explains why.
-- ⚠️ Removing `is_registration_open` is a breaking change if task #44 is already deployed. Coordinate with the task #44 spec and any deployed frontend before releasing.
+- ⚠️ Removing `is_registration_open` is a breaking change if [#1845](https://github.com/climateconnect/climateconnect/issues/1845) is already deployed. Coordinate with the [#1845](https://github.com/climateconnect/climateconnect/issues/1845) spec and any deployed frontend before releasing.
 
 **Event list (existing)**
 ```
@@ -124,18 +124,18 @@ None. Close/reopen is synchronous. No async side-effects in this iteration (part
     - If `status == "open"`: a **"Close registration"** button (e.g. outlined / secondary style).
     - If `status == "closed"` or `"full"`: a **"Reopen registration"** button.
     - If `status == "ended"`: no close/reopen action — show an informational label (e.g. *"Registration period has ended"*). The organizer must edit the event's `registration_end_date` to reopen.
-  - Clicking "Close registration" calls `POST /api/events/{slug}/registration/close/` and updates the local state:
+  - Clicking "Close registration" calls `POST /api/projects/{slug}/registration/close/` and updates the local state:
     - The management button switches to "Reopen registration".
     - Members now see the contextual disabled button state driven by `status: "closed"` (see Member view below).
-  - Clicking "Reopen registration" calls `POST /api/events/{slug}/registration/reopen/` and mirrors the above in reverse.
+  - Clicking "Reopen registration" calls `POST /api/projects/{slug}/registration/reopen/` and mirrors the above in reverse.
   - On error: show an inline error message near the button.
-  - Regular members do not see the close/reopen action — only the `is_registration_open`-driven button state (existing behaviour from task #44).
+  - Regular members do not see the close/reopen action — only the `is_registration_open`-driven button state (existing behaviour from [#1845](https://github.com/climateconnect/climateconnect/issues/1845)).
 
 - **Event edit page** (organizer/admin view):
   - If the event has `event_registration` present, display a registration status section with the same close/reopen toggle behaviour as the event detail page.
-  - Uses the same `POST /api/events/{slug}/registration/close|reopen/` endpoints.
+  - Uses the same `POST /api/projects/{slug}/registration/close|reopen/` endpoints.
 
-- **Member view** — the existing "Registration closed" disabled button state (task #44) must be updated to use `status` instead of the removed `is_registration_open` boolean. The frontend can now show contextual messaging based on the status value:
+- **Member view** — the existing "Registration closed" disabled button state ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)) must be updated to use `status` instead of the removed `is_registration_open` boolean. The frontend can now show contextual messaging based on the status value:
   - `status == "open"`: show the "Register" button (active).
   - `status == "closed"`: show disabled button labelled **"Registration closed"**.
   - `status == "full"`: show disabled button labelled **"Booked out"**.
@@ -143,7 +143,7 @@ None. Close/reopen is synchronous. No async side-effects in this iteration (part
 
 ### Backend
 
-- **`EventRegistration` model**: no changes — `status` field and `RegistrationStatus` enum already exist from task #43 (migration `0121_add_eventregistration_status.py`). Default is `open`.
+- **`EventRegistration` model**: no changes — `status` field and `RegistrationStatus` enum already exist from [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (migration `0121_add_eventregistration_status.py`). Default is `open`.
 
 - **`RegistrationStatus` enum** (extend Python-side only):
   - Add `ENDED = "ended"` — never stored in the DB; used only as a return value from the serializer's effective status computation. No migration required.
@@ -160,7 +160,7 @@ None. Close/reopen is synchronous. No async side-effects in this iteration (part
   - `validate_status()` must reject `full` and `ended` as organizer-supplied values — only `open` and `closed` are writable via the API.
   - `is_registration_open` field **removed** from the serializer — not returned in any API response.
 
-- **`EventRegistrationViewSet`** (extend existing, introduced in task #44):
+- **`EventRegistrationViewSet`** (extend existing, introduced in [#1845](https://github.com/climateconnect/climateconnect/issues/1845)):
   - Add `close` action:
     ```python
     @action(detail=False, methods=["post"], url_path="close",
@@ -189,7 +189,7 @@ None. Close/reopen is synchronous. No async side-effects in this iteration (part
             registration.save(update_fields=["status"])
         return Response(serializer.data)
     ```
-  - `register()` action (task #44): update guard to `effective_status != RegistrationStatus.OPEN` — this covers `closed`, `full`, and `ended` with a single check.
+  - `register()` action ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)): update guard to `effective_status != RegistrationStatus.OPEN` — this covers `closed`, `full`, and `ended` with a single check.
 
 - **`IsEventOrganizerOrAdmin` permission class** (new or reuse existing): checks that `request.user` is the project owner or holds an admin role in the project team. Verify whether an equivalent already exists before creating a new one.
 
@@ -197,7 +197,7 @@ None. Close/reopen is synchronous. No async side-effects in this iteration (part
 
 ### Data
 
-No schema changes. `projects_eventregistration.status` column already exists (VARCHAR/Enum, NOT NULL, DEFAULT `'open'`) from task #43. The `ended` value is never written to the database — it is a Python-side enum value returned by the serializer's `get_effective_status()` method only. `is_registration_open` is no longer exposed in any API response.
+No schema changes. `projects_eventregistration.status` column already exists (VARCHAR/Enum, NOT NULL, DEFAULT `'open'`) from [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (migration `0121_add_eventregistration_status.py`). The `ended` value is never written to the database — it is a Python-side enum value returned by the serializer's `get_effective_status()` method only. `is_registration_open` is no longer exposed in any API response.
 
 ### Other
 
@@ -209,11 +209,12 @@ None.
 
 ## Log
 
-- 2026-03-24 09:00 — Task created from GitHub issue #56. Depends on task `20260305_1000_create_event_with_basic_registration.md` (issue #43) for the `EventRegistration` entity, and task `20260309_0900_member_register_for_event.md` (issue #44) for the `is_registration_open` computation and `POST /register/` endpoint.
-- 2026-03-24 09:30 — System impact analysis complete. New Manage Event Registration Status Flow defined. `is_registration_open` ripple effect documented across tasks #44 and #46. System entities and core flows updated. Status set to IMPLEMENTATION.
-- 2026-03-24 10:00 — Spec revised: `is_closed: Boolean` approach replaced by the `RegistrationStatus` enum (`open`/`closed`/`full`) already implemented in task #43 (migration `0121_add_eventregistration_status.py`). No schema migration needed. `is_registration_open` updated to `status == "open" AND registration_end_date > now`. `full` confirmed as system-only (not organizer-settable via API). Open question from original spec resolved.
+- 2026-03-24 09:00 — Task created from GitHub issue #1851. Depends on [#1820](https://github.com/climateconnect/climateconnect/issues/1820) for the `EventRegistration` entity and [#1845](https://github.com/climateconnect/climateconnect/issues/1845) for the `is_registration_open` computation and `POST /register/` endpoint.
+- 2026-03-24 09:30 — System impact analysis complete. New Manage Event Registration Status Flow defined. `is_registration_open` ripple effect documented across [#1845](https://github.com/climateconnect/climateconnect/issues/1845) and [#1849](https://github.com/climateconnect/climateconnect/issues/1849). System entities and core flows updated. Status set to IMPLEMENTATION.
+- 2026-03-24 10:00 — Spec revised: `is_closed: Boolean` approach replaced by the `RegistrationStatus` enum (`open`/`closed`/`full`) already implemented in [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (migration `0121_add_eventregistration_status.py`). No schema migration needed. `is_registration_open` updated to `status == "open" AND registration_end_date > now`. `full` confirmed as system-only (not organizer-settable via API). Open question from original spec resolved.
 - 2026-03-24 10:30 — `ended` status added (Python-side, never stored). Lazy computation in serializer: `stored_status == "open" AND registration_end_date <= now → effective "ended"`. `is_registration_open` now simplifies to `effective_status == "open"` — `status` becomes the single source of truth for all states. `reopen` endpoint guards against `ended` (returns `400`). System entities and core flows updated.
-- 2026-03-24 11:00 — `is_registration_open` removed from the API entirely. `status` covers all cases and provides richer information for contextual UI messaging (`open` → Register, `closed` → "Registration closed", `full` → "Booked out", `ended` → "Registration period ended"). Ripple effect: tasks #44 and #46 specs must be updated to remove `is_registration_open` from their API response documentation.
+- 2026-03-24 11:00 — `is_registration_open` removed from the API entirely. `status` covers all cases and provides richer information for contextual UI messaging (`open` → Register, `closed` → "Registration closed", `full` → "Booked out", `ended` → "Registration period ended"). Ripple effect: [#1845](https://github.com/climateconnect/climateconnect/issues/1845) and [#1849](https://github.com/climateconnect/climateconnect/issues/1849) specs must be updated to remove `is_registration_open` from their API response documentation.
+- 2026-03-26 — GitHub issue #1851 created in the code repository. Spec updated: `/api/events/` URLs corrected to `/api/projects/`; all product-backlog task number references replaced with code repo issue numbers.
 
 ## Acceptance Criteria
 
@@ -222,9 +223,9 @@ None.
 - [ ] Once registration is manually closed (`status = "closed"`), members cannot register — `POST /register/` returns `400 Bad Request`.
 - [ ] A manually closed registration can be **reopened** by the event organizer or team admin (if the deadline has not passed).
 - [ ] After reopening (`status = "open"`), members can register again.
-- [ ] `POST /api/events/{slug}/registration/close/` is idempotent — calling it when `status` is already `"closed"` returns `200 OK`.
-- [ ] `POST /api/events/{slug}/registration/reopen/` is idempotent — calling it when `status` is already `"open"` returns `200 OK`.
-- [ ] `POST /api/events/{slug}/registration/reopen/` returns `400 Bad Request` when `effective_status == "ended"` (deadline has passed), with a message directing the organizer to extend the registration end date first.
+- [ ] `POST /api/projects/{slug}/registration/close/` is idempotent — calling it when `status` is already `"closed"` returns `200 OK`.
+- [ ] `POST /api/projects/{slug}/registration/reopen/` is idempotent — calling it when `status` is already `"open"` returns `200 OK`.
+- [ ] `POST /api/projects/{slug}/registration/reopen/` returns `400 Bad Request` when `effective_status == "ended"` (deadline has passed), with a message directing the organizer to extend the registration end date first.
 - [ ] The organizer can reopen a `"full"` registration (`full` → `open` transition is permitted).
 - [ ] `full` and `ended` cannot be set via either endpoint — `EventRegistrationSerializer.validate_status()` rejects them with `400 Bad Request`.
 - [ ] Both endpoints return `401 Unauthorized` for unauthenticated requests.
@@ -243,7 +244,7 @@ None.
   - Informational label **"Registration period has ended"** when `status == "ended"` (no action button shown).
 - [ ] The organizer/admin UI on the event edit page includes the same close/reopen/ended behaviour.
 - [ ] Regular members do not see the close/reopen action.
-- [ ] No Django migration is required — `status` column already exists from task #43 migration `0121_add_eventregistration_status.py`. `ended` is a Python-side enum value only.
+- [ ] No Django migration is required — `status` column already exists from [#1820](https://github.com/climateconnect/climateconnect/issues/1820) migration `0121_add_eventregistration_status.py`. `ended` is a Python-side enum value only.
 - [ ] All tests pass (unit, integration, end-to-end).
 - [ ] Code review approved.
 - [ ] Documentation updated and current.
