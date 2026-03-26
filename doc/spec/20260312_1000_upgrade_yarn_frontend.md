@@ -1,6 +1,6 @@
 # Upgrade Yarn to v4 in the Frontend (node-modules linker)
 
-**Status**: IMPLEMENTATION (Reference: [`task-based-development.md`](../guides/task-based-development.md))
+**Status**: COMPLETED (Reference: [`task-based-development.md`](../guides/task-based-development.md))
 **Type**: Chore / Infrastructure
 **Date and time created**: 2026-03-12 10:00
 **Date Completed**: TBD

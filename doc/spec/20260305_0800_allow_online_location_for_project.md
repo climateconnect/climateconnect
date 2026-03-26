@@ -1,6 +1,6 @@
 # Allow Online as Location for a Project
 
-**Status**: IMPLEMENTATION (Reference: [`task-based-development.md`](../guides/task-based-development.md))
+**Status**: COMPLETED (Reference: [`task-based-development.md`](../guides/task-based-development.md))
 **Type**: Feature
 **Date and time created**: 2026-03-05 08:00
 **Date Completed**: TBD

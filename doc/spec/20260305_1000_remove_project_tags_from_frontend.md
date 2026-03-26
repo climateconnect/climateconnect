@@ -1,6 +1,6 @@
 # Remove Project Tags from the Frontend
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Cleanup / Technical Debt
 **Date and time created**: 2026-03-05 10:00 UTC
 **Date Completed**: TBD

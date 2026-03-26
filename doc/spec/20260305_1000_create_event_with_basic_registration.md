@@ -1,6 +1,6 @@
 # Create an Event with Basic Registration
 
-**Status**: DONE
+**Status**: COMPLETED
 **Type**: Feature
 **Date and time created**: 2026-03-05 10:00
 **Date Completed**: 2026-03-19

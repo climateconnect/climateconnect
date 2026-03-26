@@ -1,6 +1,6 @@
 # Wasseraktionswochen Hub Child Events Page
 
-**Status**: DRAFT  
+**Status**: COMPLETED  
 **Type**: Feature  
 **Date and time created**: 2026-01-21 14:13 UTC  
 **Date Completed**: N/A  
