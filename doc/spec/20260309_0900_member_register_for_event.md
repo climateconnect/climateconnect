@@ -124,7 +124,13 @@ GET /api/projects/
 
 ### Frontend
 
-- **Project / event listing cards**: Show a small badge or indicator (e.g. "Registration open") for events where `event_registration` is present and `status === "open"` and `new Date() < registration_end_date`. No seat count for performance reasons (seat count not yet available from the API). Both the badge and the Register button must only be rendered when the `EVENT_REGISTRATION` feature toggle is enabled (consistent with the existing organiser-creation UI in `ShareProjectRoot.tsx`).
+- **Project / event listing cards (preview)**: For events where `event_registration` is present **and the `EVENT_REGISTRATION` feature toggle is enabled**, show a **small button placed next to the project type label, aligned to the right**. The button label and state vary by effective registration status:
+  - `open` → **"Register now"** — interactive, links to `/projects/{slug}/register`
+  - `full` → **"Booked out"** — disabled, visual indicator only
+  - `closed` → **"Registration closed"** — disabled, visual indicator only
+  - `ended` → no button shown
+  - No seat count is shown in listing cards (seat count requires a COUNT query per row — performance reason).
+  - `effective_status` is derived client-side: if `status === "open"` and `registration_end_date <= now()`, treat as `ended`; otherwise use `status` directly.
 - **Event detail page**:
   - Replace the Follow button with a **"Register"** button when the event has `event_registration` present **and the `EVENT_REGISTRATION` feature toggle is enabled**.
   - When registration is closed (`status === "closed"` or `status === "full"` or `now >= registration_end_date`): render a disabled grey button labelled "Registration closed".
@@ -191,7 +197,7 @@ GET /api/projects/
 
 ## Acceptance Criteria
 
-- [ ] In project/event listing views, events with open registration show a visual indicator (e.g. badge "Registration open") **when the `EVENT_REGISTRATION` feature toggle is enabled**. No seat count shown in listings for performance.
+- [ ] In project/event listing cards (preview), when the `EVENT_REGISTRATION` feature toggle is enabled and `event_registration` is present, a small button is shown next to the project type label, right-aligned, with label and state driven by effective registration status: **"Register now"** (interactive, links to `/projects/{slug}/register`) when `open`; **"Booked out"** (disabled, visual only) when `full`; **"Registration closed"** (disabled, visual only) when `closed`; **no button** when `ended`. No seat count shown in listing cards.
 - [ ] On the event detail page, the Follow button is replaced by a "Register" button when the event has registration enabled **and the `EVENT_REGISTRATION` feature toggle is enabled**.
 - [ ] When registration is closed (deadline passed, no seats remaining, or manually closed), a disabled "Registration closed" button is shown.
 - [ ] A logged-in member can click "Register" and see a confirmation modal with their pre-filled details.
