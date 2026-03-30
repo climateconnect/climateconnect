@@ -1,6 +1,11 @@
 from django.urls import path
 
-from organization.views import organization_views, project_views, sector_views, event_registration_views
+from organization.views import (
+    organization_views,
+    project_views,
+    sector_views,
+    event_registration_views,
+)
 
 app_name = "organization"
 urlpatterns = [

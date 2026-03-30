@@ -10,7 +10,6 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Case, Prefetch, Q, When
 from django.db.models.functions import Cast
-from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
@@ -77,6 +76,7 @@ from organization.permissions import (
     ReadWriteSensibleProjectDataPermission,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
+from organization.models.event_registration import EventRegistration
 from organization.serializers.event_registration import EventRegistrationSerializer
 from organization.serializers.project import (
     EditProjectSerializer,
@@ -1059,7 +1059,6 @@ class ProjectAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
 
 
 class ListProjectPostsView(ListAPIView):

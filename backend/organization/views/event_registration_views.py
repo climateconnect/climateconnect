@@ -160,4 +160,3 @@ class RegisterForEventView(APIView):
             return None
         count = EventParticipant.objects.filter(event_registration=er).count()
         return max(0, er.max_participants - count)
-
