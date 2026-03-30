@@ -3,6 +3,7 @@ from django.contrib import admin
 from organization.models import (
     Comment,
     CommentTranslation,
+    EventParticipant,
     EventRegistration,
     Organization,
     OrganizationFieldTagging,
@@ -266,3 +267,30 @@ class EventRegistrationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(EventRegistration, EventRegistrationAdmin)
+
+
+class EventParticipantAdmin(admin.ModelAdmin):
+    search_fields = (
+        "user__username",
+        "user__email",
+        "user__first_name",
+        "user__last_name",
+        "event_registration__project__name",
+        "event_registration__project__url_slug",
+    )
+    list_display = (
+        "user",
+        "get_event_name",
+        "registered_at",
+    )
+    list_filter = ("registered_at",)
+    raw_id_fields = ("user", "event_registration")
+    readonly_fields = ("registered_at",)
+
+    def get_event_name(self, obj):
+        return obj.event_registration.project.name
+
+    get_event_name.short_description = "Event"
+
+
+admin.site.register(EventParticipant, EventParticipantAdmin)

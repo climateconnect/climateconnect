@@ -61,7 +61,6 @@ from organization.models import (
 )
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
-from organization.models.event_registration import EventRegistration
 from organization.models.type import PROJECT_TYPES, ProjectTypesChoices
 from organization.pagination import (
     MembersPagination,
@@ -77,6 +76,7 @@ from organization.permissions import (
     ReadWriteSensibleProjectDataPermission,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
+from organization.models.event_registration import EventRegistration
 from organization.serializers.event_registration import EventRegistrationSerializer
 from organization.serializers.project import (
     EditProjectSerializer,

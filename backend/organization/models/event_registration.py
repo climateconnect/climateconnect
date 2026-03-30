@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 from organization.models.project import Project
@@ -118,3 +119,59 @@ class EventRegistration(models.Model):
     def __str__(self):
         max_p = self.max_participants if self.max_participants is not None else "—"
         return f"Registration for '{self.project.name}' (max: {max_p}, status: {self.status})"
+
+
+class EventParticipant(models.Model):
+    """
+    Records which users have registered for an event.
+
+    One row per (user, event_registration) pair.  The unique_together constraint
+    acts as both a business rule (no duplicate registrations) and a DB-level
+    safety net for concurrent requests.
+
+    Seat counting:
+        available_seats = event_registration.max_participants
+                          - EventParticipant.objects.filter(event_registration=er).count()
+
+    This is computed on-the-fly on the detail endpoint only (see
+    EventRegistrationSerializer with ``include_seat_count=True`` context flag).
+    No denormalised counter column is used to avoid update-anomaly races.
+    """
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="event_participations",
+        help_text="The user who registered for the event",
+        verbose_name="User",
+    )
+    event_registration = models.ForeignKey(
+        EventRegistration,
+        on_delete=models.CASCADE,
+        related_name="participants",
+        help_text="The event registration this participant belongs to",
+        verbose_name="Event Registration",
+    )
+    registered_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text="When the user registered for the event",
+        verbose_name="Registered At",
+    )
+
+    class Meta:
+        app_label = "organization"
+        verbose_name = "Event Participant"
+        verbose_name_plural = "Event Participants"
+        unique_together = [("user", "event_registration")]
+        indexes = [
+            models.Index(
+                fields=["event_registration"], name="idx_ep_event_registration"
+            ),
+            models.Index(fields=["user"], name="idx_ep_user"),
+        ]
+
+    def __str__(self) -> str:
+        return (
+            f"{self.user.username} registered for "
+            f"'{self.event_registration.project.name}'"
+        )

@@ -352,10 +352,49 @@ This document provides comprehensive documentation of the main domain entities i
 
 **Relationships**:
 - **OneToOne**: `Project` (related_name: `event_registration`, CASCADE delete)
+- **Referenced by**: `EventParticipant` (related_name: `participants`)
 
 **Model location**: `organization/models/event_registration.py`
 
 **Serializer location**: `organization/serializers/event_registration.py`
+
+---
+
+### EventParticipant
+
+**Summary**: Records a user's registration for an event.
+
+**Description**: Join table between `User` and `EventRegistration`. One row per registered user per event. The `unique_together` constraint on `(user, event_registration)` enforces at both the application layer and DB level that the same user cannot register more than once.
+
+Available seat count is computed on-the-fly from this table (`max_participants − COUNT(participants)`) rather than maintained as a denormalised counter, to avoid update-anomaly races. The count is only queried on the project **detail** endpoint (guarded by the `include_seat_count` serializer context flag) — not on the list endpoint — to prevent N+1 queries.
+
+**Key rules**:
+- A user can register for the same event only once (idempotent endpoint returns 200 on re-registration without creating a duplicate row)
+- Registrations are only accepted when `EventRegistration.status == "open"` **and** `now() < registration_end_date`
+- When the last available seat is taken, `EventRegistration.status` is atomically promoted to `"full"` in the same transaction
+- Seat locking uses `SELECT FOR UPDATE` on `EventRegistration` to prevent race conditions at capacity
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `user` | ForeignKey | FK → `User`, CASCADE delete, related_name: `event_participations` |
+| `event_registration` | ForeignKey | FK → `EventRegistration`, CASCADE delete, related_name: `participants` |
+| `registered_at` | DateTimeField | Auto-set on creation; read-only |
+
+**Constraints & indexes**:
+| Type | Fields | Name |
+|---|---|---|
+| `unique_together` | `(user, event_registration)` | Prevents duplicate registrations |
+| Index | `event_registration` | `idx_ep_event_registration` — fast participant count / lookup by event |
+| Index | `user` | `idx_ep_user` — fast lookup of all events a user registered for |
+
+**Relationships**:
+- **ForeignKey**: `User` (related_name: `event_participations`, CASCADE delete)
+- **ForeignKey**: `EventRegistration` (related_name: `participants`, CASCADE delete)
+
+**Model location**: `organization/models/event_registration.py`
+
+**Migration**: `organization/migrations/0122_add_eventparticipant.py`
 
 ---
 
@@ -680,6 +719,7 @@ Project
 ├── Followers (ProjectFollower)
 ├── Likes (ProjectLike)
 └── EventRegistration (OneToOne - event type only, nullable)
+    └── EventParticipant (ForeignKey - registered users)
 
 Hub
 ├── Parent Hub (ForeignKey Self)
@@ -754,3 +794,4 @@ This architecture supports a comprehensive climate action platform with social n
 - **2025-11-27**: Initial documentation
 - **2026-03-19**: Added `EventRegistration` entity (GitHub issue #43). New 1-to-1 relationship on `Project` (event type only) for online registration settings (`max_participants`, `registration_end_date`). Updated `Project` relationships and Entity Relationship Summary tree.
 - **2026-03-19**: Added `status` field to `EventRegistration` (`RegistrationStatus` enum: `open`/`closed`/`full`). Prepares for use cases: organiser manually closing registration and system auto-closing when capacity is reached.
+- **2026-03-30**: Added `EventParticipant` entity (GitHub issue #1845). Join table recording which users have registered for an event. Includes `select_for_update` seat-locking, `unique_together` constraint, and two DB indexes. `EventRegistration.status` is atomically promoted to `"full"` when the last seat is taken. Updated `EventRegistration` relationships section and ER tree.

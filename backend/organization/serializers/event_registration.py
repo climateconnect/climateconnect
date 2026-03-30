@@ -22,11 +22,25 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
         - Read: always returned (defaults to 'open').
         - Write: organiser may send 'open' or 'closed' to manually open/close
           registration.  'full' is system-managed and rejected on write.
+
+    available_seats:
+        - Only included (non-null) when ``context["include_seat_count"] is True``.
+        - Computed as ``max_participants - COUNT(participants)`` on the fly.
+        - Returns ``None`` when the context flag is absent (list responses) to
+          avoid a COUNT query per row on the project list endpoint.
+        - Returns ``None`` when ``max_participants`` is None (unlimited capacity).
     """
+
+    available_seats = serializers.SerializerMethodField()
 
     class Meta:
         model = EventRegistration
-        fields = ["max_participants", "registration_end_date", "status"]
+        fields = [
+            "max_participants",
+            "registration_end_date",
+            "status",
+            "available_seats",
+        ]
         extra_kwargs = {
             # PositiveIntegerField gives us min_value via the model, but we set
             # min_value=1 explicitly so DRF returns a clear field-level error.
@@ -35,6 +49,20 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
             # Organisers may set OPEN or CLOSED; FULL is reserved for the system.
             "status": {"required": False, "default": RegistrationStatus.OPEN},
         }
+
+    def get_available_seats(self, obj):
+        """
+        Return the number of seats still available, or None.
+
+        Only computed when the ``include_seat_count`` context flag is True —
+        this prevents an expensive COUNT query on every row in list responses.
+        """
+        if not self.context.get("include_seat_count", False):
+            return None
+        if obj.max_participants is None:
+            return None
+        participant_count = obj.participants.count()
+        return max(0, obj.max_participants - participant_count)
 
     def validate_status(self, value):
         """Prevent organisers from directly setting status to FULL."""

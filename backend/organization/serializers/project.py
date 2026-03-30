@@ -189,9 +189,12 @@ class ProjectSerializer(serializers.ModelSerializer):
         return 0
 
     def get_event_registration(self, obj):
-        """Return event registration settings if present, else None."""
+        """Return event registration settings including available_seats (detail only)."""
         try:
-            return EventRegistrationSerializer(obj.event_registration).data
+            return EventRegistrationSerializer(
+                obj.event_registration,
+                context={"include_seat_count": True},
+            ).data
         except EventRegistration.DoesNotExist:
             return None
 
