@@ -164,7 +164,9 @@ class EventParticipant(models.Model):
         verbose_name_plural = "Event Participants"
         unique_together = [("user", "event_registration")]
         indexes = [
-            models.Index(fields=["event_registration"], name="idx_ep_event_registration"),
+            models.Index(
+                fields=["event_registration"], name="idx_ep_event_registration"
+            ),
             models.Index(fields=["user"], name="idx_ep_user"),
         ]
 

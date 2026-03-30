@@ -4,6 +4,7 @@ Unit tests for climateconnect_api.utility.timezone_utils.
 These tests mock the TimezoneFinder instance (_TF) so no binary data file
 lookup is performed — tests are fast and fully offline.
 """
+
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 from zoneinfo import ZoneInfo
@@ -194,8 +195,18 @@ class FormatDatetimeLocalizedTests(SimpleTestCase):
     def test_german_all_months(self):
         """Verify every German month name is mapped correctly."""
         expected = [
-            "Januar", "Februar", "März", "April", "Mai", "Juni",
-            "Juli", "August", "September", "Oktober", "November", "Dezember",
+            "Januar",
+            "Februar",
+            "März",
+            "April",
+            "Mai",
+            "Juni",
+            "Juli",
+            "August",
+            "September",
+            "Oktober",
+            "November",
+            "Dezember",
         ]
         for month_num, name in enumerate(expected, start=1):
             dt = datetime(2026, month_num, 1, 10, 0, tzinfo=_UTC)
@@ -221,4 +232,3 @@ class FormatDatetimeLocalizedTests(SimpleTestCase):
         dt = datetime(2026, 1, 15, 23, 30, tzinfo=_UTC)
         result = format_datetime_localized(dt, "en", _BERLIN)
         self.assertEqual(result, "16 January 2026 at 00:30 (CET)")
-

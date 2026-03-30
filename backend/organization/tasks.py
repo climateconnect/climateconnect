@@ -79,4 +79,3 @@ def send_event_registration_confirmation_email(self, user_id: int, event_slug: s
             exc,
         )
         raise self.retry(exc=exc)
-

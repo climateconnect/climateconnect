@@ -10,6 +10,7 @@ Covers POST /api/projects/{slug}/register/ (RegisterForEventView):
     - Race-condition / last-seat handling (status -> FULL)
     - available_seats on the detail endpoint (vs. null on list)
 """
+
 from datetime import timedelta
 
 from django.contrib.auth.models import User
@@ -31,8 +32,8 @@ from organization.models.event_registration import (
 # Use a dummy cache in all tests to avoid needing a live Redis connection.
 _DUMMY_CACHE = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
 
-# The module-level alias used in project_views.py for the Celery task.
-_TASK_PATH = "organization.views.project_views._send_registration_email"
+# The module-level alias used in event_registration_views.py for the Celery task.
+_TASK_PATH = "organization.views.event_registration_views._send_registration_email"
 
 
 def _create_project_status():
@@ -174,7 +175,10 @@ class TestRegisterForEventHappyPath(APITestCase):
         """
         self.client.login(username="reg_member", password="testpassword")
         with (
-            patch("django.db.transaction.on_commit", side_effect=lambda fn, using=None: fn()),
+            patch(
+                "django.db.transaction.on_commit",
+                side_effect=lambda fn, using=None: fn(),
+            ),
             patch(_TASK_PATH) as mock_task,
         ):
             response = self.client.post(_register_url("open-event"))
@@ -341,7 +345,9 @@ class TestLastSeatPromotion(APITestCase):
             existing_user = User.objects.create_user(
                 username=f"existing_participant_{i}", password="x"
             )
-            EventParticipant.objects.create(user=existing_user, event_registration=self.er)
+            EventParticipant.objects.create(
+                user=existing_user, event_registration=self.er
+            )
         self.final_user = User.objects.create_user(
             username="last_seat_user", password="testpassword"
         )
@@ -460,11 +466,7 @@ class TestAvailableSeatsInSerializer(APITestCase):
         response = self.client.get(reverse("organization:list-projects"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.data.get("results", response.data)
-        matching = [
-            p
-            for p in results
-            if p.get("url_slug") == "serializer-seats-event"
-        ]
+        matching = [p for p in results if p.get("url_slug") == "serializer-seats-event"]
         self.assertTrue(matching, "Expected event to appear in list")
         er_data = matching[0]["event_registration"]
         self.assertIsNotNone(er_data)

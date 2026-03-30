@@ -294,4 +294,3 @@ class EventParticipantAdmin(admin.ModelAdmin):
 
 
 admin.site.register(EventParticipant, EventParticipantAdmin)
-

@@ -8,7 +8,6 @@ from climateconnect_api.models.notification import EmailNotification
 from hubs.models import Hub
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
-from django.conf import settings
 from mailjet_rest import Client
 from user_agents import parse as parse_user_agent
 
@@ -395,7 +394,6 @@ def send_test_mail_to_engineering_email(subject, text_body):
 
     if mail.status_code != 200:
         logger.error(f"EmailFailure: Error sending email -> {mail.text}")
-
 
 
 def send_email_reminder_for_unread_notifications(

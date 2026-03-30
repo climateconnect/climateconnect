@@ -54,8 +54,8 @@ _DE_MONTHS = {
 # Common timezone abbreviations that have a German equivalent.
 # Anything not in this dict is displayed as-is (e.g. "UTC", "EST").
 _DE_TZ_ABBREVS = {
-    "CET": "MEZ",   # Mitteleuropäische Zeit
-    "CEST": "MESZ", # Mitteleuropäische Sommerzeit
+    "CET": "MEZ",  # Mitteleuropäische Zeit
+    "CEST": "MESZ",  # Mitteleuropäische Sommerzeit
 }
 
 _UTC = ZoneInfo("UTC")
@@ -94,7 +94,9 @@ def get_timezone_for_point(point) -> ZoneInfo:
             return _UTC
         return ZoneInfo(tz_name)
     except (ZoneInfoNotFoundError, Exception) as exc:
-        logger.warning("Timezone lookup failed for point (%s, %s): %s", point.x, point.y, exc)
+        logger.warning(
+            "Timezone lookup failed for point (%s, %s): %s", point.x, point.y, exc
+        )
         return _UTC
 
 
@@ -177,4 +179,3 @@ def format_datetime_localized(dt, lang_code: str, tz: ZoneInfo) -> str:
     # English (British) — also the default for unknown lang codes
     month = local_dt.strftime("%B")  # always English in the default C locale
     return f"{day} {month} {year} at {time_str} ({tz_abbrev})"
-

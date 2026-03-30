@@ -35,7 +35,12 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EventRegistration
-        fields = ["max_participants", "registration_end_date", "status", "available_seats"]
+        fields = [
+            "max_participants",
+            "registration_end_date",
+            "status",
+            "available_seats",
+        ]
         extra_kwargs = {
             # PositiveIntegerField gives us min_value via the model, but we set
             # min_value=1 explicitly so DRF returns a clear field-level error.
@@ -122,4 +127,3 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
                 )
 
         return attrs
-

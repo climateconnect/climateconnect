@@ -389,7 +389,7 @@ def send_join_project_request_email(user, request, requester, notification, hub_
     )
 
 
-def _get_organiser_name(project, lang_code: str) -> str:
+def get_organiser_name(project, lang_code: str) -> str:
     """
     Return the display name of the project organiser in the requested language.
 
@@ -415,7 +415,7 @@ def _get_organiser_name(project, lang_code: str) -> str:
     return ""
 
 
-def _get_location_name(project) -> str:
+def get_location_name(project) -> str:
     """
     Return a human-readable location string for an event.
 
@@ -462,7 +462,9 @@ def send_event_registration_confirmation_to_user(user, project):
     """
     lang_code = get_user_lang_code(user)
     display_tz = get_event_display_timezone(user, project)
-    start_date_str = format_datetime_localized(project.start_date, lang_code, display_tz)
+    start_date_str = format_datetime_localized(
+        project.start_date, lang_code, display_tz
+    )
 
     subjects_by_language = {
         "en": f"You're registered for {get_project_name(project, 'en')}!",
@@ -479,8 +481,8 @@ def send_event_registration_confirmation_to_user(user, project):
             + project.url_slug
         ),
         "StartDate": start_date_str,
-        "OrganiserName": _get_organiser_name(project, lang_code),
-        "LocationName": _get_location_name(project),
+        "OrganiserName": get_organiser_name(project, lang_code),
+        "LocationName": get_location_name(project),
     }
 
     send_email(

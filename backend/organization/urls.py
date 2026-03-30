@@ -1,6 +1,6 @@
 from django.urls import path
 
-from organization.views import organization_views, project_views, sector_views
+from organization.views import organization_views, project_views, sector_views, event_registration_views
 
 app_name = "organization"
 urlpatterns = [
@@ -232,7 +232,7 @@ urlpatterns = [
     ),
     path(
         "projects/<str:url_slug>/register/",
-        project_views.RegisterForEventView.as_view(),
+        event_registration_views.RegisterForEventView.as_view(),
         name="register-for-event",
     ),
 ]
