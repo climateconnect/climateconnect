@@ -127,6 +127,7 @@ def get_event_display_timezone(user, project) -> ZoneInfo:
         if point:
             return get_timezone_for_point(point)
     except AttributeError:
+        # Missing user profile / location is acceptable; fall back to project / UTC.
         pass
 
     # 2. Project / event location
@@ -135,6 +136,7 @@ def get_event_display_timezone(user, project) -> ZoneInfo:
         if point:
             return get_timezone_for_point(point)
     except AttributeError:
+        # Missing project location is acceptable; fall back to UTC.
         pass
 
     # 3. UTC fallback
