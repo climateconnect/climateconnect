@@ -359,13 +359,12 @@ export default function EnterDetails({
           </div>
           {/* The Draft button appears after the project name is filled out */}
           <NavigationButtons
-            className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
             saveAsDraft={projectData.name ? handleSaveAsDraft : undefined}
             loadingSubmit={loadingSubmit}
             loadingSubmitDraft={loadingSubmitDraft}
-            position="bottom"
+            sticky
           />
         </form>
       </Container>

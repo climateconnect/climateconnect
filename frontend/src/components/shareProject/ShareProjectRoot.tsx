@@ -336,84 +336,88 @@ export default function ShareProjectRoot({
           <Typography variant="h4" className={classes.headline}>
             {curStep.headline && curStep.headline}
           </Typography>
-          {curStep.key === "share" && (
-            <ShareProject
-              project={project}
-              handleSetProjectData={handleSetProject}
-              userOrganizations={userOrganizations}
-              projectTypeOptions={projectTypeOptions}
-              goToNextStep={goToNextStep}
-              hubName={hubName}
-            />
-          )}
-          {curStep.key === "selectSector" && (
-            <SelectSectors
-              project={project}
-              goToNextStep={goToNextStep}
-              goToPreviousStep={goToPreviousStep}
-              sectorsToSelectFrom={sectorOptions.filter(
-                (sector) =>
-                  project?.sectors?.filter((addedSector) => addedSector.name === sector.name)
-                    .length === 0
-              )}
-              onSelectNewSector={onSelectNewSector}
-              onClickRemoveSector={onClickRemoveSector}
-            />
-          )}
-          {curStep.key === "registration" && showRegistrationStep && (
-            <EventRegistrationStep
-              projectData={project}
-              handleSetProjectData={handleSetProject}
-              goToNextStep={goToNextStep}
-              goToPreviousStep={goToPreviousStep}
-            />
-          )}
-          {curStep.key === "enterDetails" && (
-            <EnterDetails
-              projectData={project}
-              handleSetProjectData={handleSetProject}
-              goToNextStep={goToNextStep}
-              goToPreviousStep={goToPreviousStep}
-              setMessage={setMessage}
-              saveAsDraft={saveAsDraft}
-              loadingSubmit={loadingSubmit}
-              loadingSubmitDraft={loadingSubmitDraft}
-            />
-          )}
-          {curStep.key === "addTeam" && (
-            <AddTeam
-              projectData={project}
-              handleSetProjectData={handleSetProject}
-              goToPreviousStep={goToPreviousStep}
-              goToNextStep={goToNextStep}
-              availabilityOptions={availabilityOptions}
-              rolesOptions={rolesOptions}
-              onSubmit={submitProject}
-              saveAsDraft={saveAsDraft}
-              isLastStep={steps[steps.length - 1].key === "addTeam"}
-              loadingSubmit={loadingSubmit}
-              loadingSubmitDraft={loadingSubmitDraft}
-            />
-          )}
-          {curStep.key === "translate" && (
-            <TranslateTexts
-              data={project}
-              handleSetData={handleSetProject}
-              onSubmit={submitProject}
-              goToPreviousStep={goToPreviousStep}
-              handleChangeTranslationContent={handleChangeTranslationContent}
-              translations={translations}
-              targetLanguage={targetLanguage}
-              pageName="project"
-              textsToTranslate={textsToTranslate}
-              arrayTranslationKeys={[]}
-              introTextKey="translate_project_intro"
-              submitButtonText={texts.submit}
-              saveAsDraft={saveAsDraft}
-              loadingSubmit={loadingSubmit}
-              loadingSubmitDraft={loadingSubmitDraft}
-            />
-          )}
+          {/* paddingBottom reserves space above the sticky navigation bar */}
+          <div style={{ paddingBottom: 80 }}>
+            {curStep.key === "share" && (
+              <ShareProject
+                project={project}
+                handleSetProjectData={handleSetProject}
+                userOrganizations={userOrganizations}
+                projectTypeOptions={projectTypeOptions}
+                goToNextStep={goToNextStep}
+                hubName={hubName}
+              />
+            )}
+            {curStep.key === "selectSector" && (
+              <SelectSectors
+                project={project}
+                goToNextStep={goToNextStep}
+                goToPreviousStep={goToPreviousStep}
+                sectorsToSelectFrom={sectorOptions.filter(
+                  (sector) =>
+                    project?.sectors?.filter((addedSector) => addedSector.name === sector.name)
+                      .length === 0
+                )}
+                onSelectNewSector={onSelectNewSector}
+                onClickRemoveSector={onClickRemoveSector}
+              />
+            )}
+            {curStep.key === "registration" && showRegistrationStep && (
+              <EventRegistrationStep
+                projectData={project}
+                handleSetProjectData={handleSetProject}
+                goToNextStep={goToNextStep}
+                goToPreviousStep={goToPreviousStep}
+              />
+            )}
+            {curStep.key === "enterDetails" && (
+              <EnterDetails
+                projectData={project}
+                handleSetProjectData={handleSetProject}
+                goToNextStep={goToNextStep}
+                goToPreviousStep={goToPreviousStep}
+                setMessage={setMessage}
+                saveAsDraft={saveAsDraft}
+                loadingSubmit={loadingSubmit}
+                loadingSubmitDraft={loadingSubmitDraft}
+              />
+            )}
+            {curStep.key === "addTeam" && (
+              <AddTeam
+                projectData={project}
+                handleSetProjectData={handleSetProject}
+                goToPreviousStep={goToPreviousStep}
+                goToNextStep={goToNextStep}
+                availabilityOptions={availabilityOptions}
+                rolesOptions={rolesOptions}
+                onSubmit={submitProject}
+                saveAsDraft={saveAsDraft}
+                isLastStep={steps[steps.length - 1].key === "addTeam"}
+                loadingSubmit={loadingSubmit}
+                loadingSubmitDraft={loadingSubmitDraft}
+              />
+            )}
+            {curStep.key === "translate" && (
+              <TranslateTexts
+                data={project}
+                handleSetData={handleSetProject}
+                onSubmit={submitProject}
+                goToPreviousStep={goToPreviousStep}
+                handleChangeTranslationContent={handleChangeTranslationContent}
+                translations={translations}
+                targetLanguage={targetLanguage}
+                pageName="project"
+                textsToTranslate={textsToTranslate}
+                arrayTranslationKeys={[]}
+                introTextKey="translate_project_intro"
+                submitButtonText={texts.submit}
+                saveAsDraft={saveAsDraft}
+                loadingSubmit={loadingSubmit}
+                loadingSubmitDraft={loadingSubmitDraft}
+              />
+            )}
+          </div>
+          {/* end sticky nav spacer */}
         </>
       ) : (
         <>

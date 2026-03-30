@@ -1,107 +1,156 @@
-# UX Improvement: Top Navigation Buttons in Share Project Flow
+# UX Improvement: Sticky Bottom Navigation in Share Project Flow
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: UX Improvement / Frontend
 **Date and time created**: 2026-03-26 10:00 UTC
-**Date Completed**: TBD
+**Date Completed**: 2026-03-26
 **GitHub Issue**: TBD
 **Related Specs**:
 - [`doc/mosy/architecture_overview.md`](../mosy/architecture_overview.md)
 
 ## Problem Statement
 
-The create project ("Share Project") flow is a multi-step form wizard. Each step can contain a significant amount of content, particularly the "Enter Details" step. Currently, the navigation buttons (Previous, Next, Publish) and the "Save as Draft" button are only rendered at the **bottom** of each step page. Users must scroll to the very bottom to navigate between steps, which creates friction and a poor user experience on longer pages.
+The create project ("Share Project") flow is a multi-step form wizard. Each step can contain a significant amount of content, particularly the "Enter Details" step. Currently, the navigation buttons (Previous, Next, Publish) and the "Save as Draft" button are only rendered at the **bottom** of each step page. Users must scroll to the very bottom to navigate between steps, which creates friction and a poor user experience on longer pages — especially on mobile.
 
 **Core Requirements (User/Stakeholder Stated):**
 
-1. On every step of the share project flow, the navigation buttons (Previous, Next, Publish) must **also appear at the top** of the step page, in addition to their current position at the bottom.
-2. The **"Save as Draft" button** must also appear at the top on the steps where it is currently shown at the bottom (the "Enter Details" step and the "Add Team" step).
-3. The top and bottom button groups must be **visually consistent** — same buttons, same enabled/disabled states, same loading indicators.
-4. The top buttons must be rendered **above the step content**, directly below the step headline.
+1. On every step of the share project flow, the navigation buttons (Previous, Next, Publish) and the "Save as Draft" button must always be **visible without scrolling**.
+2. The solution must work well on **both desktop and mobile**.
+3. The navigation controls must remain accessible regardless of how far down the user has scrolled.
+
+**Approved solution**: A **sticky bottom navigation bar** — fixed to the bottom of the viewport at all screen sizes — replacing the inline bottom `NavigationButtons` placement on every step. This approach was preferred over a duplicated top-and-bottom button layout because it is always visible without adding layout clutter, and works especially well on mobile.
 
 **Explicitly Out of Scope (this iteration):**
 - Changing the overall layout, step order, or flow structure of the share project wizard.
-- Adding navigation buttons to the edit project flow or any page outside the share project wizard.
+- Adding sticky navigation to the edit project flow or any page outside the share project wizard.
 - Any changes to backend, API, or data model.
 
 ### Non Functional Requirements
 
-- The top navigation buttons must mirror the exact same state as the bottom ones: same loading states, same disabled conditions, same handlers.
-- No visual regression on the bottom buttons — their existing layout and behaviour must be unchanged.
-- All existing `yarn lint` / TypeScript checks must continue to pass.
-- The layout must remain responsive (MUI breakpoints) — on small screens the top buttons should not create excessive vertical space.
+- The sticky bar must be visible at **all screen sizes** (not just mobile).
+- All existing button behaviour must be preserved: same handlers, same loading states, same disabled conditions, same form-submit semantics.
+- Content must not be hidden behind the sticky bar — a bottom padding spacer must be applied to each step's content area.
+- The bar must have a clear visual separation from page content (background + top shadow).
+- `yarn lint` and TypeScript checks must pass with zero errors.
 
 ### AI Agent Insights and Additions
 
-- **`NavigationButtons` already supports `position="top"`**: The component accepts a `position` prop and already has distinct styling for `position="top"` (reduced `marginTop`, adds `marginBottom`). No structural changes to `NavigationButtons` are required — we only need to add a second instance with `position="top"` at the top of each step.
-- **Step-by-step breakdown**:
-  - `ShareProject` (step 1 — "Basic Info"): Only has a Next button (no Previous, no Draft). A top `NavigationButtons` with `nextStepButtonType` and no `onClickPreviousStep` / `saveAsDraft` should be rendered. However, since this step uses a direct `onClick` handler (not a form submit), `onClickNextStep` must be passed instead of relying on `type="submit"`.
-  - `SelectSectors` (step 2 — "Project Category"): Has Previous + Next, no Draft. Uses `onClickNextStep` and `onClickPreviousStep` directly — a top `NavigationButtons` with the same handlers works without changes.
-  - `EventRegistrationStep` (step 3, optional — "Registration"): Has Previous + Next, no Draft. Same pattern as `SelectSectors`.
-  - `EnterDetails` (step — "Project Details"): Has Previous + Next-as-submit + Save as Draft. Wraps content in a `<form>`. The **top** `NavigationButtons` should be placed **inside the form** (before the content sections) so that the submit button type still triggers form validation. The `saveAsDraft` and `loadingSubmitDraft` props must be passed to the top instance too, mirroring the bottom instance.
-  - `AddTeam` (last step — "Add Team"): Has Previous + Publish-or-Next + Save as Draft (conditionally). Same form wrapper pattern. Top buttons must receive the same conditional `saveAsDraft` prop logic.
-- **Draft button visibility rule**: In `EnterDetails`, the draft button is only shown when `projectData.name` is non-empty. The same condition must be applied to the top instance. In `AddTeam`, the draft button is always passed when `isLastStep` is true or when `projectData.name` is present (same logic as bottom).
-- **No duplicate form submissions risk**: since both top and bottom buttons are inside the same `<form>` element for steps that use a form, both submit buttons will trigger the same form `onSubmit` handler — which is the correct behaviour.
-- **`TranslateTexts` step**: the translation step (currently commented out in production) also uses `NavigationButtons`. If/when it is re-enabled, top buttons should be added then as well. No action needed in this task.
-- **Styling consideration**: The existing `position="top"` style in `NavigationButtons` applies `marginTop: theme.spacing(6)` which may feel excessive right below the headline. Consider whether the top instance needs a custom `className` override or whether the existing `position="top"` style is sufficient.
+- **`NavigationButtons` already has `fixedOnMobile`** — a prop that fixes the bar at the bottom on small screens only. The new `sticky` prop extends this concept to all screen sizes by returning a separate CSS object from the JSS style function (avoiding conflicts with the existing media-query-based `fixedOnMobile` path).
+- **`justifyContent: flex-end` + `marginRight: auto` pattern**: the sticky bar uses `justifyContent: "flex-end"` so the Next/Publish button is always right-aligned. When a Back button is also present, it receives `marginRight: "auto"` which pushes it to the far left — preserving the expected Back-left / Next-right layout without needing `space-between`.
+- **Step 1 (`ShareProject`) special case**: previously used a standalone `<Button>` with `float: right`; replaced with `<NavigationButtons sticky onClickNextStep={...} />` using the direct click handler (not form submit).
+- **`EnterDetails` and `AddTeam` form submit**: the sticky `NavigationButtons` is kept **inside the `<form>` element** so that `type="submit"` buttons still trigger form validation via the form's `onSubmit` handler.
+- **Bottom padding spacer**: added as a `<div style={{ paddingBottom: 80 }}>` wrapper around all step components in `ShareProjectRoot.tsx`. 80 px comfortably clears the ~52 px tall sticky bar (buttons + padding) on all screen sizes.
+- **`onClickCancel` guard on `position="top"`** (defensive fix, kept): `NavigationButtons` previously rendered a `CancelButton` whenever `position="top"` was set, even without an `onClickCancel` handler. The guard `{position === "top" && onClickCancel && <CancelButton />}` was added to prevent a non-functional dialog from appearing. This does not affect the existing `EditProjectRoot` usage which correctly passes `onClickCancel`.
 
 ## System impact
 
-*To be filled by Archie (mosy-system-architect) during system impact analysis.*
+*Frontend only — no backend changes.*
 
 ## Software Architecture
-
-*Frontend only — no backend changes.*
 
 ### Affected Files
 
 | File | Change |
 |---|---|
-| `frontend/src/components/shareProject/ShareProject.tsx` | Add top `NavigationButtons` instance |
-| `frontend/src/components/shareProject/SelectSectors.tsx` | Add top `NavigationButtons` instance |
-| `frontend/src/components/shareProject/EventRegistrationStep.tsx` | Add top `NavigationButtons` instance |
-| `frontend/src/components/shareProject/EnterDetails.tsx` | Add top `NavigationButtons` instance (inside `<form>`, with draft props) |
-| `frontend/src/components/shareProject/AddTeam.tsx` | Add top `NavigationButtons` instance (inside `<form>`, with draft props) |
-| `frontend/src/components/general/NavigationButtons.tsx` | Minor style tuning if needed for top position |
+| `frontend/src/components/general/NavigationButtons.tsx` | Add `sticky?: boolean` prop; sticky CSS returns `position: fixed` at all screen sizes with background and top shadow; `flexWrap: "wrap"` for multi-row on narrow screens; `stickyCompact` class reduces button padding on xs; Back button shows `ArrowBackIcon` on xs screens when sticky; add `stickyBackButton` class (`marginRight: auto`); guard `CancelButton` on `position="top"` behind `onClickCancel` check |
+| `frontend/src/components/shareProject/ShareProject.tsx` | Replace standalone `<Button>` with `<NavigationButtons sticky onClickNextStep={...} />` |
+| `frontend/src/components/shareProject/SelectSectors.tsx` | Convert bottom `NavigationButtons` to `sticky` |
+| `frontend/src/components/shareProject/EventRegistrationStep.tsx` | Convert bottom `NavigationButtons` to `sticky` |
+| `frontend/src/components/shareProject/EnterDetails.tsx` | Convert bottom `NavigationButtons` to `sticky` (kept inside `<form>`) |
+| `frontend/src/components/shareProject/AddTeam.tsx` | Convert both conditional bottom `NavigationButtons` to `sticky` (kept inside `<form>`) |
+| `frontend/src/components/shareProject/ShareProjectRoot.tsx` | Wrap all step components in `<div style={{ paddingBottom: 80 }}>` spacer |
 
 ### Implementation Notes
 
-Each step that has bottom navigation buttons needs a mirrored top `NavigationButtons` block. Example for `SelectSectors`:
+#### `NavigationButtons` — `sticky` prop
 
 ```tsx
-// TOP — added
-<NavigationButtons
-  onClickPreviousStep={onClickPreviousStep}
-  onClickNextStep={onClickNextStep}
-  position="top"
-/>
+// JSS style function (simplified)
+navigationButtonWrapper: (props: any) => {
+  if (props.sticky) {
+    return {
+      position: "fixed",
+      bottom: 0, left: 0, right: 0,
+      display: "flex", flexWrap: "wrap",      // wraps to 2 rows on narrow screens
+      justifyContent: "flex-end", alignItems: "center",
+      rowGap: theme.spacing(1),
+      padding: `${theme.spacing(1.5)} ${theme.spacing(2)}`,
+      background: theme.palette.background.paper,
+      boxShadow: "0px -2px 8px rgba(0,0,0,0.12)",
+      zIndex: 1100,
+    };
+  }
+  // ... existing non-sticky styles unchanged ...
+},
+stickyBackButton: { marginRight: "auto" },
+stickyCompact: {
+  // Reduces MuiButton horizontal padding on xs so Draft + Next fit side-by-side
+  [theme.breakpoints.down("sm")]: {
+    "& .MuiButton-root": { paddingLeft: theme.spacing(1), paddingRight: theme.spacing(1) },
+  },
+},
+```
 
-{/* ... existing step content ... */}
+Back button — icon on xs screens, text on larger:
+```tsx
+<Button
+  className={`${classes.backButton} ${sticky ? classes.stickyBackButton : ""}`}
+  onClick={onClickPreviousStep}
+  aria-label={sticky && isMobileScreen ? texts.back : undefined}
+>
+  {sticky && isMobileScreen ? <ArrowBackIcon /> : texts.back}
+</Button>
+```
 
-// BOTTOM — already exists
+**Responsive layout on narrow screens (< 600 px, 3-button steps):**
+```
+┌─────────────────────────────────────┐
+│  [←]                                │  row 1 — Back icon, left
+│           [Entwurf] [Nächster Scht] │  row 2 — Draft + Next, right
+└─────────────────────────────────────┘
+```
+
+#### Usage in step components (all steps)
+
+```tsx
+// All share project steps — single NavigationButtons, always sticky
 <NavigationButtons
-  className={classes.block}
-  onClickPreviousStep={onClickPreviousStep}
-  onClickNextStep={onClickNextStep}
+  onClickPreviousStep={onClickPreviousStep}   // omitted on step 1
+  nextStepButtonType="submit"                  // or "publish" on last step
+  saveAsDraft={projectData.name ? handleSaveAsDraft : undefined}  // where applicable
+  loadingSubmit={loadingSubmit}
+  loadingSubmitDraft={loadingSubmitDraft}
+  sticky
 />
 ```
 
-For `EnterDetails` and `AddTeam` (which use `type="submit"` buttons inside a `<form>`), both top and bottom `NavigationButtons` instances must be placed **inside the `<form>` element** so the submit type triggers the same form `onSubmit` handler.
+#### Bottom padding spacer in `ShareProjectRoot`
+
+```tsx
+<div style={{ paddingBottom: 120 }}>
+  {curStep.key === "share" && <ShareProject ... />}
+  {curStep.key === "selectSector" && <SelectSectors ... />}
+  {/* ... all other steps ... */}
+</div>
+```
 
 ## Test Plan
 
 ### Manual Testing Steps
 
 1. Navigate to `/share` (share project page).
-2. Verify each step shows navigation buttons at both the **top** and **bottom** of the page.
-3. Scroll to the top of a long step (e.g., "Enter Details") and confirm the top navigation buttons are visible without scrolling.
-4. Confirm "Previous" on the top buttons navigates to the previous step.
-5. Confirm "Next Step" on the top buttons advances to the next step.
-6. On "Enter Details" with a project name filled in, confirm the top "Save as Draft" button saves a draft.
-7. On "Add Team" (last step), confirm the top "Publish" button submits the project.
-8. Confirm loading spinners on top and bottom buttons are synchronised during submission.
-9. Verify responsive layout — check on mobile (< 600px) and tablet (600–960px) that top buttons do not break the layout.
-10. Run `yarn lint` — must pass with zero errors.
+2. On every step, confirm the navigation bar is **always visible at the bottom of the viewport** — both when the page fits the screen and when scrolling is required.
+3. Scroll partway down a long step ("Enter Details") and confirm the sticky bar remains visible.
+4. Confirm "Back" is on the **left** and "Next Step" / "Publish" is on the **right** of the bar.
+5. On step 1 ("Basic Info"), confirm there is **no Back button** and the Next button is **right-aligned**.
+6. Confirm "Back" navigates to the previous step and "Next Step" advances to the next step.
+7. On "Enter Details" with a project name, confirm "Save as Draft" in the sticky bar saves a draft.
+8. On "Add Team" (last step), confirm "Publish" submits the project.
+9. Confirm loading spinners and disabled states work correctly during submission.
+10. Confirm the **last form element on each step is not hidden** behind the sticky bar (120 px padding spacer).
+11. On mobile (< 600 px), confirm the Back button shows an **arrow icon** (not text) and has an accessible `aria-label`.
+12. Verify on mobile (< 600 px) and tablet (600–960 px) that the bar displays correctly.
+13. Run `yarn lint` — must pass with zero errors.
 
 ---
 
@@ -109,5 +158,8 @@ For `EnterDetails` and `AddTeam` (which use `type="submit"` buttons inside a `<f
 
 | Timestamp (UTC) | Entry |
 |---|---|
-| 2026-03-26 10:00 | Task created. Problem statement and AI insights documented. |
-
+| 2026-03-26 10:00 | Task created. Problem statement and AI insights documented. Initial approach: duplicate top navigation buttons. |
+| 2026-03-26 11:00 | Top navigation approach implemented and reviewed. User feedback: preferred sticky bottom navigation instead. |
+| 2026-03-26 11:30 | Pivoted to sticky bottom navigation. Added `sticky` prop to `NavigationButtons`, converted all share project steps, added padding spacer in `ShareProjectRoot`. Fixed right-alignment of Next button when no Back button is present. |
+| 2026-03-26 12:00 | Implementation approved by user. Spec updated to reflect final solution. Status set to COMPLETED. |
+| 2026-03-26 12:30 | Refinement: Back button replaced with `ArrowBackIcon` on xs screens (< 600 px) when sticky, freeing space for Draft + Next buttons. `aria-label` added for accessibility. Spec updated. |
