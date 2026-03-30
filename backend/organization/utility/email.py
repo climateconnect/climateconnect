@@ -6,6 +6,10 @@ from organization.utility.organization import get_organization_name
 
 from climateconnect_api.utility.email_setup import send_email
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
+from climateconnect_api.utility.timezone_utils import (
+    format_datetime_localized,
+    get_event_display_timezone,
+)
 from django.conf import settings
 from mailjet_rest import Client
 
@@ -382,4 +386,108 @@ def send_join_project_request_email(user, request, requester, notification, hub_
         should_send_email_setting="email_on_join_request",
         notification=notification,
         hub_url=hub_url,
+    )
+
+
+def _get_organiser_name(project, lang_code: str) -> str:
+    """
+    Return the display name of the project organiser in the requested language.
+
+    Resolution order:
+      1. Organisation name (localised via ``get_organization_name``) if the owner
+         is an organisation.
+      2. ``UserProfile.name`` (full name) if a user owner has a profile.
+         User names are not translatable, so lang_code has no effect here.
+      3. ``User.username`` as a final fallback.
+      4. Empty string when no owner row exists.
+    """
+    project_parent = project.project_parent.first()
+    if not project_parent:
+        return ""
+    if project_parent.parent_organization:
+        return get_organization_name(project_parent.parent_organization, lang_code)
+    if project_parent.parent_user:
+        try:
+            profile_name = project_parent.parent_user.user_profile.name
+            return profile_name if profile_name else project_parent.parent_user.username
+        except AttributeError:
+            return project_parent.parent_user.username
+    return ""
+
+
+def _get_location_name(project) -> str:
+    """
+    Return a human-readable location string for an event.
+
+    Returns ``"Online"`` for online events, ``Location.name`` when a location
+    row exists, or an empty string when neither applies.
+    """
+    if project.is_online:
+        return "Online"
+    if project.loc:
+        return project.loc.name
+    return ""
+
+
+def send_event_registration_confirmation_to_user(user, project):
+    """
+    Send a registration confirmation email to a user who just registered for an event.
+
+    Uses the shared ``send_email()`` helper with a Mailjet template, consistent with
+    all other transactional emails in this module.
+
+    **Mailjet template variables** (define these in both the EN and DE templates):
+        - ``FirstName``     — user's first name (falls back to username if blank)
+        - ``EventTitle``    — display name of the event (localised for the user's language)
+        - ``EventUrl``      — full, language-aware URL to the event page
+        - ``StartDate``     — localised start date with resolved timezone
+        - ``OrganiserName`` — localised organisation name, or user's full name / username
+        - ``LocationName``  — ``"Online"`` / location name / empty string
+
+    **Required env variables**:
+        ``EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID``    — Mailjet template ID (EN)
+        ``EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE`` — Mailjet template ID (DE)
+
+    Args:
+        user: Django ``User`` instance. Must be fetched with
+            ``select_related("user_profile__location")``.
+        project: ``Project`` instance. Must be fetched with
+            ``select_related("loc", "language")`` and
+            ``prefetch_related(
+                "translation_project__language",
+                "project_parent__parent_organization__language",
+                "project_parent__parent_organization__translation_org__language",
+                "project_parent__parent_user__user_profile",
+            )``.
+    """
+    lang_code = get_user_lang_code(user)
+    display_tz = get_event_display_timezone(user, project)
+    start_date_str = format_datetime_localized(project.start_date, lang_code, display_tz)
+
+    subjects_by_language = {
+        "en": f"You're registered for {get_project_name(project, 'en')}!",
+        "de": f"Du bist für {get_project_name(project, 'de')} angemeldet!",
+    }
+
+    variables = {
+        "FirstName": user.first_name or user.username,
+        "EventTitle": get_project_name(project, lang_code),
+        "EventUrl": (
+            settings.FRONTEND_URL
+            + get_user_lang_url(lang_code)
+            + "/projects/"
+            + project.url_slug
+        ),
+        "StartDate": start_date_str,
+        "OrganiserName": _get_organiser_name(project, lang_code),
+        "LocationName": _get_location_name(project),
+    }
+
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="",
+        notification=None,
     )

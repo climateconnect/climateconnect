@@ -40,4 +40,8 @@ from organization.models.sector import (
     UserProfileSectorMapping,
 )
 
-from organization.models.event_registration import EventRegistration, RegistrationStatus
+from organization.models.event_registration import (
+    EventParticipant,
+    EventRegistration,
+    RegistrationStatus,
+)

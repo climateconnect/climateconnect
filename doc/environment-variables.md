@@ -268,10 +268,21 @@ All email template variables follow the pattern: `{TEMPLATE_NAME}_TEMPLATE_ID[_D
 - `IDEA_COMMENT_REPLY_TEMPLATE_ID` - Reply to idea comment
 - `IDEA_MENTION_TEMPLATE_ID` - Mention in idea
 - `JOINED_IDEA_TEMPLATE` - User joined idea discussion
+- `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` - Event registration confirmation (issue #1845)
 
 **German Templates** (append `_DE` to template name):
 - All above templates have German variants with `_DE` suffix
 - Example: `PROJECT_COMMENT_TEMPLATE_ID_DE`
+
+**Event registration confirmation template variables** (define in both EN and DE Mailjet templates):
+| Variable | Content |
+|---|---|
+| `FirstName` | User's first name (falls back to username) |
+| `EventTitle` | Display name of the event |
+| `EventUrl` | Full, language-aware URL to the event page (e.g. `/projects/slug` EN, `/de/projects/slug` DE) |
+| `StartDate` | Localised start date — timezone resolved from user location → project location → UTC; EN British format `"30 March 2026 at 14:00 (CET)"`, DE format `"30. März 2026 um 14:00 Uhr (MEZ)"`, or `"TBD"` |
+| `OrganiserName` | Organisation name, or user's full name / username; empty string if no owner |
+| `LocationName` | `"Online"` for online events, location name for in-person events, or empty string |
 
 **Template Configuration**:
 - **Required**: ⚠️ Conditional (per template type used)
@@ -703,3 +714,4 @@ Frontend environment variables are stored in `.env` file in the `frontend/` dire
 ## Version History
 
 - **2025-11-27**: Initial documentation
+- **2026-03-30**: Added `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` and `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE` for event registration confirmation emails (issue #1845). `StartDate` template variable is now timezone- and language-localised (user location → project location → UTC; `timezonefinder` dependency added via PDM).

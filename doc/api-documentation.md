@@ -311,21 +311,38 @@ In Swagger UI, endpoints with a 🔒 lock icon require authentication.
 | `/api/projects/{slug}/` | GET | No | Get project details |
 | `/api/projects/{slug}/` | PATCH | Yes | Update a project |
 | `/api/projects/{slug}/members/` | GET | No | List project members |
+| `/api/projects/{slug}/register/` | POST | Yes | Register authenticated user for event |
 
 #### Event Registration (`event_registration`)
 
 Event-type projects expose an optional nested `event_registration` object on all project endpoints. For non-event projects the field is always `null`.
 
-**Response shape** (`GET /api/projects/` and `GET /api/projects/{slug}/`):
+**Response shape — detail** (`GET /api/projects/{slug}/`):
 ```json
 {
   "event_registration": {
     "max_participants": 100,
     "registration_end_date": "2026-06-01T23:59:00Z",
-    "status": "open"
+    "status": "open",
+    "available_seats": 42
   }
 }
 ```
+`available_seats` is `null` when `max_participants` is `null` (unlimited capacity).
+
+**Response shape — list** (`GET /api/projects/`):
+```json
+{
+  "event_registration": {
+    "max_participants": 100,
+    "registration_end_date": "2026-06-01T23:59:00Z",
+    "status": "open",
+    "available_seats": null
+  }
+}
+```
+`available_seats` is always `null` in list responses to avoid a `COUNT(*)` query per row.
+
 Returns `null` when registration is not enabled.
 
 **Request body** (`POST /api/projects/` and `PATCH /api/projects/{slug}/`):
@@ -355,13 +372,49 @@ Omitting the `event_registration` key entirely on `PATCH` leaves existing settin
 |---|---|---|
 | `open` | Default / organiser | Accepting sign-ups (subject to `registration_end_date` and `max_participants`) |
 | `closed` | Organiser via `PATCH` | Manually closed before the end date; can be re-opened with `"status": "open"` |
-| `full` | System only (future) | Capacity reached — cannot be set via the API directly |
+| `full` | System only | Capacity reached — cannot be set via the API directly |
 
 Effective "accepting signups?" check: `status == "open" AND now() < registration_end_date`
 
 **Timezone**: `registration_end_date` follows the same convention as `Project.start_date` / `end_date`. Send ISO 8601 strings with an explicit offset or `Z` suffix (e.g. `"2026-06-01T23:59:00Z"`); the backend stores and compares in UTC.
 
 **Feature toggle**: The registration UI is gated behind the `EVENT_REGISTRATION` feature toggle. The API fields are always present (additive, no breaking changes).
+
+#### POST `/api/projects/{slug}/register/` — Register for an event
+
+Registers the authenticated user as a participant for an event that has `EventRegistration` enabled.
+
+**Authentication**: Required (401 if unauthenticated)
+
+**Success responses**:
+| Status | Condition |
+|---|---|
+| 201 Created | First-time registration — `EventParticipant` row created |
+| 200 OK | Idempotent — user was already registered; no duplicate created |
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 400 Bad Request | Registration is `closed` or `full` |
+| 400 Bad Request | `registration_end_date` has passed |
+| 400 Bad Request | Project has no `EventRegistration` record |
+| 401 Unauthorized | Request is not authenticated |
+| 404 Not Found | `{slug}` does not match any project |
+
+**Response body** (both 200 and 201):
+```json
+{
+  "registered": true,
+  "available_seats": 41
+}
+```
+`available_seats` is `null` for unlimited-capacity events (`max_participants = null`).
+
+**Race-condition safety**: The `EventRegistration` row is locked with `SELECT FOR UPDATE` inside `@transaction.atomic`. Concurrent last-seat registrations are serialised — at most `max_participants` `EventParticipant` rows are ever created.
+
+**FULL promotion**: When a registration fills the last seat, `EventRegistration.status` is atomically updated to `"full"` in the same transaction, so subsequent registrations are rejected immediately (no extra COUNT query needed on the hot path).
+
+**Confirmation email**: A Celery task (`send_event_registration_confirmation_email`) is dispatched via `transaction.on_commit` after the commit succeeds. It sends an email via Mailjet using the `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` template (EN) or `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE` template (DE), selected based on the user's language preference. **Both templates must be created in the Mailjet dashboard before emails will be sent** — see `doc/environment-variables.md` for required template variables. Not dispatched on idempotent re-registrations.
 
 ### Organizations
 
@@ -467,5 +520,5 @@ If you encounter issues or have questions about the API:
 
 ---
 
-**Last Updated**: March 19, 2026 — Added `status` field to `event_registration` (`open`/`closed`/`full` enum; `full` is system-managed). Added registration status table and validation rule. Previous: Added `event_registration` nested object to project endpoints (issue #43)
+**Last Updated**: March 30, 2026 — Added `POST /api/projects/{slug}/register/` endpoint (event participant registration, issue #1845). Added `available_seats` to `event_registration` response shape (detail only; `null` on list). Previous: March 19, 2026 — Added `status` field to `event_registration`; added registration status table and validation rules. Previous: Added `event_registration` nested object to project endpoints (issue #43)
 

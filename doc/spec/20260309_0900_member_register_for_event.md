@@ -178,12 +178,78 @@ GET /api/projects/
 
 ### Other
 
-- Confirmation email template (Mailjet): event title, date/time, location, organiser name, and a link back to the event page. Refer to the example design shared in issue #44 comments.
+#### Confirmation email — Mailjet template setup (manual step required)
+
+The backend sending infrastructure is fully implemented:
+- Celery task: `organization.tasks.send_event_registration_confirmation_email`
+- Sending function: `organization.utility.email.send_event_registration_confirmation_to_user`
+- Uses the shared `send_email()` helper with a Mailjet `TemplateID`, consistent with all other transactional emails.
+
+**Two Mailjet transactional templates must be created manually in the Mailjet dashboard before confirmation emails will be sent** — one English template and one German template.
+
+Once created, add the numeric template IDs to `.backend_env`:
+
+```
+EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID=<EN template ID>
+EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE=<DE template ID>
+```
+
+Both variables have an empty-string default in `settings.py` — without them set, `send_email()` will log an error and silently skip sending (no exception raised to the caller or the Celery task).
+
+**Template variables** — define all of the following in both templates:
+
+| Variable | Type | Content | Notes |
+|---|---|---|---|
+| `{{var:FirstName}}` | String | Registering user's first name | Falls back to `username` if `first_name` is blank |
+| `{{var:EventTitle}}` | String | Display name of the event **in the user's language** | Uses `get_project_name()` — returns the translation if one exists, otherwise the original name |
+| `{{var:EventUrl}}` | String | Full, language-aware URL to the event page | e.g. `https://climateconnect.earth/projects/{slug}` (EN) or `.../de/projects/{slug}` (DE) |
+| `{{var:StartDate}}` | String | Formatted start date — localised for the user's language and timezone | Timezone resolved from: user's location `centre_point` → project location `centre_point` → UTC. EN British format: `"30 March 2026 at 14:00 (CET)"`. DE format: `"30. März 2026 um 14:00 Uhr (MEZ)"`. Unknown timezone abbreviations shown as-is (e.g. `"EAT"`). `"TBD"` when `start_date` is null |
+| `{{var:OrganiserName}}` | String | Organisation name **in the user's language**, or user's full name / username | Uses `get_organization_name()` for org owners. **Can be empty string** if no owner row exists — render conditionally |
+| `{{var:LocationName}}` | String | `"Online"` for online events; `Location.name` for in-person | **Can be empty string** if location is not set — render conditionally |
+
+**Conditional rendering guidance** (Mailjet template language):
+```
+{% if var:OrganiserName != "" %}
+  <p>Organised by: {{var:OrganiserName}}</p>
+{% endif %}
+
+{% if var:LocationName != "" %}
+  <p>Location: {{var:LocationName}}</p>
+{% endif %}
+```
+
+**Email subject line** (set in code, not in the template — also uses localised project name):
+- EN: `"You're registered for {EventTitle}!"`
+- DE: `"Du bist für {EventTitle} angemeldet!"`
+
+The organiser name is resolved from `ProjectParents` (org name → user's `UserProfile.name` → `username`). Organisation names are localised via `get_organization_name()`. User names are not translatable. The location name comes from `project.loc.name` for in-person events, or `"Online"` when `project.is_online` is `True`.
+
+**Timezone resolution — important implementation note:**
+PostGIS `PointField` values in this codebase are stored with swapped axes (`point.x = latitude`, `point.y = longitude` — documented in `location/admin.py`). The `get_timezone_for_point()` utility handles this correctly by passing `lng=point.y, lat=point.x` to `timezonefinder`. Using the values the wrong way around would resolve to a completely different part of the world and produce a wrong timezone.
+
 - Post-login redirect: `/projects/{slug}/register` is used as the `redirect` query parameter value — verify this is preserved correctly by the login redirect mechanism (`/signin` already supports `params.redirect`; `/signup` redirect support is added in this task).
 
 ## Technical Solution Overview
 
-*To be filled by a development agent during the IMPLEMENTATION phase.*
+*Backend implemented 2026-03-30. Frontend implementation pending.*
+
+### Backend (implemented)
+
+- **`EventParticipant` model** — `organization/models/event_registration.py`. `unique_together = [("user", "event_registration")]`, two DB indexes (`idx_ep_event_registration`, `idx_ep_user`). Migration `0122_add_eventparticipant`.
+- **`POST /api/projects/{slug}/register/`** — `RegisterForEventView` in `organization/views/project_views.py`. Uses `@transaction.atomic` + `select_for_update()` on `EventRegistration` for race-condition safety. Idempotent (200 on re-registration). Promotes `status → FULL` when last seat is taken. Dispatches Celery email task via `transaction.on_commit`.
+- **`available_seats`** — added to `EventRegistrationSerializer` as a `SerializerMethodField`. Only computed when `context["include_seat_count"] is True` (passed by `ProjectSerializer.get_event_registration` on detail; absent on list).
+- **Celery task** — `organization/tasks.py`: `send_event_registration_confirmation_email(user_id, event_slug)`. Prefetches `loc`, `project_parent__parent_organization`, `project_parent__parent_user__user_profile`. Retries up to 3× on transient failures.
+- **Email function** — `climateconnect_api/utility/email_setup.py`: `send_event_registration_confirmation_to_user`. Passes 6 template variables: `FirstName`, `EventTitle`, `EventUrl`, `StartDate`, `OrganiserName`, `LocationName`. `StartDate` is localised via `climateconnect_api/utility/timezone_utils.py` (see below).
+- **Timezone utility** — `climateconnect_api/utility/timezone_utils.py`: `get_event_display_timezone(user, project)` resolves the best display timezone (user location → project location → UTC) using `timezonefinder` + PostGIS `centre_point`. `format_datetime_localized(dt, lang_code, tz)` formats the result in EN British or DE conventions with translated timezone abbreviations (CET→MEZ, CEST→MESZ). Generic utility reusable for other emails.
+- **Env vars** — `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` and `_DE` added to `settings.py` with empty-string defaults.
+
+### Frontend (pending)
+
+Not yet implemented. See `### Frontend` section above for full requirements.
+
+### Outstanding manual step
+
+**Create both Mailjet templates and set the env vars** — see `### Other` above. Until this is done the backend endpoint works but no confirmation email is sent.
 
 ## Log
 
@@ -194,6 +260,7 @@ GET /api/projects/
 - 2026-03-09 10:00 — Specs approved. Status promoted to READY FOR IMPLEMENTATION.
 - 2026-03-25 — Spec aligned with actual implementation from task #43: `is_registration_open` boolean replaced throughout by `status` field (`open`/`closed`/`full`); list endpoint already returns full `event_registration` object (no separate `has_registration` flag needed); `available_seats` and `EventParticipant` confirmed as not yet implemented; `EventRegistrationSerializer` already serializes `status`.
 - 2026-03-26 — Corrected against actual codebase: (1) API endpoint `POST /api/events/{slug}/register/` → `POST /api/projects/{slug}/register/` (no `/api/events/` prefix exists; all project endpoints live under `/api/projects/`). (2) Deep-link `/{slug}/register` → `/projects/{slug}/register` (Next.js page at `pages/projects/[projectId]/register.tsx`; consistent with existing `/projects/{slug}` routing). (3) Post-auth redirect: `/login?next=` → `/signin?redirect=`, `/signup?next=` → `/signup?redirect=`; `redirect` is the correct param name per `signin.tsx`; adding `redirect` support to `/signup` is now explicitly in scope. (4) `EventParticipant.user` `related_name` `"event_registrations"` → `"event_participations"` (avoids ambiguity with `EventRegistration` model). (5) `EVENT_REGISTRATION` feature toggle added to listing badge, Register button, and modal rendering conditions.
+- 2026-03-30 — Backend fully implemented. `EventParticipant` model + migration `0122`. `RegisterForEventView` (`POST /api/projects/{slug}/register/`) with atomic seat locking, idempotency, and FULL-status promotion. `available_seats` added to `EventRegistrationSerializer` (detail only). Celery task `send_event_registration_confirmation_email` + `send_event_registration_confirmation_to_user` using Mailjet template pattern. Env vars `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` and `_DE` added to `settings.py`. Email sends `OrganiserName` (from `ProjectParents`) and `LocationName` (from `project.loc.name` / `project.is_online`) in addition to `FirstName`, `EventTitle`, `EventUrl`, `StartDate`. `StartDate` is timezone- and language-aware: resolved via `climateconnect_api/utility/timezone_utils.py` (user location → project location → UTC fallback, using `timezonefinder`); formatted in EN British or DE convention with translated timezone abbreviations. **Outstanding**: two Mailjet templates (EN + DE) must be created manually and IDs set in `.backend_env` before confirmation emails are active — see `### Other` for template variable specification. Frontend implementation not yet started.
 
 ## Acceptance Criteria
 

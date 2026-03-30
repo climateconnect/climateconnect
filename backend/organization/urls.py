@@ -230,4 +230,9 @@ urlpatterns = [
         project_views.SimilarProjects.as_view(),
         name="similar-projects",
     ),
+    path(
+        "projects/<str:url_slug>/register/",
+        project_views.RegisterForEventView.as_view(),
+        name="register-for-event",
+    ),
 ]

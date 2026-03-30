@@ -35,7 +35,6 @@ def get_user_lang_code(user):
         # fall back to english
         return "en"
 
-
 def get_user_lang_url(lang_code):
     if lang_code == "en":
         return ""
