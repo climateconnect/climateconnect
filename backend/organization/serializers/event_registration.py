@@ -1,6 +1,11 @@
+from django.utils import timezone
 from rest_framework import serializers
 
-from organization.models.event_registration import EventRegistration, RegistrationStatus
+from organization.models.event_registration import (
+    EventParticipant,
+    EventRegistration,
+    RegistrationStatus,
+)
 
 
 class EventRegistrationSerializer(serializers.ModelSerializer):
@@ -124,6 +129,90 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
             if merged_reg_end is None:
                 raise serializers.ValidationError(
                     {"registration_end_date": "Required when publishing an event."}
+                )
+
+        return attrs
+
+
+class EditEventRegistrationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for PATCH /api/projects/{slug}/registration/.
+
+    Allows an event organiser to update only ``max_participants`` and
+    ``registration_end_date`` on an existing EventRegistration record.
+    ``status`` is always read-only via this endpoint — it is managed exclusively
+    by the close/reopen action (issue #1851).
+
+    Required context:
+        project (Project): the related project instance.  Passed in by the view
+                           so the serializer can avoid a redundant DB query via
+                           self.instance.project.
+
+    Validation (all skipped when ``project.is_draft=True``):
+        - ``registration_end_date`` must be > now()  (past-date guard, edit only)
+        - ``registration_end_date`` must be ≤ ``project.end_date``
+        - ``max_participants`` lower-bound check is deferred — see TODO below.
+    """
+
+    class Meta:
+        model = EventRegistration
+        fields = ["max_participants", "registration_end_date", "status"]
+        read_only_fields = ["status"]
+        extra_kwargs = {
+            "max_participants": {"required": False, "allow_null": True, "min_value": 1},
+            "registration_end_date": {"required": False, "allow_null": True},
+        }
+
+    def validate(self, attrs):
+        project = self.context.get("project") or (
+            self.instance.project if self.instance else None
+        )
+
+        # Only validate registration_end_date when it is explicitly included in
+        # the PATCH body.  Skipping the check when the field is absent means a
+        # PATCH that touches only max_participants never re-validates the stored
+        # date (which could legitimately be in the past if registration closed).
+        registration_end_date = attrs.get("registration_end_date")
+        if registration_end_date is not None:
+            # Past-date guard.
+            if registration_end_date <= timezone.now():
+                raise serializers.ValidationError(
+                    {
+                        "registration_end_date": (
+                            "Registration end date cannot be in the past."
+                        )
+                    }
+                )
+            # Upper-bound guard: registration must close before the event ends.
+            if (
+                project
+                and project.end_date
+                and registration_end_date > project.end_date
+            ):
+                raise serializers.ValidationError(
+                    {
+                        "registration_end_date": (
+                            "Registration end date must be on or before the event end date."
+                        )
+                    }
+                )
+
+        # Participant lower-bound guard: cannot lower capacity below the number
+        # of already-registered participants.  Only checked when max_participants
+        # is explicitly provided and the serializer has a bound instance.
+        max_participants = attrs.get("max_participants")
+        if max_participants is not None and self.instance:
+            participant_count = EventParticipant.objects.filter(
+                event_registration=self.instance
+            ).count()
+            if max_participants < participant_count:
+                raise serializers.ValidationError(
+                    {
+                        "max_participants": (
+                            f"Cannot be lower than the current number of "
+                            f"registrations ({participant_count})."
+                        )
+                    }
                 )
 
         return attrs

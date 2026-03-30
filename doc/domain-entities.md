@@ -358,6 +358,14 @@ This document provides comprehensive documentation of the main domain entities i
 
 **Serializer location**: `organization/serializers/event_registration.py`
 
+**Serializers**:
+| Serializer | Purpose |
+|---|---|
+| `EventRegistrationSerializer` | Read (project detail/list) and write (create via POST, status update via PATCH) on the project endpoint |
+| `EditEventRegistrationSerializer` | Write only — `PATCH /api/projects/{slug}/registration/` (edit `max_participants` and `registration_end_date`; `status` is read-only via this serializer) |
+
+**Edit endpoint**: `PATCH /api/projects/{slug}/registration/` — dedicated endpoint for organiser/admin to update `max_participants` and `registration_end_date` on an existing `EventRegistration`. Requires edit rights (organiser or team admin). Returns `404` if no `EventRegistration` exists. Past-date guard and upper-bound validation are skipped for drafts (`is_draft=true`). `status` is silently ignored if included in the request body.
+
 ---
 
 ### EventParticipant

@@ -192,6 +192,7 @@ class TestRegisterForEventHappyPath(APITestCase):
     def test_confirmation_email_not_sent_on_idempotent_reregistration(self):
         """Celery task must NOT be dispatched on idempotent re-registration."""
         self.client.login(username="reg_member", password="testpassword")
+
         def on_commit_immediate(fn, using=None):
             fn()
 
@@ -379,9 +380,7 @@ class TestLastSeatPromotion(APITestCase):
         self.client.login(username="last_seat_user", password="testpassword")
         self.client.post(_register_url("last-seat-event"))
         # Now try with a new user
-        User.objects.create_user(
-            username="overflow_user", password="testpassword"
-        )
+        User.objects.create_user(username="overflow_user", password="testpassword")
         self.client.login(username="overflow_user", password="testpassword")
         response = self.client.post(_register_url("last-seat-event"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

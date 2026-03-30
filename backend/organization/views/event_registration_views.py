@@ -7,12 +7,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from organization.models import Project
+from climateconnect_api.models import Role
+from organization.models import Project, ProjectMember
 from organization.models.event_registration import (
     EventParticipant,
     EventRegistration,
     RegistrationStatus,
 )
+from organization.serializers.event_registration import EditEventRegistrationSerializer
 from organization.tasks import (
     send_event_registration_confirmation_email as _send_registration_email,
 )
@@ -160,3 +162,91 @@ class RegisterForEventView(APIView):
             return None
         count = EventParticipant.objects.filter(event_registration=er).count()
         return max(0, er.max_participants - count)
+
+
+class EditEventRegistrationSettingsView(APIView):
+    """
+    PATCH /api/projects/{url_slug}/registration/
+
+    Allows an event organiser (or team admin) to update registration settings
+    for an event that already has EventRegistration enabled.
+
+    Editable fields:
+        - max_participants  (positive integer)
+        - registration_end_date  (datetime)
+
+    Read-only via this endpoint:
+        - status — managed exclusively by the close/reopen endpoint (#1851).
+
+    Behaviour:
+        - 200 OK          — settings updated; returns updated event_registration.
+        - 400 Bad Request — validation error (past date, exceeds event end_date, etc.).
+        - 401 Unauthorized — unauthenticated request.
+        - 403 Forbidden    — authenticated user without edit rights on the project.
+        - 404 Not Found    — project or EventRegistration does not exist.
+
+    Draft-mode:
+        When the project is a draft (is_draft=True), cross-field and past-date
+        validations are skipped — consistent with the create flow (#1820).
+
+    Response body (200 OK):
+        {
+            "max_participants": 80,
+            "registration_end_date": "2026-07-01T18:00:00Z",
+            "status": "open"
+        }
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, url_slug):
+
+        # ── 1. Look up project ──────────────────────────────────────────────
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            return Response(
+                {"message": "Project not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 2. Check edit rights (after project lookup so 404 takes priority) ─
+        has_edit_rights = ProjectMember.objects.filter(
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            project=project,
+        ).exists()
+        if not has_edit_rights:
+            return Response(
+                {"message": "You do not have permission to edit this project."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # ── 3. Look up EventRegistration ────────────────────────────────────
+        try:
+            er = project.event_registration
+        except EventRegistration.DoesNotExist:
+            return Response(
+                {"message": ("This project does not have event registration enabled.")},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 4. Validate and save ─────────────────────────────────────────────
+        serializer = EditEventRegistrationSerializer(
+            er,
+            data=request.data,
+            partial=True,
+            context={"project": project, "request": request},
+        )
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+
+        logger.info(
+            "[EventRegistration] Organiser %s updated registration settings for '%s'",
+            request.user.id,
+            url_slug,
+        )
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

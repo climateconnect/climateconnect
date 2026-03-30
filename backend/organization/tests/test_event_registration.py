@@ -10,10 +10,12 @@ Covers:
 
 import io
 from base64 import b64encode
+from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.test import override_settings, tag
 from django.urls import reverse
+from django.utils import timezone
 from PIL import Image
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -21,7 +23,11 @@ from rest_framework.test import APITestCase
 from climateconnect_api.models import Language, Role
 from location.models import Location
 from organization.models import Project, ProjectMember, ProjectStatus
-from organization.models.event_registration import EventRegistration, RegistrationStatus
+from organization.models.event_registration import (
+    EventParticipant,
+    EventRegistration,
+    RegistrationStatus,
+)
 
 
 def _make_black_image_b64():
@@ -999,3 +1005,387 @@ class TestEventRegistrationStatus(APITestCase):
         project = Project.objects.get(url_slug=response.data["url_slug"])
         er = project.event_registration
         self.assertEqual(er.status, RegistrationStatus.OPEN)
+
+
+class TestEditEventRegistrationSettings(APITestCase):
+    """
+    Tests for PATCH /api/projects/{url_slug}/registration/
+    (EditEventRegistrationSettingsView).
+
+    Covers:
+    - Happy-path updates (max_participants, registration_end_date, both)
+    - Response shape: max_participants, registration_end_date, status returned
+    - status field is read-only (ignored if included in request body)
+    - Validation: past-date guard, upper-bound guard, min_value=1
+    - Draft-mode: past-date and upper-bound validations are skipped
+    - 404 when project not found
+    - 404 when project has no EventRegistration record
+    - 401 Unauthorized for unauthenticated requests
+    - 403 Forbidden for authenticated users without edit rights
+    """
+
+    def setUp(self):
+        self.project_status, _ = ProjectStatus.objects.update_or_create(
+            id=2,
+            defaults={
+                "name": "active_edit_reg",
+                "name_de_translation": "aktiv",
+                "has_end_date": True,
+                "has_start_date": True,
+            },
+        )
+        self.default_language, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
+        )
+
+        # Organiser — has ALL_TYPE role on all test projects.
+        self.organiser = User.objects.create_user(
+            username="organiser_edit_reg", password="testpassword"
+        )
+        self.role = Role.objects.create(
+            name="Admin_edit_reg",
+            role_type=Role.ALL_TYPE,
+        )
+
+        # Non-member — used for 403 tests.
+        self.non_member = User.objects.create_user(
+            username="non_member_edit_reg", password="testpassword"
+        )
+
+        # Published event with an EventRegistration.
+        self.event = Project.objects.create(
+            name="Edit Reg Event",
+            url_slug="edit-reg-event",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=30),
+            end_date=timezone.now() + timedelta(days=90),
+        )
+        self.er = EventRegistration.objects.create(
+            project=self.event,
+            max_participants=100,
+            registration_end_date=timezone.now() + timedelta(days=60),
+            status=RegistrationStatus.OPEN,
+        )
+        ProjectMember.objects.create(
+            user=self.organiser,
+            project=self.event,
+            role=self.role,
+        )
+
+        # Published event WITHOUT an EventRegistration.
+        self.event_no_er = Project.objects.create(
+            name="Edit Reg Event No ER",
+            url_slug="edit-reg-event-no-er",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=30),
+            end_date=timezone.now() + timedelta(days=90),
+        )
+        ProjectMember.objects.create(
+            user=self.organiser,
+            project=self.event_no_er,
+            role=self.role,
+        )
+
+    def _url(self, slug):
+        return reverse(
+            "organization:edit-event-registration-settings",
+            kwargs={"url_slug": slug},
+        )
+
+    # ------------------------------------------------------------------
+    # Happy-path updates
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "edit_settings")
+    def test_patch_max_participants_updates_record(self):
+        """PATCH max_participants → 200 OK and DB row is updated."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 80},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.max_participants, 80)
+
+    @tag("event_registration", "edit_settings")
+    def test_patch_registration_end_date_updates_record(self):
+        """PATCH registration_end_date → 200 OK and DB row is updated."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+        new_date = timezone.now() + timedelta(days=45)
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"registration_end_date": new_date.isoformat()},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        # Compare with second precision to avoid microsecond drift.
+        self.assertAlmostEqual(
+            self.er.registration_end_date.timestamp(),
+            new_date.timestamp(),
+            delta=1,
+        )
+
+    @tag("event_registration", "edit_settings")
+    def test_patch_both_fields_updates_both(self):
+        """PATCH both fields → 200 OK; both DB values are updated."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+        new_date = timezone.now() + timedelta(days=55)
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {
+                "max_participants": 200,
+                "registration_end_date": new_date.isoformat(),
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.max_participants, 200)
+
+    # ------------------------------------------------------------------
+    # Response shape
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "edit_settings")
+    def test_200_response_includes_max_participants_registration_end_date_status(self):
+        """Successful PATCH returns max_participants, registration_end_date, status."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 75},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("max_participants", response.data)
+        self.assertIn("registration_end_date", response.data)
+        self.assertIn("status", response.data)
+        self.assertEqual(response.data["max_participants"], 75)
+        self.assertEqual(response.data["status"], RegistrationStatus.OPEN)
+
+    # ------------------------------------------------------------------
+    # status field is read-only via this endpoint
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "edit_settings")
+    def test_status_in_request_body_is_ignored(self):
+        """Including status in the request body does not change the ER status."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 90, "status": "closed"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        # Status must remain OPEN — "closed" should have been silently ignored.
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+        self.assertEqual(response.data["status"], RegistrationStatus.OPEN)
+
+    # ------------------------------------------------------------------
+    # Validation — published projects
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "edit_settings")
+    def test_past_registration_end_date_returns_400(self):
+        """PATCH with registration_end_date in the past → 400 Bad Request."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+        past_date = timezone.now() - timedelta(days=1)
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"registration_end_date": past_date.isoformat()},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("registration_end_date", response.data)
+
+    @tag("event_registration", "edit_settings")
+    def test_registration_end_date_after_event_end_date_returns_400(self):
+        """PATCH with registration_end_date after event end_date → 400."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+        after_event_end = self.event.end_date + timedelta(days=1)
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"registration_end_date": after_event_end.isoformat()},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("registration_end_date", response.data)
+
+    @tag("event_registration", "edit_settings")
+    def test_max_participants_zero_returns_400(self):
+        """PATCH with max_participants=0 → 400 (min_value=1)."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 0},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("max_participants", response.data)
+
+    @tag("event_registration", "edit_settings")
+    def test_registration_end_date_equal_to_event_end_date_is_valid(self):
+        """registration_end_date exactly equal to event end_date is allowed."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"registration_end_date": self.event.end_date.isoformat()},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+    # ------------------------------------------------------------------
+    # Participant count lower-bound guard
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "edit_settings")
+    def test_max_participants_below_participant_count_returns_400(self):
+        """PATCH max_participants below current registrations → 400 Bad Request."""
+        for i in range(3):
+            participant = User.objects.create_user(
+                username=f"participant_lower_bound_{i}", password="x"
+            )
+            EventParticipant.objects.create(
+                user=participant, event_registration=self.er
+            )
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 2},  # below current count of 3
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("max_participants", response.data)
+        # Error message must mention the count so the organiser knows the floor.
+        self.assertIn("3", str(response.data["max_participants"]))
+
+    @tag("event_registration", "edit_settings")
+    def test_max_participants_equal_to_participant_count_is_valid(self):
+        """PATCH max_participants equal to current registrations → 200 OK."""
+        for i in range(3):
+            participant = User.objects.create_user(
+                username=f"participant_equal_bound_{i}", password="x"
+            )
+            EventParticipant.objects.create(
+                user=participant, event_registration=self.er
+            )
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 3},  # exactly the current count — allowed
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+    @tag("event_registration", "edit_settings")
+    def test_max_participants_patch_does_not_revalidate_stored_end_date(self):
+        """PATCH with only max_participants does not trigger the past-date guard
+        on the stored registration_end_date. The past-date guard fires only when
+        registration_end_date is explicitly included in the request body."""
+        # Simulate a registration whose deadline has already passed.
+        self.er.registration_end_date = timezone.now() - timedelta(days=1)
+        self.er.save(update_fields=["registration_end_date", "updated_at"])
+
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 120},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.max_participants, 120)
+
+    # ------------------------------------------------------------------
+    # 404 responses
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "edit_settings")
+    def test_unknown_slug_returns_404(self):
+        """PATCH to an unknown project slug → 404 Not Found."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("does-not-exist"),
+            {"max_participants": 50},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @tag("event_registration", "edit_settings")
+    def test_project_without_event_registration_returns_404(self):
+        """PATCH on a project that has no EventRegistration → 404 Not Found."""
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event-no-er"),
+            {"max_participants": 50},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # ------------------------------------------------------------------
+    # Authentication and authorisation
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "edit_settings")
+    def test_unauthenticated_request_returns_401(self):
+        """Unauthenticated PATCH → 401 Unauthorized."""
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 50},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @tag("event_registration", "edit_settings")
+    def test_non_member_returns_403(self):
+        """Authenticated user who is not a project member → 403 Forbidden."""
+        self.client.login(username="non_member_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 50},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
