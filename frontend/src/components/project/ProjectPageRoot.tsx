@@ -25,6 +25,8 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import { useFeatureToggles } from "../featureToggle";
+import ProjectRegistrationsContent from "./ProjectRegistrationsContent";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -141,7 +143,34 @@ export default function ProjectPageRoot({
     leave: false,
     like: false,
   });
-  const typesByTabValue = ["project", "team", "comments"];
+
+  // Feature toggle for event registration
+  const { isEnabled } = useFeatureToggles();
+  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
+
+  // Lifted state so edits from either the side button or the tab stay in sync
+  const [currentEventRegistration, setCurrentEventRegistration] = useState(
+    project.event_registration ?? null
+  );
+
+  // Determine whether to show the Registrations tab:
+  // only for event admins when the toggle is on and event_registration exists
+  const user_permission =
+    user && project.team && project.team.find((m) => m.id === user.id)
+      ? project.team.find((m) => m.id === user.id).permission
+      : null;
+  const hasAdminPermissions =
+    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
+
+  const showRegistrationsTab =
+    isEventRegistrationEnabled &&
+    project.project_type?.type_id === "event" &&
+    currentEventRegistration != null &&
+    hasAdminPermissions;
+
+  const typesByTabValue = showRegistrationsTab
+    ? ["project", "team", "comments", "registrations"]
+    : ["project", "team", "comments"];
 
   // ref used within:
   // -> ProjectInteractionBoard
@@ -168,12 +197,6 @@ export default function ProjectPageRoot({
     router.push("/chat/" + chat.chat_uuid + "/");
   };
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
-  const user_permission =
-    user && project.team && project.team.find((m) => m.id === user.id)
-      ? project.team.find((m) => m.id === user.id).permission
-      : null;
-  const hasAdminPermissions =
-    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -493,6 +516,7 @@ export default function ProjectPageRoot({
             <Tab label={texts.project} className={classes.tab} />
             <Tab label={teamTabLabel()} className={classes.tab} />
             <Tab label={discussionTabLabel()} className={classes.tab} />
+            {showRegistrationsTab && <Tab label={texts.registrations} className={classes.tab} />}
           </Tabs>
         </div>
 
@@ -547,6 +571,8 @@ export default function ProjectPageRoot({
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
             hubUrl={hubPage}
+            eventRegistration={currentEventRegistration}
+            onEventRegistrationUpdated={setCurrentEventRegistration}
           />
         </TabContent>
         <TabContent value={tabValue} index={1}>
@@ -569,6 +595,15 @@ export default function ProjectPageRoot({
             hubUrl={hubPage}
           />
         </TabContent>
+        {showRegistrationsTab && (
+          <TabContent value={tabValue} index={3}>
+            <ProjectRegistrationsContent
+              project={project}
+              eventRegistration={currentEventRegistration}
+              onEventRegistrationUpdated={setCurrentEventRegistration}
+            />
+          </TabContent>
+        )}
         {screenSize.betweenTinyAndLarg && (
           <>
             <ProjectSideBar

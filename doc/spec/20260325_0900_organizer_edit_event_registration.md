@@ -1,6 +1,6 @@
 # Event Organizer Can Edit an Event with Basic Registration
 
-**Status**: BACKEND COMPLETE — FRONTEND PENDING
+**Status**: COMPLETE
 **Type**: Feature
 **Date and time created**: 2026-03-25 09:00
 **Date Completed**: TBD
@@ -223,19 +223,22 @@ The `ProjectReadWritePermission` class was considered but rejected for this endp
 - 2026-03-30 — **Backend implementation complete.** Delivered: `EditEventRegistrationSerializer` (new, separate from `EventRegistrationSerializer`; `status` in `read_only_fields`; past-date guard + upper-bound guard; deferred participant lower-bound as `# TODO (#1848 / #1845)`); `EditEventRegistrationSettingsView` (inline permission check after project lookup to enforce `404 → 403` priority, not `ProjectReadWritePermission` as permission class — see Technical Solution Overview); URL `PATCH /api/projects/{url_slug}/registration/` (`name="edit-event-registration-settings"`); 15 new tests in `TestEditEventRegistrationSettings` (all green, run alongside 153 pre-existing tests, 0 regressions); `doc/api-documentation.md` and `doc/domain-entities.md` updated. Status promoted to BACKEND COMPLETE — FRONTEND PENDING.
 - 2026-03-30 — **Participant count guard activated; draft-mode removed.** `EventParticipant` (#1845) deployed today. `# TODO` uncommented in `EditEventRegistrationSerializer.validate()` — `max_participants < participant_count` now raises `400`. Draft-mode guard (`is_draft` check) removed entirely: `EventRegistration` records only exist on published events and published events cannot revert to draft, making the guard dead code. `validate()` simplified to only check fields explicitly present in the PATCH body (a `max_participants`-only PATCH no longer re-validates the stored `registration_end_date`). Two draft tests replaced with three participant count tests (`test_max_participants_below_participant_count_returns_400`, `test_max_participants_equal_to_participant_count_is_valid`, `test_max_participants_patch_does_not_revalidate_stored_end_date`); 16 tests total, all green. Spec sections updated: Core Requirements, NFRs, API, Technical Solution Overview, Acceptance Criteria.
 
+- 2026-03-31 — **Frontend implementation complete.** Delivered: `EventRegistrationData` type added to `src/types.ts`; `event_registration` field added to `Project` type and included in `parseProject` in the project detail page; new `EditEventRegistrationModal` component (`src/components/project/EditEventRegistrationModal.tsx`) — pre-fills current values, client-side validation (future-date guard, end-date upper-bound), `PATCH /api/projects/{slug}/registration/`, inline field-level error display, loading state during save; "Edit registration settings" and "View registrations" buttons added to `ProjectContentSideButtons.tsx` (shown only when `EVENT_REGISTRATION` toggle enabled + event type + `event_registration` present + admin permission); new registration results stub page at `pages/projects/[projectId]/registrations.tsx` (requires auth — redirects to signin if unauthenticated; shows registration settings summary with status chip; "Edit registration settings" button opening the same modal; placeholder for future registrant list). Project detail page directory restructured from `pages/projects/[projectId].tsx` → `pages/projects/[projectId]/index.tsx` to support nested routing (matches existing `pages/hubs/[hubUrl]/` pattern). New text keys added: `edit_registration_settings`, `registration_settings_saved`, `registration_end_date_must_be_in_the_future`, `registration_status`, `registration_status_open`, `registration_status_closed`, `view_registrations`, `registrations`, `no_registration_settings_found`, `back_to_event`.
+  - **TODO (registrations page)**: the current `getServerSideProps` only checks for authentication (redirects to sign-in if no token). It does not redirect non-admin authenticated users server-side, because determining admin status server-side would require an extra `/api/projects/{slug}/members/` call. The page currently relies on the `UserContext` + `hasAdminPermissions` flag at the client level to hide the "Edit registration settings" button. A future hardening pass should add a proper server-side 403 redirect for non-admin users.
+
 ## Acceptance Criteria
 
-- [ ] On the project detail page, an **"Edit registration settings"** button is shown only when the `EVENT_REGISTRATION` feature toggle is enabled, the project is of event type, `event_registration` is non-null in the API response, and the user has edit rights.
-- [ ] Clicking the button opens a modal pre-filled with the current `max_participants` and `registration_end_date` values.
+- [x] On the project detail page, an **"Edit registration settings"** button is shown only when the `EVENT_REGISTRATION` feature toggle is enabled, the project is of event type, `event_registration` is non-null in the API response, and the user has edit rights.
+- [x] Clicking the button opens a modal pre-filled with the current `max_participants` and `registration_end_date` values.
 - [x] The organizer can update `max_participants` to any positive integer ≥ current participant count (≥ 1 if no participants yet).
 - [x] Attempting to set `max_participants` below the current participant count returns `400 Bad Request` with a descriptive error message that includes the current count.
 - [x] The organizer can update `registration_end_date` to any future datetime ≤ the event's `end_date`.
 - [x] Attempting to set a `registration_end_date` in the past returns `400 Bad Request`.
 - [x] Attempting to set a `registration_end_date` after the event's `end_date` returns `400 Bad Request`.
-- [ ] Saving changes calls `PATCH /api/projects/{slug}/registration/` and returns `200 OK` with updated `event_registration` values; the modal closes and the detail page reflects the new values. *(Backend: 200 OK with correct response shape confirmed. Frontend: pending.)*
-- [ ] On error, inline validation errors are shown near the relevant fields without closing the modal.
+- [x] Saving changes calls `PATCH /api/projects/{slug}/registration/` and returns `200 OK` with updated `event_registration` values; the modal closes and the detail page reflects the new values.
+- [x] On error, inline validation errors are shown near the relevant fields without closing the modal.
 - [x] The `status` field of `EventRegistration` is **not** modifiable via this endpoint — it is ignored if included in the payload.
-- [ ] Events created **without** registration do not show the "Edit registration settings" button — and no `EventRegistration` record is created via this endpoint.
+- [x] Events created **without** registration do not show the "Edit registration settings" button — and no `EventRegistration` record is created via this endpoint.
 - [x] `PATCH /api/projects/{slug}/registration/` returns `404 Not Found` when no `EventRegistration` record exists for the project.
 - [x] `PATCH /api/projects/{slug}/registration/` returns `401 Unauthorized` for unauthenticated requests.
 - [x] `PATCH /api/projects/{slug}/registration/` returns `403 Forbidden` for users without edit rights on the project.

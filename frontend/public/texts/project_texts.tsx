@@ -1249,6 +1249,46 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Registration end date must be before or equal to the event end date",
       de: "Das Anmeldeende muss vor oder gleich dem Ende des Events liegen",
     },
+    edit_registration_settings: {
+      en: "Edit registration settings",
+      de: "Anmeldeeinstellungen bearbeiten",
+    },
+    registration_settings_saved: {
+      en: "Registration settings saved successfully",
+      de: "Anmeldeeinstellungen erfolgreich gespeichert",
+    },
+    registration_end_date_must_be_in_the_future: {
+      en: "Registration end date must be in the future",
+      de: "Das Anmeldeende muss in der Zukunft liegen",
+    },
+    registration_status: {
+      en: "Registration status",
+      de: "Anmeldestatus",
+    },
+    registration_status_open: {
+      en: "Open",
+      de: "Offen",
+    },
+    registration_status_closed: {
+      en: "Closed",
+      de: "Geschlossen",
+    },
+    view_registrations: {
+      en: "View registrations",
+      de: "Anmeldungen anzeigen",
+    },
+    registrations: {
+      en: "Registrations",
+      de: "Anmeldungen",
+    },
+    no_registration_settings_found: {
+      en: "No registration settings found for this event.",
+      de: "Keine Anmeldeeinstellungen für dieses Event gefunden.",
+    },
+    back_to_event: {
+      en: "Back to event",
+      de: "Zurück zum Event",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",
