@@ -81,6 +81,20 @@ export default function ProjectRegistrationsContent({
   }
 
   const isOpen = eventRegistration.status === "open";
+  const isFull = eventRegistration.status === "full";
+  const isEnded = eventRegistration.status === "ended";
+
+  const statusLabel = isOpen
+    ? texts.registration_status_open
+    : isFull
+    ? texts.registration_status_full
+    : isEnded
+    ? texts.registration_status_ended
+    : texts.registration_status_closed;
+
+  const statusColor = isOpen ? "success" : isFull ? "warning" : isEnded ? "error" : "default";
+
+  const StatusIcon = isOpen ? CheckCircleOutlineIcon : PauseCircleOutlineIcon;
 
   return (
     <>
@@ -104,15 +118,9 @@ export default function ProjectRegistrationsContent({
           <Typography className={classes.settingLabel}>{texts.registration_status}</Typography>
           <Chip
             size="small"
-            label={isOpen ? texts.registration_status_open : texts.registration_status_closed}
-            color={isOpen ? "success" : "default"}
-            icon={
-              isOpen ? (
-                <CheckCircleOutlineIcon fontSize="small" />
-              ) : (
-                <PauseCircleOutlineIcon fontSize="small" />
-              )
-            }
+            label={statusLabel}
+            color={statusColor as any}
+            icon={<StatusIcon fontSize="small" />}
             sx={{ fontWeight: 600 }}
           />
         </Box>

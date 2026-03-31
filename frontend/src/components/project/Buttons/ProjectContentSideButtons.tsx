@@ -246,11 +246,7 @@ export default function ProjectContentSideButtons({
               {/* Badge is dynamic based on the number of membership requesters */}
               <ShowRequestsButton />
               <EditProjectButton isCustomHub={isCustomHub} />
-              {showRegistrationButtons && (
-                <>
-                  <EditRegistrationButton />
-                </>
-              )}
+              {showRegistrationButtons && <EditRegistrationButton />}
             </>
           )}
           {/* Otherwise if not a project admin, just show the Leave Project button */}

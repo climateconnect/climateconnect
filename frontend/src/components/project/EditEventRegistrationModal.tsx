@@ -97,7 +97,7 @@ export default function EditEventRegistrationModal({
     }
 
     if (!registrationEndDate) {
-      newErrors.registration_end_date = texts.registration_end_date_must_be_before_event_end_date;
+      newErrors.registration_end_date = texts.registration_end_date_required;
     } else {
       if (registrationEndDate.isBefore(dayjs())) {
         newErrors.registration_end_date = texts.registration_end_date_must_be_in_the_future;

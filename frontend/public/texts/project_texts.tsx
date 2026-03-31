@@ -1273,6 +1273,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Closed",
       de: "Geschlossen",
     },
+    registration_status_full: {
+      en: "Full",
+      de: "Ausgebucht",
+    },
+    registration_status_ended: {
+      en: "Ended",
+      de: "Abgelaufen",
+    },
+    registration_end_date_required: {
+      en: "Registration end date is required",
+      de: "Ein Anmeldedatum ist erforderlich",
+    },
     view_registrations: {
       en: "View registrations",
       de: "Anmeldungen anzeigen",
@@ -1284,10 +1296,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     no_registration_settings_found: {
       en: "No registration settings found for this event.",
       de: "Keine Anmeldeeinstellungen für dieses Event gefunden.",
-    },
-    back_to_event: {
-      en: "Back to event",
-      de: "Zurück zum Event",
     },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
