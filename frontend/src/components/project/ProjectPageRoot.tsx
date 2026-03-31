@@ -169,7 +169,7 @@ export default function ProjectPageRoot({
     hasAdminPermissions;
 
   const typesByTabValue = showRegistrationsTab
-    ? ["project", "team", "comments", "registrations"]
+    ? ["project", "registrations", "team", "comments"]
     : ["project", "team", "comments"];
 
   // ref used within:
@@ -514,9 +514,9 @@ export default function ProjectPageRoot({
             classes={{ indicator: classes.tabsIndicator }}
           >
             <Tab label={texts.project} className={classes.tab} />
+            {showRegistrationsTab && <Tab label={texts.registrations} className={classes.tab} />}
             <Tab label={teamTabLabel()} className={classes.tab} />
             <Tab label={discussionTabLabel()} className={classes.tab} />
-            {showRegistrationsTab && <Tab label={texts.registrations} className={classes.tab} />}
           </Tabs>
         </div>
 
@@ -575,7 +575,16 @@ export default function ProjectPageRoot({
             onEventRegistrationUpdated={setCurrentEventRegistration}
           />
         </TabContent>
-        <TabContent value={tabValue} index={1}>
+        {showRegistrationsTab && (
+          <TabContent value={tabValue} index={1}>
+            <ProjectRegistrationsContent
+              project={project}
+              eventRegistration={currentEventRegistration}
+              onEventRegistrationUpdated={setCurrentEventRegistration}
+            />
+          </TabContent>
+        )}
+        <TabContent value={tabValue} index={showRegistrationsTab ? 2 : 1}>
           <ProjectTeamContent
             project={project}
             handleReadNotifications={handleReadNotifications}
@@ -586,7 +595,7 @@ export default function ProjectPageRoot({
           />
         </TabContent>
 
-        <TabContent value={tabValue} index={2}>
+        <TabContent value={tabValue} index={showRegistrationsTab ? 3 : 2}>
           <ProjectCommentsContent
             project={project}
             user={user}
@@ -595,15 +604,6 @@ export default function ProjectPageRoot({
             hubUrl={hubPage}
           />
         </TabContent>
-        {showRegistrationsTab && (
-          <TabContent value={tabValue} index={3}>
-            <ProjectRegistrationsContent
-              project={project}
-              eventRegistration={currentEventRegistration}
-              onEventRegistrationUpdated={setCurrentEventRegistration}
-            />
-          </TabContent>
-        )}
         {screenSize.betweenTinyAndLarg && (
           <>
             <ProjectSideBar
