@@ -1,6 +1,6 @@
 # Event Organizer Can Edit an Event with Basic Registration
 
-**Status**: READY FOR IMPLEMENTATION (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
+**Status**: COMPLETE
 **Type**: Feature
 **Date and time created**: 2026-03-25 09:00
 **Date Completed**: TBD
@@ -27,11 +27,10 @@ A user who created an event (or holds an admin role on the event's team) can edi
 - Editable fields (basic registration scope):
   - **Maximum number of registrations** (`max_participants`).
   - **Registration end date** (`registration_end_date`).
-- The maximum registrations value **cannot be lowered below the number of already-registered guests** (i.e. below the current `EventParticipant` count). This validation is **deferred** — event participant registration ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)) will not be ready when this task is implemented. A `# TODO` comment must be left in the codebase referencing this requirement.
+- The maximum registrations value **cannot be lowered below the number of already-registered guests** (i.e. below the current `EventParticipant` count).
 - The registration end date **cannot be set to a date in the past** and **cannot be set after the event end date**.
 - It is **not possible to add event registration** to an event that was created without it. The "Edit registration settings" button and modal are only shown if `EventRegistration` already exists for the event.
 - It is **not possible to completely remove** event registration from an event once it has been enabled.
-- **Draft-mode behaviour**: while the project is a draft (`is_draft=true`), **required-field validation and cross-field constraint validation are not enforced** — allowing incomplete registration settings to be saved mid-flow. All validations (`registration_end_date` past-date guard, upper-bound against `end_date`, etc.) are enforced only when the project is published (`is_draft=false`).
 
 **Explicitly Out of Scope (this iteration):**
 - Adding registration to an event that was not created with registration.
@@ -45,8 +44,8 @@ A user who created an event (or holds an admin role on the event's team) can edi
 
 - Only a user with **edit rights** on the project (event organizer or team admin) may update registration settings. Regular team members and unauthenticated users must receive `403 Forbidden` and `401 Unauthorized` respectively.
 - `registration_end_date` validation must be **timezone-aligned** with `Project.end_date` and `Project.start_date` — consistent with the approach documented in [#1820](https://github.com/climateconnect/climateconnect/issues/1820).
-- The `max_participants` lower-bound validation (≥ current participant count) is **deferred** to a future task — `EventParticipant` ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)) will not be available when this task is implemented. The implementation must include a `# TODO` comment in the relevant serializer method, referencing [#1845](https://github.com/climateconnect/climateconnect/issues/1845) and this requirement, so it can be activated once [#1845](https://github.com/climateconnect/climateconnect/issues/1845) is deployed.
-- All cross-field and required-field validations are **skipped when the project is a draft (`is_draft=true`)**. Validations are fully enforced when the project is published (`is_draft=false`). This is consistent with the draft-mode behaviour established in [#1820](https://github.com/climateconnect/climateconnect/issues/1820).
+- The `max_participants` lower-bound validation (≥ current participant count) requires `EventParticipant` ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)) and is activated once that feature is in production.
+- **Draft-mode does not apply to this endpoint.** `EventRegistration` records only exist on published events; once an event is published it cannot revert to draft. All validations are therefore always enforced.
 - This task introduces a **new dedicated endpoint** (`PATCH /api/projects/{slug}/registration/`). Existing endpoints are not modified — no breaking changes to any existing API contract.
 - The `status` field of `EventRegistration` must **not** be updatable through this endpoint — it is managed exclusively via the close/reopen endpoints ([#1851](https://github.com/climateconnect/climateconnect/issues/1851)).
 
@@ -82,9 +81,8 @@ PATCH /api/projects/{slug}/registration/
 - Behaviour:
   - If the project does **not** have an `EventRegistration` record, returns `404 Not Found`.
   - `status` included in the request body is silently ignored (read-only via this endpoint).
-  - `max_participants` must be ≥ current `EventParticipant` count (if feature available); otherwise `400 Bad Request`.
+  - `max_participants` must be ≥ current `EventParticipant` count; otherwise `400 Bad Request`.
   - `registration_end_date` must be > `now()` and ≤ `project.end_date`; otherwise `400 Bad Request`.
-  - When the project is a draft (`is_draft=true`), cross-field and past-date validations are skipped.
   - Returns `200 OK` with the updated `event_registration` object.
 
 **Response shape**
@@ -183,7 +181,37 @@ None.
 
 ## Technical Solution Overview
 
-*To be filled by a development agent during the IMPLEMENTATION phase.*
+The backend introduces one new serializer, one new view, and one new URL pattern. No existing files were modified beyond adding imports; no migration was required.
+
+### `EditEventRegistrationSerializer` (`organization/serializers/event_registration.py`)
+
+A dedicated `ModelSerializer` for `EventRegistration`, separate from the existing `EventRegistrationSerializer` (which continues to serve the create flow and the project detail/list read path). Key decisions:
+
+- `fields = ["max_participants", "registration_end_date", "status"]`
+- `read_only_fields = ["status"]` — any `status` value in the request body is silently ignored; DRF enforces this at the field level before `validate()` runs.
+- `max_participants` carries `min_value=1`; `registration_end_date` is nullable to match the DB schema.
+- `validate()` **only checks fields that are explicitly present in the incoming payload** — a PATCH that sends only `max_participants` never re-validates the stored `registration_end_date` (which could legitimately be in the past if registration has already closed). There is no `is_draft` guard — `EventRegistration` records only exist on published events and published events cannot revert to draft, so the guard would be dead code.
+- Three guards enforced when the respective field is in the request body:
+  1. **Past-date guard**: `registration_end_date <= timezone.now()` → 400.
+  2. **Upper-bound guard**: `registration_end_date > project.end_date` → 400.
+  3. **Participant lower-bound guard**: `max_participants < EventParticipant.objects.filter(event_registration=self.instance).count()` → 400 (activated once #1845 was deployed).
+
+### `EditEventRegistrationSettingsView` (`organization/views/event_registration_views.py`)
+
+A new `APIView` with `permission_classes = [IsAuthenticated]`. The edit-rights check is intentionally performed **inside the view body** (after the project lookup) rather than as a `ProjectReadWritePermission` class. This ensures the response priority is:
+
+1. `401` — no credentials (handled by `IsAuthenticated` before the view body runs)
+2. `404` — project slug not found (view body, step 1)
+3. `403` — authenticated but not a project member with write role (view body, step 2)
+4. `404` — project found but has no `EventRegistration` (view body, step 3)
+5. `400` — validation error (serializer)
+6. `200` — success
+
+The `ProjectReadWritePermission` class was considered but rejected for this endpoint because it performs its own project lookup and returns `False` when the project is missing, which DRF translates to `403` for authenticated users — incorrect HTTP semantics. The inline check uses the same `ProjectMember` query (`role__role_type__in=[ALL_TYPE, READ_WRITE_TYPE]`) so the set of users who can edit is identical to the existing project PATCH endpoint.
+
+### URL
+
+`path("projects/<str:url_slug>/registration/", EditEventRegistrationSettingsView.as_view(), name="edit-event-registration-settings")` added to `organization/urls.py`.
 
 ## Log
 
@@ -192,27 +220,31 @@ None.
 - 2026-03-25 09:45 — Specs approved. Status promoted to READY FOR IMPLEMENTATION.
 - 2026-03-26 — Frontend section updated: "Registration settings" section in the edit form now explicitly requires the `EVENT_REGISTRATION` feature toggle to be enabled (consistent with `ShareProjectRoot.tsx` pattern and with the member-facing registration UI in [#1845](https://github.com/climateconnect/climateconnect/issues/1845)). Corresponding acceptance criterion added.
 - 2026-03-26 — Architectural refinement: registration settings editing moved out of the edit project form into a **dedicated modal**. Entry points: (1) project detail page button (event type + registration enabled), (2) registration results page (future — no spec yet). A new dedicated `PATCH /api/projects/{slug}/registration/` endpoint introduced; `PATCH /api/projects/{slug}/` is no longer modified by this task. `ProjectSerializer` changes removed. Create flow (inline in create form) unchanged. Spec sections updated: Core Requirements, Out of Scope, NFRs, AI Insights, API, Frontend, Backend, Data, Acceptance Criteria.
+- 2026-03-30 — **Backend implementation complete.** Delivered: `EditEventRegistrationSerializer` (new, separate from `EventRegistrationSerializer`; `status` in `read_only_fields`; past-date guard + upper-bound guard; deferred participant lower-bound as `# TODO (#1848 / #1845)`); `EditEventRegistrationSettingsView` (inline permission check after project lookup to enforce `404 → 403` priority, not `ProjectReadWritePermission` as permission class — see Technical Solution Overview); URL `PATCH /api/projects/{url_slug}/registration/` (`name="edit-event-registration-settings"`); 15 new tests in `TestEditEventRegistrationSettings` (all green, run alongside 153 pre-existing tests, 0 regressions); `doc/api-documentation.md` and `doc/domain-entities.md` updated. Status promoted to BACKEND COMPLETE — FRONTEND PENDING.
+- 2026-03-30 — **Participant count guard activated; draft-mode removed.** `EventParticipant` (#1845) deployed today. `# TODO` uncommented in `EditEventRegistrationSerializer.validate()` — `max_participants < participant_count` now raises `400`. Draft-mode guard (`is_draft` check) removed entirely: `EventRegistration` records only exist on published events and published events cannot revert to draft, making the guard dead code. `validate()` simplified to only check fields explicitly present in the PATCH body (a `max_participants`-only PATCH no longer re-validates the stored `registration_end_date`). Two draft tests replaced with three participant count tests (`test_max_participants_below_participant_count_returns_400`, `test_max_participants_equal_to_participant_count_is_valid`, `test_max_participants_patch_does_not_revalidate_stored_end_date`); 16 tests total, all green. Spec sections updated: Core Requirements, NFRs, API, Technical Solution Overview, Acceptance Criteria.
+
+- 2026-03-31 — **Frontend implementation complete** (revised). Registrations page removed as obsolete — replaced by a **Registrations tab** on the project detail page (visible only to event admins when `EVENT_REGISTRATION` toggle is on and `event_registration` is non-null). Frontend type `EventRegistrationData` extended with `"ended"` status pre-emptively (computed backend field pending). "Edit registration settings" button and modal hidden when event `end_date` is in the past (both in side buttons and in the tab). `EventRegistrationData.status` extended to `"open" | "closed" | "full" | "ended"`. Status chip in `ProjectRegistrationsContent` handles all four states. `registration_end_date_required` and `registration_status_full` text keys added.
+  - **~~TODO (backend) — `"ended"` computed status~~** — **DONE**: `_compute_effective_status()` helper and `to_representation` override added to `EventRegistrationSerializer` (`organization/serializers/event_registration.py`). Returns `"ended"` when stored status is `open` and `registration_end_date < timezone.now()`; no migration required. Tests: `test_open_registration_with_past_end_date_returns_ended_status`, `test_closed_registration_with_past_end_date_returns_closed_not_ended`, `test_patch_response_shows_ended_status_when_end_date_is_past` (all green). `doc/api-documentation.md` and `doc/domain-entities.md` updated.
 
 ## Acceptance Criteria
 
-- [ ] On the project detail page, an **"Edit registration settings"** button is shown only when the `EVENT_REGISTRATION` feature toggle is enabled, the project is of event type, `event_registration` is non-null in the API response, and the user has edit rights.
-- [ ] Clicking the button opens a modal pre-filled with the current `max_participants` and `registration_end_date` values.
-- [ ] The organizer can update `max_participants` to any positive integer ≥ the current number of registered participants (if count is available; otherwise ≥ 1).
-- [ ] Attempting to set `max_participants` below the current participant count returns `400 Bad Request` with a descriptive error message (conditional on [#1845](https://github.com/climateconnect/climateconnect/issues/1845) availability).
-- [ ] The organizer can update `registration_end_date` to any future datetime ≤ the event's `end_date`.
-- [ ] Attempting to set a `registration_end_date` in the past returns `400 Bad Request`.
-- [ ] Attempting to set a `registration_end_date` after the event's `end_date` returns `400 Bad Request`.
-- [ ] Saving changes calls `PATCH /api/projects/{slug}/registration/` and returns `200 OK` with updated `event_registration` values; the modal closes and the detail page reflects the new values.
-- [ ] On error, inline validation errors are shown near the relevant fields without closing the modal.
-- [ ] The `status` field of `EventRegistration` is **not** modifiable via this endpoint — it is ignored if included in the payload.
-- [ ] Events created **without** registration do not show the "Edit registration settings" button — and no `EventRegistration` record is created via this endpoint.
-- [ ] `PATCH /api/projects/{slug}/registration/` returns `404 Not Found` when no `EventRegistration` record exists for the project.
-- [ ] When the project is a draft (`is_draft=true`), past-date and cross-field validations are skipped (consistent with [#1820](https://github.com/climateconnect/climateconnect/issues/1820) draft-mode behaviour).
-- [ ] `PATCH /api/projects/{slug}/registration/` returns `401 Unauthorized` for unauthenticated requests.
-- [ ] `PATCH /api/projects/{slug}/registration/` returns `403 Forbidden` for users without edit rights on the project.
-- [ ] `PATCH /api/projects/{slug}/` (existing project endpoint) behaviour is unchanged — no breaking changes.
-- [ ] No new Django migration is required — all columns already exist from prior tasks.
-- [ ] All tests pass (unit, integration, end-to-end).
+- [x] On the project detail page, an **"Edit registration settings"** button is shown only when the `EVENT_REGISTRATION` feature toggle is enabled, the project is of event type, `event_registration` is non-null in the API response, and the user has edit rights.
+- [x] Clicking the button opens a modal pre-filled with the current `max_participants` and `registration_end_date` values.
+- [x] The organizer can update `max_participants` to any positive integer ≥ current participant count (≥ 1 if no participants yet).
+- [x] Attempting to set `max_participants` below the current participant count returns `400 Bad Request` with a descriptive error message that includes the current count.
+- [x] The organizer can update `registration_end_date` to any future datetime ≤ the event's `end_date`.
+- [x] Attempting to set a `registration_end_date` in the past returns `400 Bad Request`.
+- [x] Attempting to set a `registration_end_date` after the event's `end_date` returns `400 Bad Request`.
+- [x] Saving changes calls `PATCH /api/projects/{slug}/registration/` and returns `200 OK` with updated `event_registration` values; the modal closes and the detail page reflects the new values.
+- [x] On error, inline validation errors are shown near the relevant fields without closing the modal.
+- [x] The `status` field of `EventRegistration` is **not** modifiable via this endpoint — it is ignored if included in the payload.
+- [x] Events created **without** registration do not show the "Edit registration settings" button — and no `EventRegistration` record is created via this endpoint.
+- [x] `PATCH /api/projects/{slug}/registration/` returns `404 Not Found` when no `EventRegistration` record exists for the project.
+- [x] `PATCH /api/projects/{slug}/registration/` returns `401 Unauthorized` for unauthenticated requests.
+- [x] `PATCH /api/projects/{slug}/registration/` returns `403 Forbidden` for users without edit rights on the project.
+- [x] `PATCH /api/projects/{slug}/` (existing project endpoint) behaviour is unchanged — no breaking changes.
+- [x] No new Django migration is required — all columns already exist from prior tasks.
+- [x] All backend tests pass (16 new tests in `TestEditEventRegistrationSettings`). End-to-end pending frontend.
 - [ ] Code review approved.
-- [ ] Documentation updated and current.
+- [x] Documentation updated and current (`doc/api-documentation.md`, `doc/domain-entities.md`).
 

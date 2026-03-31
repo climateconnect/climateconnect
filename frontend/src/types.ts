@@ -1,6 +1,12 @@
 import { Dayjs } from "dayjs";
 import type { PaletteColorOptions } from "@mui/material/styles";
 
+export type EventRegistrationData = {
+  max_participants: number | null;
+  registration_end_date: string | null; // ISO 8601 string from API
+  status: "open" | "closed" | "full" | "ended";
+};
+
 export type User = {
   id: string;
   first_name?: string;
@@ -63,6 +69,8 @@ export type Project = {
   registrationEnabled?: boolean;
   max_participants?: number | null;
   registration_end_date?: Dayjs | null;
+  // Event registration data from the API (detail view)
+  event_registration?: EventRegistrationData | null;
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";

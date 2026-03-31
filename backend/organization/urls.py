@@ -240,4 +240,9 @@ urlpatterns = [
         event_registration_views.RegisterForEventView.as_view(),
         name="register-for-event",
     ),
+    path(
+        "projects/<str:url_slug>/registration/",
+        event_registration_views.EditEventRegistrationSettingsView.as_view(),
+        name="edit-event-registration-settings",
+    ),
 ]

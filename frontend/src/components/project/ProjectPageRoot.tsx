@@ -25,6 +25,8 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import { useFeatureToggles } from "../featureToggle";
+import ProjectRegistrationsContent from "./ProjectRegistrationsContent";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -58,6 +60,7 @@ const useStyles = makeStyles((theme) => {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
       width: 145,
+      whiteSpace: "nowrap",
       [theme.breakpoints.down("sm")]: {
         width: 125,
       },
@@ -141,7 +144,34 @@ export default function ProjectPageRoot({
     leave: false,
     like: false,
   });
-  const typesByTabValue = ["project", "team", "comments"];
+
+  // Feature toggle for event registration
+  const { isEnabled } = useFeatureToggles();
+  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
+
+  // Lifted state so edits from either the side button or the tab stay in sync
+  const [currentEventRegistration, setCurrentEventRegistration] = useState(
+    project.event_registration ?? null
+  );
+
+  // Determine whether to show the Registrations tab:
+  // only for event admins when the toggle is on and event_registration exists
+  const user_permission =
+    user && project.team && project.team.find((m) => m.id === user.id)
+      ? project.team.find((m) => m.id === user.id).permission
+      : null;
+  const hasAdminPermissions =
+    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
+
+  const showRegistrationsTab =
+    isEventRegistrationEnabled &&
+    project.project_type?.type_id === "event" &&
+    currentEventRegistration != null &&
+    hasAdminPermissions;
+
+  const typesByTabValue = showRegistrationsTab
+    ? ["project", "registrations", "team", "comments"]
+    : ["project", "team", "comments"];
 
   // ref used within:
   // -> ProjectInteractionBoard
@@ -168,12 +198,6 @@ export default function ProjectPageRoot({
     router.push("/chat/" + chat.chat_uuid + "/");
   };
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
-  const user_permission =
-    user && project.team && project.team.find((m) => m.id === user.id)
-      ? project.team.find((m) => m.id === user.id).permission
-      : null;
-  const hasAdminPermissions =
-    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -241,6 +265,16 @@ export default function ProjectPageRoot({
       }
     }
     return teamLabel;
+  };
+
+  const registrationsTabLabel = () => {
+    let registrationsLabel = texts.registrations;
+    if (currentEventRegistration && currentEventRegistration.max_participants) {
+      const takenSeats =
+        currentEventRegistration.max_participants - currentEventRegistration.available_seats;
+      registrationsLabel += ` • ${takenSeats}`;
+    }
+    return registrationsLabel;
   };
 
   // pagination will only return 10 comments
@@ -491,6 +525,9 @@ export default function ProjectPageRoot({
             classes={{ indicator: classes.tabsIndicator }}
           >
             <Tab label={texts.project} className={classes.tab} />
+            {showRegistrationsTab && (
+              <Tab label={registrationsTabLabel()} className={classes.tab} />
+            )}
             <Tab label={teamTabLabel()} className={classes.tab} />
             <Tab label={discussionTabLabel()} className={classes.tab} />
           </Tabs>
@@ -547,9 +584,20 @@ export default function ProjectPageRoot({
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
             hubUrl={hubPage}
+            eventRegistration={currentEventRegistration}
+            onEventRegistrationUpdated={setCurrentEventRegistration}
           />
         </TabContent>
-        <TabContent value={tabValue} index={1}>
+        {showRegistrationsTab && (
+          <TabContent value={tabValue} index={1}>
+            <ProjectRegistrationsContent
+              project={project}
+              eventRegistration={currentEventRegistration}
+              onEventRegistrationUpdated={setCurrentEventRegistration}
+            />
+          </TabContent>
+        )}
+        <TabContent value={tabValue} index={showRegistrationsTab ? 2 : 1}>
           <ProjectTeamContent
             project={project}
             handleReadNotifications={handleReadNotifications}
@@ -560,7 +608,7 @@ export default function ProjectPageRoot({
           />
         </TabContent>
 
-        <TabContent value={tabValue} index={2}>
+        <TabContent value={tabValue} index={showRegistrationsTab ? 3 : 2}>
           <ProjectCommentsContent
             project={project}
             user={user}
