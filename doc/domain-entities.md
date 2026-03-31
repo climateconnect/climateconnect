@@ -322,7 +322,7 @@ This document provides comprehensive documentation of the main domain entities i
 
 **Summary**: Online registration settings for event-type projects.
 
-**Description**: Stores registration configuration for a `Project` of type `event`. The presence of an `EventRegistration` row is the sole source of truth for whether online registration is enabled — no separate boolean flag on `Project` is needed. Both `max_participants` and `registration_end_date` are nullable to support draft events where settings have not yet been finalised; all constraints are enforced on publish (`is_draft=false`).
+**Description**: Stores registration configuration for a `Project` of type `event`. The presence of an `EventRegistration` row is the sole source of truth for whether online registration is enabled — no separate boolean flag on `Project` is needed. Both `max_participants` and `registration_end_date` are nullable to support draft events where settings have not yet been finalised; all constraints are enforced on publish (`is_draft=false`). `EventRegistration` records only exist on published events — published events cannot revert to draft, so draft-mode guards are not applied on the edit endpoint.
 
 **Key rules**:
 - Only valid for projects of type `event`; rejected with 400 for other project types
@@ -330,6 +330,7 @@ This document provides comprehensive documentation of the main domain entities i
 - `max_participants` must be > 0
 - Required fields (`max_participants`, `registration_end_date`) are enforced on publish; skipped when saving as draft
 - `status` controls the explicit registration lifecycle (see table below); organiser may set `open` or `closed`; `full` is reserved for the system when capacity is reached
+- `"ended"` is a **computed read-only value** returned by the API (never stored in DB) — see status table below
 
 **Fields**:
 | Field | Type | Notes |
@@ -342,13 +343,16 @@ This document provides comprehensive documentation of the main domain entities i
 | `updated_at` | DateTimeField | Auto-updated on save |
 
 **Registration status values** (`RegistrationStatus`):
-| Value | Set by | Meaning |
-|---|---|---|
-| `open` | Default / organiser | Accepting sign-ups (subject to `registration_end_date` and `max_participants`) |
-| `closed` | Organiser (via API) | Manually closed before the end date; organiser can re-open |
-| `full` | System (future: on last accepted signup, same transaction) | Capacity reached; blocked until a cancellation drops count below `max_participants` |
+| Value | Stored in DB | Set by | Meaning |
+|---|---|---|---|
+| `open` | ✅ | Default / organiser | Accepting sign-ups (subject to `registration_end_date` and `max_participants`) |
+| `closed` | ✅ | Organiser (via API) | Manually closed before the end date; organiser can re-open |
+| `full` | ✅ | System (on last accepted signup, same transaction) | Capacity reached; blocked until a cancellation drops count below `max_participants` |
+| `ended` | ❌ (computed) | API serializer | Returned when stored status is `open` but `registration_end_date` has passed — never written to DB; underlying stored value remains `open` |
 
 **Effective "accepting signups?" check**: `status == open AND now() < registration_end_date`
+
+> **Note**: clients should treat `ended`, `closed`, and `full` equally as "not accepting sign-ups".
 
 **Relationships**:
 - **OneToOne**: `Project` (related_name: `event_registration`, CASCADE delete)
@@ -361,10 +365,10 @@ This document provides comprehensive documentation of the main domain entities i
 **Serializers**:
 | Serializer | Purpose |
 |---|---|
-| `EventRegistrationSerializer` | Read (project detail/list) and write (create via POST, status update via PATCH) on the project endpoint |
-| `EditEventRegistrationSerializer` | Write only — `PATCH /api/projects/{slug}/registration/` (edit `max_participants` and `registration_end_date`; `status` is read-only via this serializer) |
+| `EventRegistrationSerializer` | Read (project detail/list) and write (create via `POST /api/projects/`). Returns computed `"ended"` status via `to_representation`. |
+| `EditEventRegistrationSerializer` | Write only — `PATCH /api/projects/{slug}/registration/` (edit `max_participants` and `registration_end_date`; `status` is read-only). |
 
-**Edit endpoint**: `PATCH /api/projects/{slug}/registration/` — dedicated endpoint for organiser/admin to update `max_participants` and `registration_end_date` on an existing `EventRegistration`. Requires edit rights (organiser or team admin). Returns `404` if no `EventRegistration` exists. Past-date guard and upper-bound validation are skipped for drafts (`is_draft=true`). `status` is silently ignored if included in the request body.
+**Edit endpoint**: `PATCH /api/projects/{slug}/registration/` — dedicated endpoint for organiser/admin to update `max_participants` and `registration_end_date` on an existing `EventRegistration`. Requires edit rights (organiser or team admin). Returns `404` if no `EventRegistration` exists. Draft-mode guards are not applied (published events cannot revert to draft). `status` is not directly writable via this endpoint, but **may be auto-adjusted** as a side-effect of a `max_participants` change: `full` → `open` when capacity is raised above current registrations or set to unlimited; `open` → `full` when capacity is lowered to exactly match current registrations.
 
 ---
 
@@ -803,3 +807,4 @@ This architecture supports a comprehensive climate action platform with social n
 - **2026-03-19**: Added `EventRegistration` entity (GitHub issue #43). New 1-to-1 relationship on `Project` (event type only) for online registration settings (`max_participants`, `registration_end_date`). Updated `Project` relationships and Entity Relationship Summary tree.
 - **2026-03-19**: Added `status` field to `EventRegistration` (`RegistrationStatus` enum: `open`/`closed`/`full`). Prepares for use cases: organiser manually closing registration and system auto-closing when capacity is reached.
 - **2026-03-30**: Added `EventParticipant` entity (GitHub issue #1845). Join table recording which users have registered for an event. Includes `select_for_update` seat-locking, `unique_together` constraint, and two DB indexes. `EventRegistration.status` is atomically promoted to `"full"` when the last seat is taken. Updated `EventRegistration` relationships section and ER tree.
+- **2026-03-31**: Added computed `"ended"` status to `EventRegistration` API responses (issue #1848). Returned by `EventRegistrationSerializer.to_representation` via `_compute_effective_status` when stored status is `open` but `registration_end_date` has passed — never written to DB. Updated `RegistrationStatus` table to include `ended`. Removed draft-mode guard from `EditEventRegistrationSerializer` (published events cannot revert to draft; guard was dead code). Updated `EventRegistrationSerializer` description — write path is create-only (`POST /api/projects/`); `event_registration` handling removed from `PATCH /api/projects/{slug}/`.

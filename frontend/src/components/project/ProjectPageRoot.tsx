@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
       width: 145,
+      whiteSpace: "nowrap",
       [theme.breakpoints.down("sm")]: {
         width: 125,
       },
@@ -264,6 +265,16 @@ export default function ProjectPageRoot({
       }
     }
     return teamLabel;
+  };
+
+  const registrationsTabLabel = () => {
+    let registrationsLabel = texts.registrations;
+    if (currentEventRegistration && currentEventRegistration.max_participants) {
+      const takenSeats =
+        currentEventRegistration.max_participants - currentEventRegistration.available_seats;
+      registrationsLabel += ` • ${takenSeats}`;
+    }
+    return registrationsLabel;
   };
 
   // pagination will only return 10 comments
@@ -514,7 +525,9 @@ export default function ProjectPageRoot({
             classes={{ indicator: classes.tabsIndicator }}
           >
             <Tab label={texts.project} className={classes.tab} />
-            {showRegistrationsTab && <Tab label={texts.registrations} className={classes.tab} />}
+            {showRegistrationsTab && (
+              <Tab label={registrationsTabLabel()} className={classes.tab} />
+            )}
             <Tab label={teamTabLabel()} className={classes.tab} />
             <Tab label={discussionTabLabel()} className={classes.tab} />
           </Tabs>

@@ -770,7 +770,7 @@ class TestEditEventRegistrationSettings(APITestCase):
 
     @tag("event_registration", "edit_settings")
     def test_200_response_includes_max_participants_registration_end_date_status(self):
-        """Successful PATCH returns max_participants, registration_end_date, status."""
+        """Successful PATCH returns max_participants, registration_end_date, status, available_seats."""
         self.client.login(username="organiser_edit_reg", password="testpassword")
 
         response = self.client.patch(
@@ -783,8 +783,44 @@ class TestEditEventRegistrationSettings(APITestCase):
         self.assertIn("max_participants", response.data)
         self.assertIn("registration_end_date", response.data)
         self.assertIn("status", response.data)
+        self.assertIn("available_seats", response.data)
         self.assertEqual(response.data["max_participants"], 75)
         self.assertEqual(response.data["status"], RegistrationStatus.OPEN)
+
+    @tag("event_registration", "edit_settings")
+    def test_response_available_seats_reflects_current_registrations(self):
+        """available_seats in PATCH response equals max_participants minus participant count."""
+        for i in range(4):
+            participant = User.objects.create_user(
+                username=f"participant_seats_check_{i}", password="x"
+            )
+            EventParticipant.objects.create(user=participant, event_registration=self.er)
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 10},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertEqual(response.data["available_seats"], 6)  # 10 - 4
+
+    @tag("event_registration", "edit_settings")
+    def test_response_available_seats_is_null_for_unlimited_capacity(self):
+        """available_seats is null when max_participants is null (unlimited)."""
+        self.er.max_participants = None
+        self.er.save(update_fields=["max_participants", "updated_at"])
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"registration_end_date": (timezone.now() + timedelta(days=30)).isoformat()},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertIsNone(response.data["available_seats"])
 
     # ------------------------------------------------------------------
     # status field is read-only via this endpoint
@@ -1015,3 +1051,86 @@ class TestEditEventRegistrationSettings(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["status"], "ended")
+
+    # ------------------------------------------------------------------
+    # Status auto-adjustment when max_participants changes
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "edit_settings")
+    def test_raising_max_participants_above_full_capacity_auto_reopens_registration(
+        self,
+    ):
+        """PATCH max_participants above current count auto-reopens a FULL registration."""
+        for i in range(3):
+            participant = User.objects.create_user(
+                username=f"participant_auto_reopen_{i}", password="x"
+            )
+            EventParticipant.objects.create(
+                user=participant, event_registration=self.er
+            )
+        self.er.max_participants = 3
+        self.er.status = RegistrationStatus.FULL
+        self.er.save(update_fields=["max_participants", "status", "updated_at"])
+
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 10},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+        self.assertEqual(response.data["status"], RegistrationStatus.OPEN)
+
+    @tag("event_registration", "edit_settings")
+    def test_lowering_max_participants_to_current_count_auto_sets_full(self):
+        """PATCH max_participants equal to current count auto-sets status to FULL."""
+        for i in range(3):
+            participant = User.objects.create_user(
+                username=f"participant_auto_full_{i}", password="x"
+            )
+            EventParticipant.objects.create(
+                user=participant, event_registration=self.er
+            )
+        # er is OPEN with 100 capacity and 3 participants.
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 3},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.FULL)
+        self.assertEqual(response.data["status"], RegistrationStatus.FULL)
+
+    @tag("event_registration", "edit_settings")
+    def test_setting_max_participants_to_null_reopens_full_registration(self):
+        """PATCH max_participants=null (unlimited) auto-reopens a FULL registration."""
+        for i in range(3):
+            participant = User.objects.create_user(
+                username=f"participant_null_reopen_{i}", password="x"
+            )
+            EventParticipant.objects.create(
+                user=participant, event_registration=self.er
+            )
+        self.er.max_participants = 3
+        self.er.status = RegistrationStatus.FULL
+        self.er.save(update_fields=["max_participants", "status", "updated_at"])
+
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": None},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertIsNone(self.er.max_participants)
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+        self.assertEqual(response.data["status"], RegistrationStatus.OPEN)

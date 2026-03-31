@@ -193,7 +193,8 @@ class EditEventRegistrationSettingsView(APIView):
         {
             "max_participants": 80,
             "registration_end_date": "2026-07-01T18:00:00Z",
-            "status": "open"
+            "status": "open",
+            "available_seats": 75
         }
     """
 
