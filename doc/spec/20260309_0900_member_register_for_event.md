@@ -25,8 +25,7 @@ A logged-in member of the platform can register for an event that has registrati
   - The event has reached `max_participants` (no seats remaining).
   - Registration was manually closed by the organiser *(management feature — out of scope for this iteration)*.
 - **Case 1 — Member is logged in**: clicking "Register" opens a signup/confirmation form directly.
-- **Case 2 — Member is not logged in**: the "Register" button on the event page is **enabled** and opens the registration modal. Inside the modal, the "Confirm Registration" button is **disabled**, and a message reads *"To register for this event please login or sign up!"* with two action buttons: **"Log In"** and **"Sign Up"**. Clicking either navigates to the respective page; after successful login or signup the user is returned to the event page with the modal open.
-- After the member confirms registration:
+- **Case 2 — Member is not logged in**: the "Register" button on the event page is **enabled** and opens the registration modal. Inside the modal the user can then login or signup (the sign up flow will be added later, for this implementation it can just be a placeholder). 
   - A success confirmation is shown in the UI.
   - The member receives a confirmation email.
   - The system stores the registration (links the member to the event).
@@ -44,15 +43,14 @@ A logged-in member of the platform can register for an event that has registrati
 - Available seat count displayed on the event page must reflect real-time (or near-real-time) registrations to avoid overselling. Race conditions on the last seat must be handled (e.g. database-level constraint or atomic decrement).
 - The registration endpoint must be idempotent per user/event pair — re-registering an already-registered member must not create a duplicate record.
 - Confirmation email must be sent asynchronously (via Celery + Mailjet) — it must not block the HTTP response.
-- The deep-link URL `/projects/{slug}/register` must open the registration modal for both authenticated and unauthenticated users. Unauthenticated users will see the modal's login/signup prompt. If the user then clicks "Log In" or "Sign Up", the `redirect` URL must be set to `/projects/{slug}/register` so the modal re-opens after authentication.
+- The deep-link URL `/projects/{slug}/register` must open the registration modal for both authenticated and unauthenticated users. Unauthenticated will have the option to login or signup within the modal.
 - The `redirect` query parameter support must be **added to `/signup`** as part of this task — the sign-up page currently only redirects to `/` or `/{hub}/browse` and does not yet accept a `redirect` param.
 - No breaking changes to existing project/event APIs.
 
 ### AI Agent Insights and Additions
 
 - A new `EventParticipant` entity (or equivalent join table) is needed to record *who* registered for an event. This was not explicitly named in the story but is implied by "the platform stores who has signed up."
-- The seat count shown in listings is explicitly excluded for performance reasons. For the "is registration accepting?" indicator in listing cards, the frontend derives it from the already-returned `status` and `registration_end_date` fields (`status === "open" AND now() < registration_end_date`). Full seat details (`available_seats`, `max_participants`) are returned on the event detail endpoint only.
-- The `/projects/{slug}/register` deep-link needs to handle the post-login redirect carefully: `/projects/{slug}/register` is used as the `redirect` query parameter so the modal opens after authentication.
+- The seat count shown in listings is explicitly excluded for performance reasons. For the "is registration accepting?" indicator in listing cards, the frontend derives it from the already-returned `status` (open, closed, full, ended). Full seat details (`available_seats`, `max_participants`) are returned on the event detail endpoint only.
 
 ## System impact
 
@@ -100,14 +98,15 @@ GET /api/projects/{slug}/
   "event_registration": {
     "max_participants": 100,
     "registration_end_date": "2026-06-01T23:59:00Z",
-    "status": "open" | "closed" | "full"
+    "status": "open" | "closed" | "full" | "ended"
   }
   ```
 - `status` values:
   - `"open"` — registration is accepting sign-ups.
   - `"closed"` — organiser manually closed registration.
   - `"full"` — system-set when `max_participants` is reached; reverts to `"open"` if a cancellation drops the count below `max_participants`.
-- **Registration is effectively open when**: `status == "open"` AND `now() < registration_end_date`.
+  - `"ended"` - current date is after the registration end date
+- **Registration is only open when**: `status == "open"`.
 - `available_seats` will be added to this object **on the detail endpoint only** once the `EventParticipant` table is implemented (computed as `max_participants - COUNT(participants)`). It is intentionally excluded from list responses to avoid a COUNT query per row.
 
 **Event list — existing**
@@ -115,7 +114,7 @@ GET /api/projects/{slug}/
 GET /api/projects/
 ```
 - Already returns the full `event_registration` object per list item (same shape as above, via `ProjectStubSerializer`). No separate `has_registration` boolean flag is needed — its presence signals registration is enabled.
-- For the "is registration accepting?" indicator in list cards, the frontend derives it from: `status == "open" AND now() < registration_end_date`. No seat count is returned in list responses for performance (seat count requires `EventParticipant` which is not yet implemented).
+- For the "is registration accepting?" indicator in list cards, the frontend derives it from: `status == "open"`. No seat count is returned in list responses for performance (seat count requires `EventParticipant` which is not yet implemented).
 
 ### Events
 
@@ -130,19 +129,18 @@ GET /api/projects/
   - `closed` → **"Registration closed"** — disabled, visual indicator only
   - `ended` → no button shown
   - No seat count is shown in listing cards (seat count requires a COUNT query per row — performance reason).
-  - `effective_status` is derived client-side: if `status === "open"` and `registration_end_date <= now()`, treat as `ended`; otherwise use `status` directly.
 - **Event detail page**:
   - Replace the Follow button with a **"Register"** button when the event has `event_registration` present **and the `EVENT_REGISTRATION` feature toggle is enabled**.
-  - When registration is closed (`status === "closed"` or `status === "full"` or `now >= registration_end_date`): render a disabled grey button labelled "Registration closed".
-  - When registration is open (`status === "open"` and `now < registration_end_date`): the "Register" button is **always enabled**, regardless of auth state. Clicking it opens the registration modal. Auth state is handled inside the modal (see below).
+  - When registration is closed (`status === "closed"` or `status === "full"` or `status === "ended"`): render a disabled grey button labelled "Registration closed".
+  - When registration is open (`status === "open"`): the "Register" button is **always enabled**, regardless of auth state. Clicking it opens the registration modal. Auth state is handled inside the modal (see below).
   - Show available seat count (e.g. "47 seats remaining") on the event detail page — **deferred until `EventParticipant` is implemented** and `available_seats` is returned by the API.
   - Deep-link support: navigating to `/projects/{slug}/register` auto-opens the modal on page load (for both authenticated and unauthenticated users; unauthenticated users will see the modal's login/signup prompt). Implemented as a new Next.js page at `pages/projects/[projectId]/register.tsx`.
 - **Registration modal**:
   - **Authenticated state**: user's name and email are pre-filled (read-only). Single "Confirm Registration" CTA.
     - On success: show a success state ("You're registered! A confirmation email has been sent.").
     - On error (e.g. race condition — last seat taken): show an error state ("Sorry, registration is now full.").
-  - **Unauthenticated state**: "Confirm Registration" button is **disabled**. Show the message: *"To register for this event please login or sign up!"* with two buttons: **"Log In"** (links to `/signin?redirect=/projects/{slug}/register`) and **"Sign Up"** (links to `/signup?redirect=/projects/{slug}/register`). After successful authentication the user is returned to `/projects/{slug}/register` and the modal opens.
-  - **Signup `redirect` support**: the `/signup` page currently does not accept a `redirect` query parameter. Adding this support is **in scope for this task** — on successful account creation the user must be redirected to the value of `redirect` (consistent with the existing `redirect` param behaviour in `/signin`).
+  - **Unauthenticated state**: "Confirm Registration" button is **disabled**. As first step user can enter an email address. System then checks if the email is known and depending on the result either shows a password field to login or the option to signup (to be implemented later). After loggin in within the modal the user can continue with the event registrations as described for authenticated user.
+  - UI proposal is to use a vertical stepper. 
 
 ### Backend
 
@@ -270,6 +268,7 @@ Not yet implemented. See `### Frontend` section above for full requirements.
 - 2026-03-25 — Spec aligned with actual implementation from task #43: `is_registration_open` boolean replaced throughout by `status` field (`open`/`closed`/`full`); list endpoint already returns full `event_registration` object (no separate `has_registration` flag needed); `available_seats` and `EventParticipant` confirmed as not yet implemented; `EventRegistrationSerializer` already serializes `status`.
 - 2026-03-26 — Corrected against actual codebase: (1) API endpoint `POST /api/events/{slug}/register/` → `POST /api/projects/{slug}/register/` (no `/api/events/` prefix exists; all project endpoints live under `/api/projects/`). (2) Deep-link `/{slug}/register` → `/projects/{slug}/register` (Next.js page at `pages/projects/[projectId]/register.tsx`; consistent with existing `/projects/{slug}` routing). (3) Post-auth redirect: `/login?next=` → `/signin?redirect=`, `/signup?next=` → `/signup?redirect=`; `redirect` is the correct param name per `signin.tsx`; adding `redirect` support to `/signup` is now explicitly in scope. (4) `EventParticipant.user` `related_name` `"event_registrations"` → `"event_participations"` (avoids ambiguity with `EventRegistration` model). (5) `EVENT_REGISTRATION` feature toggle added to listing badge, Register button, and modal rendering conditions.
 - 2026-03-30 — Backend fully implemented. `EventParticipant` model + migration `0122`. `RegisterForEventView` (`POST /api/projects/{slug}/register/`) extracted into `organization/views/event_registration_views.py` (refactored out of `project_views.py`) with atomic seat locking, idempotency, and FULL-status promotion. `available_seats` added to `EventRegistrationSerializer` (detail only). Celery task + email function using Mailjet template pattern. Env vars `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` and `_DE` added to `settings.py`. **Email fully localised**: `EventTitle` and `OrganiserName` use `get_project_name()` / `get_organization_name()` to return the translation for the user's language; `EventUrl` is language-aware; `StartDate` is formatted in the user's timezone (resolved via `timezonefinder` from user location → project location → UTC) and language (EN British / DE with German month names and timezone abbreviations). Email function moved to `organization/utility/email.py` alongside all other project/org emails. `timezonefinder` added as a dependency. **Bug fixed**: PostGIS `PointField` stores coordinates as `(lat, lon)` not `(lon, lat)` — `get_timezone_for_point()` correctly passes `lng=point.y, lat=point.x`. **Outstanding**: two Mailjet templates (EN + DE) must be created manually and IDs set in `.backend_env` — see `### Other` for full specification. Frontend implementation not yet started.
+- 2026-03-31 - Updated specs regarding login/signup flow and event registration modal. Also added that backend now returns an `ended` status. 
 
 ## Acceptance Criteria
 
