@@ -65,6 +65,8 @@ export default function ProjectRegistrationsContent({
 
   const [editModalOpen, setEditModalOpen] = useState(false);
 
+  const isEventEnded = project.end_date ? dayjs(project.end_date).isBefore(dayjs()) : false;
+
   const formatDate = (iso: string | null) => {
     if (!iso) return "—";
     return dayjs(iso).locale(locale).format("DD MMM YYYY, HH:mm");
@@ -116,16 +118,18 @@ export default function ProjectRegistrationsContent({
         </Box>
       </Box>
 
-      <Button
-        variant="outlined"
-        color="primary"
-        startIcon={<SettingsIcon />}
-        className={classes.editButton}
-        onClick={() => setEditModalOpen(true)}
-        aria-label={texts.edit_registration_settings}
-      >
-        {texts.edit_registration_settings}
-      </Button>
+      {!isEventEnded && (
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<SettingsIcon />}
+          className={classes.editButton}
+          onClick={() => setEditModalOpen(true)}
+          aria-label={texts.edit_registration_settings}
+        >
+          {texts.edit_registration_settings}
+        </Button>
+      )}
 
       {/* Placeholder for future registrant list */}
       <Typography variant="h6" component="h2" className={classes.sectionTitle}>
@@ -138,13 +142,15 @@ export default function ProjectRegistrationsContent({
         </Typography>
       </Box>
 
-      <EditEventRegistrationModal
-        open={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        onSaved={onEventRegistrationUpdated}
-        project={project}
-        eventRegistration={eventRegistration}
-      />
+      {!isEventEnded && (
+        <EditEventRegistrationModal
+          open={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSaved={onEventRegistrationUpdated}
+          project={project}
+          eventRegistration={eventRegistration}
+        />
+      )}
     </>
   );
 }

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Badge, useMediaQuery, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "universal-cookie";
+import dayjs from "dayjs";
 
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import EditIcon from "@mui/icons-material/Edit";
@@ -100,11 +101,14 @@ export default function ProjectContentSideButtons({
 
   const [editRegistrationOpen, setEditRegistrationOpen] = useState(false);
 
+  const isEventEnded = project.end_date ? dayjs(project.end_date).isBefore(dayjs()) : false;
+
   const showRegistrationButtons =
     isEventRegistrationEnabled &&
     project.project_type?.type_id === "event" &&
     eventRegistration != null &&
-    hasAdminPermissions;
+    hasAdminPermissions &&
+    !isEventEnded;
 
   const [requesters, setRequesters] = useState([]);
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
