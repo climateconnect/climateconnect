@@ -4,6 +4,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
+import StopCircleIcon from "@mui/icons-material/StopCircle";
+import DangerousIcon from "@mui/icons-material/Dangerous";
 import dayjs from "dayjs";
 
 import getTexts from "../../../public/texts/texts";
@@ -80,21 +82,31 @@ export default function ProjectRegistrationsContent({
     );
   }
 
-  const isOpen = eventRegistration.status === "open";
-  const isFull = eventRegistration.status === "full";
-  const isEnded = eventRegistration.status === "ended";
+  const STATUS_CONFIG = {
+    open: {
+      label: texts.registration_status_open,
+      color: "success" as const,
+      icon: CheckCircleOutlineIcon,
+    },
+    full: {
+      label: texts.registration_status_full,
+      color: "warning" as const,
+      icon: PauseCircleOutlineIcon,
+    },
+    ended: {
+      label: texts.registration_status_ended,
+      color: "error" as const,
+      icon: StopCircleIcon,
+    },
+    closed: {
+      label: texts.registration_status_closed,
+      color: "error" as const,
+      icon: DangerousIcon,
+    },
+  };
 
-  const statusLabel = isOpen
-    ? texts.registration_status_open
-    : isFull
-    ? texts.registration_status_full
-    : isEnded
-    ? texts.registration_status_ended
-    : texts.registration_status_closed;
-
-  const statusColor = isOpen ? "success" : isFull ? "warning" : isEnded ? "error" : "default";
-
-  const StatusIcon = isOpen ? CheckCircleOutlineIcon : PauseCircleOutlineIcon;
+  const statusConfig = STATUS_CONFIG[eventRegistration.status];
+  const StatusIcon = statusConfig.icon;
 
   return (
     <>
@@ -118,8 +130,8 @@ export default function ProjectRegistrationsContent({
           <Typography className={classes.settingLabel}>{texts.registration_status}</Typography>
           <Chip
             size="small"
-            label={statusLabel}
-            color={statusColor as any}
+            label={statusConfig.label}
+            color={statusConfig.color}
             icon={<StatusIcon fontSize="small" />}
             sx={{ fontWeight: 600 }}
           />
