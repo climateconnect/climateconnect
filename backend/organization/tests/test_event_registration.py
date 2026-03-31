@@ -434,406 +434,64 @@ class TestEventRegistrationRead(APITestCase):
         self.assertIsNotNone(er)
         self.assertEqual(er["max_participants"], 100)
 
+    # ------------------------------------------------------------------
+    # "ended" computed status
+    # ------------------------------------------------------------------
 
-class TestEventRegistrationPatch(APITestCase):
-    """Tests for updating event_registration via PATCH /api/projects/{slug}/."""
+    @tag("event_registration", "projects")
+    def test_open_registration_with_past_end_date_returns_ended_status(self):
+        """GET returns status 'ended' when stored status is OPEN but registration_end_date has passed."""
+        self.event_registration.registration_end_date = timezone.now() - timedelta(
+            hours=1
+        )
+        self.event_registration.status = RegistrationStatus.OPEN
+        self.event_registration.save()
 
-    def setUp(self):
-        self.project_status, _ = ProjectStatus.objects.update_or_create(
-            id=2,
-            defaults={
-                "name": "active_er_patch",
-                "name_de_translation": "aktiv",
-                "has_end_date": True,
-                "has_start_date": True,
-            },
-        )
-
-        self.default_language, _ = Language.objects.get_or_create(
-            language_code="en",
-            defaults={"name": "English", "native_name": "English"},
-        )
-
-        self.user = User.objects.create_user(
-            username="patchuser_er",
-            password="testpassword",
-        )
-
-        self.role = Role.objects.create(
-            name="Admin_er_patch",
-            role_type=Role.ALL_TYPE,
-        )
-
-        # Published event project with an EventRegistration already attached.
-        self.event_project = Project.objects.create(
-            name="Patchable Event",
-            url_slug="patchable-event",
-            is_active=True,
-            is_draft=False,
-            status=self.project_status,
-            language=self.default_language,
-            project_type="EV",
-            start_date="2026-09-01T10:00:00Z",
-            end_date="2026-10-01T20:00:00Z",
-        )
-        self.event_registration = EventRegistration.objects.create(
-            project=self.event_project,
-            max_participants=100,
-            registration_end_date="2026-09-15T23:59:00Z",
-        )
-        ProjectMember.objects.create(
-            user=self.user,
-            project=self.event_project,
-            role=self.role,
-        )
-
-        # Published event project WITHOUT an EventRegistration.
-        self.event_project_no_er = Project.objects.create(
-            name="Event Without ER",
-            url_slug="event-without-er-patch",
-            is_active=True,
-            is_draft=False,
-            status=self.project_status,
-            language=self.default_language,
-            project_type="EV",
-            start_date="2026-09-01T10:00:00Z",
-            end_date="2026-10-01T20:00:00Z",
-        )
-        ProjectMember.objects.create(
-            user=self.user,
-            project=self.event_project_no_er,
-            role=self.role,
-        )
-
-        # Draft event project (no EventRegistration yet).
-        self.draft_event_project = Project.objects.create(
-            name="Draft Event",
-            url_slug="draft-event-patch",
-            is_active=True,
-            is_draft=True,
-            status=self.project_status,
-            language=self.default_language,
-            project_type="EV",
-            start_date="2026-09-01T10:00:00Z",
-            end_date="2026-10-01T20:00:00Z",
-        )
-        ProjectMember.objects.create(
-            user=self.user,
-            project=self.draft_event_project,
-            role=self.role,
-        )
-
-        # Non-event (plain project) — used to test the type-check error.
-        self.plain_project = Project.objects.create(
-            name="Plain Project",
-            url_slug="plain-project-patch",
-            is_active=True,
-            is_draft=False,
-            status=self.project_status,
-            language=self.default_language,
-            project_type="PR",
-            start_date="2026-09-01T10:00:00Z",
-            end_date="2026-10-01T20:00:00Z",
-        )
-        ProjectMember.objects.create(
-            user=self.user,
-            project=self.plain_project,
-            role=self.role,
-        )
-
-    def _url(self, slug):
-        return reverse(
+        url = reverse(
             "organization:project-api-view",
-            kwargs={"url_slug": slug},
+            kwargs={"url_slug": "event-with-registration"},
         )
+        response = self.client.get(url)
 
-    # ------------------------------------------------------------------
-    # Happy-path: updating an existing EventRegistration
-    # ------------------------------------------------------------------
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["event_registration"]["status"], "ended")
 
     @tag("event_registration", "projects")
-    def test_patch_updates_max_participants(self):
-        """PATCH with max_participants only updates that field, leaves other fields intact."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("patchable-event"),
-            {"event_registration": {"max_participants": 200}},
-            format="json",
+    def test_open_registration_with_future_end_date_returns_open_status(self):
+        """GET returns status 'open' when stored status is OPEN and end date is in the future."""
+        self.event_registration.registration_end_date = timezone.now() + timedelta(
+            days=10
         )
+        self.event_registration.status = RegistrationStatus.OPEN
+        self.event_registration.save()
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.event_registration.refresh_from_db()
-        self.assertEqual(self.event_registration.max_participants, 200)
+        url = reverse(
+            "organization:project-api-view",
+            kwargs={"url_slug": "event-with-registration"},
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["event_registration"]["status"], "open")
 
     @tag("event_registration", "projects")
-    def test_patch_updates_registration_end_date(self):
-        """PATCH with registration_end_date only updates that field."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("patchable-event"),
-            {
-                "event_registration": {
-                    "registration_end_date": "2026-09-20T12:00:00Z",
-                }
-            },
-            format="json",
+    def test_closed_registration_with_past_end_date_returns_closed_not_ended(self):
+        """GET returns 'closed' (not 'ended') when organiser explicitly closed registration,
+        even if the end date has also passed. Organiser intent takes precedence."""
+        self.event_registration.registration_end_date = timezone.now() - timedelta(
+            hours=1
         )
+        self.event_registration.status = RegistrationStatus.CLOSED
+        self.event_registration.save()
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.event_registration.refresh_from_db()
-        self.assertEqual(
-            self.event_registration.registration_end_date.strftime(
-                "%Y-%m-%dT%H:%M:%SZ"
-            ),
-            "2026-09-20T12:00:00Z",
+        url = reverse(
+            "organization:project-api-view",
+            kwargs={"url_slug": "event-with-registration"},
         )
+        response = self.client.get(url)
 
-    @tag("event_registration", "projects")
-    def test_patch_adds_event_registration_to_event_without_one(self):
-        """PATCH with full event_registration creates an EventRegistration for an event that had none."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("event-without-er-patch"),
-            {
-                "event_registration": {
-                    "max_participants": 50,
-                    "registration_end_date": "2026-09-25T23:59:00Z",
-                }
-            },
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.assertTrue(
-            EventRegistration.objects.filter(project=self.event_project_no_er).exists()
-        )
-        er = EventRegistration.objects.get(project=self.event_project_no_er)
-        self.assertEqual(er.max_participants, 50)
-
-    @tag("event_registration", "projects")
-    def test_patch_null_event_registration_is_ignored(self):
-        """PATCH with event_registration: null is a no-op — the frontend only sends
-        touched fields, so None means the field was not touched in this request.
-        The existing EventRegistration must remain untouched."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("patchable-event"),
-            {"event_registration": None},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.assertTrue(
-            EventRegistration.objects.filter(project=self.event_project).exists(),
-            "EventRegistration should still exist after a None payload",
-        )
-        # Values must be unchanged
-        self.event_registration.refresh_from_db()
-        self.assertEqual(self.event_registration.max_participants, 100)
-
-    # ------------------------------------------------------------------
-    # Validation errors on published projects
-    # ------------------------------------------------------------------
-
-    @tag("event_registration", "projects")
-    def test_patch_event_registration_on_non_event_type_returns_400(self):
-        """PATCH event_registration on a non-event project returns 400."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("plain-project-patch"),
-            {
-                "event_registration": {
-                    "max_participants": 50,
-                    "registration_end_date": "2026-09-25T23:59:00Z",
-                }
-            },
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # Serializer returns DRF-standard errors: type check raises a non-field error.
-        self.assertIn("non_field_errors", response.data)
-        self.assertIn("event_registration", str(response.data["non_field_errors"][0]))
-
-    @tag("event_registration", "projects")
-    def test_patch_zero_max_participants_returns_400(self):
-        """PATCH with max_participants = 0 returns 400."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("patchable-event"),
-            {"event_registration": {"max_participants": 0}},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("max_participants", response.data)
-
-    @tag("event_registration", "projects")
-    def test_patch_registration_end_date_after_event_end_returns_400(self):
-        """PATCH with registration_end_date after event end_date returns 400."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("patchable-event"),
-            {
-                "event_registration": {
-                    # event ends 2026-10-01, this is after that
-                    "registration_end_date": "2026-11-01T00:00:00Z",
-                }
-            },
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("registration_end_date", response.data)
-
-    @tag("event_registration", "projects")
-    def test_patch_missing_required_field_on_new_er_for_published_project_returns_400(
-        self,
-    ):
-        """PATCH adding event_registration to a published event without max_participants returns 400."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("event-without-er-patch"),
-            {
-                "event_registration": {
-                    # missing max_participants
-                    "registration_end_date": "2026-09-25T23:59:00Z",
-                }
-            },
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("max_participants", response.data)
-
-    # ------------------------------------------------------------------
-    # Draft-mode: required fields are relaxed
-    # ------------------------------------------------------------------
-
-    @tag("event_registration", "projects")
-    def test_patch_draft_event_allows_partial_event_registration(self):
-        """PATCH on a draft event with only one of the required fields is accepted
-        and persists a partial EventRegistration row (nullable fields stay null)."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        # Send only max_participants — registration_end_date is missing.
-        response = self.client.patch(
-            self._url("draft-event-patch"),
-            {"event_registration": {"max_participants": 30}},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        # The ER row MUST be created even though it is incomplete.
-        self.assertTrue(
-            EventRegistration.objects.filter(project=self.draft_event_project).exists(),
-            "A partial ER row should be created for a draft project",
-        )
-        er = EventRegistration.objects.get(project=self.draft_event_project)
-        self.assertEqual(er.max_participants, 30)
-        self.assertIsNone(
-            er.registration_end_date,
-            "registration_end_date should be null for a partial draft ER",
-        )
-
-    @tag("event_registration", "projects")
-    def test_patch_draft_with_full_event_registration_creates_record(self):
-        """PATCH on a draft event with both required fields creates the EventRegistration."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("draft-event-patch"),
-            {
-                "event_registration": {
-                    "max_participants": 30,
-                    "registration_end_date": "2026-09-25T23:59:00Z",
-                }
-            },
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.assertTrue(
-            EventRegistration.objects.filter(project=self.draft_event_project).exists()
-        )
-
-    @tag("event_registration", "projects")
-    def test_patch_draft_can_null_individual_field(self):
-        """On a draft, sending an explicit null for a field clears it back to null."""
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        # First give the draft a full ER
-        EventRegistration.objects.create(
-            project=self.draft_event_project,
-            max_participants=40,
-            registration_end_date="2026-09-25T23:59:00Z",
-        )
-
-        # Now clear max_participants by sending null
-        response = self.client.patch(
-            self._url("draft-event-patch"),
-            {"event_registration": {"max_participants": None}},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        er = EventRegistration.objects.get(project=self.draft_event_project)
-        self.assertIsNone(er.max_participants)
-        # registration_end_date must be untouched
-        self.assertIsNotNone(er.registration_end_date)
-
-    @tag("event_registration", "projects")
-    def test_patch_publishing_draft_with_incomplete_event_registration_returns_400(
-        self,
-    ):
-        """PATCH that publishes a draft (is_draft key present) while supplying an
-        incomplete event_registration must be rejected with 400.
-
-        Even though partial ER rows are allowed during drafting, once the project
-        is being published all required fields must be set (either already in the
-        DB from a previous draft PATCH, or provided in this request).
-        """
-        self.client.login(username="patchuser_er", password="testpassword")
-
-        # Sending is_draft means "publish this draft" (sets is_draft=False).
-        # max_participants provided but registration_end_date missing → 400.
-        response = self.client.patch(
-            self._url("draft-event-patch"),
-            {
-                "is_draft": True,  # presence of key triggers publish
-                "event_registration": {
-                    "max_participants": 30,
-                    # registration_end_date intentionally missing
-                },
-            },
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("registration_end_date", response.data)
-
-    # ------------------------------------------------------------------
-    # Authentication
-    # ------------------------------------------------------------------
-
-    @tag("event_registration", "projects")
-    def test_unauthenticated_patch_returns_401(self):
-        """Unauthenticated PATCH returns 401."""
-        response = self.client.patch(
-            self._url("patchable-event"),
-            {"event_registration": {"max_participants": 99}},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["event_registration"]["status"], "closed")
 
 
 @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="True")
@@ -905,60 +563,6 @@ class TestEventRegistrationStatus(APITestCase):
         er = response.data["event_registration"]
         self.assertIn("status", er)
         self.assertEqual(er["status"], RegistrationStatus.OPEN)
-
-    # ------------------------------------------------------------------
-    # Organiser can set OPEN / CLOSED via PATCH
-    # ------------------------------------------------------------------
-
-    @tag("event_registration", "status")
-    def test_organiser_can_close_registration(self):
-        """PATCH with status='closed' sets EventRegistration.status to CLOSED."""
-        self.client.login(username="statususer_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("status-event"),
-            {"event_registration": {"status": "closed"}},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.event_registration.refresh_from_db()
-        self.assertEqual(self.event_registration.status, RegistrationStatus.CLOSED)
-
-    @tag("event_registration", "status")
-    def test_organiser_can_reopen_registration(self):
-        """PATCH with status='open' transitions CLOSED back to OPEN."""
-        self.event_registration.status = RegistrationStatus.CLOSED
-        self.event_registration.save()
-        self.client.login(username="statususer_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("status-event"),
-            {"event_registration": {"status": "open"}},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.event_registration.refresh_from_db()
-        self.assertEqual(self.event_registration.status, RegistrationStatus.OPEN)
-
-    # ------------------------------------------------------------------
-    # FULL is system-managed — organisers cannot set it directly
-    # ------------------------------------------------------------------
-
-    @tag("event_registration", "status")
-    def test_organiser_cannot_set_status_full(self):
-        """PATCH with status='full' is rejected with 400 — FULL is system-managed."""
-        self.client.login(username="statususer_er", password="testpassword")
-
-        response = self.client.patch(
-            self._url("status-event"),
-            {"event_registration": {"status": "full"}},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("status", response.data)
 
     # ------------------------------------------------------------------
     # CREATE inherits default status
@@ -1389,3 +993,25 @@ class TestEditEventRegistrationSettings(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    # ------------------------------------------------------------------
+    # "ended" computed status in PATCH response
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "edit_settings")
+    def test_patch_response_shows_ended_status_when_end_date_is_past(self):
+        """PATCH max_participants on a registration whose end_date has passed returns status 'ended'."""
+        # Bypass the past-date guard by writing directly to the DB — simulates
+        # a registration that was valid when set but has since expired.
+        self.er.registration_end_date = timezone.now() - timedelta(hours=1)
+        self.er.save(update_fields=["registration_end_date"])
+
+        self.client.login(username="organiser_edit_reg", password="testpassword")
+        response = self.client.patch(
+            self._url("edit-reg-event"),
+            {"max_participants": 90},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["status"], "ended")

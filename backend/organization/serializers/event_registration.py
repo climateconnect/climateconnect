@@ -8,6 +8,23 @@ from organization.models.event_registration import (
 )
 
 
+def _compute_effective_status(obj: EventRegistration) -> str:
+    """
+    Return the effective registration status for API responses.
+
+    Returns ``"ended"`` when the stored status is OPEN but
+    ``registration_end_date`` has already passed — no DB column needed.
+    All other stored statuses (CLOSED, FULL) are returned unchanged.
+    """
+    if (
+        obj.status == RegistrationStatus.OPEN
+        and obj.registration_end_date is not None
+        and obj.registration_end_date < timezone.now()
+    ):
+        return "ended"
+    return obj.status
+
+
 class EventRegistrationSerializer(serializers.ModelSerializer):
     """
     Serializes EventRegistration settings for an event project.
@@ -24,7 +41,9 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
     handled automatically by DRF — no manual int() / parse() calls are needed.
 
     Status field:
-        - Read: always returned (defaults to 'open').
+        - Read: returns the *effective* status — ``"ended"`` when the stored status
+          is OPEN but ``registration_end_date`` has passed (computed by
+          ``_compute_effective_status``; no DB column required).
         - Write: organiser may send 'open' or 'closed' to manually open/close
           registration.  'full' is system-managed and rejected on write.
 
@@ -54,6 +73,11 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
             # Organisers may set OPEN or CLOSED; FULL is reserved for the system.
             "status": {"required": False, "default": RegistrationStatus.OPEN},
         }
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["status"] = _compute_effective_status(instance)
+        return data
 
     def get_available_seats(self, obj):
         """
@@ -163,18 +187,18 @@ class EditEventRegistrationSerializer(serializers.ModelSerializer):
             "registration_end_date": {"required": False, "allow_null": True},
         }
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["status"] = _compute_effective_status(instance)
+        return data
+
     def validate(self, attrs):
         project = self.context.get("project") or (
             self.instance.project if self.instance else None
         )
 
-        # Only validate registration_end_date when it is explicitly included in
-        # the PATCH body.  Skipping the check when the field is absent means a
-        # PATCH that touches only max_participants never re-validates the stored
-        # date (which could legitimately be in the past if registration closed).
         registration_end_date = attrs.get("registration_end_date")
         if registration_end_date is not None:
-            # Past-date guard.
             if registration_end_date <= timezone.now():
                 raise serializers.ValidationError(
                     {
@@ -183,7 +207,6 @@ class EditEventRegistrationSerializer(serializers.ModelSerializer):
                         )
                     }
                 )
-            # Upper-bound guard: registration must close before the event ends.
             if (
                 project
                 and project.end_date
@@ -197,9 +220,6 @@ class EditEventRegistrationSerializer(serializers.ModelSerializer):
                     }
                 )
 
-        # Participant lower-bound guard: cannot lower capacity below the number
-        # of already-registered participants.  Only checked when max_participants
-        # is explicitly provided and the serializer has a bound instance.
         max_participants = attrs.get("max_participants")
         if max_participants is not None and self.instance:
             participant_count = EventParticipant.objects.filter(

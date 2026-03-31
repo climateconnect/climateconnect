@@ -374,8 +374,11 @@ Omitting the `event_registration` key entirely on `PATCH` leaves existing settin
 | `open` | Default / organiser | Accepting sign-ups (subject to `registration_end_date` and `max_participants`) |
 | `closed` | Organiser via `PATCH` | Manually closed before the end date; can be re-opened with `"status": "open"` |
 | `full` | System only | Capacity reached — cannot be set via the API directly |
+| `ended` | Computed (read-only) | `registration_end_date` has passed while the stored status was `open` — returned by the API but never stored in the DB |
 
 Effective "accepting signups?" check: `status == "open" AND now() < registration_end_date`
+
+> **Note**: `ended` is a computed value derived from the stored `open` status and a past `registration_end_date`. It is never written to the database — the underlying stored status remains `open`. Clients should treat `ended`, `closed`, and `full` equally as "not accepting sign-ups".
 
 **Timezone**: `registration_end_date` follows the same convention as `Project.start_date` / `end_date`. Send ISO 8601 strings with an explicit offset or `Z` suffix (e.g. `"2026-06-01T23:59:00Z"`); the backend stores and compares in UTC.
 
@@ -571,5 +574,5 @@ If you encounter issues or have questions about the API:
 
 ---
 
-**Last Updated**: March 30, 2026 — Activated `max_participants` participant count lower-bound guard in `PATCH /api/projects/{slug}/registration/`; removed draft-mode note (draft events do not have `EventRegistration` records). Added full endpoint documentation section for `PATCH /api/projects/{slug}/registration/`. Previous: March 30, 2026 — Added `PATCH /api/projects/{slug}/registration/` endpoint (edit event registration settings, issue #1848). Previous: March 30, 2026 — Added `POST /api/projects/{slug}/register/` endpoint (event participant registration, issue #1845). Added `available_seats` to `event_registration` response shape (detail only; `null` on list). Previous: March 19, 2026 — Added `status` field to `event_registration`; added registration status table and validation rules. Previous: Added `event_registration` nested object to project endpoints (issue #43)
+**Last Updated**: March 31, 2026 — Added computed `"ended"` status to `event_registration.status`: returned when stored status is `open` but `registration_end_date` has passed; never written to DB (issue #1848 log, 2026-03-31). Previous: March 30, 2026 — Activated `max_participants` participant count lower-bound guard in `PATCH /api/projects/{slug}/registration/`; removed draft-mode note (draft events do not have `EventRegistration` records). Added full endpoint documentation section for `PATCH /api/projects/{slug}/registration/`. Previous: March 30, 2026 — Added `PATCH /api/projects/{slug}/registration/` endpoint (edit event registration settings, issue #1848). Previous: March 30, 2026 — Added `POST /api/projects/{slug}/register/` endpoint (event participant registration, issue #1845). Added `available_seats` to `event_registration` response shape (detail only; `null` on list). Previous: March 19, 2026 — Added `status` field to `event_registration`; added registration status table and validation rules. Previous: Added `event_registration` nested object to project endpoints (issue #43)
 
