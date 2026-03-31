@@ -158,6 +158,7 @@ export default function ProjectContentSideButtons({
             className={`${classes.editProjectButton} ${classes.showRequestsButton}`}
             variant="contained"
             onClick={toggleShowRequests}
+            fullWidth
           >
             {texts.review_join_requests}
           </Button>
