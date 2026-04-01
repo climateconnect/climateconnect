@@ -1,9 +1,9 @@
 # Event Organiser Can See Status of Registrations
 
-**Status**: IMPLEMENTATION (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
+**Status**: DONE (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
 **Type**: Feature
 **Date and time created**: 2026-04-01 10:00
-**Date Completed**: TBD
+**Date Completed**: 2026-04-01
 **GitHub Issue**: [product-backlog#48](https://github.com/climateconnect/product-backlog/issues/48)
 **Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)
 **Related Specs**:
@@ -32,11 +32,16 @@ An event organiser or team admin can view the full list of members who have sign
 
 **Explicitly Out of Scope (this iteration):**
 
-- Exporting the guest list (e.g. CSV/PDF) — future story.
 - Sending email to all registered guests — future story.
 - Organiser cancelling an individual guest registration — future story.
 - Showing cancelled registrations in the list. The `cancelled_at` field on `EventParticipant` is introduced in [#1850](https://github.com/climateconnect/climateconnect/issues/1850). Once that story is implemented, only active registrations (`cancelled_at IS NULL`) must be shown. Until then, all participant rows are active.
 - Pagination on the backend — the list is loaded in full. Client-side paging is provided by the MUI DataGrid.
+
+**Implemented additions (beyond original scope):**
+
+- **CSV export and print** via `GridToolbarExport` (MUI DataGrid community edition). Originally scoped as a future story but included as it was trivial to add with `@mui/x-data-grid`.
+- **Profile links**: avatar, first name and last name are clickable links to the user's profile page (`/profiles/{url_slug}`).
+- **DataGrid localization**: the full DataGrid UI (filter operators, column menus, pagination labels) switches language with the rest of the app via `deDE`/`enUS` locale objects from `@mui/x-data-grid/locales`.
 
 ### Non Functional Requirements
 
@@ -134,27 +139,39 @@ The existing placeholder section **"Registration list will be shown here in a fu
 **Changes:**
 
 1. On component mount, call `GET /api/projects/{project.url_slug}/registrations/` and store the result in component state.
-2. Render a `TextField` for search (filters by first name + last name client-side).
-3. Render an MUI `DataGrid` (community edition) with the filtered rows.
+2. Render an MUI `DataGrid` (community edition) with a custom toolbar containing a name search field and an export button.
+3. Render the filtered rows in the DataGrid based on the toolbar search input.
 
 **DataGrid columns:**
 
-| Column | Field | Sortable | Notes |
-|--------|-------|----------|-------|
-| Avatar | `user_thumbnail_image` | No | Rendered with `renderCell` → `<Avatar src={...} sx={{ width: 32, height: 32 }} />` |
-| First name | `user_first_name` | Yes | |
-| Last name | `user_last_name` | Yes | |
-| Registration date | `registered_at` | Yes | Format with `dayjs` (same as other date displays in the file) |
+| Column | Field | Sortable | Filterable | Notes |
+|--------|-------|----------|------------|-------|
+| Avatar | `user_thumbnail_image` | No | No | `renderCell` → `<Avatar>` wrapped in `<Link>` to user profile. Excluded from export and column menu. |
+| First name | `user_first_name` | Yes | Yes | `renderCell` → `<Link>` to user profile (`/profiles/{url_slug}`). |
+| Last name | `user_last_name` | Yes | Yes | `renderCell` → `<Link>` to user profile. |
+| Registration date | `registered_at` | Yes | Yes (date-aware) | `type: "dateTime"`, `valueGetter` converts ISO string to `Date`, `valueFormatter` renders with `dayjs`. |
+
+**Default state:**
+- Sort: `registered_at` ascending.
+- Page size: 25 rows.
+
+**Toolbar (`RegistrationsToolbar`):**
+- Defined outside the main component for a stable reference (avoids DataGrid re-initialisation on each render).
+- Receives `search`, `onSearchChange`, `placeholder` via `slotProps.toolbar`.
+- Left side: `TextField` with `<SearchIcon>` adornment. Filters the local `participants` array on every keystroke — keeps rows where `user_first_name` or `user_last_name` contains the query (case-insensitive). Filtered array is passed to the DataGrid's `rows` prop.
+- Right side: `GridToolbarExport` — provides "Download as CSV" (`event-registrations.csv`) and "Print" (footer and toolbar hidden). The avatar column is excluded from both via `disableExport: true`.
+
+**Column menu (`CustomColumnMenu`):**
+- Wraps `GridColumnMenu` with `slots={{ columnMenuColumnsItem: null }}` to remove "Hide column" and "Manage columns" from all column menus.
+- Avatar column additionally has `disableColumnMenu: true` (no three-dot menu at all) and `filterable: false` (excluded from the filter panel column list).
+
+**Localization:**
+- `localeText` spreads the full built-in MUI DataGrid locale (`deDE` or `enUS` based on `UserContext.locale`), then overrides `noRowsLabel` with the project text key.
 
 **States to handle:**
 - Loading: show `CircularProgress` while the API call is in flight.
-- Error: show an inline error message (e.g. `<Typography color="error">`).
-- Empty (API returns `[]`): DataGrid shows built-in "No rows" state (customise the `localeText` prop if needed).
-
-**Search behaviour:**
-- A `TextField` with `InputProps={{ startAdornment: <SearchIcon /> }}` is placed above the DataGrid.
-- On every keystroke, filter the local `participants` array: keep rows where `user_first_name` or `user_last_name` contains the search string (case-insensitive).
-- Pass the filtered array to the DataGrid's `rows` prop.
+- Error: show an inline error message (`<Typography color="error">`).
+- Empty (API returns `[]`): DataGrid shows built-in "No rows" label (overridden via `localeText`).
 
 **Feature toggle:**
 - The Registrations tab is only shown when `isEnabled("EVENT_REGISTRATION")` is true AND the user has admin permissions — this is already enforced in `ProjectPageRoot.tsx` via `showRegistrationsTab`. No additional toggle check is needed inside `ProjectRegistrationsContent.tsx`.
@@ -330,7 +347,7 @@ None.
 
 | File | Change |
 |------|--------|
-| `src/components/project/ProjectRegistrationsContent.tsx` | Replace placeholder with DataGrid + search |
+| `src/components/project/ProjectRegistrationsContent.tsx` | Replace placeholder with DataGrid + toolbar (search + export) + profile links + localization |
 | `public/texts/project_texts.tsx` | Add new text keys (see table above) |
 | `package.json` / `yarn.lock` | Add `@mui/x-data-grid@6` dependency |
 
@@ -359,10 +376,15 @@ None.
 | 2 | API call in flight | `CircularProgress` shown |
 | 3 | API call fails | Error message shown |
 | 4 | API returns empty list | DataGrid shows empty state |
-| 5 | User types in search box | Rows filtered by first/last name (case-insensitive) |
+| 5 | User types in toolbar search box | Rows filtered by first/last name (case-insensitive) |
 | 6 | User clicks column header to sort | Rows reorder correctly |
-| 7 | User clicks through DataGrid pagination | Correct page shown |
+| 7 | User clicks through DataGrid pagination | Correct page shown (default: 25 rows per page) |
 | 8 | User without admin rights | Registrations tab is not rendered (enforced in `ProjectPageRoot.tsx`) |
+| 9 | User clicks avatar, first name, or last name | Navigates to user profile page |
+| 10 | User opens column dot-menu | No "Hide column" or "Manage columns" options shown |
+| 11 | User opens filter panel | Avatar column not listed as a filterable column; date column uses date-aware operators |
+| 12 | User clicks Export → Download as CSV | CSV downloaded without avatar URL column |
+| 13 | Locale is switched to German | All DataGrid UI strings (filter operators, pagination, etc.) appear in German |
 
 ---
 
@@ -378,4 +400,7 @@ None.
 
 - 2026-04-01 10:00 — Task created from product-backlog issue #48. Initial problem statement and architecture drafted.
 - 2026-04-01 10:30 — Spec reviewed and approved. Transitioning to IMPLEMENTATION. Backend work starting first.
+- 2026-04-01 — Backend implemented: `EventParticipantSerializer`, `ListEventParticipantsView`, URL pattern.
+- 2026-04-01 — Frontend implemented: `ProjectRegistrationsContent.tsx` — DataGrid with toolbar search, CSV/print export, profile links on avatar/name, `dateTime` filtering on registration date, column menu stripped of hide/columns items, `deDE`/`enUS` localization. `@mui/x-data-grid@6` added. Text keys added to `project_texts.tsx`.
+- 2026-04-01 — Status updated to DONE.
 
