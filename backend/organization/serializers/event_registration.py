@@ -182,6 +182,55 @@ class EventRegistrationSerializer(EventRegistrationBaseSerializer):
         return attrs
 
 
+class EventParticipantSerializer(serializers.ModelSerializer):
+    """
+    Read-only serializer for EventParticipant.
+
+    Used by GET /api/projects/{url_slug}/registrations/ to return the full
+    guest list to event organisers and team admins.
+
+    Requires ``select_related("user__user_profile")`` on the queryset to avoid
+    N+1 queries when resolving ``url_slug`` and ``thumbnail_image`` from the
+    related ``UserProfile``.
+
+    Pass ``request`` in context to build absolute URLs for ``thumbnail_image``.
+    """
+
+    user_first_name = serializers.CharField(source="user.first_name", read_only=True)
+    user_last_name = serializers.CharField(source="user.last_name", read_only=True)
+    user_url_slug = serializers.SerializerMethodField()
+    user_thumbnail_image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = EventParticipant
+        fields = [
+            "user_first_name",
+            "user_last_name",
+            "user_url_slug",
+            "user_thumbnail_image",
+            "registered_at",
+        ]
+        read_only_fields = fields
+
+    def get_user_url_slug(self, obj):
+        try:
+            return obj.user.user_profile.url_slug
+        except AttributeError:
+            return None
+
+    def get_user_thumbnail_image(self, obj):
+        try:
+            profile = obj.user.user_profile
+            if not profile.thumbnail_image:
+                return None
+            request = self.context.get("request")
+            if request:
+                return request.build_absolute_uri(profile.thumbnail_image.url)
+            return profile.thumbnail_image.url
+        except AttributeError:
+            return None
+
+
 class EditEventRegistrationSerializer(EventRegistrationBaseSerializer):
     """
     Serializer for PATCH /api/projects/{slug}/registration/.

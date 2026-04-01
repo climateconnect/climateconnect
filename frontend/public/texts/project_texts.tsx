@@ -1337,5 +1337,37 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Congratulations! Your event has been published!",
       de: "Glückwunsch! Deine Veranstaltung ist veröffentlicht worden!",
     },
+    registered_guests: {
+      en: "Registered guests",
+      de: "Angemeldete Gäste",
+    },
+    search_guests: {
+      en: "Search by name…",
+      de: "Nach Name suchen…",
+    },
+    first_name: {
+      en: "First name",
+      de: "Vorname",
+    },
+    last_name: {
+      en: "Last name",
+      de: "Nachname",
+    },
+    registration_date: {
+      en: "Registration date",
+      de: "Anmeldedatum",
+    },
+    no_registrations_yet: {
+      en: "No registrations yet.",
+      de: "Noch keine Anmeldungen.",
+    },
+    loading_registrations: {
+      en: "Loading registrations…",
+      de: "Anmeldungen werden geladen…",
+    },
+    error_loading_registrations: {
+      en: "Failed to load registrations. Please try again.",
+      de: "Anmeldungen konnten nicht geladen werden. Bitte erneut versuchen.",
+    },
   };
 }

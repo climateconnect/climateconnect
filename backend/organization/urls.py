@@ -245,4 +245,9 @@ urlpatterns = [
         event_registration_views.EditEventRegistrationSettingsView.as_view(),
         name="edit-event-registration-settings",
     ),
+    path(
+        "projects/<str:url_slug>/registrations/",
+        event_registration_views.ListEventParticipantsView.as_view(),
+        name="list-event-registrations",
+    ),
 ]
