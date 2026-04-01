@@ -17,8 +17,6 @@ import { getDateTimeRange } from "../../../public/lib/dateOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
-import EventRegistrationModal from "./EventRegistrationModal";
-import { useFeatureToggles } from "../featureToggle";
 import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
 import MessageContent from "../communication/MessageContent";
@@ -105,6 +103,16 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       height: 40,
       minWidth: 120,
     },
+    registerButton: {
+      height: 40,
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      whiteSpace: "nowrap",
+    },
+    registerButtonMobile: {
+      marginTop: theme.spacing(2),
+      whiteSpace: "nowrap",
+    },
     shortDescription: {
       wordBreak: "break-word",
     },
@@ -154,6 +162,8 @@ type Props = {
   parentProjectName?: string; // Name of the parent project
   parentProjectSlug?: string; // Slug of the parent project
   isWasseraktionswochenEnabled: boolean;
+  isEventRegistrationEnabled: boolean;
+  handleRegisterClick: () => void;
 };
 
 export default function ProjectOverview({
@@ -181,31 +191,19 @@ export default function ProjectOverview({
   toggleShowLikes,
   hubUrl,
   isWasseraktionswochenEnabled,
+  isEventRegistrationEnabled,
+  handleRegisterClick,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [gotParams, setGotParams] = useState(false);
-  const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
-  const { isEnabled } = useFeatureToggles();
-  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
-
-  const handleRegisterClick = () => {
-    setRegistrationModalOpen(true);
-  };
 
   useEffect(() => {
     if (!gotParams) {
       const params = getParams(window.location.href);
       if (params.show_followers && !showFollowers) {
         toggleShowFollowers();
-      }
-      if (
-        params.openRegistration === "true" &&
-        isEventRegistrationEnabled &&
-        project.event_registration
-      ) {
-        setRegistrationModalOpen(true);
       }
       setGotParams(true);
     }
@@ -270,15 +268,6 @@ export default function ProjectOverview({
         user={user}
         url={"projects/" + project.url_slug + "?show_likes=true"}
       />
-
-      {isEventRegistrationEnabled && project.event_registration && (
-        <EventRegistrationModal
-          open={registrationModalOpen}
-          onClose={() => setRegistrationModalOpen(false)}
-          project={project}
-          eventRegistration={project.event_registration}
-        />
-      )}
     </Container>
   );
 }
@@ -422,7 +411,6 @@ function LargeScreenOverview({
     project.event_registration.status !== "ended";
 
   const getRegisterButtonText = () => {
-    if (!project.event_registration) return "";
     const status = project.event_registration.status;
     if (status === "open") return texts.register_now;
     if (status === "full") return texts.booked_out;
@@ -430,7 +418,6 @@ function LargeScreenOverview({
   };
 
   const isRegisterButtonDisabled = () => {
-    if (!project.event_registration) return true;
     return ["closed", "full"].includes(project.event_registration.status);
   };
 
@@ -476,7 +463,7 @@ function LargeScreenOverview({
                 color={isRegisterButtonDisabled() ? "secondary" : "primary"}
                 disabled={isRegisterButtonDisabled()}
                 onClick={handleRegisterClick}
-                style={{ height: 40, marginLeft: 8, marginRight: 8 }}
+                className={classes.registerButton}
               >
                 {getRegisterButtonText()}
               </Button>

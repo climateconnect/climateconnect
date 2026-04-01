@@ -27,6 +27,7 @@ import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
 import { useFeatureToggles } from "../featureToggle";
 import ProjectRegistrationsContent from "./ProjectRegistrationsContent";
+import EventRegistrationModal from "./EventRegistrationModal";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -154,6 +155,12 @@ export default function ProjectPageRoot({
     project.event_registration ?? null
   );
 
+  // Registration modal state
+  const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
+  const handleRegisterClick = () => {
+    setRegistrationModalOpen(true);
+  };
+
   // Determine whether to show the Registrations tab:
   // only for event admins when the toggle is on and event_registration exists
   const user_permission =
@@ -205,6 +212,18 @@ export default function ProjectPageRoot({
       setTabValue(typesByTabValue.indexOf(window.location.hash.replace("#", "")));
     }
   });
+
+  // Handle deep-link for event registration
+  useEffect(() => {
+    const params = getParams(window.location.href);
+    if (
+      params.openRegistration === "true" &&
+      isEventRegistrationEnabled &&
+      project.event_registration
+    ) {
+      setRegistrationModalOpen(true);
+    }
+  }, [isEventRegistrationEnabled, project.event_registration]);
 
   /**
    * Calls backend, sending a request to join this project based
@@ -514,6 +533,8 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         hubUrl={hubPage}
         isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+        isEventRegistrationEnabled={isEventRegistrationEnabled}
+        handleRegisterClick={handleRegisterClick}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -566,6 +587,8 @@ export default function ProjectPageRoot({
           bindLike={bindLike}
           bindFollow={bindFollow}
           user={user}
+          isEventRegistrationEnabled={isEventRegistrationEnabled}
+          handleRegisterClick={handleRegisterClick}
         />
       </Container>
 
@@ -678,6 +701,14 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
+      {isEventRegistrationEnabled && project.event_registration && (
+        <EventRegistrationModal
+          open={registrationModalOpen}
+          onClose={() => setRegistrationModalOpen(false)}
+          project={project}
+          eventRegistration={project.event_registration}
+        />
+      )}
     </div>
   );
 }

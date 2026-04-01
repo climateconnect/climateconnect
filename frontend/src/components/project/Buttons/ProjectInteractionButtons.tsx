@@ -1,11 +1,36 @@
-import { AppBar, Container, Toolbar } from "@mui/material";
+import { AppBar, Button, Container, Toolbar } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "../../general/FollowButton";
 import LikeButton from "./LikeButton";
+import { Project } from "../../../types";
 
-const useStyles = makeStyles(() => ({
+// Helper functions for event registration
+const shouldShowRegisterButton = (
+  isEventRegistrationEnabled: boolean,
+  project: Project
+): boolean => {
+  return !!(
+    isEventRegistrationEnabled &&
+    project.event_registration &&
+    project.event_registration.status !== "ended"
+  );
+};
+
+const getRegisterButtonText = (project: Project, texts: any): string => {
+  const status = project.event_registration?.status;
+  if (status === "open") return texts.register_now;
+  if (status === "full") return texts.booked_out;
+  return texts.registration_closed;
+};
+
+const isRegisterButtonDisabled = (project: Project): boolean => {
+  const status = project.event_registration?.status;
+  return ["closed", "full"].includes(status || "");
+};
+
+const useStyles = makeStyles((theme) => ({
   largeScreenButton: (props) => ({
     position: "fixed",
     bottom: props.visibleFooterHeight + 2,
@@ -22,6 +47,12 @@ const useStyles = makeStyles(() => ({
   containerButtonsActionBar: {
     display: "flex",
     justifyContent: "space-around",
+  },
+  registerButton: {
+    // height: 40,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    whiteSpace: "nowrap",
   },
 }));
 
@@ -48,11 +79,15 @@ export default function ProjectInteractionButtons({
   bindLike,
   bindFollow,
   user,
+  isEventRegistrationEnabled,
+  handleRegisterClick,
 }) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
     tabContentContainerSpaceToRight: tabContentContainerSpaceToRight,
   });
+
+  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
 
   if (screenSize.belowSmall)
     return (
@@ -65,21 +100,33 @@ export default function ProjectInteractionButtons({
               withIcons={!screenSize.belowTiny}
             />
           )}
-          <FollowButton
-            isUserFollowing={isUserFollowing}
-            handleToggleFollow={handleToggleFollowProject}
-            project={project}
-            hasAdminPermissions={hasAdminPermissions}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
-            texts={texts}
-            screenSize={screenSize}
-            numberOfFollowers={numberOfFollowers}
-            bindFollow={bindFollow}
-            showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
-            showNumberInText={screenSize.belowSmall}
-            isLoggedIn={user}
-          />
+          {showRegisterButton ? (
+            <Button
+              variant="contained"
+              color={isRegisterButtonDisabled(project) ? "secondary" : "primary"}
+              disabled={isRegisterButtonDisabled(project)}
+              onClick={handleRegisterClick}
+              className={classes.registerButton}
+            >
+              {getRegisterButtonText(project, texts)}
+            </Button>
+          ) : (
+            <FollowButton
+              isUserFollowing={isUserFollowing}
+              handleToggleFollow={handleToggleFollowProject}
+              project={project}
+              hasAdminPermissions={hasAdminPermissions}
+              toggleShowFollowers={toggleShowFollowers}
+              followingChangePending={followingChangePending}
+              texts={texts}
+              screenSize={screenSize}
+              numberOfFollowers={numberOfFollowers}
+              bindFollow={bindFollow}
+              showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
+              showNumberInText={screenSize.belowSmall}
+              isLoggedIn={user}
+            />
+          )}
           <LikeButton
             texts={texts}
             screenSize={screenSize}

@@ -4,6 +4,7 @@ import {
   Button,
   CircularProgress,
   Step,
+  StepContent,
   StepLabel,
   Stepper,
   TextField,
@@ -26,9 +27,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: 400,
     display: "flex",
     flexDirection: "column",
-  },
-  stepperContainer: {
-    marginBottom: theme.spacing(3),
   },
   formContainer: {
     flex: 1,
@@ -76,6 +74,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: theme.spacing(3),
     textAlign: "center",
   },
+  confirmationText: {
+    marginTop: theme.spacing(2),
+  },
+  confirmationActions: {
+    justifyContent: "center",
+    marginTop: theme.spacing(4),
+  },
   authFieldsContainer: {
     gap: theme.spacing(2),
     display: "flex",
@@ -109,7 +114,7 @@ export default function EventRegistrationModal({
   onRegistrationSuccess,
 }: Props) {
   const classes = useStyles();
-  const { locale, user } = useContext(UserContext);
+  const { locale, user, signIn } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -128,7 +133,39 @@ export default function EventRegistrationModal({
     ? [texts.authentication, texts.confirmation]
     : [texts.authentication, texts.event_registration, texts.confirmation];
 
-  const activeStep = user ? (state === "success" || state === "error" ? 1 : 0) : 0;
+  const activeStep = user
+    ? state === "success" || state === "error"
+      ? 1
+      : 0
+    : state === "success" || state === "error"
+    ? 2
+    : 0;
+
+  const getStepContent = (stepIndex: number) => {
+    if (user) {
+      // Authenticated user flow: Registration → Confirmation
+      switch (stepIndex) {
+        case 0:
+          return renderAuthenticatedContent();
+        case 1:
+          return state === "success" ? renderSuccessContent() : renderErrorContent();
+        default:
+          return null;
+      }
+    } else {
+      // Unauthenticated user flow: Authentication → Registration → Confirmation
+      switch (stepIndex) {
+        case 0:
+          return renderUnauthenticatedContent();
+        case 1:
+          return null; // This step is skipped (user becomes authenticated after login)
+        case 2:
+          return state === "success" ? renderSuccessContent() : renderErrorContent();
+        default:
+          return null;
+      }
+    }
+  };
 
   const handleRegister = async () => {
     if (!user) return;
@@ -173,9 +210,36 @@ export default function EventRegistrationModal({
     if (!email || !password) return;
 
     setLoading(true);
-    // TODO: Implement login API call
-    // After successful login, the user context will update and modal will show registration step
-    setLoading(false);
+    setErrorMessage("");
+
+    try {
+      const response = await apiRequest({
+        method: "post",
+        url: "/login/",
+        payload: {
+          username: email.toLowerCase(),
+          password: password,
+        },
+        locale: locale,
+      });
+
+      // Sign in the user - this will update the UserContext
+      await signIn(response.data.token, response.data.expiry);
+
+      // After signIn updates the context, the modal will automatically re-render
+      // and show the authenticated registration form instead of login form
+    } catch (error: any) {
+      console.error("Login error:", error);
+      if (error.response?.data?.type === "not_verified") {
+        setErrorMessage(error.response.data.message || "Account not verified");
+      } else {
+        setErrorMessage(
+          error.response?.data?.message || "Login failed. Please check your credentials."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -200,7 +264,7 @@ export default function EventRegistrationModal({
         <TextField
           fullWidth
           label={texts.email}
-          value={""} // Email not available in current User type
+          value={user?.email || ""}
           disabled
           className={classes.infoField}
         />
@@ -230,6 +294,12 @@ export default function EventRegistrationModal({
           {texts.to_register_please_login_or_signup}
         </Typography>
 
+        {errorMessage && (
+          <Typography variant="body2" className={classes.errorText}>
+            {errorMessage}
+          </Typography>
+        )}
+
         {authStep === "email" && (
           <Box className={classes.authFieldsContainer}>
             <TextField
@@ -237,7 +307,15 @@ export default function EventRegistrationModal({
               label={texts.email}
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrorMessage("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && email) {
+                  handleCheckEmail();
+                }
+              }}
               disabled={checkingEmail}
             />
             <Button
@@ -260,7 +338,15 @@ export default function EventRegistrationModal({
               label={texts.password}
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrorMessage("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && password) {
+                  handleLogin();
+                }
+              }}
               disabled={loading}
             />
             <Button
@@ -296,10 +382,10 @@ export default function EventRegistrationModal({
     <Box className={classes.confirmationContainer}>
       <CheckCircleOutlineIcon className={classes.successIcon} />
       <Typography variant="h6">{texts.youre_registered}</Typography>
-      <Typography variant="body1" style={{ marginTop: 16 }}>
+      <Typography variant="body1" className={classes.confirmationText}>
         {texts.a_confirmation_email_has_been_sent}
       </Typography>
-      <Box className={classes.actionRow} style={{ justifyContent: "center", marginTop: 32 }}>
+      <Box className={`${classes.actionRow} ${classes.confirmationActions}`}>
         <Button onClick={handleClose} variant="contained" color="primary">
           {texts.close}
         </Button>
@@ -316,7 +402,7 @@ export default function EventRegistrationModal({
           {errorMessage}
         </Typography>
       )}
-      <Box className={classes.actionRow} style={{ justifyContent: "center", marginTop: 32 }}>
+      <Box className={`${classes.actionRow} ${classes.confirmationActions}`}>
         <Button onClick={handleClose} variant="outlined">
           {texts.close}
         </Button>
@@ -327,25 +413,17 @@ export default function EventRegistrationModal({
     </Box>
   );
 
-  const renderContent = () => {
-    if (state === "success") return renderSuccessContent();
-    if (state === "error") return renderErrorContent();
-    return user ? renderAuthenticatedContent() : renderUnauthenticatedContent();
-  };
-
   return (
     <GenericDialog open={open} onClose={handleClose} title={texts.register_for_event} maxWidth="sm">
       <Box className={classes.modalContent}>
-        <Box className={classes.stepperContainer}>
-          <Stepper activeStep={activeStep}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Box>
-        {renderContent()}
+        <Stepper activeStep={activeStep} orientation="vertical">
+          {steps.map((label, index) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+              <StepContent>{getStepContent(index)}</StepContent>
+            </Step>
+          ))}
+        </Stepper>
       </Box>
     </GenericDialog>
   );
