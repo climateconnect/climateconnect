@@ -124,9 +124,10 @@ Content-Type: application/json
 **Response — 200 OK (Test)**
 ```json
 {
-  "sent_to": "organiser@example.com"
+  "sent_count": 1
 }
 ```
+Always `1` — the test email is sent to the organiser only. The response shape is intentionally identical to the bulk response for consistency. The frontend reads the recipient's email address from `UserContext` rather than the API response.
 
 **Response — 400 Bad Request**
 ```json
@@ -213,7 +214,7 @@ type SendState =
   | { phase: "idle" }
   | { phase: "sending" }
   | { phase: "sent_all"; sentCount: number }
-  | { phase: "sent_test"; sentTo: string };
+  | { phase: "sent_test" };
 ```
 
 **Form reset**: `useEffect` on `open` — when `open` becomes `true`, reset `subject`, `message`, errors, and `sendState` to initial values. Consistent with `EditEventRegistrationModal`.
@@ -284,7 +285,7 @@ const resp = await apiRequest({
 
 On success:
 - `is_test: false` → transition to `{ phase: "sent_all", sentCount: resp.data.sent_count }`
-- `is_test: true` → transition to `{ phase: "sent_test", sentTo: resp.data.sent_to }`
+- `is_test: true` → transition to `{ phase: "sent_test" }` — the confirmation message reads the organiser's email from `UserContext` (`user.email`), not from the API response.
 
 On error: surface `errors.general` below the form (same pattern as `EditEventRegistrationModal`).
 
@@ -459,8 +460,8 @@ class SendOrganizerEmailView(APIView):
     Sends an organiser-authored email to all active event guests (is_test=False)
     or a test copy to the authenticated organiser (is_test=True).
 
-    Response for is_test=False: { "sent_count": <int> }
-    Response for is_test=True:  { "sent_to": "<email>" }
+    Always returns { "sent_count": <int> } — 1 for test, N for bulk send.
+    The subject is prepended with "[TEST] " when is_test=True.
     """
 
     permission_classes = [IsAuthenticated]
@@ -516,13 +517,15 @@ class SendOrganizerEmailView(APIView):
             )
 
         if is_test:
-            # Synchronous — single email to the organiser themselves
+            # Synchronous — single email to the organiser themselves.
+            # Prepend "[TEST] " to subject so the organiser can identify test emails in their inbox.
+            test_subject = f"[TEST] {subject}"
             organiser = (
                 User.objects.select_related("user_profile__location")
                 .get(id=request.user.id)
             )
             try:
-                send_organizer_message_to_guest(organiser, project, subject, message)
+                send_organizer_message_to_guest(organiser, project, test_subject, message)
             except Exception as exc:
                 logger.error(
                     "[OrganizerEmail] Test send failed for user %s, event '%s': %s",
@@ -534,7 +537,7 @@ class SendOrganizerEmailView(APIView):
                     {"message": "Failed to send test email. Please try again."},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
-            return Response({"sent_to": request.user.email}, status=status.HTTP_200_OK)
+            return Response({"sent_count": 1}, status=status.HTTP_200_OK)
 
         # Bulk send — count first, then dispatch async
         # TODO #1850: add .filter(cancelled_at__isnull=True) once cancelled_at is added
@@ -654,7 +657,7 @@ None.
 | 6 | `subject` > 200 characters | 400 Bad Request |
 | 7 | `is_test=false`, 3 active participants | 200 OK, `{"sent_count": 3}`; Celery task dispatched with 3 user IDs |
 | 8 | `is_test=false`, 0 active participants | 200 OK, `{"sent_count": 0}`; Celery task dispatched with empty list |
-| 9 | `is_test=true` | 200 OK, `{"sent_to": "<organiser email>"}`; `send_organizer_message_to_guest` called once with organiser user |
+| 9 | `is_test=true` | 200 OK, `{"sent_count": 1}`; `send_organizer_message_to_guest` called once with organiser user and subject prefixed with `"[TEST] "` |
 | 10 | Team admin (not creator) with `read_write_type` role, `is_test=false` | 200 OK |
 | 11 | Celery task: project not found | logs error, does not raise |
 | 12 | Celery task: mail delivery fails | retries up to 3 times; raises after max retries |
@@ -673,7 +676,7 @@ None.
 | 7 | Click "Send now" with valid input | buttons disabled, spinner shown; API called with `is_test: false` |
 | 8 | "Send now" succeeds | confirmation "Email sent to 42 registered guests." shown |
 | 9 | Click "Send test" with valid input | API called with `is_test: true` |
-| 10 | "Send test" succeeds | confirmation "Test email sent to you@example.com." shown |
+| 10 | "Send test" succeeds | confirmation "Test email sent to you@example.com." shown — email address sourced from `UserContext`, not API response |
 | 11 | API returns error | general error message shown below form |
 | 12 | Click "Close" after confirmation | modal closes |
 | 13 | User without admin rights | "Email guests" button not visible (Registrations tab not shown per `ProjectPageRoot.tsx`) |
