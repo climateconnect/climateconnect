@@ -429,6 +429,67 @@ def get_location_name(project) -> str:
     return ""
 
 
+def send_organizer_message_to_guest(user, project, subject: str, message: str):
+    """
+    Send an organiser-composed plain-text message to a single event guest.
+
+    Delegates to ``send_email()`` using the ``EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID``
+    Mailjet template (EN) or ``EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE`` (DE),
+    selected automatically based on the recipient's language preference.
+
+    **Mailjet template variables**:
+        - ``FirstName``         — recipient's first name (falls back to username)
+        - ``EventTitle``        — event name localised to recipient's language
+        - ``EventUrl``          — language-aware link to the event page
+        - ``OrganiserName``     — localised organisation name, or organiser's name
+        - ``OrganizerSubject``  — the subject entered by the organiser
+        - ``OrganizerMessage``  — the plain-text body entered by the organiser
+
+    The email envelope subject is set directly to the organiser's ``subject``
+    — no wrapping platform prefix is applied.
+
+    **Required env variables**:
+        ``EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID``    — Mailjet template ID (EN)
+        ``EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE`` — Mailjet template ID (DE)
+
+    Args:
+        user:    Django ``User`` instance.  Fetch with
+                 ``select_related("user_profile__location")`` to avoid N+1.
+        project: ``Project`` instance.  Fetch with
+                 ``select_related("loc", "language")`` and the organiser/
+                 translation prefetch chain (same as the confirmation email).
+        subject: Organiser-provided subject string.
+        message: Organiser-provided plain-text body.
+    """
+    lang_code = get_user_lang_code(user)
+
+    variables = {
+        "FirstName": user.first_name or user.username,
+        "EventTitle": get_project_name(project, lang_code),
+        "EventUrl": (
+            settings.FRONTEND_URL
+            + get_user_lang_url(lang_code)
+            + "/projects/"
+            + project.url_slug
+        ),
+        "OrganiserName": get_organiser_name(project, lang_code),
+        "OrganizerSubject": subject,
+        "OrganizerMessage": message,
+    }
+
+    # The envelope subject is the organiser-provided subject directly.
+    subjects_by_language = {"en": subject, "de": subject}
+
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="",
+        notification=None,
+    )
+
+
 def send_event_registration_confirmation_to_user(user, project):
     """
     Send a registration confirmation email to a user who just registered for an event.

@@ -314,6 +314,7 @@ In Swagger UI, endpoints with a 🔒 lock icon require authentication.
 | `/api/projects/{slug}/register/` | POST | Yes | Register authenticated user for event |
 | `/api/projects/{slug}/registration/` | PATCH | Yes | Update event registration settings (organiser only) |
 | `/api/projects/{slug}/registrations/` | GET | Yes | List participants for an event (organiser/admin only) |
+| `/api/projects/{slug}/registrations/email/` | POST | Yes | Send email to all registered guests (organiser/admin only) |
 
 #### Event Registration (`event_registration`)
 
@@ -530,6 +531,52 @@ Intended for organisers / team admins to review their guest list.
 **Query optimisation**: the queryset uses `select_related("user__user_profile")` — all participant data is fetched in a single SQL JOIN, regardless of participant count.
 
 **Forward compatibility**: once issue [#1850](https://github.com/climateconnect/climateconnect/issues/1850) adds `cancelled_at` to `EventParticipant`, the view will add `.filter(cancelled_at__isnull=True)` to exclude cancelled registrations. The response contract is unchanged.
+
+#### POST `/api/projects/{slug}/registrations/email/` — Send organiser email to guests
+
+Sends a plain-text email authored by the organiser to all active registered guests
+(`is_test=false`) or a single test copy to the authenticated organiser (`is_test=true`).
+
+**Authentication**: Required (401 if unauthenticated). Requires organiser or team admin role — 403 if unauthorised.
+
+**Request body**:
+```json
+{
+  "subject": "Important update about the event",
+  "message": "Hi everyone, we have an important update…",
+  "is_test": false
+}
+```
+
+| Field | Type | Required | Constraints |
+|-------|------|----------|-------------|
+| `subject` | string | Yes | max 200 chars, non-blank |
+| `message` | string | Yes | non-blank |
+| `is_test` | boolean | No | defaults to `false` |
+
+**Success response** (200 OK):
+```json
+{ "sent_count": 42 }
+```
+`sent_count` is the number of active participants at request time. For `is_test=true` it is always `1`. Bulk delivery is asynchronous (Celery task); the HTTP response returns immediately.
+
+When `is_test=true`, the subject is prefixed with `[TEST] ` so the organiser can identify the test email in their inbox.
+
+**Error responses**:
+| Status | Condition |
+|--------|-----------|
+| 400 Bad Request | `subject` or `message` is blank or missing |
+| 400 Bad Request | `subject` exceeds 200 characters |
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | Authenticated user without edit rights on the project |
+| 404 Not Found | `{slug}` does not match any project |
+| 404 Not Found | Project exists but has no `EventRegistration` record |
+
+**Implementation notes**:
+- Bulk send dispatches `send_organizer_message_to_guests` Celery task with a pre-computed snapshot of `user_id` values, isolating it from concurrent registration changes.
+- Test send is synchronous — one email, inline in the HTTP request.
+- Uses Mailjet templates `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` (EN) and `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE` (DE). No emails are sent until these are configured — see `doc/environment-variables.md`.
+- `# TODO #1850`: once `cancelled_at` is added, filter `.filter(cancelled_at__isnull=True)` before counting and dispatching.
 
 ### Organizations
 

@@ -15,6 +15,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import DangerousIcon from "@mui/icons-material/Dangerous";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   DataGrid,
@@ -33,6 +34,7 @@ import getTexts from "../../../public/texts/texts";
 import { EventRegistrationData, Project } from "../../types";
 import UserContext from "../context/UserContext";
 import EditEventRegistrationModal from "./EditEventRegistrationModal";
+import SendEmailToGuestsModal from "./SendEmailToGuestsModal";
 
 type EventParticipant = {
   id: string; // derived from user_url_slug for DataGrid row identity
@@ -86,13 +88,21 @@ type ToolbarProps = {
   search: string;
   onSearchChange: (_value: string) => void;
   placeholder: string;
+  onOpenEmailModal?: () => void;
+  emailGuestsLabel?: string;
 };
 
 function CustomColumnMenu(props: GridColumnMenuProps) {
   return <GridColumnMenu {...props} slots={{ columnMenuColumnsItem: null }} />;
 }
 
-function RegistrationsToolbar({ search, onSearchChange, placeholder }: ToolbarProps) {
+function RegistrationsToolbar({
+  search,
+  onSearchChange,
+  placeholder,
+  onOpenEmailModal,
+  emailGuestsLabel,
+}: ToolbarProps) {
   return (
     <GridToolbarContainer sx={{ display: "flex", alignItems: "center", gap: 1, p: 1 }}>
       <TextField
@@ -107,6 +117,17 @@ function RegistrationsToolbar({ search, onSearchChange, placeholder }: ToolbarPr
         sx={{ flex: 1, maxWidth: 360 }}
       />
       <Box sx={{ flex: 1 }} />
+      {onOpenEmailModal && (
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={<EmailOutlinedIcon fontSize="small" />}
+          onClick={onOpenEmailModal}
+          aria-label={emailGuestsLabel}
+        >
+          {emailGuestsLabel}
+        </Button>
+      )}
       <GridToolbarExport
         csvOptions={{ fileName: "event-registrations" }}
         printOptions={{ hideFooter: true, hideToolbar: true }}
@@ -125,6 +146,7 @@ export default function ProjectRegistrationsContent({
   const texts = getTexts({ page: "project", locale });
 
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
 
   const [participants, setParticipants] = useState<EventParticipant[]>([]);
   const [loadingParticipants, setLoadingParticipants] = useState(true);
@@ -350,6 +372,8 @@ export default function ProjectRegistrationsContent({
                 search,
                 onSearchChange: setSearch,
                 placeholder: texts.search_guests,
+                onOpenEmailModal: () => setEmailModalOpen(true),
+                emailGuestsLabel: texts.send_email_to_guests,
               } as ToolbarProps,
             }}
             sx={{ border: "none" }}
@@ -366,6 +390,12 @@ export default function ProjectRegistrationsContent({
           eventRegistration={eventRegistration}
         />
       )}
+
+      <SendEmailToGuestsModal
+        open={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        project={project}
+      />
     </>
   );
 }
