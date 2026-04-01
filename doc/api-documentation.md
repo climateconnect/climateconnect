@@ -313,6 +313,7 @@ In Swagger UI, endpoints with a 🔒 lock icon require authentication.
 | `/api/projects/{slug}/members/` | GET | No | List project members |
 | `/api/projects/{slug}/register/` | POST | Yes | Register authenticated user for event |
 | `/api/projects/{slug}/registration/` | PATCH | Yes | Update event registration settings (organiser only) |
+| `/api/projects/{slug}/registrations/` | GET | Yes | List participants for an event (organiser/admin only) |
 
 #### Event Registration (`event_registration`)
 
@@ -492,6 +493,43 @@ Allows an event organiser (or team admin) to update `max_participants`, `registr
 **Validation note**: guards are only applied to fields explicitly included in the request body. A PATCH that sends only `max_participants` does not re-validate the stored `registration_end_date`, and vice versa.
 
 **Existing endpoint unchanged**: `PATCH /api/projects/{slug}/` is not affected.
+
+#### GET `/api/projects/{slug}/registrations/` — List event participants (organiser view)
+
+Returns the full list of participants for an event that has `EventRegistration` enabled.
+Intended for organisers / team admins to review their guest list.
+
+**Authentication**: Required (401 if unauthenticated). Requires organiser or team admin role (`role_type` in `["all", "read write"]`) — 403 if unauthorised.
+
+**No pagination**: all rows are returned in a single response. Client-side paging is provided by the MUI DataGrid in the frontend.
+
+**Default ordering**: `registered_at` ascending (chronological).
+
+**Success response** (200 OK):
+```json
+[
+  {
+    "user_first_name": "Alice",
+    "user_last_name": "Smith",
+    "user_url_slug": "alice-smith",
+    "user_thumbnail_image": "https://.../thumb_alice.jpg",
+    "registered_at": "2026-05-10T14:23:00Z"
+  }
+]
+```
+`user_thumbnail_image` is `null` when the participant has no profile image.
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | Authenticated user without edit rights on the project |
+| 404 Not Found | `{slug}` does not match any project |
+| 404 Not Found | Project exists but has no `EventRegistration` record |
+
+**Query optimisation**: the queryset uses `select_related("user__user_profile")` — all participant data is fetched in a single SQL JOIN, regardless of participant count.
+
+**Forward compatibility**: once issue [#1850](https://github.com/climateconnect/climateconnect/issues/1850) adds `cancelled_at` to `EventParticipant`, the view will add `.filter(cancelled_at__isnull=True)` to exclude cancelled registrations. The response contract is unchanged.
 
 ### Organizations
 

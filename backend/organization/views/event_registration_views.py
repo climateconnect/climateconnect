@@ -15,6 +15,7 @@ from organization.models.event_registration import (
 )
 from organization.serializers.event_registration import (
     EditEventRegistrationSerializer,
+    EventParticipantSerializer,
     _compute_effective_status,
 )
 from organization.tasks import (
@@ -253,4 +254,75 @@ class EditEventRegistrationSettingsView(APIView):
             url_slug,
         )
 
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ListEventParticipantsView(APIView):
+    """
+    GET /api/projects/{url_slug}/registrations/
+
+    Returns the full list of active participants for an event.
+    Restricted to event organisers and team admins (role_type ALL or READ_WRITE).
+
+    Response: list of EventParticipantSerializer dicts, ordered by registered_at asc.
+    No backend pagination — all rows returned in one response; client-side paging
+    is handled by the MUI DataGrid in the frontend.
+
+    See spec: doc/spec/20260401_1000_organizer_see_registration_status.md
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, url_slug):
+
+        # ── 1. Look up project ──────────────────────────────────────────────
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            return Response(
+                {"message": "Project not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 2. Check organiser/admin permission ─────────────────────────────
+        # Inline check — consistent with EditEventRegistrationSettingsView.
+        has_edit_rights = ProjectMember.objects.filter(
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            project=project,
+        ).exists()
+        if not has_edit_rights:
+            return Response(
+                {
+                    "message": (
+                        "You do not have permission to view registrations "
+                        "for this project."
+                    )
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # ── 3. Look up EventRegistration ────────────────────────────────────
+        try:
+            er = project.event_registration
+        except EventRegistration.DoesNotExist:
+            return Response(
+                {"message": "This project does not have event registration enabled."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 4. Query participants ────────────────────────────────────────────
+        # select_related avoids N+1 when the serializer reads user.first_name,
+        # user.last_name, user.user_profile.url_slug, and
+        # user.user_profile.thumbnail_image.
+        # TODO #1850: add .filter(cancelled_at__isnull=True) once cancelled_at is added
+        participants = (
+            EventParticipant.objects.select_related("user__user_profile")
+            .filter(event_registration=er)
+            .order_by("registered_at")
+        )
+
+        serializer = EventParticipantSerializer(
+            participants, many=True, context={"request": request}
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)

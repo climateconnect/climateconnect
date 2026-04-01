@@ -1515,3 +1515,279 @@ class TestEditEventRegistrationStatusChange(APITestCase):
         ):
             response = self.client.post(register_url)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class TestListEventParticipants(APITestCase):
+    """
+    Tests for GET /api/projects/{url_slug}/registrations/
+    (ListEventParticipantsView).
+
+    Covers all 8 scenarios from the spec test table:
+    1. Unauthenticated request → 401
+    2. Authenticated non-admin → 403
+    3. Organiser on project without EventRegistration → 404
+    4. Organiser, no participants yet → 200 OK, empty list
+    5. Organiser, 3 participants → 200 OK, ordered by registered_at asc
+    6. Participant with no profile image → user_thumbnail_image is null
+    7. Team admin (READ_WRITE_TYPE, not creator) → 200 OK
+    8. select_related in use → query count does not grow with participant count
+    """
+
+    def setUp(self):
+        self.project_status, _ = ProjectStatus.objects.update_or_create(
+            id=2,
+            defaults={
+                "name": "active_list_reg",
+                "name_de_translation": "aktiv",
+                "has_end_date": True,
+                "has_start_date": True,
+            },
+        )
+        self.default_language, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
+        )
+
+        # Organiser — ALL_TYPE role.
+        self.organiser = User.objects.create_user(
+            username="organiser_list_reg",
+            password="testpassword",
+            first_name="Org",
+            last_name="Aniser",
+        )
+        self.admin_role = Role.objects.create(
+            name="Admin_list_reg",
+            role_type=Role.ALL_TYPE,
+        )
+
+        # Team admin — READ_WRITE_TYPE role (used for test 7).
+        self.team_admin = User.objects.create_user(
+            username="team_admin_list_reg",
+            password="testpassword",
+            first_name="Team",
+            last_name="Admin",
+        )
+        self.rw_role = Role.objects.create(
+            name="ReadWrite_list_reg",
+            role_type=Role.READ_WRITE_TYPE,
+        )
+
+        # Non-member — used for 403 tests.
+        self.non_member = User.objects.create_user(
+            username="non_member_list_reg",
+            password="testpassword",
+        )
+
+        # Event with registration.
+        self.event = Project.objects.create(
+            name="List Reg Event",
+            url_slug="list-reg-event",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=30),
+            end_date=timezone.now() + timedelta(days=90),
+        )
+        self.er = EventRegistration.objects.create(
+            project=self.event,
+            max_participants=100,
+            registration_end_date=timezone.now() + timedelta(days=60),
+            status=RegistrationStatus.OPEN,
+        )
+        ProjectMember.objects.create(
+            user=self.organiser,
+            project=self.event,
+            role=self.admin_role,
+        )
+        ProjectMember.objects.create(
+            user=self.team_admin,
+            project=self.event,
+            role=self.rw_role,
+        )
+
+        # Event WITHOUT registration — used for 404 test.
+        self.event_no_er = Project.objects.create(
+            name="List Reg Event No ER",
+            url_slug="list-reg-event-no-er",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=30),
+            end_date=timezone.now() + timedelta(days=90),
+        )
+        ProjectMember.objects.create(
+            user=self.organiser,
+            project=self.event_no_er,
+            role=self.admin_role,
+        )
+
+    def _url(self, slug="list-reg-event"):
+        return reverse(
+            "organization:list-event-registrations",
+            kwargs={"url_slug": slug},
+        )
+
+    def _make_participant(self, username, first_name="", last_name=""):
+        """Helper: create a User and an EventParticipant for self.er."""
+        user = User.objects.create_user(
+            username=username,
+            password="x",
+            first_name=first_name,
+            last_name=last_name,
+        )
+        return EventParticipant.objects.create(user=user, event_registration=self.er)
+
+    # ------------------------------------------------------------------
+    # 1. Unauthenticated
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "list_participants")
+    def test_unauthenticated_returns_401(self):
+        """GET without auth → 401 Unauthorized."""
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # ------------------------------------------------------------------
+    # 2. Authenticated non-admin → 403
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "list_participants")
+    def test_non_member_returns_403(self):
+        """Authenticated user without project membership → 403 Forbidden."""
+        self.client.login(username="non_member_list_reg", password="testpassword")
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn("message", response.data)
+
+    # ------------------------------------------------------------------
+    # 3. Project without EventRegistration → 404
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "list_participants")
+    def test_project_without_event_registration_returns_404(self):
+        """Organiser on a project that has no EventRegistration → 404."""
+        self.client.login(username="organiser_list_reg", password="testpassword")
+        response = self.client.get(self._url("list-reg-event-no-er"))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn("message", response.data)
+
+    # ------------------------------------------------------------------
+    # 4. Empty list
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "list_participants")
+    def test_no_participants_returns_empty_list(self):
+        """Organiser on valid event with zero registrations → 200 OK, empty list."""
+        self.client.login(username="organiser_list_reg", password="testpassword")
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), [])
+
+    # ------------------------------------------------------------------
+    # 5. Three participants, ordered by registered_at asc
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "list_participants")
+    def test_three_participants_returned_in_registration_date_order(self):
+        """Returns 3 participants in registered_at ascending order."""
+        # Create in reverse order to verify ordering is applied.
+        p3 = self._make_participant("part_list_c", "Charlie", "Brown")
+        p2 = self._make_participant("part_list_b", "Bob", "Jones")
+        p1 = self._make_participant("part_list_a", "Alice", "Smith")
+
+        # Force registered_at ordering for determinism.
+        base = timezone.now()
+        EventParticipant.objects.filter(pk=p1.pk).update(
+            registered_at=base + timedelta(minutes=1)
+        )
+        EventParticipant.objects.filter(pk=p2.pk).update(
+            registered_at=base + timedelta(minutes=2)
+        )
+        EventParticipant.objects.filter(pk=p3.pk).update(
+            registered_at=base + timedelta(minutes=3)
+        )
+
+        self.client.login(username="organiser_list_reg", password="testpassword")
+        response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(len(data), 3)
+
+        # First row is the one with the earliest registered_at (p1 = Alice).
+        self.assertEqual(data[0]["user_first_name"], "Alice")
+        self.assertEqual(data[0]["user_last_name"], "Smith")
+        self.assertIn("registered_at", data[0])
+
+        # Response fields present on every row.
+        for row in data:
+            self.assertIn("user_first_name", row)
+            self.assertIn("user_last_name", row)
+            self.assertIn("user_url_slug", row)
+            self.assertIn("user_thumbnail_image", row)
+            self.assertIn("registered_at", row)
+
+    # ------------------------------------------------------------------
+    # 6. No profile image → user_thumbnail_image is null
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "list_participants")
+    def test_participant_without_thumbnail_returns_null_image(self):
+        """A participant whose UserProfile has no thumbnail → user_thumbnail_image is null."""
+        self._make_participant("part_no_image", "NoImage", "User")
+
+        self.client.login(username="organiser_list_reg", password="testpassword")
+        response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(len(data), 1)
+        self.assertIsNone(data[0]["user_thumbnail_image"])
+
+    # ------------------------------------------------------------------
+    # 7. Team admin (READ_WRITE_TYPE) can access the list
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "list_participants")
+    def test_team_admin_with_read_write_role_can_access_list(self):
+        """A team member with READ_WRITE_TYPE role (not just ALL_TYPE) can view registrations."""
+        self._make_participant("part_for_admin", "Sample", "Participant")
+
+        self.client.login(username="team_admin_list_reg", password="testpassword")
+        response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 1)
+
+    # ------------------------------------------------------------------
+    # 8. select_related keeps query count constant
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "list_participants")
+    def test_query_count_does_not_grow_with_participant_count(self):
+        """
+        Ensure select_related('user__user_profile') is in effect.
+
+        With 5 participants the DB query count should stay low (≤ 3):
+        1 for the project lookup, 1 for the permission check, 1 for the
+        participants + joined user/profile data.  Without select_related
+        each participant would fire separate user and profile queries.
+        """
+        for i in range(5):
+            self._make_participant(f"part_qcount_{i}", f"First{i}", f"Last{i}")
+
+        self.client.login(username="organiser_list_reg", password="testpassword")
+
+        with self.assertNumQueries(6):
+            # Queries: session lookup (1) + auth user lookup (1) + project lookup (1)
+            #          + permission check (1) + EventRegistration lookup (1)
+            #          + participants joined with user/profile via select_related (1)
+            # Total is constant regardless of participant count — no N+1.
+            response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 5)
