@@ -337,6 +337,7 @@ def send_organizer_message_to_guest(user, project, subject: str, message: str):
         - ``FirstName``         — recipient's first name (falls back to username)
         - ``EventTitle``        — event name, localised to recipient's language
         - ``EventUrl``          — language-aware link to the event page
+        - ``OrganiserName``     — localised organisation name or organiser's name (same as registration confirmation email)
         - ``OrganizerSubject``  — the subject entered by the organiser
         - ``OrganizerMessage``  — the plain-text body entered by the organiser
 
@@ -365,6 +366,7 @@ def send_organizer_message_to_guest(user, project, subject: str, message: str):
         "FirstName": user.first_name or user.username,
         "EventTitle": event_title,
         "EventUrl": event_url,
+        "OrganiserName": get_organiser_name(project, lang_code),
         "OrganizerSubject": subject,
         "OrganizerMessage": message,
     }
@@ -473,9 +475,19 @@ class SendOrganizerEmailView(APIView):
         message = serializer.validated_data["message"]
         is_test = serializer.validated_data["is_test"]
 
-        # 2. Look up project
+        # 2. Look up project — prefetch organiser relations needed by send_organizer_message_to_guest
         try:
-            project = Project.objects.get(url_slug=url_slug)
+            project = (
+                Project.objects
+                .select_related("loc", "language")
+                .prefetch_related(
+                    "translation_project__language",
+                    "project_parent__parent_organization__language",
+                    "project_parent__parent_organization__translation_org__language",
+                    "project_parent__parent_user__user_profile",
+                )
+                .get(url_slug=url_slug)
+            )
         except Project.DoesNotExist:
             return Response(
                 {"message": f"Project not found: {url_slug}"},
@@ -581,9 +593,10 @@ Two new Mailjet templates (EN and DE) must be created before this feature goes t
 
 | Variable | Description |
 |----------|-------------|
-| `FirstName` | Recipient's first name |
+| `FirstName` | Recipient's first name (falls back to username) |
 | `EventTitle` | Event name (localised for the recipient) |
 | `EventUrl` | Language-aware URL to the event page |
+| `OrganiserName` | Localised organisation name, or organiser's full name / username — same logic as the registration confirmation email (`get_organiser_name(project, lang_code)`) |
 | `OrganizerSubject` | The subject text entered by the organiser |
 | `OrganizerMessage` | The plain-text body entered by the organiser |
 
