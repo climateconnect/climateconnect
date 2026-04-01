@@ -34,7 +34,7 @@ An event organiser or team admin can send a plain-text email to all registered g
 - By default each email includes, in addition to the organiser-provided subject and body:
   - The **event name** (localised: use the translation for the recipient's language if available, same as the registration confirmation email).
   - A **link to the event page**, language-aware (same pattern as in `send_event_registration_confirmation_to_user`).
-- No email is sent to guests whose registration has been **cancelled** (`cancelled_at IS NOT NULL`).
+- No email is sent to guests whose registration has been **cancelled** (`cancelled_at IS NOT NULL`). _Note: cancellation ([#1850](https://github.com/climateconnect/climateconnect/issues/1850)) is not yet implemented and will likely not be ready when this story ships. For now, all `EventParticipant` rows are treated as active. The filter will be added as a one-line change once #1850 lands._
 
 **Explicitly Out of Scope (this iteration):**
 
@@ -57,7 +57,7 @@ An event organiser or team admin can send a plain-text email to all registered g
 
 ### AI Agent Insights and Additions
 
-- **`cancelled_at` forward-compatibility**: as with `ListEventParticipantsView`, the queryset for active participants must add `.filter(cancelled_at__isnull=True)` when story [#1850](https://github.com/climateconnect/climateconnect/issues/1850) ships `cancelled_at`. Add a `# TODO #1850: add .filter(cancelled_at__isnull=True)` comment in the task, consistent with the existing pattern.
+- **`cancelled_at` future reminder**: cancellation ([#1850](https://github.com/climateconnect/climateconnect/issues/1850)) is not yet implemented and is unlikely to be ready when this story ships. The queryset in the view and in the Celery task therefore does **not** filter by `cancelled_at` at this time — all `EventParticipant` rows are active. Add a `# TODO #1850: add .filter(cancelled_at__isnull=True)` comment in both the view and the task as a reminder, consistent with the pattern in `ListEventParticipantsView`. No further action needed now.
 - **Recipient count in response**: count the queryset **before** dispatching the Celery task so the API can return `sent_count` immediately. The Celery task receives the list of participant IDs (not a lazy queryset) to avoid race conditions where registrations change between request time and task execution time.
 - **Send test email reuses `send_event_registration_confirmation_to_user` pattern**: call the new `send_organizer_message_to_guest(user, project, subject, message)` helper synchronously in the view for the test case. No Celery task needed for test.
 - **Mailjet template variables**: the new template must accept `OrganizerSubject`, `OrganizerMessage`, `EventTitle`, `EventUrl`, and `FirstName`. `OrganizerSubject` is the organiser-provided subject line; the email's envelope `Subject` header should also be set to `OrganizerSubject` directly (not a default platform subject line). This is consistent with how the user controls the communication.
@@ -416,6 +416,9 @@ def send_organizer_message_to_guests(
         )
         return
 
+    # TODO #1850: user_ids already captures a snapshot at request time, but once
+    # cancelled_at exists the view's queryset should pre-filter cancelled rows
+    # so they never enter user_ids in the first place.
     users = (
         User.objects.select_related("user_profile__location")
         .filter(id__in=user_ids)
@@ -666,7 +669,7 @@ None.
 
 - **Depends on** [#1845](https://github.com/climateconnect/climateconnect/issues/1845): `EventParticipant` entity must exist.
 - **Depends on** [`20260401_1000_organizer_see_registration_status.md`](./20260401_1000_organizer_see_registration_status.md): `ProjectRegistrationsContent.tsx` with `RegistrationsToolbar` must exist (DONE).
-- **Forward dependency** [#1850](https://github.com/climateconnect/climateconnect/issues/1850): once `cancelled_at` is added to `EventParticipant`, the queryset in `SendOrganizerEmailView` must be updated to filter `cancelled_at__isnull=True`. The `# TODO #1850` comment in the view marks this location (consistent with the existing pattern in `ListEventParticipantsView`).
+- **Future reminder — cancellation [#1850](https://github.com/climateconnect/climateconnect/issues/1850)**: cancellation is not yet implemented and is not a dependency for this story. When [#1850](https://github.com/climateconnect/climateconnect/issues/1850) eventually ships `cancelled_at`, the queries in both `SendOrganizerEmailView` and the `send_organizer_message_to_guests` Celery task must be updated to add `.filter(cancelled_at__isnull=True)`. The `# TODO #1850` comments in the code mark both locations.
 - **Action item** (non-code): two Mailjet templates (EN + DE) must be created and their IDs configured in `settings.py` before the feature can send real emails. The backend will not error without them — `send_email` logs a warning if the template ID is blank — but no emails will be delivered.
 - **Update Epic** [`EPIC_event_registration.md`](./EPIC_event_registration.md): change the row "Organiser sends email to all registered guests" from `⚪ Not started` to `📝 Draft` after this spec is reviewed.
 
