@@ -43,18 +43,18 @@ Foundational work done before feature development began. No tasks in this epic's
 
 The complete Phase 2 must be shipped before the toggle is flipped in production. This is the full set of stories agreed for go-live. Stories marked ⚪ do not yet have a spec or implementation issue.
 
-| Story | GitHub Issue | Spec | Status                     |
-|-------|-------------|------|----------------------------|
+| Story | GitHub Issue                                                         | Spec | Status                     |
+|-------|----------------------------------------------------------------------|------|----------------------------|
 | Organiser creates event with registration | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | [`20260305_...`](./20260305_1000_create_event_with_basic_registration.md) | ✅ Done                     |
 | Member registers for event | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) | [`20260309_0900_...`](./20260309_0900_member_register_for_event.md) | ⚙️ In proress              |
 | Member sees their registered events | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) | [`20260309_1100_...`](./20260309_1100_member_see_registered_events.md) | 🔵 Ready                   |
 | Member cancels a registration | [#1850](https://github.com/climateconnect/climateconnect/issues/1850) | [`20260309_1500_...`](./20260309_1500_member_cancel_event_registration.md) | 📝 Draft                   |
-| Member receives event reminder notifications | — | — | ⚪ Not started              |
-| Organiser sees status of registrations (list of guests) | [product-backlog#48](https://github.com/climateconnect/product-backlog/issues/48) | [`20260401_1000_...`](./20260401_1000_organizer_see_registration_status.md) | ✅ Done                     |
-| Organiser exports / prints registered guests | — | — | ✅ Done (folded into above) |
-| Organiser sends email to all registered guests | — | — | ⚪ Not started              |
+| Member receives event reminder notifications | —                                                                    | — | ⚪ Not started              |
+| Organiser sees status of registrations (list of guests) | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) | [`20260401_1000_...`](./20260401_1000_organizer_see_registration_status.md) | ✅ Done                     |
+| Organiser exports / prints registered guests |  [#1863](https://github.com/climateconnect/climateconnect/issues/1863)                                                                     | [`20260401_1000_...`](./20260401_1000_organizer_see_registration_status.md)  | ✅ Done |
+| Organiser sends email to all registered guests | —                                                                    | — | ⚪ Not started              |
 | Organiser closes / reopens registration | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | [`20260324_0900_...`](./20260324_0900_organizer_close_event_registration.md) | ✅ Done                     |
-| Organiser cancels an individual guest registration | — | — | ⚪ Not started              |
+| Organiser cancels an individual guest registration | —                                                                    | — | ⚪ Not started              |
 
 ### 🔭 Phase 3 — Advanced Registration (next goal after Phase 2 ships)
 
