@@ -1,6 +1,6 @@
 # Event Organiser Can See Status of Registrations
 
-**Status**: DRAFT (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
+**Status**: IMPLEMENTATION (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
 **Type**: Feature
 **Date and time created**: 2026-04-01 10:00
 **Date Completed**: TBD
@@ -377,4 +377,5 @@ None.
 ## Log
 
 - 2026-04-01 10:00 — Task created from product-backlog issue #48. Initial problem statement and architecture drafted.
+- 2026-04-01 10:30 — Spec reviewed and approved. Transitioning to IMPLEMENTATION. Backend work starting first.
 
