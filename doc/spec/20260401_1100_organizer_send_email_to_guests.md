@@ -1,6 +1,6 @@
 # Event Organiser Can Send Email Message to All Guests
 
-**Status**: DRAFT (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
+**Status**: IMPLEMENTATION (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
 **Type**: Feature
 **Date and time created**: 2026-04-01 11:00 UTC
 **Date Completed**: —
@@ -63,7 +63,7 @@ An event organiser or team admin can send a plain-text email to all registered g
 - **Mailjet template variables**: the new template must accept `OrganizerSubject`, `OrganizerMessage`, `EventTitle`, `EventUrl`, and `FirstName`. `OrganizerSubject` is the organiser-provided subject line; the email's envelope `Subject` header should also be set to `OrganizerSubject` directly (not a default platform subject line). This is consistent with how the user controls the communication.
 - **Two Mailjet templates (EN + DE)**: follow the existing `_TEMPLATE_ID` / `_TEMPLATE_ID_DE` naming pattern. Add env variables `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` and `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE`.
 - **Toolbar button placement**: place the "Email guests" button to the **left** of the existing `GridToolbarExport` button in `RegistrationsToolbar`, after the search field spacer. Use `EmailIcon` from `@mui/icons-material`. The button should only render when the `onSendEmail` callback prop is provided — this keeps the toolbar reusable and the button absent when not relevant (e.g. future read-only organisers).
-- **Modal confirmation state**: use a `"sent"` state enum value in the modal (`"idle" | "sending" | "sent_all" | "sent_test"`) rather than two booleans. `"sent_all"` stores `sentCount`, `"sent_test"` stores `sentTo` — both typed in a discriminated union for safety.
+- **Modal confirmation state**: use a discriminated union for the modal send state (`"idle" | "sending" | "sent_all" | "sent_test"`). `"sent_all"` stores `sentCount: number`. `"sent_test"` carries no extra data — the organiser's email is read directly from `UserContext` when rendering the confirmation message.
 - **Character limit on subject**: enforce a 200-character limit on subject server-side (matches `EmailMessage.subject` max length convention). Surface as a `maxLength` attribute on the input and a `400` error if exceeded.
 - **Character limit on message**: no hard limit imposed server-side for now, but set `inputProps={{ maxLength: 5000 }}` on the textarea as a soft guardrail to protect against accidental paste of very long content.
 - **Re-opening the modal resets the form**: `useEffect` on `open` — same pattern as `EditEventRegistrationModal`. The confirmation state should also reset when the modal is re-opened so the organiser can send another message in the same session.
@@ -696,4 +696,5 @@ None.
 ## Log
 
 - 2026-04-01 11:00 — Task created from product-backlog issue #55. Problem statement, AI insights, and full software architecture documented.
+- 2026-04-01 12:00 — Spec reviewed and approved. Clarified: `cancelled_at` is a future reminder only; consistent `sent_count` API response; `[TEST] ` subject prefix; `OrganiserName` variable added; `sent_test` state simplified (email from `UserContext`); view project prefetch corrected. Status updated to IMPLEMENTATION.
 
