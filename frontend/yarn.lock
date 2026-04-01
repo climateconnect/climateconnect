@@ -3202,6 +3202,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mui/x-data-grid@npm:6":
+  version: 6.20.4
+  resolution: "@mui/x-data-grid@npm:6.20.4"
+  dependencies:
+    "@babel/runtime": "npm:^7.23.2"
+    "@mui/utils": "npm:^5.14.16"
+    clsx: "npm:^2.0.0"
+    prop-types: "npm:^15.8.1"
+    reselect: "npm:^4.1.8"
+  peerDependencies:
+    "@mui/material": ^5.4.1
+    "@mui/system": ^5.4.1
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 10c0/8ec0841e3fe587d99afe254b42c6f121e360078092431c9f6ab37fdffae06869fd49ec115fd9be4047665f6ead6dc79eee934c0493303500cc7e110202acca45
+  languageName: node
+  linkType: hard
+
 "@mui/x-date-pickers@npm:^6.0.3":
   version: 6.20.2
   resolution: "@mui/x-date-pickers@npm:6.20.2"
@@ -6461,6 +6479,7 @@ __metadata:
     "@mui/icons-material": "npm:^5.11.11"
     "@mui/material": "npm:^5.11.15"
     "@mui/styles": "npm:^5.11.13"
+    "@mui/x-data-grid": "npm:6"
     "@mui/x-date-pickers": "npm:^6.0.3"
     "@next/bundle-analyzer": "npm:^12.0.7"
     "@react-google-maps/api": "npm:^1.13.0"
@@ -14282,6 +14301,13 @@ __metadata:
   version: 2.0.1
   resolution: "require-package-name@npm:2.0.1"
   checksum: 10c0/2da87caecdd2157489deaf8add246696dc9cbcebd89ef49b062ad1183594b979f96f8194d4b0f5447a92ad72d39b9fae2df38ec5b9ecef9c7c0157af38eeecbc
+  languageName: node
+  linkType: hard
+
+"reselect@npm:^4.1.8":
+  version: 4.1.8
+  resolution: "reselect@npm:4.1.8"
+  checksum: 10c0/06a305a504affcbb67dd0561ddc8306b35796199c7e15b38934c80606938a021eadcf68cfd58e7bb5e17786601c37602a3362a4665c7bf0a96c1041ceee9d0b7
   languageName: node
   linkType: hard
 
