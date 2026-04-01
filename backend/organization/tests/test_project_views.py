@@ -601,7 +601,7 @@ class TestProjectApi(APITestCase):
         )
 
         # Get the language that was created globally
-        self.default_language = Language.objects.get(id=1)
+        self.default_language = Language.objects.get(language_code="en")
 
         self.project = Project.objects.create(
             name="Test Project",

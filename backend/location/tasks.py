@@ -63,12 +63,12 @@ def fetch_and_create_location_translations(self, loc_id):
                 continue
 
             address = data[0].get("address", {})
-            translation_data["translated_city"] = (
+            translation_data["city_translation"] = (
                 address.get("city") or address.get("town") or address.get("village")
             )
-            translation_data["translated_state"] = address.get("state")
-            translation_data["translated_country"] = address.get("country")
-            translation_data["translated_name"] = data[0].get("localname")
+            translation_data["state_translation"] = address.get("state")
+            translation_data["country_translation"] = address.get("country")
+            translation_data["name_translation"] = data[0].get("localname")
 
         except requests.exceptions.RequestException as e:
             logger.error(
@@ -76,23 +76,23 @@ def fetch_and_create_location_translations(self, loc_id):
             )
             raise self.retry(exc=e, countdown=60 * (self.request.retries + 1))
 
-        if not translation_data.get("translated_name"):
+        if not translation_data.get("name_translation"):
             formatted_translation = format_translation_data(translation_data)
-            translation_data["translated_name"] = format_location_name(
+            translation_data["name_translation"] = format_location_name(
                 formatted_translation
-            )
-            if not translation_data["translated_name"]:
-                translation_data["translated_name"] = instance.name
+            ).get("name")
+            if not translation_data["name_translation"]:
+                translation_data["name_translation"] = instance.name
 
         try:
             with transaction.atomic():
                 LocationTranslation.objects.create(
                     location=instance,
                     language_id=language.id,
-                    name_translation=translation_data["translated_name"],
-                    city_translation=translation_data["translated_city"],
-                    state_translation=translation_data["translated_state"],
-                    country_translation=translation_data["translated_country"],
+                    name_translation=translation_data["name_translation"],
+                    city_translation=translation_data["city_translation"],
+                    state_translation=translation_data["state_translation"],
+                    country_translation=translation_data["country_translation"],
                 )
                 logger.info(f"Translation created for {instance.pk} in {locale}.")
         except IntegrityError as e:

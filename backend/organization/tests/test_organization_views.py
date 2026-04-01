@@ -268,7 +268,7 @@ class TestCreateOrganizationView(APITestCase):
         )
 
         # Use German language created by test_runner
-        self.default_language = Language.objects.get(id=2)
+        self.default_language = Language.objects.get(language_code="de")
 
         Location.objects.create(
             name="Test Location", city="Berlin", country="Germany", place_id=1
@@ -568,7 +568,7 @@ class TestOrganizationAPIView(APITestCase):
         )
 
         # Use German language created by test_runner
-        self.default_language = Language.objects.get(id=2)
+        self.default_language = Language.objects.get(language_code="de")
 
         self.org = Organization.objects.create(
             name=f"Test Organization",

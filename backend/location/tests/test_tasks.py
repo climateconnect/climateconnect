@@ -41,7 +41,7 @@ MOCK_NOMINATIM_NOT_FOUND_RESPONSE = []
 
 
 @override_settings(
-    NOMINATIM_DETAILS_URL="http://mock.nominatim.test/lookup",
+    NOMINATIM_LOOKUP_URL="http://mock.nominatim.test/lookup",
     CUSTOM_USER_AGENT="Test-Agent",
     CELERY_TASK_ALWAYS_EAGER=True,
     CELERY_TASK_EAGER_PROPAGATES=True,

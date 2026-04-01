@@ -143,7 +143,9 @@ def get_translations(
     if depth > 1:
         raise ValueError
     finished_translations = {}
-    for target_language in settings.LOCALES:
+    for target_language in Language.objects.exclude(language_code=source_language).values_list(
+        "language_code", flat=True
+    ):
         if not target_language == source_language:
             finished_translations[target_language] = {"is_manual_translation": False}
             for key in texts.keys():
