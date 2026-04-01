@@ -50,26 +50,26 @@ An event organiser or team admin can send a plain-text email to all registered g
 - Access to the send endpoint **must be enforced server-side** (`403 Forbidden` for non-organiser, `401` for unauthenticated). The button not rendering for non-admins is not sufficient.
 - **Bulk send ("Send now") is asynchronous** — dispatched as a Celery task so that the HTTP request returns immediately. The response contains the pre-counted recipient count; actual email dispatch happens in the background.
 - **Test send is synchronous** — sends a single email inline in the request. One email, one user, fast enough to handle in-request.
-- `select_related("user__userprofile")` must be used when fetching participant users to avoid N+1 queries.
+- Participant user relations must be **eagerly loaded** when fetching participants to avoid N+1 queries.
 - Subject and message fields must each be **non-empty** — enforced both client-side and server-side (400 Bad Request).
 - The `EVENT_REGISTRATION` feature toggle must be active for the tab to render. No additional toggle check inside the modal is needed.
 - No breaking changes to existing API contracts.
 
 ### AI Agent Insights and Additions
 
-- **`cancelled_at` future reminder**: cancellation ([#1850](https://github.com/climateconnect/climateconnect/issues/1850)) is not yet implemented and is unlikely to be ready when this story ships. The queryset in the view and in the Celery task therefore does **not** filter by `cancelled_at` at this time — all `EventParticipant` rows are active. Add a `# TODO #1850: add .filter(cancelled_at__isnull=True)` comment in both the view and the task as a reminder, consistent with the pattern in `ListEventParticipantsView`. No further action needed now.
-- **Recipient count in response**: count the queryset **before** dispatching the Celery task so the API can return `sent_count` immediately. The Celery task receives the list of participant IDs (not a lazy queryset) to avoid race conditions where registrations change between request time and task execution time.
-- **Send test email reuses `send_event_registration_confirmation_to_user` pattern**: call the new `send_organizer_message_to_guest(user, project, subject, message)` helper synchronously in the view for the test case. No Celery task needed for test.
-- **Mailjet template variables**: the new template must accept `OrganizerSubject`, `OrganizerMessage`, `EventTitle`, `EventUrl`, and `FirstName`. `OrganizerSubject` is the organiser-provided subject line; the email's envelope `Subject` header should also be set to `OrganizerSubject` directly (not a default platform subject line). This is consistent with how the user controls the communication.
-- **Two Mailjet templates (EN + DE)**: follow the existing `_TEMPLATE_ID` / `_TEMPLATE_ID_DE` naming pattern. Add env variables `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` and `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE`.
-- **Toolbar button placement**: place the "Email guests" button to the **left** of the existing `GridToolbarExport` button in `RegistrationsToolbar`, after the search field spacer. Use `EmailIcon` from `@mui/icons-material`. The button should only render when the `onSendEmail` callback prop is provided — this keeps the toolbar reusable and the button absent when not relevant (e.g. future read-only organisers).
-- **Modal confirmation state**: use a discriminated union for the modal send state (`"idle" | "sending" | "sent_all" | "sent_test"`). `"sent_all"` stores `sentCount: number`. `"sent_test"` carries no extra data — the organiser's email is read directly from `UserContext` when rendering the confirmation message.
-- **Character limit on subject**: enforce a 200-character limit on subject server-side (matches `EmailMessage.subject` max length convention). Surface as a `maxLength` attribute on the input and a `400` error if exceeded.
-- **Character limit on message**: no hard limit imposed server-side for now, but set `inputProps={{ maxLength: 5000 }}` on the textarea as a soft guardrail to protect against accidental paste of very long content.
-- **Re-opening the modal resets the form**: `useEffect` on `open` — same pattern as `EditEventRegistrationModal`. The confirmation state should also reset when the modal is re-opened so the organiser can send another message in the same session.
-- **`send_now` participant list isolation**: pass the list of `user_id` values (not a slug or queryset) to the Celery task so the task operates on exactly the set of users who were active at request time, even if a cancellation arrives between the request and task execution.
-- **Bulk send strategy — one-by-one (consistent with existing pattern)**: `send_email()` always sends one Mailjet API call per recipient. The Mailjet Send API v3.1 supports batching up to 50 `Messages` objects per call, which would reduce HTTP round-trips for large guest lists. However, all existing transactional emails in the codebase use the one-by-one approach, and events are not expected to have thousands of registrations in Phase 2. The Celery task therefore follows the same one-by-one loop. If large events become common in Phase 3+, batching (50 `Messages` per request) would be the straightforward optimisation.
-- **Recipient `Name` in `To` header — handled automatically by `send_email()`**: `send_email()` always sets `"Name": user.first_name + " " + user.last_name` in the `To` header. Callers do not need to supply this separately. The `send_organizer_message_to_guest` helper inherits this behaviour by delegating to `send_email()`.
+- **`cancelled_at` future reminder**: cancellation ([#1850](https://github.com/climateconnect/climateconnect/issues/1850)) is not yet implemented. The participant queryset in the view and in the Celery task therefore does **not** filter by `cancelled_at` at this time — all `EventParticipant` rows are active. Mark both locations with a `TODO #1850` comment as a reminder to add the filter once cancellation ships, consistent with the pattern in `ListEventParticipantsView`. No further action needed now.
+- **Recipient count in response**: count the queryset **before** dispatching the Celery task so the API can return `sent_count` immediately. The Celery task receives a list of participant IDs (not a lazy queryset) to avoid race conditions where registrations change between request time and task execution time.
+- **Test send follows the existing email helper pattern**: call the new single-guest email helper synchronously in the view for the test case. No Celery task is needed for the test path.
+- **Mailjet template variables**: the new template must accept `OrganizerSubject`, `OrganizerMessage`, `EventTitle`, `EventUrl`, `OrganiserName`, and `FirstName`. `OrganizerSubject` is the organiser-provided subject line; the email's envelope `Subject` header should also be set to `OrganizerSubject` directly (not a default platform subject line). This is consistent with how the user controls the communication.
+- **Two Mailjet templates (EN + DE)**: follow the existing `_TEMPLATE_ID` / `_TEMPLATE_ID_DE` naming convention. Add env variables `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` and `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE`.
+- **Toolbar button placement**: place the "Email guests" button to the **left** of the existing export button, after the search field spacer. Use an email icon from the existing icons library. The button should only render when the open-modal callback prop is provided — this keeps the toolbar reusable and the button absent when not relevant (e.g. future read-only organisers).
+- **Modal send state**: the modal has four internal phases: **idle** (form visible), **sending** (form frozen, spinners shown), **sent_all** (bulk send confirmed, stores recipient count), and **sent_test** (test send confirmed, organiser's email read from user context). These are one-way within a session.
+- **Character limit on subject**: enforce a 200-character limit server-side. Surface the limit as a `maxLength` attribute on the input and return a 400 error if exceeded.
+- **Character limit on message**: no hard server-side limit for now, but apply a soft 5,000-character limit client-side to protect against accidental paste of very large content.
+- **Re-opening the modal resets the form**: when the modal re-opens, reset subject, message, field errors, and send state to their initial (idle) values. Consistent with `EditEventRegistrationModal`.
+- **Bulk send participant list isolation**: pass the list of user IDs (not a slug or queryset) to the Celery task so the task operates on exactly the set of users who were active at request time, even if a cancellation arrives between the request and task execution.
+- **Bulk send strategy — one-by-one (consistent with existing pattern)**: all existing transactional emails in the codebase send one Mailjet API call per recipient. Events are not expected to have thousands of registrations in Phase 2, so the Celery task follows the same one-by-one loop. If large events become common in Phase 3+, batching multiple recipients per API call would be the natural optimisation.
+- **Recipient name in `To` header**: the existing `send_email()` utility automatically sets the recipient's full name in the `To` header. The new email helper inherits this behaviour by delegating to `send_email()` — callers do not need to supply it separately.
 
 ## System impact
 
@@ -81,9 +81,7 @@ _To be filled in by Archie._
 
 **New endpoint — send organiser email to guests**
 
-```
-POST /api/projects/{url_slug}/registrations/email/
-```
+`POST /api/projects/{url_slug}/registrations/email/`
 
 - Auth required — returns `401 Unauthorized` if not authenticated.
 - Requires organiser or team admin role — returns `403 Forbidden` otherwise.
@@ -91,135 +89,77 @@ POST /api/projects/{url_slug}/registrations/email/
 - Subject and message are required — returns `400 Bad Request` if either is blank.
 - Subject max length: 200 characters — returns `400 Bad Request` if exceeded.
 
-**Request — Send to all guests**
-```json
-POST /api/projects/my-event/registrations/email/
-Authorization: Token <token>
-Content-Type: application/json
+**Request payload** (both actions share the same shape):
 
-{
-  "subject": "Important update about the event",
-  "message": "Hi everyone, we have an important update…",
-  "is_test": false
-}
-```
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `subject` | string | yes | Organiser-authored email subject, max 200 characters |
+| `message` | string | yes | Organiser-authored plain-text email body |
+| `is_test` | boolean | no (default: false) | When true, sends only to the authenticated organiser |
 
-**Response — 200 OK (Send now)**
-```json
-{
-  "sent_count": 42
-}
-```
-`sent_count` is the number of active (non-cancelled) participants at the time the task was dispatched. Actual delivery is asynchronous.
+**Response — 200 OK**
 
-**Request — Send test to self**
-```json
-{
-  "subject": "Important update about the event",
-  "message": "Hi everyone, we have an important update…",
-  "is_test": true
-}
-```
+| Field | Type | Description |
+|-------|------|-------------|
+| `sent_count` | integer | Number of recipients. Always `1` for test sends. For bulk sends, reflects the number of active participants at the time the task was dispatched — actual delivery is asynchronous. |
 
-**Response — 200 OK (Test)**
-```json
-{
-  "sent_count": 1
-}
-```
-Always `1` — the test email is sent to the organiser only. The response shape is intentionally identical to the bulk response for consistency. The frontend reads the recipient's email address from `UserContext` rather than the API response.
+The response shape is identical for both bulk and test sends.
 
-**Response — 400 Bad Request**
-```json
-{ "subject": ["This field may not be blank."] }
-```
-or
-```json
-{ "message": ["This field may not be blank."] }
-```
+**Error responses**
 
-**Response — 403 Forbidden**
-```json
-{ "message": "You do not have permission to send emails for this event." }
-```
-
-**Response — 404 Not Found**
-```json
-{ "message": "Project not found: my-event" }
-```
-or
-```json
-{ "message": "This project does not have event registration enabled." }
-```
+| Status | Body | Condition |
+|--------|------|-----------|
+| 400 | `{ "subject": ["..."] }` or `{ "message": ["..."] }` | Blank or oversized field |
+| 401 | — | Unauthenticated request |
+| 403 | `{ "message": "You do not have permission to send emails for this event." }` | Authenticated but not an organiser or team admin |
+| 404 | `{ "message": "Project not found: {slug}" }` | Project slug does not exist |
+| 404 | `{ "message": "This project does not have event registration enabled." }` | Project exists but has no `EventRegistration` |
 
 ### Events
 
-One new async Celery task:
-- `send_organizer_message_to_guests(event_slug, user_ids, subject, message)` — iterates `user_ids`, fetches each `User` with `select_related("user_profile__location")`, calls `send_organizer_message_to_guest(user, project, subject, message)`. Retries up to 3 times on transient failure (same pattern as `send_event_registration_confirmation_email`).
+One new async Celery task handles bulk email delivery. It accepts the event slug, a pre-captured snapshot of participant user IDs, a subject, and a message body. The task:
+
+- Fetches the project with all relations required for email rendering (translations, organiser name).
+- Fetches only the users whose IDs were passed in the snapshot — not a live queryset — so the set is stable even if cancellations arrive after dispatch.
+- Calls the single-guest email helper once per user.
+- On transient failure for an individual send, retries up to 3 times with a 60-second delay — consistent with `send_event_registration_confirmation_email`.
+- If the project cannot be found, logs an error and exits without retrying (the data snapshot is stale; retrying would not help).
+- Marks the location where the `cancelled_at` filter must be added once [#1850](https://github.com/climateconnect/climateconnect/issues/1850) ships (see `TODO #1850` comments).
 
 ### Frontend
 
 #### `ProjectRegistrationsContent.tsx`
 
-**Changes:**
-
-1. Add a `sendEmailOpen` state (`useState(false)`) to control the new modal.
-2. Pass an `onSendEmail` callback prop down to `RegistrationsToolbar` via `slotProps.toolbar`, wiring it to `() => setSendEmailOpen(true)`.
-3. Render `<SendEmailToGuestsModal>` at the bottom of the component (next to the existing `EditEventRegistrationModal`), passing `project` and the open/close state.
+Add state to control the new modal's open/closed visibility. Wire the toolbar's "Email guests" button to open the modal. Render `SendEmailToGuestsModal` at the bottom of the component, alongside the existing `EditEventRegistrationModal`, passing the project context and the open/close state.
 
 #### `RegistrationsToolbar` (in `ProjectRegistrationsContent.tsx`)
 
-Add `onSendEmail?: () => void` to `ToolbarProps`.
+Add an optional open-modal callback prop. When the prop is provided, render an "Email guests" button to the **left of the existing export button**, after the search field spacer. Use an email icon. Apply the `send_email_to_guests` text key as the button label and as an `aria-label` for accessibility. The button must not render when the prop is absent — keeping the toolbar reusable without it.
 
-**New button** in the toolbar (between the spacer `<Box sx={{ flex: 1 }} />` and `<GridToolbarExport />`):
+**Toolbar layout (button placement):**
 
-```tsx
-{onSendEmail && (
-  <Button
-    size="small"
-    startIcon={<EmailIcon fontSize="small" />}
-    onClick={onSendEmail}
-    aria-label={texts.send_email_to_guests}
-  >
-    {texts.send_email_to_guests}
-  </Button>
-)}
+```
+[search input] ─────────────────── [Email guests] [Export ▼]
 ```
 
 #### New component — `SendEmailToGuestsModal.tsx`
 
 Location: `frontend/src/components/project/SendEmailToGuestsModal.tsx`
 
-**Props:**
+**Props:** `open` (boolean), `onClose` (callback), `project` (Project object).
 
-```tsx
-type Props = {
-  open: boolean;
-  onClose: () => void;
-  project: Project;
-};
-```
+**Send state machine** — four phases, one-way within a session:
 
-**State machine:**
+| Phase | Description |
+|-------|-------------|
+| `idle` | Form is visible and interactive |
+| `sending` | All buttons disabled; spinners shown |
+| `sent_all` | Confirmation shown with bulk recipient count |
+| `sent_test` | Confirmation shown with organiser's own email address |
 
-```
-"idle" → "sending" → "sent_all" (stores sentCount: number)
-                   → "sent_test" (stores sentTo: string)
-```
+Re-opening the modal always resets to `idle` and clears all field values and errors — consistent with `EditEventRegistrationModal`.
 
-Implemented as:
-
-```tsx
-type SendState =
-  | { phase: "idle" }
-  | { phase: "sending" }
-  | { phase: "sent_all"; sentCount: number }
-  | { phase: "sent_test" };
-```
-
-**Form reset**: `useEffect` on `open` — when `open` becomes `true`, reset `subject`, `message`, errors, and `sendState` to initial values. Consistent with `EditEventRegistrationModal`.
-
-**Idle/sending phase — form layout:**
+**Form layout (idle / sending):**
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -241,9 +181,9 @@ type SendState =
 └─────────────────────────────────────────────┘
 ```
 
-During `"sending"` phase, all buttons are disabled and `CircularProgress` spinners replace button icons.
+During the `sending` phase all buttons are disabled and spinner icons replace button labels.
 
-**Confirmation phase — `sent_all`:**
+**Confirmation layout — bulk send (`sent_all`):**
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -256,7 +196,7 @@ During `"sending"` phase, all buttons are disabled and `CircularProgress` spinne
 └─────────────────────────────────────────────┘
 ```
 
-**Confirmation phase — `sent_test`:**
+**Confirmation layout — test send (`sent_test`):**
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -269,29 +209,9 @@ During `"sending"` phase, all buttons are disabled and `CircularProgress` spinne
 └─────────────────────────────────────────────┘
 ```
 
-Uses `GenericDialog` (same as `EditEventRegistrationModal`).
+The organiser's email address shown in the test confirmation is sourced from user context, not from the API response. Use `GenericDialog` as the modal wrapper, consistent with `EditEventRegistrationModal`.
 
-**API call (both actions):**
-
-```ts
-const resp = await apiRequest({
-  method: "post",
-  url: `/api/projects/${project.url_slug}/registrations/email/`,
-  payload: { subject, message, is_test: isTest },
-  token,
-  locale,
-});
-```
-
-On success:
-- `is_test: false` → transition to `{ phase: "sent_all", sentCount: resp.data.sent_count }`
-- `is_test: true` → transition to `{ phase: "sent_test" }` — the confirmation message reads the organiser's email from `UserContext` (`user.email`), not from the API response.
-
-On error: surface `errors.general` below the form (same pattern as `EditEventRegistrationModal`).
-
-#### New dependency
-
-None — no new packages required. `@mui/icons-material` is already installed.
+**API integration:** both actions call `POST /api/projects/{url_slug}/registrations/email/` using the project's standard `apiRequest` helper with the appropriate `is_test` flag. On success, transition to `sent_all` (storing the recipient count from `sent_count`) or `sent_test`. On error, surface a general error message below the form — consistent with `EditEventRegistrationModal`.
 
 #### New text keys (`public/texts/project_texts.tsx`)
 
@@ -310,287 +230,56 @@ Add to the `project` page text object:
 | `email_subject_required` | `"Subject is required."` | `"Betreff ist erforderlich."` |
 | `email_message_required` | `"Message is required."` | `"Nachricht ist erforderlich."` |
 
-> **Interpolation note**: the existing `texts` system in this project uses simple string replacement via helper functions (e.g. `replace_str_with_jsx`). Use the same pattern for `{count}` and `{email}` interpolation as is done elsewhere in project texts. If the texts system does not support interpolation for this key, produce the string dynamically in the component: `` `${texts.email_sent_to_guests_prefix}${sentCount}${texts.email_sent_to_guests_suffix}` ``.
+> **Interpolation note**: the existing `texts` system uses simple string replacement via helper functions (e.g. `replace_str_with_jsx`). Use the same pattern for `{count}` and `{email}` as done elsewhere in the project texts.
 
 ### Backend
 
-#### Serializer — `SendOrganizerEmailSerializer`
+#### Serializer
 
-New serializer in `organization/serializers/event_registration.py`.
+New serializer in `organization/serializers/event_registration.py`. Validates the request payload: `subject` must be a non-blank string with a maximum of 200 characters; `message` must be a non-blank string with no server-side length limit; `is_test` is a boolean defaulting to `false`.
 
-```python
-class SendOrganizerEmailSerializer(serializers.Serializer):
-    subject = serializers.CharField(max_length=200, allow_blank=False)
-    message = serializers.CharField(allow_blank=False)
-    is_test = serializers.BooleanField(default=False)
-```
+#### Email helper — single guest
 
-#### Email helper — `send_organizer_message_to_guest`
+New function in `organization/utility/email.py`. Accepts a user, a project, an organiser-authored subject, and a message body. The function:
 
-New function in `organization/utility/email.py`.
+- Resolves the recipient's preferred language.
+- Builds a localised event title and a language-aware event URL — following the same pattern as `send_event_registration_confirmation_to_user`.
+- Assembles the Mailjet template variables (see the Mailjet templates section below).
+- Delegates to the existing `send_email()` utility, setting the envelope `Subject` header directly to the organiser-provided subject (no platform prefix).
 
-```python
-def send_organizer_message_to_guest(user, project, subject: str, message: str):
-    """
-    Send an organiser-composed message to a single event guest.
+Recipient name in the `To` header is handled automatically by `send_email()` — the helper does not need to set it explicitly.
 
-    **Mailjet template variables**:
-        - ``FirstName``         — recipient's first name (falls back to username)
-        - ``EventTitle``        — event name, localised to recipient's language
-        - ``EventUrl``          — language-aware link to the event page
-        - ``OrganiserName``     — localised organisation name or organiser's name (same as registration confirmation email)
-        - ``OrganizerSubject``  — the subject entered by the organiser
-        - ``OrganizerMessage``  — the plain-text body entered by the organiser
+#### Celery task — bulk send
 
-    **Required env variables**:
-        ``EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID``    — Mailjet template ID (EN)
-        ``EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE`` — Mailjet template ID (DE)
+New task in `organization/tasks.py`. See the [Events](#events) section above for the full behavioural description. Signature: accepts event slug, list of user IDs, subject, and message.
 
-    The email envelope ``Subject`` header is set to the organiser-provided
-    ``subject`` directly (not a generic platform subject line).
-    """
-    lang_code = get_user_lang_code(user)
-    event_title = get_project_name(project, lang_code)
-    event_url = (
-        settings.FRONTEND_URL
-        + get_user_lang_url(lang_code)
-        + "/projects/"
-        + project.url_slug
-    )
+#### View
 
-    subjects_by_language = {
-        "en": subject,
-        "de": subject,  # organiser-authored subject is language-agnostic here
-    }
+New `APIView` in `organization/views/event_registration_views.py` for `POST /api/projects/{url_slug}/registrations/email/`.
 
-    variables = {
-        "FirstName": user.first_name or user.username,
-        "EventTitle": event_title,
-        "EventUrl": event_url,
-        "OrganiserName": get_organiser_name(project, lang_code),
-        "OrganizerSubject": subject,
-        "OrganizerMessage": message,
-    }
+Request flow:
 
-    send_email(
-        user=user,
-        variables=variables,
-        template_key="EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID",
-        subjects_by_language=subjects_by_language,
-        should_send_email_setting="",
-        notification=None,
-    )
-```
-
-#### Celery task — `send_organizer_message_to_guests`
-
-New task in `organization/tasks.py`.
-
-```python
-@app.task(bind=True, max_retries=3, default_retry_delay=60)
-def send_organizer_message_to_guests(
-    self, event_slug: str, user_ids: list, subject: str, message: str
-):
-    """
-    Async bulk send: deliver an organiser-composed email to a list of event guests.
-
-    ``user_ids`` is a pre-computed list of User PKs captured at request time so
-    the task operates on a stable snapshot of active participants even if
-    cancellations arrive between the HTTP request and task execution.
-
-    Retries up to 3 times with a 60-second delay on transient failure
-    (consistent with send_event_registration_confirmation_email).
-    """
-    from organization.models.project import Project
-    from organization.utility.email import send_organizer_message_to_guest
-
-    try:
-        project = (
-            Project.objects.select_related("loc", "language")
-            .prefetch_related(
-                "translation_project__language",
-                "project_parent__parent_organization__language",
-                "project_parent__parent_organization__translation_org__language",
-                "project_parent__parent_user__user_profile",
-            )
-            .get(url_slug=event_slug)
-        )
-    except Project.DoesNotExist:
-        logger.error(
-            "[OrganizerEmail] Project '%s' not found — aborting bulk send", event_slug
-        )
-        return
-
-    # TODO #1850: user_ids already captures a snapshot at request time, but once
-    # cancelled_at exists the view's queryset should pre-filter cancelled rows
-    # so they never enter user_ids in the first place.
-    users = (
-        User.objects.select_related("user_profile__location")
-        .filter(id__in=user_ids)
-    )
-
-    for user in users:
-        try:
-            send_organizer_message_to_guest(user, project, subject, message)
-        except Exception as exc:
-            logger.error(
-                "[OrganizerEmail] Failed to send to user %s for event '%s': %s",
-                user.id,
-                event_slug,
-                exc,
-            )
-            raise self.retry(exc=exc)
-
-    logger.info(
-        "[OrganizerEmail] Sent organiser email to %d guests for event '%s'",
-        len(user_ids),
-        event_slug,
-    )
-```
-
-#### View — `SendOrganizerEmailView`
-
-New view in `organization/views/event_registration_views.py`.
-
-```python
-class SendOrganizerEmailView(APIView):
-    """
-    POST /api/projects/{url_slug}/registrations/email/
-
-    Sends an organiser-authored email to all active event guests (is_test=False)
-    or a test copy to the authenticated organiser (is_test=True).
-
-    Always returns { "sent_count": <int> } — 1 for test, N for bulk send.
-    The subject is prepended with "[TEST] " when is_test=True.
-    """
-
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, url_slug):
-        # 1. Validate input
-        serializer = SendOrganizerEmailSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        subject = serializer.validated_data["subject"]
-        message = serializer.validated_data["message"]
-        is_test = serializer.validated_data["is_test"]
-
-        # 2. Look up project — prefetch organiser relations needed by send_organizer_message_to_guest
-        try:
-            project = (
-                Project.objects
-                .select_related("loc", "language")
-                .prefetch_related(
-                    "translation_project__language",
-                    "project_parent__parent_organization__language",
-                    "project_parent__parent_organization__translation_org__language",
-                    "project_parent__parent_user__user_profile",
-                )
-                .get(url_slug=url_slug)
-            )
-        except Project.DoesNotExist:
-            return Response(
-                {"message": f"Project not found: {url_slug}"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        # 3. Permission check (inline, consistent with ListEventParticipantsView)
-        has_edit_rights = ProjectMember.objects.filter(
-            user=request.user,
-            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
-            project=project,
-        ).exists()
-        if not has_edit_rights:
-            return Response(
-                {"message": "You do not have permission to send emails for this event."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        # 4. Look up EventRegistration
-        try:
-            er = project.event_registration
-        except EventRegistration.DoesNotExist:
-            return Response(
-                {"message": "This project does not have event registration enabled."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        if is_test:
-            # Synchronous — single email to the organiser themselves.
-            # Prepend "[TEST] " to subject so the organiser can identify test emails in their inbox.
-            test_subject = f"[TEST] {subject}"
-            organiser = (
-                User.objects.select_related("user_profile__location")
-                .get(id=request.user.id)
-            )
-            try:
-                send_organizer_message_to_guest(organiser, project, test_subject, message)
-            except Exception as exc:
-                logger.error(
-                    "[OrganizerEmail] Test send failed for user %s, event '%s': %s",
-                    request.user.id,
-                    url_slug,
-                    exc,
-                )
-                return Response(
-                    {"message": "Failed to send test email. Please try again."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-            return Response({"sent_count": 1}, status=status.HTTP_200_OK)
-
-        # Bulk send — count first, then dispatch async
-        # TODO #1850: add .filter(cancelled_at__isnull=True) once cancelled_at is added
-        participants = (
-            EventParticipant.objects
-            .select_related("user")
-            .filter(event_registration=er)
-        )
-        user_ids = list(participants.values_list("user_id", flat=True))
-        sent_count = len(user_ids)
-
-        send_organizer_message_to_guests.delay(
-            event_slug=url_slug,
-            user_ids=user_ids,
-            subject=subject,
-            message=message,
-        )
-
-        return Response({"sent_count": sent_count}, status=status.HTTP_200_OK)
-```
+1. Validate the request payload with the new serializer — return 400 on invalid input.
+2. Look up the project by slug with all relations required for email rendering — return 404 if not found.
+3. Verify the requesting user has organiser-level (`ALL_TYPE` or `READ_WRITE_TYPE`) membership on the project — return 403 if not. Mirror the permission check pattern used in `ListEventParticipantsView`.
+4. Verify the project has an `EventRegistration` — return 404 if not.
+5. **Test send** (`is_test=true`): prepend `[TEST] ` to the subject so the organiser can identify test emails in their inbox. Call the email helper synchronously for the requesting user. Return `{"sent_count": 1}`. Return 500 on unexpected failure with a user-friendly message.
+6. **Bulk send** (`is_test=false`): fetch all active `EventParticipant` rows with user relations eagerly loaded, capture their user IDs as a snapshot list, dispatch the Celery task asynchronously with that snapshot, and return `{"sent_count": <length of snapshot>}`. Mark the participant queryset with a `TODO #1850` comment where `cancelled_at` filtering belongs.
 
 #### URL
 
-Add to `organization/urls.py`:
-
-```python
-path(
-    "projects/<str:url_slug>/registrations/email/",
-    event_registration_views.SendOrganizerEmailView.as_view(),
-    name="send-organizer-email-to-guests",
-),
-```
+Register the new view for `POST projects/<url_slug>/registrations/email/` in `organization/urls.py`, following the existing URL naming conventions in that file.
 
 #### Settings — new env variables
 
-Add to `climateconnect_main/settings.py` (next to the existing `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` block):
+Add two settings reading from environment variables, placed next to the existing `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` block in `climateconnect_main/settings.py`:
 
-```python
-EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID = env(
-    "EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID", ""
-)
-EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE = env(
-    "EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE", ""
-)
-```
+- `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` — Mailjet template ID for the English template.
+- `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE` — Mailjet template ID for the German template.
 
-Add to `.backend_env` (and to the Azure App Service configuration in production):
-```
-EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID=<mailjet-template-id-en>
-EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE=<mailjet-template-id-de>
-```
+Add both to `.backend_env` and to the Azure App Service configuration in production.
 
-#### Mailjet template (action item — not code)
+#### Mailjet templates (action item — not code)
 
 Two new Mailjet templates (EN and DE) must be created before this feature goes to production. Required template variables:
 
@@ -599,11 +288,11 @@ Two new Mailjet templates (EN and DE) must be created before this feature goes t
 | `FirstName` | Recipient's first name (falls back to username) |
 | `EventTitle` | Event name (localised for the recipient) |
 | `EventUrl` | Language-aware URL to the event page |
-| `OrganiserName` | Localised organisation name, or organiser's full name / username — same logic as the registration confirmation email (`get_organiser_name(project, lang_code)`) |
+| `OrganiserName` | Localised organisation name, or organiser's full name / username — same logic as the registration confirmation email |
 | `OrganizerSubject` | The subject text entered by the organiser |
 | `OrganizerMessage` | The plain-text body entered by the organiser |
 
-The email envelope subject should be set directly to the organiser's subject (no wrapping platform prefix).
+The email envelope subject must be set directly to the organiser's subject (no wrapping platform prefix).
 
 #### No migration required
 
@@ -626,8 +315,8 @@ None.
 | File | Change |
 |------|--------|
 | `organization/serializers/event_registration.py` | Add `SendOrganizerEmailSerializer` |
-| `organization/utility/email.py` | Add `send_organizer_message_to_guest(user, project, subject, message)` helper |
-| `organization/tasks.py` | Add `send_organizer_message_to_guests` Celery task |
+| `organization/utility/email.py` | Add single-guest email helper function |
+| `organization/tasks.py` | Add bulk-send Celery task |
 | `organization/views/event_registration_views.py` | Add `SendOrganizerEmailView` |
 | `organization/urls.py` | Add URL pattern for `POST /api/projects/{url_slug}/registrations/email/` |
 | `climateconnect_main/settings.py` | Add `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` and `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE` |
@@ -637,7 +326,7 @@ None.
 
 | File | Change |
 |------|--------|
-| `src/components/project/ProjectRegistrationsContent.tsx` | Add `sendEmailOpen` state; add `onSendEmail` prop to `RegistrationsToolbar`; add "Email guests" button to toolbar; render `<SendEmailToGuestsModal>` |
+| `src/components/project/ProjectRegistrationsContent.tsx` | Add modal open/close state; wire toolbar button to open the modal; render `SendEmailToGuestsModal` alongside existing modal |
 | `src/components/project/SendEmailToGuestsModal.tsx` | **New file** — modal with subject + message form, "Send test" and "Send now" actions, confirmation state |
 | `public/texts/project_texts.tsx` | Add new text keys (see table above) |
 
@@ -657,11 +346,11 @@ None.
 | 6 | `subject` > 200 characters | 400 Bad Request |
 | 7 | `is_test=false`, 3 active participants | 200 OK, `{"sent_count": 3}`; Celery task dispatched with 3 user IDs |
 | 8 | `is_test=false`, 0 active participants | 200 OK, `{"sent_count": 0}`; Celery task dispatched with empty list |
-| 9 | `is_test=true` | 200 OK, `{"sent_count": 1}`; `send_organizer_message_to_guest` called once with organiser user and subject prefixed with `"[TEST] "` |
+| 9 | `is_test=true` | 200 OK, `{"sent_count": 1}`; email helper called once with organiser user and subject prefixed with `"[TEST] "` |
 | 10 | Team admin (not creator) with `read_write_type` role, `is_test=false` | 200 OK |
 | 11 | Celery task: project not found | logs error, does not raise |
 | 12 | Celery task: mail delivery fails | retries up to 3 times; raises after max retries |
-| 13 | `select_related` used in task | query count does not grow with number of recipients |
+| 13 | Eager loading used in task | query count does not grow with number of recipients |
 
 ### Frontend
 
@@ -676,7 +365,7 @@ None.
 | 7 | Click "Send now" with valid input | buttons disabled, spinner shown; API called with `is_test: false` |
 | 8 | "Send now" succeeds | confirmation "Email sent to 42 registered guests." shown |
 | 9 | Click "Send test" with valid input | API called with `is_test: true` |
-| 10 | "Send test" succeeds | confirmation "Test email sent to you@example.com." shown — email address sourced from `UserContext`, not API response |
+| 10 | "Send test" succeeds | confirmation "Test email sent to you@example.com." shown — email address sourced from user context, not API response |
 | 11 | API returns error | general error message shown below form |
 | 12 | Click "Close" after confirmation | modal closes |
 | 13 | User without admin rights | "Email guests" button not visible (Registrations tab not shown per `ProjectPageRoot.tsx`) |
@@ -687,8 +376,8 @@ None.
 
 - **Depends on** [#1845](https://github.com/climateconnect/climateconnect/issues/1845): `EventParticipant` entity must exist.
 - **Depends on** [`20260401_1000_organizer_see_registration_status.md`](./20260401_1000_organizer_see_registration_status.md): `ProjectRegistrationsContent.tsx` with `RegistrationsToolbar` must exist (DONE).
-- **Future reminder — cancellation [#1850](https://github.com/climateconnect/climateconnect/issues/1850)**: cancellation is not yet implemented and is not a dependency for this story. When [#1850](https://github.com/climateconnect/climateconnect/issues/1850) eventually ships `cancelled_at`, the queries in both `SendOrganizerEmailView` and the `send_organizer_message_to_guests` Celery task must be updated to add `.filter(cancelled_at__isnull=True)`. The `# TODO #1850` comments in the code mark both locations.
-- **Action item** (non-code): two Mailjet templates (EN + DE) must be created and their IDs configured in `settings.py` before the feature can send real emails. The backend will not error without them — `send_email` logs a warning if the template ID is blank — but no emails will be delivered.
+- **Future reminder — cancellation [#1850](https://github.com/climateconnect/climateconnect/issues/1850)**: cancellation is not yet implemented and is not a dependency for this story. When [#1850](https://github.com/climateconnect/climateconnect/issues/1850) eventually ships `cancelled_at`, the participant querysets in both the view and the Celery task must be updated to exclude cancelled registrations. The `TODO #1850` comments in the code mark both locations.
+- **Action item** (non-code): two Mailjet templates (EN + DE) must be created and their IDs configured in settings before the feature can send real emails. The backend will not error without them — `send_email` logs a warning if the template ID is blank — but no emails will be delivered.
 - **Update Epic** [`EPIC_event_registration.md`](./EPIC_event_registration.md): change the row "Organiser sends email to all registered guests" from `⚪ Not started` to `📝 Draft` after this spec is reviewed.
 
 ---
@@ -696,5 +385,5 @@ None.
 ## Log
 
 - 2026-04-01 11:00 — Task created from product-backlog issue #55. Problem statement, AI insights, and full software architecture documented.
-- 2026-04-01 12:00 — Spec reviewed and approved. Clarified: `cancelled_at` is a future reminder only; consistent `sent_count` API response; `[TEST] ` subject prefix; `OrganiserName` variable added; `sent_test` state simplified (email from `UserContext`); view project prefetch corrected. Status updated to IMPLEMENTATION.
-
+- 2026-04-01 12:00 — Spec reviewed and approved. Clarified: `cancelled_at` is a future reminder only; consistent `sent_count` API response; `[TEST] ` subject prefix; `OrganiserName` variable added; `sent_test` state simplified (email from user context); view project prefetch corrected. Status updated to IMPLEMENTATION.
+- 2026-04-01 13:00 — Removed implementation code examples from Software Architecture section. Spec now describes outcomes and constraints only; implementing agents own the "how".
