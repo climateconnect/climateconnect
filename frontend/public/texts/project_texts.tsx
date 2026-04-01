@@ -1324,5 +1324,98 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Congratulations! Your event has been published!",
       de: "Glückwunsch! Deine Veranstaltung ist veröffentlicht worden!",
     },
+    // Event registration translations
+    register_for_event: {
+      en: "Register for Event",
+      de: "Für Veranstaltung anmelden",
+    },
+    register_now: {
+      en: "Register now",
+      de: "Jetzt anmelden",
+    },
+    booked_out: {
+      en: "Booked out",
+      de: "Ausgebucht",
+    },
+    registration_closed: {
+      en: "Registration closed",
+      de: "Anmeldung geschlossen",
+    },
+    authentication: {
+      en: "Authentication",
+      de: "Authentifizierung",
+    },
+    event_registration: {
+      en: "Registration",
+      de: "Anmeldung",
+    },
+    confirmation: {
+      en: "Confirmation",
+      de: "Bestätigung",
+    },
+    name: {
+      en: "Name",
+      de: "Name",
+    },
+    email: {
+      en: "Email",
+      de: "E-Mail",
+    },
+    password: {
+      en: "Password",
+      de: "Passwort",
+    },
+    cancel: {
+      en: "Cancel",
+      de: "Abbrechen",
+    },
+    confirm_registration: {
+      en: "Confirm Registration",
+      de: "Anmeldung bestätigen",
+    },
+    to_register_please_login_or_signup: {
+      en: "To register for this event, please log in or sign up!",
+      de: "Um dich für diese Veranstaltung anzumelden, melde dich bitte an oder registriere dich!",
+    },
+    log_in: {
+      en: "Log In",
+      de: "Anmelden",
+    },
+    sign_up: {
+      en: "Sign Up",
+      de: "Registrieren",
+    },
+    continue: {
+      en: "Continue",
+      de: "Weiter",
+    },
+    signup_flow_coming_soon: {
+      en: "Sign-up flow coming soon",
+      de: "Registrierungsablauf kommt bald",
+    },
+    youre_registered: {
+      en: "You're registered!",
+      de: "Du bist angemeldet!",
+    },
+    a_confirmation_email_has_been_sent: {
+      en: "A confirmation email has been sent to you.",
+      de: "Eine Bestätigungs-E-Mail wurde an dich gesendet.",
+    },
+    registration_failed: {
+      en: "Registration failed",
+      de: "Anmeldung fehlgeschlagen",
+    },
+    registration_failed_please_try_again: {
+      en: "Registration failed. Please try again.",
+      de: "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+    },
+    close: {
+      en: "Close",
+      de: "Schließen",
+    },
+    try_again: {
+      en: "Try Again",
+      de: "Erneut versuchen",
+    },
   };
 }

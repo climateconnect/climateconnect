@@ -17,6 +17,8 @@ import { getDateTimeRange } from "../../../public/lib/dateOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
+import EventRegistrationModal from "./EventRegistrationModal";
+import { useFeatureToggles } from "../featureToggle";
 import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
 import MessageContent from "../communication/MessageContent";
@@ -184,12 +186,26 @@ export default function ProjectOverview({
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [gotParams, setGotParams] = useState(false);
+  const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
+  const { isEnabled } = useFeatureToggles();
+  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
+
+  const handleRegisterClick = () => {
+    setRegistrationModalOpen(true);
+  };
 
   useEffect(() => {
     if (!gotParams) {
       const params = getParams(window.location.href);
       if (params.show_followers && !showFollowers) {
         toggleShowFollowers();
+      }
+      if (
+        params.openRegistration === "true" &&
+        isEventRegistrationEnabled &&
+        project.event_registration
+      ) {
+        setRegistrationModalOpen(true);
       }
       setGotParams(true);
     }
@@ -224,6 +240,8 @@ export default function ProjectOverview({
           followingChangePending={followingChangePending}
           numberOfFollowers={numberOfFollowers}
           isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+          isEventRegistrationEnabled={isEventRegistrationEnabled}
+          handleRegisterClick={handleRegisterClick}
         />
       )}
 
@@ -252,6 +270,15 @@ export default function ProjectOverview({
         user={user}
         url={"projects/" + project.url_slug + "?show_likes=true"}
       />
+
+      {isEventRegistrationEnabled && project.event_registration && (
+        <EventRegistrationModal
+          open={registrationModalOpen}
+          onClose={() => setRegistrationModalOpen(false)}
+          project={project}
+          eventRegistration={project.event_registration}
+        />
+      )}
     </Container>
   );
 }
@@ -382,10 +409,31 @@ function LargeScreenOverview({
   followingChangePending,
   numberOfFollowers,
   isWasseraktionswochenEnabled,
+  isEventRegistrationEnabled,
+  handleRegisterClick,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+
+  const showRegisterButton =
+    isEventRegistrationEnabled &&
+    project.event_registration &&
+    project.event_registration.status !== "ended";
+
+  const getRegisterButtonText = () => {
+    if (!project.event_registration) return "";
+    const status = project.event_registration.status;
+    if (status === "open") return texts.register_now;
+    if (status === "full") return texts.booked_out;
+    return texts.registration_closed;
+  };
+
+  const isRegisterButtonDisabled = () => {
+    if (!project.event_registration) return true;
+    return ["closed", "full"].includes(project.event_registration.status);
+  };
+
   return (
     <>
       <div className={classes.headerContainer}>
@@ -422,19 +470,31 @@ function LargeScreenOverview({
               hasAdminPermissions={hasAdminPermissions}
               numberOfLikes={numberOfLikes}
             />
-            <FollowButton
-              isLoggedIn={!!user}
-              followingChangePending={followingChangePending}
-              handleToggleFollow={handleToggleFollowProject}
-              hasAdminPermissions={hasAdminPermissions}
-              isUserFollowing={isUserFollowing}
-              numberOfFollowers={numberOfFollowers}
-              screenSize={screenSize}
-              texts={texts}
-              toggleShowFollowers={toggleShowFollowers}
-              showStartIcon={!screenSize.belowMedium}
-              showLinkUnderButton
-            />
+            {showRegisterButton ? (
+              <Button
+                variant="contained"
+                color={isRegisterButtonDisabled() ? "secondary" : "primary"}
+                disabled={isRegisterButtonDisabled()}
+                onClick={handleRegisterClick}
+                style={{ height: 40, marginLeft: 8, marginRight: 8 }}
+              >
+                {getRegisterButtonText()}
+              </Button>
+            ) : (
+              <FollowButton
+                isLoggedIn={!!user}
+                followingChangePending={followingChangePending}
+                handleToggleFollow={handleToggleFollowProject}
+                hasAdminPermissions={hasAdminPermissions}
+                isUserFollowing={isUserFollowing}
+                numberOfFollowers={numberOfFollowers}
+                screenSize={screenSize}
+                texts={texts}
+                toggleShowFollowers={toggleShowFollowers}
+                showStartIcon={!screenSize.belowMedium}
+                showLinkUnderButton
+              />
+            )}
             {!hasAdminPermissions &&
               (!screenSize.belowMedium ? (
                 <ContactCreatorButton
