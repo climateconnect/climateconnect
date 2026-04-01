@@ -16,7 +16,15 @@ import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import SearchIcon from "@mui/icons-material/Search";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridColumnMenu,
+  GridColumnMenuProps,
+  GridToolbarContainer,
+  GridToolbarExport,
+} from "@mui/x-data-grid";
+import { deDE, enUS } from "@mui/x-data-grid/locales";
 import dayjs from "dayjs";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -66,10 +74,6 @@ const useStyles = makeStyles((theme) => ({
   listSection: {
     marginTop: theme.spacing(2),
   },
-  searchField: {
-    marginBottom: theme.spacing(2),
-    maxWidth: 360,
-  },
 }));
 
 type Props = {
@@ -77,6 +81,39 @@ type Props = {
   eventRegistration: EventRegistrationData | null;
   onEventRegistrationUpdated: (_updated: EventRegistrationData) => void;
 };
+
+type ToolbarProps = {
+  search: string;
+  onSearchChange: (_value: string) => void;
+  placeholder: string;
+};
+
+function CustomColumnMenu(props: GridColumnMenuProps) {
+  return <GridColumnMenu {...props} slots={{ columnMenuColumnsItem: null }} />;
+}
+
+function RegistrationsToolbar({ search, onSearchChange, placeholder }: ToolbarProps) {
+  return (
+    <GridToolbarContainer sx={{ display: "flex", alignItems: "center", gap: 1, p: 1 }}>
+      <TextField
+        size="small"
+        placeholder={placeholder}
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        InputProps={{
+          startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.5, color: "text.secondary" }} />,
+        }}
+        aria-label={placeholder}
+        sx={{ flex: 1, maxWidth: 360 }}
+      />
+      <Box sx={{ flex: 1 }} />
+      <GridToolbarExport
+        csvOptions={{ fileName: "event-registrations" }}
+        printOptions={{ hideFooter: true, hideToolbar: true }}
+      />
+    </GridToolbarContainer>
+  );
+}
 
 export default function ProjectRegistrationsContent({
   project,
@@ -123,11 +160,6 @@ export default function ProjectRegistrationsContent({
   }, [project.url_slug]);
 
   const isEventEnded = project.end_date ? dayjs(project.end_date).isBefore(dayjs()) : false;
-
-  const formatDate = (iso: string | null) => {
-    if (!iso) return "—";
-    return dayjs(iso).locale(locale).format("DD MMM YYYY, HH:mm");
-  };
 
   if (!eventRegistration) {
     return (
@@ -177,7 +209,11 @@ export default function ProjectRegistrationsContent({
         <Box className={classes.settingItem}>
           <Typography className={classes.settingLabel}>{texts.registration_end_date}</Typography>
           <Typography className={classes.settingValue}>
-            {formatDate(eventRegistration.registration_end_date)}
+            {eventRegistration.registration_end_date
+              ? dayjs(eventRegistration.registration_end_date)
+                  .locale(locale)
+                  .format("DD MMM YYYY, HH:mm")
+              : "—"}
           </Typography>
         </Box>
 
@@ -224,104 +260,100 @@ export default function ProjectRegistrationsContent({
         )}
 
         {!loadingParticipants && !participantsError && (
-          <>
-            <TextField
-              className={classes.searchField}
-              size="small"
-              placeholder={texts.search_guests}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <SearchIcon fontSize="small" sx={{ mr: 0.5, color: "text.secondary" }} />
-                ),
-              }}
-              aria-label={texts.search_guests}
-              fullWidth
-            />
-            <DataGrid
-              autoHeight
-              rows={participants.filter((p) => {
-                const q = search.toLowerCase();
-                return (
-                  p.user_first_name.toLowerCase().includes(q) ||
-                  p.user_last_name.toLowerCase().includes(q)
-                );
-              })}
-              columns={
-                [
-                  {
-                    field: "user_thumbnail_image",
-                    headerName: "",
-                    width: 56,
-                    sortable: false,
-                    renderCell: (params) => (
-                      <Link
-                        href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}
-                        underline="none"
-                        aria-label={`${params.row.user_first_name} ${params.row.user_last_name}`}
-                      >
-                        <Avatar
-                          src={params.row.user_thumbnail_image ?? undefined}
-                          alt={`${params.row.user_first_name} ${params.row.user_last_name}`}
-                          sx={{ width: 32, height: 32 }}
-                        />
-                      </Link>
-                    ),
-                  },
-                  {
-                    field: "user_first_name",
-                    headerName: texts.first_name,
-                    flex: 1,
-                    minWidth: 120,
-                    renderCell: (params) => (
-                      <Link
-                        href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}
-                      >
-                        {params.value}
-                      </Link>
-                    ),
-                  },
-                  {
-                    field: "user_last_name",
-                    headerName: texts.last_name,
-                    flex: 1,
-                    minWidth: 120,
-                    renderCell: (params) => (
-                      <Link
-                        href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}
-                      >
-                        {params.value}
-                      </Link>
-                    ),
-                  },
-                  {
-                    field: "registered_at",
-                    headerName: texts.registration_date,
-                    flex: 1,
-                    minWidth: 160,
-                    valueFormatter: (params) =>
-                      dayjs(params.value as string)
-                        .locale(locale)
-                        .format("DD MMM YYYY, HH:mm"),
-                  },
-                ] as GridColDef[]
-              }
-              initialState={{
-                sorting: {
-                  sortModel: [{ field: "registered_at", sort: "asc" }],
+          <DataGrid
+            autoHeight
+            rows={participants.filter((p) => {
+              const q = search.toLowerCase();
+              return (
+                p.user_first_name.toLowerCase().includes(q) ||
+                p.user_last_name.toLowerCase().includes(q)
+              );
+            })}
+            columns={
+              [
+                {
+                  field: "user_thumbnail_image",
+                  headerName: "",
+                  width: 56,
+                  sortable: false,
+                  disableExport: true,
+                  disableColumnMenu: true,
+                  filterable: false,
+                  renderCell: (params) => (
+                    <Link
+                      href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}
+                      underline="none"
+                      aria-label={`${params.row.user_first_name} ${params.row.user_last_name}`}
+                    >
+                      <Avatar
+                        src={params.row.user_thumbnail_image ?? undefined}
+                        alt={`${params.row.user_first_name} ${params.row.user_last_name}`}
+                        sx={{ width: 32, height: 32 }}
+                      />
+                    </Link>
+                  ),
                 },
-                pagination: {
-                  paginationModel: { pageSize: 25 },
+                {
+                  field: "user_first_name",
+                  headerName: texts.first_name,
+                  flex: 1,
+                  minWidth: 120,
+                  renderCell: (params) => (
+                    <Link href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}>
+                      {params.value}
+                    </Link>
+                  ),
                 },
-              }}
-              localeText={{
-                noRowsLabel: texts.no_registrations_yet,
-              }}
-              disableRowSelectionOnClick
-              sx={{ border: "none" }}
-            />
-          </>
+                {
+                  field: "user_last_name",
+                  headerName: texts.last_name,
+                  flex: 1,
+                  minWidth: 120,
+                  renderCell: (params) => (
+                    <Link href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}>
+                      {params.value}
+                    </Link>
+                  ),
+                },
+                {
+                  field: "registered_at",
+                  headerName: texts.registration_date,
+                  type: "dateTime",
+                  flex: 1,
+                  minWidth: 160,
+                  valueGetter: (params) => (params.value ? new Date(params.value as string) : null),
+                  valueFormatter: (params) =>
+                    params.value
+                      ? dayjs(params.value as Date)
+                          .locale(locale)
+                          .format("DD MMM YYYY, HH:mm")
+                      : "—",
+                },
+              ] as GridColDef[]
+            }
+            initialState={{
+              sorting: {
+                sortModel: [{ field: "registered_at", sort: "asc" }],
+              },
+              pagination: {
+                paginationModel: { pageSize: 25 },
+              },
+            }}
+            localeText={{
+              ...(locale === "de" ? deDE : enUS).components.MuiDataGrid.defaultProps.localeText,
+              noRowsLabel: texts.no_registrations_yet,
+            }}
+            disableRowSelectionOnClick
+            slots={{ toolbar: RegistrationsToolbar, columnMenu: CustomColumnMenu }}
+            slotProps={{
+              toolbar: {
+                search,
+                onSearchChange: setSearch,
+                placeholder: texts.search_guests,
+              } as ToolbarProps,
+            }}
+            sx={{ border: "none" }}
+          />
         )}
       </Box>
 
