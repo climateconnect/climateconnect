@@ -1,7 +1,6 @@
 import logging
 
 from django.db import transaction
-from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -14,7 +13,10 @@ from organization.models.event_registration import (
     EventRegistration,
     RegistrationStatus,
 )
-from organization.serializers.event_registration import EditEventRegistrationSerializer
+from organization.serializers.event_registration import (
+    EditEventRegistrationSerializer,
+    _compute_effective_status,
+)
 from organization.tasks import (
     send_event_registration_confirmation_email as _send_registration_email,
 )
@@ -84,21 +86,19 @@ class RegisterForEventView(APIView):
             )
 
         # ── 4. Validate that registration is currently open ──────────────────
-        if er.status != RegistrationStatus.OPEN:
+        effective_status = _compute_effective_status(er)
+        if effective_status != RegistrationStatus.OPEN:
+            _message_map = {
+                RegistrationStatus.CLOSED: "Registration is currently closed.",
+                RegistrationStatus.FULL: "The event is fully booked.",
+                RegistrationStatus.ENDED: "The registration deadline has passed.",
+            }
             return Response(
                 {
-                    "message": (
-                        "Registration is currently closed."
-                        if er.status == RegistrationStatus.CLOSED
-                        else "The event is fully booked."
+                    "message": _message_map.get(
+                        effective_status, "Registration is not available."
                     )
                 },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if er.registration_end_date and timezone.now() >= er.registration_end_date:
-            return Response(
-                {"message": "The registration deadline has passed."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -172,28 +172,31 @@ class EditEventRegistrationSettingsView(APIView):
     for an event that already has EventRegistration enabled.
 
     Editable fields:
-        - max_participants  (positive integer)
+        - max_participants  (positive integer or null for unlimited)
         - registration_end_date  (datetime)
+        - status  ("open" or "closed" only — "full" and "ended" are system-managed)
 
-    Read-only via this endpoint:
-        - status — managed exclusively by the close/reopen endpoint (#1851).
+    Status change rules:
+        - "open" → "closed"   Organiser manually closes registration.
+        - "closed" → "open"   Organiser reopens (permitted unless deadline has passed).
+        - "full" → "open"     Organiser overrides the system capacity block.
+        - Setting "open" when effective_status == "ended" (deadline has passed)
+          returns 400 — extend registration_end_date first, then reopen.
+        - "full" and "ended" cannot be set via the API (400 Bad Request).
+        - Setting status to its current stored value is idempotent (200 OK).
 
     Behaviour:
         - 200 OK          — settings updated; returns updated event_registration.
-        - 400 Bad Request — validation error (past date, exceeds event end_date, etc.).
+        - 400 Bad Request — validation error (past date, invalid status, etc.).
         - 401 Unauthorized — unauthenticated request.
         - 403 Forbidden    — authenticated user without edit rights on the project.
         - 404 Not Found    — project or EventRegistration does not exist.
-
-    Draft-mode:
-        When the project is a draft (is_draft=True), cross-field and past-date
-        validations are skipped — consistent with the create flow (#1820).
 
     Response body (200 OK):
         {
             "max_participants": 80,
             "registration_end_date": "2026-07-01T18:00:00Z",
-            "status": "open",
+            "status": "open" | "closed" | "full" | "ended",
             "available_seats": 75
         }
     """

@@ -1297,6 +1297,19 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "No registration settings found for this event.",
       de: "Keine Anmeldeeinstellungen für dieses Event gefunden.",
     },
+    registration_is_open: {
+      en: "Registration is open",
+      de: "Anmeldung ist offen",
+    },
+    registration_is_closed: {
+      en: "Registration is closed",
+      de: "Anmeldung ist geschlossen",
+    },
+    registration_fully_booked_increase_max_participants: {
+      en: "Registration is fully booked. Increase the maximum participants to reopen.",
+      de:
+        "Die Anmeldung ist ausgebucht. Erhöhe die maximale Teilnehmerzahl, um sie wieder zu öffnen.",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",

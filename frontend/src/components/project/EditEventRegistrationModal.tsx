@@ -1,5 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  FormControlLabel,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import dayjs, { Dayjs } from "dayjs";
 import Cookies from "universal-cookie";
@@ -38,11 +47,17 @@ const useStyles = makeStyles((theme) => ({
   generalError: {
     marginTop: theme.spacing(1),
   },
+  statusHint: {
+    marginTop: theme.spacing(0.5),
+    fontSize: "0.75rem",
+    color: theme.palette.warning.dark,
+  },
 }));
 
 type FormErrors = {
   max_participants?: string;
   registration_end_date?: string;
+  status?: string;
   general?: string;
 };
 
@@ -55,6 +70,12 @@ type Props = {
   /** Current event_registration values to pre-fill. Treated as controlled from the outside. */
   eventRegistration: EventRegistrationData;
 };
+
+/** Returns "open" or "closed" as the editable initialiser for any backend status. */
+function initSelectedStatus(status: EventRegistrationData["status"]): "open" | "closed" {
+  if (status === "closed") return "closed";
+  return "open"; // "open", "full" → intent is open; "ended" → doesn't matter, field is hidden
+}
 
 export default function EditEventRegistrationModal({
   open,
@@ -70,6 +91,7 @@ export default function EditEventRegistrationModal({
 
   const [maxParticipants, setMaxParticipants] = useState<string>("");
   const [registrationEndDate, setRegistrationEndDate] = useState<Dayjs | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<"open" | "closed">("open");
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
 
@@ -84,24 +106,51 @@ export default function EditEventRegistrationModal({
           ? dayjs(eventRegistration.registration_end_date)
           : null
       );
+      setSelectedStatus(initSelectedStatus(eventRegistration.status));
       setErrors({});
     }
   }, [open, eventRegistration]);
+
+  const backendStatus = eventRegistration.status;
+  const isStatusEnded = backendStatus === "ended";
+  const isStatusFull = backendStatus === "full";
+
+  // Participant count derived from the backend values (not the form field, which may have changed)
+  const participantCount =
+    eventRegistration.max_participants != null && eventRegistration.available_seats != null
+      ? eventRegistration.max_participants - eventRegistration.available_seats
+      : 0;
+
+  // "Open" option is only selectable when the form's max_participants creates at least one free seat
+  const canSelectOpen =
+    !isStatusFull ||
+    (parseInt(maxParticipants, 10) > participantCount && !isNaN(parseInt(maxParticipants, 10)));
+
+  const isDraft = !!project.is_draft;
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
     const parsedMax = parseInt(maxParticipants, 10);
-    if (!maxParticipants || isNaN(parsedMax) || parsedMax < 1) {
+    const hasParticipants = maxParticipants !== "";
+
+    if (
+      isDraft
+        ? hasParticipants && (isNaN(parsedMax) || parsedMax < 1)
+        : !hasParticipants || isNaN(parsedMax) || parsedMax < 1
+    ) {
       newErrors.max_participants = texts.max_participants_must_be_greater_than_0;
     }
 
-    if (!registrationEndDate) {
+    const hasEndDate = registrationEndDate !== null;
+
+    if (isDraft ? hasEndDate && !registrationEndDate!.isValid() : !hasEndDate) {
       newErrors.registration_end_date = texts.registration_end_date_required;
-    } else {
-      if (registrationEndDate.isBefore(dayjs())) {
+    } else if (hasEndDate && registrationEndDate!.isValid()) {
+      // "must be in the future" only enforced for published projects
+      if (!isDraft && registrationEndDate!.isBefore(dayjs())) {
         newErrors.registration_end_date = texts.registration_end_date_must_be_in_the_future;
-      } else if (project.end_date && registrationEndDate.isAfter(dayjs(project.end_date))) {
+      } else if (project.end_date && registrationEndDate!.isAfter(dayjs(project.end_date))) {
         newErrors.registration_end_date = texts.registration_end_date_must_be_before_event_end_date;
       }
     }
@@ -116,14 +165,25 @@ export default function EditEventRegistrationModal({
     setSaving(true);
     setErrors({});
 
+    const payload: Record<string, unknown> = {};
+
+    if (maxParticipants !== "") {
+      payload.max_participants = parseInt(maxParticipants, 10);
+    }
+    if (registrationEndDate !== null) {
+      payload.registration_end_date = registrationEndDate.toISOString();
+    }
+    // Don't send status for "ended" — the backend would reject it;
+    // the organiser must extend the date first (which alone moves it out of ended).
+    if (!isStatusEnded) {
+      payload.status = selectedStatus;
+    }
+
     try {
       const resp = await apiRequest({
         method: "patch",
         url: `/api/projects/${project.url_slug}/registration/`,
-        payload: {
-          max_participants: parseInt(maxParticipants, 10),
-          registration_end_date: registrationEndDate!.toISOString(),
-        },
+        payload,
         token,
         locale,
       });
@@ -132,7 +192,6 @@ export default function EditEventRegistrationModal({
     } catch (err: any) {
       const data = err?.response?.data;
       if (data && typeof data === "object") {
-        // Map field-level errors from the API onto the form
         const apiErrors: FormErrors = {};
         if (data.max_participants) {
           apiErrors.max_participants = Array.isArray(data.max_participants)
@@ -143,6 +202,9 @@ export default function EditEventRegistrationModal({
           apiErrors.registration_end_date = Array.isArray(data.registration_end_date)
             ? data.registration_end_date[0]
             : data.registration_end_date;
+        }
+        if (data.status) {
+          apiErrors.status = Array.isArray(data.status) ? data.status[0] : data.status;
         }
         if (data.detail || data.non_field_errors) {
           apiErrors.general = data.detail ?? data.non_field_errors?.[0];
@@ -190,6 +252,77 @@ export default function EditEventRegistrationModal({
             error={errors.registration_end_date as any}
             required
           />
+        </Box>
+
+        {/* Status field */}
+        <Box className={classes.field}>
+          {isStatusEnded ? (
+            // "ended" is system-managed — show read-only chip, no select
+            <Box>
+              <Typography
+                variant="caption"
+                sx={{
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  color: "text.secondary",
+                }}
+              >
+                {texts.registration_status}
+              </Typography>
+              <Box sx={{ mt: 0.5 }}>
+                <Chip
+                  size="small"
+                  label={texts.registration_status_ended}
+                  color="error"
+                  sx={{ fontWeight: 600 }}
+                />
+              </Box>
+            </Box>
+          ) : (
+            // "open", "closed", or "full" — show a Switch
+            <Box>
+              {isStatusFull && (
+                // Extra chip to communicate the current effective status
+                <Box sx={{ mb: 1 }}>
+                  <Chip
+                    size="small"
+                    label={texts.registration_status_full}
+                    color="warning"
+                    sx={{ fontWeight: 600 }}
+                  />
+                </Box>
+              )}
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={selectedStatus === "open"}
+                    onChange={(e) => {
+                      // Capacity guard: block turning ON when full and seats not freed
+                      if (e.target.checked && !canSelectOpen) return;
+                      setSelectedStatus(e.target.checked ? "open" : "closed");
+                    }}
+                    color="primary"
+                    aria-label={texts.registration_status}
+                  />
+                }
+                label={
+                  selectedStatus === "open"
+                    ? texts.registration_is_open
+                    : texts.registration_is_closed
+                }
+              />
+              {errors.status && (
+                <Typography className={classes.errorText} role="alert">
+                  {errors.status}
+                </Typography>
+              )}
+              {isStatusFull && !canSelectOpen && (
+                <Typography className={classes.statusHint} role="note">
+                  {texts.registration_fully_booked_increase_max_participants}
+                </Typography>
+              )}
+            </Box>
+          )}
         </Box>
       </Box>
 

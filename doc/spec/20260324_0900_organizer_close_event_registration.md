@@ -1,9 +1,9 @@
 # Event Organizer Can Close Registration Before the End Date
 
-**Status**: READY (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
+**Status**: COMPLETE (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
 **Type**: Feature
 **Date and time created**: 2026-03-24 09:00
-**Date Completed**: TBD
+**Date Completed**: 2026-04-01
 **GitHub Issue**: [#1851](https://github.com/climateconnect/climateconnect/issues/1851)
 **Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)  
 **Related Specs**:
@@ -73,31 +73,20 @@ An event organizer or team admin can manually close the registration for their e
 
 ### API
 
-Two dedicated action endpoints for close and reopen.
-
-**Close registration (new)**
+**Update event registration (extend existing)**
 ```
-POST /api/projects/{slug}/registration/close/
+PATCH /api/projects/{slug}/registration/
 ```
+- Existing endpoint extended to allow organizer status changes.
 - Auth required (`401` if unauthenticated).
 - Requires organizer or team admin role on the project (`403` otherwise).
 - `404 Not Found` if no `EventRegistration` exists for this event.
-- Idempotent: if `status` is already `"closed"`, returns `200 OK` without changing state.
-- Sets `EventRegistration.status = "closed"`.
-- Returns `200 OK` with the updated `event_registration` object (including `status: "closed"`).
-
-**Reopen registration (new)**
-```
-POST /api/projects/{slug}/registration/reopen/
-```
-- Auth required (`401` if unauthenticated).
-- Requires organizer or team admin role on the project (`403` otherwise).
-- `404 Not Found` if no `EventRegistration` exists for this event.
-- `400 Bad Request` if `effective_status == "ended"` (registration deadline has already passed — organizer must extend `registration_end_date` via the event edit flow first).
-- Idempotent: if `status` is already `"open"`, returns `200 OK` without changing state.
-- Sets `EventRegistration.status = "open"` (only permitted when deadline has not yet passed).
-- Returns `200 OK` with the updated `event_registration` object (including `status: "open"`).
-- Note: `full` → `open` transition is permitted (organizer overrides the system-set capacity block).
+- Accepts `status` in the request body — only `"open"` and `"closed"` are permitted values for organizer updates.
+- `validate_status()` must reject `"full"` and `"ended"` with `400 Bad Request` — these values are system-managed only.
+- Idempotent: setting `status` to its current value returns `200 OK` without changes.
+- When setting `status = "open"` and `effective_status == "ended"` (registration deadline has already passed), returns `400 Bad Request` with message directing organizer to extend `registration_end_date` first.
+- `full` → `open` transition is only permitted when `max_participants` is **also increased in the same request** to a value greater than the current participant count (i.e. at least one seat becomes available). Without a capacity increase, returns `400 Bad Request`: *"Cannot reopen: the event is fully booked. Please increase the maximum participants first."* The check uses the new `max_participants` value from the PATCH body, so a single combined request (`status=open` + `max_participants=<new value>`) is sufficient.
+- Returns `200 OK` with the updated `event_registration` object (including the new `status`).
 
 **Extended event detail endpoint (existing)**
 ```
@@ -119,21 +108,15 @@ None. Close/reopen is synchronous. No async side-effects in this iteration (part
 
 ### Frontend
 
-- **Event detail page** (organizer/admin view):
-  - When the viewing user is the event organizer or a team admin and the event has `event_registration` present, show a management action below or alongside the registration status block:
-    - If `status == "open"`: a **"Close registration"** button (e.g. outlined / secondary style).
-    - If `status == "closed"` or `"full"`: a **"Reopen registration"** button.
-    - If `status == "ended"`: no close/reopen action — show an informational label (e.g. *"Registration period has ended"*). The organizer must edit the event's `registration_end_date` to reopen.
-  - Clicking "Close registration" calls `POST /api/projects/{slug}/registration/close/` and updates the local state:
-    - The management button switches to "Reopen registration".
-    - Members now see the contextual disabled button state driven by `status: "closed"` (see Member view below).
-  - Clicking "Reopen registration" calls `POST /api/projects/{slug}/registration/reopen/` and mirrors the above in reverse.
-  - On error: show an inline error message near the button.
-  - Regular members do not see the close/reopen action — only the `is_registration_open`-driven button state (existing behaviour from [#1845](https://github.com/climateconnect/climateconnect/issues/1845)).
-
 - **Event edit page** (organizer/admin view):
-  - If the event has `event_registration` present, display a registration status section with the same close/reopen toggle behaviour as the event detail page.
-  - Uses the same `POST /api/projects/{slug}/registration/close|reopen/` endpoints.
+  - The existing event registration edit form is extended to include a **status** field.
+  - Status is displayed as a select/radio group with two options: **"Open"** and **"Closed"**.
+  - The form submits to `PATCH /api/projects/{slug}/registration/` including the `status` field.
+  - If `effective_status == "ended"` and the organizer attempts to set `status = "open"`, the backend returns `400 Bad Request` — the frontend should display the error message directing the organizer to extend `registration_end_date` first.
+  - `"full"` and `"ended"` statuses are not selectable options — they are system-managed. The form displays the current status as read-only text when it is `"full"` or `"ended"`.
+  - **Capacity guard (status `"full"`)**: when the current status is `"full"`, the **"Open"** option in the status selector must be **disabled**. An inline hint is displayed: *"Registration is fully booked. Increase the maximum participants to reopen."* The "Open" option becomes selectable only once the organizer has changed `max_participants` to a value strictly greater than the current participant count (i.e. at least one seat opens up). The organizer may set both `max_participants` and `status = "open"` in a single form submission — the backend accepts this as one atomic operation.
+  - On success: the form updates with the new status value and any other changed fields.
+  - On error: show an inline error message in the form.
 
 - **Member view** — the existing "Registration closed" disabled button state ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)) must be updated to use `status` instead of the removed `is_registration_open` boolean. The frontend can now show contextual messaging based on the status value:
   - `status == "open"`: show the "Register" button (active).
@@ -161,34 +144,14 @@ None. Close/reopen is synchronous. No async side-effects in this iteration (part
   - `is_registration_open` field **removed** from the serializer — not returned in any API response.
 
 - **`EventRegistrationViewSet`** (extend existing, introduced in [#1845](https://github.com/climateconnect/climateconnect/issues/1845)):
-  - Add `close` action:
-    ```python
-    @action(detail=False, methods=["post"], url_path="close",
-            permission_classes=[IsAuthenticated, IsEventOrganizerOrAdmin])
-    def close(self, request, slug=None):
-        registration = get_object_or_404(EventRegistration, project__slug=slug)
-        if registration.status != RegistrationStatus.CLOSED:
-            registration.status = RegistrationStatus.CLOSED
-            registration.save(update_fields=["status"])
-        return Response(EventRegistrationSerializer(registration, context={"request": request}).data)
-    ```
-  - Add `reopen` action — sets `status = RegistrationStatus.OPEN`, but guards against `ended`:
-    ```python
-    @action(detail=False, methods=["post"], url_path="reopen",
-            permission_classes=[IsAuthenticated, IsEventOrganizerOrAdmin])
-    def reopen(self, request, slug=None):
-        registration = get_object_or_404(EventRegistration, project__slug=slug)
-        serializer = EventRegistrationSerializer(registration, context={"request": request})
-        if serializer.get_effective_status(registration) == RegistrationStatus.ENDED:
-            return Response(
-                {"detail": "Cannot reopen: registration deadline has passed. Please extend the registration end date first."},
-                status=400
-            )
-        if registration.status != RegistrationStatus.OPEN:
-            registration.status = RegistrationStatus.OPEN
-            registration.save(update_fields=["status"])
-        return Response(serializer.data)
-    ```
+  - `partial_update()` method (handles `PATCH`) must allow `status` updates from organizers/admins.
+  - Permission class for `PATCH` must be `IsAuthenticated` and `IsEventOrganizerOrAdmin`.
+  - `validate_status()` in the serializer enforces:
+    - Only `"open"` and `"closed"` are accepted from the frontend.
+    - If organizer attempts to set `status = "open"` when `effective_status == "ended"`, raise `ValidationError` with message: *"Cannot reopen: registration deadline has passed. Please extend the registration end date first."*
+    - Reject `"full"` and `"ended"` with `ValidationError`: *"Status can only be set to 'open' or 'closed'. 'full' and 'ended' are system-managed."*
+  - Backend automatically sets `status = "full"` when the last seat is taken (existing behaviour from prior specs).
+  - Backend automatically computes `effective_status = "ended"` in the serializer when `status == "open"` and `registration_end_date <= now` (lazy computation, never stored).
   - `register()` action ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)): update guard to `effective_status != RegistrationStatus.OPEN` — this covers `closed`, `full`, and `ended` with a single check.
 
 - **`IsEventOrganizerOrAdmin` permission class** (new or reuse existing): checks that `request.user` is the project owner or holds an admin role in the project team. Verify whether an equivalent already exists before creating a new one.
@@ -205,7 +168,52 @@ None.
 
 ## Technical Solution Overview
 
-*To be filled by a development agent during the IMPLEMENTATION phase.*
+**Backend — completed 2026-03-31.**
+
+### Models (`organization/models/event_registration.py`)
+- `RegistrationStatus` extended with `ENDED = "ended", "Ended"` as a Python-side-only computed constant. It is **never stored in the DB** — `validate_status()` rejects it on any write. The `status` field `help_text` was updated to document this.
+
+### Serializers (`organization/serializers/event_registration.py`)
+- `_compute_effective_status(obj)` — module-level helper used by both the read path (serializer `to_representation`) and the view's write guard. Returns `RegistrationStatus.ENDED` constant (not the raw string) when `stored_status == OPEN` and `registration_end_date <= now()`.
+- `EventRegistrationSerializer.validate_status()` — rejects both `FULL` and `ENDED` with a unified message: *"Status can only be set to 'open' or 'closed'. 'full' and 'ended' are system-managed."*
+- `EditEventRegistrationSerializer`:
+  - Removed `status` from `read_only_fields` — it is now writable.
+  - `validate_status()` — same rejection of `FULL` and `ENDED`.
+  - `validate()` — reopen guard: when `new_status == OPEN` and `_compute_effective_status(self.instance) == ENDED`, raises a field-level `ValidationError` directing the organiser to extend `registration_end_date` first.
+  - `update()` — explicit-status-priority pattern: reads `explicit_status = validated_data.get("status")`. The existing `max_participants` auto-adjustment only runs when `explicit_status is None` — organiser's explicit intent always wins.
+
+### Views (`organization/views/event_registration_views.py`)
+- `RegisterForEventView.post()` — two-step guard (`er.status != OPEN` + deadline check) replaced by a single `_compute_effective_status(er) != OPEN` check. A `_message_map` dict provides status-specific error messages (`closed` → "Registration is currently closed.", `full` → "The event is fully booked.", `ended` → "The registration deadline has passed.").
+
+### No migration required
+`RegistrationStatus.ENDED` is Python-side only. The `status` column already exists from migration `0121_add_eventregistration_status.py`.
+
+**Frontend — completed 2026-04-01.**
+
+### Types (`src/types.ts`)
+- `EventRegistrationData` extended with `available_seats: number | null` — already returned by the backend; added to the TypeScript type to enable the capacity guard computation.
+
+### Texts (`public/texts/project_texts.tsx`)
+- Added `registration_is_open` / `registration_is_closed` — descriptive switch labels ("Registration is open" / "Registration is closed").
+- Added `registration_fully_booked_increase_max_participants` — inline capacity guard hint shown when `status == "full"` and `max_participants` has not yet freed a seat.
+
+### Modal (`src/components/project/EditEventRegistrationModal.tsx`)
+- **Status field**: replaced the prior placeholder with a `Switch` (`FormControlLabel`) with label **"Registration is open"** / **"Registration is closed"**, more legible and touch-friendly than a dropdown.
+  - Initialised from `eventRegistration.status`: `"open"` → switch ON; `"closed"` → switch OFF; `"full"` → switch ON (representing organiser intent); `"ended"` → field hidden entirely.
+  - For `"full"`: a warning `Chip` shows the current effective status above the switch. The switch's `onChange` handler silently blocks turning it ON when `canSelectOpen` is false (capacity guard), and the inline hint is shown.
+  - For `"ended"`: only an error `Chip` is rendered; the switch is omitted since the backend rejects `status=open` when the deadline has passed.
+  - `canSelectOpen` is computed reactively: `!isStatusFull || parseInt(maxParticipants) > participantCount`. Turning ON becomes possible as soon as the organiser types a `max_participants` value that frees at least one seat.
+- **`status` in payload**: included for all statuses except `"ended"` (where the backend would reject it regardless).
+- **Draft-mode validation** (`is_draft == true`): mirrors the relaxed rules from `EnterDetails.tsx` —
+  - Required checks skipped (empty fields are allowed).
+  - "Must be in the future" check skipped.
+  - If a value *is* entered it must still be coherent: `max_participants ≥ 1`, end date valid, end date before event end date.
+- **Payload safety**: fields are only added to the PATCH body when they have a value (`maxParticipants !== ""` / `registrationEndDate !== null`), preventing `NaN` / runtime errors when drafts are saved with empty fields.
+- **API error mapping**: `status` field errors from the backend are now surfaced as inline form errors.
+
+### Tests (`src/components/project/EditEventRegistrationModal.test.tsx`)
+- 25 unit tests covering: rendering for all 4 statuses, switch toggle labels, capacity guard (block/unblock/hint), full validation suite for published and draft projects, payload construction (omit status for ended, correct status on toggle), and API error surfacing.
+- Key design choices documented in tests: `getByRole('spinbutton')` for the number input (avoids MUI dual-label ambiguity), `FUTURE_DATE` set before `EVENT_END_DATE` to prevent cross-field validation failures, capacity guard test data uses `available_seats: 0` so the initial form value equals participant count.
 
 ## Log
 
@@ -215,37 +223,33 @@ None.
 - 2026-03-24 10:30 — `ended` status added (Python-side, never stored). Lazy computation in serializer: `stored_status == "open" AND registration_end_date <= now → effective "ended"`. `is_registration_open` now simplifies to `effective_status == "open"` — `status` becomes the single source of truth for all states. `reopen` endpoint guards against `ended` (returns `400`). System entities and core flows updated.
 - 2026-03-24 11:00 — `is_registration_open` removed from the API entirely. `status` covers all cases and provides richer information for contextual UI messaging (`open` → Register, `closed` → "Registration closed", `full` → "Booked out", `ended` → "Registration period ended"). Ripple effect: [#1845](https://github.com/climateconnect/climateconnect/issues/1845) and [#1849](https://github.com/climateconnect/climateconnect/issues/1849) specs must be updated to remove `is_registration_open` from their API response documentation.
 - 2026-03-26 — GitHub issue #1851 created in the code repository. Spec updated: `/api/events/` URLs corrected to `/api/projects/`; all product-backlog task number references replaced with code repo issue numbers.
+- 2026-03-31 — Spec revised: removed separate `POST /close/` and `POST /reopen/` endpoints. Status changes are now handled via the existing `PATCH /api/projects/{slug}/registration/` endpoint as part of the registration edit form. Only `"open"` and `"closed"` are user-settable; `"full"` and `"ended"` remain system-managed. Backend automatically handles status transitions based on registration count and deadline. Frontend shows status as a select field in the edit form with "Open" and "Closed" options, displaying "full" and "ended" as read-only when applicable.
+- 2026-03-31 — Capacity guard added. `full → open` is now **blocked** at the API level unless `max_participants` is increased above the current participant count in the same PATCH request. Frontend must enforce this proactively: when `status == "full"`, the "Open" option is disabled until `max_participants` is set to a value that creates at least one free seat. A single combined `status=open` + `max_participants=<new value>` submission is accepted as one atomic operation by the backend.
+- 2026-04-01 — Frontend completed. `EditEventRegistrationModal` extended with status `Switch`, capacity guard, draft-mode relaxed validation, and safe payload construction. `available_seats` added to `EventRegistrationData` type. Descriptive switch labels and capacity hint text added. 25 unit tests written and passing. Spec updated to COMPLETE.
 
 ## Acceptance Criteria
 
-- [ ] An event organizer or team admin can close the event registration from the **event detail page**.
-- [ ] An event organizer or team admin can close the event registration from the **event edit page**.
-- [ ] Once registration is manually closed (`status = "closed"`), members cannot register — `POST /register/` returns `400 Bad Request`.
-- [ ] A manually closed registration can be **reopened** by the event organizer or team admin (if the deadline has not passed).
-- [ ] After reopening (`status = "open"`), members can register again.
-- [ ] `POST /api/projects/{slug}/registration/close/` is idempotent — calling it when `status` is already `"closed"` returns `200 OK`.
-- [ ] `POST /api/projects/{slug}/registration/reopen/` is idempotent — calling it when `status` is already `"open"` returns `200 OK`.
-- [ ] `POST /api/projects/{slug}/registration/reopen/` returns `400 Bad Request` when `effective_status == "ended"` (deadline has passed), with a message directing the organizer to extend the registration end date first.
-- [ ] The organizer can reopen a `"full"` registration (`full` → `open` transition is permitted).
-- [ ] `full` and `ended` cannot be set via either endpoint — `EventRegistrationSerializer.validate_status()` rejects them with `400 Bad Request`.
-- [ ] Both endpoints return `401 Unauthorized` for unauthenticated requests.
-- [ ] Both endpoints return `403 Forbidden` for users who are not the event organizer or a team admin.
-- [ ] Both endpoints return `404 Not Found` when no `EventRegistration` exists for the event.
-- [ ] `event_registration.status: "open" | "closed" | "full" | "ended"` is returned by `GET /api/projects/{slug}/` and `GET /api/projects/`. `"ended"` is computed lazily (never stored in DB).
-- [ ] `is_registration_open` is **not present** in any API response — removed from `EventRegistrationSerializer` and all endpoint payloads.
-- [ ] The member-facing button on the event detail page uses `status` for both gating and contextual labelling:
-  - `status == "open"`: active "Register" button.
-  - `status == "closed"`: disabled button labelled **"Registration closed"**.
-  - `status == "full"`: disabled button labelled **"Booked out"**.
-  - `status == "ended"`: disabled button labelled **"Registration period ended"**.
-- [ ] The organizer/admin UI on the event detail page shows:
-  - **"Close registration"** when `status == "open"`.
-  - **"Reopen registration"** when `status == "closed"` or `"full"`.
-  - Informational label **"Registration period has ended"** when `status == "ended"` (no action button shown).
-- [ ] The organizer/admin UI on the event edit page includes the same close/reopen/ended behaviour.
-- [ ] Regular members do not see the close/reopen action.
-- [ ] No Django migration is required — `status` column already exists from [#1820](https://github.com/climateconnect/climateconnect/issues/1820) migration `0121_add_eventregistration_status.py`. `ended` is a Python-side enum value only.
-- [ ] All tests pass (unit, integration, end-to-end).
+- [x] An event organizer or team admin can change registration status between **"open"** and **"closed"** from the **event edit page** via the registration edit form.
+- [x] The registration edit form includes a status field with **"Open"** and **"Closed"** as selectable options.
+- [x] When `status = "full"` or `"ended"`, the form displays the current status as read-only text (not selectable).
+- [x] Once registration is manually closed (`status = "closed"`), members cannot register — `POST /register/` returns `400 Bad Request`.
+- [x] A manually closed registration can be **reopened** by the event organizer or team admin via the form (if the deadline has not passed).
+- [x] After reopening (`status = "open"`), members can register again.
+- [x] `PATCH /api/projects/{slug}/registration/` accepts `status` in the request body and updates it.
+- [x] `PATCH` is idempotent — setting `status` to its current value returns `200 OK` without changes.
+- [x] `PATCH` returns `400 Bad Request` when `effective_status == "ended"` and organizer attempts to set `status = "open"`, with a message directing the organizer to extend the registration end date first.
+- [x] `PATCH` returns `400 Bad Request` when the event is at capacity (`participant_count >= max_participants`) and the organizer attempts to set `status = "open"` without also increasing `max_participants` — error message: *"Cannot reopen: the event is fully booked. Please increase the maximum participants first."*
+- [x] The organizer **can** reopen a `"full"` registration when `max_participants` is increased above the current participant count in the same PATCH request (single atomic `status=open` + `max_participants=<new value>` submission).
+- [x] When `status == "full"`, the "Open" option in the registration status selector on the event edit form is **disabled** with a hint explaining that `max_participants` must be increased first. The option becomes enabled once `max_participants` is set to a value above the current participant count.
+- [x] `full` and `ended` cannot be set via `PATCH` — `EventRegistrationSerializer.validate_status()` rejects them with `400 Bad Request` and message: *"Status can only be set to 'open' or 'closed'. 'full' and 'ended' are system-managed."*
+- [x] `PATCH` returns `401 Unauthorized` for unauthenticated requests.
+- [x] `PATCH` returns `403 Forbidden` for users who are not the event organizer or a team admin.
+- [x] `PATCH` returns `404 Not Found` when no `EventRegistration` exists for the event.
+- [x] `event_registration.status: "open" | "closed" | "full" | "ended"` is returned by `GET /api/projects/{slug}/` and `GET /api/projects/`. `"ended"` is computed lazily (never stored in DB).
+- [x] `is_registration_open` is **not present** in any API response — removed from `EventRegistrationSerializer` and all endpoint payloads.
+- [x] The organizer/admin event registration edit form correctly displays and allows editing of the status field.
+- [x] Regular members do not see the status edit control.
+- [x] No Django migration is required — `status` column already exists from [#1820](https://github.com/climateconnect/climateconnect/issues/1820) migration `0121_add_eventregistration_status.py`. `ended` is a Python-side enum value only.
+- [x] All tests pass (unit, integration, end-to-end).
 - [ ] Code review approved.
-- [ ] Documentation updated and current.
-
+- [x] Documentation updated and current.

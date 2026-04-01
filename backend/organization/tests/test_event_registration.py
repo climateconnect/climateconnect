@@ -794,7 +794,9 @@ class TestEditEventRegistrationSettings(APITestCase):
             participant = User.objects.create_user(
                 username=f"participant_seats_check_{i}", password="x"
             )
-            EventParticipant.objects.create(user=participant, event_registration=self.er)
+            EventParticipant.objects.create(
+                user=participant, event_registration=self.er
+            )
         self.client.login(username="organiser_edit_reg", password="testpassword")
 
         response = self.client.patch(
@@ -815,7 +817,11 @@ class TestEditEventRegistrationSettings(APITestCase):
 
         response = self.client.patch(
             self._url("edit-reg-event"),
-            {"registration_end_date": (timezone.now() + timedelta(days=30)).isoformat()},
+            {
+                "registration_end_date": (
+                    timezone.now() + timedelta(days=30)
+                ).isoformat()
+            },
             format="json",
         )
 
@@ -827,8 +833,8 @@ class TestEditEventRegistrationSettings(APITestCase):
     # ------------------------------------------------------------------
 
     @tag("event_registration", "edit_settings")
-    def test_status_in_request_body_is_ignored(self):
-        """Including status in the request body does not change the ER status."""
+    def test_status_closed_in_request_body_is_applied(self):
+        """Including status='closed' in the request body closes the registration."""
         self.client.login(username="organiser_edit_reg", password="testpassword")
 
         response = self.client.patch(
@@ -839,9 +845,8 @@ class TestEditEventRegistrationSettings(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
         self.er.refresh_from_db()
-        # Status must remain OPEN — "closed" should have been silently ignored.
-        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
-        self.assertEqual(response.data["status"], RegistrationStatus.OPEN)
+        self.assertEqual(self.er.status, RegistrationStatus.CLOSED)
+        self.assertEqual(response.data["status"], RegistrationStatus.CLOSED)
 
     # ------------------------------------------------------------------
     # Validation — published projects
@@ -1134,3 +1139,379 @@ class TestEditEventRegistrationSettings(APITestCase):
         self.assertIsNone(self.er.max_participants)
         self.assertEqual(self.er.status, RegistrationStatus.OPEN)
         self.assertEqual(response.data["status"], RegistrationStatus.OPEN)
+
+
+class TestEditEventRegistrationStatusChange(APITestCase):
+    """
+    Tests for organiser-driven status changes via
+    PATCH /api/projects/{slug}/registration/.
+
+    Covers:
+    - Organiser can close registration (open → closed)
+    - Organiser can reopen registration (closed → open)
+    - full → open transition is permitted (organiser overrides capacity block)
+    - Setting status to its current value is idempotent (200 OK, no DB change)
+    - "full" and "ended" cannot be set via the API (400 Bad Request)
+    - Attempting to reopen when effective_status == "ended" returns 400
+    - Status-only PATCH does not affect other fields
+    - 401 Unauthorized for unauthenticated requests
+    - 403 Forbidden for non-members
+    """
+
+    def setUp(self):
+        self.project_status, _ = ProjectStatus.objects.update_or_create(
+            id=2,
+            defaults={
+                "name": "active_status_change",
+                "name_de_translation": "aktiv",
+                "has_end_date": True,
+                "has_start_date": True,
+            },
+        )
+        self.default_language, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
+        )
+
+        self.organiser = User.objects.create_user(
+            username="organiser_status_change", password="testpassword"
+        )
+        self.role = Role.objects.create(
+            name="Admin_status_change",
+            role_type=Role.ALL_TYPE,
+        )
+        self.non_member = User.objects.create_user(
+            username="non_member_status_change", password="testpassword"
+        )
+
+        self.event = Project.objects.create(
+            name="Status Change Event",
+            url_slug="status-change-event",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=30),
+            end_date=timezone.now() + timedelta(days=90),
+        )
+        self.er = EventRegistration.objects.create(
+            project=self.event,
+            max_participants=50,
+            registration_end_date=timezone.now() + timedelta(days=60),
+            status=RegistrationStatus.OPEN,
+        )
+        ProjectMember.objects.create(
+            user=self.organiser,
+            project=self.event,
+            role=self.role,
+        )
+
+    def _url(self, slug="status-change-event"):
+        return reverse(
+            "organization:edit-event-registration-settings",
+            kwargs={"url_slug": slug},
+        )
+
+    # ------------------------------------------------------------------
+    # Happy-path: close and reopen
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "status_change")
+    def test_organiser_can_close_open_registration(self):
+        """PATCH status='closed' on an open registration → 200 OK, status is CLOSED."""
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "closed"}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.CLOSED)
+        self.assertEqual(response.data["status"], RegistrationStatus.CLOSED)
+
+    @tag("event_registration", "status_change")
+    def test_organiser_can_reopen_closed_registration(self):
+        """PATCH status='open' on a closed registration → 200 OK, status is OPEN."""
+        self.er.status = RegistrationStatus.CLOSED
+        self.er.save(update_fields=["status", "updated_at"])
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "open"}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+        self.assertEqual(response.data["status"], RegistrationStatus.OPEN)
+
+    @tag("event_registration", "status_change")
+    def test_cannot_reopen_fully_booked_registration_returns_400(self):
+        """PATCH status='open' when stored status is FULL and event is at capacity → 400."""
+        # Fill the event to capacity (max_participants=50 from setUp).
+        users = [
+            User.objects.create_user(username=f"full_cap_user_{i}", password="x")
+            for i in range(self.er.max_participants)
+        ]
+        for u in users:
+            EventParticipant.objects.create(user=u, event_registration=self.er)
+        self.er.status = RegistrationStatus.FULL
+        self.er.save(update_fields=["status", "updated_at"])
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "open"}, format="json")
+
+        self.assertEqual(
+            response.status_code, status.HTTP_400_BAD_REQUEST, response.data
+        )
+        self.assertIn("status", response.data)
+        self.assertIn("fully booked", str(response.data["status"]))
+
+    @tag("event_registration", "status_change")
+    def test_cannot_reopen_closed_booked_out_registration_returns_400(self):
+        """PATCH status='open' when stored status is CLOSED but event is at capacity → 400."""
+        self.er.max_participants = 3
+        self.er.status = RegistrationStatus.CLOSED
+        self.er.save(update_fields=["status", "max_participants", "updated_at"])
+        users = [
+            User.objects.create_user(username=f"closed_cap_user_{i}", password="x")
+            for i in range(3)
+        ]
+        for u in users:
+            EventParticipant.objects.create(user=u, event_registration=self.er)
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "open"}, format="json")
+
+        self.assertEqual(
+            response.status_code, status.HTTP_400_BAD_REQUEST, response.data
+        )
+        self.assertIn("status", response.data)
+        self.assertIn("fully booked", str(response.data["status"]))
+
+    @tag("event_registration", "status_change")
+    def test_organiser_can_reopen_full_registration_after_increasing_capacity(self):
+        """PATCH status='open' AND max_participants > current count on a FULL event → 200 OK."""
+        self.er.max_participants = 3
+        self.er.status = RegistrationStatus.FULL
+        self.er.save(update_fields=["status", "max_participants", "updated_at"])
+        users = [
+            User.objects.create_user(username=f"increase_cap_user_{i}", password="x")
+            for i in range(3)
+        ]
+        for u in users:
+            EventParticipant.objects.create(user=u, event_registration=self.er)
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        # Raise cap to 10 (> 3 participants) AND explicitly reopen.
+        response = self.client.patch(
+            self._url(),
+            {"status": "open", "max_participants": 10},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+        self.assertEqual(self.er.max_participants, 10)
+
+    # ------------------------------------------------------------------
+    # Idempotency
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "status_change")
+    def test_setting_status_to_current_open_value_is_idempotent(self):
+        """PATCH status='open' on an already-open registration → 200 OK, no change."""
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "open"}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+
+    @tag("event_registration", "status_change")
+    def test_setting_status_to_current_closed_value_is_idempotent(self):
+        """PATCH status='closed' on an already-closed registration → 200 OK, no change."""
+        self.er.status = RegistrationStatus.CLOSED
+        self.er.save(update_fields=["status", "updated_at"])
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "closed"}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.CLOSED)
+
+    # ------------------------------------------------------------------
+    # System-managed statuses rejected on write
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "status_change")
+    def test_setting_status_to_full_returns_400(self):
+        """PATCH status='full' → 400 Bad Request (system-managed)."""
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "full"}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("status", response.data)
+        self.assertIn("system-managed", str(response.data["status"]))
+
+    @tag("event_registration", "status_change")
+    def test_setting_status_to_ended_returns_400(self):
+        """PATCH status='ended' → 400 Bad Request (system-managed computed value)."""
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "ended"}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("status", response.data)
+        self.assertIn("system-managed", str(response.data["status"]))
+
+    # ------------------------------------------------------------------
+    # Reopen guard: cannot reopen when effective_status == "ended"
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "status_change")
+    def test_cannot_reopen_when_registration_deadline_has_passed(self):
+        """PATCH status='open' when deadline is in the past → 400 with helpful message."""
+        # Bypass the past-date guard by writing directly — simulates a registration
+        # that expired naturally after being created with a valid future date.
+        self.er.registration_end_date = timezone.now() - timedelta(hours=1)
+        self.er.save(update_fields=["registration_end_date"])
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "open"}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("status", response.data)
+        self.assertIn("deadline has passed", str(response.data["status"]))
+
+    @tag("event_registration", "status_change")
+    def test_closing_when_deadline_has_passed_is_allowed(self):
+        """PATCH status='closed' when deadline is in the past → 200 OK (allowed)."""
+        self.er.registration_end_date = timezone.now() - timedelta(hours=1)
+        self.er.save(update_fields=["registration_end_date"])
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        response = self.client.patch(self._url(), {"status": "closed"}, format="json")
+
+        # Closing an ended registration is allowed (no-op in practice but valid).
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.CLOSED)
+
+    # ------------------------------------------------------------------
+    # Status change does not affect unrelated fields
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "status_change")
+    def test_status_only_patch_does_not_change_max_participants(self):
+        """PATCH with only status does not alter max_participants."""
+        original_max = self.er.max_participants
+        self.client.login(username="organiser_status_change", password="testpassword")
+
+        self.client.patch(self._url(), {"status": "closed"}, format="json")
+
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.max_participants, original_max)
+
+    @tag("event_registration", "status_change")
+    def test_explicit_status_overrides_auto_adjustment(self):
+        """When status is explicitly provided, auto-adjustment from max_participants is skipped.
+
+        Scenario: organiser sends status='open' AND max_participants equal to participant
+        count. Without the explicit-status priority, auto-adjustment would set FULL.
+        With the priority, the explicit status='open' wins.
+        """
+        # Create 3 participants
+        for i in range(3):
+            p = User.objects.create_user(
+                username=f"p_explicit_override_{i}", password="x"
+            )
+            EventParticipant.objects.create(user=p, event_registration=self.er)
+
+        self.er.status = RegistrationStatus.FULL
+        self.er.max_participants = 3
+        self.er.save(update_fields=["status", "max_participants", "updated_at"])
+
+        self.client.login(username="organiser_status_change", password="testpassword")
+        # Organiser raises cap to 10 AND explicitly sets status=open — should be OPEN.
+        response = self.client.patch(
+            self._url(),
+            {"status": "open", "max_participants": 10},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+
+    # ------------------------------------------------------------------
+    # Auth / authorisation
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "status_change")
+    def test_unauthenticated_status_change_returns_401(self):
+        """Unauthenticated PATCH → 401 Unauthorized."""
+        response = self.client.patch(self._url(), {"status": "closed"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @tag("event_registration", "status_change")
+    def test_non_member_status_change_returns_403(self):
+        """Authenticated user who is not a project member → 403 Forbidden."""
+        self.client.login(username="non_member_status_change", password="testpassword")
+        response = self.client.patch(self._url(), {"status": "closed"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    # ------------------------------------------------------------------
+    # Effect on member registration (closed blocks new sign-ups)
+    # ------------------------------------------------------------------
+
+    @tag("event_registration", "status_change")
+    def test_closed_registration_blocks_new_member_signups(self):
+        """After organiser closes registration, POST /register/ returns 400."""
+        # Close the registration via PATCH
+        self.client.login(username="organiser_status_change", password="testpassword")
+        patch_resp = self.client.patch(self._url(), {"status": "closed"}, format="json")
+        self.assertEqual(patch_resp.status_code, status.HTTP_200_OK)
+
+        # A new member tries to register
+        User.objects.create_user(
+            username="blocked_member_status", password="testpassword"
+        )
+        self.client.login(username="blocked_member_status", password="testpassword")
+        register_url = reverse(
+            "organization:register-for-event",
+            kwargs={"url_slug": "status-change-event"},
+        )
+        response = self.client.post(register_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("event_registration", "status_change")
+    def test_reopened_registration_allows_member_signups(self):
+        """After organiser reopens a closed registration, POST /register/ succeeds."""
+        # First close
+        self.er.status = RegistrationStatus.CLOSED
+        self.er.save(update_fields=["status", "updated_at"])
+
+        # Reopen via PATCH
+        self.client.login(username="organiser_status_change", password="testpassword")
+        patch_resp = self.client.patch(self._url(), {"status": "open"}, format="json")
+        self.assertEqual(patch_resp.status_code, status.HTTP_200_OK)
+
+        # A member registers successfully
+        from unittest.mock import patch as mock_patch
+
+        User.objects.create_user(
+            username="allowed_member_status", password="testpassword"
+        )
+        self.client.login(username="allowed_member_status", password="testpassword")
+        register_url = reverse(
+            "organization:register-for-event",
+            kwargs={"url_slug": "status-change-event"},
+        )
+        with mock_patch(
+            "organization.views.event_registration_views._send_registration_email"
+        ):
+            response = self.client.post(register_url)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
