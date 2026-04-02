@@ -18,7 +18,7 @@ import Cookies from "universal-cookie";
 
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
-import { EventRegistrationData, Project } from "../../types";
+import { Project } from "../../types";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
 
@@ -107,7 +107,6 @@ type Props = {
   open: boolean;
   onClose: () => void;
   project: Project;
-  eventRegistration: EventRegistrationData;
   onRegistrationSuccess?: () => void;
 };
 
@@ -117,7 +116,6 @@ export default function EventRegistrationModal({
   open,
   onClose,
   project,
-  eventRegistration: _eventRegistration,
   onRegistrationSuccess,
 }: Props) {
   const classes = useStyles();

@@ -706,7 +706,6 @@ export default function ProjectPageRoot({
           open={registrationModalOpen}
           onClose={() => setRegistrationModalOpen(false)}
           project={project}
-          eventRegistration={project.event_registration}
         />
       )}
     </div>
