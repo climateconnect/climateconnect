@@ -174,7 +174,7 @@ export default function EventRegistrationModal({
     try {
       const response = await apiRequest({
         method: "post",
-        url: `/api/projects/${project.url_slug}/register/`,
+        url: `/api/projects/${project.url_slug}/registrations/`,
         payload: {},
         token: token,
         locale: locale,

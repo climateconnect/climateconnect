@@ -67,7 +67,7 @@ type Props = {
   /** Called with the updated EventRegistrationData after a successful PATCH */
   onSaved: (_updated: EventRegistrationData) => void;
   project: Project;
-  /** Current event_registration values to pre-fill. Treated as controlled from the outside. */
+  /** Current registration_config values to pre-fill. Treated as controlled from the outside. */
   eventRegistration: EventRegistrationData;
 };
 
@@ -182,7 +182,7 @@ export default function EditEventRegistrationModal({
     try {
       const resp = await apiRequest({
         method: "patch",
-        url: `/api/projects/${project.url_slug}/registration/`,
+        url: `/api/projects/${project.url_slug}/registration-config/`,
         payload,
         token,
         locale,

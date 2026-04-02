@@ -36,7 +36,7 @@ import UserContext from "../context/UserContext";
 import EditEventRegistrationModal from "./EditEventRegistrationModal";
 import SendEmailToGuestsModal from "./SendEmailToGuestsModal";
 
-type EventParticipant = {
+type EventRegistration = {
   id: string; // derived from user_url_slug for DataGrid row identity
   user_first_name: string;
   user_last_name: string;
@@ -148,7 +148,7 @@ export default function ProjectRegistrationsContent({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
 
-  const [participants, setParticipants] = useState<EventParticipant[]>([]);
+  const [participants, setParticipants] = useState<EventRegistration[]>([]);
   const [loadingParticipants, setLoadingParticipants] = useState(true);
   const [participantsError, setParticipantsError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -164,8 +164,8 @@ export default function ProjectRegistrationsContent({
       locale,
     })
       .then((resp) => {
-        const rows: EventParticipant[] = resp.data.map(
-          (p: Omit<EventParticipant, "id">, idx: number) => ({
+        const rows: EventRegistration[] = resp.data.map(
+          (p: Omit<EventRegistration, "id">, idx: number) => ({
             ...p,
             // DataGrid requires a unique `id` field
             id: p.user_url_slug || String(idx),

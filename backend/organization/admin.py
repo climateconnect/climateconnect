@@ -3,8 +3,8 @@ from django.contrib import admin
 from organization.models import (
     Comment,
     CommentTranslation,
-    EventParticipant,
     EventRegistration,
+    EventRegistrationConfig,
     Organization,
     OrganizationFieldTagging,
     OrganizationFollower,
@@ -253,7 +253,7 @@ class OrganizationTranslationAdmin(admin.ModelAdmin):
 admin.site.register(OrganizationTranslation, OrganizationTranslationAdmin)
 
 
-class EventRegistrationAdmin(admin.ModelAdmin):
+class EventRegistrationConfigAdmin(admin.ModelAdmin):
     search_fields = ("project__name", "project__url_slug")
     list_display = (
         "project",
@@ -266,17 +266,17 @@ class EventRegistrationAdmin(admin.ModelAdmin):
     raw_id_fields = ("project",)
 
 
-admin.site.register(EventRegistration, EventRegistrationAdmin)
+admin.site.register(EventRegistrationConfig, EventRegistrationConfigAdmin)
 
 
-class EventParticipantAdmin(admin.ModelAdmin):
+class EventRegistrationAdmin(admin.ModelAdmin):
     search_fields = (
         "user__username",
         "user__email",
         "user__first_name",
         "user__last_name",
-        "event_registration__project__name",
-        "event_registration__project__url_slug",
+        "registration_config__project__name",
+        "registration_config__project__url_slug",
     )
     list_display = (
         "user",
@@ -284,13 +284,13 @@ class EventParticipantAdmin(admin.ModelAdmin):
         "registered_at",
     )
     list_filter = ("registered_at",)
-    raw_id_fields = ("user", "event_registration")
+    raw_id_fields = ("user", "registration_config")
     readonly_fields = ("registered_at",)
 
     def get_event_name(self, obj):
-        return obj.event_registration.project.name
+        return obj.registration_config.project.name
 
     get_event_name.short_description = "Event"
 
 
-admin.site.register(EventParticipant, EventParticipantAdmin)
+admin.site.register(EventRegistration, EventRegistrationAdmin)

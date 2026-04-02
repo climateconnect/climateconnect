@@ -152,7 +152,7 @@ export default function ProjectPageRoot({
 
   // Lifted state so edits from either the side button or the tab stay in sync
   const [currentEventRegistration, setCurrentEventRegistration] = useState(
-    project.event_registration ?? null
+    project.registration_config ?? null
   );
 
   // Registration modal state
@@ -162,7 +162,7 @@ export default function ProjectPageRoot({
   };
 
   // Determine whether to show the Registrations tab:
-  // only for event admins when the toggle is on and event_registration exists
+  // only for event admins when the toggle is on and registration_config exists
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
@@ -219,11 +219,11 @@ export default function ProjectPageRoot({
     if (
       params.openRegistration === "true" &&
       isEventRegistrationEnabled &&
-      project.event_registration
+      project.registration_config
     ) {
       setRegistrationModalOpen(true);
     }
-  }, [isEventRegistrationEnabled, project.event_registration]);
+  }, [isEventRegistrationEnabled, project.registration_config]);
 
   /**
    * Calls backend, sending a request to join this project based
@@ -704,7 +704,7 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
-      {isEventRegistrationEnabled && project.event_registration && (
+      {isEventRegistrationEnabled && project.registration_config && (
         <EventRegistrationModal
           open={registrationModalOpen}
           onClose={() => setRegistrationModalOpen(false)}

@@ -545,7 +545,7 @@ function parseProject(project) {
     parent_project_name: project.parent_project_name,
     parent_project_slug: project.parent_project_slug,
     is_online: project.is_online,
-    event_registration: project.event_registration ?? null,
+    registration_config: project.registration_config ?? null,
   };
 }
 

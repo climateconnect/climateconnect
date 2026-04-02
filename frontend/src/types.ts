@@ -72,7 +72,7 @@ export type Project = {
   max_participants?: number | null;
   registration_end_date?: Dayjs | null;
   // Event registration data from the API (detail view)
-  event_registration?: EventRegistrationData | null;
+  registration_config?: EventRegistrationData | null;
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";
