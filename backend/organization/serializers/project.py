@@ -26,8 +26,10 @@ from organization.models import (
     ProjectParents,
 )
 from organization.models.translations import ProjectTranslation
-from organization.models.event_registration import EventRegistration
-from organization.serializers.event_registration import EventRegistrationSerializer
+from organization.models.event_registration import EventRegistrationConfig
+from organization.serializers.event_registration import (
+    EventRegistrationConfigSerializer,
+)
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.status import (
     ProjectTypesSerializer,
@@ -60,7 +62,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     loc = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
-    event_registration = serializers.SerializerMethodField()
+    registration_config = serializers.SerializerMethodField()
 
     # Parent/child relationship fields (detail view)
     parent_project_id = serializers.IntegerField(
@@ -105,9 +107,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "has_children",
             "child_projects_count",
             "is_online",
-            "event_registration",
+            "registration_config",
         )
-        read_only_fields = ["url_slug"]
 
     def get_name(self, obj):
         return get_project_name(obj, get_language())
@@ -188,14 +189,14 @@ class ProjectSerializer(serializers.ModelSerializer):
             return obj.child_projects.count()
         return 0
 
-    def get_event_registration(self, obj):
-        """Return event registration settings including available_seats (detail only)."""
+    def get_registration_config(self, obj):
+        """Return event registration config including available_seats (detail only)."""
         try:
-            return EventRegistrationSerializer(
-                obj.event_registration,
+            return EventRegistrationConfigSerializer(
+                obj.registration_config,
                 context={"include_seat_count": True},
             ).data
-        except EventRegistration.DoesNotExist:
+        except EventRegistrationConfig.DoesNotExist:
             return None
 
 
@@ -315,7 +316,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     number_of_comments = serializers.SerializerMethodField()
     number_of_likes = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
-    event_registration = serializers.SerializerMethodField()
+    registration_config = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -338,7 +339,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "end_date",
             "has_children",
             "is_online",
-            "event_registration",
+            "registration_config",
         )
 
     def get_name(self, obj):
@@ -427,11 +428,11 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
         return serializer.data
 
-    def get_event_registration(self, obj):
-        """Return event registration settings if present, else None."""
+    def get_registration_config(self, obj):
+        """Return event registration config if present, else None."""
         try:
-            return EventRegistrationSerializer(obj.event_registration).data
-        except EventRegistration.DoesNotExist:
+            return EventRegistrationConfigSerializer(obj.registration_config).data
+        except EventRegistrationConfig.DoesNotExist:
             return None
 
 

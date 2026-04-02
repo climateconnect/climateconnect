@@ -499,8 +499,8 @@ const formatProjectForRequest = async (project, translations) => {
       : undefined,
     source_language: project.language,
     translations: translations ? translations : {},
-    // Include event_registration only when toggle is on and both fields are present
-    event_registration:
+    // Include registration_config only when toggle is on and both fields are present
+    registration_config:
       registrationEnabled && project.project_type?.type_id === "event"
         ? {
             max_participants: max_participants ? Number(max_participants) : undefined,

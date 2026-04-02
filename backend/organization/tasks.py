@@ -23,7 +23,7 @@ def send_event_registration_confirmation_email(self, user_id: int, event_slug: s
     Send a registration confirmation email to a user who just registered for an event.
 
     This task is dispatched asynchronously (via .delay()) immediately after the
-    EventParticipant row is created, so it never blocks the HTTP response.
+    EventRegistration row is created, so it never blocks the HTTP response.
 
     Retries up to 3 times with a 60-second delay on transient failures (e.g. Mailjet
     downtime).  Permanent failures (missing user, missing project) are logged and
@@ -54,7 +54,7 @@ def send_event_registration_confirmation_email(self, user_id: int, event_slug: s
 
     try:
         project = (
-            Project.objects.select_related("event_registration", "loc", "language")
+            Project.objects.select_related("registration_config", "loc", "language")
             .prefetch_related(
                 "translation_project__language",
                 "project_parent__parent_organization__language",

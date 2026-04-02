@@ -10,13 +10,13 @@ from rest_framework.views import APIView
 from climateconnect_api.models import Role
 from organization.models import Project, ProjectMember
 from organization.models.event_registration import (
-    EventParticipant,
     EventRegistration,
+    EventRegistrationConfig,
     RegistrationStatus,
 )
 from organization.serializers.event_registration import (
-    EditEventRegistrationSerializer,
-    EventParticipantSerializer,
+    EditEventRegistrationConfigSerializer,
+    EventRegistrationSerializer,
     SendOrganizerEmailSerializer,
     _compute_effective_status,
 )
@@ -29,29 +29,24 @@ from organization.utility.email import send_organizer_message_to_guest
 logger = logging.getLogger(__name__)
 
 
-class RegisterForEventView(APIView):
+class EventRegistrationsView(APIView):
     """
-    POST /api/projects/{url_slug}/register/
+    POST /api/projects/{url_slug}/registrations/  — Member registers for the event.
+    GET  /api/projects/{url_slug}/registrations/  — Organiser lists all registrations.
 
-    Registers the authenticated user for an event that has registration enabled.
-
-    Behaviour:
-        - 201 Created  — first-time registration; EventParticipant row created.
+    POST behaviour:
+        - 201 Created  — first-time registration; EventRegistration row created.
         - 200 OK       — idempotent; user was already registered.
         - 400 Bad Request — registration is closed, full, or deadline has passed.
         - 401 Unauthorized — unauthenticated request.
-        - 404 Not Found — project or event_registration does not exist.
+        - 404 Not Found — project or registration_config does not exist.
 
-    Race-condition safety:
-        The EventRegistration row is locked with SELECT FOR UPDATE inside an atomic
-        transaction.  This serialises concurrent last-seat registrations so that no
-        more than max_participants participants can ever be stored.
+    GET behaviour (organiser/admin only):
+        Returns all active registrations ordered by registered_at asc.
+        No backend pagination; client-side paging via MUI DataGrid.
 
-    Response body (both 200 and 201):
-        {
-            "registered": true,
-            "available_seats": <int | null>
-        }
+    See spec: doc/spec/20260309_0900_member_register_for_event.md
+             doc/spec/20260401_1000_organizer_see_registration_status.md
     """
 
     permission_classes = [IsAuthenticated]
@@ -68,30 +63,32 @@ class RegisterForEventView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # ── 2. Look up EventRegistration (lock row for duration of txn) ─────
+        # ── 2. Look up EventRegistrationConfig (lock row for duration of txn) ─
         try:
-            er = EventRegistration.objects.select_for_update().get(project=project)
-        except EventRegistration.DoesNotExist:
+            rc = EventRegistrationConfig.objects.select_for_update().get(
+                project=project
+            )
+        except EventRegistrationConfig.DoesNotExist:
             return Response(
                 {"message": "This project does not have event registration enabled."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         # ── 3. Idempotency check — return 200 if already registered ─────────
-        already_registered = EventParticipant.objects.filter(
-            user=request.user, event_registration=er
+        already_registered = EventRegistration.objects.filter(
+            user=request.user, registration_config=rc
         ).exists()
         if already_registered:
             return Response(
                 {
                     "registered": True,
-                    "available_seats": self._compute_available_seats(er),
+                    "available_seats": self._compute_available_seats(rc),
                 },
                 status=status.HTTP_200_OK,
             )
 
         # ── 4. Validate that registration is currently open ──────────────────
-        effective_status = _compute_effective_status(er)
+        effective_status = _compute_effective_status(rc)
         if effective_status != RegistrationStatus.OPEN:
             _message_map = {
                 RegistrationStatus.CLOSED: "Registration is currently closed.",
@@ -108,33 +105,33 @@ class RegisterForEventView(APIView):
             )
 
         # ── 5. Capacity check (inside the lock) ──────────────────────────────
-        if er.max_participants is not None:
-            current_count = EventParticipant.objects.filter(
-                event_registration=er
+        if rc.max_participants is not None:
+            current_count = EventRegistration.objects.filter(
+                registration_config=rc
             ).count()
-            if current_count >= er.max_participants:
+            if current_count >= rc.max_participants:
                 # Ensure status reflects reality even if it was missed earlier.
-                er.status = RegistrationStatus.FULL
-                er.save(update_fields=["status", "updated_at"])
+                rc.status = RegistrationStatus.FULL
+                rc.save(update_fields=["status", "updated_at"])
                 return Response(
                     {"message": "Sorry, the event is now fully booked."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        # ── 6. Create EventParticipant ────────────────────────────────────────
-        EventParticipant.objects.create(
+        # ── 6. Create EventRegistration ───────────────────────────────────────
+        EventRegistration.objects.create(
             user=request.user,
-            event_registration=er,
+            registration_config=rc,
         )
 
         # ── 7. Update status to FULL if last seat was just taken ─────────────
         available_seats = None
-        if er.max_participants is not None:
-            new_count = EventParticipant.objects.filter(event_registration=er).count()
-            available_seats = max(0, er.max_participants - new_count)
+        if rc.max_participants is not None:
+            new_count = EventRegistration.objects.filter(registration_config=rc).count()
+            available_seats = max(0, rc.max_participants - new_count)
             if available_seats == 0:
-                er.status = RegistrationStatus.FULL
-                er.save(update_fields=["status", "updated_at"])
+                rc.status = RegistrationStatus.FULL
+                rc.save(update_fields=["status", "updated_at"])
 
         logger.info(
             "[EventRegistration] User %s registered for project '%s'",
@@ -161,20 +158,70 @@ class RegisterForEventView(APIView):
         )
 
     @staticmethod
-    def _compute_available_seats(er: EventRegistration):
+    def _compute_available_seats(rc: EventRegistrationConfig):
         """Return remaining seats or None for unlimited-capacity events."""
-        if er.max_participants is None:
+        if rc.max_participants is None:
             return None
-        count = EventParticipant.objects.filter(event_registration=er).count()
-        return max(0, er.max_participants - count)
+        count = EventRegistration.objects.filter(registration_config=rc).count()
+        return max(0, rc.max_participants - count)
+
+    def get(self, request, url_slug):
+
+        # ── 1. Look up project ──────────────────────────────────────────────
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            return Response(
+                {"message": "Project not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 2. Check organiser/admin permission ─────────────────────────────
+        has_edit_rights = ProjectMember.objects.filter(
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            project=project,
+        ).exists()
+        if not has_edit_rights:
+            return Response(
+                {
+                    "message": (
+                        "You do not have permission to view registrations "
+                        "for this project."
+                    )
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # ── 3. Look up EventRegistrationConfig ───────────────────────────────
+        try:
+            rc = project.registration_config
+        except EventRegistrationConfig.DoesNotExist:
+            return Response(
+                {"message": "This project does not have event registration enabled."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 4. Query registrations ───────────────────────────────────────────
+        # TODO #1850: add .filter(cancelled_at__isnull=True) once cancelled_at is added
+        registrations = (
+            EventRegistration.objects.select_related("user__user_profile")
+            .filter(registration_config=rc)
+            .order_by("registered_at")
+        )
+
+        serializer = EventRegistrationSerializer(
+            registrations, many=True, context={"request": request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EditEventRegistrationSettingsView(APIView):
+class EditRegistrationConfigView(APIView):
     """
-    PATCH /api/projects/{url_slug}/registration/
+    PATCH /api/projects/{url_slug}/registration-config/
 
     Allows an event organiser (or team admin) to update registration settings
-    for an event that already has EventRegistration enabled.
+    for an event that already has EventRegistrationConfig enabled.
 
     Editable fields:
         - max_participants  (positive integer or null for unlimited)
@@ -191,11 +238,11 @@ class EditEventRegistrationSettingsView(APIView):
         - Setting status to its current stored value is idempotent (200 OK).
 
     Behaviour:
-        - 200 OK          — settings updated; returns updated event_registration.
+        - 200 OK          — settings updated; returns updated registration_config.
         - 400 Bad Request — validation error (past date, invalid status, etc.).
         - 401 Unauthorized — unauthenticated request.
         - 403 Forbidden    — authenticated user without edit rights on the project.
-        - 404 Not Found    — project or EventRegistration does not exist.
+        - 404 Not Found    — project or EventRegistrationConfig does not exist.
 
     Response body (200 OK):
         {
@@ -231,18 +278,18 @@ class EditEventRegistrationSettingsView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # ── 3. Look up EventRegistration ────────────────────────────────────
+        # ── 3. Look up EventRegistrationConfig ───────────────────────────────
         try:
-            er = project.event_registration
-        except EventRegistration.DoesNotExist:
+            rc = project.registration_config
+        except EventRegistrationConfig.DoesNotExist:
             return Response(
                 {"message": ("This project does not have event registration enabled.")},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
         # ── 4. Validate and save ─────────────────────────────────────────────
-        serializer = EditEventRegistrationSerializer(
-            er,
+        serializer = EditEventRegistrationConfigSerializer(
+            rc,
             data=request.data,
             partial=True,
             context={"project": project, "request": request},
@@ -258,77 +305,6 @@ class EditEventRegistrationSettingsView(APIView):
             url_slug,
         )
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class ListEventParticipantsView(APIView):
-    """
-    GET /api/projects/{url_slug}/registrations/
-
-    Returns the full list of active participants for an event.
-    Restricted to event organisers and team admins (role_type ALL or READ_WRITE).
-
-    Response: list of EventParticipantSerializer dicts, ordered by registered_at asc.
-    No backend pagination — all rows returned in one response; client-side paging
-    is handled by the MUI DataGrid in the frontend.
-
-    See spec: doc/spec/20260401_1000_organizer_see_registration_status.md
-    """
-
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, url_slug):
-
-        # ── 1. Look up project ──────────────────────────────────────────────
-        try:
-            project = Project.objects.get(url_slug=url_slug)
-        except Project.DoesNotExist:
-            return Response(
-                {"message": "Project not found: {}".format(url_slug)},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        # ── 2. Check organiser/admin permission ─────────────────────────────
-        # Inline check — consistent with EditEventRegistrationSettingsView.
-        has_edit_rights = ProjectMember.objects.filter(
-            user=request.user,
-            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
-            project=project,
-        ).exists()
-        if not has_edit_rights:
-            return Response(
-                {
-                    "message": (
-                        "You do not have permission to view registrations "
-                        "for this project."
-                    )
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        # ── 3. Look up EventRegistration ────────────────────────────────────
-        try:
-            er = project.event_registration
-        except EventRegistration.DoesNotExist:
-            return Response(
-                {"message": "This project does not have event registration enabled."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        # ── 4. Query participants ────────────────────────────────────────────
-        # select_related avoids N+1 when the serializer reads user.first_name,
-        # user.last_name, user.user_profile.url_slug, and
-        # user.user_profile.thumbnail_image.
-        # TODO #1850: add .filter(cancelled_at__isnull=True) once cancelled_at is added
-        participants = (
-            EventParticipant.objects.select_related("user__user_profile")
-            .filter(event_registration=er)
-            .order_by("registered_at")
-        )
-
-        serializer = EventParticipantSerializer(
-            participants, many=True, context={"request": request}
-        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -396,10 +372,10 @@ class SendOrganizerEmailView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # ── 4. Look up EventRegistration ────────────────────────────────
+        # ── 4. Look up EventRegistrationConfig ───────────────────────────
         try:
-            er = project.event_registration
-        except EventRegistration.DoesNotExist:
+            rc = project.registration_config
+        except EventRegistrationConfig.DoesNotExist:
             return Response(
                 {"message": "This project does not have event registration enabled."},
                 status=status.HTTP_404_NOT_FOUND,
@@ -429,10 +405,10 @@ class SendOrganizerEmailView(APIView):
                 )
             return Response({"sent_count": 1}, status=status.HTTP_200_OK)
 
-        # ── 5. Bulk send — count participants, then dispatch async ───────
+        # ── 5. Bulk send — count registrations, then dispatch async ─────
         # TODO #1850: add .filter(cancelled_at__isnull=True) once cancelled_at is added
         user_ids = list(
-            EventParticipant.objects.filter(event_registration=er).values_list(
+            EventRegistration.objects.filter(registration_config=rc).values_list(
                 "user_id", flat=True
             )
         )

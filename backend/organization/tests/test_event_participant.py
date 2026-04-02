@@ -1,7 +1,7 @@
 """
-Tests for the EventParticipant / member event registration feature.
+Tests for the EventRegistration / member event registration feature.
 
-Covers POST /api/projects/{slug}/register/ (RegisterForEventView):
+Covers POST /api/projects/{slug}/registrations/ (EventRegistrationsView):
     - 201 Created on first successful registration
     - 200 OK on idempotent re-registration (same user, same event)
     - 400 Bad Request when registration is closed / full / deadline passed
@@ -24,8 +24,8 @@ from unittest.mock import patch
 from climateconnect_api.models import Language
 from organization.models import Project, ProjectStatus
 from organization.models.event_registration import (
-    EventParticipant,
     EventRegistration,
+    EventRegistrationConfig,
     RegistrationStatus,
 )
 
@@ -74,7 +74,7 @@ def _create_event(slug, project_status, language, **kwargs):
 
 
 def _create_open_er(project, max_participants=50, days_until_close=20):
-    return EventRegistration.objects.create(
+    return EventRegistrationConfig.objects.create(
         project=project,
         max_participants=max_participants,
         registration_end_date=timezone.now() + timedelta(days=days_until_close),
@@ -83,7 +83,7 @@ def _create_open_er(project, max_participants=50, days_until_close=20):
 
 
 def _register_url(slug):
-    return reverse("organization:register-for-event", kwargs={"url_slug": slug})
+    return reverse("organization:event-registrations", kwargs={"url_slug": slug})
 
 
 def _detail_url(slug):
@@ -120,13 +120,13 @@ class TestRegisterForEventHappyPath(APITestCase):
 
     @tag("event_participant", "registration")
     @patch(_TASK_PATH)
-    def test_first_registration_creates_eventparticipant_record(self, mock_task):
-        """POST creates exactly one EventParticipant row."""
+    def test_first_registration_creates_eventregistration_record(self, mock_task):
+        """POST creates exactly one EventRegistration row."""
         self.client.login(username="reg_member", password="testpassword")
         self.client.post(_register_url("open-event"))
         self.assertEqual(
-            EventParticipant.objects.filter(
-                user=self.user, event_registration=self.er
+            EventRegistration.objects.filter(
+                user=self.user, registration_config=self.er
             ).count(),
             1,
         )
@@ -149,8 +149,8 @@ class TestRegisterForEventHappyPath(APITestCase):
         self.client.post(_register_url("open-event"))
         self.client.post(_register_url("open-event"))
         self.assertEqual(
-            EventParticipant.objects.filter(
-                user=self.user, event_registration=self.er
+            EventRegistration.objects.filter(
+                user=self.user, registration_config=self.er
             ).count(),
             1,
         )
@@ -256,7 +256,7 @@ class TestRegisterForEventNotFound(APITestCase):
 
     @tag("event_participant", "registration")
     def test_project_without_event_registration_returns_400(self):
-        """POST for a project with no EventRegistration record -> 400."""
+        """POST for a project with no EventRegistrationConfig record -> 400."""
         Project.objects.create(
             name="Plain project",
             url_slug="plain-project-no-er",
@@ -288,7 +288,7 @@ class TestRegisterForEventClosed(APITestCase):
     def test_closed_status_returns_400(self):
         """Registration with status=CLOSED -> 400."""
         event = _create_event("closed-event", self.ps, self.lang)
-        EventRegistration.objects.create(
+        EventRegistrationConfig.objects.create(
             project=event,
             max_participants=10,
             registration_end_date=timezone.now() + timedelta(days=10),
@@ -302,7 +302,7 @@ class TestRegisterForEventClosed(APITestCase):
     def test_full_status_returns_400(self):
         """Registration with status=FULL -> 400."""
         event = _create_event("full-event", self.ps, self.lang)
-        EventRegistration.objects.create(
+        EventRegistrationConfig.objects.create(
             project=event,
             max_participants=5,
             registration_end_date=timezone.now() + timedelta(days=10),
@@ -316,7 +316,7 @@ class TestRegisterForEventClosed(APITestCase):
     def test_deadline_passed_returns_400(self):
         """Registration after registration_end_date -> 400."""
         event = _create_event("deadline-passed-event", self.ps, self.lang)
-        EventRegistration.objects.create(
+        EventRegistrationConfig.objects.create(
             project=event,
             max_participants=10,
             registration_end_date=timezone.now() - timedelta(hours=1),
@@ -347,8 +347,8 @@ class TestLastSeatPromotion(APITestCase):
             existing_user = User.objects.create_user(
                 username=f"existing_participant_{i}", password="x"
             )
-            EventParticipant.objects.create(
-                user=existing_user, event_registration=self.er
+            EventRegistration.objects.create(
+                user=existing_user, registration_config=self.er
             )
         self.final_user = User.objects.create_user(
             username="last_seat_user", password="testpassword"
@@ -391,7 +391,7 @@ class TestLastSeatPromotion(APITestCase):
         """Never more than max_participants rows exist regardless of concurrency."""
         self.client.login(username="last_seat_user", password="testpassword")
         self.client.post(_register_url("last-seat-event"))
-        count = EventParticipant.objects.filter(event_registration=self.er).count()
+        count = EventRegistration.objects.filter(registration_config=self.er).count()
         self.assertLessEqual(count, self.er.max_participants)
 
 
@@ -411,7 +411,7 @@ class TestUnlimitedCapacity(APITestCase):
             username="unlimited_user", password="testpassword"
         )
         self.event = _create_event("unlimited-event", self.ps, self.lang)
-        EventRegistration.objects.create(
+        EventRegistrationConfig.objects.create(
             project=self.event,
             max_participants=None,
             registration_end_date=timezone.now() + timedelta(days=30),
@@ -446,8 +446,8 @@ class TestAvailableSeatsInSerializer(APITestCase):
         participant_user = User.objects.create_user(
             username="participant_for_serializer", password="x"
         )
-        EventParticipant.objects.create(
-            user=participant_user, event_registration=self.er
+        EventRegistration.objects.create(
+            user=participant_user, registration_config=self.er
         )
 
     @tag("event_participant", "serializer")
@@ -455,7 +455,7 @@ class TestAvailableSeatsInSerializer(APITestCase):
         """GET /api/projects/{slug}/ includes non-null available_seats."""
         response = self.client.get(_detail_url("serializer-seats-event"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        er_data = response.data["event_registration"]
+        er_data = response.data["registration_config"]
         self.assertIsNotNone(er_data)
         self.assertIn("available_seats", er_data)
         self.assertEqual(er_data["available_seats"], 99)  # 100 - 1
@@ -468,7 +468,7 @@ class TestAvailableSeatsInSerializer(APITestCase):
         results = response.data.get("results", response.data)
         matching = [p for p in results if p.get("url_slug") == "serializer-seats-event"]
         self.assertTrue(matching, "Expected event to appear in list")
-        er_data = matching[0]["event_registration"]
+        er_data = matching[0]["registration_config"]
         self.assertIsNotNone(er_data)
         self.assertIn("available_seats", er_data)
         self.assertIsNone(er_data["available_seats"])

@@ -236,19 +236,14 @@ urlpatterns = [
         name="similar-projects",
     ),
     path(
-        "projects/<str:url_slug>/register/",
-        event_registration_views.RegisterForEventView.as_view(),
-        name="register-for-event",
-    ),
-    path(
-        "projects/<str:url_slug>/registration/",
-        event_registration_views.EditEventRegistrationSettingsView.as_view(),
-        name="edit-event-registration-settings",
-    ),
-    path(
         "projects/<str:url_slug>/registrations/",
-        event_registration_views.ListEventParticipantsView.as_view(),
-        name="list-event-registrations",
+        event_registration_views.EventRegistrationsView.as_view(),
+        name="event-registrations",
+    ),
+    path(
+        "projects/<str:url_slug>/registration-config/",
+        event_registration_views.EditRegistrationConfigView.as_view(),
+        name="edit-registration-config",
     ),
     path(
         "projects/<str:url_slug>/registrations/email/",
