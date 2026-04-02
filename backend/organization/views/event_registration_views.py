@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib.auth.models import User
 from django.db import transaction
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -16,11 +17,14 @@ from organization.models.event_registration import (
 from organization.serializers.event_registration import (
     EditEventRegistrationSerializer,
     EventParticipantSerializer,
+    SendOrganizerEmailSerializer,
     _compute_effective_status,
 )
 from organization.tasks import (
     send_event_registration_confirmation_email as _send_registration_email,
+    send_organizer_message_to_guests as _send_organizer_email_task,
 )
+from organization.utility.email import send_organizer_message_to_guest
 
 logger = logging.getLogger(__name__)
 
@@ -326,3 +330,125 @@ class ListEventParticipantsView(APIView):
             participants, many=True, context={"request": request}
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SendOrganizerEmailView(APIView):
+    """
+    POST /api/projects/{url_slug}/registrations/email/
+
+    Sends an organiser-authored plain-text email to all active event guests
+    (``is_test=false``) or a single test copy to the authenticated organiser
+    (``is_test=true``).
+
+    Always returns ``{"sent_count": <int>}`` — ``1`` for test, ``N`` for bulk.
+    Bulk dispatch is asynchronous (Celery task); test dispatch is synchronous.
+
+    The subject is prefixed with ``"[TEST] "`` for test sends so the organiser
+    can recognise them in their inbox.
+
+    See spec: doc/spec/20260401_1100_organizer_send_email_to_guests.md
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+
+        # ── 1. Validate input ────────────────────────────────────────────
+        serializer = SendOrganizerEmailSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        subject = serializer.validated_data["subject"]
+        message = serializer.validated_data["message"]
+        is_test = serializer.validated_data["is_test"]
+
+        # ── 2. Look up project ──────────────────────────────────────────
+        try:
+            project = (
+                Project.objects.select_related("loc", "language")
+                .prefetch_related(
+                    "translation_project__language",
+                    "project_parent__parent_organization__language",
+                    "project_parent__parent_organization__translation_org__language",
+                    "project_parent__parent_user__user_profile",
+                )
+                .get(url_slug=url_slug)
+            )
+        except Project.DoesNotExist:
+            return Response(
+                {"message": "Project not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 3. Permission check — organiser or team admin ───────────────
+        has_edit_rights = ProjectMember.objects.filter(
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            project=project,
+        ).exists()
+        if not has_edit_rights:
+            return Response(
+                {
+                    "message": (
+                        "You do not have permission to send emails for this event."
+                    )
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # ── 4. Look up EventRegistration ────────────────────────────────
+        try:
+            er = project.event_registration
+        except EventRegistration.DoesNotExist:
+            return Response(
+                {"message": "This project does not have event registration enabled."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if is_test:
+            # Synchronous — single email to the organiser themselves.
+            # Prepend "[TEST] " so the organiser can identify it in their inbox.
+            test_subject = "[TEST] {}".format(subject)
+            organiser = User.objects.select_related("user_profile__location").get(
+                id=request.user.id
+            )
+            try:
+                send_organizer_message_to_guest(
+                    organiser, project, test_subject, message
+                )
+            except Exception as exc:
+                logger.error(
+                    "[OrganizerEmail] Test send failed for user %s, event '%s': %s",
+                    request.user.id,
+                    url_slug,
+                    exc,
+                )
+                return Response(
+                    {"message": "Failed to send test email. Please try again."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            return Response({"sent_count": 1}, status=status.HTTP_200_OK)
+
+        # ── 5. Bulk send — count participants, then dispatch async ───────
+        # TODO #1850: add .filter(cancelled_at__isnull=True) once cancelled_at is added
+        user_ids = list(
+            EventParticipant.objects.filter(event_registration=er).values_list(
+                "user_id", flat=True
+            )
+        )
+        sent_count = len(user_ids)
+
+        _send_organizer_email_task.delay(
+            event_slug=url_slug,
+            user_ids=user_ids,
+            subject=subject,
+            message=message,
+        )
+
+        logger.info(
+            "[OrganizerEmail] Bulk send dispatched for event '%s': %d recipients",
+            url_slug,
+            sent_count,
+        )
+
+        return Response({"sent_count": sent_count}, status=status.HTTP_200_OK)

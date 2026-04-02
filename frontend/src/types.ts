@@ -13,6 +13,7 @@ export type User = {
   first_name?: string;
   last_name?: string;
   url_slug?: string;
+  email?: string;
 };
 
 export type Role = {

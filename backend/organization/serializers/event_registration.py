@@ -231,6 +231,22 @@ class EventParticipantSerializer(serializers.ModelSerializer):
             return None
 
 
+class SendOrganizerEmailSerializer(serializers.Serializer):
+    """
+    Validates the payload for POST /api/projects/{url_slug}/registrations/email/.
+
+    Fields:
+        subject  — plain-text subject line (max 200 chars, required).
+        message  — plain-text body (required).
+        is_test  — when True, send a single test email to the organiser only;
+                   when False (default), bulk-send to all active participants.
+    """
+
+    subject = serializers.CharField(max_length=200, allow_blank=False)
+    message = serializers.CharField(allow_blank=False)
+    is_test = serializers.BooleanField(default=False)
+
+
 class EditEventRegistrationSerializer(EventRegistrationBaseSerializer):
     """
     Serializer for PATCH /api/projects/{slug}/registration/.

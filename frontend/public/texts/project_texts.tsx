@@ -1369,5 +1369,49 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Failed to load registrations. Please try again.",
       de: "Anmeldungen konnten nicht geladen werden. Bitte erneut versuchen.",
     },
+    send_email_to_guests: {
+      en: "Email guests",
+      de: "Gäste per E-Mail benachrichtigen",
+    },
+    email_subject: {
+      en: "Subject",
+      de: "Betreff",
+    },
+    email_message: {
+      en: "Message",
+      de: "Nachricht",
+    },
+    send_now: {
+      en: "Send now",
+      de: "Jetzt senden",
+    },
+    send_test_to_myself: {
+      en: "Send test to myself",
+      de: "Testmail an mich senden",
+    },
+    sending: {
+      en: "Sending…",
+      de: "Wird gesendet…",
+    },
+    email_sent_to_guests: {
+      en: "Email sent to {count} registered guests.",
+      de: "E-Mail an {count} registrierte Gäste gesendet.",
+    },
+    test_email_sent_to: {
+      en: "Test email sent to {email}.",
+      de: "Test-E-Mail an {email} gesendet.",
+    },
+    email_subject_required: {
+      en: "Subject is required.",
+      de: "Betreff ist erforderlich.",
+    },
+    email_message_required: {
+      en: "Message is required.",
+      de: "Nachricht ist erforderlich.",
+    },
+    close: {
+      en: "Close",
+      de: "Schließen",
+    },
   };
 }
