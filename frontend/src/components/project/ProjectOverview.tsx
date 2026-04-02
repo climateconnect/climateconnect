@@ -29,6 +29,11 @@ import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMedi
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
 import WasseraktionswochenLink from "../hub/WasseraktionswochenLink";
 import { isWasseraktionswochenSubEvent } from "../../../public/data/wasseraktionswochen_config.js";
+import {
+  shouldShowRegisterButton,
+  getRegisterButtonText,
+  isRegisterButtonDisabled,
+} from "../../utils/eventRegistrationHelpers";
 
 type StyleProps = { hasAdminPermissions?: boolean };
 
@@ -103,6 +108,16 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       height: 40,
       minWidth: 120,
     },
+    registerButton: {
+      height: 40,
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      whiteSpace: "nowrap",
+    },
+    registerButtonMobile: {
+      marginTop: theme.spacing(2),
+      whiteSpace: "nowrap",
+    },
     shortDescription: {
       wordBreak: "break-word",
     },
@@ -152,6 +167,8 @@ type Props = {
   parentProjectName?: string; // Name of the parent project
   parentProjectSlug?: string; // Slug of the parent project
   isWasseraktionswochenEnabled: boolean;
+  isEventRegistrationEnabled: boolean;
+  handleRegisterClick: () => void;
 };
 
 export default function ProjectOverview({
@@ -179,6 +196,8 @@ export default function ProjectOverview({
   toggleShowLikes,
   hubUrl,
   isWasseraktionswochenEnabled,
+  isEventRegistrationEnabled,
+  handleRegisterClick,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);
@@ -224,6 +243,8 @@ export default function ProjectOverview({
           followingChangePending={followingChangePending}
           numberOfFollowers={numberOfFollowers}
           isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+          isEventRegistrationEnabled={isEventRegistrationEnabled}
+          handleRegisterClick={handleRegisterClick}
         />
       )}
 
@@ -382,10 +403,15 @@ function LargeScreenOverview({
   followingChangePending,
   numberOfFollowers,
   isWasseraktionswochenEnabled,
+  isEventRegistrationEnabled,
+  handleRegisterClick,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+
+  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
+
   return (
     <>
       <div className={classes.headerContainer}>
@@ -422,19 +448,31 @@ function LargeScreenOverview({
               hasAdminPermissions={hasAdminPermissions}
               numberOfLikes={numberOfLikes}
             />
-            <FollowButton
-              isLoggedIn={!!user}
-              followingChangePending={followingChangePending}
-              handleToggleFollow={handleToggleFollowProject}
-              hasAdminPermissions={hasAdminPermissions}
-              isUserFollowing={isUserFollowing}
-              numberOfFollowers={numberOfFollowers}
-              screenSize={screenSize}
-              texts={texts}
-              toggleShowFollowers={toggleShowFollowers}
-              showStartIcon={!screenSize.belowMedium}
-              showLinkUnderButton
-            />
+            {showRegisterButton ? (
+              <Button
+                variant="contained"
+                color={isRegisterButtonDisabled(project) ? "secondary" : "primary"}
+                disabled={isRegisterButtonDisabled(project)}
+                onClick={handleRegisterClick}
+                className={classes.registerButton}
+              >
+                {getRegisterButtonText(project, texts)}
+              </Button>
+            ) : (
+              <FollowButton
+                isLoggedIn={!!user}
+                followingChangePending={followingChangePending}
+                handleToggleFollow={handleToggleFollowProject}
+                hasAdminPermissions={hasAdminPermissions}
+                isUserFollowing={isUserFollowing}
+                numberOfFollowers={numberOfFollowers}
+                screenSize={screenSize}
+                texts={texts}
+                toggleShowFollowers={toggleShowFollowers}
+                showStartIcon={!screenSize.belowMedium}
+                showLinkUnderButton
+              />
+            )}
             {!hasAdminPermissions &&
               (!screenSize.belowMedium ? (
                 <ContactCreatorButton

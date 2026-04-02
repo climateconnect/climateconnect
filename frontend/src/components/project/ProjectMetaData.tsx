@@ -1,8 +1,9 @@
-import { Box, Collapse, Container, Theme, Tooltip, Typography } from "@mui/material";
+import { Box, Collapse, Container, Theme, Tooltip, Typography, Button } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
@@ -13,6 +14,12 @@ import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
 import BrowseContext from "../context/BrowseContext";
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
+import { useFeatureToggles } from "../featureToggle";
+import {
+  shouldShowRegisterButton,
+  getRegisterButtonText,
+  isRegisterButtonDisabled,
+} from "../../utils/eventRegistrationHelpers";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
@@ -86,6 +93,14 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
     height: 20,
     marginLeft: 2,
     marginRight: 6,
+  },
+  registerButton: {
+    marginLeft: "auto",
+    fontSize: 11,
+    padding: "4px 12px",
+    height: 24,
+    textTransform: "none",
+    whiteSpace: "nowrap",
   },
 }));
 
@@ -251,10 +266,33 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
 const AdditionalPreviewInfo = ({ project }) => {
   const classes = useStyles({});
   const { projectTypes } = useContext(BrowseContext);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale });
+  const { isEnabled } = useFeatureToggles();
+
   const projectType =
     projectTypes && projectTypes.length > 0
       ? projectTypes.find((t) => t.type_id === project.project_type)
       : { name: project.project_type, type_id: project.project_type };
+
+  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
+  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
+
+  const getRegisterButtonConfig = () => {
+    if (!showRegisterButton) return null;
+
+    const buttonText = getRegisterButtonText(project, texts);
+    const disabled = isRegisterButtonDisabled(project);
+
+    return {
+      label: buttonText,
+      disabled: disabled,
+      variant: disabled ? "outlined" : "contained",
+      color: disabled ? "secondary" : "primary",
+    };
+  };
+
+  const buttonConfig = getRegisterButtonConfig();
 
   return (
     <Box className={classes.additionalInfoContainer}>
@@ -284,6 +322,22 @@ const AdditionalPreviewInfo = ({ project }) => {
           hasChildren={project.has_children}
         />
       </Box>
+      {buttonConfig && (
+        <Button
+          className={classes.registerButton}
+          variant={buttonConfig.variant as any}
+          color={buttonConfig.color as any}
+          size="small"
+          disabled={buttonConfig.disabled}
+          href={
+            buttonConfig.disabled
+              ? undefined
+              : `${getLocalePrefix(locale)}/projects/${project.url_slug}/register`
+          }
+        >
+          {buttonConfig.label}
+        </Button>
+      )}
     </Box>
   );
 };
