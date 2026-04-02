@@ -1297,6 +1297,19 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "No registration settings found for this event.",
       de: "Keine Anmeldeeinstellungen für dieses Event gefunden.",
     },
+    registration_is_open: {
+      en: "Registration is open",
+      de: "Anmeldung ist offen",
+    },
+    registration_is_closed: {
+      en: "Registration is closed",
+      de: "Anmeldung ist geschlossen",
+    },
+    registration_fully_booked_increase_max_participants: {
+      en: "Registration is fully booked. Increase the maximum participants to reopen.",
+      de:
+        "Die Anmeldung ist ausgebucht. Erhöhe die maximale Teilnehmerzahl, um sie wieder zu öffnen.",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",
@@ -1323,6 +1336,82 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     congratulations_your_event_has_been_published: {
       en: "Congratulations! Your event has been published!",
       de: "Glückwunsch! Deine Veranstaltung ist veröffentlicht worden!",
+    },
+    registered_guests: {
+      en: "Registered guests",
+      de: "Angemeldete Gäste",
+    },
+    search_guests: {
+      en: "Search by name…",
+      de: "Nach Name suchen…",
+    },
+    first_name: {
+      en: "First name",
+      de: "Vorname",
+    },
+    last_name: {
+      en: "Last name",
+      de: "Nachname",
+    },
+    registration_date: {
+      en: "Registration date",
+      de: "Anmeldedatum",
+    },
+    no_registrations_yet: {
+      en: "No registrations yet.",
+      de: "Noch keine Anmeldungen.",
+    },
+    loading_registrations: {
+      en: "Loading registrations…",
+      de: "Anmeldungen werden geladen…",
+    },
+    error_loading_registrations: {
+      en: "Failed to load registrations. Please try again.",
+      de: "Anmeldungen konnten nicht geladen werden. Bitte erneut versuchen.",
+    },
+    send_email_to_guests: {
+      en: "Email guests",
+      de: "Gäste per E-Mail benachrichtigen",
+    },
+    email_subject: {
+      en: "Subject",
+      de: "Betreff",
+    },
+    email_message: {
+      en: "Message",
+      de: "Nachricht",
+    },
+    send_now: {
+      en: "Send now",
+      de: "Jetzt senden",
+    },
+    send_test_to_myself: {
+      en: "Send test to myself",
+      de: "Testmail an mich senden",
+    },
+    sending: {
+      en: "Sending…",
+      de: "Wird gesendet…",
+    },
+    email_sent_to_guests: {
+      en: "Email sent to {count} registered guests.",
+      de: "E-Mail an {count} registrierte Gäste gesendet.",
+    },
+    test_email_sent_to: {
+      en: "Test email sent to {email}.",
+      de: "Test-E-Mail an {email} gesendet.",
+    },
+    email_subject_required: {
+      en: "Subject is required.",
+      de: "Betreff ist erforderlich.",
+    },
+    email_message_required: {
+      en: "Message is required.",
+      de: "Nachricht ist erforderlich.",
+    },
+    close: {
+      en: "Close",
+      de: "Schließen",
     },
     // Event registration translations
     register_for_event: {
@@ -1408,10 +1497,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     registration_failed_please_try_again: {
       en: "Registration failed. Please try again.",
       de: "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
-    },
-    close: {
-      en: "Close",
-      de: "Schließen",
     },
     try_again: {
       en: "Try Again",

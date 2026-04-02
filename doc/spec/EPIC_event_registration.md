@@ -43,40 +43,41 @@ Foundational work done before feature development began. No tasks in this epic's
 
 The complete Phase 2 must be shipped before the toggle is flipped in production. This is the full set of stories agreed for go-live. Stories marked ⚪ do not yet have a spec or implementation issue.
 
-| Story | GitHub Issue | Spec | Status |
-|-------|-------------|------|--------|
-| Organiser creates event with registration | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | [`20260305_...`](./20260305_1000_create_event_with_basic_registration.md) | ✅ Done |
-| Member registers for event | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) | [`20260309_0900_...`](./20260309_0900_member_register_for_event.md) | 🔵 Ready |
-| Member sees their registered events | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) | [`20260309_1100_...`](./20260309_1100_member_see_registered_events.md) | 🔵 Ready |
-| Member cancels a registration | [#1850](https://github.com/climateconnect/climateconnect/issues/1850) | [`20260309_1500_...`](./20260309_1500_member_cancel_event_registration.md) | 📝 Draft |
-| Member receives event reminder notifications | — | — | ⚪ Not started |
-| Organiser sees status of registrations (list of guests) | — | — | ⚪ Not started |
-| Organiser edits registration settings | [#1848](https://github.com/climateconnect/climateconnect/issues/1848) | [`20260325_0900_...`](./20260325_0900_organizer_edit_event_registration.md) | 🔵 Ready |
-| Organiser exports / prints registered guests | — | — | ⚪ Not started |
-| Organiser sends email to all registered guests | — | — | ⚪ Not started |
-| Organiser closes / reopens registration | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | [`20260324_0900_...`](./20260324_0900_organizer_close_event_registration.md) | ?? Ready |
-| Organiser cancels an individual guest registration | — | — | ⚪ Not started |
+| Story                                                   | GitHub Issue                                                          | Spec                                                                         | Status                     |
+|---------------------------------------------------------|-----------------------------------------------------------------------|------------------------------------------------------------------------------|----------------------------|
+| Organiser creates event with registration               | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | [`20260305_...`](./20260305_1000_create_event_with_basic_registration.md)    | ✅ Done                     |
+| Member registers for event                              | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) | [`20260309_0900_...`](./20260309_0900_member_register_for_event.md)          | ⚙️ In proress              |
+| Member sees their registered events                     | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) | [`20260309_1100_...`](./20260309_1100_member_see_registered_events.md)       | 🔵 Ready                   |
+| Member cancels a registration                           | [#1850](https://github.com/climateconnect/climateconnect/issues/1850) | [`20260309_1500_...`](./20260309_1500_member_cancel_event_registration.md)   | 🔵 Ready                     |
+| Event organizer can see canceled guests                 | [#1871](https://github.com/climateconnect/climateconnect/issues/1871) | -                                                                            | ⚪ Not started                     |
+| Organiser sees status of registrations (list of guests) | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) | [`20260401_1000_...`](./20260401_1000_organizer_see_registration_status.md)  | ✅ Done                     |
+| Organiser exports / prints registered guests            | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) | [`20260401_1000_...`](./20260401_1000_organizer_see_registration_status.md)  | ✅ Done |
+| Organiser sends email to all registered guests          | [#1866](https://github.com/climateconnect/climateconnect/issues/1866) | [`20260401_1100_...`](./20260401_1100_organizer_send_email_to_guests.md)     | ✅ Done |
+| Organiser closes / reopens registration                 | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | [`20260324_0900_...`](./20260324_0900_organizer_close_event_registration.md) | ✅ Done                     |
+| Organiser cancels an individual guest registration      | [#1872](https://github.com/climateconnect/climateconnect/issues/1872) | —                                                                            | ⚪ Not started              |
 
 ### 🔭 Phase 3 — Advanced Registration (next goal after Phase 2 ships)
 
-| Story | Status |
-|-------|--------|
-| Guest user registers and becomes a platform member | ⚪ |
+| Story                                                   | Status |
+|---------------------------------------------------------|--------|
+| Guest user registers and becomes a platform member      | ⚪ |
 | Organiser creates event with custom registration fields | ⚪ |
-| Member registers with advanced options (custom fields) | ⚪ |
-| Organiser sees detailed registration status | ⚪ |
-| Organiser performs advanced management tasks | ⚪ |
+| Organiser edits event with custom registration fields   | ⚪ |
+| Member registers with advanced options (custom fields)  | ⚪ |
+| Organiser sees detailed registration status             | ⚪ |
+| Organiser performs advanced management tasks            | ⚪ |
 
-### 🔮 Phase 4 — Templates & Check-in (future)
+### 🔮 Phase 4 — Templates & Check-in, Nice to Have (future)
 
-Event check-in and reusable event templates. Not yet broken down into stories.
-
-### 🔮 Phase 5 — Nice to Have (future)
-
-Post-event feedback. Not yet broken down into stories.
-
+| Story                                                             | Status |
+|-------------------------------------------------------------------|--------|
+| Reusable event registration settings (templates)                  | ⚪                                                                   |
+| Event organizer can checkin attendants                            | ⚪                                                                   |
+| Member receives event reminder notifications                      | ⚪                                                                   | 
+| Post-event follow ups (survey/feedback,...)                       | ⚪                                                                   | 
+| Enriched messages to guests (e.g. with html, images, attachments) | ⚪                                                                   | 
+| iCal support for events                                           | ⚪                                                                   | 
 ---
-
 
 ## Shared Architecture
 
@@ -134,6 +135,8 @@ Where `effective_status` is computed lazily by `EventRegistrationSerializer`:
 | `GET /api/members/me/registered-events/` | GET | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) | Authenticated member's upcoming registered events |
 | `POST /api/projects/{slug}/registration/close/` | POST | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | Organiser closes registration |
 | `POST /api/projects/{slug}/registration/reopen/` | POST | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | Organiser reopens registration |
+| `GET /api/projects/{slug}/registrations/` | GET | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) | Organiser lists registered guests |
+| `POST /api/projects/{slug}/registrations/email/` | POST | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) | Organiser sends email to all registered guests (`is_test=true` sends to self only; always returns `{"sent_count": N}`) |
 
 ### `event_registration` API Response Shape
 
@@ -180,6 +183,7 @@ Consistent across all tasks: when `is_draft=true`, all required-field validation
 | Cancel own registration | Authenticated (same member who registered) |
 | Edit registration settings | Project organiser or team admin |
 | Close / reopen registration | Project organiser or team admin |
+| Send email to registered guests | Project organiser or team admin |
 
 ### Post-Auth Redirect ([#1845](https://github.com/climateconnect/climateconnect/issues/1845))
 - Sign-in page: `/signin` (not `/login`)
@@ -232,14 +236,17 @@ Consistent across all tasks: when `is_draft=true`, all required-field validation
 |------|-------|
 | `organization/models/event_registration.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1851](https://github.com/climateconnect/climateconnect/issues/1851) |
 | `organization/models/__init__.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) |
-| `organization/serializers/event_registration.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1848](https://github.com/climateconnect/climateconnect/issues/1848) |
+| `organization/serializers/event_registration.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
 | `organization/serializers/project.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) |
 | `organization/views/project_views.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) |
-| `organization/views/event_registration_views.py` *(new in #1845 / #1851)* | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
+| `organization/views/event_registration_views.py` *(new in #1845 / #1851)* | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
 | `organization/permissions.py` | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
-| `organization/urls.py` | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
+| `organization/urls.py` | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
 | `organization/models/event_participant.py` *(new in #1845)* | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
-| `organization/tests/test_event_registration.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
+| `organization/utility/email.py` | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
+| `organization/tasks.py` | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
+| `climateconnect_main/settings.py` | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
+| `organization/tests/test_event_registration.py` | [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
 | `climateconnect_api/views/` *(or member profile views)* | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) |
 
 ### Frontend
@@ -248,5 +255,8 @@ Consistent across all tasks: when `is_draft=true`, all required-field validation
 | `pages/projects/[projectId]/register.tsx` | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) |
 | `pages/projects/[projectId]/index.tsx` (event detail) | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
 | `src/components/project/EventRegistrationButton.js` *(or similar)* | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
+| `src/components/project/ProjectRegistrationsContent.tsx` | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
+| `src/components/project/SendEmailToGuestsModal.tsx` *(new)* | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
+| `public/texts/project_texts.tsx` | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
 | Profile / dashboard page (registered events grid) | [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
 | `pages/signup.tsx` — add `redirect` param support | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) |

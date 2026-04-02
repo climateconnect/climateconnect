@@ -15,9 +15,17 @@ class RegistrationStatus(models.TextChoices):
              registration (using select_for_update + atomic counter) to avoid
              races.  Automatically transitions back to OPEN if a participant
              cancels and the count drops below max_participants.
+    ENDED  — ⚠️  PYTHON-SIDE ONLY — NEVER WRITTEN TO THE DATABASE.
+             Computed lazily by the serializer when ``stored_status == OPEN``
+             and ``registration_end_date <= now()``.  Allows API consumers to
+             distinguish a naturally-expired registration from an
+             organiser-closed one without a Celery Beat job or schema change.
+             ``validate_status()`` rejects this value on write, so it can never
+             be stored.
 
     The effective "is registration accepting?" check in the application layer is:
-        status == OPEN  AND  now() < registration_end_date
+        effective_status == OPEN
+    which combines the stored status and the deadline check into one value.
     A separate FULL state (vs. a computed count query) keeps this check O(1)
     without a COUNT(*) on every incoming signup request.
 
@@ -37,6 +45,7 @@ class RegistrationStatus(models.TextChoices):
     OPEN = "open", "Open"
     CLOSED = "closed", "Closed"
     FULL = "full", "Full"
+    ENDED = "ended", "Ended"  # Python-side only — never stored in the DB.
 
 
 class EventRegistration(models.Model):
@@ -94,7 +103,8 @@ class EventRegistration(models.Model):
             "'open' — accepting sign-ups (default). "
             "'closed' — organiser manually closed before end date. "
             "'full' — system-set when max_participants reached; "
-            "reverts to 'open' if a cancellation drops count below max."
+            "reverts to 'open' if a cancellation drops count below max. "
+            "'ended' — Python-side computed value only; NEVER stored here."
         ),
         verbose_name="Registration Status",
     )

@@ -313,6 +313,8 @@ In Swagger UI, endpoints with a 🔒 lock icon require authentication.
 | `/api/projects/{slug}/members/` | GET | No | List project members |
 | `/api/projects/{slug}/register/` | POST | Yes | Register authenticated user for event |
 | `/api/projects/{slug}/registration/` | PATCH | Yes | Update event registration settings (organiser only) |
+| `/api/projects/{slug}/registrations/` | GET | Yes | List participants for an event (organiser/admin only) |
+| `/api/projects/{slug}/registrations/email/` | POST | Yes | Send email to all registered guests (organiser/admin only) |
 
 #### Event Registration (`event_registration`)
 
@@ -420,35 +422,47 @@ Registers the authenticated user as a participant for an event that has `EventRe
 
 **Confirmation email**: A Celery task (`send_event_registration_confirmation_email`) is dispatched via `transaction.on_commit` after the commit succeeds. It sends an email via Mailjet using the `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` template (EN) or `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE` template (DE), selected based on the user's language preference. **Both templates must be created in the Mailjet dashboard before emails will be sent** — see `doc/environment-variables.md` for required template variables. Not dispatched on idempotent re-registrations.
 
-#### PATCH `/api/projects/{slug}/registration/` — Edit registration settings
+#### PATCH `/api/projects/{slug}/registration/` — Edit registration settings (issue #1851)
 
-Allows an event organiser (or team admin) to update `max_participants` and/or `registration_end_date` on an event that already has `EventRegistration` enabled.
+Allows an event organiser (or team admin) to update `max_participants`, `registration_end_date`, and/or `status` on an event that already has `EventRegistration` enabled.
 
 **Authentication**: Required (401 if unauthenticated). Requires edit rights on the project (organiser or team admin role) — 403 if unauthorised.
 
 **Editable fields**:
 | Field | Type | Notes |
 |---|---|---|
-| `max_participants` | Positive integer | Must be ≥ 1 and ≥ current participant count |
+| `max_participants` | Positive integer or `null` | Must be ≥ 1 and ≥ current participant count; `null` = unlimited |
 | `registration_end_date` | ISO 8601 datetime | Must be > `now()` and ≤ event `end_date` |
+| `status` | `"open"` or `"closed"` | Organiser may manually open or close registration; `"full"` and `"ended"` are system-managed and are rejected with 400 |
 
-**Read-only via this endpoint**:
-| Field | Notes |
-|---|---|
-| `status` | Not writable via this endpoint — silently ignored if included in the request body. However, the endpoint **may auto-adjust** `status` as a side-effect of a `max_participants` change (see table below). |
+**Status change rules**:
+| Transition | Allowed | Notes |
+|---|---|---|
+| `open` → `closed` | ✅ | Organiser manually closes registration |
+| `closed` → `open` | ✅ | Organiser reopens — only if capacity is still available (see below) |
+| `full` → `open` | ✅ | Only if current participant count < effective `max_participants` after this PATCH |
+| `open/closed` → `full` | ❌ | System-managed only |
+| `open/closed` → `ended` | ❌ | Computed read-only value — rejected with 400 |
+| `open` when `effective_status == "ended"` | ❌ | Deadline has passed — extend `registration_end_date` first |
+| `closed/full` → `open` when event is at capacity | ❌ | Event is fully booked — increase `max_participants` first (or include a higher value in the same request) |
 
-**Automatic status adjustment** (triggered only when `max_participants` is in the request body):
+**Idempotency**: setting `status` to its current stored value returns `200 OK` without any DB change.
+
+**Automatic status adjustment** (triggered only when `max_participants` is in the request body AND `status` is NOT explicitly provided):
 | Condition | Result |
 |---|---|
 | Stored status is `full` and new `max_participants` > current registrations | Auto-set to `open` (capacity raised above filled seats) |
 | Stored status is `full` and `max_participants` set to `null` (unlimited) | Auto-set to `open` (unlimited capacity) |
 | Stored status is `open` and new `max_participants` == current registrations | Auto-set to `full` (capacity lowered to exactly match filled seats) |
 
+> **Priority**: if `status` is explicitly provided, it takes precedence over auto-adjustment logic. For example, `{"status": "open", "max_participants": 10}` with 10 current registrations results in `open`, not `full`.
+
 **Request body** (all fields optional — PATCH semantics):
 ```json
 {
   "max_participants": 80,
-  "registration_end_date": "2026-07-01T18:00:00Z"
+  "registration_end_date": "2026-07-01T18:00:00Z",
+  "status": "closed"
 }
 ```
 
@@ -457,7 +471,7 @@ Allows an event organiser (or team admin) to update `max_participants` and/or `r
 {
   "max_participants": 80,
   "registration_end_date": "2026-07-01T18:00:00Z",
-  "status": "open",
+  "status": "closed",
   "available_seats": 75
 }
 ```
@@ -469,6 +483,9 @@ Allows an event organiser (or team admin) to update `max_participants` and/or `r
 | 400 Bad Request | `registration_end_date` is after the event's `end_date` |
 | 400 Bad Request | `max_participants` is 0 or negative |
 | 400 Bad Request | `max_participants` is below the current participant count |
+| 400 Bad Request | `status` is `"full"` or `"ended"` (system-managed) |
+| 400 Bad Request | `status = "open"` when `effective_status == "ended"` (deadline has passed — extend `registration_end_date` first) |
+| 400 Bad Request | `status = "open"` when participant count ≥ effective `max_participants` (event is fully booked — increase `max_participants` first, or include a higher value in the same request) |
 | 401 Unauthorized | Request is not authenticated |
 | 403 Forbidden | Authenticated user without edit rights on the project |
 | 404 Not Found | `{slug}` does not match any project |
@@ -476,7 +493,90 @@ Allows an event organiser (or team admin) to update `max_participants` and/or `r
 
 **Validation note**: guards are only applied to fields explicitly included in the request body. A PATCH that sends only `max_participants` does not re-validate the stored `registration_end_date`, and vice versa.
 
-**Existing endpoint unchanged**: `PATCH /api/projects/{slug}/` is not affected — `event_registration` is still read-only within the project payload.
+**Existing endpoint unchanged**: `PATCH /api/projects/{slug}/` is not affected.
+
+#### GET `/api/projects/{slug}/registrations/` — List event participants (organiser view)
+
+Returns the full list of participants for an event that has `EventRegistration` enabled.
+Intended for organisers / team admins to review their guest list.
+
+**Authentication**: Required (401 if unauthenticated). Requires organiser or team admin role (`role_type` in `["all", "read write"]`) — 403 if unauthorised.
+
+**No pagination**: all rows are returned in a single response. Client-side paging is provided by the MUI DataGrid in the frontend.
+
+**Default ordering**: `registered_at` ascending (chronological).
+
+**Success response** (200 OK):
+```json
+[
+  {
+    "user_first_name": "Alice",
+    "user_last_name": "Smith",
+    "user_url_slug": "alice-smith",
+    "user_thumbnail_image": "https://.../thumb_alice.jpg",
+    "registered_at": "2026-05-10T14:23:00Z"
+  }
+]
+```
+`user_thumbnail_image` is `null` when the participant has no profile image.
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | Authenticated user without edit rights on the project |
+| 404 Not Found | `{slug}` does not match any project |
+| 404 Not Found | Project exists but has no `EventRegistration` record |
+
+**Query optimisation**: the queryset uses `select_related("user__user_profile")` — all participant data is fetched in a single SQL JOIN, regardless of participant count.
+
+**Forward compatibility**: once issue [#1850](https://github.com/climateconnect/climateconnect/issues/1850) adds `cancelled_at` to `EventParticipant`, the view will add `.filter(cancelled_at__isnull=True)` to exclude cancelled registrations. The response contract is unchanged.
+
+#### POST `/api/projects/{slug}/registrations/email/` — Send organiser email to guests
+
+Sends a plain-text email authored by the organiser to all active registered guests
+(`is_test=false`) or a single test copy to the authenticated organiser (`is_test=true`).
+
+**Authentication**: Required (401 if unauthenticated). Requires organiser or team admin role — 403 if unauthorised.
+
+**Request body**:
+```json
+{
+  "subject": "Important update about the event",
+  "message": "Hi everyone, we have an important update…",
+  "is_test": false
+}
+```
+
+| Field | Type | Required | Constraints |
+|-------|------|----------|-------------|
+| `subject` | string | Yes | max 200 chars, non-blank |
+| `message` | string | Yes | non-blank |
+| `is_test` | boolean | No | defaults to `false` |
+
+**Success response** (200 OK):
+```json
+{ "sent_count": 42 }
+```
+`sent_count` is the number of active participants at request time. For `is_test=true` it is always `1`. Bulk delivery is asynchronous (Celery task); the HTTP response returns immediately.
+
+When `is_test=true`, the subject is prefixed with `[TEST] ` so the organiser can identify the test email in their inbox.
+
+**Error responses**:
+| Status | Condition |
+|--------|-----------|
+| 400 Bad Request | `subject` or `message` is blank or missing |
+| 400 Bad Request | `subject` exceeds 200 characters |
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | Authenticated user without edit rights on the project |
+| 404 Not Found | `{slug}` does not match any project |
+| 404 Not Found | Project exists but has no `EventRegistration` record |
+
+**Implementation notes**:
+- Bulk send dispatches `send_organizer_message_to_guests` Celery task with a pre-computed snapshot of `user_id` values, isolating it from concurrent registration changes.
+- Test send is synchronous — one email, inline in the HTTP request.
+- Uses Mailjet templates `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` (EN) and `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE` (DE). No emails are sent until these are configured — see `doc/environment-variables.md`.
+- `# TODO #1850`: once `cancelled_at` is added, filter `.filter(cancelled_at__isnull=True)` before counting and dispatching.
 
 ### Organizations
 
@@ -582,5 +682,5 @@ If you encounter issues or have questions about the API:
 
 ---
 
-**Last Updated**: March 31, 2026 — `PATCH /api/projects/{slug}/registration/` now returns `available_seats` in the response body (always computed; no context flag required since this is a detail-only endpoint). Introduced `EventRegistrationBaseSerializer` with shared `to_representation` and `get_available_seats`; `EventRegistrationSerializer` overrides to add the `include_seat_count` gate for list endpoints. Previous: March 31, 2026 — Added status auto-adjustment to `PATCH /api/projects/{slug}/registration/`: raising `max_participants` above current registrations auto-reopens a `full` event; setting it to `null` (unlimited) also reopens; lowering it to exactly match current registrations auto-sets to `full`. Three new tests added. Previous: March 31, 2026 — Added computed `"ended"` status to `event_registration.status`: returned when stored status is `open` but `registration_end_date` has passed; never written to DB (issue #1848 log, 2026-03-31). Previous: March 30, 2026 — Activated `max_participants` participant count lower-bound guard in `PATCH /api/projects/{slug}/registration/`; removed draft-mode note (draft events do not have `EventRegistration` records). Added full endpoint documentation section for `PATCH /api/projects/{slug}/registration/`. Previous: March 30, 2026 — Added `PATCH /api/projects/{slug}/registration/` endpoint (edit event registration settings, issue #1848). Previous: March 30, 2026 — Added `POST /api/projects/{slug}/register/` endpoint (event participant registration, issue #1845). Added `available_seats` to `event_registration` response shape (detail only; `null` on list). Previous: March 19, 2026 — Added `status` field to `event_registration`; added registration status table and validation rules. Previous: Added `event_registration` nested object to project endpoints (issue #43)
+**Last Updated**: March 31, 2026 — Added fully-booked reopen guard to `PATCH /api/projects/{slug}/registration/`: `status = "open"` is now rejected with `400 Bad Request` when participant count ≥ effective `max_participants` after this PATCH (applies to both `closed → open` and `full → open` transitions when the event is actually at capacity). An organiser can reopen a booked-out event by including a higher `max_participants` in the same request. Three new tests added. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration/` updated (issue #1851): `status` is now writable (`"open"` / `"closed"`); `"full"` and `"ended"` are rejected with 400 (system-managed); reopen guard returns 400 when `effective_status == "ended"` (extend deadline first); auto-adjustment skipped when `status` is explicit. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration/` now returns `available_seats` in the response body (always computed). Previous: March 31, 2026 — Added status auto-adjustment to `PATCH /api/projects/{slug}/registration/`. Previous: March 31, 2026 — Added computed `"ended"` status to `event_registration.status`. Previous: March 30, 2026 — Added `PATCH /api/projects/{slug}/registration/` endpoint (issue #1848). Previous: March 30, 2026 — Added `POST /api/projects/{slug}/register/` endpoint (issue #1845). Previous: March 19, 2026 — Added `status` field to `event_registration`. Previous: Added `event_registration` nested object to project endpoints (issue #43)
 
