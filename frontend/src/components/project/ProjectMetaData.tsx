@@ -15,6 +15,11 @@ import { Project } from "../../types";
 import BrowseContext from "../context/BrowseContext";
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
 import { useFeatureToggles } from "../featureToggle";
+import {
+  shouldShowRegisterButton,
+  getRegisterButtonText,
+  isRegisterButtonDisabled,
+} from "../../utils/eventRegistrationHelpers";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
@@ -271,42 +276,19 @@ const AdditionalPreviewInfo = ({ project }) => {
       : { name: project.project_type, type_id: project.project_type };
 
   const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
-  const hasEventRegistration = project.event_registration != null;
-  const showRegisterButton = isEventRegistrationEnabled && hasEventRegistration;
+  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
 
   const getRegisterButtonConfig = () => {
     if (!showRegisterButton) return null;
 
-    const status = project.event_registration.status;
+    const buttonText = getRegisterButtonText(project, texts);
+    const disabled = isRegisterButtonDisabled(project);
 
-    if (status === "ended") {
-      return null; // No button for ended events
-    }
-
-    if (status === "open") {
-      return {
-        label: texts.register_now,
-        disabled: false,
-        variant: "contained",
-        color: "primary",
-      };
-    }
-
-    if (status === "full") {
-      return {
-        label: texts.booked_out,
-        disabled: true,
-        variant: "outlined",
-        color: "secondary",
-      };
-    }
-
-    // status === "closed"
     return {
-      label: texts.registration_closed,
-      disabled: true,
-      variant: "outlined",
-      color: "secondary",
+      label: buttonText,
+      disabled: disabled,
+      variant: disabled ? "outlined" : "contained",
+      color: disabled ? "secondary" : "primary",
     };
   };
 

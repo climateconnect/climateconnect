@@ -29,6 +29,11 @@ import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMedi
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
 import WasseraktionswochenLink from "../hub/WasseraktionswochenLink";
 import { isWasseraktionswochenSubEvent } from "../../../public/data/wasseraktionswochen_config.js";
+import {
+  shouldShowRegisterButton,
+  getRegisterButtonText,
+  isRegisterButtonDisabled,
+} from "../../utils/eventRegistrationHelpers";
 
 type StyleProps = { hasAdminPermissions?: boolean };
 
@@ -405,21 +410,7 @@ function LargeScreenOverview({
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
-  const showRegisterButton =
-    isEventRegistrationEnabled &&
-    project.event_registration &&
-    project.event_registration.status !== "ended";
-
-  const getRegisterButtonText = () => {
-    const status = project.event_registration.status;
-    if (status === "open") return texts.register_now;
-    if (status === "full") return texts.booked_out;
-    return texts.registration_closed;
-  };
-
-  const isRegisterButtonDisabled = () => {
-    return ["closed", "full"].includes(project.event_registration.status);
-  };
+  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
 
   return (
     <>
@@ -460,12 +451,12 @@ function LargeScreenOverview({
             {showRegisterButton ? (
               <Button
                 variant="contained"
-                color={isRegisterButtonDisabled() ? "secondary" : "primary"}
-                disabled={isRegisterButtonDisabled()}
+                color={isRegisterButtonDisabled(project) ? "secondary" : "primary"}
+                disabled={isRegisterButtonDisabled(project)}
                 onClick={handleRegisterClick}
                 className={classes.registerButton}
               >
-                {getRegisterButtonText()}
+                {getRegisterButtonText(project, texts)}
               </Button>
             ) : (
               <FollowButton

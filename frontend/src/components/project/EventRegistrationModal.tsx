@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -134,21 +134,18 @@ export default function EventRegistrationModal({
   const [authStep, setAuthStep] = useState<"email" | "login" | "signup">("email");
   const [checkingEmail, setCheckingEmail] = useState(false);
 
-  const steps = user
-    ? [texts.authentication, texts.confirmation]
-    : [texts.authentication, texts.event_registration, texts.confirmation];
+  const steps = useMemo(() => {
+    if (user) {
+      return [texts.event_registration, texts.confirmation];
+    }
+    return [texts.authentication, texts.event_registration, texts.confirmation];
+  }, [user, texts]);
 
-  const activeStep = user
-    ? state === "success" || state === "error"
-      ? 1
-      : 0
-    : state === "success" || state === "error"
-    ? 2
-    : 0;
+  const activeStep = user ? (state === "success" || state === "error" ? 1 : 0) : 0; // Unauthenticated users are always on step 0 (authentication)
 
   const getStepContent = (stepIndex: number) => {
     if (user) {
-      // Authenticated user flow: Registration → Confirmation
+      // Authenticated user flow: Event Registration → Confirmation
       switch (stepIndex) {
         case 0:
           return renderAuthenticatedContent();
@@ -158,14 +155,10 @@ export default function EventRegistrationModal({
           return null;
       }
     } else {
-      // Unauthenticated user flow: Authentication → Registration → Confirmation
+      // Unauthenticated user flow: Authentication (auto-transitions to authenticated flow on login)
       switch (stepIndex) {
         case 0:
           return renderUnauthenticatedContent();
-        case 1:
-          return null; // This step is skipped (user becomes authenticated after login)
-        case 2:
-          return state === "success" ? renderSuccessContent() : renderErrorContent();
         default:
           return null;
       }

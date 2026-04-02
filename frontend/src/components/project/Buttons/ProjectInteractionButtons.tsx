@@ -5,6 +5,11 @@ import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "../../general/FollowButton";
 import LikeButton from "./LikeButton";
 import { Project } from "../../../types";
+import {
+  shouldShowRegisterButton,
+  getRegisterButtonText,
+  isRegisterButtonDisabled,
+} from "../../../utils/eventRegistrationHelpers";
 
 interface ProjectInteractionButtonsProps {
   projectAdmin: any;
@@ -37,30 +42,6 @@ interface ProjectInteractionButtonsProps {
   handleRegisterClick: () => void;
 }
 
-// Helper functions for event registration
-const shouldShowRegisterButton = (
-  isEventRegistrationEnabled: boolean,
-  project: Project
-): boolean => {
-  return !!(
-    isEventRegistrationEnabled &&
-    project.event_registration &&
-    project.event_registration.status !== "ended"
-  );
-};
-
-const getRegisterButtonText = (project: Project, texts: any): string => {
-  const status = project.event_registration?.status;
-  if (status === "open") return texts.register_now;
-  if (status === "full") return texts.booked_out;
-  return texts.registration_closed;
-};
-
-const isRegisterButtonDisabled = (project: Project): boolean => {
-  const status = project.event_registration?.status;
-  return ["closed", "full"].includes(status || "");
-};
-
 const useStyles = makeStyles((theme) => ({
   largeScreenButton: (props) => ({
     position: "fixed",
@@ -80,7 +61,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
   },
   registerButton: {
-    // height: 40,
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     whiteSpace: "nowrap",
