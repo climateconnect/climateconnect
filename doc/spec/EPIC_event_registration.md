@@ -129,12 +129,10 @@ Where `effective_status` is computed lazily by `EventRegistrationSerializer`:
 | `GET /api/projects/{slug}/` | GET | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Returns `event_registration` object (including `status`) |
 | `GET /api/projects/` | GET | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Returns `event_registration` per list item |
 | `PATCH /api/projects/{slug}/` | PATCH | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Accepts `event_registration` nested object on create only — read-only in update context |
-| `PATCH /api/projects/{slug}/registration/` | PATCH | [#1848](https://github.com/climateconnect/climateconnect/issues/1848) | Dedicated endpoint to update `max_participants` and `registration_end_date` |
+| `PATCH /api/projects/{slug}/registration/` | PATCH | [#1848](https://github.com/climateconnect/climateconnect/issues/1848) | Dedicated endpoint to update `max_participants`, `registration_end_date`, and `status` (close/reopen — organiser sets `status: "closed"` or `"open"`) |
 | `POST /api/projects/{slug}/register/` | POST | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) | Member registers for an event |
 | `DELETE /api/projects/{slug}/register/` | DELETE | [#1850](https://github.com/climateconnect/climateconnect/issues/1850) | Member cancels registration (soft delete — sets `cancelled_at`) |
 | `GET /api/members/me/registered-events/` | GET | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) | Authenticated member's upcoming registered events |
-| `POST /api/projects/{slug}/registration/close/` | POST | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | Organiser closes registration |
-| `POST /api/projects/{slug}/registration/reopen/` | POST | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | Organiser reopens registration |
 | `GET /api/projects/{slug}/registrations/` | GET | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) | Organiser lists registered guests |
 | `POST /api/projects/{slug}/registrations/email/` | POST | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) | Organiser sends email to all registered guests (`is_test=true` sends to self only; always returns `{"sent_count": N}`) |
 
