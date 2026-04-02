@@ -36,7 +36,7 @@ class RegistrationStatus(models.TextChoices):
           (capacity has been lowered below existing signups; block new registrations)
         • new max == current signup count AND status == OPEN → set status = FULL
         Both transitions must happen atomically in the same DB transaction as the
-        EventRegistration.save() call, using select_for_update() on the
+        EventRegistrationConfig.save() call, using select_for_update() on the
         registration count aggregate to avoid races.
         ⚠️  This logic is deferred until the Registrations feature (signup table)
         is built.  See the PATCH handler in project_views.py for the TODO marker.
@@ -48,7 +48,7 @@ class RegistrationStatus(models.TextChoices):
     ENDED = "ended", "Ended"  # Python-side only — never stored in the DB.
 
 
-class EventRegistration(models.Model):
+class EventRegistrationConfig(models.Model):
     """
     Stores registration settings for an event project.
 
@@ -66,7 +66,7 @@ class EventRegistration(models.Model):
     project = models.OneToOneField(
         Project,
         on_delete=models.CASCADE,
-        related_name="event_registration",
+        related_name="registration_config",
         help_text="The event project this registration configuration belongs to",
         verbose_name="Project",
     )
@@ -123,44 +123,44 @@ class EventRegistration(models.Model):
 
     class Meta:
         app_label = "organization"
-        verbose_name = "Event Registration"
-        verbose_name_plural = "Event Registrations"
+        verbose_name = "Event Registration Config"
+        verbose_name_plural = "Event Registration Configs"
 
     def __str__(self):
         max_p = self.max_participants if self.max_participants is not None else "—"
-        return f"Registration for '{self.project.name}' (max: {max_p}, status: {self.status})"
+        return f"Registration config for '{self.project.name}' (max: {max_p}, status: {self.status})"
 
 
-class EventParticipant(models.Model):
+class EventRegistration(models.Model):
     """
     Records which users have registered for an event.
 
-    One row per (user, event_registration) pair.  The unique_together constraint
+    One row per (user, registration_config) pair.  The unique_together constraint
     acts as both a business rule (no duplicate registrations) and a DB-level
     safety net for concurrent requests.
 
     Seat counting:
-        available_seats = event_registration.max_participants
-                          - EventParticipant.objects.filter(event_registration=er).count()
+        available_seats = registration_config.max_participants
+                          - EventRegistration.objects.filter(registration_config=rc).count()
 
     This is computed on-the-fly on the detail endpoint only (see
-    EventRegistrationSerializer with ``include_seat_count=True`` context flag).
+    EventRegistrationConfigSerializer with ``include_seat_count=True`` context flag).
     No denormalised counter column is used to avoid update-anomaly races.
     """
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="event_participations",
+        related_name="event_registrations",
         help_text="The user who registered for the event",
         verbose_name="User",
     )
-    event_registration = models.ForeignKey(
-        EventRegistration,
+    registration_config = models.ForeignKey(
+        EventRegistrationConfig,
         on_delete=models.CASCADE,
-        related_name="participants",
-        help_text="The event registration this participant belongs to",
-        verbose_name="Event Registration",
+        related_name="registrations",
+        help_text="The event registration config this registration belongs to",
+        verbose_name="Registration Config",
     )
     registered_at = models.DateTimeField(
         auto_now_add=True,
@@ -170,12 +170,12 @@ class EventParticipant(models.Model):
 
     class Meta:
         app_label = "organization"
-        verbose_name = "Event Participant"
-        verbose_name_plural = "Event Participants"
-        unique_together = [("user", "event_registration")]
+        verbose_name = "Event Registration"
+        verbose_name_plural = "Event Registrations"
+        unique_together = [("user", "registration_config")]
         indexes = [
             models.Index(
-                fields=["event_registration"], name="idx_ep_event_registration"
+                fields=["registration_config"], name="idx_ep_event_registration"
             ),
             models.Index(fields=["user"], name="idx_ep_user"),
         ]
@@ -183,5 +183,5 @@ class EventParticipant(models.Model):
     def __str__(self) -> str:
         return (
             f"{self.user.username} registered for "
-            f"'{self.event_registration.project.name}'"
+            f"'{self.registration_config.project.name}'"
         )

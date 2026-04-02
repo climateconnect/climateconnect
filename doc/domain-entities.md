@@ -318,11 +318,11 @@ This document provides comprehensive documentation of the main domain entities i
 
 ---
 
-### EventRegistration
+### EventRegistrationConfig
 
 **Summary**: Online registration settings for event-type projects.
 
-**Description**: Stores registration configuration for a `Project` of type `event`. The presence of an `EventRegistration` row is the sole source of truth for whether online registration is enabled — no separate boolean flag on `Project` is needed. Both `max_participants` and `registration_end_date` are nullable to support draft events where settings have not yet been finalised; all constraints are enforced on publish (`is_draft=false`). `EventRegistration` records only exist on published events — published events cannot revert to draft, so draft-mode guards are not applied on the edit endpoint.
+**Description**: Stores registration configuration for a `Project` of type `event`. The presence of an `EventRegistrationConfig` row is the sole source of truth for whether online registration is enabled — no separate boolean flag on `Project` is needed. Both `max_participants` and `registration_end_date` are nullable to support draft events where settings have not yet been finalised; all constraints are enforced on publish (`is_draft=false`). `EventRegistrationConfig` records only exist on published events — published events cannot revert to draft, so draft-mode guards are not applied on the edit endpoint.
 
 **Key rules**:
 - Only valid for projects of type `event`; rejected with 400 for other project types
@@ -355,8 +355,8 @@ This document provides comprehensive documentation of the main domain entities i
 > **Note**: clients should treat `ended`, `closed`, and `full` equally as "not accepting sign-ups".
 
 **Relationships**:
-- **OneToOne**: `Project` (related_name: `event_registration`, CASCADE delete)
-- **Referenced by**: `EventParticipant` (related_name: `participants`)
+- **OneToOne**: `Project` (related_name: `registration_config`, CASCADE delete)
+- **Referenced by**: `EventRegistration` (related_name: `registrations`)
 
 **Model location**: `organization/models/event_registration.py`
 
@@ -365,10 +365,10 @@ This document provides comprehensive documentation of the main domain entities i
 **Serializers**:
 | Serializer | Purpose |
 |---|---|
-| `EventRegistrationSerializer` | Read (project detail/list) and write (create via `POST /api/projects/`). Returns computed `"ended"` status via `to_representation`. |
-| `EditEventRegistrationSerializer` | Write only — `PATCH /api/projects/{slug}/registration/`. Allows organiser to update `max_participants`, `registration_end_date`, **and `status`** (`"open"` or `"closed"` only). `"full"` and `"ended"` are rejected on write. `status = "open"` is additionally blocked when the event is at or over capacity (see below). |
+| `EventRegistrationConfigSerializer` | Read (project detail/list) and write (create via `POST /api/projects/`). Returns computed `"ended"` status via `to_representation`. |
+| `EditEventRegistrationConfigSerializer` | Write only — `PATCH /api/projects/{slug}/registration-config/`. Allows organiser to update `max_participants`, `registration_end_date`, **and `status`** (`"open"` or `"closed"` only). `"full"` and `"ended"` are rejected on write. `status = "open"` is additionally blocked when the event is at or over capacity (see below). |
 
-**Edit endpoint**: `PATCH /api/projects/{slug}/registration/` — dedicated endpoint for organiser/admin to update registration settings on an existing `EventRegistration`. Requires edit rights (organiser or team admin). Returns `404` if no `EventRegistration` exists. `status` is writable (`"open"` or `"closed"`); `"full"` and `"ended"` return 400. Two reopen guards apply when `status = "open"` is requested:
+**Edit endpoint**: `PATCH /api/projects/{slug}/registration-config/` — dedicated endpoint for organiser/admin to update registration settings on an existing `EventRegistrationConfig`. Requires edit rights (organiser or team admin). Returns `404` if no `EventRegistrationConfig` exists. `status` is writable (`"open"` or `"closed"`); `"full"` and `"ended"` return 400. Two reopen guards apply when `status = "open"` is requested:
 
 1. **Deadline guard** — returns 400 when `effective_status == "ended"` (deadline has passed); organiser must extend `registration_end_date` first.
 2. **Fully-booked guard** — returns 400 when participant count ≥ effective `max_participants` (considering the new value if `max_participants` is also being changed in the same request); organiser must increase `max_participants` first (or include a higher value in the same PATCH).
@@ -377,37 +377,37 @@ Auto-adjustment of `status` from `max_participants` changes is skipped when `sta
 
 ---
 
-### EventParticipant
+### EventRegistration
 
 **Summary**: Records a user's registration for an event.
 
-**Description**: Join table between `User` and `EventRegistration`. One row per registered user per event. The `unique_together` constraint on `(user, event_registration)` enforces at both the application layer and DB level that the same user cannot register more than once.
+**Description**: Join table between `User` and `EventRegistrationConfig`. One row per registered user per event. The `unique_together` constraint on `(user, registration_config)` enforces at both the application layer and DB level that the same user cannot register more than once.
 
-Available seat count is computed on-the-fly from this table (`max_participants − COUNT(participants)`) rather than maintained as a denormalised counter, to avoid update-anomaly races. The count is only queried on the project **detail** endpoint (guarded by the `include_seat_count` serializer context flag) — not on the list endpoint — to prevent N+1 queries.
+Available seat count is computed on-the-fly from this table (`max_participants − COUNT(registrations)`) rather than maintained as a denormalised counter, to avoid update-anomaly races. The count is only queried on the project **detail** endpoint (guarded by the `include_seat_count` serializer context flag) — not on the list endpoint — to prevent N+1 queries.
 
 **Key rules**:
 - A user can register for the same event only once (idempotent endpoint returns 200 on re-registration without creating a duplicate row)
-- Registrations are only accepted when `effective_status == "open"` (i.e. stored `status == "open"` **and** `registration_end_date` has not yet passed). The guard in `RegisterForEventView` uses `_compute_effective_status()` — a single function that covers `closed`, `full`, and `ended` states with contextual error messages per state.
-- When the last available seat is taken, `EventRegistration.status` is atomically promoted to `"full"` in the same transaction
-- Seat locking uses `SELECT FOR UPDATE` on `EventRegistration` to prevent race conditions at capacity
+- Registrations are only accepted when `effective_status == "open"` (i.e. stored `status == "open"` **and** `registration_end_date` has not yet passed). The guard in `EventRegistrationsView` uses `_compute_effective_status()` — a single function that covers `closed`, `full`, and `ended` states with contextual error messages per state.
+- When the last available seat is taken, `EventRegistrationConfig.status` is atomically promoted to `"full"` in the same transaction
+- Seat locking uses `SELECT FOR UPDATE` on `EventRegistrationConfig` to prevent race conditions at capacity
 
 **Fields**:
 | Field | Type | Notes |
 |---|---|---|
-| `user` | ForeignKey | FK → `User`, CASCADE delete, related_name: `event_participations` |
-| `event_registration` | ForeignKey | FK → `EventRegistration`, CASCADE delete, related_name: `participants` |
+| `user` | ForeignKey | FK → `User`, CASCADE delete, related_name: `event_registrations` |
+| `registration_config` | ForeignKey | FK → `EventRegistrationConfig`, CASCADE delete, related_name: `registrations` |
 | `registered_at` | DateTimeField | Auto-set on creation; read-only |
 
 **Constraints & indexes**:
 | Type | Fields | Name |
 |---|---|---|
-| `unique_together` | `(user, event_registration)` | Prevents duplicate registrations |
-| Index | `event_registration` | `idx_ep_event_registration` — fast participant count / lookup by event |
+| `unique_together` | `(user, registration_config)` | Prevents duplicate registrations |
+| Index | `registration_config` | `idx_ep_event_registration` — fast participant count / lookup by event |
 | Index | `user` | `idx_ep_user` — fast lookup of all events a user registered for |
 
 **Relationships**:
-- **ForeignKey**: `User` (related_name: `event_participations`, CASCADE delete)
-- **ForeignKey**: `EventRegistration` (related_name: `participants`, CASCADE delete)
+- **ForeignKey**: `User` (related_name: `event_registrations`, CASCADE delete)
+- **ForeignKey**: `EventRegistrationConfig` (related_name: `registrations`, CASCADE delete)
 
 **Model location**: `organization/models/event_registration.py`
 
@@ -735,8 +735,8 @@ Project
 ├── Comments (ProjectComment)
 ├── Followers (ProjectFollower)
 ├── Likes (ProjectLike)
-└── EventRegistration (OneToOne - event type only, nullable)
-    └── EventParticipant (ForeignKey - registered users)
+└── EventRegistrationConfig (OneToOne - event type only, nullable)
+    └── EventRegistration (ForeignKey - registered users)
 
 Hub
 ├── Parent Hub (ForeignKey Self)
@@ -809,9 +809,10 @@ This architecture supports a comprehensive climate action platform with social n
 ## Version History
 
 - **2025-11-27**: Initial documentation
-- **2026-03-19**: Added `EventRegistration` entity (GitHub issue #43). New 1-to-1 relationship on `Project` (event type only) for online registration settings (`max_participants`, `registration_end_date`). Updated `Project` relationships and Entity Relationship Summary tree.
-- **2026-03-19**: Added `status` field to `EventRegistration` (`RegistrationStatus` enum: `open`/`closed`/`full`). Prepares for use cases: organiser manually closing registration and system auto-closing when capacity is reached.
-- **2026-03-30**: Added `EventParticipant` entity (GitHub issue #1845). Join table recording which users have registered for an event. Includes `select_for_update` seat-locking, `unique_together` constraint, and two DB indexes. `EventRegistration.status` is atomically promoted to `"full"` when the last seat is taken. Updated `EventRegistration` relationships section and ER tree.
-- **2026-03-31**: Added computed `"ended"` status to `EventRegistration` API responses (issue #1848). Returned by `EventRegistrationSerializer.to_representation` via `_compute_effective_status` when stored status is `open` but `registration_end_date` has passed — never written to DB. Updated `RegistrationStatus` table to include `ended`. Removed draft-mode guard from `EditEventRegistrationSerializer` (published events cannot revert to draft; guard was dead code). Updated `EventRegistrationSerializer` description — write path is create-only (`POST /api/projects/`); `event_registration` handling removed from `PATCH /api/projects/{slug}/`.
-- **2026-03-31**: `status` is now organiser-writable via `PATCH /api/projects/{slug}/registration/` (issue #1851). `EditEventRegistrationSerializer` accepts `"open"` and `"closed"`; `"full"` and `"ended"` are rejected with 400 (system-managed). Reopen guard in `validate()` returns 400 when `effective_status == "ended"` — organiser must extend `registration_end_date` first. `full` → `open` organiser override is permitted. When `status` is explicitly included in the PATCH body, auto-adjustment from `max_participants` changes is skipped (organiser intent takes priority). `RegisterForEventView` guard consolidated to a single `_compute_effective_status()` check with contextual error messages per status value. `RegistrationStatus.ENDED` added as a Python-side-only enum constant (never stored in DB).
-- **2026-03-31**: Added fully-booked reopen guard to `EditEventRegistrationSerializer.validate()`. `status = "open"` is now rejected with 400 when participant count ≥ effective `max_participants` (uses the new `max_participants` value if it is being changed in the same PATCH). This prevents an organiser from reopening a `closed` or `full` registration when the event has no available seats — they must increase capacity first. An organiser can still reopen a booked-out event by including a higher `max_participants` value in the same request. Shared `participant_count` sentinel prevents double-querying when both fields are present in a single PATCH.
+- **2026-03-19**: Added `EventRegistrationConfig` entity (GitHub issue #43). New 1-to-1 relationship on `Project` (event type only) for online registration settings (`max_participants`, `registration_end_date`). Updated `Project` relationships and Entity Relationship Summary tree.
+- **2026-03-19**: Added `status` field to `EventRegistrationConfig` (`RegistrationStatus` enum: `open`/`closed`/`full`). Prepares for use cases: organiser manually closing registration and system auto-closing when capacity is reached.
+- **2026-03-30**: Added `EventRegistration` entity (GitHub issue #1845). Join table recording which users have registered for an event. Includes `select_for_update` seat-locking, `unique_together` constraint, and two DB indexes. `EventRegistrationConfig.status` is atomically promoted to `"full"` when the last seat is taken. Updated `EventRegistrationConfig` relationships section and ER tree.
+- **2026-03-31**: Added computed `"ended"` status to `EventRegistrationConfig` API responses (issue #1848). Returned by `EventRegistrationConfigSerializer.to_representation` via `_compute_effective_status` when stored status is `open` but `registration_end_date` has passed — never written to DB. Updated `RegistrationStatus` table to include `ended`. Removed draft-mode guard from `EditEventRegistrationConfigSerializer` (published events cannot revert to draft; guard was dead code). Updated `EventRegistrationConfigSerializer` description — write path is create-only (`POST /api/projects/`); `registration_config` handling removed from `PATCH /api/projects/{slug}/`.
+- **2026-03-31**: `status` is now organiser-writable via `PATCH /api/projects/{slug}/registration-config/` (issue #1851). `EditEventRegistrationConfigSerializer` accepts `"open"` and `"closed"`; `"full"` and `"ended"` are rejected with 400 (system-managed). Reopen guard in `validate()` returns 400 when `effective_status == "ended"` — organiser must extend `registration_end_date` first. `full` → `open` organiser override is permitted. When `status` is explicitly included in the PATCH body, auto-adjustment from `max_participants` changes is skipped (organiser intent takes priority). `EventRegistrationsView` guard consolidated to a single `_compute_effective_status()` check with contextual error messages per status value. `RegistrationStatus.ENDED` added as a Python-side-only enum constant (never stored in DB).
+- **2026-03-31**: Added fully-booked reopen guard to `EditEventRegistrationConfigSerializer.validate()`. `status = "open"` is now rejected with 400 when participant count ≥ effective `max_participants` (uses the new `max_participants` value if it is being changed in the same PATCH). This prevents an organiser from reopening a `closed` or `full` registration when the event has no available seats — they must increase capacity first. An organiser can still reopen a booked-out event by including a higher `max_participants` value in the same request. Shared `participant_count` sentinel prevents double-querying when both fields are present in a single PATCH.
+- **2026-04-02**: Renamed models for clarity: `EventRegistration` (config) → `EventRegistrationConfig`; `EventParticipant` (sign-up record) → `EventRegistration`. Updated related_names (`event_registration` → `registration_config`, `participants` → `registrations`, `event_participations` → `event_registrations`). API JSON key renamed `event_registration` → `registration_config`. Endpoints renamed: `POST /register/` → `POST /registrations/`, `PATCH /registration/` → `PATCH /registration-config/`. Views renamed: `RegisterForEventView` + `ListEventRegistrationsView` → combined `EventRegistrationsView`; `EditEventRegistrationSettingsView` → `EditRegistrationConfigView`.

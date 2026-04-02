@@ -2,13 +2,13 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from organization.models.event_registration import (
-    EventParticipant,
     EventRegistration,
+    EventRegistrationConfig,
     RegistrationStatus,
 )
 
 
-def _compute_effective_status(obj: EventRegistration) -> str:
+def _compute_effective_status(obj: EventRegistrationConfig) -> str:
     """
     Return the effective registration status for API responses.
 
@@ -25,9 +25,9 @@ def _compute_effective_status(obj: EventRegistration) -> str:
     return obj.status
 
 
-class EventRegistrationBaseSerializer(serializers.ModelSerializer):
+class EventRegistrationConfigBaseSerializer(serializers.ModelSerializer):
     """
-    Shared base for EventRegistration serializers.
+    Shared base for EventRegistrationConfig serializers.
 
     Provides two behaviours used by every read response:
 
@@ -36,16 +36,16 @@ class EventRegistrationBaseSerializer(serializers.ModelSerializer):
         so that ``"ended"`` is returned when the deadline has passed.
 
     ``available_seats`` / ``get_available_seats``
-        Always-computed default: ``max_participants − COUNT(participants)``,
+        Always-computed default: ``max_participants − COUNT(registrations)``,
         or ``None`` for unlimited-capacity events.  Subclasses that serve
         *list* endpoints should override ``get_available_seats`` to gate the
-        COUNT query behind a context flag (see ``EventRegistrationSerializer``).
+        COUNT query behind a context flag (see ``EventRegistrationConfigSerializer``).
     """
 
     available_seats = serializers.SerializerMethodField()
 
     class Meta:
-        model = EventRegistration
+        model = EventRegistrationConfig
         fields = []  # Subclasses declare their own field list.
 
     def to_representation(self, instance):
@@ -57,12 +57,12 @@ class EventRegistrationBaseSerializer(serializers.ModelSerializer):
         """Return available seats, or ``None`` for unlimited-capacity events."""
         if obj.max_participants is None:
             return None
-        return max(0, obj.max_participants - obj.participants.count())
+        return max(0, obj.max_participants - obj.registrations.count())
 
 
-class EventRegistrationSerializer(EventRegistrationBaseSerializer):
+class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
     """
-    Serializes EventRegistration settings for an event project.
+    Serializes EventRegistrationConfig settings for an event project.
 
     Used for both read (project detail response) and write (create/update).
 
@@ -70,7 +70,7 @@ class EventRegistrationSerializer(EventRegistrationBaseSerializer):
         - is_event_type (bool): whether the project is of type 'event'
         - is_draft (bool): whether the project will remain a draft after saving
         - event_end_date (datetime | None): the event's end_date for cross-field check
-        - existing_er (EventRegistration | None): current row for PATCH merged-state check
+        - existing_er (EventRegistrationConfig | None): current row for PATCH merged-state check
 
     Type coercion (str→int, str→datetime) and range validation (min_value=1) are
     handled automatically by DRF — no manual int() / parse() calls are needed.
@@ -84,13 +84,13 @@ class EventRegistrationSerializer(EventRegistrationBaseSerializer):
 
     available_seats:
         - Only included (non-null) when ``context["include_seat_count"]`` is True.
-        - Computed as ``max_participants - COUNT(participants)`` on the fly.
+        - Computed as ``max_participants - COUNT(registrations)`` on the fly.
         - Returns ``None`` when the context flag is absent (list responses) to
           avoid a COUNT query per row on the project list endpoint.
         - Returns ``None`` when ``max_participants`` is None (unlimited capacity).
     """
 
-    class Meta(EventRegistrationBaseSerializer.Meta):
+    class Meta(EventRegistrationConfigBaseSerializer.Meta):
         fields = [
             "max_participants",
             "registration_end_date",
@@ -138,7 +138,7 @@ class EventRegistrationSerializer(EventRegistrationBaseSerializer):
 
         if not is_event_type:
             raise serializers.ValidationError(
-                "event_registration can only be set for projects of type 'event'."
+                "registration_config can only be set for projects of type 'event'."
             )
 
         # Cross-field check: registration must close before the event ends.
@@ -182,9 +182,9 @@ class EventRegistrationSerializer(EventRegistrationBaseSerializer):
         return attrs
 
 
-class EventParticipantSerializer(serializers.ModelSerializer):
+class EventRegistrationSerializer(serializers.ModelSerializer):
     """
-    Read-only serializer for EventParticipant.
+    Read-only serializer for EventRegistration (a user's sign-up record).
 
     Used by GET /api/projects/{url_slug}/registrations/ to return the full
     guest list to event organisers and team admins.
@@ -202,7 +202,7 @@ class EventParticipantSerializer(serializers.ModelSerializer):
     user_thumbnail_image = serializers.SerializerMethodField()
 
     class Meta:
-        model = EventParticipant
+        model = EventRegistration
         fields = [
             "user_first_name",
             "user_last_name",
@@ -247,12 +247,12 @@ class SendOrganizerEmailSerializer(serializers.Serializer):
     is_test = serializers.BooleanField(default=False)
 
 
-class EditEventRegistrationSerializer(EventRegistrationBaseSerializer):
+class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
     """
-    Serializer for PATCH /api/projects/{slug}/registration/.
+    Serializer for PATCH /api/projects/{slug}/registration-config/.
 
     Allows an event organiser to update ``max_participants``,
-    ``registration_end_date``, and ``status`` on an existing EventRegistration.
+    ``registration_end_date``, and ``status`` on an existing EventRegistrationConfig.
 
     ``status`` (writable):
         - Organiser may send ``"open"`` or ``"closed"`` to manually open/close
@@ -263,7 +263,7 @@ class EditEventRegistrationSerializer(EventRegistrationBaseSerializer):
           already ``"ended"`` (deadline has passed) raises ``400 Bad Request``
           with a message directing the organiser to extend the deadline first.
         - ``full`` → ``open`` is permitted **only when capacity is still
-          available** after this PATCH (i.e. current participant count <
+          available** after this PATCH (i.e. current registration count <
           effective ``max_participants``).  If the event is still at or over
           capacity the request is rejected with ``400 Bad Request``.
         - Auto-adjustment logic (see below) is skipped when ``status`` is
@@ -279,20 +279,20 @@ class EditEventRegistrationSerializer(EventRegistrationBaseSerializer):
     Validation:
         - ``registration_end_date`` must be > now()  (past-date guard, edit only)
         - ``registration_end_date`` must be ≤ ``project.end_date``
-        - ``max_participants`` must be ≥ current participant count (lower-bound guard)
+        - ``max_participants`` must be ≥ current registration count (lower-bound guard)
         - ``status = "open"`` is rejected when ``effective_status == "ended"``
-        - ``status = "open"`` is rejected when participant count ≥ effective
+        - ``status = "open"`` is rejected when registration count ≥ effective
           ``max_participants`` (fully-booked guard; use effective value from
           this PATCH if ``max_participants`` is also being changed)
 
     Automatic status adjustment (applied only when ``max_participants`` is in the
     request body AND ``status`` is NOT explicitly provided):
-        - FULL → OPEN  when new capacity > current participant count
+        - FULL → OPEN  when new capacity > current registration count
         - FULL → OPEN  when new capacity is set to ``null`` (unlimited)
-        - OPEN → FULL  when new capacity == current participant count
+        - OPEN → FULL  when new capacity == current registration count
     """
 
-    class Meta(EventRegistrationBaseSerializer.Meta):
+    class Meta(EventRegistrationConfigBaseSerializer.Meta):
         fields = [
             "max_participants",
             "registration_end_date",
@@ -331,8 +331,8 @@ class EditEventRegistrationSerializer(EventRegistrationBaseSerializer):
                 if instance.status == RegistrationStatus.FULL:
                     instance.status = RegistrationStatus.OPEN
             else:
-                current_count = EventParticipant.objects.filter(
-                    event_registration=instance
+                current_count = EventRegistration.objects.filter(
+                    registration_config=instance
                 ).count()
                 if (
                     instance.status == RegistrationStatus.FULL
@@ -377,19 +377,19 @@ class EditEventRegistrationSerializer(EventRegistrationBaseSerializer):
                 )
 
         # Lazily computed and shared by multiple guards below to avoid extra queries.
-        participant_count = None
+        registration_count = None
 
         max_participants = attrs.get("max_participants")
         if max_participants is not None and self.instance:
-            participant_count = EventParticipant.objects.filter(
-                event_registration=self.instance
+            registration_count = EventRegistration.objects.filter(
+                registration_config=self.instance
             ).count()
-            if max_participants < participant_count:
+            if max_participants < registration_count:
                 raise serializers.ValidationError(
                     {
                         "max_participants": (
                             f"Cannot be lower than the current number of "
-                            f"registrations ({participant_count})."
+                            f"registrations ({registration_count})."
                         )
                     }
                 )
@@ -416,11 +416,11 @@ class EditEventRegistrationSerializer(EventRegistrationBaseSerializer):
                 "max_participants", self.instance.max_participants
             )
             if effective_max is not None:
-                if participant_count is None:
-                    participant_count = EventParticipant.objects.filter(
-                        event_registration=self.instance
+                if registration_count is None:
+                    registration_count = EventRegistration.objects.filter(
+                        registration_config=self.instance
                     ).count()
-                if participant_count >= effective_max:
+                if registration_count >= effective_max:
                     raise serializers.ValidationError(
                         {
                             "status": (

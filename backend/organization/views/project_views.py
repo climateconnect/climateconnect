@@ -76,8 +76,10 @@ from organization.permissions import (
     ReadWriteSensibleProjectDataPermission,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
-from organization.models.event_registration import EventRegistration
-from organization.serializers.event_registration import EventRegistrationSerializer
+from organization.models.event_registration import EventRegistrationConfig
+from organization.serializers.event_registration import (
+    EventRegistrationConfigSerializer,
+)
 from organization.serializers.project import (
     EditProjectSerializer,
     InsertProjectMemberSerializer,
@@ -185,7 +187,7 @@ class ListProjectsView(ListAPIView):
         # Get project ranking
         projects = (
             Project.objects.filter(is_draft=False, is_active=True)
-            .select_related("loc", "language", "status", "event_registration")
+            .select_related("loc", "language", "status", "registration_config")
             .prefetch_related(
                 "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
@@ -528,18 +530,18 @@ class CreateProjectView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        # --- event_registration pre-creation validation ---
+        # --- registration_config pre-creation validation ---
         # Run before the status check so invalid data is rejected early.
         # Type coercion (str→int, str→datetime) and business rules are handled
-        # by EventRegistrationSerializer — no manual int()/parse() needed.
-        er_data = request.data.get("event_registration")
+        # by EventRegistrationConfigSerializer — no manual int()/parse() needed.
+        er_data = request.data.get("registration_config")
         er_serializer = None
         if er_data is not None:
             project_type_id = (request.data.get("project_type") or {}).get(
                 "type_id", ""
             )
             end_date_raw = request.data.get("end_date")
-            er_serializer = EventRegistrationSerializer(
+            er_serializer = EventRegistrationConfigSerializer(
                 data=er_data,
                 context={
                     "is_event_type": project_type_id == "event",
@@ -551,7 +553,7 @@ class CreateProjectView(APIView):
                 return Response(
                     er_serializer.errors, status=status.HTTP_400_BAD_REQUEST
                 )
-        # --- end event_registration validation ---
+        # --- end registration_config validation ---
 
         try:
             ProjectStatus.objects.get(id=int(request.data["status"]))
@@ -583,15 +585,17 @@ class CreateProjectView(APIView):
 
         project = create_new_project(request.data, source_language)
 
-        # Create EventRegistration whenever the key is present in the payload.
+        # Create EventRegistrationConfig whenever the key is present in the payload.
         # validated_data already contains correctly typed Python values —
         # no int()/parse() conversions needed here.
         if er_serializer is not None:
-            EventRegistration.objects.create(
+            EventRegistrationConfig.objects.create(
                 project=project,
                 **er_serializer.validated_data,
             )
-            logger.info("EventRegistration created for project %s", project.url_slug)
+            logger.info(
+                "EventRegistrationConfig created for project %s", project.url_slug
+            )
 
         if translations_object and translations and source_language:
             for language in translations:
@@ -768,7 +772,7 @@ class ProjectAPIView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
-            project = Project.objects.select_related("event_registration").get(
+            project = Project.objects.select_related("registration_config").get(
                 url_slug=str(url_slug)
             )
         except Project.DoesNotExist:
