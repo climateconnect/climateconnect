@@ -9,7 +9,6 @@ import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { getCustomHubData } from "../../../public/data/customHubData";
 import HubLinks from "../indexPage/hubsSubHeader/HubLinks";
-import WasseraktionswochenLink from "./WasseraktionswochenLink";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -114,12 +113,10 @@ export default function HubTabsNavigation({
   className,
   allHubs,
   fromPage,
-  showWasseraktionswochen,
 }) {
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-  const isMediumScreen = useMediaQuery("(max-width:1040px)");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Computed values
@@ -228,18 +225,13 @@ export default function HubTabsNavigation({
         <div className={classes.linksAndTabsWrapper}>
           {renderTabs()}
           {isEmmendingenHub && (
-            <>
-              {((!isNarrowScreen && !isMediumScreen) || !showWasseraktionswochen) && (
-                <Link
-                  className={classes.climateMatchLink}
-                  href="https://climatehub.earth/burgerenergie-em"
-                  underline="hover"
-                >
-                  {texts.emmerdingen_buergerenergie}
-                </Link>
-              )}
-              {showWasseraktionswochen && <WasseraktionswochenLink />}
-            </>
+            <Link
+              className={classes.climateMatchLink}
+              href="https://climatehub.earth/burgerenergie-em"
+              underline="hover"
+            >
+              {texts.emmerdingen_buergerenergie}
+            </Link>
           )}
           {renderNarrowScreenLinks()}
         </div>
