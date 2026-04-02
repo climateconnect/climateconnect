@@ -1,10 +1,10 @@
 # Event Organiser Can Send Email Message to All Guests
 
-**Status**: IMPLEMENTATION (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
+**Status**: DONE (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
 **Type**: Feature
 **Date and time created**: 2026-04-01 11:00 UTC
 **Date Completed**: —
-**GitHub Issue**: [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55)
+**GitHub Issue**: [#1866](https://github.com/climateconnect/climateconnect/issues/1866)
 **Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)
 **Related Specs**:
 - [`docs/mosy/architecture_overview.md`](../mosy/architecture_overview.md)

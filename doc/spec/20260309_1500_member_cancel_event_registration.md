@@ -1,6 +1,6 @@
 # Member Can Cancel Their Event Registration
 
-**Status**: DRAFT (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
+**Status**: READY FOR IMPLEMENTATION (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
 **Type**: Feature
 **Date and time created**: 2026-03-09 15:00
 **Date Completed**: TBD
@@ -27,13 +27,13 @@ A logged-in member who has registered for an upcoming event can cancel their reg
   - The freed seat is immediately available for other members to register.
   - The event no longer appears in the member's registered events list on their profile page.
   - The member can register again for the same event (if registration is still open). Re-registration **reuses the existing `EventParticipant` record**: `cancelled_at` is reset to `NULL`. No new row is created.
-- Once the event's `start_date` has passed, the cancellation button is no longer shown. Instead, the button area shows a non-interactive label **"You attended this event"** to acknowledge the prior registration. This applies to all registered members regardless of whether they actually attended.
+- Once the event's `start_date` has passed, the cancellation button is no longer shown. Instead, the button area shows a non-interactive label **"You attended this event"** to acknowledge the prior registration. This applies to members who had an **active** (non-cancelled) registration when the event started. Members who cancelled their registration before the event started do **not** see this label.
 - The member does not receive further notifications or reminders for the event after cancellation. If a reminder feature (issue #50) is implemented before this task, it must respect cancellation. If not yet implemented, the reminder task spec must be updated to exclude cancelled registrations — this task's log must note that dependency.
 
 **Explicitly Out of Scope (this iteration):**
-- Notifying the event organiser about cancellations.
-- The organiser being able to see who cancelled — deferred, but the soft-delete approach in this task preserves the historical record so this can be implemented in a future story without a data migration.
-- Cancellation by the organiser on behalf of a member.
+- Notifying the event organiser about cancellations. (different task)
+- The organiser being able to see who cancelled — deferred, but the soft-delete approach in this task preserves the historical record so this can be implemented in a future story without a data migration. (different task)
+- Cancellation by the organiser on behalf of a member (different task)
 
 ### Non Functional Requirements
 
@@ -48,7 +48,7 @@ A logged-in member who has registered for an upcoming event can cancel their reg
 - The `DELETE /api/projects/{slug}/register/` endpoint was explicitly noted as a future task in [#1845](https://github.com/climateconnect/climateconnect/issues/1845). This task implements it fully as a soft delete.
 - **Re-registration** reuses the existing `EventParticipant` row: `cancelled_at` is reset to `NULL`. The `POST /register/` endpoint in [#1845](https://github.com/climateconnect/climateconnect/issues/1845) must be updated accordingly — if a soft-deleted record exists for the user/event pair, update it instead of creating a new row. The unique constraint `UNIQUE(user, event_registration)` stays intact.
 - **Soft delete ripple effect**: any query that counts active participants or checks registration status must add `cancelled_at IS NULL` to its filter. Affected places: `available_seats` count in [#1845](https://github.com/climateconnect/climateconnect/issues/1845), `is_registered` check in [#1849](https://github.com/climateconnect/climateconnect/issues/1849), `GET /api/members/me/registered-events/` in [#1849](https://github.com/climateconnect/climateconnect/issues/1849), and the future reminder query in issue #50.
-- Reminder notifications (issue #50): the Celery Beat query must filter `EventParticipant.objects.filter(cancelled_at__isnull=True)` to exclude cancelled registrations.
+- Reminder notifications (issue #50) and message from organizer to guests: the Celery Beat query must filter `EventParticipant.objects.filter(cancelled_at__isnull=True)` to exclude cancelled registrations.
 
 ## System impact
 
@@ -74,8 +74,9 @@ A logged-in member who has registered for an upcoming event can cancel their reg
 DELETE /api/projects/{slug}/register/
 ```
 - Auth required (`401` if unauthenticated).
-- Verifies `request.user` has an active `EventParticipant` record (`cancelled_at IS NULL`) for this event (`404` if not registered or already cancelled).
+- Verifies an `EventParticipant` record exists for this event (`404` if no record found).
 - Verifies `request.user` owns the registration — no cross-user cancellation (`403` otherwise).
+- Verifies the participant record is active (`cancelled_at IS NULL`) for this event (`404` if already cancelled).
 - Verifies the event has not yet started (`400` if `project.start_date <= now`).
 - Sets `cancelled_at = now()` on the `EventParticipant` record atomically.
 - Returns `204 No Content` on success.
@@ -85,7 +86,7 @@ DELETE /api/projects/{slug}/register/
 GET /api/projects/{slug}/
 ```
 - `event_registration.is_registered` must now reflect `cancelled_at IS NULL` — i.e. `true` only if the participant record exists **and** is not cancelled.
-- Add `event_registration.has_attended: boolean` — `true` when `project.start_date <= now` AND the user has an `EventParticipant` record (active or cancelled) for this event. Drives the "You attended this event" UI state.
+- Add `event_registration.has_attended: boolean` — `true` when `project.start_date <= now` AND the user has an **active** (`cancelled_at IS NULL`) `EventParticipant` record for this event. Returns `false` (or is omitted) when the event has not yet started, when the user has no participant record, when the user's registration was cancelled before the event started, or when the user is unauthenticated. Drives the "You attended this event" UI state.
 - `available_seats` count must also filter `cancelled_at IS NULL`.
 
 No other API changes.
@@ -96,15 +97,16 @@ None. Cancellation is synchronous. No async side-effects in this iteration (orga
 
 ### Frontend
 
-- **Event detail page** — the button area for registered members now has three states, driven by `event_registration` in the API response:
+- **Event detail page** — the button area for registered members now has four states, driven by `event_registration` in the API response. Evaluate conditions in the order listed — `has_attended` takes highest priority:
 
-  | Condition | Button area |
-  |---|---|
-  | `is_registered: true` + event not yet started | **"Cancel registration"** button (active) |
-  | `has_attended: true` (event started, user was/is registered) | Non-interactive label **"You attended this event"** |
-  | `is_registered: false` + registration open | **"Register"** button (existing behaviour) |
-  | `is_registered: false` + registration closed | Disabled **"Registration closed"** button (existing behaviour) |
+  | Priority | Condition | Button area |
+  |---|---|---|
+  | 1 | `has_attended: true` (event started, user had active registration at start time) | Non-interactive label **"You attended this event"** |
+  | 2 | `is_registered: true` + event not yet started | **"Cancel registration"** button (active) |
+  | 3 | `is_registered: false` + registration open | **"Register"** button (existing behaviour) |
+  | 4 | `is_registered: false` + registration closed | Disabled **"Registration closed"** button (existing behaviour) |
 
+  Note: `has_attended: true` and `is_registered: true` can coexist in the API response (the user is still actively registered when the event starts). Always check `has_attended` first.
   - Clicking "Cancel registration" opens a **confirmation modal**:
     - Message: *"Are you sure you want to cancel your registration for [event title]?"*
     - Two buttons: **"Yes, cancel registration"** (calls `DELETE /api/projects/{slug}/register/`) and **"Keep registration"** (dismisses modal).
@@ -118,35 +120,21 @@ None. Cancellation is synchronous. No async side-effects in this iteration (orga
 
 - **`EventRegistrationViewSet`** (extend existing, introduced in [#1845](https://github.com/climateconnect/climateconnect/issues/1845)):
   - Implement `destroy()` action for `DELETE /api/projects/{slug}/register/`:
-    ```python
-    def destroy(self, request, slug=None):
-        participant = get_object_or_404(
-            EventParticipant,
-            event_registration__project__slug=slug,
-            user=request.user,
-            cancelled_at__isnull=True
-        )
-        if participant.event_registration.project.start_date <= now():
-            return Response(status=400)
-        participant.cancelled_at = now()
-        participant.save(update_fields=["cancelled_at"])
-        return Response(status=204)
-    ```
+    - Wrap the entire operation in `@transaction.atomic`.
+    - Look up the `EventParticipant` for this event without pre-filtering by user, then check ownership explicitly — return `403 Forbidden` if the record exists but belongs to a different user (do not fold the ownership check into the initial query filter, which would silently return `404`).
+    - Return `404 Not Found` if no active (`cancelled_at IS NULL`) participant record exists for this user and event.
+    - Return `400 Bad Request` if the event has already started (`start_date <= now()`).
+    - Set `cancelled_at = now()` and save.
+    - If the `EventRegistration.status` was `FULL`, check whether active participants are now below `max_participants`; if so, revert `status` back to `OPEN`. This is the mirror of the `FULL`-promotion logic in the `POST /register/` action and must happen in the same atomic transaction.
+    - Return `204 No Content` on success.
   - `available_seats` derivation must be updated everywhere to filter `cancelled_at__isnull=True`.
 - **`EventParticipant` model** (extend existing, introduced in [#1845](https://github.com/climateconnect/climateconnect/issues/1845)):
   - Add `cancelled_at = models.DateTimeField(null=True, blank=True, default=None)`.
 - **`EventRegistrationViewSet`** — update `create()` / register action ([#1845](https://github.com/climateconnect/climateconnect/issues/1845)) to handle re-registration:
-  ```python
-  # Instead of get_or_create, use update_or_create:
-  participant, created = EventParticipant.objects.update_or_create(
-      user=request.user,
-      event_registration=event_registration,
-      defaults={"cancelled_at": None}
-  )
-  ```
-  - If the record already exists and `cancelled_at IS NULL`: idempotent, return `200 OK` (already registered).
-  - If the record exists and `cancelled_at IS NOT NULL`: reset `cancelled_at = NULL`, return `201 Created`.
-  - If no record exists: create fresh, return `201 Created`.
+  - If a participant record exists with `cancelled_at IS NOT NULL` for this user/event pair: reset `cancelled_at` to `None` (re-registration). Return `201 Created`.
+  - If a participant record exists with `cancelled_at IS NULL`: already actively registered — idempotent, return `200 OK`. No change to the record.
+  - If no record exists: create a fresh row. Return `201 Created`.
+  - The distinction between a new registration and a re-registration from a cancelled state is a backend implementation detail — both return `201 Created` to the client.
 - **Django migration**: add `cancelled_at` column to `projects_eventparticipant`.
 
 ### Data
@@ -178,6 +166,8 @@ None. Cancellation is synchronous. No async side-effects in this iteration (orga
 - 2026-03-09 15:00 — Task created from GitHub issue #1850. Depends on [#1845](https://github.com/climateconnect/climateconnect/issues/1845) (`EventParticipant` entity and `DELETE` endpoint stub) and [#1849](https://github.com/climateconnect/climateconnect/issues/1849) (disabled Register button placeholder replaced here). Organiser cancellation visibility and organiser notification confirmed out of scope for this iteration.
 - 2026-03-09 15:30 — Confirmed soft delete over hard delete: `cancelled_at` timestamp added to `EventParticipant`, preserving historical records for future organiser visibility feature. Post-start-date UI state added: "You attended this event" non-interactive label. Soft delete ripple effect documented across [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), and issue #50.
 - 2026-03-09 15:45 — Confirmed re-registration reuses the existing `EventParticipant` row (reset `cancelled_at = NULL`) — no new row created, no extra tracking column. Unique constraint `(user, event_registration)` stays intact. `POST /register/` in [#1845](https://github.com/climateconnect/climateconnect/issues/1845) must be updated to handle this via `update_or_create`.
+- 2026-04-02 09:57 - Updated specs to reflect recent changes and progress
+- 2026-04-02 11:00 — Spec review completed. Changes applied: (1) Status promoted to READY FOR IMPLEMENTATION. (2) All backend code snippets removed — implementation details left to the developing agent. (3) `has_attended` corrected: only `true` for members with an **active** (non-cancelled) registration once the event starts; members who cancelled before the event do not see "You attended this event". (4) Frontend state table updated with explicit priority order and note about coexistence of `has_attended` and `is_registered`. (5) `destroy()` requirements updated to include `@transaction.atomic`, explicit ownership `403` check (separate from the 404 not-found check), and the missing `FULL → OPEN` status revert when a cancellation frees a seat. (6) Re-registration response codes simplified: `201 Created` for all successful registration operations (new or re-registration from cancelled); `200 OK` for idempotent already-active-registration only.
 
 ## Acceptance Criteria
 
@@ -186,9 +176,11 @@ None. Cancellation is synchronous. No async side-effects in this iteration (orga
 - [ ] Confirming cancellation soft-deletes the `EventParticipant` record (sets `cancelled_at` to now — the record is retained in the database).
 - [ ] After cancellation, the event detail page reverts to showing the "Register" button (if registration is still open) or "Registration closed" (if not).
 - [ ] After cancellation, the available seat count on the event detail page increments by 1.
+- [ ] After cancellation, if the event's registration status was `FULL`, it reverts to `OPEN` and new members can register again.
 - [ ] After cancellation, the event no longer appears in the member's registered events grid on their profile page.
 - [ ] After cancellation, the member can register again for the same event (if registration is still open); re-registration reuses the existing `EventParticipant` record (`cancelled_at` reset to `NULL` — no duplicate row created).
-- [ ] Once the event's `start_date` has passed, the button area shows a non-interactive **"You attended this event"** label for members who registered (regardless of whether they subsequently cancelled).
+- [ ] Once the event's `start_date` has passed, the button area shows a non-interactive **"You attended this event"** label for members who had an **active** registration when the event started.
+- [ ] Members who cancelled their registration **before** the event started do **not** see "You attended this event" after the start date passes.
 - [ ] The cancellation endpoint returns `403 Forbidden` if the requesting user tries to cancel another member's registration.
 - [ ] The cancellation endpoint returns `404 Not Found` if the member is not registered or has already cancelled.
 - [ ] The cancellation endpoint returns `400 Bad Request` if the event has already started.
@@ -198,4 +190,3 @@ None. Cancellation is synchronous. No async side-effects in this iteration (orga
 - [ ] All tests pass (unit, integration, end-to-end).
 - [ ] Code review approved.
 - [ ] Documentation updated and current.
-
