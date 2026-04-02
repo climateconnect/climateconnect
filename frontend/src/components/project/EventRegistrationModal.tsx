@@ -42,8 +42,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   actionRow: {
     display: "flex",
+    flexDirection: "column",
     gap: theme.spacing(2),
     marginTop: theme.spacing(3),
+    [theme.breakpoints.up("sm")]: {
+      flexDirection: "row",
+    },
   },
   authMessage: {
     marginBottom: theme.spacing(3),
@@ -93,6 +97,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   loadingContainer: {
     marginTop: theme.spacing(2),
     textAlign: "center",
+  },
+  registerButton: {
+    whiteSpace: "nowrap",
   },
 }));
 
@@ -271,17 +278,18 @@ export default function EventRegistrationModal({
       </Box>
 
       <Box className={classes.actionRow}>
-        <Button onClick={handleClose} variant="outlined">
-          {texts.cancel}
-        </Button>
         <Button
           onClick={handleRegister}
           variant="contained"
           color="primary"
           disabled={loading}
           fullWidth
+          className={classes.registerButton}
         >
           {loading ? <CircularProgress size={24} /> : texts.confirm_registration}
+        </Button>
+        <Button onClick={handleClose} variant="outlined">
+          {texts.cancel}
         </Button>
       </Box>
     </Box>
