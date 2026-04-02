@@ -158,7 +158,6 @@ export default function HubBrowsePage({
   projectTypes,
   hubThemeData,
   linkedHubs,
-  showWasseraktionswochen,
 }: HubBrowsePageProps) {
   // donationGoal was removed in PR #1560?
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
@@ -314,7 +313,6 @@ export default function HubBrowsePage({
                 linkedHubs={linkedHubs}
                 isLocationHub={isLocationHub}
                 fromPage="hub"
-                showWasseraktionswochen={showWasseraktionswochen}
               />
             </FilterProvider>
           </BrowseContext.Provider>
