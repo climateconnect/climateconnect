@@ -288,7 +288,10 @@ export default function ProjectPageRoot({
 
   const registrationsTabLabel = () => {
     let registrationsLabel = texts.registrations;
-    if (currentEventRegistration && currentEventRegistration.max_participants) {
+    if (
+      currentEventRegistration?.max_participants != null &&
+      currentEventRegistration?.available_seats != null
+    ) {
       const takenSeats =
         currentEventRegistration.max_participants - currentEventRegistration.available_seats;
       registrationsLabel += ` • ${takenSeats}`;

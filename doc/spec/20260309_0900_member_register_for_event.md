@@ -44,7 +44,7 @@ A logged-in member of the platform can register for an event that has registrati
 - The registration endpoint must be idempotent per user/event pair — re-registering an already-registered member must not create a duplicate record.
 - Confirmation email must be sent asynchronously (via Celery + Mailjet) — it must not block the HTTP response.
 - The deep-link URL `/projects/{slug}/register` must open the registration modal for both authenticated and unauthenticated users. Unauthenticated will have the option to login or signup within the modal.
-- The `redirect` query parameter support must be **added to `/signup`** as part of this task — the sign-up page currently only redirects to `/` or `/{hub}/browse` and does not yet accept a `redirect` param.
+- The current user's registration state (`is_registered`) must be derived from `GET /api/projects/{slug}/my_interactions/`, not from the shared project detail response. This keeps the project response cacheable and free of per-user state.
 - No breaking changes to existing project/event APIs.
 
 ### AI Agent Insights and Additions
@@ -116,6 +116,23 @@ GET /api/projects/
 - Already returns the full `event_registration` object per list item (same shape as above, via `ProjectStubSerializer`). No separate `has_registration` boolean flag is needed — its presence signals registration is enabled.
 - For the "is registration accepting?" indicator in list cards, the frontend derives it from: `status == "open"`. No seat count is returned in list responses for performance (seat count requires `EventParticipant` which is not yet implemented).
 
+**User interactions — extended (existing)**
+```
+GET /api/projects/{slug}/my_interactions/
+```
+- Already returns `{ liking, following, has_requested_to_join }` for the authenticated user. Called in `getServerSideProps` only when a token is present.
+- **Extend to include `is_registered`** when the project has an `EventRegistration`. Embedding this in the shared project detail response (`GET /api/projects/{slug}/`) would be wrong — it would pollute a shared response with per-user state. The `my_interactions` endpoint is the established codebase pattern for exactly this kind of authenticated, per-user project state.
+- Extended response shape:
+  ```json
+  {
+    "liking": false,
+    "following": true,
+    "has_requested_to_join": false,
+    "is_registered": true
+  }
+  ```
+- `is_registered` is `true` when an `EventParticipant` row exists for `(request.user, project.event_registration)`. Returns `false` when the project has no `EventRegistration` or the user has not registered. Only run the DB check when the project has an `EventRegistration` (guard with `hasattr(project, "event_registration")`).
+
 ### Events
 
 - **`event.registration.confirmed`** (async, internal): published to Celery queue after a successful registration; triggers the confirmation email task.
@@ -132,7 +149,9 @@ GET /api/projects/
 - **Event detail page**:
   - Replace the Follow button with a **"Register"** button when the event has `event_registration` present **and the `EVENT_REGISTRATION` feature toggle is enabled**.
   - When registration is closed (`status === "closed"` or `status === "full"` or `status === "ended"`): render a disabled grey button labelled "Registration closed".
-  - When registration is open (`status === "open"`): the "Register" button is **always enabled**, regardless of auth state. Clicking it opens the registration modal. Auth state is handled inside the modal (see below).
+  - When the current user **has already registered** (`is_registered === true` from `my_interactions`): render a disabled button labelled **"Registered ✓"**. This takes precedence over the open/closed state.
+  - When registration is open (`status === "open"`) and the user has not yet registered: the "Register" button is **always enabled**, regardless of auth state. Clicking it opens the registration modal. Auth state is handled inside the modal (see below).
+  - After a successful registration in the modal, update local state immediately: set `isUserRegistered = true` (optimistic update via `onRegistrationSuccess` callback) so the button switches to "Registered ✓" without a page reload.
   - Show available seat count (e.g. "47 seats remaining") on the event detail page — **deferred until `EventParticipant` is implemented** and `available_seats` is returned by the API.
   - Deep-link support: navigating to `/projects/{slug}/register` auto-opens the modal on page load (for both authenticated and unauthenticated users; unauthenticated users will see the modal's login/signup prompt). Implemented as a new Next.js page at `pages/projects/[projectId]/register.tsx`.
 - **Registration modal**:
@@ -160,6 +179,20 @@ GET /api/projects/
 - **`EventRegistrationSerializer`** (extend existing): add `available_seats` (annotated count: `max_participants - COUNT(participants)`) once `EventParticipant` exists. `status` is already serialized and returned.
   - **`available_seats` must only be included in the detail response, not in list responses** — a COUNT query per row would make the project list endpoint unacceptably slow.
   - Implementation: use a serializer context flag (e.g. `context={"include_seat_count": True}`) passed by `ProjectSerializer.get_event_registration` (detail) but not by `ProjectStubSerializer.get_event_registration` (list). `available_seats` is a `SerializerMethodField` that returns `None` / is omitted when the flag is absent.
+- **`GetUserInteractionsWithProjectView`** (extend existing — `organization/views/project_views.py`): add `is_registered` to the response of `GET /api/projects/{slug}/my_interactions/`.
+  - Only perform the DB check when the project has an `EventRegistration` (guard with `hasattr(project, "event_registration")`).
+  - Implementation:
+    ```python
+    is_registered = False
+    if hasattr(project, "event_registration"):
+        try:
+            is_registered = EventParticipant.objects.filter(
+                user=request.user, event_registration=project.event_registration
+            ).exists()
+        except EventRegistration.DoesNotExist:
+            pass
+    ```
+  - Add `"is_registered": is_registered` to the existing `Response` dict alongside `liking`, `following`, `has_requested_to_join`.
 - **Celery task** `send_event_registration_confirmation_email`: sends email via Mailjet with event details and a calendar invite / confirmation link.
 - **Django migration**: create `projects_eventparticipant` table.
 
@@ -225,11 +258,10 @@ The organiser name is resolved from `ProjectParents` (org name → user's `UserP
 **Timezone resolution — important implementation note:**
 PostGIS `PointField` values in this codebase are stored with swapped axes (`point.x = latitude`, `point.y = longitude` — documented in `location/admin.py`). The `get_timezone_for_point()` utility handles this correctly by passing `lng=point.y, lat=point.x` to `timezonefinder`. Using the values the wrong way around would resolve to a completely different part of the world and produce a wrong timezone.
 
-- Post-login redirect: `/projects/{slug}/register` is used as the `redirect` query parameter value — verify this is preserved correctly by the login redirect mechanism (`/signin` already supports `params.redirect`; `/signup` redirect support is added in this task).
 
 ## Technical Solution Overview
 
-*Backend implemented 2026-03-30. Frontend implementation pending.*
+*Backend implemented 2026-03-30. Frontend implementation pending. `is_registered` extension to `my_interactions` pending (backend + frontend).*
 
 ### Backend (implemented)
 
@@ -250,6 +282,10 @@ PostGIS `PointField` values in this codebase are stored with swapped axes (`poin
 - **`timezonefinder` dependency** — added to `pyproject.toml` via PDM; installed in the `django4` venv.
 - **Env vars** — `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` and `_DE` added to `settings.py` with empty-string defaults.
 
+### Backend (pending)
+
+- **`is_registered` in `my_interactions`** — extend `GetUserInteractionsWithProjectView` (`organization/views/project_views.py`) to include `is_registered` in the response of `GET /api/projects/{slug}/my_interactions/`. See `### Backend` section above for the implementation pattern. No migration required — reads from the existing `EventParticipant` table.
+
 ### Frontend (pending)
 
 Not yet implemented. See `### Frontend` section above for full requirements.
@@ -268,7 +304,8 @@ Not yet implemented. See `### Frontend` section above for full requirements.
 - 2026-03-25 — Spec aligned with actual implementation from task #43: `is_registration_open` boolean replaced throughout by `status` field (`open`/`closed`/`full`); list endpoint already returns full `event_registration` object (no separate `has_registration` flag needed); `available_seats` and `EventParticipant` confirmed as not yet implemented; `EventRegistrationSerializer` already serializes `status`.
 - 2026-03-26 — Corrected against actual codebase: (1) API endpoint `POST /api/events/{slug}/register/` → `POST /api/projects/{slug}/register/` (no `/api/events/` prefix exists; all project endpoints live under `/api/projects/`). (2) Deep-link `/{slug}/register` → `/projects/{slug}/register` (Next.js page at `pages/projects/[projectId]/register.tsx`; consistent with existing `/projects/{slug}` routing). (3) Post-auth redirect: `/login?next=` → `/signin?redirect=`, `/signup?next=` → `/signup?redirect=`; `redirect` is the correct param name per `signin.tsx`; adding `redirect` support to `/signup` is now explicitly in scope. (4) `EventParticipant.user` `related_name` `"event_registrations"` → `"event_participations"` (avoids ambiguity with `EventRegistration` model). (5) `EVENT_REGISTRATION` feature toggle added to listing badge, Register button, and modal rendering conditions.
 - 2026-03-30 — Backend fully implemented. `EventParticipant` model + migration `0122`. `RegisterForEventView` (`POST /api/projects/{slug}/register/`) extracted into `organization/views/event_registration_views.py` (refactored out of `project_views.py`) with atomic seat locking, idempotency, and FULL-status promotion. `available_seats` added to `EventRegistrationSerializer` (detail only). Celery task + email function using Mailjet template pattern. Env vars `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` and `_DE` added to `settings.py`. **Email fully localised**: `EventTitle` and `OrganiserName` use `get_project_name()` / `get_organization_name()` to return the translation for the user's language; `EventUrl` is language-aware; `StartDate` is formatted in the user's timezone (resolved via `timezonefinder` from user location → project location → UTC) and language (EN British / DE with German month names and timezone abbreviations). Email function moved to `organization/utility/email.py` alongside all other project/org emails. `timezonefinder` added as a dependency. **Bug fixed**: PostGIS `PointField` stores coordinates as `(lat, lon)` not `(lon, lat)` — `get_timezone_for_point()` correctly passes `lng=point.y, lat=point.x`. **Outstanding**: two Mailjet templates (EN + DE) must be created manually and IDs set in `.backend_env` — see `### Other` for full specification. Frontend implementation not yet started.
-- 2026-03-31 - Updated specs regarding login/signup flow and event registration modal. Also added that backend now returns an `ended` status. 
+- 2026-03-31 - Updated specs regarding login/signup flow and event registration modal. Also added that backend now returns an `ended` status.
+- 2026-04-02 — Added `is_registered` requirement to `my_interactions` endpoint. Per-user registration state must not be embedded in the shared project detail response; the existing `GET /api/projects/{slug}/my_interactions/` endpoint is the correct place (established codebase pattern for user-specific project state). Backend change needed: extend `GetUserInteractionsWithProjectView` to include `is_registered` in the response (guarded DB check against `EventParticipant`). Frontend change needed: consume `is_registered` from `my_interactions` in `index.tsx`, pass as prop to `ProjectPageRoot`, initialise `isUserRegistered` state, wire `onRegistrationSuccess` to set it to `true`, and update button helpers to render "Registered ✓" disabled state. Outdated acceptance criteria referencing `/signin?redirect=` and `/signup?redirect=` external links removed (login/signup is handled in-modal).
 
 ## Acceptance Criteria
 
@@ -276,7 +313,7 @@ Not yet implemented. See `### Frontend` section above for full requirements.
 - [ ] On the event detail page, the Follow button is replaced by a "Register" button when the event has registration enabled **and the `EVENT_REGISTRATION` feature toggle is enabled**.
 - [ ] When registration is closed (deadline passed, no seats remaining, or manually closed), a disabled "Registration closed" button is shown.
 - [ ] A logged-in member can click "Register" and see a confirmation modal with their pre-filled details.
-- [ ] An unauthenticated user can click "Register" (button is enabled); inside the modal the "Confirm Registration" button is disabled and the message *"To register for this event please login or sign up!"* is shown with "Log In" and "Sign Up" buttons.
+- [ ] An unauthenticated user can click "Register" (button is enabled); inside the modal the user is shown an email-first flow to log in. The "Confirm Registration" button is disabled until the user is logged in.
 - [ ] After confirming registration, the member sees a success confirmation in the UI.
 - [ ] After confirming registration, the member receives a confirmation email (via Mailjet, sent asynchronously).
 - [ ] **Email language** — the confirmation email is sent in the user's profile language (set at sign-up). Test with a DE-language user: subject, event title, organiser name (if org has a DE translation), month names, and timezone abbreviation are all in German.
@@ -291,10 +328,10 @@ Not yet implemented. See `### Frontend` section above for full requirements.
 - [ ] **Email content — event URL** — `EventUrl` is language-aware: `/projects/{slug}` for EN users, `/de/projects/{slug}` for DE users.
 - [ ] The system stores the registration (new `EventParticipant` record linked to the user and the `EventRegistration`).
 - [ ] The available seat count on the event detail page decrements by 1 after a successful registration.
+- [ ] After a successful registration, the "Register" button on the event detail page changes to a disabled **"Registered ✓"** button immediately (optimistic update) and remains so on return visits (`is_registered` is returned by `GET /api/projects/{slug}/my_interactions/` and initialises the button state on page load).
 - [ ] Re-registering (same user, same event) does not create a duplicate record — idempotent behaviour.
 - [ ] Race conditions on the last seat are handled — no more than `max_participants` registrations can be stored (DB-level constraint or atomic operation).
-- [ ] Navigating to `/projects/{slug}/register` opens the registration modal for all users (authenticated and unauthenticated); unauthenticated users see the login/signup prompt inside the modal, and clicking "Log In" links to `/signin?redirect=/projects/{slug}/register` and clicking "Sign Up" links to `/signup?redirect=/projects/{slug}/register` so the modal re-opens after authentication.
-- [ ] The `/signup` page accepts a `redirect` query parameter and redirects to it after successful account creation.
+- [ ] Navigating to `/projects/{slug}/register` opens the registration modal for all users (authenticated and unauthenticated); unauthenticated users see the email-first login flow inside the modal.
 - [ ] No breaking changes to existing project/event API contracts.
 - [ ] All tests pass (unit, integration, end-to-end).
 - [ ] Code review approved.
