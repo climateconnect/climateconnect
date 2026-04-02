@@ -6,6 +6,37 @@ import FollowButton from "../../general/FollowButton";
 import LikeButton from "./LikeButton";
 import { Project } from "../../../types";
 
+interface ProjectInteractionButtonsProps {
+  projectAdmin: any;
+  handleClickContact: () => void;
+  hasAdminPermissions: boolean;
+  messageButtonIsVisible: boolean;
+  contactProjectCreatorButtonRef: React.RefObject<HTMLElement> | null;
+  visibleFooterHeight: number;
+  tabContentContainerSpaceToRight: number;
+  project: Project;
+  isUserFollowing: boolean;
+  isUserLiking: boolean;
+  handleToggleFollowProject: () => void;
+  handleToggleLikeProject: () => void;
+  toggleShowFollowers: () => void;
+  followingChangePending: boolean;
+  likingChangePending: boolean;
+  texts: any;
+  screenSize: {
+    belowSmall: boolean;
+    belowTiny: boolean;
+    [key: string]: boolean;
+  };
+  numberOfFollowers: number;
+  numberOfLikes: number;
+  bindLike: any;
+  bindFollow: any;
+  user: any;
+  isEventRegistrationEnabled: boolean;
+  handleRegisterClick: () => void;
+}
+
 // Helper functions for event registration
 const shouldShowRegisterButton = (
   isEventRegistrationEnabled: boolean,
@@ -81,7 +112,7 @@ export default function ProjectInteractionButtons({
   user,
   isEventRegistrationEnabled,
   handleRegisterClick,
-}) {
+}: ProjectInteractionButtonsProps) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
     tabContentContainerSpaceToRight: tabContentContainerSpaceToRight,
