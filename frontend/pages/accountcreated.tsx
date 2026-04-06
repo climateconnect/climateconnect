@@ -37,7 +37,7 @@ export default function AccountCreated({ hubUrl, hubThemeData }) {
     const redirectParam = router.query.redirect as string;
     if (isSafeInternalRedirect(redirectParam)) {
       const cookies = new Cookies();
-      cookies.set("postSignupRedirect", redirectParam, { path: "/", maxAge: 3600 });
+      cookies.set("postSignupRedirect", redirectParam, { path: "/", maxAge: 3600, sameSite: "lax" });
     }
   }, [router.query.redirect]);
 

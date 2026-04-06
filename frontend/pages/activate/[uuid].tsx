@@ -19,7 +19,7 @@ export async function getServerSideProps(ctx) {
       // Clear the cookie and pass the original redirect URL into the signin URL
       ctx.res.setHeader(
         "Set-Cookie",
-        "postSignupRedirect=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax"
+        "postSignupRedirect=; Path=/; Max-Age=0; SameSite=Lax"
       );
       const languagePrefix = ctx.locale === "en" ? "" : `/${ctx.locale}`;
       const destination =
