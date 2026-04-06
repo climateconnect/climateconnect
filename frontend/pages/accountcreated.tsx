@@ -9,6 +9,7 @@ import { transformThemeData } from "../src/themes/transformThemeData";
 import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
 import theme from "../src/themes/theme";
 import { useRouter } from "next/router";
+import { isSafeInternalRedirect } from "../public/lib/apiOperations";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
@@ -33,7 +34,7 @@ export default function AccountCreated({ hubUrl, hubThemeData }) {
 
   useEffect(() => {
     const redirectParam = router.query.redirect as string;
-    if (redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")) {
+    if (isSafeInternalRedirect(redirectParam)) {
       localStorage.setItem("postSignupRedirect", redirectParam);
     }
   }, [router.query.redirect]);

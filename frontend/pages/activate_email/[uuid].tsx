@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import cookies from "next-cookies";
 import React, { useContext, useEffect, useState } from "react";
-import { apiRequest, redirect, sendToLogin } from "../../public/lib/apiOperations";
+import { apiRequest, redirect, isSafeInternalRedirect, sendToLogin } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
 import Layout from "../../src/components/layouts/layout";
@@ -36,11 +36,7 @@ async function newEmailVerification(uuid, token, locale) {
     });
     const postSignupRedirect = localStorage.getItem("postSignupRedirect");
     localStorage.removeItem("postSignupRedirect");
-    if (
-      postSignupRedirect &&
-      postSignupRedirect.startsWith("/") &&
-      !postSignupRedirect.startsWith("//")
-    ) {
+    if (isSafeInternalRedirect(postSignupRedirect)) {
       redirect(postSignupRedirect, { message: response.data.message });
     } else {
       redirect("/browse", {

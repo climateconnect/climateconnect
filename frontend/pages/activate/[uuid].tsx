@@ -1,6 +1,6 @@
 import { Link, Typography } from "@mui/material";
 import React, { useContext, useEffect } from "react";
-import { apiRequest, getLocalePrefix, sendToLogin } from "../../public/lib/apiOperations";
+import { apiRequest, getLocalePrefix, isSafeInternalRedirect, sendToLogin } from "../../public/lib/apiOperations";
 import { redirectOnLogin } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -64,11 +64,7 @@ export default function ProfileVerified({ successMessage, errorMessage }) {
     if (user) {
       const postSignupRedirect = localStorage.getItem("postSignupRedirect");
       localStorage.removeItem("postSignupRedirect");
-      if (
-        postSignupRedirect &&
-        postSignupRedirect.startsWith("/") &&
-        !postSignupRedirect.startsWith("//")
-      ) {
+      if (isSafeInternalRedirect(postSignupRedirect)) {
         redirectOnLogin(user, postSignupRedirect, locale);
       } else {
         redirectOnLogin(user, "/", locale);

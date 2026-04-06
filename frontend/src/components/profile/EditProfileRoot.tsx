@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 
-import { apiRequest } from "../../../public/lib/apiOperations";
+import { apiRequest, isSafeInternalRedirect } from "../../../public/lib/apiOperations";
 import { blobFromObjectUrl, getImageUrl } from "../../../public/lib/imageOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import {
@@ -106,12 +106,11 @@ export default function EditAccountRoot({
       .then(function (response) {
         const postSignupRedirect = localStorage.getItem("postSignupRedirect");
         localStorage.removeItem("postSignupRedirect");
-        if (
-          postSignupRedirect &&
-          postSignupRedirect.startsWith("/") &&
-          !postSignupRedirect.startsWith("//")
-        ) {
-          router.push(postSignupRedirect);
+        if (isSafeInternalRedirect(postSignupRedirect)) {
+          router.push({
+            pathname: postSignupRedirect,
+            query: { message: texts.you_have_successfully_updated_your_profile },
+          });
         } else {
           router.push({
             pathname: `/profiles/${response.data.url_slug}`,

@@ -74,6 +74,14 @@ export const redirect = (
   router.push(payload);
 };
 
+/**
+ * Checks that a redirect URL is a safe internal path.
+ * Prevents open redirect attacks by ensuring the URL is relative (starts with '/')
+ * and not protocol-relative (does not start with '//').
+ */
+export const isSafeInternalRedirect = (url: string): boolean =>
+  typeof url === "string" && url.startsWith("/") && !url.startsWith("//");
+
 export const sendToLogin = async (
   { resolvedUrl, locale, res }: GetServerSidePropsContext,
   message: string,
