@@ -34,9 +34,15 @@ async function newEmailVerification(uuid, token, locale) {
       token: token,
       locale: locale,
     });
-    redirect("/browse", {
-      message: response.data.message,
-    });
+    const postSignupRedirect = localStorage.getItem("postSignupRedirect");
+    if (postSignupRedirect) {
+      localStorage.removeItem("postSignupRedirect");
+      redirect(postSignupRedirect, { message: response.data.message });
+    } else {
+      redirect("/browse", {
+        message: response.data.message,
+      });
+    }
   } catch (error: any) {
     const errortexts = getTexts({ page: "general", locale: locale });
     if (error.response && error.response.data) {

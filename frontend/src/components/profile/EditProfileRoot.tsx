@@ -104,13 +104,19 @@ export default function EditAccountRoot({
       locale: locale,
     })
       .then(function (response) {
-        router.push({
-          pathname: `/profiles/${response.data.url_slug}`,
-          query: {
-            message: texts.you_have_successfully_updated_your_profile,
-            hub: hubUrl,
-          },
-        });
+        const postSignupRedirect = localStorage.getItem("postSignupRedirect");
+        if (postSignupRedirect) {
+          localStorage.removeItem("postSignupRedirect");
+          router.push(postSignupRedirect);
+        } else {
+          router.push({
+            pathname: `/profiles/${response.data.url_slug}`,
+            query: {
+              message: texts.you_have_successfully_updated_your_profile,
+              hub: hubUrl,
+            },
+          });
+        }
       })
       .catch(function (error) {
         console.log(error);

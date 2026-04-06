@@ -1,5 +1,5 @@
 import { Container, Theme, ThemeProvider, useMediaQuery } from "@mui/material";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
 import { themeSignUp } from "../src/themes/signupTheme";
@@ -8,6 +8,7 @@ import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
 import theme from "../src/themes/theme";
+import { useRouter } from "next/router";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
@@ -28,6 +29,14 @@ export default function AccountCreated({ hubUrl, hubThemeData }) {
 
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
+  const router = useRouter();
+
+  useEffect(() => {
+    const redirectParam = router.query.redirect as string;
+    if (redirectParam) {
+      localStorage.setItem("postSignupRedirect", redirectParam);
+    }
+  }, [router.query.redirect]);
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   const customThemeSignUp = hubThemeData
