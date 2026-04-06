@@ -105,8 +105,12 @@ export default function EditAccountRoot({
     })
       .then(function (response) {
         const postSignupRedirect = localStorage.getItem("postSignupRedirect");
-        if (postSignupRedirect) {
-          localStorage.removeItem("postSignupRedirect");
+        localStorage.removeItem("postSignupRedirect");
+        if (
+          postSignupRedirect &&
+          postSignupRedirect.startsWith("/") &&
+          !postSignupRedirect.startsWith("//")
+        ) {
           router.push(postSignupRedirect);
         } else {
           router.push({

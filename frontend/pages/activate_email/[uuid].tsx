@@ -35,8 +35,12 @@ async function newEmailVerification(uuid, token, locale) {
       locale: locale,
     });
     const postSignupRedirect = localStorage.getItem("postSignupRedirect");
-    if (postSignupRedirect) {
-      localStorage.removeItem("postSignupRedirect");
+    localStorage.removeItem("postSignupRedirect");
+    if (
+      postSignupRedirect &&
+      postSignupRedirect.startsWith("/") &&
+      !postSignupRedirect.startsWith("//")
+    ) {
       redirect(postSignupRedirect, { message: response.data.message });
     } else {
       redirect("/browse", {

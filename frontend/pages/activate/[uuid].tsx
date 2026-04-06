@@ -63,8 +63,12 @@ export default function ProfileVerified({ successMessage, errorMessage }) {
   useEffect(function () {
     if (user) {
       const postSignupRedirect = localStorage.getItem("postSignupRedirect");
-      if (postSignupRedirect) {
-        localStorage.removeItem("postSignupRedirect");
+      localStorage.removeItem("postSignupRedirect");
+      if (
+        postSignupRedirect &&
+        postSignupRedirect.startsWith("/") &&
+        !postSignupRedirect.startsWith("//")
+      ) {
         redirectOnLogin(user, postSignupRedirect, locale);
       } else {
         redirectOnLogin(user, "/", locale);

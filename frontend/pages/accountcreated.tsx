@@ -33,7 +33,7 @@ export default function AccountCreated({ hubUrl, hubThemeData }) {
 
   useEffect(() => {
     const redirectParam = router.query.redirect as string;
-    if (redirectParam) {
+    if (redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")) {
       localStorage.setItem("postSignupRedirect", redirectParam);
     }
   }, [router.query.redirect]);
