@@ -78,9 +78,19 @@ export const redirect = (
  * Checks that a redirect URL is a safe internal path.
  * Prevents open redirect attacks by ensuring the URL is relative (starts with '/')
  * and not protocol-relative (does not start with '//').
+ * Also checks decoded versions to guard against encoded slash bypass attempts.
  */
-export const isSafeInternalRedirect = (url: string): boolean =>
-  typeof url === "string" && url.startsWith("/") && !url.startsWith("//");
+export const isSafeInternalRedirect = (url: string | null | undefined): boolean => {
+  if (typeof url !== "string" || !url.startsWith("/") || url.startsWith("//")) {
+    return false;
+  }
+  try {
+    const decoded = decodeURIComponent(url);
+    return decoded.startsWith("/") && !decoded.startsWith("//");
+  } catch {
+    return false;
+  }
+};
 
 export const sendToLogin = async (
   { resolvedUrl, locale, res }: GetServerSidePropsContext,
