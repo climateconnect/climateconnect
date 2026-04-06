@@ -104,8 +104,7 @@ export default function EditAccountRoot({
       locale: locale,
     })
       .then(function (response) {
-        const postSignupRedirect = localStorage.getItem("postSignupRedirect");
-        localStorage.removeItem("postSignupRedirect");
+        const postSignupRedirect = router.query.redirect as string;
         if (isSafeInternalRedirect(postSignupRedirect)) {
           router.push({
             pathname: postSignupRedirect,

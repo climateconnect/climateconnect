@@ -10,6 +10,7 @@ import AccountCreatedContent from "../src/components/signup/AccountCreatedConten
 import theme from "../src/themes/theme";
 import { useRouter } from "next/router";
 import { isSafeInternalRedirect } from "../public/lib/apiOperations";
+import Cookies from "universal-cookie";
 
 export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
@@ -35,7 +36,8 @@ export default function AccountCreated({ hubUrl, hubThemeData }) {
   useEffect(() => {
     const redirectParam = router.query.redirect as string;
     if (isSafeInternalRedirect(redirectParam)) {
-      localStorage.setItem("postSignupRedirect", redirectParam);
+      const cookies = new Cookies();
+      cookies.set("postSignupRedirect", redirectParam, { path: "/", maxAge: 3600 });
     }
   }, [router.query.redirect]);
 

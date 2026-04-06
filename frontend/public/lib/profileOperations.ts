@@ -62,6 +62,7 @@ export function redirectOnLogin(user, redirectUrl, locale) {
       query: {
         message: SIGN_UP_MESSAGE,
         hub: hub,
+        ...(redirectUrl && { redirect: redirectUrl }),
       },
     });
   } else if (redirectUrl) {

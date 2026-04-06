@@ -1,5 +1,7 @@
 import { Link, Typography } from "@mui/material";
+import nextCookies from "next-cookies";
 import React, { useContext, useEffect } from "react";
+import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix, isSafeInternalRedirect, sendToLogin } from "../../public/lib/apiOperations";
 import { redirectOnLogin } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
@@ -12,6 +14,19 @@ export async function getServerSideProps(ctx) {
   const texts = getTexts({ page: "settings", locale: ctx.locale });
   if (messages?.successMessage) {
     const messageOnRedirect = messages.successMessage + " " + texts.you_can_now_log_in;
+    const { postSignupRedirect } = nextCookies(ctx);
+    if (isSafeInternalRedirect(postSignupRedirect)) {
+      // Clear the cookie and pass the original redirect URL into the signin URL
+      ctx.res.setHeader(
+        "Set-Cookie",
+        "postSignupRedirect=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax"
+      );
+      const languagePrefix = ctx.locale === "en" ? "" : `/${ctx.locale}`;
+      const destination =
+        `${languagePrefix}/signin?redirect=${encodeURIComponent(postSignupRedirect)}` +
+        `&message=${encodeURIComponent(messageOnRedirect)}&message_type=success`;
+      return { redirect: { destination, permanent: false } };
+    }
     return sendToLogin(ctx, messageOnRedirect, "success");
   }
   return {
@@ -62,13 +77,10 @@ export default function ProfileVerified({ successMessage, errorMessage }) {
   const texts = getTexts({ page: "settings", locale: locale });
   useEffect(function () {
     if (user) {
-      const postSignupRedirect = localStorage.getItem("postSignupRedirect");
-      localStorage.removeItem("postSignupRedirect");
-      if (isSafeInternalRedirect(postSignupRedirect)) {
-        redirectOnLogin(user, postSignupRedirect, locale);
-      } else {
-        redirectOnLogin(user, "/", locale);
-      }
+      const cookies = new Cookies();
+      const postSignupRedirect = cookies.get("postSignupRedirect");
+      cookies.remove("postSignupRedirect", { path: "/" });
+      redirectOnLogin(user, isSafeInternalRedirect(postSignupRedirect) ? postSignupRedirect : "/", locale);
     }
   });
   return (

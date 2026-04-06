@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
-import cookies from "next-cookies";
+import nextCookies from "next-cookies";
 import React, { useContext, useEffect, useState } from "react";
+import UniversalCookies from "universal-cookie";
 import { apiRequest, redirect, isSafeInternalRedirect, sendToLogin } from "../../public/lib/apiOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -8,7 +9,7 @@ import Layout from "../../src/components/layouts/layout";
 
 export async function getServerSideProps(ctx) {
   const uuid = encodeURI(ctx.query.uuid);
-  const { auth_token } = cookies(ctx);
+  const { auth_token } = nextCookies(ctx);
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "activate_email", locale: ctx.locale });
     const message = texts.log_in_to_verify_email;
@@ -34,8 +35,9 @@ async function newEmailVerification(uuid, token, locale) {
       token: token,
       locale: locale,
     });
-    const postSignupRedirect = localStorage.getItem("postSignupRedirect");
-    localStorage.removeItem("postSignupRedirect");
+    const cookies = new UniversalCookies();
+    const postSignupRedirect = cookies.get("postSignupRedirect");
+    cookies.remove("postSignupRedirect", { path: "/" });
     if (isSafeInternalRedirect(postSignupRedirect)) {
       redirect(postSignupRedirect, { message: response.data.message });
     } else {
