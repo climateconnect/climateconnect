@@ -709,6 +709,13 @@ export default function ProjectPageRoot({
           open={registrationModalOpen}
           onClose={() => setRegistrationModalOpen(false)}
           project={project}
+          onRegistrationSuccess={() => {
+            setCurrentEventRegistration((prev) =>
+              prev && prev.available_seats != null
+                ? { ...prev, available_seats: prev.available_seats - 1 }
+                : prev
+            );
+          }}
         />
       )}
     </div>

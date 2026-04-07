@@ -124,6 +124,13 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
     summaryHeadline: {
       color: "inherit",
     },
+    projectTypeContainer: {
+      display: "flex",
+      alignItems: "center",
+    },
+    availableSeatsText: {
+      marginLeft: theme.spacing(0.5),
+    },
   };
 });
 
@@ -331,7 +338,14 @@ function ShortProjectInfo({ project, isWasseraktionswochenEnabled }) {
         </Typography>
       </div>
       <div className={classes.projectInfoEl}>
-        <ProjectTypeDisplay projectType={project.project_type} />
+        <div className={classes.projectTypeContainer}>
+          <ProjectTypeDisplay projectType={project.project_type} />
+          {project.registration_config && (
+            <Typography component="span" className={classes.availableSeatsText}>
+              · {project.registration_config.available_seats} {texts.seats_available}
+            </Typography>
+          )}
+        </div>
       </div>
     </>
   );
