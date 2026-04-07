@@ -509,6 +509,15 @@ export default function ProjectPageRoot({
   });
 
   const latestParentComment = [project.comments[0]];
+
+  const handleRegistrationModalClose = () => {
+    setRegistrationModalOpen(false);
+    // Remove the openRegistration query param from the URL when closing the modal
+    const url = new URL(window.location.href);
+    url.searchParams.delete("openRegistration");
+    window.history.replaceState({}, "", url.toString());
+  };
+
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -707,7 +716,7 @@ export default function ProjectPageRoot({
       {isEventRegistrationEnabled && project.registration_config && (
         <EventRegistrationModal
           open={registrationModalOpen}
-          onClose={() => setRegistrationModalOpen(false)}
+          onClose={() => handleRegistrationModalClose()}
           project={project}
           onRegistrationSuccess={() => {
             setCurrentEventRegistration((prev) =>
