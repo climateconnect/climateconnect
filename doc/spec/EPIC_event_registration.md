@@ -54,7 +54,7 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 | Organiser exports / prints registered guests            | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) | [`20260401_1000_...`](./20260401_1000_organizer_see_registration_status.md)  | ✅ Done |
 | Organiser sends email to all registered guests          | [#1866](https://github.com/climateconnect/climateconnect/issues/1866) | [`20260401_1100_...`](./20260401_1100_organizer_send_email_to_guests.md)     | ✅ Done |
 | Organiser closes / reopens registration                 | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) | [`20260324_0900_...`](./20260324_0900_organizer_close_event_registration.md) | ✅ Done                     |
-| Organiser cancels an individual guest registration      | [#1872](https://github.com/climateconnect/climateconnect/issues/1872) | —                                                                            | ⚪ Not started              |
+| Organiser cancels an individual guest registration      | [#1872](https://github.com/climateconnect/climateconnect/issues/1872) | [`20260407_1000_...`](./20260407_1000_organizer_cancel_guest_registration.md) | 🔵 Ready                   |
 
 ### 🔭 Phase 3 — Advanced Registration (next goal after Phase 2 ships)
 
