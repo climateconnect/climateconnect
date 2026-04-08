@@ -1,6 +1,6 @@
 # Rename EventRegistration / EventParticipant Models for Clarity
 
-**Status**: READY FOR IMPLEMENTATION
+**Status**: DONE
 **Type**: Refactor
 **Date and time created**: 2026-04-02 15:00
 **Date Completed**: TBD
