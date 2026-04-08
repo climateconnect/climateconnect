@@ -36,7 +36,7 @@
     "@sentry/react": "^7.46.0",
     "@svgr/webpack": "^8.1.0",
     "@types/node": "^18.11.18",
-    "@webflow/webflow-cli": "^1.6.13",
+    "@webflow/webflow-cli": "^1.13.0",
     "@zeit/next-css": "^1.0.1",
     "axios": "^1.13.5",
     "babel-plugin-lodash": "^3.3.4",

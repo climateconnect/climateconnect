@@ -1,13 +1,44 @@
 /**
  * Post-devlink-sync patch script.
  *
- * Webflow devlink generates both `devlinkContext.js` (legacy) and
- * `DevLinkProvider.js` (current) and re-exports both from `index.js`.
- * They export the same names, which causes a "conflicting star exports"
- * build error in Next.js / webpack.
+ * Webflow devlink generates several issues that must be patched
+ * after every `npx webflow devlink sync` run:
  *
- * This script removes the stale files and the duplicate export line.
- * Run it immediately after `npx webflow devlink sync`.
+ * 1. `devlinkContext.js` (legacy) and `DevLinkProvider.js` (current) are both
+ *    generated and re-exported from `index.js`. They export the same names,
+ *    causing a "conflicting star exports" build error. Fix: delete the legacy
+ *    files, remove the duplicate export line from index.js and index.d.ts,
+ *    and update _Builtin/Basic.js which imports DevLinkContext from the
+ *    legacy file (it should import from DevLinkProvider instead).
+ *
+ * 2. `export * from "./css/classes"` references a CSS module file
+ *    (`classes.module.css`) that cannot be re-exported as a JS module.
+ *    Fix: remove that export line.
+ *
+ * 3. `values/Number/doesNotEqual` and `values/Number/equals` conflict with
+ *    `values/Boolean/doesNotEqual` and `values/Boolean/equals` (same export
+ *    names). Fix: remove the Number variants from the barrel (they are
+ *    functionally identical for the use cases in Webflow components).
+ *
+ * 4. Each component JS file now imports from the consolidated `css/classes.module.css`
+ *    instead of its own `ComponentName.module.css`. The consolidated file has broken
+ *    image URLs (see #5) and causes CSS loading issues with Next.js dynamic imports.
+ *    The individual CSS files are still generated and have correct content.
+ *    Fix: revert each component's CSS import to its own file.
+ *
+ * 5. `css/classes.module.css` contains broken background-image URLs where the
+ *    CDN hostname (`cdn.prod.website-files.com`) is stripped, producing invalid
+ *    URLs like `https:///615d9a37...`. Fix: restore the missing hostname (kept
+ *    as a safety net even though components no longer import this file after #4).
+ *
+ * 6. The new Webflow CLI injects a large Webflow UI framework block into `global.css`
+ *    (`.w-nav { background: #dddddd }`, `.w-slider { background: #dddddd; height: 300px }`,
+ *    `.w-button { background-color: #3898EC }`, etc.). These leak into devlink components
+ *    and change the appearance of the hub landing pages.
+ *    Fix: replace global.css with the stable version stored at scripts/devlink-global.css.
+ *    If the Webflow design changes (fonts, CSS variables, typography), update that file too.
+ *
+ * Run this script immediately after `npx webflow devlink sync`.
  */
 
 const fs = require("fs");
@@ -25,19 +56,106 @@ for (const file of legacyFiles) {
   }
 }
 
-// 2. Remove the duplicate export line from index.js
-const indexPath = path.join(devlinkDir, "index.js");
-if (fs.existsSync(indexPath)) {
-  const original = fs.readFileSync(indexPath, "utf8");
+// 1b. Fix _Builtin/Basic.js which imports DevLinkContext from the deleted
+// devlinkContext.js — redirect it to DevLinkProvider.js instead.
+const basicJsPath = path.join(devlinkDir, "_Builtin", "Basic.js");
+if (fs.existsSync(basicJsPath)) {
+  const original = fs.readFileSync(basicJsPath, "utf8");
+  const patched = original.replace(
+    'import { DevLinkContext } from "../devlinkContext"',
+    'import { DevLinkContext } from "../DevLinkProvider"'
+  );
+  if (patched !== original) {
+    fs.writeFileSync(basicJsPath, patched, "utf8");
+    console.log("fix-devlink: fixed DevLinkContext import in _Builtin/Basic.js");
+  } else {
+    console.log("fix-devlink: _Builtin/Basic.js already clean, nothing to do");
+  }
+}
+
+// 2. Remove broken/duplicate export lines from index.js and index.d.ts.
+// Lines to remove from the barrel:
+// - "./devlinkContext"  → duplicate of DevLinkProvider (causes conflicting star exports)
+// - "./css/classes"     → references a .module.css file, not a JS module (causes Module not found)
+// - "./values/Number/doesNotEqual" → conflicts with ./values/Boolean/doesNotEqual
+// - "./values/Number/equals"       → conflicts with ./values/Boolean/equals
+const linesToRemove = [
+  'from "./devlinkContext"',
+  'from "./css/classes"',
+  'from "./values/Number/doesNotEqual"',
+  'from "./values/Number/equals"',
+];
+
+for (const barrelFile of ["index.js", "index.d.ts"]) {
+  const barrelPath = path.join(devlinkDir, barrelFile);
+  if (!fs.existsSync(barrelPath)) continue;
+  const original = fs.readFileSync(barrelPath, "utf8");
   const patched = original
     .split("\n")
-    .filter((line) => !line.includes('export * from "./devlinkContext"'))
+    .filter((line) => !linesToRemove.some((bad) => line.includes(bad)))
     .join("\n");
-
   if (patched !== original) {
-    fs.writeFileSync(indexPath, patched, "utf8");
-    console.log("fix-devlink: removed duplicate export from index.js");
+    fs.writeFileSync(barrelPath, patched, "utf8");
+    console.log(`fix-devlink: patched ${barrelFile}`);
   } else {
-    console.log("fix-devlink: index.js already clean, nothing to do");
+    console.log(`fix-devlink: ${barrelFile} already clean, nothing to do`);
   }
+}
+
+// 3. (handled above via linesToRemove — no separate block needed)
+
+// 4. Revert each component's CSS import from the consolidated file back to its
+// own ComponentName.module.css. The individual files are still generated by the
+// CLI, have correct URLs, and work correctly with Next.js dynamic imports.
+const jsFiles = fs.readdirSync(devlinkDir).filter((f) => f.endsWith(".js"));
+let cssImportCount = 0;
+for (const jsFile of jsFiles) {
+  const jsPath = path.join(devlinkDir, jsFile);
+  const original = fs.readFileSync(jsPath, "utf8");
+  const consolidated = 'import _styles from "./css/classes.module.css"';
+  if (!original.includes(consolidated)) continue;
+  const componentName = path.basename(jsFile, ".js");
+  const individualCss = `./${componentName}.module.css`;
+  if (!fs.existsSync(path.join(devlinkDir, `${componentName}.module.css`))) {
+    console.warn(`fix-devlink: no individual CSS for ${jsFile}, skipping`);
+    continue;
+  }
+  const patched = original.replace(consolidated, `import _styles from "${individualCss}"`);
+  fs.writeFileSync(jsPath, patched, "utf8");
+  cssImportCount++;
+}
+if (cssImportCount > 0) {
+  console.log(`fix-devlink: reverted CSS imports in ${cssImportCount} component files`);
+} else {
+  console.log("fix-devlink: component CSS imports already use individual files, nothing to do");
+}
+
+// 5. Fix broken background-image URLs in css/classes.module.css.
+// The Webflow CLI strips the CDN hostname when generating the consolidated CSS,
+// producing `url(https:///615d9a37...)` instead of
+// `url(https://cdn.prod.website-files.com/615d9a37...)`.
+const cssPath = path.join(devlinkDir, "css", "classes.module.css");
+if (fs.existsSync(cssPath)) {
+  const original = fs.readFileSync(cssPath, "utf8");
+  const patched = original.replaceAll("https:///", "https://cdn.prod.website-files.com/");
+  if (patched !== original) {
+    fs.writeFileSync(cssPath, patched, "utf8");
+    console.log("fix-devlink: restored CDN hostnames in css/classes.module.css");
+  } else {
+    console.log("fix-devlink: css/classes.module.css URLs already clean, nothing to do");
+  }
+}
+
+// 6. Replace global.css with the stable version from scripts/devlink-global.css.
+// The synced global.css now includes Webflow's full UI framework CSS (.w-nav,
+// .w-slider, .w-button, etc.) which conflicts with the hub landing page styling.
+// scripts/devlink-global.css is the known-good version without those additions.
+// Update scripts/devlink-global.css if fonts, CSS variables, or typography change.
+const stableGlobalCss = path.join(__dirname, "devlink-global.css");
+const globalCssPath = path.join(devlinkDir, "global.css");
+if (fs.existsSync(stableGlobalCss)) {
+  fs.copyFileSync(stableGlobalCss, globalCssPath);
+  console.log("fix-devlink: restored global.css from scripts/devlink-global.css");
+} else {
+  console.warn("fix-devlink: scripts/devlink-global.css not found — global.css NOT restored.");
 }
