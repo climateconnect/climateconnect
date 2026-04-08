@@ -109,6 +109,7 @@ export default function ProjectPageRoot({
   hubPage,
   siblingProjects,
   isWasseraktionswochenEnabled,
+  isRegistered,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -154,6 +155,9 @@ export default function ProjectPageRoot({
   const [currentEventRegistration, setCurrentEventRegistration] = useState(
     project.registration_config ?? null
   );
+
+  // Per-user registration state (optimistic update on success)
+  const [isUserRegistered, setIsUserRegistered] = useState(isRegistered ?? false);
 
   // Registration modal state
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
@@ -547,6 +551,7 @@ export default function ProjectPageRoot({
         isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
         isEventRegistrationEnabled={isEventRegistrationEnabled}
         handleRegisterClick={handleRegisterClick}
+        isUserRegistered={isUserRegistered}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -601,6 +606,7 @@ export default function ProjectPageRoot({
           user={user}
           isEventRegistrationEnabled={isEventRegistrationEnabled}
           handleRegisterClick={handleRegisterClick}
+          isUserRegistered={isUserRegistered}
         />
       </Container>
 
@@ -665,6 +671,7 @@ export default function ProjectPageRoot({
               hubName={hubPage}
               siblingProjects={siblingProjects}
               isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+              isUserRegistered={isUserRegistered}
             />
           </>
         )}
@@ -719,6 +726,7 @@ export default function ProjectPageRoot({
           onClose={() => handleRegistrationModalClose()}
           project={project}
           onRegistrationSuccess={() => {
+            setIsUserRegistered(true);
             setCurrentEventRegistration((prev) =>
               prev && prev.available_seats != null
                 ? { ...prev, available_seats: prev.available_seats - 1 }

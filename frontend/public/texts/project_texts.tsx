@@ -1506,5 +1506,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Seats available",
       de: "Verfügbare Plätze",
     },
+    already_registered: {
+      en: "Registered ✓",
+      de: "Angemeldet ✓",
+    },
   };
 }

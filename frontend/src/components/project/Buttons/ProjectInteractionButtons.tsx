@@ -40,6 +40,7 @@ interface ProjectInteractionButtonsProps {
   user: any;
   isEventRegistrationEnabled: boolean;
   handleRegisterClick: () => void;
+  isUserRegistered?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -92,6 +93,7 @@ export default function ProjectInteractionButtons({
   user,
   isEventRegistrationEnabled,
   handleRegisterClick,
+  isUserRegistered,
 }: ProjectInteractionButtonsProps) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
@@ -114,12 +116,12 @@ export default function ProjectInteractionButtons({
           {showRegisterButton ? (
             <Button
               variant="contained"
-              color={isRegisterButtonDisabled(project) ? "secondary" : "primary"}
-              disabled={isRegisterButtonDisabled(project)}
+              color={isRegisterButtonDisabled(project, isUserRegistered) ? "secondary" : "primary"}
+              disabled={isRegisterButtonDisabled(project, isUserRegistered)}
               onClick={handleRegisterClick}
               className={classes.registerButton}
             >
-              {getRegisterButtonText(project, texts)}
+              {getRegisterButtonText(project, texts, isUserRegistered)}
             </Button>
           ) : (
             <FollowButton

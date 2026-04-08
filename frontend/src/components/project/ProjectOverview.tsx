@@ -176,6 +176,7 @@ type Props = {
   isWasseraktionswochenEnabled: boolean;
   isEventRegistrationEnabled: boolean;
   handleRegisterClick: () => void;
+  isUserRegistered?: boolean;
 };
 
 export default function ProjectOverview({
@@ -205,6 +206,7 @@ export default function ProjectOverview({
   isWasseraktionswochenEnabled,
   isEventRegistrationEnabled,
   handleRegisterClick,
+  isUserRegistered,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);
@@ -252,6 +254,7 @@ export default function ProjectOverview({
           isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
           isEventRegistrationEnabled={isEventRegistrationEnabled}
           handleRegisterClick={handleRegisterClick}
+          isUserRegistered={isUserRegistered}
         />
       )}
 
@@ -419,6 +422,7 @@ function LargeScreenOverview({
   isWasseraktionswochenEnabled,
   isEventRegistrationEnabled,
   handleRegisterClick,
+  isUserRegistered,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   const { locale, user } = useContext(UserContext);
@@ -465,12 +469,14 @@ function LargeScreenOverview({
             {showRegisterButton ? (
               <Button
                 variant="contained"
-                color={isRegisterButtonDisabled(project) ? "secondary" : "primary"}
-                disabled={isRegisterButtonDisabled(project)}
+                color={
+                  isRegisterButtonDisabled(project, isUserRegistered) ? "secondary" : "primary"
+                }
+                disabled={isRegisterButtonDisabled(project, isUserRegistered)}
                 onClick={handleRegisterClick}
                 className={classes.registerButton}
               >
-                {getRegisterButtonText(project, texts)}
+                {getRegisterButtonText(project, texts, isUserRegistered)}
               </Button>
             ) : (
               <FollowButton
