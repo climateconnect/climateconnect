@@ -2634,7 +2634,7 @@ class TestMyInteractionsRegistrationFields(_CancellationTestBase):
 
 class TestAdminCancelGuestRegistration(_CancellationTestBase):
     """
-    Tests for DELETE /api/projects/{url_slug}/registrations/{registration_id}/
+    Tests for PATCH /api/projects/{url_slug}/registrations/{registration_id}/
     (admin cancel guest, spec #1872).
 
     Covers all 12 test cases from the spec:
@@ -2655,7 +2655,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
     @tag("admin_cancel", "auth")
     def test_unauthenticated_returns_401(self):
         reg = self._register(self.member)
-        response = self.client.delete(self._admin_cancel_url(reg.pk))
+        response = self.client.patch(self._admin_cancel_url(reg.pk))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     @tag("admin_cancel", "auth")
@@ -2663,7 +2663,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
         """A user without edit rights on the project → 403 Forbidden."""
         reg = self._register(self.member)
         self.client.login(username="member_cancel", password="testpassword")
-        response = self.client.delete(self._admin_cancel_url(reg.pk))
+        response = self.client.patch(self._admin_cancel_url(reg.pk))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @tag("admin_cancel", "validation")
@@ -2689,14 +2689,14 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
             kwargs={"url_slug": event_no_er.url_slug, "registration_id": 9999},
         )
         self.client.login(username="organiser_cancel", password="testpassword")
-        response = self.client.delete(url)
+        response = self.client.patch(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     @tag("admin_cancel", "validation")
     def test_registration_id_not_on_this_project_returns_404(self):
         """registration_id that does not belong to this project → 404."""
         self.client.login(username="organiser_cancel", password="testpassword")
-        response = self.client.delete(self._admin_cancel_url(99999))
+        response = self.client.patch(self._admin_cancel_url(99999))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     @tag("admin_cancel", "validation")
@@ -2708,7 +2708,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
         reg.save(update_fields=["cancelled_at", "cancelled_by"])
 
         self.client.login(username="organiser_cancel", password="testpassword")
-        response = self.client.delete(self._admin_cancel_url(reg.pk))
+        response = self.client.patch(self._admin_cancel_url(reg.pk))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @tag("admin_cancel", "happy_path")
@@ -2720,7 +2720,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
         with mock_patch(
             "organization.views.event_registration_views.send_guest_cancellation_notification"
         ) as mock_email:
-            response = self.client.delete(
+            response = self.client.patch(
                 self._admin_cancel_url(reg.pk), {}, format="json"
             )
 
@@ -2739,7 +2739,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
         with mock_patch(
             "organization.views.event_registration_views.send_guest_cancellation_notification"
         ) as mock_email:
-            response = self.client.delete(
+            response = self.client.patch(
                 self._admin_cancel_url(reg.pk),
                 {"message": "You have been removed from this event."},
                 format="json",
@@ -2763,7 +2763,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
         with mock_patch(
             "organization.views.event_registration_views.send_guest_cancellation_notification"
         ):
-            response = self.client.delete(
+            response = self.client.patch(
                 self._admin_cancel_url(reg.pk), {}, format="json"
             )
 
@@ -2782,7 +2782,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
         with mock_patch(
             "organization.views.event_registration_views.send_guest_cancellation_notification"
         ):
-            response = self.client.delete(
+            response = self.client.patch(
                 self._admin_cancel_url(reg.pk), {}, format="json"
             )
 
@@ -2799,7 +2799,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
         with mock_patch(
             "organization.views.event_registration_views.send_guest_cancellation_notification"
         ):
-            response = self.client.delete(
+            response = self.client.patch(
                 self._admin_cancel_url(reg.pk), {}, format="json"
             )
 
@@ -2817,7 +2817,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
         with mock_patch(
             "organization.views.event_registration_views.send_guest_cancellation_notification"
         ):
-            self.client.delete(self._admin_cancel_url(reg1.pk), {}, format="json")
+            self.client.patch(self._admin_cancel_url(reg1.pk), {}, format="json")
 
         list_url = reverse(
             "organization:event-registrations",
