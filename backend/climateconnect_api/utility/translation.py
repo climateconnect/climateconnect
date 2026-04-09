@@ -146,48 +146,47 @@ def get_translations(
     for target_language in Language.objects.exclude(language_code=source_language).values_list(
         "language_code", flat=True
     ):
-        if not target_language == source_language:
-            finished_translations[target_language] = {"is_manual_translation": False}
-            for key in texts.keys():
-                # If the user manually translated and the translation
-                # isn't an empty string: take the user's translation
-                if (
-                    target_language in translations
-                    and "is_manual_translation" in translations[target_language]
-                    and translations[target_language]["is_manual_translation"]
-                    and key in translations[target_language]
-                    and len(translations[target_language][key]) > 0
-                ):
-                    finished_translations[target_language][key] = translations[
-                        target_language
-                    ][key]
-                    finished_translations["is_manual_translation"] = True
-                # Else use DeepL to translate the text
+        finished_translations[target_language] = {"is_manual_translation": False}
+        for key in texts.keys():
+            # If the user manually translated and the translation
+            # isn't an empty string: take the user's translation
+            if (
+                target_language in translations
+                and "is_manual_translation" in translations[target_language]
+                and translations[target_language]["is_manual_translation"]
+                and key in translations[target_language]
+                and len(translations[target_language][key]) > 0
+            ):
+                finished_translations[target_language][key] = translations[
+                    target_language
+                ][key]
+                finished_translations["is_manual_translation"] = True
+            # Else use DeepL to translate the text
+            else:
+                # If the key should not be translated, just pass the original
+                # string (We do this for organization names for example)
+                if key in keys_to_ignore_for_translation:
+                    translated_text_object = {
+                        "original_lang": source_language,
+                        "translated_text": texts[key],
+                    }
                 else:
-                    # If the key should not be translated, just pass the original
-                    # string (We do this for organization names for example)
-                    if key in keys_to_ignore_for_translation:
-                        translated_text_object = {
-                            "original_lang": source_language,
-                            "translated_text": texts[key],
-                        }
-                    else:
-                        translated_text_object = translate_text(
-                            texts[key], source_language, target_language
-                        )
-                    # If we got the source language wrong start over
-                    # with the correct source language
-                    if not translated_text_object["original_lang"] == source_language:
-                        return get_translations(
-                            texts,
-                            translations,
-                            translated_text_object["original_lang"],
-                            keys_to_ignore_for_translation,
-                            depth + 1,
-                        )
-                    finished_translations[target_language][key] = (
-                        translated_text_object["translated_text"]
+                    translated_text_object = translate_text(
+                        texts[key], source_language, target_language
                     )
+                # If we got the source language wrong start over
+                # with the correct source language
+                if not translated_text_object["original_lang"] == source_language:
+                    return get_translations(
+                        texts,
+                        translations,
+                        translated_text_object["original_lang"],
+                        keys_to_ignore_for_translation,
+                        depth + 1,
+                    )
+                finished_translations[target_language][key] = (
+                    translated_text_object["translated_text"]
+                )
     return {"translations": finished_translations, "source_language": source_language}
 
 

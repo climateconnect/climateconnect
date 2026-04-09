@@ -25,28 +25,6 @@ CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.3
 MAPPING_TABLE_PATH = Path(__file__).parent / "osm_lookup_tables" / "mapping.csv"
 
 
-def load_osm_mapping() -> dict[str, list[int]]:
-    """
-    Loads the mapping table and returns a dict:
-    osm_combination -> list of location_ids
-    """
-    mapping = {}
-    if not MAPPING_TABLE_PATH.exists():
-        print(f"warning: mapping table not found at {MAPPING_TABLE_PATH}")
-        return mapping
-
-    with open(MAPPING_TABLE_PATH, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            osm_combination = row["osm_combination"]
-            location_ids_str = row["location_ids"]
-            if location_ids_str:
-                location_ids = [int(id_str) for id_str in location_ids_str.split(",")]
-                mapping[osm_combination] = location_ids
-
-    return mapping
-
-
 def create_name_from_translation_data(
     original_location: Location, translation_data: dict
 ) -> str:
@@ -96,10 +74,6 @@ def translate_locations(locs: list["Location"], locale: str):
         for loc in batch_locations:
             if loc.osm_id and loc.osm_type:
                 osm_type = loc.osm_type[0].upper()
-                if osm_type is None:
-                    print(f"invalid osm_type: {loc.osm_type}")
-                    continue
-
                 osm_string = f"{osm_type}{loc.osm_id}"
                 osm_ids.add(osm_string)
             elif not loc.osm_id:
@@ -146,7 +120,7 @@ def translate_locations(locs: list["Location"], locale: str):
                     continue
 
         if not data:
-            tqdm.write(f"no data came back from nominatim")
+            tqdm.write("no data came back from nominatim")
             continue
 
         # Check response for osm_ids that did not return any result from nominatim
