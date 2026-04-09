@@ -1,3 +1,4 @@
+from django.contrib.gis.geos import Point
 from django.test import TestCase, override_settings
 
 from location.models import Location
@@ -7,6 +8,7 @@ from location.utility import (
     format_location_name,
     get_global_location,
     get_location,
+    get_location_with_range,
 )
 
 
@@ -308,3 +310,43 @@ class TestGetLocation(TestCase):
 
         self.assertEqual(location.city, "Berlin")
         self.assertEqual(location.country, "Germany")
+
+
+class TestGetLocationWithRange(TestCase):
+    """Tests for get_location_with_range, specifically the newest-record selection."""
+
+    def _make_location(self, name, country, place_id, osm_id=62422):
+        """Helper to create a Location with a centre_point geometry."""
+        return Location.objects.create(
+            name=name,
+            city="Berlin",
+            country=country,
+            osm_id=osm_id,
+            osm_type="W",
+            osm_class="boundary",
+            place_id=place_id,
+            centre_point=Point(13.4050, 52.5200),
+        )
+
+    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    def test_returns_newest_for_duplicate_osm_composite(self):
+        """When multiple records share the same OSM composite key,
+        get_location_with_range must use the newest (highest ID) record."""
+        self._make_location("Berlin Older", "OldCountry", place_id=100)
+        newer = self._make_location("Berlin Newer", "NewCountry", place_id=101)
+
+        result = get_location_with_range(
+            {"osm_id": 62422, "osm_type": "way", "osm_class": "boundary"}
+        )
+
+        self.assertEqual(result["country"], newer.country)
+
+    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    def test_place_id_fallback_resolves_location(self):
+        """When only place_id is provided (no OSM params), the existing
+        location must still be resolved via the deprecated place_id path."""
+        location = self._make_location("Berlin", "Germany", place_id=999)
+
+        result = get_location_with_range({"place_id": 999})
+
+        self.assertEqual(result["country"], location.country)

@@ -85,22 +85,9 @@ def get_location(location_object):
     if location_object.get("type") == "global":
         return get_global_location()
 
-    required_params = [
-        "country",
-        "name",
-        "type",
-        "lon",
-        "lat",
-        "osm_id",
-        "osm_type",
-        "osm_class",
-        "osm_class_type",
-        "display_name",
-    ]
-    for param in required_params:
-        if param not in location_object:
-            raise ValidationError("Required parameter is missing:" + param)
-
+    # --- Try DB first (before validating required fields for creation) ---
+    # This allows backward-compatible place_id-only requests to resolve
+    # to an existing record even when OSM fields are not provided.
     has_osm_composite_key = _has_osm_composite_key(location_object)
 
     if has_osm_composite_key:
@@ -122,7 +109,25 @@ def get_location(location_object):
         loc = _get_newest_location_by_place_id(place_id)
         if loc:
             return loc
-    elif not location_object.get("is_stub") and not has_osm_composite_key:
+
+    # Location not found in DB; validate required fields before creating a new record.
+    required_params = [
+        "country",
+        "name",
+        "type",
+        "lon",
+        "lat",
+        "osm_id",
+        "osm_type",
+        "osm_class",
+        "osm_class_type",
+        "display_name",
+    ]
+    for param in required_params:
+        if param not in location_object:
+            raise ValidationError("Required parameter is missing:" + param)
+
+    if not location_object.get("is_stub") and not has_osm_composite_key:
         raise ValidationError(
             "Required OSM composite key is missing: osm_id, osm_type, osm_class"
         )

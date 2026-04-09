@@ -245,9 +245,10 @@ class ListOrganizationsAPIView(ListAPIView):
                 tag_organization__in=organization_taggings
             ).distinct()
 
-        if "osm_id" in self.request.query_params and (
-            "osm_type" in self.request.query_params
-        ):
+        if (
+            "osm_id" in self.request.query_params
+            and "osm_type" in self.request.query_params
+        ) or "place_id" in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
             organizations = (
                 organizations.filter(

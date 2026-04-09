@@ -10,16 +10,9 @@ from rest_framework.views import APIView
 
 from location.models import Location
 from location.serializers import LocationStubSerializer
-from location.utility import format_location, get_location
+from location.utility import format_location, get_location, _osm_type_char
 
 logger = logging.getLogger("django")
-
-
-def _osm_type_char(v):
-    if v is None:
-        return None
-    mapping = {"relation": "R", "way": "W", "node": "N", "r": "R", "w": "W", "n": "N"}
-    return mapping.get(str(v).lower())
 
 
 class GetLocationView(APIView):

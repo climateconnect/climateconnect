@@ -1,11 +1,11 @@
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APITestCase
 
 from location.models import Location
 
 
-class TestGetLocationView(TestCase):
+class TestGetLocationView(APITestCase):
     def setUp(self):
         self.url = reverse("location:get-location")
     def test_get_location_uses_osm_composite_when_both_osm_and_place_are_provided(self):

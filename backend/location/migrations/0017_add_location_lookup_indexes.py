@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="location",
-            index=models.Index(fields=["place_id"], name="location_loc_place_i_6bf2e7_idx"),
+            index=models.Index(fields=["place_id"], name="location_place_id_idx"),
         ),
     ]
