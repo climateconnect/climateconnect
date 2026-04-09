@@ -124,6 +124,13 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
     summaryHeadline: {
       color: "inherit",
     },
+    projectTypeContainer: {
+      display: "flex",
+      alignItems: "center",
+    },
+    availableSeatsText: {
+      marginLeft: theme.spacing(0.5),
+    },
   };
 });
 
@@ -169,6 +176,7 @@ type Props = {
   isWasseraktionswochenEnabled: boolean;
   isEventRegistrationEnabled: boolean;
   handleRegisterClick: () => void;
+  isUserRegistered?: boolean;
 };
 
 export default function ProjectOverview({
@@ -198,6 +206,7 @@ export default function ProjectOverview({
   isWasseraktionswochenEnabled,
   isEventRegistrationEnabled,
   handleRegisterClick,
+  isUserRegistered,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);
@@ -245,6 +254,7 @@ export default function ProjectOverview({
           isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
           isEventRegistrationEnabled={isEventRegistrationEnabled}
           handleRegisterClick={handleRegisterClick}
+          isUserRegistered={isUserRegistered}
         />
       )}
 
@@ -331,7 +341,14 @@ function ShortProjectInfo({ project, isWasseraktionswochenEnabled }) {
         </Typography>
       </div>
       <div className={classes.projectInfoEl}>
-        <ProjectTypeDisplay projectType={project.project_type} />
+        <div className={classes.projectTypeContainer}>
+          <ProjectTypeDisplay projectType={project.project_type} />
+          {project.registration_config?.available_seats != null && (
+            <Typography component="span" className={classes.availableSeatsText}>
+              · {project.registration_config.available_seats} {texts.seats_available}
+            </Typography>
+          )}
+        </div>
       </div>
     </>
   );
@@ -405,6 +422,7 @@ function LargeScreenOverview({
   isWasseraktionswochenEnabled,
   isEventRegistrationEnabled,
   handleRegisterClick,
+  isUserRegistered,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   const { locale, user } = useContext(UserContext);
@@ -451,12 +469,14 @@ function LargeScreenOverview({
             {showRegisterButton ? (
               <Button
                 variant="contained"
-                color={isRegisterButtonDisabled(project) ? "secondary" : "primary"}
-                disabled={isRegisterButtonDisabled(project)}
+                color={
+                  isRegisterButtonDisabled(project, isUserRegistered) ? "secondary" : "primary"
+                }
+                disabled={isRegisterButtonDisabled(project, isUserRegistered)}
                 onClick={handleRegisterClick}
                 className={classes.registerButton}
               >
-                {getRegisterButtonText(project, texts)}
+                {getRegisterButtonText(project, texts, isUserRegistered)}
               </Button>
             ) : (
               <FollowButton

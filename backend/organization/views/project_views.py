@@ -59,6 +59,10 @@ from organization.models import (
     ProjectTags,
     Sector,
 )
+from organization.models.event_registration import (
+    EventRegistration,
+    EventRegistrationConfig,
+)
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
 from organization.models.type import PROJECT_TYPES, ProjectTypesChoices
@@ -76,7 +80,6 @@ from organization.permissions import (
     ReadWriteSensibleProjectDataPermission,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
-from organization.models.event_registration import EventRegistrationConfig
 from organization.serializers.event_registration import (
     EventRegistrationConfigSerializer,
 )
@@ -1314,11 +1317,21 @@ class GetUserInteractionsWithProjectView(APIView):
             user=self.request.user,
         ).exists()
 
+        is_registered = False
+        if hasattr(project, "registration_config"):
+            try:
+                is_registered = EventRegistration.objects.filter(
+                    user=request.user, registration_config=project.registration_config
+                ).exists()
+            except EventRegistrationConfig.DoesNotExist:
+                pass
+
         return Response(
             {
                 "liking": is_liking,
                 "following": is_following,
                 "has_requested_to_join": has_open_membership_request,
+                "is_registered": is_registered,
             },
             status=status.HTTP_200_OK,
         )

@@ -109,6 +109,7 @@ export default function ProjectPageRoot({
   hubPage,
   siblingProjects,
   isWasseraktionswochenEnabled,
+  isRegistered,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -154,6 +155,9 @@ export default function ProjectPageRoot({
   const [currentEventRegistration, setCurrentEventRegistration] = useState(
     project.registration_config ?? null
   );
+
+  // Per-user registration state (optimistic update on success)
+  const [isUserRegistered, setIsUserRegistered] = useState(isRegistered ?? false);
 
   // Registration modal state
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
@@ -509,6 +513,15 @@ export default function ProjectPageRoot({
   });
 
   const latestParentComment = [project.comments[0]];
+
+  const handleRegistrationModalClose = () => {
+    setRegistrationModalOpen(false);
+    // Remove the openRegistration query param from the URL when closing the modal
+    const url = new URL(window.location.href);
+    url.searchParams.delete("openRegistration");
+    window.history.replaceState({}, "", url.toString());
+  };
+
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -538,6 +551,7 @@ export default function ProjectPageRoot({
         isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
         isEventRegistrationEnabled={isEventRegistrationEnabled}
         handleRegisterClick={handleRegisterClick}
+        isUserRegistered={isUserRegistered}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -592,6 +606,7 @@ export default function ProjectPageRoot({
           user={user}
           isEventRegistrationEnabled={isEventRegistrationEnabled}
           handleRegisterClick={handleRegisterClick}
+          isUserRegistered={isUserRegistered}
         />
       </Container>
 
@@ -656,6 +671,7 @@ export default function ProjectPageRoot({
               hubName={hubPage}
               siblingProjects={siblingProjects}
               isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+              isUserRegistered={isUserRegistered}
             />
           </>
         )}
@@ -707,8 +723,16 @@ export default function ProjectPageRoot({
       {isEventRegistrationEnabled && project.registration_config && (
         <EventRegistrationModal
           open={registrationModalOpen}
-          onClose={() => setRegistrationModalOpen(false)}
+          onClose={() => handleRegistrationModalClose()}
           project={project}
+          onRegistrationSuccess={() => {
+            setIsUserRegistered(true);
+            setCurrentEventRegistration((prev) =>
+              prev && prev.available_seats != null
+                ? { ...prev, available_seats: prev.available_seats - 1 }
+                : prev
+            );
+          }}
         />
       )}
     </div>
