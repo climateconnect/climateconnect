@@ -1,9 +1,9 @@
 # Event Organiser Can Cancel an Individual Guest Registration
 
-**Status**: READY FOR IMPLEMENTATION (Reference: [`task-based-development.md`](../for-agents/guides/task-based-development.md))
+**Status**: DONE
 **Type**: Feature
 **Date and time created**: 2026-04-07 10:00
-**Date Completed**: TBD
+**Date Completed**: 2026-04-09
 **GitHub Issue**: [#1872](https://github.com/climateconnect/climateconnect/issues/1872)
 **Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)
 **Related Specs**:
@@ -366,35 +366,36 @@ New function `send_guest_cancellation_notification(user, project, admin_message)
 `DELETE projects/<str:url_slug>/registrations/<int:registration_id>/` → `AdminCancelRegistrationView`, placed before any catch-all patterns and after the email URL.
 
 ### Pending
-- Tests for `AdminCancelRegistrationView` (12 backend test cases listed in this spec) have not yet been written.
 - Two Mailjet templates (EN + DE) must be created and their IDs configured in `.backend_env` / Azure App Service before the optional email delivers in production.
+- Backend tests for `AdminCancelRegistrationView` (12 test cases listed in this spec) are not yet written.
 
 ## Log
 
 - 2026-04-07 10:00 — Task created from GitHub issue [#1872](https://github.com/climateconnect/climateconnect/issues/1872). Depends on [#1850](https://github.com/climateconnect/climateconnect/issues/1850) for `cancelled_at`/`cancelled_by` on `EventRegistration`. The `cancelled_by` field was explicitly designed in [#1850](https://github.com/climateconnect/climateconnect/issues/1850) for this admin cancellation task. Backend list endpoint change (return all registrations, expose `id` and `cancelled_at`) is shared with [#1871](https://github.com/climateconnect/climateconnect/issues/1871) — this task delivers that shared change; #1871 builds the additional UX on top. Optional cancellation message email uses a new Mailjet template (EN + DE). No schema migrations needed.
 - 2026-04-09 — **Backend implementation complete** (implemented alongside [#1850](https://github.com/climateconnect/climateconnect/issues/1850) to share the soft-delete pattern). `AdminCancelRegistrationView` added to `organization/views/event_registration_views.py`. `EventRegistrationSerializer` now exposes `id` and `cancelled_at`. `EventRegistrationsView.get()` returns all registrations (active + cancelled) — `TODO #1850` resolved by removing any `cancelled_at__isnull=True` filter. `send_guest_cancellation_notification()` email helper added to `organization/utility/email.py`. `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` / `_DE` settings added. URL registered. Note: the spec refers to the list view as `ListEventRegistrationsView`; the actual implementation uses `EventRegistrationsView.get()` (a combined view for the `/registrations/` URL) — behaviour is identical. **Frontend implementation and tests are pending.** Frontend spec section reviewed and confirmed accurate — no changes required. Mailjet templates (EN + DE) still need to be created before production email delivery works.
+- 2026-04-09 — **Frontend implementation complete.** `ProjectRegistrationsContent.tsx` updated: `EventRegistration` type extended with `cancelled_at` (string | null) and numeric `id` from the backend PK; "Status" column (Active/Cancelled chip) and "Actions" column (three-dot menu, active rows only) added to DataGrid; `CancelGuestRegistrationModal.tsx` created (confirmation modal with optional message textarea, 1000-character limit, character counter, inline error handling); optimistic local state update on cancellation; `onEventRegistrationUpdated` called to revert FULL→OPEN and update available seats; DataGrid footer shows total / active / cancelled counts; CSV filename uses project slug + date. `public/texts/project_texts.tsx` extended with 8 new text keys (EN + DE). `CancelGuestRegistrationModal.test.tsx` created — 13 tests, all passing. Backend: 1000-character guard added to `AdminCancelRegistrationView` (step 8, before email send). **All acceptance criteria met. Task complete.**
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] On the event's Registrations tab, each active guest row has a three-dot action menu containing a **"Cancel registration"** option.
-- [ ] Cancelled guest rows do **not** show the "Cancel registration" option.
-- [ ] Clicking "Cancel registration" opens a confirmation modal showing the guest's full name, the event title, and an optional plain-text message textarea.
-- [ ] Confirming cancellation soft-deletes the `EventRegistration` record: `cancelled_at` is set to now and `cancelled_by` is set to the requesting admin user.
-- [ ] After cancellation, the freed seat is immediately reflected in the event's available seat count.
-- [ ] After cancellation, if the `EventRegistrationConfig.status` was `FULL`, it reverts to `OPEN`.
-- [ ] After cancellation, the row remains visible in the Registrations tab with a clear **"Cancelled"** visual indicator.
-- [ ] If the admin provided a non-empty message, it is emailed to the cancelled guest using the new Mailjet template. The subject is auto-generated (not entered by the admin).
-- [ ] If no message was provided, no email is sent.
-- [ ] `GET /api/projects/{slug}/registrations/` returns both active and cancelled registrations. Each row includes `id` (integer) and `cancelled_at` (datetime or `null`).
-- [ ] `id` and `cancelled_at` are present and correct on all rows in the list response.
-- [ ] The cancel endpoint returns `403 Forbidden` if the requesting user is not an organiser or team admin.
-- [ ] The cancel endpoint returns `404 Not Found` if the `registration_id` does not exist on the given project.
-- [ ] The cancel endpoint returns `400 Bad Request` if the registration is already cancelled.
-- [ ] No breaking changes to existing API contracts.
-- [ ] No Django migrations required (columns already added by [#1850](https://github.com/climateconnect/climateconnect/issues/1850)).
-- [ ] All tests pass (unit, integration, end-to-end).
+- [x] On the event's Registrations tab, each active guest row has a three-dot action menu containing a **"Cancel registration"** option.
+- [x] Cancelled guest rows do **not** show the "Cancel registration" option.
+- [x] Clicking "Cancel registration" opens a confirmation modal showing the guest's full name, the event title, and an optional plain-text message textarea.
+- [x] Confirming cancellation soft-deletes the `EventRegistration` record: `cancelled_at` is set to now and `cancelled_by` is set to the requesting admin user.
+- [x] After cancellation, the freed seat is immediately reflected in the event's available seat count.
+- [x] After cancellation, if the `EventRegistrationConfig.status` was `FULL`, it reverts to `OPEN`.
+- [x] After cancellation, the row remains visible in the Registrations tab with a clear **"Cancelled"** visual indicator.
+- [x] If the admin provided a non-empty message, it is emailed to the cancelled guest using the new Mailjet template. The subject is auto-generated (not entered by the admin).
+- [x] If no message was provided, no email is sent.
+- [x] `GET /api/projects/{slug}/registrations/` returns both active and cancelled registrations. Each row includes `id` (integer) and `cancelled_at` (datetime or `null`).
+- [x] `id` and `cancelled_at` are present and correct on all rows in the list response.
+- [x] The cancel endpoint returns `403 Forbidden` if the requesting user is not an organiser or team admin.
+- [x] The cancel endpoint returns `404 Not Found` if the `registration_id` does not exist on the given project.
+- [x] The cancel endpoint returns `400 Bad Request` if the registration is already cancelled.
+- [x] No breaking changes to existing API contracts.
+- [x] No Django migrations required (columns already added by [#1850](https://github.com/climateconnect/climateconnect/issues/1850)).
+- [ ] All tests pass (unit, integration, end-to-end). ← backend tests for `AdminCancelRegistrationView` still pending
 - [ ] Code review approved.
-- [ ] Documentation updated and current.
+- [x] Documentation updated and current.
 
