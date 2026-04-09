@@ -490,6 +490,68 @@ def send_organizer_message_to_guest(user, project, subject: str, message: str):
     )
 
 
+def send_guest_cancellation_notification(user, project, admin_message: str):
+    """
+    Send a cancellation notification email to a guest whose registration was
+    cancelled by an event organiser or team admin.
+
+    Called synchronously from ``AdminCancelRegistrationView`` — single recipient,
+    no Celery task needed.  Mirrors the ``send_organizer_message_to_guest`` pattern.
+
+    **Mailjet template variables**:
+        - ``FirstName``       — recipient's first name (falls back to username)
+        - ``EventTitle``      — event name localised to recipient's language
+        - ``EventUrl``        — language-aware link to the event page
+        - ``OrganiserName``   — localised organisation name or organiser's display name
+        - ``OrganizerMessage`` — the plain-text message body provided by the admin
+
+    The email envelope subject is auto-generated in the recipient's language
+    (e.g. "Your registration for [Event Name] has been cancelled") — it is never
+    organiser-authored.
+
+    **Required env variables** (configured in ``climateconnect_main/settings.py``):
+        ``ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID``    — Mailjet template ID (EN)
+        ``ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE`` — Mailjet template ID (DE)
+
+    Args:
+        user:          Django ``User`` instance.  Fetch with
+                       ``select_related("user_profile__location")`` to avoid N+1.
+        project:       ``Project`` instance.  Fetch with
+                       ``select_related("loc", "language")`` and the organiser/
+                       translation prefetch chain (same as the confirmation email).
+        admin_message: Admin-provided plain-text message body.
+    """
+    lang_code = get_user_lang_code(user)
+    event_title = get_project_name(project, lang_code)
+
+    subjects_by_language = {
+        "en": f"Your registration for {get_project_name(project, 'en')} has been cancelled",
+        "de": f"Deine Anmeldung für {get_project_name(project, 'de')} wurde storniert",
+    }
+
+    variables = {
+        "FirstName": user.first_name or user.username,
+        "EventTitle": event_title,
+        "EventUrl": (
+            settings.FRONTEND_URL
+            + get_user_lang_url(lang_code)
+            + "/projects/"
+            + project.url_slug
+        ),
+        "OrganiserName": get_organiser_name(project, lang_code),
+        "OrganizerMessage": admin_message,
+    }
+
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="",
+        notification=None,
+    )
+
+
 def send_event_registration_confirmation_to_user(user, project):
     """
     Send a registration confirmation email to a user who just registered for an event.

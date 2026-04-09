@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -24,7 +25,10 @@ from organization.tasks import (
     send_event_registration_confirmation_email as _send_registration_email,
     send_organizer_message_to_guests as _send_organizer_email_task,
 )
-from organization.utility.email import send_organizer_message_to_guest
+from organization.utility.email import (
+    send_guest_cancellation_notification,
+    send_organizer_message_to_guest,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,17 +39,21 @@ class EventRegistrationsView(APIView):
     GET  /api/projects/{url_slug}/registrations/  — Organiser lists all registrations.
 
     POST behaviour:
-        - 201 Created  — first-time registration; EventRegistration row created.
-        - 200 OK       — idempotent; user was already registered.
+        - 201 Created  — first-time registration or re-registration after self-cancellation.
+        - 200 OK       — idempotent; user already has an active registration.
         - 400 Bad Request — registration is closed, full, or deadline has passed.
         - 401 Unauthorized — unauthenticated request.
+        - 403 Forbidden — user's registration was cancelled by an admin; cannot re-register.
         - 404 Not Found — project or registration_config does not exist.
 
     GET behaviour (organiser/admin only):
-        Returns all active registrations ordered by registered_at asc.
+        Returns ALL registrations (active and cancelled) ordered by registered_at asc.
+        Includes ``id`` and ``cancelled_at`` on each row so the frontend can
+        distinguish active from cancelled and target individual rows for admin-cancellation.
         No backend pagination; client-side paging via MUI DataGrid.
 
     See spec: doc/spec/20260309_0900_member_register_for_event.md
+             doc/spec/20260309_1500_member_cancel_event_registration.md
              doc/spec/20260401_1000_organizer_see_registration_status.md
     """
 
@@ -74,18 +82,39 @@ class EventRegistrationsView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # ── 3. Idempotency check — return 200 if already registered ─────────
-        already_registered = EventRegistration.objects.filter(
-            user=request.user, registration_config=rc
-        ).exists()
-        if already_registered:
-            return Response(
-                {
-                    "registered": True,
-                    "available_seats": self._compute_available_seats(rc),
-                },
-                status=status.HTTP_200_OK,
+        # ── 3. Check for an existing record (active OR cancelled) ────────────
+        try:
+            existing = EventRegistration.objects.select_for_update().get(
+                user=request.user, registration_config=rc
             )
+        except EventRegistration.DoesNotExist:
+            existing = None
+
+        if existing is not None:
+            if existing.cancelled_at is None:
+                # Already actively registered — idempotent.
+                return Response(
+                    {
+                        "registered": True,
+                        "available_seats": self._compute_available_seats(rc),
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                # A cancelled record exists.
+                if existing.cancelled_by_id != request.user.id:
+                    # Admin-cancelled — member may not self-re-register.
+                    return Response(
+                        {
+                            "message": (
+                                "Your registration was cancelled by an administrator. "
+                                "You cannot re-register for this event."
+                            )
+                        },
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
+                # Self-cancelled — fall through to registration-open check,
+                # then re-use the existing row.
 
         # ── 4. Validate that registration is currently open ──────────────────
         effective_status = _compute_effective_status(rc)
@@ -104,10 +133,11 @@ class EventRegistrationsView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # ── 5. Capacity check (inside the lock) ──────────────────────────────
+        # ── 5. Capacity check (inside the lock; active registrations only) ───
         if rc.max_participants is not None:
             current_count = EventRegistration.objects.filter(
-                registration_config=rc
+                registration_config=rc,
+                cancelled_at__isnull=True,
             ).count()
             if current_count >= rc.max_participants:
                 # Ensure status reflects reality even if it was missed earlier.
@@ -118,16 +148,25 @@ class EventRegistrationsView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        # ── 6. Create EventRegistration ───────────────────────────────────────
-        EventRegistration.objects.create(
-            user=request.user,
-            registration_config=rc,
-        )
+        # ── 6. Create or re-activate EventRegistration ───────────────────────
+        if existing is not None:
+            # Re-registration: reset soft-delete fields on the existing row.
+            existing.cancelled_at = None
+            existing.cancelled_by = None
+            existing.save(update_fields=["cancelled_at", "cancelled_by"])
+        else:
+            EventRegistration.objects.create(
+                user=request.user,
+                registration_config=rc,
+            )
 
         # ── 7. Update status to FULL if last seat was just taken ─────────────
         available_seats = None
         if rc.max_participants is not None:
-            new_count = EventRegistration.objects.filter(registration_config=rc).count()
+            new_count = EventRegistration.objects.filter(
+                registration_config=rc,
+                cancelled_at__isnull=True,
+            ).count()
             available_seats = max(0, rc.max_participants - new_count)
             if available_seats == 0:
                 rc.status = RegistrationStatus.FULL
@@ -159,10 +198,16 @@ class EventRegistrationsView(APIView):
 
     @staticmethod
     def _compute_available_seats(rc: EventRegistrationConfig):
-        """Return remaining seats or None for unlimited-capacity events."""
+        """Return remaining seats or None for unlimited-capacity events.
+
+        Only active (non-cancelled) registrations count against capacity.
+        """
         if rc.max_participants is None:
             return None
-        count = EventRegistration.objects.filter(registration_config=rc).count()
+        count = EventRegistration.objects.filter(
+            registration_config=rc,
+            cancelled_at__isnull=True,
+        ).count()
         return max(0, rc.max_participants - count)
 
     def get(self, request, url_slug):
@@ -202,8 +247,10 @@ class EventRegistrationsView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # ── 4. Query registrations ───────────────────────────────────────────
-        # TODO #1850: add .filter(cancelled_at__isnull=True) once cancelled_at is added
+        # ── 4. Query ALL registrations (active + cancelled) ──────────────────
+        # Returns all rows so organisers can see the full history including
+        # cancellations. ``id`` and ``cancelled_at`` are included in the response
+        # so the frontend can target individual rows for admin-cancellation.
         registrations = (
             EventRegistration.objects.select_related("user__user_profile")
             .filter(registration_config=rc)
@@ -214,6 +261,104 @@ class EventRegistrationsView(APIView):
             registrations, many=True, context={"request": request}
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @transaction.atomic
+    def delete(self, request, url_slug):
+        """
+        DELETE /api/projects/{url_slug}/registrations/
+
+        Allows the authenticated member to cancel their own registration for an
+        upcoming event (soft delete: sets ``cancelled_at`` and ``cancelled_by``).
+
+        Response codes:
+            204 No Content  — cancellation successful.
+            400 Bad Request — event has already started.
+            401 Unauthorized — unauthenticated request.
+            403 Forbidden   — registration belongs to a different user.
+            404 Not Found   — no active registration exists for this user and event.
+
+        See spec: doc/spec/20260309_1500_member_cancel_event_registration.md
+        """
+
+        # ── 1. Look up project ──────────────────────────────────────────────
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            return Response(
+                {"message": "Project not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 2. Look up EventRegistrationConfig ───────────────────────────────
+        try:
+            rc = EventRegistrationConfig.objects.select_for_update().get(
+                project=project
+            )
+        except EventRegistrationConfig.DoesNotExist:
+            return Response(
+                {"message": "This project does not have event registration enabled."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 3. Look up the registration record for the requesting user ───────
+        #       Explicit ownership check gives 403 instead of a silent 404 when a
+        #       registration exists for a different user.
+        try:
+            reg = EventRegistration.objects.select_for_update().get(
+                registration_config=rc,
+                user=request.user,
+            )
+        except EventRegistration.DoesNotExist:
+            return Response(
+                {"message": "You do not have an active registration for this event."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 4. Ownership check (explicit, per spec) ──────────────────────────
+        if reg.user_id != request.user.id:
+            return Response(
+                {"message": "You do not have permission to cancel this registration."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # ── 5. Check registration is currently active ────────────────────────
+        if reg.cancelled_at is not None:
+            return Response(
+                {"message": "You do not have an active registration for this event."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 6. Check event has not yet started ───────────────────────────────
+        if project.start_date and project.start_date <= timezone.now():
+            return Response(
+                {
+                    "message": "Cannot cancel a registration for an event that has already started."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # ── 7. Soft-delete: set cancelled_at and cancelled_by ────────────────
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = request.user
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        # ── 8. Revert FULL → OPEN if cancellation freed a seat ──────────────
+        if rc.status == RegistrationStatus.FULL and rc.max_participants is not None:
+            active_count = EventRegistration.objects.filter(
+                registration_config=rc,
+                cancelled_at__isnull=True,
+            ).count()
+            if active_count < rc.max_participants:
+                rc.status = RegistrationStatus.OPEN
+                rc.save(update_fields=["status", "updated_at"])
+
+        logger.info(
+            "[EventRegistration] User %s cancelled registration for project '%s'",
+            request.user.id,
+            project.url_slug,
+        )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class EditRegistrationConfigView(APIView):
@@ -405,12 +550,12 @@ class SendOrganizerEmailView(APIView):
                 )
             return Response({"sent_count": 1}, status=status.HTTP_200_OK)
 
-        # ── 5. Bulk send — count registrations, then dispatch async ─────
-        # TODO #1850: add .filter(cancelled_at__isnull=True) once cancelled_at is added
+        # ── 5. Bulk send — only active (non-cancelled) registrations ────
         user_ids = list(
-            EventRegistration.objects.filter(registration_config=rc).values_list(
-                "user_id", flat=True
-            )
+            EventRegistration.objects.filter(
+                registration_config=rc,
+                cancelled_at__isnull=True,
+            ).values_list("user_id", flat=True)
         )
         sent_count = len(user_ids)
 
@@ -428,3 +573,137 @@ class SendOrganizerEmailView(APIView):
         )
 
         return Response({"sent_count": sent_count}, status=status.HTTP_200_OK)
+
+
+class AdminCancelRegistrationView(APIView):
+    """
+    DELETE /api/projects/{url_slug}/registrations/{registration_id}/
+
+    Allows an event organiser or team admin to cancel a specific guest's
+    registration (soft delete: sets ``cancelled_at`` and ``cancelled_by``).
+
+    An optional ``message`` field in the request body triggers a cancellation
+    notification email to the guest. If absent or empty, no email is sent.
+
+    Response codes:
+        204 No Content  — cancellation successful.
+        400 Bad Request — registration already cancelled.
+        401 Unauthorized — unauthenticated request.
+        403 Forbidden   — authenticated but not an organiser or team admin.
+        404 Not Found   — project, registration config, or registration not found.
+
+    See spec: doc/spec/20260407_1000_organizer_cancel_guest_registration.md
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def delete(self, request, url_slug, registration_id):
+
+        # ── 1. Look up project ──────────────────────────────────────────────
+        try:
+            project = (
+                Project.objects.select_related("loc", "language")
+                .prefetch_related(
+                    "translation_project__language",
+                    "project_parent__parent_organization__language",
+                    "project_parent__parent_organization__translation_org__language",
+                    "project_parent__parent_user__user_profile",
+                )
+                .get(url_slug=url_slug)
+            )
+        except Project.DoesNotExist:
+            return Response(
+                {"message": "Project not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 2. Organiser/admin permission check ─────────────────────────────
+        has_edit_rights = ProjectMember.objects.filter(
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            project=project,
+        ).exists()
+        if not has_edit_rights:
+            return Response(
+                {
+                    "message": (
+                        "You do not have permission to cancel registrations "
+                        "for this project."
+                    )
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # ── 3. Look up EventRegistrationConfig ───────────────────────────────
+        try:
+            rc = EventRegistrationConfig.objects.select_for_update().get(
+                project=project
+            )
+        except EventRegistrationConfig.DoesNotExist:
+            return Response(
+                {"message": "This project does not have event registration enabled."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 4. Look up the specific EventRegistration by ID ─────────────────
+        try:
+            reg = EventRegistration.objects.select_for_update().get(
+                id=registration_id,
+                registration_config=rc,
+            )
+        except EventRegistration.DoesNotExist:
+            return Response(
+                {"message": "Registration not found on this project."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 5. Guard: already cancelled → 400 ───────────────────────────────
+        if reg.cancelled_at is not None:
+            return Response(
+                {"message": "This registration is already cancelled."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # ── 6. Soft-delete: set cancelled_at and cancelled_by ────────────────
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = request.user
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        # ── 7. Revert FULL → OPEN if cancellation freed a seat ──────────────
+        if rc.status == RegistrationStatus.FULL and rc.max_participants is not None:
+            active_count = EventRegistration.objects.filter(
+                registration_config=rc,
+                cancelled_at__isnull=True,
+            ).count()
+            if active_count < rc.max_participants:
+                rc.status = RegistrationStatus.OPEN
+                rc.save(update_fields=["status", "updated_at"])
+
+        logger.info(
+            "[EventRegistration] Admin %s cancelled registration %s for project '%s'",
+            request.user.id,
+            registration_id,
+            project.url_slug,
+        )
+
+        # ── 8. Optional cancellation notification email ──────────────────────
+        message = request.data.get("message", "").strip()
+        if message:
+            guest = reg.user
+            try:
+                # Re-fetch guest with location for email helper.
+                guest = User.objects.select_related("user_profile__location").get(
+                    id=guest.id
+                )
+                send_guest_cancellation_notification(guest, project, message)
+            except Exception as exc:
+                # Log but do not fail the request — cancellation is already committed.
+                logger.error(
+                    "[AdminCancelRegistration] Email to guest %s failed for event '%s': %s",
+                    guest.id,
+                    url_slug,
+                    exc,
+                )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

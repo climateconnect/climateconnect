@@ -6,6 +6,11 @@ Covers:
 - GET /api/projects/{slug}/ returns registration_config
 - GET /api/projects/ (list) returns registration_config per item
 - Validation: wrong project type, missing fields, invalid max_participants, date order
+- DELETE /api/projects/{slug}/registrations/ — member self-cancellation (#1850)
+- Member re-registration after self-cancellation and admin-cancellation (#1850)
+- GET /api/projects/{slug}/my_interactions/ — is_registered, has_attended, admin_cancelled (#1850)
+- DELETE /api/projects/{slug}/registrations/{id}/ — admin cancel guest (#1872)
+- GET /api/projects/{slug}/registrations/ returns all rows with id and cancelled_at (#1872)
 """
 
 import io
@@ -2195,3 +2200,660 @@ class TestSendOrganizerEmail(APITestCase):
                 )
 
         self.assertEqual(mock_helper.call_count, 5)
+
+
+# ===========================================================================
+# Shared setUp mixin for cancellation / interaction tests
+# ===========================================================================
+
+
+class _CancellationTestBase(APITestCase):
+    """
+    Common setUp for member-cancel, re-registration, my_interactions,
+    and admin-cancel test classes.
+
+    Creates:
+        self.event          — future event, start_date in 30 days
+        self.er             — EventRegistrationConfig (max 10, open)
+        self.organiser      — ALL_TYPE project member
+        self.team_admin     — READ_WRITE_TYPE project member
+        self.member         — a guest user (not a project member)
+        self.non_member     — no project membership, no registration
+    """
+
+    def setUp(self):
+        self.project_status, _ = ProjectStatus.objects.update_or_create(
+            id=2,
+            defaults={
+                "name": "active_cancel",
+                "name_de_translation": "aktiv",
+                "has_end_date": True,
+                "has_start_date": True,
+            },
+        )
+        self.default_language, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
+        )
+
+        self.organiser = User.objects.create_user(
+            username="organiser_cancel", password="testpassword"
+        )
+        self.admin_role = Role.objects.create(
+            name="Admin_cancel", role_type=Role.ALL_TYPE
+        )
+        self.team_admin = User.objects.create_user(
+            username="teamadmin_cancel", password="testpassword"
+        )
+        self.rw_role = Role.objects.create(
+            name="ReadWrite_cancel", role_type=Role.READ_WRITE_TYPE
+        )
+        self.member = User.objects.create_user(
+            username="member_cancel", password="testpassword"
+        )
+        self.non_member = User.objects.create_user(
+            username="nonmember_cancel", password="testpassword"
+        )
+
+        self.event = Project.objects.create(
+            name="Cancel Test Event",
+            url_slug="cancel-test-event",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=30),
+            end_date=timezone.now() + timedelta(days=90),
+        )
+        self.er = EventRegistrationConfig.objects.create(
+            project=self.event,
+            max_participants=10,
+            registration_end_date=timezone.now() + timedelta(days=60),
+            status=RegistrationStatus.OPEN,
+        )
+        ProjectMember.objects.create(
+            user=self.organiser, project=self.event, role=self.admin_role
+        )
+        ProjectMember.objects.create(
+            user=self.team_admin, project=self.event, role=self.rw_role
+        )
+
+    def _register(self, user):
+        """Helper: create an active EventRegistration for the given user."""
+        return EventRegistration.objects.create(user=user, registration_config=self.er)
+
+    def _cancel_url(self):
+        return reverse(
+            "organization:event-registrations",
+            kwargs={"url_slug": self.event.url_slug},
+        )
+
+    def _my_interactions_url(self):
+        return reverse(
+            "organization:am-i-following-view",
+            kwargs={"url_slug": self.event.url_slug},
+        )
+
+    def _admin_cancel_url(self, registration_id):
+        return reverse(
+            "organization:admin-cancel-guest-registration",
+            kwargs={
+                "url_slug": self.event.url_slug,
+                "registration_id": registration_id,
+            },
+        )
+
+
+# ===========================================================================
+# Member self-cancellation (DELETE /api/projects/{slug}/registrations/)
+# ===========================================================================
+
+
+class TestMemberCancelRegistration(_CancellationTestBase):
+    """
+    Tests for DELETE /api/projects/{url_slug}/registrations/
+    (member self-cancellation, spec #1850).
+
+    Covers all backend test cases from the spec:
+    1. Unauthenticated → 401
+    2. Member with no registration → 404
+    3. Member with already-cancelled registration → 404
+    4. Event has already started → 400
+    5. Valid cancellation → 204; record soft-deleted (cancelled_at, cancelled_by set)
+    6. Cancellation on FULL event → status reverts to OPEN
+    7. Cancellation on OPEN event → status stays OPEN
+    8. available_seats increases after cancellation (derived from active count)
+    """
+
+    @tag("cancel_registration", "member_cancel")
+    def test_unauthenticated_returns_401(self):
+        """DELETE without auth → 401 Unauthorized."""
+        response = self.client.delete(self._cancel_url())
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @tag("cancel_registration", "member_cancel")
+    def test_no_registration_returns_404(self):
+        """DELETE when member has no registration → 404 Not Found."""
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.delete(self._cancel_url())
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @tag("cancel_registration", "member_cancel")
+    def test_already_cancelled_returns_404(self):
+        """DELETE when registration is already cancelled → 404 Not Found."""
+        reg = self._register(self.member)
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.member
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.delete(self._cancel_url())
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @tag("cancel_registration", "member_cancel")
+    def test_event_already_started_returns_400(self):
+        """DELETE after event start_date → 400 Bad Request."""
+        self._register(self.member)
+        self.event.start_date = timezone.now() - timedelta(hours=1)
+        self.event.save(update_fields=["start_date"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.delete(self._cancel_url())
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("cancel_registration", "member_cancel")
+    def test_valid_cancellation_returns_204(self):
+        """Valid DELETE → 204 No Content; record soft-deleted."""
+        reg = self._register(self.member)
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.delete(self._cancel_url())
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        reg.refresh_from_db()
+        self.assertIsNotNone(reg.cancelled_at)
+        self.assertEqual(reg.cancelled_by, self.member)
+
+    @tag("cancel_registration", "member_cancel")
+    def test_cancellation_record_retained_in_db(self):
+        """After cancellation the EventRegistration row still exists (soft delete)."""
+        reg = self._register(self.member)
+
+        self.client.login(username="member_cancel", password="testpassword")
+        self.client.delete(self._cancel_url())
+
+        self.assertTrue(EventRegistration.objects.filter(pk=reg.pk).exists())
+
+    @tag("cancel_registration", "member_cancel")
+    def test_cancellation_on_full_event_reverts_status_to_open(self):
+        """When status=FULL and a cancellation frees a seat → status reverts to OPEN."""
+        self._register(self.member)
+        self.er.status = RegistrationStatus.FULL
+        self.er.save(update_fields=["status", "updated_at"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.delete(self._cancel_url())
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+
+    @tag("cancel_registration", "member_cancel")
+    def test_cancellation_on_open_event_keeps_status_open(self):
+        """Cancellation on an OPEN event with spare capacity → status stays OPEN."""
+        # Two registrations exist; cancelling one still leaves capacity.
+        self._register(self.member)
+        other = User.objects.create_user(username="other_cancel_open", password="x")
+        self._register(other)
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.delete(self._cancel_url())
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+
+    @tag("cancel_registration", "member_cancel")
+    def test_available_seats_increases_after_cancellation(self):
+        """
+        After cancellation, the available_seats count in the project detail
+        endpoint reflects only active (non-cancelled) registrations.
+        """
+        self._register(self.member)
+        project_url = reverse(
+            "organization:project-api-view",
+            kwargs={"url_slug": self.event.url_slug},
+        )
+        resp_before = self.client.get(project_url)
+        seats_before = resp_before.data["registration_config"]["available_seats"]
+
+        self.client.login(username="member_cancel", password="testpassword")
+        self.client.delete(self._cancel_url())
+
+        resp_after = self.client.get(project_url)
+        seats_after = resp_after.data["registration_config"]["available_seats"]
+        self.assertEqual(seats_after, seats_before + 1)
+
+
+# ===========================================================================
+# Member re-registration after cancellation
+# ===========================================================================
+
+
+class TestMemberReRegistration(_CancellationTestBase):
+    """
+    Tests for re-registration via POST /api/projects/{slug}/registrations/
+    after a self-cancellation or admin-cancellation (spec #1850).
+
+    1. Self-cancelled → re-registration returns 201; row reset in place (no duplicate)
+    2. Admin-cancelled → re-registration returns 403
+    3. Re-registration respects closed/full status
+    """
+
+    @tag("re_registration")
+    def test_self_cancelled_member_can_reregister(self):
+        """After self-cancellation POST /registrations/ returns 201 and resets the row."""
+        reg = self._register(self.member)
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.member
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        with mock_patch(
+            "organization.views.event_registration_views._send_registration_email"
+        ):
+            response = self.client.post(self._cancel_url())
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        reg.refresh_from_db()
+        self.assertIsNone(reg.cancelled_at)
+        self.assertIsNone(reg.cancelled_by)
+        # Unique constraint: no duplicate row.
+        self.assertEqual(
+            EventRegistration.objects.filter(
+                user=self.member, registration_config=self.er
+            ).count(),
+            1,
+        )
+
+    @tag("re_registration")
+    def test_admin_cancelled_member_cannot_reregister_returns_403(self):
+        """After admin-cancellation POST /registrations/ returns 403 Forbidden."""
+        reg = self._register(self.member)
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.organiser  # different user = admin-cancelled
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.post(self._cancel_url())
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @tag("re_registration")
+    def test_active_registration_post_is_idempotent_200(self):
+        """POST when already actively registered → 200 OK (idempotent)."""
+        self._register(self.member)
+        self.client.login(username="member_cancel", password="testpassword")
+        with mock_patch(
+            "organization.views.event_registration_views._send_registration_email"
+        ):
+            response = self.client.post(self._cancel_url())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @tag("re_registration")
+    def test_self_cancelled_cannot_reregister_when_closed(self):
+        """Re-registration blocked when registration status is CLOSED → 400."""
+        reg = self._register(self.member)
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.member
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.er.status = RegistrationStatus.CLOSED
+        self.er.save(update_fields=["status", "updated_at"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.post(self._cancel_url())
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+# ===========================================================================
+# GET /api/projects/{slug}/my_interactions/ — new fields
+# ===========================================================================
+
+
+class TestMyInteractionsRegistrationFields(_CancellationTestBase):
+    """
+    Tests for is_registered, has_attended, admin_cancelled fields
+    returned by GET /api/projects/{slug}/my_interactions/ (spec #1850).
+    """
+
+    @tag("my_interactions", "is_registered")
+    def test_is_registered_false_when_no_registration(self):
+        """is_registered=false when the user has no registration."""
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.get(self._my_interactions_url())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data["is_registered"])
+        self.assertFalse(response.data["has_attended"])
+        self.assertFalse(response.data["admin_cancelled"])
+
+    @tag("my_interactions", "is_registered")
+    def test_is_registered_true_for_active_registration(self):
+        """is_registered=true when the user has an active (non-cancelled) registration."""
+        self._register(self.member)
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.get(self._my_interactions_url())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["is_registered"])
+
+    @tag("my_interactions", "is_registered")
+    def test_is_registered_false_for_cancelled_registration(self):
+        """is_registered=false when the user's registration is cancelled."""
+        reg = self._register(self.member)
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.member
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.get(self._my_interactions_url())
+        self.assertFalse(response.data["is_registered"])
+
+    @tag("my_interactions", "has_attended")
+    def test_has_attended_false_when_event_not_started(self):
+        """has_attended=false when the event has not yet started."""
+        self._register(self.member)
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.get(self._my_interactions_url())
+        self.assertFalse(response.data["has_attended"])
+
+    @tag("my_interactions", "has_attended")
+    def test_has_attended_true_after_event_starts_with_active_registration(self):
+        """has_attended=true when event start_date has passed and registration is active."""
+        self._register(self.member)
+        self.event.start_date = timezone.now() - timedelta(hours=1)
+        self.event.save(update_fields=["start_date"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.get(self._my_interactions_url())
+        self.assertTrue(response.data["has_attended"])
+        self.assertTrue(response.data["is_registered"])
+
+    @tag("my_interactions", "has_attended")
+    def test_has_attended_false_when_cancelled_before_event_start(self):
+        """has_attended=false when the user cancelled before the event started."""
+        reg = self._register(self.member)
+        reg.cancelled_at = timezone.now() - timedelta(days=5)
+        reg.cancelled_by = self.member
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+        # Event started after cancellation.
+        self.event.start_date = timezone.now() - timedelta(hours=1)
+        self.event.save(update_fields=["start_date"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.get(self._my_interactions_url())
+        self.assertFalse(response.data["has_attended"])
+
+    @tag("my_interactions", "admin_cancelled")
+    def test_admin_cancelled_false_when_no_registration(self):
+        """admin_cancelled=false when the user has no registration at all."""
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.get(self._my_interactions_url())
+        self.assertFalse(response.data["admin_cancelled"])
+
+    @tag("my_interactions", "admin_cancelled")
+    def test_admin_cancelled_false_when_self_cancelled(self):
+        """admin_cancelled=false when the user cancelled their own registration."""
+        reg = self._register(self.member)
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.member
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.get(self._my_interactions_url())
+        self.assertFalse(response.data["admin_cancelled"])
+
+    @tag("my_interactions", "admin_cancelled")
+    def test_admin_cancelled_true_when_admin_cancelled_registration(self):
+        """admin_cancelled=true when a different user (admin) cancelled the registration."""
+        reg = self._register(self.member)
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.organiser  # different user = admin-cancelled
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.get(self._my_interactions_url())
+        self.assertTrue(response.data["admin_cancelled"])
+        self.assertFalse(response.data["is_registered"])
+
+
+# ===========================================================================
+# Admin cancel guest registration — DELETE /projects/{slug}/registrations/{id}/
+# ===========================================================================
+
+
+class TestAdminCancelGuestRegistration(_CancellationTestBase):
+    """
+    Tests for DELETE /api/projects/{url_slug}/registrations/{registration_id}/
+    (admin cancel guest, spec #1872).
+
+    Covers all 12 test cases from the spec:
+    1.  Unauthenticated → 401
+    2.  Authenticated member without edit rights → 403
+    3.  Organiser on project without EventRegistrationConfig → 404
+    4.  registration_id does not exist on this project → 404
+    5.  Registration already cancelled → 400
+    6.  Valid cancellation, no message → 204; cancelled_at set; cancelled_by = admin; no email
+    7.  Valid cancellation, message provided → 204; email helper called once
+    8.  Event was FULL, cancellation frees a seat → status reverts to OPEN
+    9.  Event was OPEN, cancellation frees a seat → status remains OPEN
+    10. Team admin (READ_WRITE_TYPE) → 204 (admin role is sufficient)
+    11. GET /registrations/ after cancellation → both active and cancelled rows returned
+    12. GET /registrations/ — id and cancelled_at fields present on all rows
+    """
+
+    @tag("admin_cancel", "auth")
+    def test_unauthenticated_returns_401(self):
+        reg = self._register(self.member)
+        response = self.client.delete(self._admin_cancel_url(reg.pk))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @tag("admin_cancel", "auth")
+    def test_non_admin_member_returns_403(self):
+        """A user without edit rights on the project → 403 Forbidden."""
+        reg = self._register(self.member)
+        self.client.login(username="member_cancel", password="testpassword")
+        response = self.client.delete(self._admin_cancel_url(reg.pk))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @tag("admin_cancel", "validation")
+    def test_project_without_registration_config_returns_404(self):
+        """Organiser on project that has no EventRegistrationConfig → 404."""
+        # Create a project with no ER config.
+        event_no_er = Project.objects.create(
+            name="No ER Event",
+            url_slug="no-er-event-admin",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=30),
+            end_date=timezone.now() + timedelta(days=90),
+        )
+        ProjectMember.objects.create(
+            user=self.organiser, project=event_no_er, role=self.admin_role
+        )
+        url = reverse(
+            "organization:admin-cancel-guest-registration",
+            kwargs={"url_slug": event_no_er.url_slug, "registration_id": 9999},
+        )
+        self.client.login(username="organiser_cancel", password="testpassword")
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @tag("admin_cancel", "validation")
+    def test_registration_id_not_on_this_project_returns_404(self):
+        """registration_id that does not belong to this project → 404."""
+        self.client.login(username="organiser_cancel", password="testpassword")
+        response = self.client.delete(self._admin_cancel_url(99999))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @tag("admin_cancel", "validation")
+    def test_already_cancelled_registration_returns_400(self):
+        """Trying to cancel an already-cancelled registration → 400 Bad Request."""
+        reg = self._register(self.member)
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.organiser
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.client.login(username="organiser_cancel", password="testpassword")
+        response = self.client.delete(self._admin_cancel_url(reg.pk))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("admin_cancel", "happy_path")
+    def test_valid_cancellation_no_message_returns_204(self):
+        """Valid cancellation without a message → 204; record soft-deleted; no email."""
+        reg = self._register(self.member)
+        self.client.login(username="organiser_cancel", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views.send_guest_cancellation_notification"
+        ) as mock_email:
+            response = self.client.delete(
+                self._admin_cancel_url(reg.pk), {}, format="json"
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        reg.refresh_from_db()
+        self.assertIsNotNone(reg.cancelled_at)
+        self.assertEqual(reg.cancelled_by, self.organiser)
+        mock_email.assert_not_called()
+
+    @tag("admin_cancel", "happy_path")
+    def test_valid_cancellation_with_message_sends_email(self):
+        """Valid cancellation with a message → 204; email helper called once with message."""
+        reg = self._register(self.member)
+        self.client.login(username="organiser_cancel", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views.send_guest_cancellation_notification"
+        ) as mock_email:
+            response = self.client.delete(
+                self._admin_cancel_url(reg.pk),
+                {"message": "You have been removed from this event."},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        mock_email.assert_called_once()
+        # First positional arg is the guest User.
+        args, _ = mock_email.call_args
+        self.assertEqual(args[0].id, self.member.id)
+        self.assertIn("removed", args[2])
+
+    @tag("admin_cancel", "status")
+    def test_full_event_reverts_to_open_after_admin_cancellation(self):
+        """Cancellation on a FULL event → status reverts to OPEN."""
+        reg = self._register(self.member)
+        self.er.status = RegistrationStatus.FULL
+        self.er.save(update_fields=["status", "updated_at"])
+
+        self.client.login(username="organiser_cancel", password="testpassword")
+        with mock_patch(
+            "organization.views.event_registration_views.send_guest_cancellation_notification"
+        ):
+            response = self.client.delete(
+                self._admin_cancel_url(reg.pk), {}, format="json"
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+
+    @tag("admin_cancel", "status")
+    def test_open_event_stays_open_after_admin_cancellation(self):
+        """Cancellation on an OPEN event with spare capacity → status stays OPEN."""
+        reg = self._register(self.member)
+        other = User.objects.create_user(username="other_admin_cancel", password="x")
+        self._register(other)
+
+        self.client.login(username="organiser_cancel", password="testpassword")
+        with mock_patch(
+            "organization.views.event_registration_views.send_guest_cancellation_notification"
+        ):
+            response = self.client.delete(
+                self._admin_cancel_url(reg.pk), {}, format="json"
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.er.refresh_from_db()
+        self.assertEqual(self.er.status, RegistrationStatus.OPEN)
+
+    @tag("admin_cancel", "auth")
+    def test_team_admin_read_write_role_can_cancel(self):
+        """Team admin (READ_WRITE_TYPE role) can cancel a guest registration."""
+        reg = self._register(self.member)
+        self.client.login(username="teamadmin_cancel", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views.send_guest_cancellation_notification"
+        ):
+            response = self.client.delete(
+                self._admin_cancel_url(reg.pk), {}, format="json"
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    @tag("admin_cancel", "list_view")
+    def test_list_returns_cancelled_rows_after_admin_cancellation(self):
+        """GET /registrations/ after admin cancellation returns both active and cancelled rows."""
+        reg1 = self._register(self.member)
+        other = User.objects.create_user(username="active_guest_after", password="x")
+        reg2 = self._register(other)
+
+        # Admin-cancel reg1.
+        self.client.login(username="organiser_cancel", password="testpassword")
+        with mock_patch(
+            "organization.views.event_registration_views.send_guest_cancellation_notification"
+        ):
+            self.client.delete(self._admin_cancel_url(reg1.pk), {}, format="json")
+
+        list_url = reverse(
+            "organization:event-registrations",
+            kwargs={"url_slug": self.event.url_slug},
+        )
+        response = self.client.get(list_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(len(data), 2)  # both rows returned
+
+        # One row should have a non-null cancelled_at.
+        cancelled_rows = [r for r in data if r["cancelled_at"] is not None]
+        active_rows = [r for r in data if r["cancelled_at"] is None]
+        self.assertEqual(len(cancelled_rows), 1)
+        self.assertEqual(len(active_rows), 1)
+
+    @tag("admin_cancel", "list_view")
+    def test_list_response_includes_id_and_cancelled_at_on_all_rows(self):
+        """GET /registrations/ — id and cancelled_at present on all rows."""
+        self._register(self.member)
+        other = User.objects.create_user(username="id_check_guest", password="x")
+        other_reg = self._register(other)
+        other_reg.cancelled_at = timezone.now()
+        other_reg.cancelled_by = self.organiser
+        other_reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.client.login(username="organiser_cancel", password="testpassword")
+        list_url = reverse(
+            "organization:event-registrations",
+            kwargs={"url_slug": self.event.url_slug},
+        )
+        response = self.client.get(list_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for row in response.json():
+            self.assertIn("id", row)
+            self.assertIn("cancelled_at", row)
+            self.assertIsNotNone(row["id"])

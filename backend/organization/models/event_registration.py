@@ -139,9 +139,21 @@ class EventRegistration(models.Model):
     acts as both a business rule (no duplicate registrations) and a DB-level
     safety net for concurrent requests.
 
-    Seat counting:
+    Soft-delete lifecycle:
+        Active     — cancelled_at IS NULL,  cancelled_by IS NULL
+        Cancelled  — cancelled_at IS NOT NULL, cancelled_by = the user who cancelled
+        Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL
+
+    ``cancelled_by`` distinguishes self-cancellation from admin/organiser cancellation:
+        - Self-cancelled:  cancelled_by == user  → member may re-register
+        - Admin-cancelled: cancelled_by != user  → member may NOT self-re-register
+
+    Seat counting (active registrations only):
         available_seats = registration_config.max_participants
-                          - EventRegistration.objects.filter(registration_config=rc).count()
+                          - EventRegistration.objects.filter(
+                                registration_config=rc,
+                                cancelled_at__isnull=True,
+                            ).count()
 
     This is computed on-the-fly on the detail endpoint only (see
     EventRegistrationConfigSerializer with ``include_seat_count=True`` context flag).
@@ -166,6 +178,31 @@ class EventRegistration(models.Model):
         auto_now_add=True,
         help_text="When the user registered for the event",
         verbose_name="Registered At",
+    )
+    cancelled_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None,
+        help_text=(
+            "Timestamp when the registration was cancelled. "
+            "NULL means the registration is active. "
+            "Reset to NULL on re-registration."
+        ),
+        verbose_name="Cancelled At",
+    )
+    cancelled_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="cancelled_registrations",
+        help_text=(
+            "User who cancelled the registration. "
+            "Set to the guest when they cancel themselves; "
+            "set to the organiser/admin when they cancel on behalf of the guest. "
+            "NULL when the registration is active (reset on re-registration)."
+        ),
+        verbose_name="Cancelled By",
     )
 
     class Meta:
