@@ -135,7 +135,7 @@ Where `effective_status` is computed lazily by `EventRegistrationSerializer`:
 | `GET /api/members/me/registered-events/` | GET | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) | Authenticated member's upcoming registered events |
 | `GET /api/projects/{slug}/registrations/` | GET | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) | Organiser lists registered guests; extended in [#1872](https://github.com/climateconnect/climateconnect/issues/1872) to return all registrations (active + cancelled) with `id` and `cancelled_at` |
 | `POST /api/projects/{slug}/registrations/email/` | POST | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) | Organiser sends email to all registered guests (`is_test=true` sends to self only; always returns `{"sent_count": N}`) |
-| `DELETE /api/projects/{slug}/registrations/{registration_id}/` | DELETE | [#1872](https://github.com/climateconnect/climateconnect/issues/1872) | Organiser/admin cancels a specific guest's registration (soft delete); optional `message` body triggers cancellation email to the guest |
+| `PATCH /api/projects/{slug}/registrations/{registration_id}/` | PATCH | [#1872](https://github.com/climateconnect/climateconnect/issues/1872) | Organiser/admin cancels a specific guest's registration (soft delete); optional `message` body triggers cancellation email to the guest |
 
 ### `event_registration` API Response Shape
 
