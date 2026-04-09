@@ -54,10 +54,14 @@ class EventRegistrationConfigBaseSerializer(serializers.ModelSerializer):
         return data
 
     def get_available_seats(self, obj):
-        """Return available seats, or ``None`` for unlimited-capacity events."""
+        """Return available seats, or ``None`` for unlimited-capacity events.
+
+        Only active (non-cancelled) registrations count against capacity.
+        """
         if obj.max_participants is None:
             return None
-        return max(0, obj.max_participants - obj.registrations.count())
+        active_count = obj.registrations.filter(cancelled_at__isnull=True).count()
+        return max(0, obj.max_participants - active_count)
 
 
 class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
@@ -187,7 +191,11 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
     Read-only serializer for EventRegistration (a user's sign-up record).
 
     Used by GET /api/projects/{url_slug}/registrations/ to return the full
-    guest list to event organisers and team admins.
+    guest list (active and cancelled) to event organisers and team admins.
+
+    ``id`` is included so the frontend can target individual registrations for
+    admin-cancellation (DELETE /api/projects/{slug}/registrations/{id}/).
+    ``cancelled_at`` lets the frontend distinguish active from cancelled rows.
 
     Requires ``select_related("user__user_profile")`` on the queryset to avoid
     N+1 queries when resolving ``url_slug`` and ``thumbnail_image`` from the
@@ -204,11 +212,13 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventRegistration
         fields = [
+            "id",
             "user_first_name",
             "user_last_name",
             "user_url_slug",
             "user_thumbnail_image",
             "registered_at",
+            "cancelled_at",
         ]
         read_only_fields = fields
 
@@ -332,7 +342,8 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                     instance.status = RegistrationStatus.OPEN
             else:
                 current_count = EventRegistration.objects.filter(
-                    registration_config=instance
+                    registration_config=instance,
+                    cancelled_at__isnull=True,
                 ).count()
                 if (
                     instance.status == RegistrationStatus.FULL
@@ -382,7 +393,8 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
         max_participants = attrs.get("max_participants")
         if max_participants is not None and self.instance:
             registration_count = EventRegistration.objects.filter(
-                registration_config=self.instance
+                registration_config=self.instance,
+                cancelled_at__isnull=True,
             ).count()
             if max_participants < registration_count:
                 raise serializers.ValidationError(
@@ -418,7 +430,8 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
             if effective_max is not None:
                 if registration_count is None:
                     registration_count = EventRegistration.objects.filter(
-                        registration_config=self.instance
+                        registration_config=self.instance,
+                        cancelled_at__isnull=True,
                     ).count()
                 if registration_count >= effective_max:
                     raise serializers.ValidationError(

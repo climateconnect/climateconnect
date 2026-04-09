@@ -332,13 +332,47 @@ No schema changes. The `cancelled_by_id` column set to the admin user's ID is th
 
 ## Technical Solution Overview
 
-*To be filled by a development agent during the IMPLEMENTATION phase.*
+Backend implemented on 2026-04-09 alongside [`20260309_1500_member_cancel_event_registration.md`](./20260309_1500_member_cancel_event_registration.md) to share the soft-delete pattern and `FULL→OPEN` seat-revert logic.
 
----
+### `DELETE /api/projects/{url_slug}/registrations/{registration_id}/` — `AdminCancelRegistrationView`
+New class in `organization/views/event_registration_views.py`. Wrapped in `@transaction.atomic`. Flow:
+1. Look up project by `url_slug` (with `select_related`/`prefetch_related` for email helper) → `404` if not found
+2. Inline `ProjectMember` queryset check for `role_type in [ALL_TYPE, READ_WRITE_TYPE]` → `403` if not satisfied (same pattern as `EditRegistrationConfigView`)
+3. Look up `EventRegistrationConfig` via `select_for_update()` → `404` if not found
+4. Look up `EventRegistration` by `id=registration_id` scoped to the RC via `select_for_update()` → `404` if not found on this project
+5. Guard: `cancelled_at IS NOT NULL` → `400 Bad Request`
+6. Soft-delete: `cancelled_at = now()`, `cancelled_by = request.user`
+7. Revert `EventRegistrationConfig.status` `FULL→OPEN` if active count drops below `max_participants`
+8. Optional email: `message = request.data.get("message", "").strip()` — if non-empty, calls `send_guest_cancellation_notification()` synchronously. Email errors are caught and logged; cancellation is **never rolled back** due to email failure.
+Returns `204 No Content`.
+
+### `GET /api/projects/{url_slug}/registrations/` — `EventRegistrationsView.get()`
+The list view is the `get()` method on the existing `EventRegistrationsView` class (combined GET/POST/DELETE view). The `cancelled_at__isnull=True` filter was removed — all registrations (active and cancelled) are now returned. Note: the spec refers to this as `ListEventRegistrationsView`; the actual implementation class is `EventRegistrationsView`.
+
+### `EventRegistrationSerializer` — `organization/serializers/event_registration.py`
+`id` and `cancelled_at` added to `Meta.fields` as read-only. Docstring updated to reflect the new dual purpose (active + cancelled rows, `id` for delete-by-ID).
+
+### Email helper — `organization/utility/email.py`
+New function `send_guest_cancellation_notification(user, project, admin_message)`:
+- Resolves recipient's preferred language via `get_user_lang_code(user)`
+- Auto-generates subject: `"Your registration for [EventTitle] has been cancelled"` (EN) / `"Deine Anmeldung für [EventTitle] wurde storniert"` (DE)
+- Template variables: `FirstName`, `EventTitle`, `EventUrl` (language-aware), `OrganiserName`, `OrganizerMessage`
+- Delegates to existing `send_email()` utility with `template_key="ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID"`
+
+### Settings — `climateconnect_main/settings.py`
+`ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` and `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE` added, reading from env vars, placed after the `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE` block.
+
+### URL — `organization/urls.py`
+`DELETE projects/<str:url_slug>/registrations/<int:registration_id>/` → `AdminCancelRegistrationView`, placed before any catch-all patterns and after the email URL.
+
+### Pending
+- Tests for `AdminCancelRegistrationView` (12 backend test cases listed in this spec) have not yet been written.
+- Two Mailjet templates (EN + DE) must be created and their IDs configured in `.backend_env` / Azure App Service before the optional email delivers in production.
 
 ## Log
 
 - 2026-04-07 10:00 — Task created from GitHub issue [#1872](https://github.com/climateconnect/climateconnect/issues/1872). Depends on [#1850](https://github.com/climateconnect/climateconnect/issues/1850) for `cancelled_at`/`cancelled_by` on `EventRegistration`. The `cancelled_by` field was explicitly designed in [#1850](https://github.com/climateconnect/climateconnect/issues/1850) for this admin cancellation task. Backend list endpoint change (return all registrations, expose `id` and `cancelled_at`) is shared with [#1871](https://github.com/climateconnect/climateconnect/issues/1871) — this task delivers that shared change; #1871 builds the additional UX on top. Optional cancellation message email uses a new Mailjet template (EN + DE). No schema migrations needed.
+- 2026-04-09 — **Backend implementation complete** (implemented alongside [#1850](https://github.com/climateconnect/climateconnect/issues/1850) to share the soft-delete pattern). `AdminCancelRegistrationView` added to `organization/views/event_registration_views.py`. `EventRegistrationSerializer` now exposes `id` and `cancelled_at`. `EventRegistrationsView.get()` returns all registrations (active + cancelled) — `TODO #1850` resolved by removing any `cancelled_at__isnull=True` filter. `send_guest_cancellation_notification()` email helper added to `organization/utility/email.py`. `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` / `_DE` settings added. URL registered. Note: the spec refers to the list view as `ListEventRegistrationsView`; the actual implementation uses `EventRegistrationsView.get()` (a combined view for the `/registrations/` URL) — behaviour is identical. **Frontend implementation and tests are pending.** Frontend spec section reviewed and confirmed accurate — no changes required. Mailjet templates (EN + DE) still need to be created before production email delivery works.
 
 ---
 

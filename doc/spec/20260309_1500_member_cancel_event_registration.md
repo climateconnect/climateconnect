@@ -179,7 +179,50 @@ None. Cancellation is synchronous. No async side-effects in this iteration (orga
 
 ## Technical Solution Overview
 
-*To be filled by a development agent during the IMPLEMENTATION phase.*
+Backend implemented on 2026-04-09 alongside [`20260407_1000_organizer_cancel_guest_registration.md`](./20260407_1000_organizer_cancel_guest_registration.md) to share the soft-delete pattern and `FULL→OPEN` seat-revert logic.
+
+### Model — `organization/models/event_registration.py`
+`EventRegistration` gained two nullable fields:
+- `cancelled_at = DateTimeField(null=True, blank=True, default=None)` — `NULL` = active registration.
+- `cancelled_by = ForeignKey(User, null=True, blank=True, on_delete=SET_NULL, related_name="cancelled_registrations")` — set to `request.user` on self-cancel; set to the admin user on admin-cancel; reset to `NULL` on re-registration. The dual role of this single FK field is the key design choice: `cancelled_by == request.user` → self-cancel (re-registration allowed); `cancelled_by != request.user` → admin-cancel (re-registration blocked, `403`).
+
+### Migration — `organization/migrations/0124_add_cancelled_fields_to_eventregistration.py`
+Additive `AddField` operations for both columns. All existing rows default to `NULL` (active). No backfill required.
+
+### `DELETE /api/projects/{url_slug}/registrations/` — `EventRegistrationsView.delete()`
+In `organization/views/event_registration_views.py`, added as a `delete()` method on the existing `EventRegistrationsView` class (which already handled `GET` and `POST` for the same URL). Wrapped in `@transaction.atomic`. Guards in order:
+1. Project not found → `404`
+2. No `EventRegistrationConfig` → `404`
+3. No `EventRegistration` for requesting user → `404`
+4. Ownership: `reg.user_id != request.user.id` → `403` (explicit check after lookup, as specified)
+5. Already cancelled (`cancelled_at IS NOT NULL`) → `404`
+6. Event already started (`start_date <= now()`) → `400`
+7. Soft-delete: set `cancelled_at = now()`, `cancelled_by = request.user`
+8. Revert `EventRegistrationConfig.status` `FULL → OPEN` if active count drops below `max_participants`
+Returns `204 No Content`.
+
+### `POST /api/projects/{url_slug}/registrations/` — `EventRegistrationsView.post()`
+Updated to handle re-registration before the registration-open validation:
+- Existing record, `cancelled_at IS NULL` → already active, idempotent `200 OK`
+- Existing record, `cancelled_at IS NOT NULL`, `cancelled_by == request.user` → self-cancelled, fall through to registration-open check then reset fields on the existing row → `201 Created`
+- Existing record, `cancelled_at IS NOT NULL`, `cancelled_by != request.user` → admin-cancelled, `403 Forbidden`
+- No record → create fresh row → `201 Created`
+The unique constraint `UNIQUE(user, registration_config)` is never relaxed; re-registration updates the existing row in place.
+
+### `GET /api/projects/{url_slug}/my_interactions/` — `GetUserInteractionsWithProjectView`
+In `organization/views/project_views.py`, the response was extended with three new fields:
+- `is_registered`: updated to check `cancelled_at IS NULL`
+- `has_attended`: `True` when `project.start_date <= now()` AND the user has an active registration
+- `admin_cancelled`: `True` when a cancelled record exists where `cancelled_by_id != request.user.id`
+
+### Serializers — `organization/serializers/event_registration.py`
+All `available_seats` derivations updated to filter `cancelled_at__isnull=True`:
+- `EventRegistrationConfigBaseSerializer.get_available_seats()`
+- `EditEventRegistrationConfigSerializer.update()` — `current_count` query
+- `EditEventRegistrationConfigSerializer.validate()` — both `registration_count` queries
+
+### Pending
+- Tests for the new `delete()` method on `EventRegistrationsView` and the updated `post()` re-registration paths have not yet been written. See test cases in [`20260407_1000_organizer_cancel_guest_registration.md`](./20260407_1000_organizer_cancel_guest_registration.md) for the combined test suite.
 
 ## Log
 
@@ -190,6 +233,7 @@ None. Cancellation is synchronous. No async side-effects in this iteration (orga
 - 2026-04-02 11:00 — Spec review completed. Changes applied: (1) Status promoted to READY FOR IMPLEMENTATION. (2) All backend code snippets removed — implementation details left to the developing agent. (3) `has_attended` corrected: only `true` for members with an **active** (non-cancelled) registration once the event starts; members who cancelled before the event do not see "You attended this event". (4) Frontend state table updated with explicit priority order and note about coexistence of `has_attended` and `is_registered`. (5) `destroy()` requirements updated to include `@transaction.atomic`, explicit ownership `403` check (separate from the 404 not-found check), and the missing `FULL → OPEN` status revert when a cancellation frees a seat. (6) Re-registration response codes simplified: `201 Created` for all successful registration operations (new or re-registration from cancelled); `200 OK` for idempotent already-active-registration only.
 - 2026-04-07 — Spec updated to reflect model renames from [20260402_1500_rename_event_registration_models.md](./20260402_1500_rename_event_registration_models.md): `EventParticipant` → `EventRegistration`, `EventRegistration` (settings) → `EventRegistrationConfig`, endpoint `/register/` → `/registrations/`, JSON response key `event_registration` → `registration_config`. Added `cancelled_by` FK field to `EventRegistration` to record who performed the cancellation — set to `request.user` in this task; a future admin-cancellation task will reuse the same field without any schema change.
 - 2026-04-09 — Added admin-cancellation re-registration restriction: a member whose registration was cancelled by a different user (e.g. a team admin) cannot self-re-register. `POST /registrations/` returns `403 Forbidden` in that case. Per-user fields `is_registered`, `has_attended`, and `admin_cancelled` correctly placed in `GET /api/projects/{slug}/my_interactions/` (established pattern for per-user project state — keeps the project detail response shared/cacheable). `GET /api/projects/{slug}/` retains only the event-level `available_seats` change (filter `cancelled_at IS NULL`). Frontend state table updated to source conditions from `my_interactions` with a dedicated priority-3 row for admin-cancelled members showing a disabled "Registration closed" button.
+- 2026-04-09 — **Backend implementation complete.** Migration `0124_add_cancelled_fields_to_eventregistration` applied; `cancelled_at` and `cancelled_by` columns added to `organization_eventregistration`. `DELETE /api/projects/{slug}/registrations/` implemented as `EventRegistrationsView.delete()` with atomic soft-delete, ownership guard, start-date guard, and `FULL→OPEN` revert. `POST /registrations/` updated for re-registration paths (self-cancelled → 201, admin-cancelled → 403, already-active → 200). `GET /my_interactions/` extended with `is_registered` (now filters `cancelled_at IS NULL`), `has_attended`, and `admin_cancelled`. All `available_seats` counts updated to filter `cancelled_at__isnull=True`. Backend for admin-cancel (`AdminCancelRegistrationView`) implemented in the same session — see [`20260407_1000_organizer_cancel_guest_registration.md`](./20260407_1000_organizer_cancel_guest_registration.md). **Frontend implementation and tests are pending.** Frontend spec section reviewed and confirmed accurate — no changes required.
 
 ## Acceptance Criteria
 

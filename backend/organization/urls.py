@@ -250,4 +250,9 @@ urlpatterns = [
         event_registration_views.SendOrganizerEmailView.as_view(),
         name="send-organizer-email-to-guests",
     ),
+    path(
+        "projects/<str:url_slug>/registrations/<int:registration_id>/",
+        event_registration_views.AdminCancelRegistrationView.as_view(),
+        name="admin-cancel-guest-registration",
+    ),
 ]

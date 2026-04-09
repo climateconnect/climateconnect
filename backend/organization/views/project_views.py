@@ -10,6 +10,7 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Case, Prefetch, Q, When
 from django.db.models.functions import Cast
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
@@ -1318,11 +1319,29 @@ class GetUserInteractionsWithProjectView(APIView):
         ).exists()
 
         is_registered = False
+        has_attended = False
+        admin_cancelled = False
         if hasattr(project, "registration_config"):
             try:
-                is_registered = EventRegistration.objects.filter(
-                    user=request.user, registration_config=project.registration_config
-                ).exists()
+                rc = project.registration_config
+                user_reg = EventRegistration.objects.filter(
+                    user=request.user, registration_config=rc
+                ).first()
+                if user_reg is not None:
+                    if user_reg.cancelled_at is None:
+                        # Active registration.
+                        is_registered = True
+                        # has_attended: event has started AND registration is active.
+                        if project.start_date and project.start_date <= timezone.now():
+                            has_attended = True
+                    else:
+                        # Cancelled registration.
+                        # admin_cancelled: cancelled by someone other than the member.
+                        if (
+                            user_reg.cancelled_by_id is not None
+                            and user_reg.cancelled_by_id != request.user.id
+                        ):
+                            admin_cancelled = True
             except EventRegistrationConfig.DoesNotExist:
                 pass
 
@@ -1332,6 +1351,8 @@ class GetUserInteractionsWithProjectView(APIView):
                 "following": is_following,
                 "has_requested_to_join": has_open_membership_request,
                 "is_registered": is_registered,
+                "has_attended": has_attended,
+                "admin_cancelled": admin_cancelled,
             },
             status=status.HTTP_200_OK,
         )
