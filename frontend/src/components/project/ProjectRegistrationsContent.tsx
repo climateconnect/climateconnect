@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
@@ -101,6 +102,7 @@ type ToolbarProps = {
   onOpenEmailModal?: () => void;
   emailGuestsLabel?: string;
   csvFileName: string;
+  csvFields: string[];
 };
 
 function CustomColumnMenu(props: GridColumnMenuProps) {
@@ -114,6 +116,7 @@ function RegistrationsToolbar({
   onOpenEmailModal,
   emailGuestsLabel,
   csvFileName,
+  csvFields,
 }: ToolbarProps) {
   return (
     <GridToolbarContainer sx={{ display: "flex", alignItems: "center", gap: 1, p: 1 }}>
@@ -141,7 +144,7 @@ function RegistrationsToolbar({
         </Button>
       )}
       <GridToolbarExport
-        csvOptions={{ fileName: csvFileName }}
+        csvOptions={{ fileName: csvFileName, fields: csvFields }}
         printOptions={{ hideFooter: true, hideToolbar: true }}
       />
     </GridToolbarContainer>
@@ -470,6 +473,17 @@ export default function ProjectRegistrationsContent({
                         : "—",
                   },
                   {
+                    // Hidden column — ISO 8601 registration timestamp for CSV export
+                    field: "registered_at_iso",
+                    headerName: "Registration date (ISO)",
+                    width: 0,
+                    sortable: false,
+                    filterable: false,
+                    disableColumnMenu: true,
+                    valueGetter: (params) =>
+                      params.row.registered_at ? params.row.registered_at.split(".")[0] + "Z" : "",
+                  },
+                  {
                     field: "cancelled_at",
                     headerName: texts.registration_status as string,
                     width: 120,
@@ -479,8 +493,8 @@ export default function ProjectRegistrationsContent({
                       params.value
                         ? (texts.registration_status_cancelled as string)
                         : (texts.registration_status_active as string),
-                    renderCell: (params) =>
-                      params.row.cancelled_at ? (
+                    renderCell: (params) => {
+                      const chip = params.row.cancelled_at ? (
                         <Chip
                           size="small"
                           label={texts.registration_status_cancelled as string}
@@ -494,7 +508,31 @@ export default function ProjectRegistrationsContent({
                           color="success"
                           sx={{ fontWeight: 500 }}
                         />
-                      ),
+                      );
+                      return params.row.cancelled_at ? (
+                        <Tooltip
+                          title={dayjs(params.row.cancelled_at)
+                            .locale(locale)
+                            .format("DD MMM YYYY, HH:mm")}
+                          arrow
+                        >
+                          <span>{chip}</span>
+                        </Tooltip>
+                      ) : (
+                        chip
+                      );
+                    },
+                  },
+                  {
+                    // Hidden column — ISO 8601 cancellation timestamp for CSV export
+                    field: "cancelled_at_iso",
+                    headerName: "Cancellation date (ISO)",
+                    width: 0,
+                    sortable: false,
+                    filterable: false,
+                    disableColumnMenu: true,
+                    valueGetter: (params) =>
+                      params.row.cancelled_at ? params.row.cancelled_at.split(".")[0] + "Z" : "",
                   },
                   {
                     field: "__actions__",
@@ -520,6 +558,12 @@ export default function ProjectRegistrationsContent({
                 ] as GridColDef[]
               }
               initialState={{
+                columns: {
+                  columnVisibilityModel: {
+                    registered_at_iso: false,
+                    cancelled_at_iso: false,
+                  },
+                },
                 sorting: {
                   sortModel: [{ field: "registered_at", sort: "asc" }],
                 },
@@ -545,6 +589,13 @@ export default function ProjectRegistrationsContent({
                   onOpenEmailModal: () => setEmailModalOpen(true),
                   emailGuestsLabel: texts.send_email_to_guests,
                   csvFileName: `${project.url_slug}-registrations-${dayjs().format("YYYY-MM-DD")}`,
+                  csvFields: [
+                    "user_first_name",
+                    "user_last_name",
+                    "registered_at_iso",
+                    "cancelled_at",
+                    "cancelled_at_iso",
+                  ],
                 } as ToolbarProps,
                 footer: {
                   total: participants.length,
