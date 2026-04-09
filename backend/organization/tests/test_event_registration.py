@@ -2810,7 +2810,7 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
         """GET /registrations/ after admin cancellation returns both active and cancelled rows."""
         reg1 = self._register(self.member)
         other = User.objects.create_user(username="active_guest_after", password="x")
-        reg2 = self._register(other)
+        self._register(other)
 
         # Admin-cancel reg1.
         self.client.login(username="organiser_cancel", password="testpassword")
