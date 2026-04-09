@@ -1262,8 +1262,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Das Anmeldeende muss in der Zukunft liegen",
     },
     registration_status: {
-      en: "Registration status",
-      de: "Anmeldestatus",
+      en: "Status",
+      de: "Status",
     },
     registration_status_open: {
       en: "Open",
@@ -1509,6 +1509,38 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     already_registered: {
       en: "Registered ✓",
       de: "Angemeldet ✓",
+    },
+    keep_registration: {
+      en: "Keep registration",
+      de: "Anmeldung behalten",
+    },
+    cancel_guest_registration: {
+      en: "Cancel registration",
+      de: "Anmeldung stornieren",
+    },
+    cancel_guest_registration_confirm: {
+      en: "Are you sure you want to cancel {name}'s registration for {event}?",
+      de: "Bist du sicher, dass du die Anmeldung von {name} für {event} stornieren möchtest?",
+    },
+    message_to_guest_optional: {
+      en: "Message to guest (optional)",
+      de: "Nachricht an den Gast (optional)",
+    },
+    cancellation_message_placeholder: {
+      en: "Reason for cancellation or instructions for the guest…",
+      de: "Grund für die Stornierung oder Hinweise an den Gast…",
+    },
+    yes_cancel_registration: {
+      en: "Yes, cancel registration",
+      de: "Ja, Anmeldung stornieren",
+    },
+    registration_status_active: {
+      en: "Active",
+      de: "Aktiv",
+    },
+    registration_status_cancelled: {
+      en: "Cancelled",
+      de: "Storniert",
     },
   };
 }

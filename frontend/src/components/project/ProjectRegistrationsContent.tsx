@@ -5,7 +5,10 @@ import {
   Button,
   Chip,
   CircularProgress,
+  IconButton,
   Link,
+  Menu,
+  MenuItem,
   TextField,
   Typography,
 } from "@mui/material";
@@ -16,12 +19,15 @@ import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutline";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   DataGrid,
   GridColDef,
   GridColumnMenu,
   GridColumnMenuProps,
+  GridFooterContainer,
+  GridPagination,
   GridToolbarContainer,
   GridToolbarExport,
 } from "@mui/x-data-grid";
@@ -33,16 +39,20 @@ import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import { EventRegistrationData, Project } from "../../types";
 import UserContext from "../context/UserContext";
+import CancelGuestRegistrationModal, { RegistrationInfo } from "./CancelGuestRegistrationModal";
 import EditEventRegistrationModal from "./EditEventRegistrationModal";
 import SendEmailToGuestsModal from "./SendEmailToGuestsModal";
 
 type EventRegistration = {
-  id: string; // derived from user_url_slug for DataGrid row identity
+  /** Backend PK — used as DataGrid row id and in the DELETE URL. */
+  id: number;
   user_first_name: string;
   user_last_name: string;
   user_url_slug: string;
   user_thumbnail_image: string | null;
   registered_at: string;
+  /** null = active registration; ISO string = cancelled */
+  cancelled_at: string | null;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -90,6 +100,7 @@ type ToolbarProps = {
   placeholder: string;
   onOpenEmailModal?: () => void;
   emailGuestsLabel?: string;
+  csvFileName: string;
 };
 
 function CustomColumnMenu(props: GridColumnMenuProps) {
@@ -102,6 +113,7 @@ function RegistrationsToolbar({
   placeholder,
   onOpenEmailModal,
   emailGuestsLabel,
+  csvFileName,
 }: ToolbarProps) {
   return (
     <GridToolbarContainer sx={{ display: "flex", alignItems: "center", gap: 1, p: 1 }}>
@@ -129,10 +141,55 @@ function RegistrationsToolbar({
         </Button>
       )}
       <GridToolbarExport
-        csvOptions={{ fileName: "event-registrations" }}
+        csvOptions={{ fileName: csvFileName }}
         printOptions={{ hideFooter: true, hideToolbar: true }}
       />
     </GridToolbarContainer>
+  );
+}
+
+type FooterProps = {
+  total: number;
+  active: number;
+  cancelled: number;
+  guestsLabel: string;
+  activeLabel: string;
+  cancelledLabel: string;
+};
+
+function RegistrationsFooter({
+  total,
+  active,
+  cancelled,
+  guestsLabel,
+  activeLabel,
+  cancelledLabel,
+}: FooterProps) {
+  return (
+    <GridFooterContainer sx={{ px: 1, gap: 1.5, flexWrap: "wrap" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, py: 0.5, flexWrap: "wrap" }}>
+        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+          {total} {guestsLabel}
+        </Typography>
+        <Chip
+          size="small"
+          label={`${active} ${activeLabel}`}
+          color="success"
+          variant="outlined"
+          sx={{ height: 20, fontSize: "0.7rem" }}
+        />
+        {cancelled > 0 && (
+          <Chip
+            size="small"
+            label={`${cancelled} ${cancelledLabel}`}
+            color="default"
+            variant="outlined"
+            sx={{ height: 20, fontSize: "0.7rem" }}
+          />
+        )}
+      </Box>
+      <GridPagination />
+    </GridFooterContainer>
   );
 }
 
@@ -147,6 +204,11 @@ export default function ProjectRegistrationsContent({
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [cancelModal, setCancelModal] = useState<RegistrationInfo | null>(null);
+
+  // State for the per-row three-dot action menu
+  const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
+  const [menuRowId, setMenuRowId] = useState<number | null>(null);
 
   const [participants, setParticipants] = useState<EventRegistration[]>([]);
   const [loadingParticipants, setLoadingParticipants] = useState(true);
@@ -165,10 +227,10 @@ export default function ProjectRegistrationsContent({
     })
       .then((resp) => {
         const rows: EventRegistration[] = resp.data.map(
-          (p: Omit<EventRegistration, "id">, idx: number) => ({
+          (p: Omit<EventRegistration, never>, idx: number) => ({
             ...p,
-            // DataGrid requires a unique `id` field
-            id: p.user_url_slug || String(idx),
+            // Fall back to index if backend id is missing (defensive)
+            id: p.id ?? idx,
           })
         );
         setParticipants(rows);
@@ -182,6 +244,47 @@ export default function ProjectRegistrationsContent({
   }, [project.url_slug]);
 
   const isEventEnded = project.end_date ? dayjs(project.end_date).isBefore(dayjs()) : false;
+
+  /** Called by CancelGuestRegistrationModal after a successful 204. */
+  const handleCancelled = (registrationId: number) => {
+    const cancelledAt = new Date().toISOString();
+
+    setParticipants((prev) =>
+      prev.map((row) => (row.id === registrationId ? { ...row, cancelled_at: cancelledAt } : row))
+    );
+
+    // Optimistically update available_seats and revert FULL → OPEN in the parent
+    if (eventRegistration) {
+      const newAvailableSeats = (eventRegistration.available_seats ?? 0) + 1;
+      const newStatus = eventRegistration.status === "full" ? "open" : eventRegistration.status;
+      onEventRegistrationUpdated({
+        ...eventRegistration,
+        available_seats: newAvailableSeats,
+        status: newStatus,
+      });
+    }
+  };
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, rowId: number) => {
+    setMenuAnchorEl(event.currentTarget);
+    setMenuRowId(rowId);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuAnchorEl(null);
+    setMenuRowId(null);
+  };
+
+  const handleOpenCancelModal = () => {
+    const row = participants.find((p) => p.id === menuRowId);
+    if (!row) return;
+    setCancelModal({
+      id: row.id,
+      user_first_name: row.user_first_name,
+      user_last_name: row.user_last_name,
+    });
+    handleCloseMenu();
+  };
 
   if (!eventRegistration) {
     return (
@@ -282,102 +385,197 @@ export default function ProjectRegistrationsContent({
         )}
 
         {!loadingParticipants && !participantsError && (
-          <DataGrid
-            autoHeight
-            rows={participants.filter((p) => {
-              const q = search.toLowerCase();
-              return (
-                p.user_first_name.toLowerCase().includes(q) ||
-                p.user_last_name.toLowerCase().includes(q)
-              );
-            })}
-            columns={
-              [
-                {
-                  field: "user_thumbnail_image",
-                  headerName: "",
-                  width: 56,
-                  sortable: false,
-                  disableExport: true,
-                  disableColumnMenu: true,
-                  filterable: false,
-                  renderCell: (params) => (
-                    <Link
-                      href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}
-                      underline="none"
-                      aria-label={`${params.row.user_first_name} ${params.row.user_last_name}`}
-                    >
-                      <Avatar
-                        src={params.row.user_thumbnail_image ?? undefined}
-                        alt={`${params.row.user_first_name} ${params.row.user_last_name}`}
-                        sx={{ width: 32, height: 32 }}
-                      />
-                    </Link>
-                  ),
+          <>
+            <DataGrid
+              autoHeight
+              rows={participants.filter((p) => {
+                const q = search.toLowerCase();
+                return (
+                  p.user_first_name.toLowerCase().includes(q) ||
+                  p.user_last_name.toLowerCase().includes(q)
+                );
+              })}
+              getRowClassName={(params) =>
+                params.row.cancelled_at ? "registration-row--cancelled" : ""
+              }
+              columns={
+                [
+                  {
+                    field: "user_thumbnail_image",
+                    headerName: "",
+                    width: 56,
+                    sortable: false,
+                    disableExport: true,
+                    disableColumnMenu: true,
+                    filterable: false,
+                    renderCell: (params) => (
+                      <Link
+                        href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}
+                        underline="none"
+                        aria-label={`${params.row.user_first_name} ${params.row.user_last_name}`}
+                      >
+                        <Avatar
+                          src={params.row.user_thumbnail_image ?? undefined}
+                          alt={`${params.row.user_first_name} ${params.row.user_last_name}`}
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            opacity: params.row.cancelled_at ? 0.5 : 1,
+                          }}
+                        />
+                      </Link>
+                    ),
+                  },
+                  {
+                    field: "user_first_name",
+                    headerName: texts.first_name,
+                    flex: 1,
+                    minWidth: 120,
+                    renderCell: (params) => (
+                      <Link
+                        href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}
+                        sx={{ color: params.row.cancelled_at ? "text.disabled" : undefined }}
+                      >
+                        {params.value}
+                      </Link>
+                    ),
+                  },
+                  {
+                    field: "user_last_name",
+                    headerName: texts.last_name,
+                    flex: 1,
+                    minWidth: 120,
+                    renderCell: (params) => (
+                      <Link
+                        href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}
+                        sx={{ color: params.row.cancelled_at ? "text.disabled" : undefined }}
+                      >
+                        {params.value}
+                      </Link>
+                    ),
+                  },
+                  {
+                    field: "registered_at",
+                    headerName: texts.registration_date,
+                    type: "dateTime",
+                    flex: 1,
+                    minWidth: 160,
+                    valueGetter: (params) =>
+                      params.value ? new Date(params.value as string) : null,
+                    valueFormatter: (params) =>
+                      params.value
+                        ? dayjs(params.value as Date)
+                            .locale(locale)
+                            .format("DD MMM YYYY, HH:mm")
+                        : "—",
+                  },
+                  {
+                    field: "cancelled_at",
+                    headerName: texts.registration_status as string,
+                    width: 120,
+                    sortable: true,
+                    disableColumnMenu: true,
+                    valueFormatter: (params) =>
+                      params.value
+                        ? (texts.registration_status_cancelled as string)
+                        : (texts.registration_status_active as string),
+                    renderCell: (params) =>
+                      params.row.cancelled_at ? (
+                        <Chip
+                          size="small"
+                          label={texts.registration_status_cancelled as string}
+                          color="warning"
+                          sx={{ fontWeight: 500 }}
+                        />
+                      ) : (
+                        <Chip
+                          size="small"
+                          label={texts.registration_status_active as string}
+                          color="success"
+                          sx={{ fontWeight: 500 }}
+                        />
+                      ),
+                  },
+                  {
+                    field: "__actions__",
+                    headerName: "",
+                    width: 52,
+                    sortable: false,
+                    filterable: false,
+                    disableExport: true,
+                    disableColumnMenu: true,
+                    renderCell: (params) => {
+                      if (params.row.cancelled_at) return null;
+                      return (
+                        <IconButton
+                          size="small"
+                          aria-label={texts.cancel_guest_registration as string}
+                          onClick={(e) => handleOpenMenu(e, params.row.id as number)}
+                        >
+                          <MoreVertIcon fontSize="small" />
+                        </IconButton>
+                      );
+                    },
+                  },
+                ] as GridColDef[]
+              }
+              initialState={{
+                sorting: {
+                  sortModel: [{ field: "registered_at", sort: "asc" }],
                 },
-                {
-                  field: "user_first_name",
-                  headerName: texts.first_name,
-                  flex: 1,
-                  minWidth: 120,
-                  renderCell: (params) => (
-                    <Link href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}>
-                      {params.value}
-                    </Link>
-                  ),
+                pagination: {
+                  paginationModel: { pageSize: 25 },
                 },
-                {
-                  field: "user_last_name",
-                  headerName: texts.last_name,
-                  flex: 1,
-                  minWidth: 120,
-                  renderCell: (params) => (
-                    <Link href={`${getLocalePrefix(locale)}/profiles/${params.row.user_url_slug}`}>
-                      {params.value}
-                    </Link>
-                  ),
+              }}
+              localeText={{
+                ...(locale === "de" ? deDE : enUS).components.MuiDataGrid.defaultProps.localeText,
+                noRowsLabel: texts.no_registrations_yet,
+              }}
+              disableRowSelectionOnClick
+              slots={{
+                toolbar: RegistrationsToolbar,
+                columnMenu: CustomColumnMenu,
+                footer: RegistrationsFooter,
+              }}
+              slotProps={{
+                toolbar: {
+                  search,
+                  onSearchChange: setSearch,
+                  placeholder: texts.search_guests,
+                  onOpenEmailModal: () => setEmailModalOpen(true),
+                  emailGuestsLabel: texts.send_email_to_guests,
+                  csvFileName: `${project.url_slug}-registrations-${dayjs().format("YYYY-MM-DD")}`,
+                } as ToolbarProps,
+                footer: {
+                  total: participants.length,
+                  active: participants.filter((p) => !p.cancelled_at).length,
+                  cancelled: participants.filter((p) => !!p.cancelled_at).length,
+                  guestsLabel: texts.registered_guests as string,
+                  activeLabel: texts.registration_status_active as string,
+                  cancelledLabel: texts.registration_status_cancelled as string,
+                } as FooterProps,
+              }}
+              sx={{
+                border: "none",
+                "& .registration-row--cancelled": {
+                  color: "text.disabled",
                 },
-                {
-                  field: "registered_at",
-                  headerName: texts.registration_date,
-                  type: "dateTime",
-                  flex: 1,
-                  minWidth: 160,
-                  valueGetter: (params) => (params.value ? new Date(params.value as string) : null),
-                  valueFormatter: (params) =>
-                    params.value
-                      ? dayjs(params.value as Date)
-                          .locale(locale)
-                          .format("DD MMM YYYY, HH:mm")
-                      : "—",
-                },
-              ] as GridColDef[]
-            }
-            initialState={{
-              sorting: {
-                sortModel: [{ field: "registered_at", sort: "asc" }],
-              },
-              pagination: {
-                paginationModel: { pageSize: 25 },
-              },
-            }}
-            localeText={{
-              ...(locale === "de" ? deDE : enUS).components.MuiDataGrid.defaultProps.localeText,
-              noRowsLabel: texts.no_registrations_yet,
-            }}
-            disableRowSelectionOnClick
-            slots={{ toolbar: RegistrationsToolbar, columnMenu: CustomColumnMenu }}
-            slotProps={{
-              toolbar: {
-                search,
-                onSearchChange: setSearch,
-                placeholder: texts.search_guests,
-                onOpenEmailModal: () => setEmailModalOpen(true),
-                emailGuestsLabel: texts.send_email_to_guests,
-              } as ToolbarProps,
-            }}
-            sx={{ border: "none" }}
-          />
+              }}
+            />
+
+            {/* Per-row action menu */}
+            <Menu
+              anchorEl={menuAnchorEl}
+              open={Boolean(menuAnchorEl)}
+              onClose={handleCloseMenu}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              <MenuItem onClick={handleOpenCancelModal} sx={{ color: "error.main" }}>
+                {texts.cancel_guest_registration as string}
+              </MenuItem>
+            </Menu>
+          </>
         )}
       </Box>
 
@@ -395,6 +593,14 @@ export default function ProjectRegistrationsContent({
         open={emailModalOpen}
         onClose={() => setEmailModalOpen(false)}
         project={project}
+      />
+
+      <CancelGuestRegistrationModal
+        open={cancelModal !== null}
+        onClose={() => setCancelModal(null)}
+        registration={cancelModal}
+        project={project}
+        onCancelled={handleCancelled}
       />
     </>
   );

@@ -689,6 +689,11 @@ class AdminCancelRegistrationView(APIView):
 
         # ── 8. Optional cancellation notification email ──────────────────────
         message = request.data.get("message", "").strip()
+        if message and len(message) > 1000:
+            return Response(
+                {"message": "Message must be 1000 characters or fewer."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         if message:
             guest = reg.user
             try:
