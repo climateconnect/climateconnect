@@ -97,7 +97,7 @@ An event organiser or team admin can cancel the registration of an individual gu
 **Admin cancel a guest registration (new endpoint)**
 
 ```
-DELETE /api/projects/{slug}/registrations/{registration_id}/
+PATCH /api/projects/{slug}/registrations/{registration_id}/
 ```
 
 - Auth required — returns `401 Unauthorized` if unauthenticated.
@@ -106,13 +106,15 @@ DELETE /api/projects/{slug}/registrations/{registration_id}/
 - Returns `400 Bad Request` if the targeted registration is already cancelled (`cancelled_at IS NOT NULL`).
 - Sets `cancelled_at = now()` and `cancelled_by = request.user`, atomically.
 - If `EventRegistrationConfig.status` was `FULL` and active registrations are now below `max_participants`, reverts status to `OPEN` — same logic as in [#1850](https://github.com/climateconnect/climateconnect/issues/1850).
-- Accepts an **optional** `message` field in the request body. If provided and non-empty, sends a cancellation notification email to the guest (synchronous — single email, consistent with "Send test" in [#1866](https://github.com/climateconnect/climateconnect/issues/1866)). If absent or empty, no email is sent.
+- Accepts an **optional** `message` field in the request body (max 1000 characters). If provided and non-empty, sends a cancellation notification email to the guest (synchronous). If absent or empty, no email is sent.
 - Returns `204 No Content` on success.
+
+> **Note on HTTP method**: although the original spec used `DELETE`, the implementation uses `PATCH` because the operation is a partial update of the `EventRegistration` record (setting `cancelled_at`/`cancelled_by`), not a deletion. `PATCH` also avoids a known limitation in the shared `apiRequest` utility where `DELETE` requests with a body silently drop the `Authorization` header.
 
 | Status | Condition |
 |--------|-----------|
 | `204 No Content` | Cancellation successful |
-| `400 Bad Request` | Registration already cancelled |
+| `400 Bad Request` | Registration already cancelled, or message exceeds 1000 characters |
 | `401 Unauthorized` | Unauthenticated request |
 | `403 Forbidden` | Authenticated but not an organiser or team admin |
 | `404 Not Found` | Project not found, registration not enabled, or `registration_id` not found on this project |

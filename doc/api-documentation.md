@@ -569,7 +569,7 @@ Intended for organisers / team admins to review their guest list and manage canc
 
 **Query optimisation**: the queryset uses `select_related("user__user_profile")` — all participant data is fetched in a single SQL JOIN, regardless of participant count.
 
-#### DELETE `/api/projects/{slug}/registrations/{id}/` — Admin cancel guest registration (issue #1872)
+#### PATCH `/api/projects/{slug}/registrations/{id}/` — Admin cancel guest registration (issue #1872)
 
 Allows an event organiser or team admin to cancel a specific guest's registration. This is a **soft delete** — `cancelled_at` and `cancelled_by` are set on the row. The guest cannot self-re-register after an admin cancellation.
 

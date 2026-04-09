@@ -137,7 +137,7 @@ describe("CancelGuestRegistrationModal", () => {
   // ── Confirm with no message ────────────────────────────────────────────────
 
   describe("confirm without message", () => {
-    it("calls DELETE endpoint without a body when message is empty", async () => {
+    it("calls PATCH endpoint without a message body when message is empty", async () => {
       const onCancelled = jest.fn();
       const onClose = jest.fn();
       renderModal({ onCancelled, onClose });
@@ -147,9 +147,9 @@ describe("CancelGuestRegistrationModal", () => {
       await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
 
       const { method, url, payload } = mockApiRequest.mock.calls[0][0];
-      expect(method).toBe("delete");
+      expect(method).toBe("patch");
       expect(url).toBe("/api/projects/test-event/registrations/42/");
-      expect(payload).toBeUndefined();
+      expect(payload).toEqual({});
     });
 
     it("calls onCancelled with the registration id after success", async () => {

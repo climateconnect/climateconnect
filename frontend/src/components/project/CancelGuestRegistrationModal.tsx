@@ -95,9 +95,9 @@ export default function CancelGuestRegistrationModal({
     try {
       const trimmedMessage = message.trim();
       await apiRequest({
-        method: "delete",
+        method: "patch",
         url: `/api/projects/${project.url_slug}/registrations/${registration.id}/`,
-        payload: trimmedMessage ? { message: trimmedMessage } : undefined,
+        payload: trimmedMessage ? { message: trimmedMessage } : {},
         token,
         locale,
       });

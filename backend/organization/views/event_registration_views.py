@@ -577,7 +577,7 @@ class SendOrganizerEmailView(APIView):
 
 class AdminCancelRegistrationView(APIView):
     """
-    DELETE /api/projects/{url_slug}/registrations/{registration_id}/
+    PATCH /api/projects/{url_slug}/registrations/{registration_id}/
 
     Allows an event organiser or team admin to cancel a specific guest's
     registration (soft delete: sets ``cancelled_at`` and ``cancelled_by``).
@@ -587,7 +587,7 @@ class AdminCancelRegistrationView(APIView):
 
     Response codes:
         204 No Content  — cancellation successful.
-        400 Bad Request — registration already cancelled.
+        400 Bad Request — registration already cancelled, or message exceeds 1000 chars.
         401 Unauthorized — unauthenticated request.
         403 Forbidden   — authenticated but not an organiser or team admin.
         404 Not Found   — project, registration config, or registration not found.
@@ -598,7 +598,7 @@ class AdminCancelRegistrationView(APIView):
     permission_classes = [IsAuthenticated]
 
     @transaction.atomic
-    def delete(self, request, url_slug, registration_id):
+    def patch(self, request, url_slug, registration_id):
 
         # ── 1. Look up project ──────────────────────────────────────────────
         try:
