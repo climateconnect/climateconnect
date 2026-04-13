@@ -4,7 +4,7 @@ import WideLayout from "../../../src/components/layouts/WideLayout";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import WasseraktionswochenEvents from "../../../src/components/hub/WasseraktionswochenEvents";
 import theme from "../../../src/themes/theme";
-import { Wasseraktionswochen as WasseraktionswochenHero } from "../../../devlink";
+import { Wasseraktionswochen as WasseraktionswochenHero } from "../../../devlink/Wasseraktionswochen";
 import makeStyles from "@mui/styles/makeStyles";
 import LocalAmbassadorInfoBox from "../../../src/components/hub/LocalAmbassadorInfoBox";
 import {

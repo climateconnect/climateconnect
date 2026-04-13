@@ -1,32 +1,32 @@
 import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
-import ROLE_TYPES from "../../public/data/role_types";
-import { apiRequest } from "../../public/lib/apiOperations";
-import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
-import getTexts from "../../public/texts/texts";
-import UserContext from "../../src/components/context/UserContext";
-import PageNotFound from "../../src/components/general/PageNotFound";
-import WideLayout from "../../src/components/layouts/WideLayout";
-import ProjectPageRoot from "../../src/components/project/ProjectPageRoot";
-import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
-import { getAllHubs } from "../../public/lib/hubOperations";
+import ROLE_TYPES from "../../../public/data/role_types";
+import { apiRequest } from "../../../public/lib/apiOperations";
+import { nullifyUndefinedValues } from "../../../public/lib/profileOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../../../src/components/context/UserContext";
+import PageNotFound from "../../../src/components/general/PageNotFound";
+import WideLayout from "../../../src/components/layouts/WideLayout";
+import ProjectPageRoot from "../../../src/components/project/ProjectPageRoot";
+import HubsSubHeader from "../../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
+import { getAllHubs } from "../../../public/lib/hubOperations";
 import { useMediaQuery } from "@mui/material";
-import { getImageUrl } from "../../public/lib/imageOperations";
+import { getImageUrl } from "../../../public/lib/imageOperations";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
-import ProjectSideBar from "../../src/components/project/ProjectSideBar";
-import { transformThemeData } from "../../src/themes/transformThemeData";
-import getHubTheme from "../../src/themes/fetchHubTheme";
-import theme from "../../src/themes/theme";
-import { NOTIFICATION_TYPES } from "../../src/components/communication/notifications/Notification";
-import { getProjectTypeOptions } from "../../public/lib/getOptions";
-import BrowseContext from "../../src/components/context/BrowseContext";
-import { parseData } from "../../public/lib/parsingOperations";
+import ProjectSideBar from "../../../src/components/project/ProjectSideBar";
+import { transformThemeData } from "../../../src/themes/transformThemeData";
+import getHubTheme from "../../../src/themes/fetchHubTheme";
+import theme from "../../../src/themes/theme";
+import { NOTIFICATION_TYPES } from "../../../src/components/communication/notifications/Notification";
+import { getProjectTypeOptions } from "../../../public/lib/getOptions";
+import BrowseContext from "../../../src/components/context/BrowseContext";
+import { parseData } from "../../../public/lib/parsingOperations";
 import {
   WASSERAKTIONSWOCHEN_PARENT_SLUG,
   isWasseraktionswochenEnabled,
-} from "../../public/data/wasseraktionswochen_config.js";
+} from "../../../public/data/wasseraktionswochen_config.js";
 
 type StyleProps = {
   showSimilarProjects: boolean;
@@ -129,6 +129,7 @@ export async function getServerSideProps(ctx) {
       following: userInteractions.following,
       liking: userInteractions.liking,
       hasRequestedToJoin: userInteractions.has_requested_to_join,
+      isRegistered: userInteractions.is_registered ?? false,
       hubs: hubs,
       similarProjects: similarProjects,
       hubSupporters: hubSupporters,
@@ -148,6 +149,7 @@ export default function ProjectPage({
   following,
   liking,
   hasRequestedToJoin,
+  isRegistered,
   hubs,
   similarProjects,
   hubSupporters,
@@ -321,6 +323,7 @@ export default function ProjectPage({
                 hubPage={hubUrl}
                 siblingProjects={siblingProjects}
                 isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+                isRegistered={isRegistered}
               />
             </div>
             <div className={classes.secondaryContent}>
@@ -545,6 +548,7 @@ function parseProject(project) {
     parent_project_name: project.parent_project_name,
     parent_project_slug: project.parent_project_slug,
     is_online: project.is_online,
+    registration_config: project.registration_config ?? null,
   };
 }
 

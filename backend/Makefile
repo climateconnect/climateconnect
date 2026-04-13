@@ -26,7 +26,7 @@ install:
 	pdm install
 
 test:
-	python3 manage.py test --keepdb
+	python3 manage.py test --keepdb --noinput
 test-clean:
 	python3 manage.py test --noinput
 

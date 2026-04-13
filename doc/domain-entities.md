@@ -177,7 +177,7 @@ This document provides comprehensive documentation of the main domain entities i
 **Relationships**:
 - **ForeignKey**: `ProjectStatus`, `Location`, `Language`
 - **ManyToMany**: `Hub` (related_hubs)
-- **Referenced by**: `ProjectTranslation`, `ProjectParents`, `ProjectMember`, `ProjectCollaborators`, `ProjectTagging`, `ProjectSectorMapping`, `ProjectComment`, `Post`, `ProjectFollower`, `ProjectLike`, `OrgProjectPublished`, `ContentShares`
+- **Referenced by**: `ProjectTranslation`, `ProjectParents`, `ProjectMember`, `ProjectCollaborators`, `ProjectTagging`, `ProjectSectorMapping`, `ProjectComment`, `Post`, `ProjectFollower`, `ProjectLike`, `OrgProjectPublished`, `ContentShares`, `EventRegistration`
 
 ---
 
@@ -315,6 +315,117 @@ This document provides comprehensive documentation of the main domain entities i
   - **ForeignKey**: `Project`, `Organization` (nullable), `User` (nullable)
 - **ProjectCollaborators**:
   - **ForeignKey**: `Project`, `Organization`
+
+---
+
+### EventRegistrationConfig
+
+**Summary**: Online registration settings for event-type projects.
+
+**Description**: Stores registration configuration for a `Project` of type `event`. The presence of an `EventRegistrationConfig` row is the sole source of truth for whether online registration is enabled — no separate boolean flag on `Project` is needed. Both `max_participants` and `registration_end_date` are nullable to support draft events where settings have not yet been finalised; all constraints are enforced on publish (`is_draft=false`). `EventRegistrationConfig` records only exist on published events — published events cannot revert to draft, so draft-mode guards are not applied on the edit endpoint.
+
+**Key rules**:
+- Only valid for projects of type `event`; rejected with 400 for other project types
+- `registration_end_date` must be ≤ the event's `end_date`
+- `max_participants` must be > 0
+- Required fields (`max_participants`, `registration_end_date`) are enforced on publish; skipped when saving as draft
+- `status` controls the explicit registration lifecycle (see table below); organiser may set `open` or `closed`; `full` is reserved for the system when capacity is reached
+- `"ended"` is a **computed read-only value** returned by the API (never stored in DB) — see status table below
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `project` | OneToOneField | FK → `Project`, CASCADE delete |
+| `max_participants` | PositiveIntegerField | Nullable (draft allowed); must be > 0 |
+| `registration_end_date` | DateTimeField (TIMESTAMPTZ) | Nullable (draft allowed); must be ≤ event `end_date`; stored in UTC |
+| `status` | CharField (enum) | `open` (default) / `closed` / `full` — see status table below |
+| `created_at` | DateTimeField | Auto-set on creation |
+| `updated_at` | DateTimeField | Auto-updated on save |
+
+**Registration status values** (`RegistrationStatus`):
+| Value | Stored in DB | Set by | Meaning |
+|---|---|---|---|
+| `open` | ✅ | Default / organiser | Accepting sign-ups (subject to `registration_end_date` and `max_participants`) |
+| `closed` | ✅ | Organiser (via API) | Manually closed before the end date; organiser can re-open |
+| `full` | ✅ | System (on last accepted signup, same transaction) | Capacity reached; blocked until a cancellation drops count below `max_participants` |
+| `ended` | ❌ (computed) | API serializer | Returned when stored status is `open` but `registration_end_date` has passed — never written to DB; underlying stored value remains `open` |
+
+**Effective "accepting signups?" check**: `status == open AND now() < registration_end_date`
+
+> **Note**: clients should treat `ended`, `closed`, and `full` equally as "not accepting sign-ups".
+
+**Relationships**:
+- **OneToOne**: `Project` (related_name: `registration_config`, CASCADE delete)
+- **Referenced by**: `EventRegistration` (related_name: `registrations`)
+
+**Model location**: `organization/models/event_registration.py`
+
+**Serializer location**: `organization/serializers/event_registration.py`
+
+**Serializers**:
+| Serializer | Purpose |
+|---|---|
+| `EventRegistrationConfigSerializer` | Read (project detail/list) and write (create via `POST /api/projects/`). Returns computed `"ended"` status via `to_representation`. |
+| `EditEventRegistrationConfigSerializer` | Write only — `PATCH /api/projects/{slug}/registration-config/`. Allows organiser to update `max_participants`, `registration_end_date`, **and `status`** (`"open"` or `"closed"` only). `"full"` and `"ended"` are rejected on write. `status = "open"` is additionally blocked when the event is at or over capacity (see below). |
+
+**Edit endpoint**: `PATCH /api/projects/{slug}/registration-config/` — dedicated endpoint for organiser/admin to update registration settings on an existing `EventRegistrationConfig`. Requires edit rights (organiser or team admin). Returns `404` if no `EventRegistrationConfig` exists. `status` is writable (`"open"` or `"closed"`); `"full"` and `"ended"` return 400. Two reopen guards apply when `status = "open"` is requested:
+
+1. **Deadline guard** — returns 400 when `effective_status == "ended"` (deadline has passed); organiser must extend `registration_end_date` first.
+2. **Fully-booked guard** — returns 400 when participant count ≥ effective `max_participants` (considering the new value if `max_participants` is also being changed in the same request); organiser must increase `max_participants` first (or include a higher value in the same PATCH).
+
+Auto-adjustment of `status` from `max_participants` changes is skipped when `status` is explicitly provided — the organiser's intent takes priority.
+
+---
+
+### EventRegistration
+
+**Summary**: Records a user's registration for an event, with soft-delete lifecycle.
+
+**Description**: Join table between `User` and `EventRegistrationConfig`. One row per registered user per event. The `unique_together` constraint on `(user, registration_config)` enforces at both the application layer and DB level that the same user cannot have more than one row per event. Rows are **never deleted** — instead they are soft-deleted by setting `cancelled_at` and `cancelled_by`.
+
+Available seat count is computed on-the-fly from the **active** registrations (`cancelled_at IS NULL`) rather than maintained as a denormalised counter, to avoid update-anomaly races. The count is only queried on the project **detail** endpoint (guarded by the `include_seat_count` serializer context flag) — not on the list endpoint — to prevent N+1 queries.
+
+**Registration lifecycle**:
+```
+Active       — cancelled_at IS NULL, cancelled_by IS NULL
+Cancelled    — cancelled_at IS NOT NULL, cancelled_by = user who cancelled
+Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row reused)
+```
+
+**Key rules**:
+- A user can register for the same event only once per row (idempotent endpoint returns 200 on re-registration if already active; returns 201 and resets the row if previously self-cancelled)
+- Registrations are only accepted when `effective_status == "open"` (i.e. stored `status == "open"` **and** `registration_end_date` has not yet passed). The guard in `EventRegistrationsView` uses `_compute_effective_status()` — a single function that covers `closed`, `full`, and `ended` states with contextual error messages per state.
+- When the last available seat is taken, `EventRegistrationConfig.status` is atomically promoted to `"full"` in the same transaction
+- Seat locking uses `SELECT FOR UPDATE` on `EventRegistrationConfig` to prevent race conditions at capacity
+- **Only active registrations count against capacity** — all `available_seats` computations filter by `cancelled_at IS NULL`
+- Member cancellation (`DELETE /api/projects/{slug}/registrations/`) is blocked once the event has started (`start_date ≤ now()`)
+- After a member cancellation that frees a seat, `EventRegistrationConfig.status` reverts from `"full"` to `"open"` atomically
+- `cancelled_by` distinguishes self-cancellation (member may re-register) from admin-cancellation (member blocked from re-registering until an admin explicitly reinstates them)
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `user` | ForeignKey | FK → `User`, CASCADE delete, related_name: `event_registrations` |
+| `registration_config` | ForeignKey | FK → `EventRegistrationConfig`, CASCADE delete, related_name: `registrations` |
+| `registered_at` | DateTimeField | Auto-set on creation; read-only |
+| `cancelled_at` | DateTimeField | `NULL` = active; non-null = soft-deleted. Reset to `NULL` on re-registration |
+| `cancelled_by` | ForeignKey (nullable) | FK → `User`, SET_NULL, related_name: `cancelled_registrations`. `NULL` when active. Set to the cancelling user (member or admin) on cancellation. Reset to `NULL` on re-registration |
+
+**Constraints & indexes**:
+| Type | Fields | Name |
+|---|---|---|
+| `unique_together` | `(user, registration_config)` | Prevents duplicate rows (one row per user per event) |
+| Index | `registration_config` | `idx_ep_event_registration` — fast participant count / lookup by event |
+| Index | `user` | `idx_ep_user` — fast lookup of all events a user registered for |
+
+**Relationships**:
+- **ForeignKey**: `User` (related_name: `event_registrations`, CASCADE delete)
+- **ForeignKey**: `EventRegistrationConfig` (related_name: `registrations`, CASCADE delete)
+- **ForeignKey (nullable)**: `User` (cancelled_by, related_name: `cancelled_registrations`, SET_NULL)
+
+**Model location**: `organization/models/event_registration.py`
+
+**Migration**: `organization/migrations/0124_add_cancelled_fields_to_eventregistration.py` — adds `cancelled_at` and `cancelled_by` columns (nullable, no backfill required)
 
 ---
 
@@ -637,7 +748,9 @@ Project
 ├── Posts (updates)
 ├── Comments (ProjectComment)
 ├── Followers (ProjectFollower)
-└── Likes (ProjectLike)
+├── Likes (ProjectLike)
+└── EventRegistrationConfig (OneToOne - event type only, nullable)
+    └── EventRegistration (ForeignKey - registered users)
 
 Hub
 ├── Parent Hub (ForeignKey Self)
@@ -710,3 +823,11 @@ This architecture supports a comprehensive climate action platform with social n
 ## Version History
 
 - **2025-11-27**: Initial documentation
+- **2026-03-19**: Added `EventRegistrationConfig` entity (GitHub issue #43). New 1-to-1 relationship on `Project` (event type only) for online registration settings (`max_participants`, `registration_end_date`). Updated `Project` relationships and Entity Relationship Summary tree.
+- **2026-03-19**: Added `status` field to `EventRegistrationConfig` (`RegistrationStatus` enum: `open`/`closed`/`full`). Prepares for use cases: organiser manually closing registration and system auto-closing when capacity is reached.
+- **2026-03-30**: Added `EventRegistration` entity (GitHub issue #1845). Join table recording which users have registered for an event. Includes `select_for_update` seat-locking, `unique_together` constraint, and two DB indexes. `EventRegistrationConfig.status` is atomically promoted to `"full"` when the last seat is taken. Updated `EventRegistrationConfig` relationships section and ER tree.
+- **2026-03-31**: Added computed `"ended"` status to `EventRegistrationConfig` API responses (issue #1848). Returned by `EventRegistrationConfigSerializer.to_representation` via `_compute_effective_status` when stored status is `open` but `registration_end_date` has passed — never written to DB. Updated `RegistrationStatus` table to include `ended`. Removed draft-mode guard from `EditEventRegistrationConfigSerializer` (published events cannot revert to draft; guard was dead code). Updated `EventRegistrationConfigSerializer` description — write path is create-only (`POST /api/projects/`); `registration_config` handling removed from `PATCH /api/projects/{slug}/`.
+- **2026-03-31**: `status` is now organiser-writable via `PATCH /api/projects/{slug}/registration-config/` (issue #1851). `EditEventRegistrationConfigSerializer` accepts `"open"` and `"closed"`; `"full"` and `"ended"` are rejected with 400 (system-managed). Reopen guard in `validate()` returns 400 when `effective_status == "ended"` — organiser must extend `registration_end_date` first. `full` → `open` organiser override is permitted. When `status` is explicitly included in the PATCH body, auto-adjustment from `max_participants` changes is skipped (organiser intent takes priority). `EventRegistrationsView` guard consolidated to a single `_compute_effective_status()` check with contextual error messages per status value. `RegistrationStatus.ENDED` added as a Python-side-only enum constant (never stored in DB).
+- **2026-03-31**: Added fully-booked reopen guard to `EditEventRegistrationConfigSerializer.validate()`. `status = "open"` is now rejected with 400 when participant count ≥ effective `max_participants` (uses the new `max_participants` value if it is being changed in the same PATCH). This prevents an organiser from reopening a `closed` or `full` registration when the event has no available seats — they must increase capacity first. An organiser can still reopen a booked-out event by including a higher `max_participants` value in the same request. Shared `participant_count` sentinel prevents double-querying when both fields are present in a single PATCH.
+- **2026-04-02**: Renamed models for clarity: `EventRegistration` (config) → `EventRegistrationConfig`; `EventParticipant` (sign-up record) → `EventRegistration`. Updated related_names (`event_registration` → `registration_config`, `participants` → `registrations`, `event_participations` → `event_registrations`). API JSON key renamed `event_registration` → `registration_config`. Endpoints renamed: `POST /register/` → `POST /registrations/`, `PATCH /registration/` → `PATCH /registration-config/`. Views renamed: `RegisterForEventView` + `ListEventRegistrationsView` → combined `EventRegistrationsView`; `EditEventRegistrationSettingsView` → `EditRegistrationConfigView`.
+- **2026-04-09**: Added soft-delete to `EventRegistration` (issues #1850, #1872). Two new nullable columns: `cancelled_at` (DateTimeField) and `cancelled_by` (ForeignKey → User, SET_NULL). All seat-count queries now filter `cancelled_at IS NULL`. Lifecycle: Active (both NULL) → Cancelled (both set) → Re-registered (both reset to NULL). `cancelled_by == user` means self-cancellation (re-registration allowed); `cancelled_by != user` means admin-cancellation (re-registration blocked). New endpoints: `DELETE /api/projects/{slug}/registrations/` (member self-cancel, issue #1850) and `DELETE /api/projects/{slug}/registrations/{id}/` (admin cancel guest, issue #1872). `EventRegistrationSerializer` now includes `id` and `cancelled_at`; `GET /registrations/` returns all rows (active + cancelled). `GET /projects/{slug}/my_interactions/` extended with `has_attended` (bool) and `admin_cancelled` (bool); `is_registered` now filtered by `cancelled_at IS NULL`. New email helper `send_guest_cancellation_notification` uses Mailjet templates `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` / `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE`.

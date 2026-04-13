@@ -1,4 +1,4 @@
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { Project, Organization } from "../../types";
@@ -9,6 +9,7 @@ import UserContext from "../context/UserContext";
 import Switcher from "../general/Switcher";
 import SelectField from "../general/SelectField";
 import { useTheme } from "@mui/material/styles";
+import NavigationButtons from "../general/NavigationButtons";
 
 const useStyles = makeStyles((theme) => ({
   orgBottomLink: {
@@ -33,10 +34,6 @@ const useStyles = makeStyles((theme) => ({
   },
   field: {
     marginTop: theme.spacing(3),
-  },
-  button: {
-    float: "right",
-    marginTop: theme.spacing(2),
   },
 }));
 
@@ -133,14 +130,7 @@ export default function Share({
         types={projectTypeOptions}
         color={mainColor}
       />
-      <Button
-        variant="contained"
-        color="primary"
-        className={classes.button}
-        onClick={onClickNextStep}
-      >
-        {texts.next_step}
-      </Button>
+      <NavigationButtons onClickNextStep={onClickNextStep} sticky />
     </div>
   );
 }

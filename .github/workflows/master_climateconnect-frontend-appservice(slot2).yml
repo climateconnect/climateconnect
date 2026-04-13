@@ -61,7 +61,7 @@ jobs:
           LOCATION_HUBS: ${{ secrets.LOCATION_HUBS }}
           SOCKET_URL: ${{ secrets.SOCKET_URL }}
           WASSERAKTIONSWOCHEN_FEATURE: ${{ secrets.WASSERAKTIONSWOCHEN_FEATURE }}
-          WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
+          WEBFLOW_SITE_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
           WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID}}
 
 

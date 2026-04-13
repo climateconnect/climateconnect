@@ -1,11 +1,49 @@
-import { AppBar, Container, Toolbar } from "@mui/material";
+import { AppBar, Button, Container, Toolbar } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "../../general/FollowButton";
 import LikeButton from "./LikeButton";
+import { Project } from "../../../types";
+import {
+  shouldShowRegisterButton,
+  getRegisterButtonText,
+  isRegisterButtonDisabled,
+} from "../../../utils/eventRegistrationHelpers";
 
-const useStyles = makeStyles(() => ({
+interface ProjectInteractionButtonsProps {
+  projectAdmin: any;
+  handleClickContact: () => void;
+  hasAdminPermissions: boolean;
+  messageButtonIsVisible: boolean;
+  contactProjectCreatorButtonRef: React.RefObject<HTMLElement> | null;
+  visibleFooterHeight: number;
+  tabContentContainerSpaceToRight: number;
+  project: Project;
+  isUserFollowing: boolean;
+  isUserLiking: boolean;
+  handleToggleFollowProject: () => void;
+  handleToggleLikeProject: () => void;
+  toggleShowFollowers: () => void;
+  followingChangePending: boolean;
+  likingChangePending: boolean;
+  texts: any;
+  screenSize: {
+    belowSmall: boolean;
+    belowTiny: boolean;
+    [key: string]: boolean;
+  };
+  numberOfFollowers: number;
+  numberOfLikes: number;
+  bindLike: any;
+  bindFollow: any;
+  user: any;
+  isEventRegistrationEnabled: boolean;
+  handleRegisterClick: () => void;
+  isUserRegistered?: boolean;
+}
+
+const useStyles = makeStyles((theme) => ({
   largeScreenButton: (props) => ({
     position: "fixed",
     bottom: props.visibleFooterHeight + 2,
@@ -22,6 +60,11 @@ const useStyles = makeStyles(() => ({
   containerButtonsActionBar: {
     display: "flex",
     justifyContent: "space-around",
+  },
+  registerButton: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    whiteSpace: "nowrap",
   },
 }));
 
@@ -48,11 +91,16 @@ export default function ProjectInteractionButtons({
   bindLike,
   bindFollow,
   user,
-}) {
+  isEventRegistrationEnabled,
+  handleRegisterClick,
+  isUserRegistered,
+}: ProjectInteractionButtonsProps) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
     tabContentContainerSpaceToRight: tabContentContainerSpaceToRight,
   });
+
+  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
 
   if (screenSize.belowSmall)
     return (
@@ -65,21 +113,33 @@ export default function ProjectInteractionButtons({
               withIcons={!screenSize.belowTiny}
             />
           )}
-          <FollowButton
-            isUserFollowing={isUserFollowing}
-            handleToggleFollow={handleToggleFollowProject}
-            project={project}
-            hasAdminPermissions={hasAdminPermissions}
-            toggleShowFollowers={toggleShowFollowers}
-            followingChangePending={followingChangePending}
-            texts={texts}
-            screenSize={screenSize}
-            numberOfFollowers={numberOfFollowers}
-            bindFollow={bindFollow}
-            showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
-            showNumberInText={screenSize.belowSmall}
-            isLoggedIn={user}
-          />
+          {showRegisterButton ? (
+            <Button
+              variant="contained"
+              color={isRegisterButtonDisabled(project, isUserRegistered) ? "secondary" : "primary"}
+              disabled={isRegisterButtonDisabled(project, isUserRegistered)}
+              onClick={handleRegisterClick}
+              className={classes.registerButton}
+            >
+              {getRegisterButtonText(project, texts, isUserRegistered)}
+            </Button>
+          ) : (
+            <FollowButton
+              isUserFollowing={isUserFollowing}
+              handleToggleFollow={handleToggleFollowProject}
+              project={project}
+              hasAdminPermissions={hasAdminPermissions}
+              toggleShowFollowers={toggleShowFollowers}
+              followingChangePending={followingChangePending}
+              texts={texts}
+              screenSize={screenSize}
+              numberOfFollowers={numberOfFollowers}
+              bindFollow={bindFollow}
+              showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
+              showNumberInText={screenSize.belowSmall}
+              isLoggedIn={user}
+            />
+          )}
           <LikeButton
             texts={texts}
             screenSize={screenSize}

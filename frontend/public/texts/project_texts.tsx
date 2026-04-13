@@ -1217,6 +1217,99 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Do you want to delete this project?",
       de: "Möchtest Du dieses Projekt löschen?",
     },
+    registration: {
+      en: "Registration",
+      de: "Anmeldung",
+    },
+    registration_settings: {
+      en: "Registration settings",
+      de: "Eventanmeldung einrichten",
+    },
+    allow_online_registration: {
+      en: "Allow members to register online for the event",
+      de: "Mitgliedern erlauben, sich online für das Event anzumelden",
+    },
+    registration_enabled_help_text: {
+      en: "In the next step you can configure the event registration.",
+      de: "Im nächsten Schritt kannst du die Eventanmeldung konfigurieren.",
+    },
+    max_participants: {
+      en: "Max. number of guests",
+      de: "Max. Anzahl Teilnehmende",
+    },
+    max_participants_must_be_greater_than_0: {
+      en: "Maximum number of guests must be greater than 0",
+      de: "Die maximale Anzahl an Teilnehmenden muss größer als 0 sein",
+    },
+    registration_end_date: {
+      en: "End of registration",
+      de: "Ende der Anmeldung",
+    },
+    registration_end_date_must_be_before_event_end_date: {
+      en: "Registration end date must be before or equal to the event end date",
+      de: "Das Anmeldeende muss vor oder gleich dem Ende des Events liegen",
+    },
+    edit_registration_settings: {
+      en: "Edit registration settings",
+      de: "Anmeldeeinstellungen bearbeiten",
+    },
+    registration_settings_saved: {
+      en: "Registration settings saved successfully",
+      de: "Anmeldeeinstellungen erfolgreich gespeichert",
+    },
+    registration_end_date_must_be_in_the_future: {
+      en: "Registration end date must be in the future",
+      de: "Das Anmeldeende muss in der Zukunft liegen",
+    },
+    registration_status: {
+      en: "Status",
+      de: "Status",
+    },
+    registration_status_open: {
+      en: "Open",
+      de: "Offen",
+    },
+    registration_status_closed: {
+      en: "Closed",
+      de: "Geschlossen",
+    },
+    registration_status_full: {
+      en: "Full",
+      de: "Ausgebucht",
+    },
+    registration_status_ended: {
+      en: "Ended",
+      de: "Abgelaufen",
+    },
+    registration_end_date_required: {
+      en: "Registration end date is required",
+      de: "Ein Anmeldedatum ist erforderlich",
+    },
+    view_registrations: {
+      en: "View registrations",
+      de: "Anmeldungen anzeigen",
+    },
+    registrations: {
+      en: "Registrations",
+      de: "Anmeldungen",
+    },
+    no_registration_settings_found: {
+      en: "No registration settings found for this event.",
+      de: "Keine Anmeldeeinstellungen für dieses Event gefunden.",
+    },
+    registration_is_open: {
+      en: "Registration is open",
+      de: "Anmeldung ist offen",
+    },
+    registration_is_closed: {
+      en: "Registration is closed",
+      de: "Anmeldung ist geschlossen",
+    },
+    registration_fully_booked_increase_max_participants: {
+      en: "Registration is fully booked. Increase the maximum participants to reopen.",
+      de:
+        "Die Anmeldung ist ausgebucht. Erhöhe die maximale Teilnehmerzahl, um sie wieder zu öffnen.",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",
@@ -1243,6 +1336,211 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     congratulations_your_event_has_been_published: {
       en: "Congratulations! Your event has been published!",
       de: "Glückwunsch! Deine Veranstaltung ist veröffentlicht worden!",
+    },
+    registered_guests: {
+      en: "Registered guests",
+      de: "Angemeldete Gäste",
+    },
+    search_guests: {
+      en: "Search by name…",
+      de: "Nach Name suchen…",
+    },
+    first_name: {
+      en: "First name",
+      de: "Vorname",
+    },
+    last_name: {
+      en: "Last name",
+      de: "Nachname",
+    },
+    registration_date: {
+      en: "Registration date",
+      de: "Anmeldedatum",
+    },
+    no_registrations_yet: {
+      en: "No registrations yet.",
+      de: "Noch keine Anmeldungen.",
+    },
+    loading_registrations: {
+      en: "Loading registrations…",
+      de: "Anmeldungen werden geladen…",
+    },
+    error_loading_registrations: {
+      en: "Failed to load registrations. Please try again.",
+      de: "Anmeldungen konnten nicht geladen werden. Bitte erneut versuchen.",
+    },
+    send_email_to_guests: {
+      en: "Email guests",
+      de: "Gäste per E-Mail benachrichtigen",
+    },
+    email_subject: {
+      en: "Subject",
+      de: "Betreff",
+    },
+    email_message: {
+      en: "Message",
+      de: "Nachricht",
+    },
+    send_now: {
+      en: "Send now",
+      de: "Jetzt senden",
+    },
+    send_test_to_myself: {
+      en: "Send test to myself",
+      de: "Testmail an mich senden",
+    },
+    sending: {
+      en: "Sending…",
+      de: "Wird gesendet…",
+    },
+    email_sent_to_guests: {
+      en: "Email sent to {count} registered guests.",
+      de: "E-Mail an {count} registrierte Gäste gesendet.",
+    },
+    test_email_sent_to: {
+      en: "Test email sent to {email}.",
+      de: "Test-E-Mail an {email} gesendet.",
+    },
+    email_subject_required: {
+      en: "Subject is required.",
+      de: "Betreff ist erforderlich.",
+    },
+    email_message_required: {
+      en: "Message is required.",
+      de: "Nachricht ist erforderlich.",
+    },
+    close: {
+      en: "Close",
+      de: "Schließen",
+    },
+    // Event registration translations
+    register_for_event: {
+      en: "Register for Event",
+      de: "Für Veranstaltung anmelden",
+    },
+    register_now: {
+      en: "Register now",
+      de: "Jetzt anmelden",
+    },
+    booked_out: {
+      en: "Booked out",
+      de: "Ausgebucht",
+    },
+    registration_closed: {
+      en: "Registration closed",
+      de: "Anmeldung geschlossen",
+    },
+    authentication: {
+      en: "Authentication",
+      de: "Authentifizierung",
+    },
+    event_registration: {
+      en: "Registration",
+      de: "Anmeldung",
+    },
+    confirmation: {
+      en: "Confirmation",
+      de: "Bestätigung",
+    },
+    name: {
+      en: "Name",
+      de: "Name",
+    },
+    email: {
+      en: "Email",
+      de: "E-Mail",
+    },
+    password: {
+      en: "Password",
+      de: "Passwort",
+    },
+    cancel: {
+      en: "Cancel",
+      de: "Abbrechen",
+    },
+    confirm_registration: {
+      en: "Confirm Registration",
+      de: "Anmeldung bestätigen",
+    },
+    to_register_please_login_or_signup: {
+      en: "To register for this event, please log in or sign up!",
+      de: "Um dich für diese Veranstaltung anzumelden, melde dich bitte an oder registriere dich!",
+    },
+    log_in: {
+      en: "Log In",
+      de: "Anmelden",
+    },
+    sign_up: {
+      en: "Sign Up",
+      de: "Registrieren",
+    },
+    continue: {
+      en: "Continue",
+      de: "Weiter",
+    },
+    signup_flow_coming_soon: {
+      en: "Sign-up flow coming soon",
+      de: "Registrierungsablauf kommt bald",
+    },
+    youre_registered: {
+      en: "You're registered!",
+      de: "Du bist angemeldet!",
+    },
+    a_confirmation_email_has_been_sent: {
+      en: "A confirmation email has been sent to you.",
+      de: "Eine Bestätigungs-E-Mail wurde an dich gesendet.",
+    },
+    registration_failed: {
+      en: "Registration failed",
+      de: "Anmeldung fehlgeschlagen",
+    },
+    registration_failed_please_try_again: {
+      en: "Registration failed. Please try again.",
+      de: "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+    },
+    try_again: {
+      en: "Try Again",
+      de: "Erneut versuchen",
+    },
+    seats_available: {
+      en: "Seats available",
+      de: "Verfügbare Plätze",
+    },
+    already_registered: {
+      en: "Registered ✓",
+      de: "Angemeldet ✓",
+    },
+    keep_registration: {
+      en: "Keep registration",
+      de: "Anmeldung behalten",
+    },
+    cancel_guest_registration: {
+      en: "Cancel registration",
+      de: "Anmeldung stornieren",
+    },
+    cancel_guest_registration_confirm: {
+      en: "Are you sure you want to cancel {name}'s registration for {event}?",
+      de: "Bist du sicher, dass du die Anmeldung von {name} für {event} stornieren möchtest?",
+    },
+    message_to_guest_optional: {
+      en: "Message to guest (optional)",
+      de: "Nachricht an den Gast (optional)",
+    },
+    cancellation_message_placeholder: {
+      en: "Reason for cancellation or instructions for the guest…",
+      de: "Grund für die Stornierung oder Hinweise an den Gast…",
+    },
+    yes_cancel_registration: {
+      en: "Yes, cancel registration",
+      de: "Ja, Anmeldung stornieren",
+    },
+    registration_status_active: {
+      en: "Active",
+      de: "Aktiv",
+    },
+    registration_status_cancelled: {
+      en: "Cancelled",
+      de: "Storniert",
     },
   };
 }

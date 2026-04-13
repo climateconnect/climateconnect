@@ -26,6 +26,10 @@ from organization.models import (
     ProjectParents,
 )
 from organization.models.translations import ProjectTranslation
+from organization.models.event_registration import EventRegistrationConfig
+from organization.serializers.event_registration import (
+    EventRegistrationConfigSerializer,
+)
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.status import (
     ProjectTypesSerializer,
@@ -58,6 +62,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     loc = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
+    registration_config = serializers.SerializerMethodField()
 
     # Parent/child relationship fields (detail view)
     parent_project_id = serializers.IntegerField(
@@ -102,8 +107,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "has_children",
             "child_projects_count",
             "is_online",
+            "registration_config",
         )
-        read_only_fields = ["url_slug"]
 
     def get_name(self, obj):
         return get_project_name(obj, get_language())
@@ -183,6 +188,16 @@ class ProjectSerializer(serializers.ModelSerializer):
         if hasattr(obj, "child_projects"):
             return obj.child_projects.count()
         return 0
+
+    def get_registration_config(self, obj):
+        """Return event registration config including available_seats (detail only)."""
+        try:
+            return EventRegistrationConfigSerializer(
+                obj.registration_config,
+                context={"include_seat_count": True},
+            ).data
+        except EventRegistrationConfig.DoesNotExist:
+            return None
 
 
 class EditProjectSerializer(ProjectSerializer):
@@ -301,6 +316,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     number_of_comments = serializers.SerializerMethodField()
     number_of_likes = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
+    registration_config = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -323,6 +339,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "end_date",
             "has_children",
             "is_online",
+            "registration_config",
         )
 
     def get_name(self, obj):
@@ -410,6 +427,13 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_collaborating_organizations(self, obj):
         serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
         return serializer.data
+
+    def get_registration_config(self, obj):
+        """Return event registration config if present, else None."""
+        try:
+            return EventRegistrationConfigSerializer(obj.registration_config).data
+        except EventRegistrationConfig.DoesNotExist:
+            return None
 
 
 class ProjectSuggestionSerializer(ProjectStubSerializer):

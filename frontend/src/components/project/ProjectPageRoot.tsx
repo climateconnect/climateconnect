@@ -25,6 +25,9 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import { useFeatureToggles } from "../featureToggle";
+import ProjectRegistrationsContent from "./ProjectRegistrationsContent";
+import EventRegistrationModal from "./EventRegistrationModal";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -58,6 +61,7 @@ const useStyles = makeStyles((theme) => {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
       width: 145,
+      whiteSpace: "nowrap",
       [theme.breakpoints.down("sm")]: {
         width: 125,
       },
@@ -105,6 +109,7 @@ export default function ProjectPageRoot({
   hubPage,
   siblingProjects,
   isWasseraktionswochenEnabled,
+  isRegistered,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -141,7 +146,43 @@ export default function ProjectPageRoot({
     leave: false,
     like: false,
   });
-  const typesByTabValue = ["project", "team", "comments"];
+
+  // Feature toggle for event registration
+  const { isEnabled } = useFeatureToggles();
+  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
+
+  // Lifted state so edits from either the side button or the tab stay in sync
+  const [currentEventRegistration, setCurrentEventRegistration] = useState(
+    project.registration_config ?? null
+  );
+
+  // Per-user registration state (optimistic update on success)
+  const [isUserRegistered, setIsUserRegistered] = useState(isRegistered ?? false);
+
+  // Registration modal state
+  const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
+  const handleRegisterClick = () => {
+    setRegistrationModalOpen(true);
+  };
+
+  // Determine whether to show the Registrations tab:
+  // only for event admins when the toggle is on and registration_config exists
+  const user_permission =
+    user && project.team && project.team.find((m) => m.id === user.id)
+      ? project.team.find((m) => m.id === user.id).permission
+      : null;
+  const hasAdminPermissions =
+    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
+
+  const showRegistrationsTab =
+    isEventRegistrationEnabled &&
+    project.project_type?.type_id === "event" &&
+    currentEventRegistration != null &&
+    hasAdminPermissions;
+
+  const typesByTabValue = showRegistrationsTab
+    ? ["project", "registrations", "team", "comments"]
+    : ["project", "team", "comments"];
 
   // ref used within:
   // -> ProjectInteractionBoard
@@ -168,12 +209,6 @@ export default function ProjectPageRoot({
     router.push("/chat/" + chat.chat_uuid + "/");
   };
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
-  const user_permission =
-    user && project.team && project.team.find((m) => m.id === user.id)
-      ? project.team.find((m) => m.id === user.id).permission
-      : null;
-  const hasAdminPermissions =
-    user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -181,6 +216,18 @@ export default function ProjectPageRoot({
       setTabValue(typesByTabValue.indexOf(window.location.hash.replace("#", "")));
     }
   });
+
+  // Handle deep-link for event registration
+  useEffect(() => {
+    const params = getParams(window.location.href);
+    if (
+      params.openRegistration === "true" &&
+      isEventRegistrationEnabled &&
+      project.registration_config
+    ) {
+      setRegistrationModalOpen(true);
+    }
+  }, [isEventRegistrationEnabled, project.registration_config]);
 
   /**
    * Calls backend, sending a request to join this project based
@@ -241,6 +288,19 @@ export default function ProjectPageRoot({
       }
     }
     return teamLabel;
+  };
+
+  const registrationsTabLabel = () => {
+    let registrationsLabel = texts.registrations;
+    if (
+      currentEventRegistration?.max_participants != null &&
+      currentEventRegistration?.available_seats != null
+    ) {
+      const takenSeats =
+        currentEventRegistration.max_participants - currentEventRegistration.available_seats;
+      registrationsLabel += ` • ${takenSeats}`;
+    }
+    return registrationsLabel;
   };
 
   // pagination will only return 10 comments
@@ -453,6 +513,15 @@ export default function ProjectPageRoot({
   });
 
   const latestParentComment = [project.comments[0]];
+
+  const handleRegistrationModalClose = () => {
+    setRegistrationModalOpen(false);
+    // Remove the openRegistration query param from the URL when closing the modal
+    const url = new URL(window.location.href);
+    url.searchParams.delete("openRegistration");
+    window.history.replaceState({}, "", url.toString());
+  };
+
   return (
     <div className={classes.root}>
       <ProjectOverview
@@ -480,6 +549,9 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         hubUrl={hubPage}
         isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+        isEventRegistrationEnabled={isEventRegistrationEnabled}
+        handleRegisterClick={handleRegisterClick}
+        isUserRegistered={isUserRegistered}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -491,6 +563,9 @@ export default function ProjectPageRoot({
             classes={{ indicator: classes.tabsIndicator }}
           >
             <Tab label={texts.project} className={classes.tab} />
+            {showRegistrationsTab && (
+              <Tab label={registrationsTabLabel()} className={classes.tab} />
+            )}
             <Tab label={teamTabLabel()} className={classes.tab} />
             <Tab label={discussionTabLabel()} className={classes.tab} />
           </Tabs>
@@ -529,6 +604,9 @@ export default function ProjectPageRoot({
           bindLike={bindLike}
           bindFollow={bindFollow}
           user={user}
+          isEventRegistrationEnabled={isEventRegistrationEnabled}
+          handleRegisterClick={handleRegisterClick}
+          isUserRegistered={isUserRegistered}
         />
       </Container>
 
@@ -547,9 +625,20 @@ export default function ProjectPageRoot({
             handleSendProjectJoinRequest={handleSendProjectJoinRequest}
             requestedToJoinProject={requestedToJoinProject}
             hubUrl={hubPage}
+            eventRegistration={currentEventRegistration}
+            onEventRegistrationUpdated={setCurrentEventRegistration}
           />
         </TabContent>
-        <TabContent value={tabValue} index={1}>
+        {showRegistrationsTab && (
+          <TabContent value={tabValue} index={1}>
+            <ProjectRegistrationsContent
+              project={project}
+              eventRegistration={currentEventRegistration}
+              onEventRegistrationUpdated={setCurrentEventRegistration}
+            />
+          </TabContent>
+        )}
+        <TabContent value={tabValue} index={showRegistrationsTab ? 2 : 1}>
           <ProjectTeamContent
             project={project}
             handleReadNotifications={handleReadNotifications}
@@ -560,7 +649,7 @@ export default function ProjectPageRoot({
           />
         </TabContent>
 
-        <TabContent value={tabValue} index={2}>
+        <TabContent value={tabValue} index={showRegistrationsTab ? 3 : 2}>
           <ProjectCommentsContent
             project={project}
             user={user}
@@ -582,6 +671,7 @@ export default function ProjectPageRoot({
               hubName={hubPage}
               siblingProjects={siblingProjects}
               isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+              isUserRegistered={isUserRegistered}
             />
           </>
         )}
@@ -630,6 +720,21 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
+      {isEventRegistrationEnabled && project.registration_config && (
+        <EventRegistrationModal
+          open={registrationModalOpen}
+          onClose={() => handleRegistrationModalClose()}
+          project={project}
+          onRegistrationSuccess={() => {
+            setIsUserRegistered(true);
+            setCurrentEventRegistration((prev) =>
+              prev && prev.available_seats != null
+                ? { ...prev, available_seats: prev.available_seats - 1 }
+                : prev
+            );
+          }}
+        />
+      )}
     </div>
   );
 }

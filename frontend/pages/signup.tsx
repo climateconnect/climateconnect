@@ -76,7 +76,12 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
 
   useEffect(function () {
     if (user) {
-      const redirectUrl = hubUrl ? `${getLocalePrefix(locale)}/hubs/${hubUrl}/browse` : "/";
+      const redirectParam = router.query.redirect as string;
+      const redirectUrl = redirectParam
+        ? redirectParam
+        : hubUrl
+        ? `${getLocalePrefix(locale)}/hubs/${hubUrl}/browse`
+        : "/";
       redirectOnLogin(user, redirectUrl, locale);
     }
   });
@@ -138,6 +143,14 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
     if (hubUrl) {
       args.query = {
         hub: hubUrl,
+      };
+    }
+    // Preserve redirect parameter for accountcreated page
+    const redirectParam = router.query.redirect as string;
+    if (redirectParam) {
+      args.query = {
+        ...args.query,
+        redirect: redirectParam,
       };
     }
     setIsLoading(true);

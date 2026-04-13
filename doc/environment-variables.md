@@ -268,10 +268,44 @@ All email template variables follow the pattern: `{TEMPLATE_NAME}_TEMPLATE_ID[_D
 - `IDEA_COMMENT_REPLY_TEMPLATE_ID` - Reply to idea comment
 - `IDEA_MENTION_TEMPLATE_ID` - Mention in idea
 - `JOINED_IDEA_TEMPLATE` - User joined idea discussion
+- `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` - Event registration confirmation (issue #1845)
+- `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` - Organiser-to-guests email (issue #1866)
+- `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` - Admin cancellation notification to guest (issue #1872)
 
 **German Templates** (append `_DE` to template name):
 - All above templates have German variants with `_DE` suffix
 - Example: `PROJECT_COMMENT_TEMPLATE_ID_DE`
+
+**Event registration confirmation template variables** (define in both EN and DE Mailjet templates):
+| Variable | Content |
+|---|---|
+| `FirstName` | User's first name (falls back to username) |
+| `EventTitle` | Display name of the event |
+| `EventUrl` | Full, language-aware URL to the event page (e.g. `/projects/slug` EN, `/de/projects/slug` DE) |
+| `StartDate` | Localised start date — timezone resolved from user location → project location → UTC; EN British format `"30 March 2026 at 14:00 (CET)"`, DE format `"30. März 2026 um 14:00 Uhr (MEZ)"`, or `"TBD"` |
+| `OrganiserName` | Organisation name, or user's full name / username; empty string if no owner |
+| `LocationName` | `"Online"` for online events, location name for in-person events, or empty string |
+
+**Organiser-to-guests email template variables** (define in both EN and DE Mailjet templates, `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID`):
+| Variable | Content |
+|---|---|
+| `FirstName` | Recipient's first name (falls back to username) |
+| `EventTitle` | Display name of the event (localised for the recipient) |
+| `EventUrl` | Language-aware link to the event page |
+| `OrganiserName` | Organisation name, or organiser's full name / username |
+| `OrganizerSubject` | The subject entered by the organiser |
+| `OrganizerMessage` | The plain-text body entered by the organiser |
+
+**Admin cancellation notification template variables** (define in both EN and DE Mailjet templates, `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID`):
+| Variable | Content |
+|---|---|
+| `FirstName` | Guest's first name (falls back to username) |
+| `EventTitle` | Display name of the event (localised for the guest) |
+| `EventUrl` | Language-aware link to the event page |
+| `OrganiserName` | Organisation name, or organiser's full name / username |
+| `OrganizerMessage` | The plain-text cancellation message provided by the admin |
+
+The email envelope `Subject` header is set directly to the organiser-provided subject (no wrapping platform prefix). These templates must be created in Mailjet and their IDs configured before any organiser emails will be delivered.
 
 **Template Configuration**:
 - **Required**: ⚠️ Conditional (per template type used)
@@ -703,3 +737,6 @@ Frontend environment variables are stored in `.env` file in the `frontend/` dire
 ## Version History
 
 - **2025-11-27**: Initial documentation
+- **2026-03-30**: Added `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` and `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE` for event registration confirmation emails (issue #1845). `StartDate` template variable is now timezone- and language-localised (user location → project location → UTC; `timezonefinder` dependency added via PDM).
+- **2026-04-01**: Added `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` and `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE` for organiser-to-guests emails (issue #1866, spec `20260401_1100_organizer_send_email_to_guests.md`). Both templates default to `""` (empty string) — no emails will be delivered until configured in Mailjet and set in the environment.
+- **2026-04-09**: Added `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` and `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE` for admin-cancellation notification emails sent to guests (issue #1872, spec `20260407_1000_organizer_cancel_guest_registration.md`). Both templates default to `""` (empty string) — no emails will be delivered until configured in Mailjet and set in the environment.

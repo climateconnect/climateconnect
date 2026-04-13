@@ -10,6 +10,7 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Case, Prefetch, Q, When
 from django.db.models.functions import Cast
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
@@ -59,6 +60,10 @@ from organization.models import (
     ProjectTags,
     Sector,
 )
+from organization.models.event_registration import (
+    EventRegistration,
+    EventRegistrationConfig,
+)
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
 from organization.models.type import PROJECT_TYPES, ProjectTypesChoices
@@ -76,6 +81,9 @@ from organization.permissions import (
     ReadWriteSensibleProjectDataPermission,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
+from organization.serializers.event_registration import (
+    EventRegistrationConfigSerializer,
+)
 from organization.serializers.project import (
     EditProjectSerializer,
     InsertProjectMemberSerializer,
@@ -183,7 +191,7 @@ class ListProjectsView(ListAPIView):
         # Get project ranking
         projects = (
             Project.objects.filter(is_draft=False, is_active=True)
-            .select_related("loc", "language", "status")
+            .select_related("loc", "language", "status", "registration_config")
             .prefetch_related(
                 "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
@@ -478,8 +486,8 @@ class CreateProjectView(APIView):
         else:
             organization = None
 
-        is_draft_input = request.data.get("is_draft", False)
-        is_draft = is_draft_input in (True, "true", "True", "1", 1)
+        is_draft = request.data.get("is_draft", False) in (True, "true", "True", "1", 1)
+
         required_params = ["name"]
         # If 'is_draft' is not set or is set to a falsy value then run the code in this if block
         if not is_draft:
@@ -525,6 +533,32 @@ class CreateProjectView(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+
+        # --- registration_config pre-creation validation ---
+        # Run before the status check so invalid data is rejected early.
+        # Type coercion (str→int, str→datetime) and business rules are handled
+        # by EventRegistrationConfigSerializer — no manual int()/parse() needed.
+        er_data = request.data.get("registration_config")
+        er_serializer = None
+        if er_data is not None:
+            project_type_id = (request.data.get("project_type") or {}).get(
+                "type_id", ""
+            )
+            end_date_raw = request.data.get("end_date")
+            er_serializer = EventRegistrationConfigSerializer(
+                data=er_data,
+                context={
+                    "is_event_type": project_type_id == "event",
+                    "is_draft": is_draft,
+                    "event_end_date": parse(end_date_raw) if end_date_raw else None,
+                },
+            )
+            if not er_serializer.is_valid():
+                return Response(
+                    er_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                )
+        # --- end registration_config validation ---
+
         try:
             ProjectStatus.objects.get(id=int(request.data["status"]))
         except ProjectStatus.DoesNotExist:
@@ -535,6 +569,7 @@ class CreateProjectView(APIView):
                     )
                 }
             )
+
         translations_object = None
         # Only process translations if both source_language and translations are provided
         if "source_language" in request.data and "translations" in request.data:
@@ -553,6 +588,18 @@ class CreateProjectView(APIView):
             translations = translations_object["translations"]
 
         project = create_new_project(request.data, source_language)
+
+        # Create EventRegistrationConfig whenever the key is present in the payload.
+        # validated_data already contains correctly typed Python values —
+        # no int()/parse() conversions needed here.
+        if er_serializer is not None:
+            EventRegistrationConfig.objects.create(
+                project=project,
+                **er_serializer.validated_data,
+            )
+            logger.info(
+                "EventRegistrationConfig created for project %s", project.url_slug
+            )
 
         if translations_object and translations and source_language:
             for language in translations:
@@ -729,7 +776,9 @@ class ProjectAPIView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(url_slug=str(url_slug))
+            project = Project.objects.select_related("registration_config").get(
+                url_slug=str(url_slug)
+            )
         except Project.DoesNotExist:
             return Response(
                 {"message": "Project not found: {}".format(url_slug)},
@@ -907,6 +956,7 @@ class ProjectAPIView(APIView):
 
             project_parents.parent_organization = organization
             project_parents.save()
+
         project.save()
 
         items_to_translate = [
@@ -1268,11 +1318,41 @@ class GetUserInteractionsWithProjectView(APIView):
             user=self.request.user,
         ).exists()
 
+        is_registered = False
+        has_attended = False
+        admin_cancelled = False
+        if hasattr(project, "registration_config"):
+            try:
+                rc = project.registration_config
+                user_reg = EventRegistration.objects.filter(
+                    user=request.user, registration_config=rc
+                ).first()
+                if user_reg is not None:
+                    if user_reg.cancelled_at is None:
+                        # Active registration.
+                        is_registered = True
+                        # has_attended: event has started AND registration is active.
+                        if project.start_date and project.start_date <= timezone.now():
+                            has_attended = True
+                    else:
+                        # Cancelled registration.
+                        # admin_cancelled: cancelled by someone other than the member.
+                        if (
+                            user_reg.cancelled_by_id is not None
+                            and user_reg.cancelled_by_id != request.user.id
+                        ):
+                            admin_cancelled = True
+            except EventRegistrationConfig.DoesNotExist:
+                pass
+
         return Response(
             {
                 "liking": is_liking,
                 "following": is_following,
                 "has_requested_to_join": has_open_membership_request,
+                "is_registered": is_registered,
+                "has_attended": has_attended,
+                "admin_cancelled": admin_cancelled,
             },
             status=status.HTTP_200_OK,
         )

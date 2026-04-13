@@ -122,13 +122,18 @@ app_name/
 - Use `self.client` for API endpoint testing
 
 ### Documentation Maintenance
-- Update `doc/domain-entities.md` when modifying models or relationships
-- Update `doc/api-documentation.md` when changing endpoints or adding new ones
-- Add new backend specifications to `doc/spec/` for major features (optional)
-- Update `doc/architecture.md` for significant backend architecture changes
-- Update `doc/environment-variables.md` when adding new environment variables
-- Review and update this backend agent.md file as the backend evolves
-- **Note**: `/doc/spec/` contains optional specifications for reference - use as helpful context but not required. **Workflow**: GitHub Issues lead the work, specs provide fine-grained details when available.
+Documentation updates are **part of every task**, not an afterthought. The specific files to update are listed in each checklist in the [Definition of Done](#definition-of-done) and [Quick Reference](#quick-reference-for-common-tasks) sections above.
+
+Quick reference for which doc maps to which change:
+| Change type | Doc to update |
+|---|---|
+| New or modified model / relationship | `doc/domain-entities.md` |
+| New or modified API endpoint | `doc/api-documentation.md` |
+| Significant architecture change | `doc/architecture.md` |
+| New environment variable | `doc/environment-variables.md` |
+| Major new feature | `doc/spec/` (optional, for reference) |
+
+- **Note**: `/doc/spec/` contains optional specifications for reference — use as helpful context but not required. **Workflow**: GitHub Issues lead the work, specs provide fine-grained details when available.
 
 ## Common Code Patterns
 
@@ -175,6 +180,58 @@ class ExampleViewSet(viewsets.ModelViewSet):
         return Example.objects.select_related("user").filter(user=self.request.user)
 ```
 
+### Validation Pattern
+
+Django + DRF handle validation across three layers. Always rely on this pipeline and **do not duplicate validation manually** unless adding business logic.
+
+#### Layer 1 — DRF Serializer (primary, runs automatically)
+`ModelSerializer` maps model field constraints to serializer fields automatically:
+- Type coercion (e.g. `"42"` → `int`, `"2026-03-19"` → `date`)
+- `required`, `max_length`, `min_length`, `blank`, `null`, `choices`
+- `unique=True` → `UniqueValidator` added automatically
+- `unique_together` → `UniqueTogetherValidator` added automatically
+
+Add custom logic using:
+```python
+# Single-field validation
+def validate_name(self, value):
+    if value.lower() == "banned":
+        raise serializers.ValidationError("This name is not allowed.")
+    return value
+
+# Cross-field validation
+def validate(self, attrs):
+    if attrs["end_date"] < attrs["start_date"]:
+        raise serializers.ValidationError("end_date must be after start_date.")
+    return attrs
+```
+
+#### Layer 2 — Model `clean()` (NOT called automatically by DRF)
+DRF **does not** call `model.full_clean()` before saving. If business rules live in `clean()`, call it explicitly in the serializer:
+```python
+def validate(self, attrs):
+    instance = self.Meta.model(**attrs)
+    try:
+        instance.full_clean(exclude=["id"])
+    except ValidationError as e:
+        raise serializers.ValidationError(e.message_dict)
+    return attrs
+```
+Prefer putting validation in the serializer rather than `clean()` to keep the API contract clear.
+
+#### Layer 3 — Database constraints (last resort)
+PostgreSQL enforces NOT NULL, UNIQUE, and FK integrity — but violations raise `IntegrityError`, which is **not** automatically converted to a 400 response. Rely on layers 1–2 to catch errors before hitting the DB.
+
+#### Summary Table
+| Constraint | Enforced by |
+|---|---|
+| Field type, max_length, required, blank, null | DRF serializer (auto from ModelSerializer) |
+| choices | DRF serializer (auto) |
+| unique, unique_together | DRF serializer (auto) |
+| Cross-field business rules | `validate()` in serializer |
+| Model `clean()` logic | Must call `full_clean()` explicitly |
+| DB-level integrity | PostgreSQL (catch with try/except if needed) |
+
 ### Celery Task Example
 ```python
 from climateconnect_main.celery import app
@@ -184,6 +241,16 @@ def send_notification_email(user_id, message):
     # Task implementation
     pass
 ```
+
+## Definition of Done
+
+A task is **not complete** until all of the following are done:
+
+- [ ] Code is formatted (`make format`)
+- [ ] Tests written and passing
+- [ ] **Documentation updated** (see each checklist below for which files)
+
+> Documentation debt is real debt. If a model, endpoint, or architecture decision changed and the docs were not updated, the task is not done.
 
 ## Quick Reference for Common Tasks
 
@@ -195,6 +262,7 @@ def send_notification_email(user_id, message):
 5. Run `python manage.py migrate`
 6. Register in `app/admin.py` (optional)
 7. Add tests in `app/tests/`
+8. **Update `doc/domain-entities.md`** — add the new entity, its fields, and relationships
 
 ### Adding a New API Endpoint
 1. Create view in `app/views/`
@@ -202,7 +270,14 @@ def send_notification_email(user_id, message):
 3. Implement permissions in view or `app/permissions.py`
 4. Create/update serializer
 5. Test endpoint
-6. Document in code comments
+6. **Update `doc/api-documentation.md`** — document the new endpoint, request/response format, and auth requirements
+
+### Modifying an Existing Model or Relationship
+1. Update model fields or relationships
+2. Run `python manage.py makemigrations` and `python manage.py migrate`
+3. Update affected serializers and views
+4. **Update `doc/domain-entities.md`** — reflect the changed fields or relationships
+5. If the change affects API responses, **update `doc/api-documentation.md`** too
 
 ### Adding a Background Task
 1. Create task in `app/tasks.py` with `@app.task` decorator (using Celery app)
