@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Box, TextField, Typography } from "@mui/material";
+import { Box, FormControlLabel, Switch, TextField, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useTheme } from "@mui/styles";
 import dayjs, { Dayjs } from "dayjs";
@@ -53,6 +53,10 @@ export default function EventRegistrationSection({
     handleSetProjectData({ registration_end_date: value });
   };
 
+  const handleNotifyAdminsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleSetProjectData({ notify_admins: e.target.checked });
+  };
+
   return (
     <>
       <Typography component="h2" variant="subtitle2" color="primary" className={classes.subHeader}>
@@ -87,6 +91,19 @@ export default function EventRegistrationSection({
             error={errors.registration_end_date as any}
           />
         </Box>
+      </Box>
+      <Box sx={{ width: "100%", mt: 1 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={projectData.notify_admins !== false}
+              onChange={handleNotifyAdminsChange}
+              color="primary"
+              aria-label={texts.notify_admins_on_registration}
+            />
+          }
+          label={texts.notify_admins_on_registration}
+        />
       </Box>
     </>
   );

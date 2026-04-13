@@ -1310,6 +1310,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Die Anmeldung ist ausgebucht. Erhöhe die maximale Teilnehmerzahl, um sie wieder zu öffnen.",
     },
+    notify_admins_on_registration: {
+      en: "Send a notification to team admins when someone registers or cancels.",
+      de: "Sende eine Benachrichtigung an Team-Admins, wenn sich jemand an- oder abmeldet.",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",

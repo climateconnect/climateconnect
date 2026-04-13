@@ -92,6 +92,7 @@ export default function EditEventRegistrationModal({
   const [maxParticipants, setMaxParticipants] = useState<string>("");
   const [registrationEndDate, setRegistrationEndDate] = useState<Dayjs | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<"open" | "closed">("open");
+  const [notifyAdmins, setNotifyAdmins] = useState<boolean>(true);
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
 
@@ -107,6 +108,7 @@ export default function EditEventRegistrationModal({
           : null
       );
       setSelectedStatus(initSelectedStatus(eventRegistration.status));
+      setNotifyAdmins(eventRegistration.notify_admins);
       setErrors({});
     }
   }, [open, eventRegistration]);
@@ -178,6 +180,7 @@ export default function EditEventRegistrationModal({
     if (!isStatusEnded) {
       payload.status = selectedStatus;
     }
+    payload.notify_admins = notifyAdmins;
 
     try {
       const resp = await apiRequest({
@@ -324,6 +327,21 @@ export default function EditEventRegistrationModal({
             </Box>
           )}
         </Box>
+      </Box>
+
+      {/* Notify admins toggle */}
+      <Box sx={{ width: "100%", mt: 2 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={notifyAdmins}
+              onChange={(e) => setNotifyAdmins(e.target.checked)}
+              color="primary"
+              aria-label={texts.notify_admins_on_registration}
+            />
+          }
+          label={texts.notify_admins_on_registration}
+        />
       </Box>
 
       {errors.general && (
