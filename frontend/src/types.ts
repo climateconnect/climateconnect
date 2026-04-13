@@ -6,6 +6,8 @@ export type EventRegistrationData = {
   available_seats: number | null;
   registration_end_date: string | null; // ISO 8601 string from API
   status: "open" | "closed" | "full" | "ended";
+  /** When true, team admins receive an email on registration/cancellation. */
+  notify_admins: boolean;
 };
 
 export type User = {
@@ -71,6 +73,7 @@ export type Project = {
   registrationEnabled?: boolean;
   max_participants?: number | null;
   registration_end_date?: Dayjs | null;
+  notify_admins?: boolean;
   // Event registration data from the API (detail view)
   registration_config?: EventRegistrationData | null;
 };

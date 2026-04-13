@@ -1310,6 +1310,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Die Anmeldung ist ausgebucht. Erhöhe die maximale Teilnehmerzahl, um sie wieder zu öffnen.",
     },
+    notify_admins_on_registration: {
+      en: "Send a notification to team admins when someone registers or cancels.",
+      de: "Sende eine Benachrichtigung an Team-Admins, wenn sich jemand an- oder abmeldet.",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",
@@ -1541,6 +1545,22 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     registration_status_cancelled: {
       en: "Cancelled",
       de: "Storniert",
+    },
+    cancel_registration: {
+      en: "Cancel registration",
+      de: "Anmeldung stornieren",
+    },
+    cancel_registration_confirm: {
+      en: "Are you sure you want to cancel your registration for {event}?",
+      de: "Bist du sicher, dass du deine Anmeldung für {event} stornieren möchtest?",
+    },
+    you_attended_this_event: {
+      en: "You attended this event",
+      de: "Du hast an dieser Veranstaltung teilgenommen",
+    },
+    cancel_registration_error: {
+      en: "Failed to cancel registration. Please try again.",
+      de: "Stornierung fehlgeschlagen. Bitte versuche es erneut.",
     },
   };
 }
