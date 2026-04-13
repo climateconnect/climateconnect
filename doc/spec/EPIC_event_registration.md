@@ -48,7 +48,7 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 | Organiser creates event with registration               | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) |    | ✅ Done                     |
 | Member registers for event                              | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) | [`20260309_0900_...`](./20260309_0900_member_register_for_event.md)          | ⚙️ In proress              |
 | Member sees their registered events                     | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) | [`20260309_1100_...`](./20260309_1100_member_see_registered_events.md)       | 🔵 Ready                   |
-| Member cancels a registration                           | [#1850](https://github.com/climateconnect/climateconnect/issues/1850) | [`20260309_1500_...`](./20260309_1500_member_cancel_event_registration.md)   | 🔵 Ready                     |
+| Member cancels a registration                           | [#1850](https://github.com/climateconnect/climateconnect/issues/1850) | [`20260309_1500_...`](./20260309_1500_member_cancel_event_registration.md)   | ✅ Done                      |
 | Event organizer can see canceled guests                 | [#1871](https://github.com/climateconnect/climateconnect/issues/1871) | delivered by [#1872](./20260407_1000_organizer_cancel_guest_registration.md) | ✅ Done                     |
 | Organiser sees status of registrations (list of guests) | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) |  | ✅ Done                     |
 | Organiser exports / prints registered guests            | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) |  | ✅ Done |
@@ -56,7 +56,7 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 | Organiser closes / reopens registration                 | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) |  | ✅ Done                     |
 | Organiser cancels an individual guest registration      | [#1872](https://github.com/climateconnect/climateconnect/issues/1872) | [`20260407_1000_...`](./20260407_1000_organizer_cancel_guest_registration.md) | ✅ Done                   |
 
-| Organiser sets admin notification preference for registrations | [#1882](https://github.com/climateconnect/climateconnect/issues/1882) | [`20260413_0800_...`](./20260413_0800_admin_notification_on_registration_changes.md) | 🔵 Ready |
+| Organiser sets admin notification preference for registrations | [#1882](https://github.com/climateconnect/climateconnect/issues/1882) | [`20260413_0800_...`](./20260413_0800_admin_notification_on_registration_changes.md) | ✅ Done |
 | Admin notification emails on member registration / cancellation | [#1888](https://github.com/climateconnect/climateconnect/issues/1888) | [`20260413_0900_...`](./20260413_0900_admin_notification_email_on_registration.md) | 🔵 Ready |
 
 ### 🔭 Phase 3 — Advanced Registration (next goal after Phase 2 ships)
@@ -105,7 +105,7 @@ Where `effective_status` is computed lazily by `EventRegistrationSerializer`:
 - If `stored_status == "open"` AND `registration_end_date <= now()` → return `"ended"` *([#1851](https://github.com/climateconnect/climateconnect/issues/1851))*
 - Otherwise → return `stored_status`
 
-### Entity: `EventParticipant` *([#1845](https://github.com/climateconnect/climateconnect/issues/1845) — not yet implemented)*
+### Entity: `EventParticipant` *([#1845](https://github.com/climateconnect/climateconnect/issues/1845) / [#1850](https://github.com/climateconnect/climateconnect/issues/1850) — implemented)*
 
 | Field | Type | Notes |
 |-------|------|-------|
@@ -221,7 +221,7 @@ Consistent across all tasks: when `is_draft=true`, all required-field validation
     │         │
     │         ├──▶ #1849 Member sees registered events  (READY)   — reads EventParticipant list
     │         │
-    │         └──▶ #1850 Member cancels registration    (DRAFT)   — soft delete; adds cancelled_at
+    │         └──▶ #1850 Member cancels registration    (COMPLETED) — soft delete; adds cancelled_at
     │
     ├──▶ #1851 Organiser closes/reopens (IN PROGRESS) — needs status UI; adds "ended" lazy status
     │
