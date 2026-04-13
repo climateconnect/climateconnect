@@ -143,9 +143,9 @@ def get_translations(
     if depth > 1:
         raise ValueError
     finished_translations = {}
-    for target_language in Language.objects.exclude(language_code=source_language).values_list(
-        "language_code", flat=True
-    ):
+    for target_language in Language.objects.exclude(
+        language_code=source_language
+    ).values_list("language_code", flat=True):
         finished_translations[target_language] = {"is_manual_translation": False}
         for key in texts.keys():
             # If the user manually translated and the translation
@@ -184,9 +184,9 @@ def get_translations(
                         keys_to_ignore_for_translation,
                         depth + 1,
                     )
-                finished_translations[target_language][key] = (
-                    translated_text_object["translated_text"]
-                )
+                finished_translations[target_language][key] = translated_text_object[
+                    "translated_text"
+                ]
     return {"translations": finished_translations, "source_language": source_language}
 
 

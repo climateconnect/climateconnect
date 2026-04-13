@@ -335,7 +335,7 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 NOMINATIM_LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
-CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+CUSTOM_USER_AGENT = "ClimateConnect/1.0 (contact@climateconnect.earth)"
 
 LOCALE_PATHS = [
     BASE_DIR + "/translations",
