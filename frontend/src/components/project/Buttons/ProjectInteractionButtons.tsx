@@ -1,15 +1,12 @@
-import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
+import { AppBar, Container, Toolbar } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "../../general/FollowButton";
 import LikeButton from "./LikeButton";
+import RegistrationActionButton from "./RegistrationActionButton";
 import { Project } from "../../../types";
-import {
-  getRegistrationUIState,
-  getRegisterButtonText,
-  isRegisterButtonDisabled,
-} from "../../../utils/eventRegistrationHelpers";
+import { getRegistrationUIState } from "../../../utils/eventRegistrationHelpers";
 
 interface ProjectInteractionButtonsProps {
   projectAdmin: any;
@@ -125,38 +122,20 @@ export default function ProjectInteractionButtons({
               withIcons={!screenSize.belowTiny}
             />
           )}
-          {registrationState === "attended" ? (
-            <Typography variant="body2" className={classes.registerButton}>
-              {texts.you_attended_this_event}
-            </Typography>
-          ) : registrationState === "cancel" ? (
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleCancelClick}
+          {registrationState === "attended" ||
+          registrationState === "cancel" ||
+          registrationState === "adminClosed" ||
+          registrationState === "register" ||
+          registrationState === "closed" ? (
+            <RegistrationActionButton
+              registrationState={registrationState}
+              project={project}
+              texts={texts}
+              isUserRegistered={isUserRegistered}
+              handleRegisterClick={handleRegisterClick}
+              handleCancelClick={handleCancelClick}
               className={classes.registerButton}
-            >
-              {texts.cancel_registration}
-            </Button>
-          ) : registrationState === "adminClosed" ? (
-            <Button
-              variant="outlined"
-              color="secondary"
-              disabled
-              className={classes.registerButton}
-            >
-              {texts.registration_closed}
-            </Button>
-          ) : registrationState === "register" || registrationState === "closed" ? (
-            <Button
-              variant="contained"
-              color={isRegisterButtonDisabled(project, isUserRegistered) ? "secondary" : "primary"}
-              disabled={isRegisterButtonDisabled(project, isUserRegistered)}
-              onClick={handleRegisterClick}
-              className={classes.registerButton}
-            >
-              {getRegisterButtonText(project, texts, isUserRegistered)}
-            </Button>
+            />
           ) : (
             <FollowButton
               isUserFollowing={isUserFollowing}

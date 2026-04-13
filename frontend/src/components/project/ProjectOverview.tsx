@@ -1,4 +1,4 @@
-import { Button, Container, Link, Tooltip, Typography } from "@mui/material";
+import { Container, Link, Tooltip, Typography, Button } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Linkify from "react-linkify";
@@ -19,6 +19,7 @@ import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
 import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
+import RegistrationActionButton from "./Buttons/RegistrationActionButton";
 import MessageContent from "../communication/MessageContent";
 import FollowersDialog from "../dialogs/FollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
@@ -29,11 +30,7 @@ import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMedi
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
 import WasseraktionswochenLink from "../hub/WasseraktionswochenLink";
 import { isWasseraktionswochenSubEvent } from "../../../public/data/wasseraktionswochen_config.js";
-import {
-  getRegistrationUIState,
-  getRegisterButtonText,
-  isRegisterButtonDisabled,
-} from "../../utils/eventRegistrationHelpers";
+import { getRegistrationUIState } from "../../utils/eventRegistrationHelpers";
 
 type StyleProps = { hasAdminPermissions?: boolean };
 
@@ -484,55 +481,30 @@ function LargeScreenOverview({
               hasAdminPermissions={hasAdminPermissions}
               numberOfLikes={numberOfLikes}
             />
-            {registrationState === "attended" ? (
-              <Typography variant="body2" className={classes.registerButton}>
-                {texts.you_attended_this_event}
-              </Typography>
-            ) : registrationState === "cancel" ? (
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={handleCancelClick}
-                className={classes.registerButton}
-              >
-                {texts.cancel_registration}
-              </Button>
-            ) : registrationState === "adminClosed" ? (
-              <Button
-                variant="outlined"
-                color="secondary"
-                disabled
-                className={classes.registerButton}
-              >
-                {texts.registration_closed}
-              </Button>
-            ) : registrationState === "register" || registrationState === "closed" ? (
-              <Button
-                variant="contained"
-                color={
-                  isRegisterButtonDisabled(project, isUserRegistered) ? "secondary" : "primary"
-                }
-                disabled={isRegisterButtonDisabled(project, isUserRegistered)}
-                onClick={handleRegisterClick}
-                className={classes.registerButton}
-              >
-                {getRegisterButtonText(project, texts, isUserRegistered)}
-              </Button>
-            ) : (
-              <FollowButton
-                isLoggedIn={!!user}
-                followingChangePending={followingChangePending}
-                handleToggleFollow={handleToggleFollowProject}
-                hasAdminPermissions={hasAdminPermissions}
-                isUserFollowing={isUserFollowing}
-                numberOfFollowers={numberOfFollowers}
-                screenSize={screenSize}
-                texts={texts}
-                toggleShowFollowers={toggleShowFollowers}
-                showStartIcon={!screenSize.belowMedium}
-                showLinkUnderButton
-              />
-            )}
+            <RegistrationActionButton
+              registrationState={registrationState}
+              project={project}
+              texts={texts}
+              isUserRegistered={isUserRegistered}
+              handleRegisterClick={handleRegisterClick}
+              handleCancelClick={handleCancelClick}
+              className={classes.registerButton}
+              fallback={
+                <FollowButton
+                  isLoggedIn={!!user}
+                  followingChangePending={followingChangePending}
+                  handleToggleFollow={handleToggleFollowProject}
+                  hasAdminPermissions={hasAdminPermissions}
+                  isUserFollowing={isUserFollowing}
+                  numberOfFollowers={numberOfFollowers}
+                  screenSize={screenSize}
+                  texts={texts}
+                  toggleShowFollowers={toggleShowFollowers}
+                  showStartIcon={!screenSize.belowMedium}
+                  showLinkUnderButton
+                />
+              }
+            />
             {!hasAdminPermissions &&
               (!screenSize.belowMedium ? (
                 <ContactCreatorButton
