@@ -64,7 +64,6 @@ const useStyles = makeStyles((theme) => ({
   registerButton: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    whiteSpace: "nowrap",
   },
 }));
 

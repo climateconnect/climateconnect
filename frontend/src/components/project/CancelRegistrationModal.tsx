@@ -51,7 +51,6 @@ export default function CancelRegistrationModal({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale, project });
-  const cookies = new Cookies();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +65,7 @@ export default function CancelRegistrationModal({
     setLoading(true);
     setError(null);
     try {
-      const token = cookies.get("auth_token");
+      const token = new Cookies().get("auth_token");
       await apiRequest({
         method: "delete",
         url: `/api/projects/${project.url_slug}/registrations/`,

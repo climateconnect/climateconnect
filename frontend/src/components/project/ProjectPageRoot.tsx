@@ -161,8 +161,8 @@ export default function ProjectPageRoot({
 
   // Per-user registration state (optimistic update on success)
   const [isUserRegistered, setIsUserRegistered] = useState(isRegistered ?? false);
-  const [isUserHasAttended] = useState(hasAttended ?? false);
-  const [isAdminCancelled, setIsAdminCancelled] = useState(adminCancelled ?? false);
+  const hasUserAttended = hasAttended ?? false;
+  const isAdminCancelled = adminCancelled ?? false;
 
   // Registration modal state
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
@@ -177,7 +177,6 @@ export default function ProjectPageRoot({
   };
   const handleCancellationSuccess = () => {
     setIsUserRegistered(false);
-    setIsAdminCancelled(false);
     setCurrentEventRegistration((prev) =>
       prev && prev.available_seats != null
         ? { ...prev, available_seats: prev.available_seats + 1 }
@@ -572,7 +571,7 @@ export default function ProjectPageRoot({
         isEventRegistrationEnabled={isEventRegistrationEnabled}
         handleRegisterClick={handleRegisterClick}
         isUserRegistered={isUserRegistered}
-        hasAttended={isUserHasAttended}
+        hasAttended={hasUserAttended}
         adminCancelled={isAdminCancelled}
         handleCancelClick={handleCancelClick}
       />
@@ -630,7 +629,7 @@ export default function ProjectPageRoot({
           isEventRegistrationEnabled={isEventRegistrationEnabled}
           handleRegisterClick={handleRegisterClick}
           isUserRegistered={isUserRegistered}
-          hasAttended={isUserHasAttended}
+          hasAttended={hasUserAttended}
           adminCancelled={isAdminCancelled}
           handleCancelClick={handleCancelClick}
         />
