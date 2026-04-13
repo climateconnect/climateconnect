@@ -55,7 +55,6 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 | Organiser sends email to all registered guests          | [#1866](https://github.com/climateconnect/climateconnect/issues/1866) |   | ✅ Done |
 | Organiser closes / reopens registration                 | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) |  | ✅ Done                     |
 | Organiser cancels an individual guest registration      | [#1872](https://github.com/climateconnect/climateconnect/issues/1872) | [`20260407_1000_...`](./20260407_1000_organizer_cancel_guest_registration.md) | ✅ Done                   |
-
 | Organiser sets admin notification preference for registrations | [#1882](https://github.com/climateconnect/climateconnect/issues/1882) | [`20260413_0800_...`](./20260413_0800_admin_notification_on_registration_changes.md) | ✅ Done |
 | Admin notification emails on member registration / cancellation | [#1888](https://github.com/climateconnect/climateconnect/issues/1888) | [`20260413_0900_...`](./20260413_0900_admin_notification_email_on_registration.md) | 🔵 Ready |
 
