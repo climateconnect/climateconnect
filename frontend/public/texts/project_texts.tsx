@@ -1542,5 +1542,21 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Cancelled",
       de: "Storniert",
     },
+    cancel_registration: {
+      en: "Cancel registration",
+      de: "Anmeldung stornieren",
+    },
+    cancel_registration_confirm: {
+      en: "Are you sure you want to cancel your registration for {event}?",
+      de: "Bist du sicher, dass du deine Anmeldung für {event} stornieren möchtest?",
+    },
+    you_attended_this_event: {
+      en: "You attended this event",
+      de: "Du hast an dieser Veranstaltung teilgenommen",
+    },
+    cancel_registration_error: {
+      en: "Failed to cancel registration. Please try again.",
+      de: "Stornierung fehlgeschlagen. Bitte versuche es erneut.",
+    },
   };
 }

@@ -1,15 +1,12 @@
-import { AppBar, Button, Container, Toolbar } from "@mui/material";
+import { AppBar, Container, Toolbar } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
 import FollowButton from "../../general/FollowButton";
 import LikeButton from "./LikeButton";
+import RegistrationActionButton from "./RegistrationActionButton";
 import { Project } from "../../../types";
-import {
-  shouldShowRegisterButton,
-  getRegisterButtonText,
-  isRegisterButtonDisabled,
-} from "../../../utils/eventRegistrationHelpers";
+import { getRegistrationUIState } from "../../../utils/eventRegistrationHelpers";
 
 interface ProjectInteractionButtonsProps {
   projectAdmin: any;
@@ -41,6 +38,9 @@ interface ProjectInteractionButtonsProps {
   isEventRegistrationEnabled: boolean;
   handleRegisterClick: () => void;
   isUserRegistered?: boolean;
+  hasAttended?: boolean;
+  adminCancelled?: boolean;
+  handleCancelClick?: () => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -64,7 +64,6 @@ const useStyles = makeStyles((theme) => ({
   registerButton: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    whiteSpace: "nowrap",
   },
 }));
 
@@ -94,13 +93,22 @@ export default function ProjectInteractionButtons({
   isEventRegistrationEnabled,
   handleRegisterClick,
   isUserRegistered,
+  hasAttended,
+  adminCancelled,
+  handleCancelClick,
 }: ProjectInteractionButtonsProps) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
     tabContentContainerSpaceToRight: tabContentContainerSpaceToRight,
   });
 
-  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
+  const registrationState = getRegistrationUIState(
+    isEventRegistrationEnabled,
+    project,
+    isUserRegistered,
+    hasAttended,
+    adminCancelled
+  );
 
   if (screenSize.belowSmall)
     return (
@@ -113,16 +121,16 @@ export default function ProjectInteractionButtons({
               withIcons={!screenSize.belowTiny}
             />
           )}
-          {showRegisterButton ? (
-            <Button
-              variant="contained"
-              color={isRegisterButtonDisabled(project, isUserRegistered) ? "secondary" : "primary"}
-              disabled={isRegisterButtonDisabled(project, isUserRegistered)}
-              onClick={handleRegisterClick}
+          {registrationState !== "hidden" ? (
+            <RegistrationActionButton
+              registrationState={registrationState}
+              project={project}
+              texts={texts}
+              isUserRegistered={isUserRegistered}
+              handleRegisterClick={handleRegisterClick}
+              handleCancelClick={handleCancelClick}
               className={classes.registerButton}
-            >
-              {getRegisterButtonText(project, texts, isUserRegistered)}
-            </Button>
+            />
           ) : (
             <FollowButton
               isUserFollowing={isUserFollowing}

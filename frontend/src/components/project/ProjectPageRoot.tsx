@@ -28,6 +28,7 @@ import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMedi
 import { useFeatureToggles } from "../featureToggle";
 import ProjectRegistrationsContent from "./ProjectRegistrationsContent";
 import EventRegistrationModal from "./EventRegistrationModal";
+import CancelRegistrationModal from "./CancelRegistrationModal";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -110,6 +111,8 @@ export default function ProjectPageRoot({
   siblingProjects,
   isWasseraktionswochenEnabled,
   isRegistered,
+  hasAttended,
+  adminCancelled,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -158,11 +161,27 @@ export default function ProjectPageRoot({
 
   // Per-user registration state (optimistic update on success)
   const [isUserRegistered, setIsUserRegistered] = useState(isRegistered ?? false);
+  const hasUserAttended = hasAttended ?? false;
+  const isAdminCancelled = adminCancelled ?? false;
 
   // Registration modal state
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const handleRegisterClick = () => {
     setRegistrationModalOpen(true);
+  };
+
+  // Cancel registration modal state
+  const [cancelRegistrationModalOpen, setCancelRegistrationModalOpen] = useState(false);
+  const handleCancelClick = () => {
+    setCancelRegistrationModalOpen(true);
+  };
+  const handleCancellationSuccess = () => {
+    setIsUserRegistered(false);
+    setCurrentEventRegistration((prev) =>
+      prev && prev.available_seats != null
+        ? { ...prev, available_seats: prev.available_seats + 1 }
+        : prev
+    );
   };
 
   // Determine whether to show the Registrations tab:
@@ -552,6 +571,9 @@ export default function ProjectPageRoot({
         isEventRegistrationEnabled={isEventRegistrationEnabled}
         handleRegisterClick={handleRegisterClick}
         isUserRegistered={isUserRegistered}
+        hasAttended={hasUserAttended}
+        adminCancelled={isAdminCancelled}
+        handleCancelClick={handleCancelClick}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -607,6 +629,9 @@ export default function ProjectPageRoot({
           isEventRegistrationEnabled={isEventRegistrationEnabled}
           handleRegisterClick={handleRegisterClick}
           isUserRegistered={isUserRegistered}
+          hasAttended={hasUserAttended}
+          adminCancelled={isAdminCancelled}
+          handleCancelClick={handleCancelClick}
         />
       </Container>
 
@@ -733,6 +758,14 @@ export default function ProjectPageRoot({
                 : prev
             );
           }}
+        />
+      )}
+      {isEventRegistrationEnabled && project.registration_config && (
+        <CancelRegistrationModal
+          open={cancelRegistrationModalOpen}
+          onClose={() => setCancelRegistrationModalOpen(false)}
+          project={project}
+          onCancellationSuccess={handleCancellationSuccess}
         />
       )}
     </div>

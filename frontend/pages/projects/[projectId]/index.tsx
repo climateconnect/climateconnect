@@ -130,6 +130,8 @@ export async function getServerSideProps(ctx) {
       liking: userInteractions.liking,
       hasRequestedToJoin: userInteractions.has_requested_to_join,
       isRegistered: userInteractions.is_registered ?? false,
+      hasAttended: userInteractions.has_attended ?? false,
+      adminCancelled: userInteractions.admin_cancelled ?? false,
       hubs: hubs,
       similarProjects: similarProjects,
       hubSupporters: hubSupporters,
@@ -150,6 +152,8 @@ export default function ProjectPage({
   liking,
   hasRequestedToJoin,
   isRegistered,
+  hasAttended,
+  adminCancelled,
   hubs,
   similarProjects,
   hubSupporters,
@@ -324,6 +328,8 @@ export default function ProjectPage({
                 siblingProjects={siblingProjects}
                 isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
                 isRegistered={isRegistered}
+                hasAttended={hasAttended}
+                adminCancelled={adminCancelled}
               />
             </div>
             <div className={classes.secondaryContent}>
