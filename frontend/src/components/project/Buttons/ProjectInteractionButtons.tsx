@@ -121,11 +121,7 @@ export default function ProjectInteractionButtons({
               withIcons={!screenSize.belowTiny}
             />
           )}
-          {registrationState === "attended" ||
-          registrationState === "cancel" ||
-          registrationState === "adminClosed" ||
-          registrationState === "register" ||
-          registrationState === "closed" ? (
+          {registrationState !== "hidden" ? (
             <RegistrationActionButton
               registrationState={registrationState}
               project={project}
