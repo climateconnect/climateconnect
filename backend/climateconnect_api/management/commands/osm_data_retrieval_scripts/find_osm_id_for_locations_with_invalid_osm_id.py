@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 SEARCH_URL = "https://nominatim.openstreetmap.org/search"
 # search only allows 1 request per second, no batch requests
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+HEADERS = {"User-Agent": "ClimateConnect/1.0 (contact@climateconnect.earth)"}
 
 
 def discover_osm_id(loc: dict) -> dict | None:

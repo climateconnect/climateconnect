@@ -6,7 +6,7 @@ import requests
 from tqdm import tqdm
 
 LOCATIONS_URL = "https://nominatim.openstreetmap.org/lookup"
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+HEADERS = {"User-Agent": "ClimateConnect/1.0 (contact@climateconnect.earth)"}
 
 
 def discover_osm_type(osm_ids: list) -> tuple[dict, set] | None:

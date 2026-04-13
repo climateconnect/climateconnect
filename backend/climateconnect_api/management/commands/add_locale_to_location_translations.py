@@ -16,11 +16,12 @@ from climateconnect_api.models.language import Language
 
 # from django.db import transaction
 from location.models import Location, LocationTranslation
+from django.conf import settings
+
 from location.utility import format_location_name
 from location.utility import format_translation_data
 
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
-CUSTOM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 MAPPING_TABLE_PATH = Path(__file__).parent / "osm_lookup_tables" / "mapping.csv"
 
 
@@ -88,7 +89,7 @@ def translate_locations(locs: list["Location"], locale: str):
             "accept-language": locale,
         }
 
-        headers = {"User-Agent": CUSTOM_USER_AGENT}
+        headers = {"User-Agent": settings.CUSTOM_USER_AGENT}
 
         # Retry-Logic for Nominatim (503 errors may occur when too many requests are sent)
         max_retries = 3
