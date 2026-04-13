@@ -100,6 +100,7 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
             "registration_end_date",
             "status",
             "available_seats",
+            "notify_admins",
         ]
         extra_kwargs = {
             # PositiveIntegerField gives us min_value via the model, but we set
@@ -108,6 +109,10 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
             "registration_end_date": {"required": False, "allow_null": True},
             # Organisers may set OPEN or CLOSED; FULL is reserved for the system.
             "status": {"required": False, "default": RegistrationStatus.OPEN},
+            # Writable on creation (POST /api/projects/); defaults to True when omitted.
+            # Editing after creation is done via PATCH /registration-config/ using
+            # EditEventRegistrationConfigSerializer.
+            "notify_admins": {"required": False},
         }
 
     def get_available_seats(self, obj):
@@ -120,6 +125,19 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
         if not self.context.get("include_seat_count", False):
             return None
         return super().get_available_seats(obj)
+
+    def to_representation(self, instance):
+        """
+        Exclude ``notify_admins`` from list responses.
+
+        ``notify_admins`` is only included when ``context["include_seat_count"]``
+        is True (i.e. the detail endpoint).  The list endpoint omits it to keep
+        the payload lean and avoid leaking organiser-only settings to all callers.
+        """
+        data = super().to_representation(instance)
+        if not self.context.get("include_seat_count", False):
+            data.pop("notify_admins", None)
+        return data
 
     def validate_status(self, value):
         """Prevent organisers from directly setting system-managed statuses."""
@@ -308,11 +326,13 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
             "registration_end_date",
             "status",
             "available_seats",
+            "notify_admins",
         ]
         extra_kwargs = {
             "max_participants": {"required": False, "allow_null": True, "min_value": 1},
             "registration_end_date": {"required": False, "allow_null": True},
             "status": {"required": False},
+            "notify_admins": {"required": False},
         }
 
     def validate_status(self, value):

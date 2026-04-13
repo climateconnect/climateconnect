@@ -121,6 +121,16 @@ class EventRegistrationConfig(models.Model):
         auto_now=True,
     )
 
+    notify_admins = models.BooleanField(
+        default=True,
+        help_text=(
+            "When True, team admins receive an email notification whenever "
+            "a participant registers or cancels. "
+            "Consumed by the admin notification task (see GitHub issue #1888)."
+        ),
+        verbose_name="Notify Admins",
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Event Registration Config"
