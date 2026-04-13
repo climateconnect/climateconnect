@@ -30,7 +30,7 @@ import ProjectTypeDisplay from "./ProjectTypeDisplay";
 import WasseraktionswochenLink from "../hub/WasseraktionswochenLink";
 import { isWasseraktionswochenSubEvent } from "../../../public/data/wasseraktionswochen_config.js";
 import {
-  shouldShowRegisterButton,
+  getRegistrationUIState,
   getRegisterButtonText,
   isRegisterButtonDisabled,
 } from "../../utils/eventRegistrationHelpers";
@@ -177,6 +177,9 @@ type Props = {
   isEventRegistrationEnabled: boolean;
   handleRegisterClick: () => void;
   isUserRegistered?: boolean;
+  hasAttended?: boolean;
+  adminCancelled?: boolean;
+  handleCancelClick?: () => void;
 };
 
 export default function ProjectOverview({
@@ -207,6 +210,9 @@ export default function ProjectOverview({
   isEventRegistrationEnabled,
   handleRegisterClick,
   isUserRegistered,
+  hasAttended,
+  adminCancelled,
+  handleCancelClick,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);
@@ -255,6 +261,9 @@ export default function ProjectOverview({
           isEventRegistrationEnabled={isEventRegistrationEnabled}
           handleRegisterClick={handleRegisterClick}
           isUserRegistered={isUserRegistered}
+          hasAttended={hasAttended}
+          adminCancelled={adminCancelled}
+          handleCancelClick={handleCancelClick}
         />
       )}
 
@@ -423,12 +432,21 @@ function LargeScreenOverview({
   isEventRegistrationEnabled,
   handleRegisterClick,
   isUserRegistered,
+  hasAttended,
+  adminCancelled,
+  handleCancelClick,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
 
-  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
+  const registrationState = getRegistrationUIState(
+    isEventRegistrationEnabled,
+    project,
+    isUserRegistered,
+    hasAttended,
+    adminCancelled
+  );
 
   return (
     <>
@@ -466,7 +484,29 @@ function LargeScreenOverview({
               hasAdminPermissions={hasAdminPermissions}
               numberOfLikes={numberOfLikes}
             />
-            {showRegisterButton ? (
+            {registrationState === "attended" ? (
+              <Typography variant="body2" className={classes.registerButton}>
+                {texts.you_attended_this_event}
+              </Typography>
+            ) : registrationState === "cancel" ? (
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleCancelClick}
+                className={classes.registerButton}
+              >
+                {texts.cancel_registration}
+              </Button>
+            ) : registrationState === "adminClosed" ? (
+              <Button
+                variant="outlined"
+                color="secondary"
+                disabled
+                className={classes.registerButton}
+              >
+                {texts.registration_closed}
+              </Button>
+            ) : registrationState === "register" || registrationState === "closed" ? (
               <Button
                 variant="contained"
                 color={

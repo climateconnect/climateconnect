@@ -1,4 +1,4 @@
-import { AppBar, Button, Container, Toolbar } from "@mui/material";
+import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
@@ -6,7 +6,7 @@ import FollowButton from "../../general/FollowButton";
 import LikeButton from "./LikeButton";
 import { Project } from "../../../types";
 import {
-  shouldShowRegisterButton,
+  getRegistrationUIState,
   getRegisterButtonText,
   isRegisterButtonDisabled,
 } from "../../../utils/eventRegistrationHelpers";
@@ -41,6 +41,9 @@ interface ProjectInteractionButtonsProps {
   isEventRegistrationEnabled: boolean;
   handleRegisterClick: () => void;
   isUserRegistered?: boolean;
+  hasAttended?: boolean;
+  adminCancelled?: boolean;
+  handleCancelClick?: () => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -94,13 +97,22 @@ export default function ProjectInteractionButtons({
   isEventRegistrationEnabled,
   handleRegisterClick,
   isUserRegistered,
+  hasAttended,
+  adminCancelled,
+  handleCancelClick,
 }: ProjectInteractionButtonsProps) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
     tabContentContainerSpaceToRight: tabContentContainerSpaceToRight,
   });
 
-  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
+  const registrationState = getRegistrationUIState(
+    isEventRegistrationEnabled,
+    project,
+    isUserRegistered,
+    hasAttended,
+    adminCancelled
+  );
 
   if (screenSize.belowSmall)
     return (
@@ -113,7 +125,29 @@ export default function ProjectInteractionButtons({
               withIcons={!screenSize.belowTiny}
             />
           )}
-          {showRegisterButton ? (
+          {registrationState === "attended" ? (
+            <Typography variant="body2" className={classes.registerButton}>
+              {texts.you_attended_this_event}
+            </Typography>
+          ) : registrationState === "cancel" ? (
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleCancelClick}
+              className={classes.registerButton}
+            >
+              {texts.cancel_registration}
+            </Button>
+          ) : registrationState === "adminClosed" ? (
+            <Button
+              variant="outlined"
+              color="secondary"
+              disabled
+              className={classes.registerButton}
+            >
+              {texts.registration_closed}
+            </Button>
+          ) : registrationState === "register" || registrationState === "closed" ? (
             <Button
               variant="contained"
               color={isRegisterButtonDisabled(project, isUserRegistered) ? "secondary" : "primary"}
