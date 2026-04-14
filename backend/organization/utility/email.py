@@ -616,3 +616,103 @@ def send_event_registration_confirmation_to_user(user, project):
         should_send_email_setting="",
         notification=None,
     )
+
+
+def send_admin_event_notification(admin_user, project, guest_user, change_type: str):
+    """
+    Send a single admin notification email when a member registers or self-cancels.
+
+    Called once per admin from the ``notify_admins_of_registration_change`` Celery
+    task.  All email copy (subject, body, CTA label) is generated here in the
+    admin's preferred language — the Mailjet template is a styled wrapper only.
+
+    **Mailjet template variables**:
+        - ``AdminFirstName``    — admin's first name (falls back to username)
+        - ``Subject``           — localised subject (also used as envelope subject)
+        - ``Body``              — localised body text
+        - ``EventTitle``        — event name localised for the admin's language
+        - ``EventUrl``          — language-aware URL to the event page
+        - ``RegistrationsUrl``  — direct link to the event's Registrations tab
+        - ``CtaLabel``          — localised CTA button label
+
+    **Required env variables**:
+        ``ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID``    — Mailjet template ID (EN)
+        ``ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID_DE`` — Mailjet template ID (DE)
+
+    Args:
+        admin_user:  Django ``User`` instance of the admin recipient.
+        project:     ``Project`` instance.  Fetch with
+                     ``select_related("loc", "language")`` and the organiser/
+                     translation prefetch chain to avoid N+1.
+        guest_user:  Django ``User`` instance of the member who registered or cancelled.
+        change_type: ``"registered"`` or ``"cancelled"``.
+    """
+    lang_code = get_user_lang_code(admin_user)
+    event_title = get_project_name(project, lang_code)
+    guest_name = (
+        f"{guest_user.first_name} {guest_user.last_name}".strip()
+        or guest_user.username
+    )
+
+    if change_type == "registered":
+        subjects_by_language = {
+            "en": f"{guest_name} registered for {get_project_name(project, 'en')}",
+            "de": f"{guest_name} hat sich für {get_project_name(project, 'de')} angemeldet",
+        }
+        bodies_by_language = {
+            "en": (
+                f"{guest_name} has just registered for \"{get_project_name(project, 'en')}\". "
+                "View the updated registrations list."
+            ),
+            "de": (
+                f"{guest_name} hat sich soeben für \"{get_project_name(project, 'de')}\" angemeldet. "
+                "Sieh dir die aktualisierte Anmeldeliste an."
+            ),
+        }
+    else:  # "cancelled"
+        subjects_by_language = {
+            "en": f"{guest_name} cancelled their registration for {get_project_name(project, 'en')}",
+            "de": f"{guest_name} hat seine/ihre Anmeldung für {get_project_name(project, 'de')} storniert",
+        }
+        bodies_by_language = {
+            "en": (
+                f"{guest_name} has just cancelled their registration for \"{get_project_name(project, 'en')}\". "
+                "View the updated registrations list."
+            ),
+            "de": (
+                f"{guest_name} hat soeben seine/ihre Anmeldung für \"{get_project_name(project, 'de')}\" storniert. "
+                "Sieh dir die aktualisierte Anmeldeliste an."
+            ),
+        }
+
+    cta_labels_by_language = {
+        "en": "View registrations",
+        "de": "Anmeldeliste ansehen",
+    }
+
+    event_url = (
+        settings.FRONTEND_URL
+        + get_user_lang_url(lang_code)
+        + "/projects/"
+        + project.url_slug
+    )
+    registrations_url = event_url + "?#registrations"
+
+    variables = {
+        "AdminFirstName": admin_user.first_name or admin_user.username,
+        "Subject": subjects_by_language[lang_code],
+        "Body": bodies_by_language[lang_code],
+        "EventTitle": event_title,
+        "EventUrl": event_url,
+        "RegistrationsUrl": registrations_url,
+        "CtaLabel": cta_labels_by_language[lang_code],
+    }
+
+    send_email(
+        user=admin_user,
+        variables=variables,
+        template_key="ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="",
+        notification=None,
+    )
