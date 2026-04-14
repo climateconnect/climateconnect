@@ -6,6 +6,9 @@ Currently includes:
       sent after a successful event registration.
     - send_organizer_message_to_guests: async bulk send of an organiser-authored
       email to all active participants for an event.
+    - notify_admins_of_registration_change: async notification emails to all
+      team admins when a member registers or self-cancels (gated by
+      EventRegistrationConfig.notify_admins).
 """
 
 import logging
@@ -147,3 +150,128 @@ def send_organizer_message_to_guests(
         len(user_ids),
         event_slug,
     )
+
+
+@app.task(bind=True, max_retries=3, default_retry_delay=60)
+def notify_admins_of_registration_change(
+    self, project_id: int, guest_user_id: int, change_type: str
+):
+    """
+    Notify all team admins of a member registration or self-cancellation.
+
+    Dispatched asynchronously (via .delay()) inside a ``transaction.on_commit``
+    callback so it only fires after the enclosing DB transaction commits
+    successfully.
+
+    The task re-reads ``EventRegistrationConfig.notify_admins`` from the DB
+    before doing any work — if the flag has been toggled off between the HTTP
+    request and task execution, the task exits early without sending any emails.
+
+    One admin's email failure does not prevent notifications to other admins:
+    each send is wrapped in its own try/except.  If any admin's send fails, the
+    task retries (up to 3 times, 60-second delay) so the failing admin eventually
+    receives their notification.
+
+    Args:
+        project_id:    Primary key of the event Project.
+        guest_user_id: Primary key of the member who registered or cancelled.
+        change_type:   ``"registered"`` or ``"cancelled"``.
+    """
+    from climateconnect_api.models import Role
+    from organization.models.project import Project
+    from organization.models.event_registration import EventRegistrationConfig
+    from organization.utility.email import send_admin_event_notification
+
+    # ── 1. Look up project ────────────────────────────────────────────────────
+    try:
+        project = (
+            Project.objects.select_related("loc", "language")
+            .prefetch_related(
+                "translation_project__language",
+                "project_parent__parent_organization__language",
+                "project_parent__parent_organization__translation_org__language",
+                "project_parent__parent_user__user_profile",
+            )
+            .get(id=project_id)
+        )
+    except Project.DoesNotExist:
+        logger.warning(
+            "[AdminNotification] Project %s not found — aborting admin notification",
+            project_id,
+        )
+        return
+
+    # ── 2. Look up guest user ─────────────────────────────────────────────────
+    try:
+        guest_user = User.objects.select_related("user_profile").get(id=guest_user_id)
+    except User.DoesNotExist:
+        logger.warning(
+            "[AdminNotification] Guest user %s not found — aborting admin notification",
+            guest_user_id,
+        )
+        return
+
+    # ── 3. Re-check notify_admins flag (may have been toggled since dispatch) ─
+    try:
+        rc = EventRegistrationConfig.objects.get(project=project)
+    except EventRegistrationConfig.DoesNotExist:
+        logger.warning(
+            "[AdminNotification] No EventRegistrationConfig for project %s — aborting",
+            project_id,
+        )
+        return
+
+    if not rc.notify_admins:
+        logger.info(
+            "[AdminNotification] notify_admins=False for project %s — skipping",
+            project_id,
+        )
+        return
+
+    # ── 4. Fetch all team admins (organiser + write-access project members) ───
+    # ProjectMember.user has related_name="project_member_user" (see organization/models/members.py)
+    admin_users = User.objects.select_related("user_profile__location").filter(
+        project_member_user__project=project,
+        project_member_user__role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+    )
+
+    if not admin_users.exists():
+        logger.info(
+            "[AdminNotification] No team admins found for project %s — nothing to send",
+            project_id,
+        )
+        return
+
+    # ── 5. Send notification to each admin; failures are isolated ─────────────
+    failed = False
+    for admin in admin_users:
+        try:
+            send_admin_event_notification(
+                admin_user=admin,
+                project=project,
+                guest_user=guest_user,
+                change_type=change_type,
+            )
+            logger.info(
+                "[AdminNotification] Sent %s notification to admin %s for project %s",
+                change_type,
+                admin.id,
+                project_id,
+            )
+        except Exception as exc:
+            logger.error(
+                "[AdminNotification] Failed to send %s notification to admin %s "
+                "for project %s: %s",
+                change_type,
+                admin.id,
+                project_id,
+                exc,
+            )
+            failed = True
+
+    if failed:
+        raise self.retry(
+            exc=Exception(
+                f"[AdminNotification] One or more admin notifications failed for project {project_id}"
+            )
+        )

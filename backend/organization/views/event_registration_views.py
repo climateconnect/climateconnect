@@ -22,6 +22,7 @@ from organization.serializers.event_registration import (
     _compute_effective_status,
 )
 from organization.tasks import (
+    notify_admins_of_registration_change as _notify_admins_task,
     send_event_registration_confirmation_email as _send_registration_email,
     send_organizer_message_to_guests as _send_organizer_email_task,
 )
@@ -191,6 +192,20 @@ class EventRegistrationsView(APIView):
             )
         )
 
+        # ── 9. Dispatch async admin notification (only when notify_admins=True) ─
+        # Re-check is done inside the task to handle flag toggling between
+        # dispatch and execution.  No extra DB query here when flag is False.
+        if rc.notify_admins:
+            _project_id = project.id
+            _guest_user_id = request.user.id
+            transaction.on_commit(
+                lambda: _notify_admins_task.delay(
+                    project_id=_project_id,
+                    guest_user_id=_guest_user_id,
+                    change_type="registered",
+                )
+            )
+
         return Response(
             {"registered": True, "available_seats": available_seats},
             status=status.HTTP_201_CREATED,
@@ -357,6 +372,20 @@ class EventRegistrationsView(APIView):
             request.user.id,
             project.url_slug,
         )
+
+        # ── 9. Dispatch async admin notification (only when notify_admins=True) ─
+        # This is a self-cancellation, so the admin notification is appropriate.
+        # Capture values eagerly before the transaction commits.
+        if rc.notify_admins:
+            _project_id = project.id
+            _guest_user_id = request.user.id
+            transaction.on_commit(
+                lambda: _notify_admins_task.delay(
+                    project_id=_project_id,
+                    guest_user_id=_guest_user_id,
+                    change_type="cancelled",
+                )
+            )
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
