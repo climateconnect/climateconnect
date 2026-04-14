@@ -104,8 +104,18 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   },
 }));
 
-type Props = { project: Project; hovering: boolean; withDescription?: boolean };
-export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
+type Props = {
+  project: Project;
+  hovering: boolean;
+  withDescription?: boolean;
+  isUserRegistered?: boolean;
+};
+export default function ProjectMetaData({
+  project,
+  hovering,
+  withDescription,
+  isUserRegistered,
+}: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
@@ -119,6 +129,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
         hovering={hovering}
         main_project_sector={main_project_sector}
         texts={texts}
+        isUserRegistered={isUserRegistered}
       />
     );
   }
@@ -130,6 +141,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
       project={project}
       main_project_sector={main_project_sector}
       texts={texts}
+      isUserRegistered={isUserRegistered}
     />
   );
 }
@@ -141,6 +153,7 @@ const WithDescription = ({
   project,
   main_project_sector,
   texts,
+  isUserRegistered,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -169,7 +182,7 @@ const WithDescription = ({
               iconClassName={classes.cardIcon}
             />
           )}
-          <AdditionalPreviewInfo project={project} />
+          <AdditionalPreviewInfo project={project} isUserRegistered={isUserRegistered} />
         </Box>
       </Container>
       {hovering && (
@@ -190,6 +203,7 @@ const WithOutDescription = ({
   project,
   main_project_sector,
   texts,
+  isUserRegistered,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -211,7 +225,7 @@ const WithOutDescription = ({
             projectSectorClassName={classes.metadataText}
             iconClassName={classes.cardIcon}
           />
-          <AdditionalPreviewInfo project={project} />
+          <AdditionalPreviewInfo project={project} isUserRegistered={isUserRegistered} />
         </Box>
       </Container>
     </Box>
@@ -263,7 +277,13 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
   );
 };
 
-const AdditionalPreviewInfo = ({ project }) => {
+const AdditionalPreviewInfo = ({
+  project,
+  isUserRegistered,
+}: {
+  project: Project;
+  isUserRegistered?: boolean;
+}) => {
   const classes = useStyles({});
   const { projectTypes } = useContext(BrowseContext);
   const { locale } = useContext(UserContext);
@@ -281,8 +301,8 @@ const AdditionalPreviewInfo = ({ project }) => {
   const getRegisterButtonConfig = () => {
     if (!showRegisterButton) return null;
 
-    const buttonText = getRegisterButtonText(project, texts);
-    const disabled = isRegisterButtonDisabled(project);
+    const buttonText = getRegisterButtonText(project, texts, isUserRegistered);
+    const disabled = isRegisterButtonDisabled(project, isUserRegistered);
 
     return {
       label: buttonText,

@@ -239,7 +239,7 @@ export default function ProfileRoot({
             <h2 className={classes.title}>{texts.your_registered_events}</h2>
           </div>
           {registeredEvents && registeredEvents.length > 0 ? (
-            <ProjectPreviews projects={registeredEvents} hubUrl={hubUrl} />
+            <ProjectPreviews projects={registeredEvents} hubUrl={hubUrl} isUserRegistered />
           ) : (
             <Typography>{texts.no_registered_events_yet}</Typography>
           )}
