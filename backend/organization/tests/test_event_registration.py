@@ -2020,7 +2020,8 @@ class TestSendOrganizerEmail(APITestCase):
 
     @tag("organizer_email", "bulk_send")
     def test_bulk_send_with_three_participants_returns_sent_count(self):
-        """is_test=false with 3 participants → 200 OK, sent_count=3, task dispatched."""
+        """is_test=false with 3 guests → 200 OK, sent_count=5 (3 guests + 2 admins),
+        task dispatched with all 5 unique user IDs."""
         for i in range(3):
             self._make_participant(f"send_email_p_{i}")
 
@@ -2034,10 +2035,11 @@ class TestSendOrganizerEmail(APITestCase):
             )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.assertEqual(response.data["sent_count"], 3)
+        # 3 guests + organiser (ALL_TYPE) + team_admin (READ_WRITE_TYPE) = 5
+        self.assertEqual(response.data["sent_count"], 5)
         mock_task.delay.assert_called_once()
         _, kwargs = mock_task.delay.call_args
-        self.assertEqual(len(kwargs["user_ids"]), 3)
+        self.assertEqual(len(kwargs["user_ids"]), 5)
         self.assertEqual(kwargs["subject"], "Important update")
         self.assertEqual(kwargs["event_slug"], "send-email-event")
 
@@ -2047,7 +2049,8 @@ class TestSendOrganizerEmail(APITestCase):
 
     @tag("organizer_email", "bulk_send")
     def test_bulk_send_with_zero_participants_returns_zero_count(self):
-        """is_test=false with no participants → 200 OK, sent_count=0, task dispatched with []."""
+        """is_test=false with no registered guests → 200 OK, sent_count=2 (admins only),
+        task dispatched with the 2 team admin IDs."""
         self.client.login(username="organiser_send_email", password="testpassword")
 
         with mock_patch(
@@ -2058,10 +2061,13 @@ class TestSendOrganizerEmail(APITestCase):
             )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
-        self.assertEqual(response.data["sent_count"], 0)
+        # 0 guests + organiser (ALL_TYPE) + team_admin (READ_WRITE_TYPE) = 2
+        self.assertEqual(response.data["sent_count"], 2)
         mock_task.delay.assert_called_once()
         _, kwargs = mock_task.delay.call_args
-        self.assertEqual(kwargs["user_ids"], [])
+        self.assertEqual(len(kwargs["user_ids"]), 2)
+        self.assertIn(self.organiser.id, kwargs["user_ids"])
+        self.assertIn(self.team_admin.id, kwargs["user_ids"])
 
     # ------------------------------------------------------------------
     # 9. is_test=true → 200, sent_count=1, helper called with [TEST] prefix
@@ -2107,8 +2113,84 @@ class TestSendOrganizerEmail(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
 
     # ------------------------------------------------------------------
-    # 11. Celery task: project not found → logs error, returns without raising
+    # 14 (#1886). Bulk send: guests + admins with no overlap → correct total
     # ------------------------------------------------------------------
+
+    @tag("organizer_email", "bulk_send", "admin_cc")
+    def test_bulk_send_includes_team_admins_alongside_guests(self):
+        """Bulk send with 5 distinct guests and 2 admins (no overlap) → sent_count=7."""
+        for i in range(5):
+            self._make_participant(f"admin_cc_guest_{i}")
+
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(), self._valid_payload(is_test=False), format="json"
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        # 5 guests + organiser (ALL_TYPE) + team_admin (READ_WRITE_TYPE) = 7
+        self.assertEqual(response.data["sent_count"], 7)
+        _, kwargs = mock_task.delay.call_args
+        self.assertEqual(len(kwargs["user_ids"]), 7)
+
+    # ------------------------------------------------------------------
+    # 15 (#1886). Bulk send: admin who is also a registered guest → deduplicated
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "bulk_send", "admin_cc")
+    def test_bulk_send_deduplicates_admin_who_is_also_a_guest(self):
+        """A team admin who is also registered as a guest appears only once in the
+        recipient list and counts as one in sent_count."""
+        # Register the organiser (ALL_TYPE admin) as a guest too.
+        EventRegistration.objects.create(user=self.organiser, registration_config=self.er)
+
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(), self._valid_payload(is_test=False), format="json"
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        # organiser (guest + admin) counted once + team_admin (admin only) = 2
+        self.assertEqual(response.data["sent_count"], 2)
+        _, kwargs = mock_task.delay.call_args
+        self.assertEqual(len(kwargs["user_ids"]), 2)
+        self.assertIn(self.organiser.id, kwargs["user_ids"])
+        self.assertIn(self.team_admin.id, kwargs["user_ids"])
+
+    # ------------------------------------------------------------------
+    # 16 (#1886). Bulk send: 0 guests but admins present → admins receive email
+    # ------------------------------------------------------------------
+    # Covered by the updated test_bulk_send_with_zero_participants_returns_zero_count above.
+
+    # ------------------------------------------------------------------
+    # 17 (#1886). Test send (is_test=true) → team admins NOT included
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "test_send", "admin_cc")
+    def test_test_send_does_not_include_team_admins(self):
+        """Test send (is_test=true) sends only to the requesting organiser;
+        team admins are not included (#1886)."""
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views.send_organizer_message_to_guest"
+        ) as mock_helper:
+            response = self.client.post(
+                self._url(), self._valid_payload(is_test=True), format="json"
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        # Only one call — to the requesting organiser. No admin copies.
+        self.assertEqual(mock_helper.call_count, 1)
+        self.assertEqual(response.data["sent_count"], 1)
 
     @tag("organizer_email", "celery_task")
     def test_task_project_not_found_logs_error_and_returns(self):

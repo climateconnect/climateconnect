@@ -1413,6 +1413,22 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Message is required.",
       de: "Nachricht ist erforderlich.",
     },
+    email_confirmation_recipients: {
+      en: "This email will be sent to {count} registered guests.",
+      de: "Diese E-Mail wird an {count} registrierte Gäste gesendet.",
+    },
+    email_confirmation_admin_cc: {
+      en: "Team admins will also receive a copy.",
+      de: "Team-Admins erhalten ebenfalls eine Kopie.",
+    },
+    confirm_and_send: {
+      en: "Confirm and send",
+      de: "Bestätigen und senden",
+    },
+    back: {
+      en: "Back",
+      de: "Zurück",
+    },
     close: {
       en: "Close",
       de: "Schließen",
