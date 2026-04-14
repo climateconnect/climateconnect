@@ -14,18 +14,26 @@ import UserContext from "./../../src/components/context/UserContext";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import theme from "../../src/themes/theme";
-import { parseProjectStubs } from "../../public/lib/parsingOperations";
+import { parseProjectStubs, parseDirectProjectStubs } from "../../public/lib/parsingOperations";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
   const hubUrl = ctx.query.hub;
-  const [profile, organizations, projects, projectTypes, hubThemeData] = await Promise.all([
+  const [
+    profile,
+    organizations,
+    projects,
+    projectTypes,
+    hubThemeData,
+    registeredEvents,
+  ] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, auth_token, ctx.locale),
     getOrganizationsByUser(profileUrl, auth_token, ctx.locale),
     getProjectsByUser(profileUrl, auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    auth_token ? getRegisteredEvents(auth_token, ctx.locale) : null,
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -35,6 +43,7 @@ export async function getServerSideProps(ctx) {
       projectTypes: projectTypes,
       hubUrl: hubUrl,
       hubThemeData: hubThemeData,
+      registeredEvents: registeredEvents,
     }),
   };
 }
@@ -46,6 +55,7 @@ export default function ProfilePage({
   projectTypes,
   hubUrl,
   hubThemeData,
+  registeredEvents,
 }) {
   const token = new Cookies().get("auth_token");
   const { user, locale } = useContext(UserContext);
@@ -85,6 +95,7 @@ export default function ProfilePage({
             texts={texts}
             locale={locale}
             hubUrl={hubUrl}
+            registeredEvents={registeredEvents}
           />
         </BrowseContext.Provider>
       ) : (
@@ -159,4 +170,21 @@ function parseOrganizationStubs(organizations) {
       short_description: o.organization?.short_description,
     },
   }));
+}
+
+async function getRegisteredEvents(token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/members/me/registered-events/",
+      token: token,
+      locale: locale,
+    });
+    if (!resp.data) return null;
+    return parseDirectProjectStubs(resp.data.results);
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
 }

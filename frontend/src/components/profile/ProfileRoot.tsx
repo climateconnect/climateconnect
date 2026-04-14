@@ -98,6 +98,7 @@ export default function ProfileRoot({
   texts,
   locale,
   hubUrl,
+  registeredEvents,
 }) {
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const classes = useStyles();
@@ -232,6 +233,18 @@ export default function ProfileRoot({
           </Typography>
         )}
       </Container>
+      {isOwnAccount && (
+        <Container className={classes.container}>
+          <div className={classes.sectionHeadlineWithButtonContainer}>
+            <h2 className={classes.title}>{texts.your_registered_events}</h2>
+          </div>
+          {registeredEvents && registeredEvents.length > 0 ? (
+            <ProjectPreviews projects={registeredEvents} hubUrl={hubUrl} />
+          ) : (
+            <Typography>{texts.no_registered_events_yet}</Typography>
+          )}
+        </Container>
+      )}
     </AccountPage>
   );
 }
