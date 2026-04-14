@@ -3603,10 +3603,13 @@ class TestAdminNotificationTask(APITestCase):
         from organization.tasks import notify_admins_of_registration_change
         from celery.exceptions import Retry
 
+        # mock_patch.object(task, 'apply_async') prevents self.retry() from
+        # trying to connect to the Celery broker (which isn't running in CI).
+        # self.retry() still raises Retry — we just prevent the broker call.
         with mock_patch(
             "organization.utility.email.send_admin_event_notification",
             side_effect=side_effect,
-        ):
+        ), mock_patch.object(notify_admins_of_registration_change, "apply_async"):
             with self.assertRaises(Retry):
                 notify_admins_of_registration_change.apply(
                     kwargs={
