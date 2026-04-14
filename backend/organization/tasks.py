@@ -178,7 +178,6 @@ def notify_admins_of_registration_change(
         change_type:   ``"registered"`` or ``"cancelled"``.
     """
     from climateconnect_api.models import Role
-    from organization.models import ProjectMember
     from organization.models.project import Project
     from organization.models.event_registration import EventRegistrationConfig
     from organization.utility.email import send_admin_event_notification

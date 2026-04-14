@@ -650,8 +650,7 @@ def send_admin_event_notification(admin_user, project, guest_user, change_type: 
     lang_code = get_user_lang_code(admin_user)
     event_title = get_project_name(project, lang_code)
     guest_name = (
-        f"{guest_user.first_name} {guest_user.last_name}".strip()
-        or guest_user.username
+        f"{guest_user.first_name} {guest_user.last_name}".strip() or guest_user.username
     )
 
     if change_type == "registered":

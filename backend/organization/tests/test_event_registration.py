@@ -2928,7 +2928,9 @@ class TestNotifyAdminsField(APITestCase):
         return reverse("organization:project-api-view", kwargs={"url_slug": slug})
 
     def _edit_config_url(self, slug):
-        return reverse("organization:edit-registration-config", kwargs={"url_slug": slug})
+        return reverse(
+            "organization:edit-registration-config", kwargs={"url_slug": slug}
+        )
 
     # ------------------------------------------------------------------
     # Test case 1: GET detail includes notify_admins
@@ -3009,7 +3011,10 @@ class TestNotifyAdminsField(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
         self.er.refresh_from_db()
-        self.assertTrue(self.er.notify_admins, "notify_admins must remain True when not in PATCH body")
+        self.assertTrue(
+            self.er.notify_admins,
+            "notify_admins must remain True when not in PATCH body",
+        )
 
     @tag("notify_admins", "registration_config", "edit_settings")
     def test_patch_notify_admins_true_updates_field(self):
@@ -3238,13 +3243,17 @@ class TestAdminNotificationEmailDispatch(APITestCase):
         # transaction.on_commit does not fire inside Django TestCase (which wraps
         # everything in a transaction that never commits).  Mock it to call the
         # callback immediately so we can assert on the task dispatch.
-        with mock_patch(
-            "organization.views.event_registration_views._send_registration_email"
-        ), mock_patch(
-            "organization.views.event_registration_views._notify_admins_task"
-        ) as mock_notify, mock_patch(
-            "organization.views.event_registration_views.transaction.on_commit",
-            side_effect=lambda fn: fn(),
+        with (
+            mock_patch(
+                "organization.views.event_registration_views._send_registration_email"
+            ),
+            mock_patch(
+                "organization.views.event_registration_views._notify_admins_task"
+            ) as mock_notify,
+            mock_patch(
+                "organization.views.event_registration_views.transaction.on_commit",
+                side_effect=lambda fn: fn(),
+            ),
         ):
             response = self.client.post(self._register_url())
 
@@ -3267,11 +3276,14 @@ class TestAdminNotificationEmailDispatch(APITestCase):
 
         self.client.login(username="member_admin_notif", password="testpassword")
 
-        with mock_patch(
-            "organization.views.event_registration_views._send_registration_email"
-        ), mock_patch(
-            "organization.views.event_registration_views._notify_admins_task"
-        ) as mock_notify:
+        with (
+            mock_patch(
+                "organization.views.event_registration_views._send_registration_email"
+            ),
+            mock_patch(
+                "organization.views.event_registration_views._notify_admins_task"
+            ) as mock_notify,
+        ):
             response = self.client.post(self._register_url())
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -3312,11 +3324,14 @@ class TestAdminNotificationEmailDispatch(APITestCase):
 
         self.client.login(username="member_admin_notif", password="testpassword")
 
-        with mock_patch(
-            "organization.views.event_registration_views._send_registration_email"
-        ), mock_patch(
-            "organization.views.event_registration_views._notify_admins_task"
-        ) as mock_notify:
+        with (
+            mock_patch(
+                "organization.views.event_registration_views._send_registration_email"
+            ),
+            mock_patch(
+                "organization.views.event_registration_views._notify_admins_task"
+            ) as mock_notify,
+        ):
             # captureOnCommitCallbacks executes on_commit callbacks synchronously
             # so we can assert on the task dispatch within the test.
             with self.captureOnCommitCallbacks(execute=True):
@@ -3387,10 +3402,13 @@ class TestAdminNotificationEmailDispatch(APITestCase):
 
         self.client.login(username="organiser_admin_notif", password="testpassword")
 
-        with mock_patch(
-            "organization.views.event_registration_views._notify_admins_task"
-        ) as mock_notify, mock_patch(
-            "organization.views.event_registration_views.send_guest_cancellation_notification"
+        with (
+            mock_patch(
+                "organization.views.event_registration_views._notify_admins_task"
+            ) as mock_notify,
+            mock_patch(
+                "organization.views.event_registration_views.send_guest_cancellation_notification"
+            ),
         ):
             response = self.client.patch(
                 self._admin_cancel_url(reg.id),
@@ -3488,9 +3506,9 @@ class TestAdminNotificationTask(APITestCase):
         notify_admins_of_registration_change.apply(
             kwargs={
                 "project_id": project_id if project_id is not None else self.event.id,
-                "guest_user_id": guest_user_id
-                if guest_user_id is not None
-                else self.guest.id,
+                "guest_user_id": (
+                    guest_user_id if guest_user_id is not None else self.guest.id
+                ),
                 "change_type": change_type,
             }
         )
@@ -3520,14 +3538,24 @@ class TestAdminNotificationTask(APITestCase):
     def test_task_calls_email_helper_once_per_admin(self):
         """With 3 team admins the email helper is called exactly 3 times."""
         admin2 = User.objects.create_user(
-            username="admin2_task_notif", password="x", first_name="Admin", last_name="Two"
+            username="admin2_task_notif",
+            password="x",
+            first_name="Admin",
+            last_name="Two",
         )
         admin3 = User.objects.create_user(
-            username="admin3_task_notif", password="x", first_name="Admin", last_name="Three"
+            username="admin3_task_notif",
+            password="x",
+            first_name="Admin",
+            last_name="Three",
         )
-        rw_role2 = Role.objects.create(name="RW2_task_notif", role_type=Role.READ_WRITE_TYPE)
+        rw_role2 = Role.objects.create(
+            name="RW2_task_notif", role_type=Role.READ_WRITE_TYPE
+        )
         ProjectMember.objects.create(user=admin2, project=self.event, role=rw_role2)
-        rw_role3 = Role.objects.create(name="RW3_task_notif", role_type=Role.READ_WRITE_TYPE)
+        rw_role3 = Role.objects.create(
+            name="RW3_task_notif", role_type=Role.READ_WRITE_TYPE
+        )
         ProjectMember.objects.create(user=admin3, project=self.event, role=rw_role3)
 
         with mock_patch(
@@ -3545,13 +3573,23 @@ class TestAdminNotificationTask(APITestCase):
     def test_one_admin_failure_does_not_prevent_others_and_task_retries(self):
         """When one admin's send raises, the others still receive emails and the task retries."""
         admin2 = User.objects.create_user(
-            username="admin2_fail_notif", password="x", first_name="Admin", last_name="Two"
+            username="admin2_fail_notif",
+            password="x",
+            first_name="Admin",
+            last_name="Two",
         )
         admin3 = User.objects.create_user(
-            username="admin3_fail_notif", password="x", first_name="Admin", last_name="Three"
+            username="admin3_fail_notif",
+            password="x",
+            first_name="Admin",
+            last_name="Three",
         )
-        rw_role2 = Role.objects.create(name="RW2_fail_notif", role_type=Role.READ_WRITE_TYPE)
-        rw_role3 = Role.objects.create(name="RW3_fail_notif", role_type=Role.READ_WRITE_TYPE)
+        rw_role2 = Role.objects.create(
+            name="RW2_fail_notif", role_type=Role.READ_WRITE_TYPE
+        )
+        rw_role3 = Role.objects.create(
+            name="RW3_fail_notif", role_type=Role.READ_WRITE_TYPE
+        )
         ProjectMember.objects.create(user=admin2, project=self.event, role=rw_role2)
         ProjectMember.objects.create(user=admin3, project=self.event, role=rw_role3)
 
@@ -3591,6 +3629,7 @@ class TestAdminNotificationTask(APITestCase):
         """Task exits gracefully when the event has no team admins."""
         # Remove the organiser from the project.
         from organization.models import ProjectMember as PM
+
         PM.objects.filter(project=self.event).delete()
 
         with mock_patch(
@@ -3640,7 +3679,9 @@ class TestAdminNotificationTask(APITestCase):
 
         captured = {}
 
-        def capture_send_email(user, variables, template_key, subjects_by_language, **kwargs):
+        def capture_send_email(
+            user, variables, template_key, subjects_by_language, **kwargs
+        ):
             captured["subjects"] = subjects_by_language
             captured["variables"] = variables
 
@@ -3669,7 +3710,9 @@ class TestAdminNotificationTask(APITestCase):
 
         captured = {}
 
-        def capture_send_email(user, variables, template_key, subjects_by_language, **kwargs):
+        def capture_send_email(
+            user, variables, template_key, subjects_by_language, **kwargs
+        ):
             captured["subjects"] = subjects_by_language
             captured["variables"] = variables
 
@@ -3708,7 +3751,9 @@ class TestAdminNotificationTask(APITestCase):
 
         captured = {}
 
-        def capture_send_email(user, variables, template_key, subjects_by_language, **kwargs):
+        def capture_send_email(
+            user, variables, template_key, subjects_by_language, **kwargs
+        ):
             captured["subjects"] = subjects_by_language
             captured["variables"] = variables
 
