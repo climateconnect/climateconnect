@@ -89,6 +89,52 @@ app_name/
 - `python manage.py createsuperuser` - Create admin user
 - Run tests by activating the PDM virtual environment first: `pdm venv activate django4`, then run `python manage.py test`
 
+### Running Tests
+
+Always use `pdm run` to run tests (avoids needing to activate the venv manually):
+
+```bash
+# Run all tests in a module
+cd backend && pdm run python manage.py test organization.tests.test_event_registration --keepdb
+
+# Run a specific test class
+cd backend && pdm run python manage.py test organization.tests.test_event_registration.TestAdminNotificationTask --keepdb
+
+# Run a single test method
+cd backend && pdm run python manage.py test organization.tests.test_event_registration.TestAdminNotificationTask.test_task_exits_early_when_notify_admins_toggled_off --keepdb
+```
+
+**`--keepdb`**: Reuse the existing test database instead of recreating it. Required when the test DB already exists (avoids the interactive "delete?" prompt that breaks non-interactive terminals).
+
+If the test DB does not yet exist, omit `--keepdb` for the first run.
+
+#### Avoiding file corruption when editing files open in PyCharm
+
+PyCharm has autosave enabled. When the agent writes to a file that PyCharm has open, a race condition can occur:
+
+1. Agent writes change A via `apply_diff` → file on disk updated.
+2. PyCharm detects external modification and reloads — but may have buffered an in-memory version of the file.
+3. Agent writes change B via a second `apply_diff` → PyCharm's buffered version (which may not include change A) gets saved, overwriting change B or producing duplicated/corrupted content.
+
+**Rules to avoid this:**
+
+- **Batch edits to the same file**: use a single `apply_diff` call with multiple SEARCH/REPLACE blocks rather than separate calls in sequence.
+- **For bulk text replacements on large files**: use a CLI Python one-liner (`python3 -c "content = open(...).read(); content = content.replace(...); open(..., 'w').write(content)"`) which is atomic from PyCharm's perspective.
+- **Never mix `apply_diff` and CLI edits on the same file** in the same session — pick one approach and stick to it.
+- **After a CLI edit, re-read the file** before making further `apply_diff` calls to ensure the baseline is current.
+
+#### Infrastructure dependencies for tests
+
+Django tests require **PostgreSQL** and **Redis** to be running. If tests fail with connection errors, stop and ask the user to start the required services before continuing:
+
+| Error symptom | Likely cause | Ask user to |
+|---|---|---|
+| `connection refused` on port 5432 | PostgreSQL not running | Start PostgreSQL (e.g. `brew services start postgresql` or start the dev container) |
+| `connection refused` on port 6379 | Redis not running | Start Redis (e.g. `brew services start redis` or start the dev container) |
+| `CHANNEL_LAYERS` / `channels_redis` errors | Redis not running | Start Redis |
+
+**Do not attempt to work around infrastructure failures by modifying test code or settings.** Stop, explain the problem to the user, and ask them to start the missing service.
+
 ### Background Tasks
 - `celery -A climateconnect_main worker -l info` - Start Celery worker
 - `celery -A climateconnect_main beat -l info` - Start Celery beat (scheduler)
@@ -120,6 +166,75 @@ app_name/
 - Test error cases and edge conditions
 - Clean up test data with `setUp()` and `tearDown()`
 - Use `self.client` for API endpoint testing
+
+#### Testing `transaction.on_commit` callbacks
+
+Django's `TestCase` wraps each test in a transaction that never commits, so `transaction.on_commit` callbacks **do not fire** automatically. Two approaches:
+
+**Option A — `captureOnCommitCallbacks` (Django 4.1+, preferred)**
+```python
+with mock_patch("myapp.views._my_task") as mock_task:
+    with self.captureOnCommitCallbacks(execute=True):
+        response = self.client.post(url)
+mock_task.delay.assert_called_once_with(...)
+```
+
+**Option B — mock `transaction.on_commit` directly**
+```python
+with mock_patch("myapp.views._my_task") as mock_task, \
+     mock_patch("myapp.views.transaction.on_commit", side_effect=lambda fn: fn()):
+    response = self.client.post(url)
+mock_task.delay.assert_called_once_with(...)
+```
+
+Both approaches make the `on_commit` callback execute synchronously within the test so you can assert on the task dispatch.
+
+#### Mocking locally-imported functions in Celery tasks
+
+Celery tasks often import helpers locally (inside the function body) to avoid circular imports:
+```python
+@app.task
+def my_task(project_id):
+    from myapp.utility.email import send_notification  # local import
+    send_notification(...)
+```
+
+To mock `send_notification` in tests, patch it **at the module where it is defined**, not where it is imported:
+```python
+with mock_patch("myapp.utility.email.send_notification") as mock_send:
+    my_task.apply(kwargs={"project_id": 1})
+mock_send.assert_called_once()
+```
+
+#### Running Celery tasks synchronously in tests
+
+Use `.apply()` (not `.delay()`) to run a task synchronously in tests:
+```python
+from myapp.tasks import my_task
+my_task.apply(kwargs={"project_id": 1})
+```
+
+To test that a task raises `Retry` on failure, pass `throw=True`:
+```python
+from celery.exceptions import Retry
+with self.assertRaises(Retry):
+    my_task.apply(kwargs={"project_id": 1}, throw=True)
+```
+
+#### Key model related names
+
+`ProjectMember` uses non-default related names — use these in ORM queries:
+- `ProjectMember.user` → `related_name="project_member_user"` (User → ProjectMember)
+- `ProjectMember.project` → `related_name="project_member_project"` (Project → ProjectMember)
+- `ProjectMember.role` → `related_name="project_member_role"` (Role → ProjectMember)
+
+Example — fetch all users who are admins on a project:
+```python
+admin_users = User.objects.filter(
+    project_member_user__project=project,
+    project_member_user__role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+)
+```
 
 ### Documentation Maintenance
 Documentation updates are **part of every task**, not an afterthought. The specific files to update are listed in each checklist in the [Definition of Done](#definition-of-done) and [Quick Reference](#quick-reference-for-common-tasks) sections above.
