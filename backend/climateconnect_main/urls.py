@@ -14,25 +14,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.contrib import admin
-from django.urls import path, include
-from climateconnect_api.views import (
-    badge_views,
-    status_views,
-    user_views,
-    common_views,
-    settings_views,
-    role_views,
-    faq_views,
-    notifications_views,
-    donation_views,
-    translation_views,
-)
-from knox import views as knox_views
+import django
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-import django
+from knox import views as knox_views
+
+from climateconnect_api.views import (
+    badge_views,
+    common_views,
+    donation_views,
+    faq_views,
+    notifications_views,
+    role_views,
+    settings_views,
+    status_views,
+    translation_views,
+    user_views,
+)
 
 # Customize admin site to show Django version
 admin.site.site_header = (
@@ -79,6 +80,11 @@ urls = [
         "api/member/<str:url_slug>/organizations/",
         user_views.ListMemberOrganizationsView.as_view(),
         name="get-organizations-of-member-api",
+    ),
+    path(
+        "api/members/me/registered-events/",
+        user_views.ListMemberRegisteredEventsView.as_view(),
+        name="member-registered-events-api",
     ),
     path(
         "api/members/",
