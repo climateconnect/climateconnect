@@ -31,8 +31,6 @@ from organization.models.event_registration import (
 
 _REGISTERED_EVENTS_URL = reverse("member-registered-events-api")
 
-_DUMMY_CACHE = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
-
 
 # ---------------------------------------------------------------------------
 # Helpers
