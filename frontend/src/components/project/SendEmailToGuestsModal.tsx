@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Cookies from "universal-cookie";
 
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -44,6 +45,17 @@ const useStyles = makeStyles<Theme>((theme) => ({
     gap: theme.spacing(1.5),
     padding: theme.spacing(3, 0, 1),
   },
+  confirmStepBox: {
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+  },
+  confirmInfoRow: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: theme.spacing(1),
+  },
   testSuccessAlert: {
     marginBottom: theme.spacing(2),
   },
@@ -53,9 +65,12 @@ const useStyles = makeStyles<Theme>((theme) => ({
 // Types
 // ---------------------------------------------------------------------------
 
-// sent_test is no longer a locked confirmation phase — after a test send the
-// form returns to idle so the organiser can send the real email or another test.
-type SendState = "idle" | "sending" | "sent_all";
+/**
+ * "idle"       — compose form, ready for input
+ * "confirming" — pre-send confirmation step (no API call yet)
+ * "sent_all"   — bulk send completed, success view
+ */
+type SendState = "idle" | "confirming" | "sent_all";
 
 type FormErrors = {
   subject?: string;
@@ -67,13 +82,21 @@ type Props = {
   open: boolean;
   onClose: () => void;
   project: Project;
+  /** Number of currently active (non-cancelled) registered guests. Used in the
+   *  confirmation step to show how many people will receive the email. */
+  activeGuestCount: number;
 };
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export default function SendEmailToGuestsModal({ open, onClose, project }: Props) {
+export default function SendEmailToGuestsModal({
+  open,
+  onClose,
+  project,
+  activeGuestCount,
+}: Props) {
   const classes = useStyles();
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
@@ -83,17 +106,20 @@ export default function SendEmailToGuestsModal({ open, onClose, project }: Props
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [sendState, setSendState] = useState<SendState>("idle");
+  // True while any async API call is in flight (test send or bulk confirm send).
+  const [isSending, setIsSending] = useState(false);
   const [sentCount, setSentCount] = useState(0);
   // Non-null when a test send has just succeeded; cleared on next send or modal open.
   const [testSentToEmail, setTestSentToEmail] = useState<string | null>(null);
 
-  // Reset form every time the modal is opened (consistent with EditEventRegistrationModal)
+  // Reset form every time the modal is opened.
   useEffect(() => {
     if (open) {
       setSubject("");
       setMessage("");
       setErrors({});
       setSendState("idle");
+      setIsSending(false);
       setSentCount(0);
       setTestSentToEmail(null);
     }
@@ -112,36 +138,78 @@ export default function SendEmailToGuestsModal({ open, onClose, project }: Props
   };
 
   // ---------------------------------------------------------------------------
-  // Send handler
+  // Handlers
   // ---------------------------------------------------------------------------
 
-  const handleSend = async (isTest: boolean) => {
+  /** "Send now" — validate and advance to the confirmation step (no API call). */
+  const handleSendNowClick = () => {
     if (!validate()) return;
-
-    setSendState("sending");
-    setErrors({});
     setTestSentToEmail(null);
+    setSendState("confirming");
+  };
+
+  /** "Back" from the confirmation step — return to the compose form. */
+  const handleBackToForm = () => {
+    setSendState("idle");
+  };
+
+  /** "Confirm and send" — dispatch the bulk send API call. */
+  const handleConfirmSend = async () => {
+    setIsSending(true);
+    setErrors({});
 
     try {
       const resp = await apiRequest({
         method: "post",
         url: `/api/projects/${project.url_slug}/registrations/email/`,
-        payload: { subject, message, is_test: isTest },
+        payload: { subject, message, is_test: false },
         token,
         locale,
       });
-
-      if (isTest) {
-        // Return to the form so the organiser can review and send for real.
-        setTestSentToEmail(user?.email ?? "");
-        setSendState("idle");
-      } else {
-        setSentCount(resp.data.sent_count as number);
-        setSendState("sent_all");
-      }
+      setSentCount(resp.data.sent_count as number);
+      setSendState("sent_all");
     } catch (err: any) {
+      // Return to the compose form so the organiser can fix or retry.
       setSendState("idle");
+      const data = err?.response?.data;
+      if (data && typeof data === "object") {
+        const apiErrors: FormErrors = {};
+        if (data.subject) {
+          apiErrors.subject = Array.isArray(data.subject) ? data.subject[0] : data.subject;
+        }
+        if (data.message) {
+          apiErrors.message = Array.isArray(data.message) ? data.message[0] : data.message;
+        }
+        if (data.detail || data.non_field_errors) {
+          apiErrors.general = data.detail ?? data.non_field_errors?.[0];
+        }
+        setErrors(apiErrors);
+      } else {
+        setErrors({ general: String(err?.message ?? "Unknown error") });
+      }
+    } finally {
+      setIsSending(false);
+    }
+  };
 
+  /** "Send test to myself" — bypasses the confirmation step entirely. */
+  const handleTestSend = async () => {
+    if (!validate()) return;
+
+    setIsSending(true);
+    setErrors({});
+    setTestSentToEmail(null);
+
+    try {
+      await apiRequest({
+        method: "post",
+        url: `/api/projects/${project.url_slug}/registrations/email/`,
+        payload: { subject, message, is_test: true },
+        token,
+        locale,
+      });
+      setTestSentToEmail(user?.email ?? "");
+    } catch (err: any) {
       const data = err?.response?.data;
       if (data && typeof data === "object") {
         const apiErrors: FormErrors = {};
@@ -158,15 +226,10 @@ export default function SendEmailToGuestsModal({ open, onClose, project }: Props
       } else {
         setErrors({ general: String(err?.message ?? "Unknown error") });
       }
+    } finally {
+      setIsSending(false);
     }
   };
-
-  // ---------------------------------------------------------------------------
-  // Derived state
-  // ---------------------------------------------------------------------------
-
-  const isSentAll = sendState === "sent_all";
-  const isSending = sendState === "sending";
 
   // ---------------------------------------------------------------------------
   // Render
@@ -174,8 +237,8 @@ export default function SendEmailToGuestsModal({ open, onClose, project }: Props
 
   return (
     <GenericDialog open={open} onClose={onClose} title={texts.send_email_to_guests} maxWidth="sm">
-      {isSentAll ? (
-        // ── Bulk-send confirmation (one-way; organiser is done) ──────────────
+      {sendState === "sent_all" ? (
+        // ── Success view ─────────────────────────────────────────────────────
         <>
           <Box className={classes.confirmationBox}>
             <CheckCircleOutlineIcon color="success" aria-hidden="true" />
@@ -190,8 +253,39 @@ export default function SendEmailToGuestsModal({ open, onClose, project }: Props
             </Button>
           </Box>
         </>
+      ) : sendState === "confirming" ? (
+        // ── Confirmation step ────────────────────────────────────────────────
+        <Box className={classes.confirmStepBox} role="region" aria-label={texts.confirm_and_send}>
+          <Box className={classes.confirmInfoRow}>
+            <InfoOutlinedIcon color="info" fontSize="small" aria-hidden="true" sx={{ mt: 0.25 }} />
+            <Typography>
+              {texts.email_confirmation_recipients.replace("{count}", String(activeGuestCount))}
+            </Typography>
+          </Box>
+
+          <Typography variant="body2" color="text.secondary">
+            {texts.email_confirmation_admin_cc}
+          </Typography>
+
+          <Box className={classes.actionRow}>
+            <Button variant="outlined" onClick={handleBackToForm} disabled={isSending}>
+              {texts.back}
+            </Button>
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleConfirmSend}
+              disabled={isSending}
+              startIcon={isSending ? <CircularProgress size={16} color="inherit" /> : undefined}
+              aria-label={texts.confirm_and_send}
+            >
+              {isSending ? texts.sending : texts.confirm_and_send}
+            </Button>
+          </Box>
+        </Box>
       ) : (
-        // ── Form view (also shown after a successful test send) ──────────────
+        // ── Compose form ─────────────────────────────────────────────────────
         <>
           {/* Inline success notice after a test send */}
           <Collapse in={testSentToEmail !== null} unmountOnExit>
@@ -248,7 +342,7 @@ export default function SendEmailToGuestsModal({ open, onClose, project }: Props
             <Button
               variant="outlined"
               color="primary"
-              onClick={() => handleSend(true)}
+              onClick={handleTestSend}
               disabled={isSending}
               startIcon={isSending ? <CircularProgress size={16} color="inherit" /> : undefined}
               aria-label={texts.send_test_to_myself}
@@ -259,12 +353,11 @@ export default function SendEmailToGuestsModal({ open, onClose, project }: Props
             <Button
               variant="contained"
               color="primary"
-              onClick={() => handleSend(false)}
+              onClick={handleSendNowClick}
               disabled={isSending}
-              startIcon={isSending ? <CircularProgress size={16} color="inherit" /> : undefined}
               aria-label={texts.send_now}
             >
-              {isSending ? texts.sending : texts.send_now}
+              {texts.send_now}
             </Button>
           </Box>
         </>
