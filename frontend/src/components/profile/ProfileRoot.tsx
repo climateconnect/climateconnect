@@ -192,6 +192,18 @@ export default function ProfileRoot({
           {texts.send_message}
         </Button>
       )}
+      {isOwnAccount && isEventRegistrationEnabled && (
+        <Container className={classes.container}>
+          <div className={classes.sectionHeadlineWithButtonContainer}>
+            <h2 className={classes.title}>{texts.your_registered_events}</h2>
+          </div>
+          {registeredEvents && registeredEvents.length > 0 ? (
+            <ProjectPreviews projects={registeredEvents} hubUrl={hubUrl} isUserRegistered />
+          ) : (
+            <Typography>{texts.no_registered_events_yet}</Typography>
+          )}
+        </Container>
+      )}
       <Container className={classes.container} ref={projectsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <h2 className={classes.title}>
@@ -263,18 +275,6 @@ export default function ProfileRoot({
           </Typography>
         )}
       </Container>
-      {isOwnAccount && isEventRegistrationEnabled && (
-        <Container className={classes.container}>
-          <div className={classes.sectionHeadlineWithButtonContainer}>
-            <h2 className={classes.title}>{texts.your_registered_events}</h2>
-          </div>
-          {registeredEvents && registeredEvents.length > 0 ? (
-            <ProjectPreviews projects={registeredEvents} hubUrl={hubUrl} isUserRegistered />
-          ) : (
-            <Typography>{texts.no_registered_events_yet}</Typography>
-          )}
-        </Container>
-      )}
     </AccountPage>
   );
 }
