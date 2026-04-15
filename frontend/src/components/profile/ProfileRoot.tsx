@@ -107,7 +107,6 @@ export default function ProfileRoot({
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const router = useRouter();
   const [registeredEvents, setRegisteredEvents] = useState<any>(null);
-  const [loadingEvents, setLoadingEvents] = useState(false);
   const handleConnectBtn = async (e) => {
     e.preventDefault();
     try {
@@ -151,14 +150,7 @@ export default function ProfileRoot({
 
   // Fetch registered events only for own account on client-side
   useEffect(() => {
-    if (
-      isOwnAccount &&
-      isEventRegistrationEnabled &&
-      token &&
-      !loadingEvents &&
-      !registeredEvents
-    ) {
-      setLoadingEvents(true);
+    if (isOwnAccount && isEventRegistrationEnabled && token && !registeredEvents) {
       apiRequest({
         method: "get",
         url: "/api/members/me/registered-events/",
@@ -175,9 +167,6 @@ export default function ProfileRoot({
           if (err.response && err.response.data) {
             console.log("Error: " + err.response.data.detail);
           }
-        })
-        .finally(() => {
-          setLoadingEvents(false);
         });
     }
   }, [isOwnAccount, isEventRegistrationEnabled, token, locale]);
