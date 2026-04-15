@@ -10,7 +10,7 @@
 - **State**: React hooks (no Redux/global state library)
 - **HTTP Client**: Axios
 - **Date Handling**: date-fns, dayjs
-- **Package Manager**: Yarn (also supports Bun - bun.lock present)
+- **Package Manager**: Yarn 4 (also supports Bun - bun.lock present)
 - **Testing**: Jest
 - **Rendering**: SSR (Server-Side Rendering)
 
@@ -220,7 +220,7 @@ const DataComponent = () => {
 - `SENTRY_DSN` - Sentry error tracking DSN
 
 ## Key Dependencies to Remember
-- Next.js 12, React 17, MUI v5, Axios, Emotion, date-fns
+- Next.js 14, React 18, MUI v5, Axios, Emotion, date-fns
 
 ## Performance Optimization Tips
 - Use dynamic imports for large components: `const Component = dynamic(() => import('./Component'))`
