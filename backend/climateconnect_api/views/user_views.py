@@ -49,7 +49,6 @@ from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
 from location.models import Location
 from location.utility import get_location, get_location_with_range
 from organization.models import Project, Sector, UserProfileSectorMapping
-from organization.models.event_registration import EventRegistration
 from organization.models.members import OrganizationMember, ProjectMember
 from organization.serializers.organization import OrganizationsFromOrganizationMember
 from organization.serializers.project import (
