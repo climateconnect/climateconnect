@@ -176,8 +176,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "noch in keiner Organisation engagiert!",
     },
     your_registered_events: {
-      en: "Your registered events",
-      de: "Deine angemeldeten Veranstaltungen",
+      en: "Events you registered for",
+      de: "Veranstaltungen für die du dich angemeldet hast",
     },
     no_registered_events_yet: {
       en: "You haven't registered for any upcoming events yet.",
