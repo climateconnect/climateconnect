@@ -2,9 +2,10 @@ import { Button, Container, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme, useTheme } from "@mui/material/styles";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useRef } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import { parseDirectProjectStubs } from "../../../public/lib/parsingOperations";
 import AccountPage from "../account/AccountPage";
 import LoginNudge from "../general/LoginNudge";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
@@ -12,6 +13,7 @@ import ProjectPreviews from "../project/ProjectPreviews";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import IconButton from "@mui/material/IconButton";
 import FeedbackContext from "../context/FeedbackContext";
+import { useFeatureToggles } from "../featureToggle";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
@@ -98,13 +100,14 @@ export default function ProfileRoot({
   texts,
   locale,
   hubUrl,
-  registeredEvents,
 }) {
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const classes = useStyles();
   const theme = useTheme();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
   const router = useRouter();
+  const [registeredEvents, setRegisteredEvents] = useState<any>(null);
+  const [loadingEvents, setLoadingEvents] = useState(false);
   const handleConnectBtn = async (e) => {
     e.preventDefault();
     try {
@@ -141,6 +144,44 @@ export default function ProfileRoot({
     }
   }, []);
   const queryString = hubUrl ? `?hub=${hubUrl}` : "";
+
+  // Feature toggle for event registration
+  const { isEnabled } = useFeatureToggles();
+  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
+
+  // Fetch registered events only for own account on client-side
+  useEffect(() => {
+    if (
+      isOwnAccount &&
+      isEventRegistrationEnabled &&
+      token &&
+      !loadingEvents &&
+      !registeredEvents
+    ) {
+      setLoadingEvents(true);
+      apiRequest({
+        method: "get",
+        url: "/api/members/me/registered-events/",
+        token: token,
+        locale: locale,
+      })
+        .then((resp) => {
+          if (resp.data) {
+            setRegisteredEvents(parseDirectProjectStubs(resp.data.results));
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response && err.response.data) {
+            console.log("Error: " + err.response.data.detail);
+          }
+        })
+        .finally(() => {
+          setLoadingEvents(false);
+        });
+    }
+  }, [isOwnAccount, isEventRegistrationEnabled, token, locale]);
+
   return (
     <AccountPage
       account={profile}
@@ -233,7 +274,7 @@ export default function ProfileRoot({
           </Typography>
         )}
       </Container>
-      {isOwnAccount && (
+      {isOwnAccount && isEventRegistrationEnabled && (
         <Container className={classes.container}>
           <div className={classes.sectionHeadlineWithButtonContainer}>
             <h2 className={classes.title}>{texts.your_registered_events}</h2>
