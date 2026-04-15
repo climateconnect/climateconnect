@@ -175,6 +175,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "not involved in any organisations yet!",
       de: "noch in keiner Organisation engagiert!",
     },
+    your_registered_events: {
+      en: "Your registered events",
+      de: "Deine angemeldeten Veranstaltungen",
+    },
+    no_registered_events_yet: {
+      en: "You haven't registered for any upcoming events yet.",
+      de: "Du hast dich bisher für keine bevorstehenden Veranstaltungen angemeldet.",
+    },
     sign_up_message: {
       en: "You are now a Climate Connect member. On this page you can customize your profile.",
       de:

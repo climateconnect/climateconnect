@@ -28,13 +28,16 @@ export default function ProjectPreviews({
   isLoading = false,
   displayOnePreviewInRow,
   parentHandlesGridItems,
+  isUserRegistered,
 }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
   const toProjectPreviews = (projects) =>
-    (projects || []).map((p) => <GridItem key={p.url_slug} project={p} hubUrl={hubUrl} />);
+    (projects || []).map((p) => (
+      <GridItem key={p.url_slug} project={p} hubUrl={hubUrl} isUserRegistered={isUserRegistered} />
+    ));
 
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
 
@@ -93,6 +96,6 @@ export default function ProjectPreviews({
   );
 }
 
-function GridItem({ project, hubUrl }) {
-  return <ProjectPreview project={project} hubUrl={hubUrl} />;
+function GridItem({ project, hubUrl, isUserRegistered }) {
+  return <ProjectPreview project={project} hubUrl={hubUrl} isUserRegistered={isUserRegistered} />;
 }

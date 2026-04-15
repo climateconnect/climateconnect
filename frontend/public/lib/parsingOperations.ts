@@ -29,6 +29,19 @@ export function parseProjectStubs(projects) {
   });
 }
 
+/**
+ * Parses a flat array of project stub objects (as returned by e.g.
+ * GET /api/members/me/registered-events/ which uses ProjectStubSerializer directly,
+ * without a wrapping `.project` key).
+ */
+export function parseDirectProjectStubs(projects) {
+  return projects.map((project) => ({
+    ...project,
+    location: project.location,
+    sectors: project.sectors.sort((a, b) => a.order - b.order).map((s) => s.sector),
+  }));
+}
+
 const parseMembers = (members) => {
   return members;
 };
