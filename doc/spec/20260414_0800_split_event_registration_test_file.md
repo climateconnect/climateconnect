@@ -1,9 +1,9 @@
 # Split `test_event_registration.py` into a Tests Package
 
-**Status**: READY FOR IMPLEMENTATION
+**Status**: COMPLETED
 **Type**: Refactor (no logic changes)
 **Date and time created**: 2026-04-14 08:00
-**Date Completed**: TBD
+**Date Completed**: 2026-04-15
 **Related Specs**:
 - All specs under `doc/spec/` prefixed `20260309_*`, `20260402_*`, `20260407_*`, `20260413_*` — these are the features whose tests live in the file being split.
 
@@ -76,15 +76,18 @@ backend/organization/tests/
 
 ## Acceptance Criteria
 
-- [ ] `organization/tests/` is a package (has `__init__.py`)
-- [ ] Original `test_event_registration.py` is deleted
-- [ ] All 137 tests pass: `pdm run python manage.py test organization.tests --keepdb`
-- [ ] Each new file is ≤ 700 lines
-- [ ] Each new file has a module-level docstring listing the test classes it contains
-- [ ] `_helpers.py` contains only shared fixtures/base classes (no test methods)
+- [x] `organization/tests/` is a package (has `__init__.py`)
+- [x] Original `test_event_registration.py` is deleted
+- [x] All 140 tests pass: `pdm run python manage.py test organization.tests --keepdb`
+- [x] Each new file is ≤ 700 lines
+- [x] Each new file has a module-level docstring listing the test classes it contains
+- [x] `_helpers.py` contains only shared fixtures/base classes (no test methods)
+
+> Note: the spec anticipated 137 tests; the file had grown to 140 by the time of implementation.
 
 ---
 
 ## Log
 
 - 2026-04-14 08:00 — Task created. Pure refactor; no logic changes. Coordinate with other developers before merging — the original file is frequently edited.
+- 2026-04-15 — Implemented. Split into 6 test modules + `_helpers.py`. All 140 tests pass. `TestMemberRegisterForEvent` referenced in the spec did not exist in the file (no such class was present); `test_event_registration_signup.py` was therefore not created.
