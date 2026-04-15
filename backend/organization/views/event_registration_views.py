@@ -487,16 +487,21 @@ class SendOrganizerEmailView(APIView):
     POST /api/projects/{url_slug}/registrations/email/
 
     Sends an organiser-authored plain-text email to all active event guests
-    (``is_test=false``) or a single test copy to the authenticated organiser
-    (``is_test=true``).
+    **and all team admins** (``is_test=false``), or a single test copy to the
+    authenticated organiser (``is_test=true``).
 
-    Always returns ``{"sent_count": <int>}`` — ``1`` for test, ``N`` for bulk.
+    For bulk sends, the recipient list is the union of active (non-cancelled)
+    registered guests and project members with organiser/write-access role.
+    A team admin who is also a registered guest receives only one copy.
+
+    Always returns ``{"sent_count": <int>}`` — total unique recipients for bulk,
+    ``1`` for test.
     Bulk dispatch is asynchronous (Celery task); test dispatch is synchronous.
 
     The subject is prefixed with ``"[TEST] "`` for test sends so the organiser
     can recognise them in their inbox.
 
-    See spec: doc/spec/20260401_1100_organizer_send_email_to_guests.md
+    See spec: doc/spec/20260414_1300_send_email_to_guests_improvements.md
     """
 
     permission_classes = [IsAuthenticated]
@@ -579,26 +584,42 @@ class SendOrganizerEmailView(APIView):
                 )
             return Response({"sent_count": 1}, status=status.HTTP_200_OK)
 
-        # ── 5. Bulk send — only active (non-cancelled) registrations ────
-        user_ids = list(
+        # ── 5. Bulk send — active guests + team admins (deduped) ────────
+        guest_user_ids = set(
             EventRegistration.objects.filter(
                 registration_config=rc,
                 cancelled_at__isnull=True,
             ).values_list("user_id", flat=True)
         )
-        sent_count = len(user_ids)
+
+        # Team admins receive a copy so they have full visibility into
+        # communications sent to attendees (#1886).
+        admin_user_ids = set(
+            ProjectMember.objects.filter(
+                project=project,
+                role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            ).values_list("user_id", flat=True)
+        )
+
+        # A team admin who is also a registered guest must receive only one copy.
+        combined_user_ids = list(guest_user_ids | admin_user_ids)
+        sent_count = len(combined_user_ids)
 
         _send_organizer_email_task.delay(
             event_slug=url_slug,
-            user_ids=user_ids,
+            user_ids=combined_user_ids,
             subject=subject,
             message=message,
         )
 
         logger.info(
-            "[OrganizerEmail] Bulk send dispatched for event '%s': %d recipients",
+            "[OrganizerEmail] Bulk send dispatched for event '%s': %d recipients "
+            "(%d guests, %d admins, %d overlap)",
             url_slug,
             sent_count,
+            len(guest_user_ids),
+            len(admin_user_ids),
+            len(guest_user_ids & admin_user_ids),
         )
 
         return Response({"sent_count": sent_count}, status=status.HTTP_200_OK)

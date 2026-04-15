@@ -644,6 +644,7 @@ export default function ProjectRegistrationsContent({
         open={emailModalOpen}
         onClose={() => setEmailModalOpen(false)}
         project={project}
+        activeGuestCount={participants.filter((p) => p.cancelled_at === null).length}
       />
 
       <CancelGuestRegistrationModal
