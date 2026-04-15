@@ -277,13 +277,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
   );
 };
 
-const AdditionalPreviewInfo = ({
-  project,
-  isUserRegistered,
-}: {
-  project: Project;
-  isUserRegistered?: boolean;
-}) => {
+const AdditionalPreviewInfo = ({ project, isUserRegistered }) => {
   const classes = useStyles({});
   const { projectTypes } = useContext(BrowseContext);
   const { locale } = useContext(UserContext);
@@ -316,20 +310,20 @@ const AdditionalPreviewInfo = ({
 
   return (
     <Box className={classes.additionalInfoContainer}>
-      {project.number_of_comments > 0 && (
+      {(project.number_of_comments ?? 0) > 0 && (
         <Box className={classes.additionalInfoIcon}>
           <ModeCommentIcon />
           <span className={classes.additionalInfoCounter}> {project.number_of_comments} </span>
         </Box>
       )}
-      {project.number_of_likes > 2 && (
+      {(project.number_of_likes ?? 0) > 2 && (
         <Box className={classes.additionalInfoIcon}>
           <FavoriteIcon />
           <span className={classes.additionalInfoCounter}> {project.number_of_likes}</span>
         </Box>
       )}
       <Box className={classes.additionalInfoIcon}>
-        {(project.number_of_comments > 0 || project.number_of_likes > 2) && (
+        {((project.number_of_comments ?? 0) > 0 || (project.number_of_likes ?? 0) > 2) && (
           <>
             {" • "}
             <div className={classes.horizontalSpacing} />
