@@ -190,7 +190,59 @@ The combined page must load hub theme data server-side when `?hub=` is present, 
 
 ### Feature Toggle
 
-Auth Unification does **not** need its own `FeatureToggle` — the changes are platform-wide and backward compatible. The new combined page can be deployed and made the canonical entry point as soon as Phase A is complete.
+Auth Unification **requires** a `FeatureToggle` named `AUTH_UNIFICATION` to enable parallel development and safe incremental rollout.
+
+**Rationale**: The new combined flow is entirely new frontend code — new page(s), new components, new API calls. The existing `/signin` and `/signup` pages remain untouched behind the toggle. This means:
+- Development can proceed on the new flow without touching or risking the legacy auth code.
+- The new backend endpoints (`POST /api/auth/request-token`, `POST /api/auth/verify-token`) can be deployed independently — they are additive and do not affect the existing `POST /login/` or `POST /signup/` endpoints.
+- QA and staging validation of the new flow can happen while production still runs the old flow.
+- The toggle can be flipped per-environment: off on production, on on staging, on for internal users first.
+
+**Toggle behaviour**:
+- `AUTH_UNIFICATION = off` (default): `/signin` and `/signup` behave exactly as today. No change.
+- `AUTH_UNIFICATION = on`: `/signin` and `/signup` redirect to the new combined page (e.g. `/login`). The new page and new API endpoints are active.
+
+**Cutover**: once Phase A is validated on staging and production rollout is approved, the toggle is flipped to on globally and the old pages are retired in a follow-up cleanup task. The toggle itself is removed once the old code is deleted.
+
+> The `FeatureToggle` model and `feature_toggles` app already exist in the codebase — use the established pattern.
+
+---
+
+## Combined Login/Signup Flow
+
+```mermaid
+flowchart TD
+    A([Login Page]) --> B[User enters email]
+    B --> C{Is email known?}
+
+    C -->|No - new user| D[Show signup step 1\nFirst name, last name, location]
+    D --> E[Continue signup\nInterest areas / sectors]
+    E --> F[Send OTP to email\nCreate account - no password]
+    F --> G[Show OTP code form]
+    G --> H{Code valid?}
+    H -->|Yes| I([Authenticated\nRedirect to destination])
+    H -->|No / expired| G
+    G -->|Resend after 60s cooldown| F
+
+    C -->|Yes - has password| J[Show password form]
+    J --> K{Password correct?}
+    K -->|Yes| I
+    K -->|No| J
+    J -->|Forgot password| P[Send password reset email]
+    P --> Q[User clicks reset link\nin email]
+    Q --> R[Set new password form]
+    R --> S{Password saved?}
+    S -->|Yes| J
+    S -->|No| R
+    J -.->|Prefer OTP instead| L
+
+    C -->|Yes - no password| L[Send OTP to email]
+    L --> M[Show OTP code form]
+    M --> N{Code valid?}
+    N -->|Yes| I
+    N -->|No / expired| M
+    M -->|Resend after 60s cooldown| L
+```
 
 ---
 
