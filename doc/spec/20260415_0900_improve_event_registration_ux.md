@@ -7,13 +7,15 @@
 **GitHub Issue**: [#1885](https://github.com/climateconnect/climateconnect/issues/1885)
 **Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)  
 **Related Specs**:
+
 - [`20260309_0900_member_register_for_event.md`](./20260309_0900_member_register_for_event.md) ← builds on this initial implementation
 
 **Implementation Progress:**
+
 - ✅ Point 1: Button Text Uppercase - COMPLETED (2026-04-16)
 - ✅ Point 2: "Booked Out" Text - COMPLETED (2026-04-16)
-- ⏳ Point 3: Language Redirect Fix - PENDING
-- ⏳ Point 4: Disable Card Hover Effect - PENDING  
+- ✅ Point 3: Language Redirect Fix - COMPLETED (2026-04-16)
+- ⏳ Point 4: Disable Card Hover Effect - PENDING
 - ⏳ Point 5: Remove Modal Steps - PENDING
 - ⏳ Point 6: Show User Identity for Logged-In Users - PENDING
 - ⏳ Point 7: Confirmation Message with Event Name - PENDING
@@ -84,19 +86,16 @@ Following the initial implementation of event registration (#1845), several UX i
   - `Member` (logged in): Sees improved registration UI with pre-filled identity
   - `Guest` (not logged in): Sees streamlined registration modal without steps
   - `System`: Provides available seats data in real-time
-  
 - **Actions to update**:
   - `Member` → `View Event Registration Button` → improved button text and styling
   - `Member` → `Open Registration Modal` → sees confirmation message with event name and available seats
   - `Member` (logged in) → `View Registration Form` → sees avatar/name instead of input fields
-  
 - **Flows affected**:
   - **Member Event Registration Flow** (from #1845): UI improvements throughout
   - **Browse Projects Flow**: Button styling on cards
 
 - **Entity changes needed**: No
   - All data fields already exist in `EventRegistrationConfig`
-  
 - **Flow changes needed**: No
   - Core flow logic remains the same; only UI presentation changes
 
@@ -113,78 +112,95 @@ Following the initial implementation of event registration (#1845), several UX i
 #### 1. Button Text Uppercase (Browse Cards)
 
 **Files to modify:**
+
 - `/frontend/src/components/project/ProjectMetaData.tsx` - Registration button rendering
 
 **Changes needed:**
+
 - Add explicit `textTransform: 'uppercase'` to registration button styling
 - Ensure Material-UI theme default is properly configured
 - May require inline `sx` prop if CSS specificity issues exist
 
 **Testing:**
+
 - Verify buttons on browse page show uppercase text
 - Check that MUI theme default is properly configured in theme files
 
 #### 2. "Booked Out" Button Text
 
 **Files to modify:**
+
 - `/frontend/src/utils/eventRegistrationHelpers.ts` - `getRegisterButtonText()` function
 
 **Changes needed:**
+
 - Update return value when `status === "closed"` or `status === "full"` from "Registration Closed" to "Booked Out"
 - Update default fallback return value to "Booked Out" (when status is undefined or other values)
 - Use translation key `booked_out` instead of `registration_closed` for these cases
 - Note: `texts.registration_closed` is still used for `adminClosed` UI state in RegistrationActionButton component
 
 **Translations to update:**
+
 - `/frontend/public/texts/project_texts.tsx` - Update `booked_out` key capitalization
 - English: "Booked Out" (capital 'O')
 - German: "Ausgebucht" (already correct)
 
 **Tests to update:**
+
 - `/frontend/src/utils/eventRegistrationHelpers.test.ts` - Update test expectations from "Registration Closed" to "Booked Out"
 
 #### 3. Language Redirect Fix
 
-**Files to investigate:**
-- `/frontend/middleware.ts` - Next.js middleware for locale handling
-- `/frontend/pages/projects/[slug]/register.tsx` or similar registration page
+**Files modified:**
 
-**Changes needed:**
-- Ensure the deep-link route (`/projects/{slug}/register`) properly detects and preserves locale from cookies or URL prefix
-- Verify that `getServerSideProps` includes proper locale handling
-- May need to add `getLocalePrefix()` call in page server-side props
+- `/frontend/pages/projects/[projectId]/register.tsx` - Registration deep-link page
+
+**Changes implemented:**
+
+- Added import for `getLocalePrefix` from `apiOperations`
+- Added `locale` parameter to `getServerSideProps` context
+- Used `getLocalePrefix(locale)` to construct proper redirect destination with locale prefix
+- Redirect now preserves language: `/de/projects/{slug}/register` → `/de/projects/{slug}?openRegistration=true`
 
 **Testing:**
-- Access `/projects/{slug}/register` with different locale cookies set
-- Verify redirect URLs maintain locale prefix (`/de/projects/...` etc.)
+
+- Access `/projects/{slug}/register` (English) - should redirect to `/projects/{slug}?openRegistration=true`
+- Access `/de/projects/{slug}/register` (German) - should redirect to `/de/projects/{slug}?openRegistration=true`
+- Verify modal opens correctly with proper language after redirect
 
 #### 4. Disable Card Hover Effect
 
 **Files to modify:**
+
 - `/frontend/src/components/project/ProjectCard.tsx` or wherever hover state is managed
 - `/frontend/src/components/project/ProjectMetaData.tsx`
 
 **Changes needed:**
+
 - Disable the hover expansion effect that causes the registration button to jump
 - Either set `hovering={false}` prop or add a feature flag to conditionally enable/disable
 - Keep the hover effect code in place with a comment explaining why it's disabled
 
 **Testing:**
+
 - Verify hover on project cards no longer causes button position shift
 - Ensure code can be easily re-enabled if needed
 
 #### 5. Remove Modal Steps
 
 **Files to modify:**
+
 - Event registration modal component (need to locate - likely in `/frontend/src/components/project/` or `/frontend/src/components/event/`)
 
 **Changes needed:**
+
 - Remove `<Stepper>` component from Material-UI
 - Remove step indicators (1/2, 2/2) from modal header/footer
 - Simplify modal to single-view form (no step transitions)
 - Remove step-related state variables (`activeStep`, `handleNext`, `handleBack`)
 
 **Testing:**
+
 - Verify modal displays single unified form
 - Ensure form submission still works correctly
 - Test both logged-in and guest user flows
@@ -192,19 +208,23 @@ Following the initial implementation of event registration (#1845), several UX i
 #### 6. Show User Identity for Logged-In Users
 
 **Files to modify:**
+
 - Registration modal/form component
 
 **Changes needed:**
+
 - When user is logged in, display their avatar and name using `MiniProfilePreview` component
 - Remove or hide the separate email and name input fields for logged-in users
 - Show confirmation email address as read-only text
 - Keep name/email input fields for guest users (not logged in)
 
 **Components to reuse:**
+
 - `MiniProfilePreview` from `/frontend/src/components/profile/MiniProfilePreview.tsx`
 - Access user data via `UserContext`
 
 **Testing:**
+
 - Verify logged-in users see their avatar and name
 - Verify guest users still see input fields
 - Ensure email confirmation message is displayed
@@ -212,33 +232,40 @@ Following the initial implementation of event registration (#1845), several UX i
 #### 7. Confirmation Message with Event Name
 
 **Files to modify:**
+
 - Registration modal component
 
 **Changes needed:**
+
 - Add confirmation message in format: "Confirm your registration for [Event Name]"
 - Use translation key for internationalization
 - Display event name dynamically from `project.name`
 
 **Translation keys to add:**
+
 - `confirm_registration_for`: "Confirm your registration for"
 - German: "Bestätigen Sie Ihre Anmeldung für"
 
 **Testing:**
+
 - Verify message displays with correct event name
 - Test in both English and German
 
 #### 8. Show Available Seats
 
 **Location:**
+
 - **Project page (project detail page)** - Display available seats on the individual project page, NOT on browse cards
 - Show below the registration button, similar to how the Following and Like buttons display their counts
 
 **Files to modify:**
+
 - `/frontend/src/components/project/ProjectOverview.tsx` - Main project detail page (desktop)
 - `/frontend/src/components/project/Buttons/ProjectInteractionButtons.tsx` - Mobile bottom navigation bar
 - `/frontend/src/components/project/Buttons/RegistrationActionButton.tsx` - Add container and seats display similar to FollowButton pattern
 
 **Changes needed:**
+
 - Display available seats count below the registration button on the project page
 - Use the same visual pattern as the Following and Like buttons (number + text below button)
 - Format: "[X] / [Y] seats available" where X is available_seats and Y is max_participants
@@ -250,20 +277,24 @@ Following the initial implementation of event registration (#1845), several UX i
   - Appropriate spacing between button and count
 
 **Data source:**
+
 - `project.registration_config.available_seats` - already returned from API
 - `project.registration_config.max_participants` - already returned from API
 
 **Translation keys to add:**
+
 - `seats_available`: "seats available"
 - `seat_available`: "seat available" (singular form)
 - German: "Plätze verfügbar" / "Platz verfügbar"
 
 **Implementation pattern (follow FollowButton pattern):**
+
 - Reference `/frontend/src/components/general/FollowButton.tsx` for the container and text display pattern
 - Use `showLinkUnderButton` prop pattern from FollowButton
 - Add `showSeatsInfo` prop to RegistrationActionButton component
 
 **Testing:**
+
 - Verify seats display on project page (desktop and mobile)
 - Test with various seat counts (0, 1, low, high numbers)
 - Verify singular/plural text (1 seat vs. multiple seats)
@@ -273,6 +304,7 @@ Following the initial implementation of event registration (#1845), several UX i
 ### API Changes
 
 **No API changes required** - all necessary data is already provided:
+
 - `GET /api/projects/{slug}/` returns `registration_config` with `available_seats` and `max_participants`
 - Existing endpoints support all UI improvements
 
@@ -348,6 +380,7 @@ Suggested order to minimize conflicts:
 ### Files Summary
 
 **Primary files to modify:**
+
 - `/frontend/src/components/project/ProjectMetaData.tsx`
 - `/frontend/src/utils/eventRegistrationHelpers.ts`
 - Registration modal component (TBD - needs location)
@@ -356,6 +389,7 @@ Suggested order to minimize conflicts:
 - Mobile bottom navigation component (possibly)
 
 **Files to investigate:**
+
 - Event registration modal component location
 - Locale redirect handling in middleware
 - Mobile bottom navigation layout
@@ -378,6 +412,7 @@ Add to `/frontend/public/texts/texts.ts` under project section:
 ## Rollback Plan
 
 All changes are frontend-only and do not affect data models or API contracts. Rollback can be achieved by:
+
 1. Reverting the deployment
 2. Individual changes can be feature-flagged if needed
 3. No database migrations to roll back
