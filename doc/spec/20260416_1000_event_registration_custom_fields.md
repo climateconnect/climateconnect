@@ -71,9 +71,19 @@ The registrant-side flow (rendering fields on the registration form, capturing a
 
 - **Schema — single `RegistrationField` table with `settings` JSONField (JSONB)**: chosen over per-type tables. Django's `JSONField` is first-class on PostgreSQL. Adding Phase 4b field types means adding a new `field_type` choice — no new tables or migrations to the field definition layer. Options for `option_select` are stored as separate `RegistrationFieldOption` rows (not inside `settings`) so each option has an addressable `id` for the future answer FK.
 
-- **`settings` shape per field type**:
-  - Checkbox: `{ "description": "<HTML from MUI-tiptap>" }`
-  - Option select: `{}` (options are in `RegistrationFieldOption` rows; `settings` is reserved for future per-type metadata such as placeholder text)
+- **Settings validation — type-settings registry pattern**: each `field_type` has a companion DRF `Serializer` subclass that declares the exact expected keys for `settings`. A registry dict (`FIELD_TYPE_SETTINGS_VALIDATORS`) maps `field_type` → settings serializer class. `RegistrationFieldSerializer.validate()` dispatches to the right one. Benefits: unknown keys are stripped on write; adding a new field type in Phase 4b only requires a new settings serializer + one registry entry. The registry lives in `organization/serializers/registration_field.py` alongside the main serializer.
+
+  ```
+  CheckboxSettingsSerializer      → { description: CharField(allow_blank=True) }
+  OptionSelectSettingsSerializer  → {}  (no settings yet; options are in RegistrationFieldOption rows)
+
+  FIELD_TYPE_SETTINGS_VALIDATORS = {
+      RegistrationFieldType.CHECKBOX:       CheckboxSettingsSerializer,
+      RegistrationFieldType.OPTION_SELECT:  OptionSelectSettingsSerializer,
+  }
+  ```
+
+  Publish-time non-empty check for `description` is a separate guard in the outer `validate()` using `is_draft` from context — same pattern as `EventRegistrationConfigSerializer`.
 
 - **Rich text — MUI-tiptap, stored as HTML**: the checkbox description uses MUI-tiptap (being integrated on a separate branch, not yet merged). Tiptap's default output is HTML via `getHTML()`. The toolbar is restricted to **Bold** and **Link** only — no other formatting. The `Link` extension allows the organiser to set custom link text (e.g. "Terms of Service"), which is why plain text + auto-linkify is insufficient. The HTML string is stored in `settings.description` and rendered safely in the registrant-side task (follow-up).
 
@@ -229,7 +239,13 @@ For `option_select`:
 
 - **New file**: `organization/models/registration_field.py` — `RegistrationField` and `RegistrationFieldOption` models; `RegistrationFieldType` choices enum.
 - **`organization/models/__init__.py`** — export new models.
-- **New file**: `organization/serializers/registration_field.py` — `RegistrationFieldSerializer` (with nested `options`), `RegistrationFieldOptionSerializer`, `ReorderFieldsSerializer`.
+- **New file**: `organization/serializers/registration_field.py` — contains:
+  - `CheckboxSettingsSerializer` — declares `description` (CharField); strips unknown keys on write.
+  - `OptionSelectSettingsSerializer` — empty for now; reserved for future per-type metadata.
+  - `FIELD_TYPE_SETTINGS_VALIDATORS` registry dict — maps `field_type` → settings serializer class. Adding a Phase 4b type = one new serializer + one registry entry.
+  - `RegistrationFieldOptionSerializer` — `id`, `title`, `order`.
+  - `RegistrationFieldSerializer` — main serializer with nested `options`; dispatches `settings` validation via the registry in `validate()`; applies publish-time non-empty check on `description` using `is_draft` from context.
+  - `ReorderFieldsSerializer` — validates `[{"id": int, "order": int}, ...]`.
 - **`organization/serializers/event_registration.py`** — add `fields` nested array to `EventRegistrationConfigSerializer` read path (using `RegistrationFieldSerializer(many=True, read_only=True)`).
 - **New file**: `organization/views/registration_field_views.py` — `RegistrationFieldsView` (GET list / POST create), `RegistrationFieldDetailView` (PATCH / DELETE), `ReorderRegistrationFieldsView` (POST).
 - **`organization/urls.py`** — register the 5 new URL patterns under `projects/<str:url_slug>/registration-config/fields/`.
@@ -300,6 +316,10 @@ For `option_select`:
 | 6 | Delete a field | Field and its options removed |
 | 7 | Unauthenticated field management request | `401 Unauthorized` |
 | 8 | Non-organiser attempts to manage fields | `403 Forbidden` |
+| 9 | Checkbox with unknown key in `settings` (e.g. `{"description": "...", "rogue": "x"}`) | `rogue` stripped; only `description` persisted |
+| 10 | Checkbox `settings.description` empty on publish | `400 Bad Request` |
+| 11 | Checkbox `settings.description` empty on draft save | Accepted |
+| 12 | Option select `settings` contains arbitrary keys | All stripped; `{}` persisted |
 
 ### Frontend
 
