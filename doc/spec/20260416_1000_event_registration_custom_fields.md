@@ -85,7 +85,21 @@ The registrant-side flow (rendering fields on the registration form, capturing a
 
   Publish-time non-empty check for `description` is a separate guard in the outer `validate()` using `is_draft` from context — same pattern as `EventRegistrationConfigSerializer`.
 
-- **Rich text — MUI-tiptap, stored as HTML**: the checkbox description uses MUI-tiptap (being integrated on a separate branch, not yet merged). Tiptap's default output is HTML via `getHTML()`. The toolbar is restricted to **Bold** and **Link** only — no other formatting. The `Link` extension allows the organiser to set custom link text (e.g. "Terms of Service"), which is why plain text + auto-linkify is insufficient. The HTML string is stored in `settings.description` and rendered safely in the registrant-side task (follow-up).
+- **Rich text — MUI-tiptap, stored as sanitized HTML**: the checkbox description uses MUI-tiptap (being integrated on a separate branch, not yet merged). Tiptap's default output is HTML via `getHTML()`. The toolbar is restricted to **Bold** and **Link** only — no other formatting. The `Link` extension allows the organiser to set custom link text (e.g. "Terms of Service"), which is why plain text + auto-linkify is insufficient.
+
+  **HTML sanitization**: the HTML string must be sanitized on write (in `CheckboxSettingsSerializer.validate_description()`) before being stored. A reusable `sanitize_html()` utility lives in `climateconnect_api/utility/html.py`. It uses **`bleach`** (new dependency) with an explicit allowlist of tags and attributes — the caller specifies exactly what is permitted, making it easy to reuse for any future rich-text field with a different allowed set.
+
+  ```
+  sanitize_html(
+      html,
+      allowed_tags=["p", "strong", "b", "a", "br"],
+      allowed_attributes={"a": ["href", "target", "rel"]},
+  ) → cleaned HTML string (always safe to render)
+  ```
+
+  `bleach` strips all tags and attributes not in the allowlist and forces `rel="noopener noreferrer"` on links. Returns `""` for empty input. The stored value is always clean; the registrant-side renderer needs no further sanitization.
+
+  `bleach` must be added to `pyproject.toml` as a new dependency.
 
 - **Answer storage shape (forward-compatible, implemented in follow-up task)**: `RegistrationFieldAnswer` with `value_boolean` (nullable), `value_option` FK nullable → `RegistrationFieldOption`, and `value_json` JSONField nullable for Inventory's `(option_id, quantity)` and future types. This schema requires no migration when Phase 4b arrives.
 
@@ -259,6 +273,7 @@ For `option_select`, `options` is a non-empty array of `{ "id": 10, "title": "Ve
 
 ### Backend
 
+- **New file**: `climateconnect_api/utility/html.py` — `sanitize_html(html, allowed_tags, allowed_attributes)` using `bleach`. Defaults: `allowed_tags=["p", "strong", "b", "a", "br"]`, `allowed_attributes={"a": ["href", "target", "rel"]}`. Forces `rel="noopener noreferrer"` on all links. Returns `""` for blank input. Add `bleach` to `pyproject.toml`.
 - **New file**: `organization/models/registration_field.py` — `RegistrationField` and `RegistrationFieldOption` models; `RegistrationFieldType` choices enum.
 - **`organization/models/__init__.py`** — export new models.
 - **New file**: `organization/serializers/registration_field.py` — contains:
@@ -299,6 +314,7 @@ For `option_select`, `options` is a non-empty array of `{ "id": 10, "title": "Ve
 
 | File | Change |
 |------|--------|
+| `climateconnect_api/utility/html.py` | **New** — `sanitize_html(html, allowed_tags, allowed_attributes)` reusable sanitizer using `bleach` |
 | `organization/models/registration_field.py` | **New** — `RegistrationField`, `RegistrationFieldOption`, `RegistrationFieldType` enum |
 | `organization/models/__init__.py` | Export new models |
 | `organization/serializers/registration_field.py` | **New** — settings serializers, registry, `RegistrationFieldSerializer`, `RegistrationFieldOptionSerializer` |
@@ -308,6 +324,7 @@ For `option_select`, `options` is a non-empty array of `{ "id": 10, "title": "Ve
 | `organization/migrations/0NNN_add_registrationfield.py` | **New** — creates both new tables |
 | `feature_toggles/migrations/0003_add_registration_custom_fields_toggle.py` | **New** — creates `REGISTRATION_CUSTOM_FIELDS` toggle row |
 | `organization/tests/test_event_registration.py` | Add tests for field create/edit/sync, validation, and settings registry |
+| `pyproject.toml` | Add `bleach` as a new dependency |
 
 ### Frontend
 
@@ -339,9 +356,11 @@ For `option_select`, `options` is a non-empty array of `{ "id": 10, "title": "Ve
 | 7 | Unauthenticated field management request | `401 Unauthorized` |
 | 8 | Non-organiser attempts to manage fields | `403 Forbidden` |
 | 9 | Checkbox with unknown key in `settings` (e.g. `{"description": "...", "rogue": "x"}`) | `rogue` stripped; only `description` persisted |
-| 10 | Checkbox `settings.description` empty on publish | `400 Bad Request` |
-| 11 | Checkbox `settings.description` empty on draft save | Accepted |
-| 12 | Option select `settings` contains arbitrary keys | All stripped; `{}` persisted |
+| 10 | Checkbox `settings.description` contains disallowed HTML (e.g. `<script>alert(1)</script>`) | Script tag stripped; safe HTML stored |
+| 11 | Checkbox `settings.description` contains `<a>` without `rel` | `rel="noopener noreferrer"` added on save |
+| 12 | Checkbox `settings.description` empty on publish | `400 Bad Request` |
+| 13 | Checkbox `settings.description` empty on draft save | Accepted |
+| 14 | Option select `settings` contains arbitrary keys | All stripped; `{}` persisted |
 
 ### Frontend
 
