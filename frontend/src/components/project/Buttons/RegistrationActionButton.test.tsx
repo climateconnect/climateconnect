@@ -109,9 +109,9 @@ describe("RegistrationActionButton", () => {
   // ── adminClosed ───────────────────────────────────────────────────────────
 
   describe('state: "adminClosed"', () => {
-    it('renders a disabled "Registration closed" button', () => {
+    it('renders a disabled "Booked out" button', () => {
       renderButton({ registrationState: "adminClosed" });
-      const btn = screen.getByRole("button", { name: /registration closed/i });
+      const btn = screen.getByRole("button", { name: /booked out/i });
       expect(btn).toBeInTheDocument();
       expect(btn).toBeDisabled();
     });
@@ -120,7 +120,7 @@ describe("RegistrationActionButton", () => {
       const handleRegisterClick = jest.fn();
       const handleCancelClick = jest.fn();
       renderButton({ registrationState: "adminClosed", handleRegisterClick, handleCancelClick });
-      const btn = screen.getByRole("button", { name: /registration closed/i });
+      const btn = screen.getByRole("button", { name: /booked out/i });
       fireEvent.click(btn);
       expect(handleRegisterClick).not.toHaveBeenCalled();
       expect(handleCancelClick).not.toHaveBeenCalled();

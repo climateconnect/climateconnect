@@ -119,7 +119,11 @@ export default function RegistrationActionButton({
     if (!shouldShowSeats) return null;
 
     return (
-      <Typography className={classes.seatsText} color="text.primary">
+      <Typography
+        className={classes.seatsText}
+        color="text.primary"
+        aria-label={`${availableSeats} of ${maxParticipants} seats available`}
+      >
         <span className={classes.seatsNumber}>
           {availableSeats} / {maxParticipants}{" "}
         </span>
