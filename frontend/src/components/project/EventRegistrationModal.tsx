@@ -11,6 +11,7 @@ import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
+import MiniProfilePreview from "../profile/MiniProfilePreview";
 
 const useStyles = makeStyles((theme: Theme) => ({
   modalContent: {
@@ -26,6 +27,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   userInfo: {
     marginBottom: theme.spacing(3),
+  },
+  profilePreview: {
+    marginBottom: theme.spacing(2),
   },
   infoField: {
     marginBottom: theme.spacing(2),
@@ -230,20 +234,13 @@ export default function EventRegistrationModal({
   const renderAuthenticatedContent = () => (
     <Box className={classes.formContainer}>
       <Box className={classes.userInfo}>
-        <TextField
-          fullWidth
-          label={texts.name}
-          value={`${user?.first_name || ""} ${user?.last_name || ""}`}
-          disabled
-          className={classes.infoField}
-        />
-        <TextField
-          fullWidth
-          label={texts.email}
-          value={user?.email || ""}
-          disabled
-          className={classes.infoField}
-        />
+        <Box className={classes.profilePreview}>
+          <MiniProfilePreview
+            profile={{ ...user, thumbnail_image: user.image }}
+            size="medium"
+            nolink
+          />
+        </Box>
       </Box>
 
       <Box className={classes.actionRow}>

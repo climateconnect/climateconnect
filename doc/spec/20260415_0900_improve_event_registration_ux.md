@@ -1,6 +1,6 @@
 # Improve Event Registration UX
 
-**Status**: IN PROGRESS (Points 1-5 COMPLETED)
+**Status**: IN PROGRESS (Points 1-6 COMPLETED)
 **Type**: Improvement
 **Date and time created**: 2026-04-15 09:00
 **Date Completed**: TBD
@@ -17,7 +17,7 @@
 - ✅ Point 3: Language Redirect Fix - COMPLETED (2026-04-16)
 - ✅ Point 4: Disable Card Hover Effect - COMPLETED (2026-04-16)
 - ✅ Point 5: Remove Modal Steps - COMPLETED (2026-04-16)
-- ⏳ Point 6: Show User Identity for Logged-In Users - PENDING
+- ✅ Point 6: Show User Identity for Logged-In Users - COMPLETED (2026-04-16)
 - ⏳ Point 7: Confirmation Message with Event Name - PENDING
 - ⏳ Point 8: Show Available Seats - PENDING
 
@@ -231,27 +231,30 @@ Following the initial implementation of event registration (#1845), several UX i
 
 #### 6. Show User Identity for Logged-In Users
 
-**Files to modify:**
+**Files modified:**
 
-- Registration modal/form component
+- `/frontend/src/components/project/EventRegistrationModal.tsx` - Event registration modal component
 
-**Changes needed:**
+**Changes implemented:**
 
-- When user is logged in, display their avatar and name using `MiniProfilePreview` component
-- Remove or hide the separate email and name input fields for logged-in users
-- Show confirmation email address as read-only text
-- Keep name/email input fields for guest users (not logged in)
+- Added import for `MiniProfilePreview` component
+- Replaced disabled TextField components (name and email) with `MiniProfilePreview`
+- Display user's avatar and name using `MiniProfilePreview` with `size="medium"` and `nolink` props
+- Added CSS class: `profilePreview` for proper spacing
+- Guest users (unauthenticated) continue to see the authentication flow unchanged
 
-**Components to reuse:**
+**Result:**
 
-- `MiniProfilePreview` from `/frontend/src/components/profile/MiniProfilePreview.tsx`
-- Access user data via `UserContext`
+- Logged-in users now see their profile preview (avatar + name) instead of disabled input fields
+- Cleaner, more visual presentation
+- Consistent with how user identity is shown elsewhere in the app
+- Guest users still see email/password input fields as before
 
 **Testing:**
 
-- Verify logged-in users see their avatar and name
-- Verify guest users still see input fields
-- Ensure email confirmation message is displayed
+- Logged-in users see MiniProfilePreview with avatar and name
+- Guest users still see authentication flow
+- Modal functionality unchanged
 
 #### 7. Confirmation Message with Event Name
 
