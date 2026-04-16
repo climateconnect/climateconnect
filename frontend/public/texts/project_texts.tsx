@@ -1443,12 +1443,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Jetzt anmelden",
     },
     booked_out: {
-      en: "Booked out",
+      en: "Booked Out",
       de: "Ausgebucht",
-    },
-    registration_closed: {
-      en: "Registration closed",
-      de: "Anmeldung geschlossen",
     },
     authentication: {
       en: "Authentication",

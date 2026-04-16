@@ -99,7 +99,6 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
     fontSize: 11,
     padding: "4px 12px",
     height: 24,
-    textTransform: "none",
     whiteSpace: "nowrap",
   },
 }));

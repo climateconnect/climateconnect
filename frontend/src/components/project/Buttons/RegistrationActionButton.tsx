@@ -58,7 +58,7 @@ export default function RegistrationActionButton({
   if (registrationState === "adminClosed") {
     return (
       <Button variant="outlined" color="secondary" disabled className={className}>
-        {texts.registration_closed}
+        {texts.booked_out}
       </Button>
     );
   }

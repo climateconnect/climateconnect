@@ -33,7 +33,7 @@ export const getRegisterButtonText = (
   const status = project.registration_config?.status;
   if (status === "open") return texts.register_now;
   if (status === "full") return texts.booked_out;
-  return texts.registration_closed;
+  return texts.booked_out;
 };
 
 /**

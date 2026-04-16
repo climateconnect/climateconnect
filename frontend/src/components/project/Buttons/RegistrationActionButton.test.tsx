@@ -14,9 +14,8 @@ import { RegistrationUIState } from "../../../utils/eventRegistrationHelpers";
 const TEXTS = {
   you_attended_this_event: "You attended this event",
   cancel_registration: "Cancel registration",
-  registration_closed: "Registration closed",
   register_now: "Register now",
-  booked_out: "Booked out",
+  booked_out: "Booked Out",
   already_registered: "Registered ✓",
 };
 
@@ -147,9 +146,9 @@ describe("RegistrationActionButton", () => {
   // ── closed ────────────────────────────────────────────────────────────────
 
   describe('state: "closed"', () => {
-    it('renders a disabled "Registration closed" button for a closed event', () => {
+    it('renders a disabled "Booked Out" button for a closed event', () => {
       renderButton({ registrationState: "closed", project: makeProject("closed") });
-      const btn = screen.getByRole("button", { name: /registration closed/i });
+      const btn = screen.getByRole("button", { name: /booked out/i });
       expect(btn).toBeInTheDocument();
       expect(btn).toBeDisabled();
     });
