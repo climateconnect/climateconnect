@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
     bottom: props.visibleFooterHeight,
     boxShadow: "-3px -3px 6px #00000029",
     zIndex: 101,
+    paddingTop: theme.spacing(1),
   }),
   containerButtonsActionBar: {
     display: "flex",

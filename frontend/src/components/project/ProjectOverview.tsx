@@ -352,11 +352,6 @@ function ShortProjectInfo({ project, isWasseraktionswochenEnabled }) {
       <div className={classes.projectInfoEl}>
         <div className={classes.projectTypeContainer}>
           <ProjectTypeDisplay projectType={project.project_type} />
-          {project.registration_config?.available_seats != null && (
-            <Typography component="span" className={classes.availableSeatsText}>
-              · {project.registration_config.available_seats} {texts.seats_available}
-            </Typography>
-          )}
         </div>
       </div>
     </>
