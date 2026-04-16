@@ -36,9 +36,7 @@ _DUMMY_CACHE = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCa
 _TASK_PATH = "organization.views.event_registration_views._send_registration_email"
 # Admin notification task — must be mocked whenever transaction.on_commit is patched
 # to run immediately, because EventRegistrationConfig.notify_admins defaults to True.
-_NOTIFY_ADMINS_PATH = (
-    "organization.views.event_registration_views._notify_admins_task"
-)
+_NOTIFY_ADMINS_PATH = "organization.views.event_registration_views._notify_admins_task"
 
 
 def _create_project_status():
@@ -185,7 +183,9 @@ class TestRegisterForEventHappyPath(APITestCase):
                 side_effect=lambda fn, using=None: fn(),
             ),
             patch(_TASK_PATH) as mock_task,
-            patch(_NOTIFY_ADMINS_PATH),  # prevent broker connection; notify_admins defaults to True
+            patch(
+                _NOTIFY_ADMINS_PATH
+            ),  # prevent broker connection; notify_admins defaults to True
         ):
             response = self.client.post(_register_url("open-event"))
 

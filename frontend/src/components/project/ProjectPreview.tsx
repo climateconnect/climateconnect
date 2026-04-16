@@ -106,12 +106,17 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProjectPreview({ project, projectRef, hubUrl, className }: any) {
+export default function ProjectPreview({
+  project,
+  projectRef,
+  hubUrl,
+  className,
+  isUserRegistered,
+}: any) {
   // DISABLED: Hover expansion effect causes registration button to jump/shift position (Issue #1885)
   // Keeping code in place for potential future re-enablement
   // const [hovering, setHovering] = useState(false);
   const hovering = false; // Hover effect disabled
-
   const { locale } = useContext(UserContext);
   const { projectTypes } = useContext(BrowseContext);
   const projectType =
@@ -171,8 +176,16 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
             )}
           </CardMedia>
           <div className={classes.cardContentWrapper}>
-            <CardContentWithDescription project={project} hovering={hovering} />
-            <CardContentWithoutDescription project={project} hovering={hovering} />
+            <CardContentWithDescription
+              project={project}
+              hovering={hovering}
+              isUserRegistered={isUserRegistered}
+            />
+            <CardContentWithoutDescription
+              project={project}
+              hovering={hovering}
+              isUserRegistered={isUserRegistered}
+            />
           </div>
         </Card>
       </div>
@@ -180,7 +193,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
   );
 }
 
-const CardContentWithoutDescription = ({ project, hovering }) => {
+const CardContentWithoutDescription = ({ project, hovering, isUserRegistered }) => {
   const classes = useStyles();
   return (
     <CardContent className={classes.cardContent}>
@@ -189,12 +202,12 @@ const CardContentWithoutDescription = ({ project, hovering }) => {
           {project.name}
         </Typography>
       </div>
-      <ProjectMetaData project={project} hovering={hovering} />
+      <ProjectMetaData project={project} hovering={hovering} isUserRegistered={isUserRegistered} />
     </CardContent>
   );
 };
 
-const CardContentWithDescription = ({ project, hovering }) => {
+const CardContentWithDescription = ({ project, hovering, isUserRegistered }) => {
   const classes = useStyles({ hovering: hovering });
 
   return (
@@ -204,7 +217,12 @@ const CardContentWithDescription = ({ project, hovering }) => {
           {project.name}
         </Typography>
       </div>
-      <ProjectMetaData project={project} hovering={hovering} withDescription />
+      <ProjectMetaData
+        project={project}
+        hovering={hovering}
+        withDescription
+        isUserRegistered={isUserRegistered}
+      />
     </CardContent>
   );
 };

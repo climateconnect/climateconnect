@@ -1266,20 +1266,20 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Status",
     },
     registration_status_open: {
-      en: "Open",
-      de: "Offen",
+      en: "Registration open",
+      de: "Anmeldung offen",
     },
     registration_status_closed: {
-      en: "Closed",
-      de: "Geschlossen",
+      en: "Registration closed",
+      de: "Anmeldung geschlossen",
     },
     registration_status_full: {
-      en: "Full",
-      de: "Ausgebucht",
+      en: "Event full",
+      de: "Veranstaltung ausgebucht",
     },
     registration_status_ended: {
-      en: "Ended",
-      de: "Abgelaufen",
+      en: "Registration ended",
+      de: "Anmeldung abgelaufen",
     },
     registration_end_date_required: {
       en: "Registration end date is required",
@@ -1536,7 +1536,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     cancel_guest_registration: {
       en: "Cancel registration",
-      de: "Anmeldung stornieren",
+      de: "Abmelden",
     },
     cancel_guest_registration_confirm: {
       en: "Are you sure you want to cancel {name}'s registration for {event}?",
@@ -1552,7 +1552,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     yes_cancel_registration: {
       en: "Yes, cancel registration",
-      de: "Ja, Anmeldung stornieren",
+      de: "Ja, abmelden",
     },
     registration_status_active: {
       en: "Active",
@@ -1564,7 +1564,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     cancel_registration: {
       en: "Cancel registration",
-      de: "Anmeldung stornieren",
+      de: "Abmelden",
     },
     cancel_registration_confirm: {
       en: "Are you sure you want to cancel your registration for {event}?",

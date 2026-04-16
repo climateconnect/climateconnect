@@ -3,7 +3,7 @@
 **Type**: Epic  
 **Status**: IN PROGRESS  
 **Started**: 2026-03-05  
-**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872)  
+**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901)  
 **Owner**: CC
 
 ---
@@ -12,7 +12,7 @@
 
 This epic delivers end-to-end online registration for Climate Connect events. It is part of the larger **[Event management functionality](https://github.com/climateconnect/product-backlog/issues/4)** initiative, which adds signup, notifications, and customisable event-specific information collection to the existing event feature.
 
-The implementation is incremental across multiple phases. **Phase 1 is complete. Phase 2 is the MVP — the goal is to ship Phase 2 to production and then continue with Phase 3.**
+The implementation is incremental across multiple phases. **Phase 1 is complete. Phase 2 is nearly complete. Phase 3 (guest registration via unified auth) is the final go-live blocker — the toggle flips to production once Phase 3 is validated on staging. Phase 4 (custom fields) starts in parallel and ships incrementally post-launch.**
 
 ### Rollout Strategy: Toggle-First
 
@@ -20,7 +20,7 @@ The `EVENT_REGISTRATION` feature toggle was implemented **before any feature wor
 
 1. **All tasks** are developed and shipped behind the toggle — production users see nothing until Phase 2 is complete.
 2. The toggle allows the team to test incrementally on staging and in development without exposing incomplete flows to production users.
-3. When **Phase 2 is complete**, the toggle is flipped to `production_is_active = True`. From that point, Phase 3 work continues — still behind the same toggle if needed.
+3. When **Phase 3 (guest registration) is complete and validated on staging**, the toggle is flipped to `production_is_active = True`. Phase 2 alone is not sufficient to go live — the guest registration flow (which depends on the Auth Unification epic) must also be ready. Phase 4 work is developed in parallel and continues behind the toggle after the flip.
 4. **Every new UI component** in this epic must check `isEnabled("EVENT_REGISTRATION")` before rendering — consistent with `ShareProjectRoot.tsx`. Backend API changes are always additive and do not need to be toggled.
 
 > ⚙️ **Toggle flip procedure**: update `production_is_active = True` on the `EVENT_REGISTRATION` `FeatureToggle` record (via the Django admin panel or a data migration). Coordinate frontend and backend deployments so both are live before flipping.
@@ -47,38 +47,82 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 |---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|----------------------------|
 | Organiser creates event with registration               | [#1820](https://github.com/climateconnect/climateconnect/issues/1820)                                                                         |    | ✅ Done                     |
 | Member registers for event                              | [#1845](https://github.com/climateconnect/climateconnect/issues/1845)   [#1885](https://github.com/climateconnect/climateconnect/issues/1885) | [`20260309_0900_...`](./20260309_0900_member_register_for_event.md)          | ⚙️ In proress              |
-| Member sees their registered events                     | [#1849](https://github.com/climateconnect/climateconnect/issues/1849)                                                                         | [`20260309_1100_...`](./20260309_1100_member_see_registered_events.md)       | 🔵 Ready                   |
-| Member cancels a registration                           | [#1850](https://github.com/climateconnect/climateconnect/issues/1850)                                                                         | [`20260309_1500_...`](./20260309_1500_member_cancel_event_registration.md)   | ✅ Done                      |
+| Member sees their registered events                     | [#1849](https://github.com/climateconnect/climateconnect/issues/1849)                                                                         |       | ✅ Done                     |
+| Member cancels a registration                           | [#1850](https://github.com/climateconnect/climateconnect/issues/1850)                                                                         |   | ✅ Done                      |
 | Event organizer can see canceled guests                 | [#1871](https://github.com/climateconnect/climateconnect/issues/1871)                                                                         | delivered by [#1872](./20260407_1000_organizer_cancel_guest_registration.md) | ✅ Done                     |
 | Organiser sees status of registrations (list of guests) | [#1863](https://github.com/climateconnect/climateconnect/issues/1863)                                                                         |  | ✅ Done                     |
 | Organiser exports / prints registered guests            | [#1863](https://github.com/climateconnect/climateconnect/issues/1863)                                                                         |  | ✅ Done |
-| Organiser sends email to all registered guests          | [#1866](https://github.com/climateconnect/climateconnect/issues/1866)   [#1886](https://github.com/climateconnect/climateconnect/issues/1886) | [`20260414_1300_...`](./20260414_1300_send_email_to_guests_improvements.md) | ✅ Done ([#1866](https://github.com/climateconnect/climateconnect/issues/1866)) / 🔵 Ready ([#1886](https://github.com/climateconnect/climateconnect/issues/1886)) |
+| Organiser sends email to all registered guests          | [#1866](https://github.com/climateconnect/climateconnect/issues/1866)   [#1886](https://github.com/climateconnect/climateconnect/issues/1886) |  | ✅ Done |
 | Organiser closes / reopens registration                 | [#1851](https://github.com/climateconnect/climateconnect/issues/1851)                                                                         |  | ✅ Done                     |
 | Organiser cancels an individual guest registration      | [#1872](https://github.com/climateconnect/climateconnect/issues/1872)                                                                         |  | ✅ Done                   |
 | Organiser sets admin notification preference for registrations | [#1882](https://github.com/climateconnect/climateconnect/issues/1882)                                                                         |  | ✅ Done |
 | Admin notification emails on member registration / cancellation | [#1888](https://github.com/climateconnect/climateconnect/issues/1888)                                                                         |  | ✅ Done |
 
-### 🔭 Phase 3 — Advanced Registration (next goal after Phase 2 ships)
+### 🎯 Phase 3 — Guest Registration + UX Polish (go-live blocker)
 
-| Story                                                   | Status |
-|---------------------------------------------------------|--------|
-| Guest user registers and becomes a platform member      | ⚪ |
-| Organiser creates event with custom registration fields | ⚪ |
-| Organiser edits event with custom registration fields   | ⚪ |
-| Member registers with advanced options (custom fields)  | ⚪ |
-| Organiser sees detailed registration status             | ⚪ |
-| Organiser performs advanced management tasks            | ⚪ |
+> **Enabler dependency**: Requires **[EPIC: Auth Unification](./EPIC_auth_unification.md)** (Phase A) to be complete before the guest registration story can ship. The guest registration flow depends on the new combined login/signup and token-based auth that are delivered by that separate epic.
+>
+> **Toggle flip**: The `EVENT_REGISTRATION` production toggle is flipped **after** this phase is validated on staging — not after Phase 2.
 
-### 🔮 Phase 4 — Templates & Check-in, Nice to Have (future)
+| Story | GitHub Issue | Status |
+|-------|-------------|--------|
+| Guest user registers for an event and becomes a platform member | — | ⚪ |
+| Show registration status on project browse and similar projects sidebar | [#1901](https://github.com/climateconnect/climateconnect/issues/1901) | ⚪ |
+
+### 🔧 Phase 4 — Custom Registration Fields (incremental)
+
+> **Scheduling**: Development starts **in parallel with Phase 3**. Phase 4 stories are built and deployed behind the `EVENT_REGISTRATION` toggle and ship to production after the toggle flip. Each iteration stands on its own and delivers user value independently.
+>
+> **Organiser view and management capabilities** (what was previously called "detailed registration status" and "advanced management tasks") grow organically with each iteration — they are not separate stories but are included in the scope of each field-type story.
+
+#### Phase 4a — Select & Checkbox Fields (first iteration)
+
+The foundational custom fields story. Organisers can add up to **5 extra fields** — single-select (dropdown) and checkbox (boolean) — to their event's registration form, control field order, and mark fields as required.
+
+| Story | GitHub Issue | Status |
+|-------|-------------|--------|
+| Organiser creates/edits event with custom registration fields (select, checkbox) | [#1880](https://github.com/climateconnect/climateconnect/issues/1880) | ⚪ |
+| Member registers with custom fields (select, checkbox) | — | ⚪ |
+
+**#1880 field specs** (detail to be expanded in tech spec):
+
+| Field type | Registration value | Key settings |
+|------------|-------------------|--------------|
+| Checkbox | Boolean | Description (rich text — bold + links); required flag |
+| Option select (single) | Selected option | Title; 1–N options (each with title + order); required flag |
+
+**Forward-compatibility constraints from #1880** (must be kept in mind during design, not necessarily implemented now):
+- Response storage must accommodate a later **Inventory** field type that persists `(selected option, quantity)` — not just a single value.
+- Schema should not preclude a **Time slot select** field type with per-slot seat limits.
+- Architecture should support future **registration form templates** for reuse across events.
+
+#### Phase 4b — Inventory / Capacity Options
+
+Organisers can define options with **limited availability** — e.g. workshop slots, shuttle seats, meal choices. Each option has a capacity (stock limit). The system tracks remaining availability per option and stores per-guest what they booked (option + quantity). This requires capacity tracking at the option level and a per-participant response record. Guests cannot select an option once it is fully booked.
+
+| Story | Status |
+|-------|--------|
+| Organiser creates/edits event with inventory options (capacity per option) | ⚪ |
+| Member selects inventory options when registering; system enforces per-option capacity | ⚪ |
+
+#### Phase 4c+ — Further Field Types (TBD)
+
+Additional field types (e.g. free text, number, date) to be defined based on user feedback after Phase 4a ships.
+
+| Story | Status |
+|-------|--------|
+| Further custom field types (scope TBD after Phase 4a user feedback) | ⚪ |
+
+### 🔮 Phase 5 — Templates, Check-in & Nice-to-Haves (future)
 
 | Story                                                             | Status |
 |-------------------------------------------------------------------|--------|
-| Reusable event registration settings (templates)                  | ⚪                                                                   |
-| Event organizer can checkin attendants                            | ⚪                                                                   |
-| Member receives event reminder notifications                      | ⚪                                                                   | 
-| Post-event follow ups (survey/feedback,...)                       | ⚪                                                                   | 
-| Enriched messages to guests (e.g. with html, images, attachments) | ⚪                                                                   | 
-| iCal support for events                                           | ⚪                                                                   | 
+| Reusable event registration settings (templates)                  | ⚪ |
+| Event organizer can checkin attendants                            | ⚪ |
+| Member receives event reminder notifications                      | ⚪ |
+| Post-event follow ups (survey/feedback,...)                       | ⚪ |
+| Enriched messages to guests (e.g. with html, images, attachments) | ⚪ |
+| iCal support for events                                           | ⚪ |
 ---
 
 ## Shared Architecture
@@ -163,14 +207,14 @@ The `EVENT_REGISTRATION` toggle was created **first**, before any feature work, 
 |-------------|--------------|-------|
 | Development | ✅ Enabled | Always on — full feature visible to developers |
 | Staging | ✅ Enabled | Full feature visible for QA and stakeholder review |
-| Production | ❌ Disabled | Flipped to `True` when Phase 2 is complete |
+| Production | ❌ Disabled | Flipped to `True` when Phase 3 (guest registration) is complete and validated on staging |
 
 **Rules for every agent working on this epic:**
 - All new frontend UI components **must** check `isEnabled("EVENT_REGISTRATION")` before rendering. The check pattern from `ShareProjectRoot.tsx` is the reference: `const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION")`.
 - Backend API changes are **always additive** and do not need to be gated by the toggle — the new fields and endpoints are harmless to existing consumers even when the UI is hidden.
 - Do **not** remove or bypass the toggle check, even if the toggle is enabled in your local environment. The check must stay in place until the team explicitly decides to retire it post-launch.
 
-**Toggle flip when Phase 2 is complete**: when all Phase 2 stories are done and validated on staging, update the `FeatureToggle` record: `production_is_active = True`. This can be done via the Django admin panel or a targeted data migration. Coordinate the backend deployment and frontend deployment so both are live before flipping.
+**Toggle flip when Phase 3 is complete**: when Phase 2 and Phase 3 (guest registration) are both done and validated on staging, update the `FeatureToggle` record: `production_is_active = True`. This can be done via the Django admin panel or a targeted data migration. Coordinate the backend deployment and frontend deployment so both are live before flipping. [EPIC: Auth Unification](./EPIC_auth_unification.md) (Phase A) must also be deployed and live before the flip.
 
 ### Draft Mode
 Consistent across all tasks: when `is_draft=true`, all required-field validation and cross-field constraint validation (e.g. `registration_end_date ≤ project.end_date`, past-date guard) are **skipped**. Full validation is enforced on publish (`is_draft=false`). Established in [#1820](https://github.com/climateconnect/climateconnect/issues/1820).
