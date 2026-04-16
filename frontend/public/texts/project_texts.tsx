@@ -1478,6 +1478,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Confirm Registration",
       de: "Anmeldung bestätigen",
     },
+    confirm_your_registration_for: {
+      en: `Confirm your registration for ${project?.name}`,
+      de: `Bestätige deine Anmeldung für ${project?.name}`,
+    },
     to_register_please_login_or_signup: {
       en: "To register for this event, please log in or sign up!",
       de: "Um dich für diese Veranstaltung anzumelden, melde dich bitte an oder registriere dich!",

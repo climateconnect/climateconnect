@@ -15,7 +15,6 @@ import MiniProfilePreview from "../profile/MiniProfilePreview";
 
 const useStyles = makeStyles((theme: Theme) => ({
   modalContent: {
-    minHeight: 400,
     display: "flex",
     flexDirection: "column",
   },
@@ -30,6 +29,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   profilePreview: {
     marginBottom: theme.spacing(2),
+  },
+  confirmationMessage: {
+    marginBottom: theme.spacing(2),
+    fontWeight: 500,
   },
   infoField: {
     marginBottom: theme.spacing(2),
@@ -114,7 +117,7 @@ export default function EventRegistrationModal({
 }: Props) {
   const classes = useStyles();
   const { locale, user, signIn } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale });
+  const texts = getTexts({ page: "project", locale, project });
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
 
@@ -241,6 +244,9 @@ export default function EventRegistrationModal({
             nolink
           />
         </Box>
+        <Typography variant="body1" className={classes.confirmationMessage}>
+          {texts.confirm_your_registration_for}
+        </Typography>
       </Box>
 
       <Box className={classes.actionRow}>

@@ -1,6 +1,6 @@
 # Improve Event Registration UX
 
-**Status**: IN PROGRESS (Points 1-6 COMPLETED)
+**Status**: IN PROGRESS (Points 1-7 COMPLETED)
 **Type**: Improvement
 **Date and time created**: 2026-04-15 09:00
 **Date Completed**: TBD
@@ -18,7 +18,7 @@
 - ✅ Point 4: Disable Card Hover Effect - COMPLETED (2026-04-16)
 - ✅ Point 5: Remove Modal Steps - COMPLETED (2026-04-16)
 - ✅ Point 6: Show User Identity for Logged-In Users - COMPLETED (2026-04-16)
-- ⏳ Point 7: Confirmation Message with Event Name - PENDING
+- ✅ Point 7: Confirmation Message with Event Name - COMPLETED (2026-04-16)
 - ⏳ Point 8: Show Available Seats - PENDING
 
 ## Problem Statement
