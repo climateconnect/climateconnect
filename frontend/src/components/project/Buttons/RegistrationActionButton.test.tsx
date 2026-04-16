@@ -14,16 +14,22 @@ import { RegistrationUIState } from "../../../utils/eventRegistrationHelpers";
 const TEXTS = {
   you_attended_this_event: "You attended this event",
   cancel_registration: "Cancel registration",
+  registration_closed: "Registration closed",
   register_now: "Register now",
   booked_out: "Booked Out",
   already_registered: "Registered ✓",
+  seats_available: "Seats available",
 };
 
-function makeProject(status: string): Project {
+function makeProject(status: string, availableSeats?: number, maxParticipants?: number): Project {
   return {
     url_slug: "test-event",
     name: "Test Event",
-    registration_config: { status },
+    registration_config: {
+      status,
+      available_seats: availableSeats ?? null,
+      max_participants: maxParticipants ?? null,
+    },
   } as Project;
 }
 
@@ -34,6 +40,7 @@ function renderButton({
   handleRegisterClick = jest.fn(),
   handleCancelClick = jest.fn(),
   fallback = null,
+  showSeatsCount = false,
 }: {
   registrationState: RegistrationUIState;
   project?: Project;
@@ -41,6 +48,7 @@ function renderButton({
   handleRegisterClick?: jest.Mock;
   handleCancelClick?: jest.Mock;
   fallback?: React.ReactNode;
+  showSeatsCount?: boolean;
 }) {
   return render(
     <ThemeProvider theme={theme}>
@@ -52,6 +60,7 @@ function renderButton({
         handleRegisterClick={handleRegisterClick}
         handleCancelClick={handleCancelClick}
         fallback={fallback}
+        showSeatsCount={showSeatsCount}
       />
     </ThemeProvider>
   );
@@ -175,6 +184,67 @@ describe("RegistrationActionButton", () => {
     it("renders nothing when no fallback is provided", () => {
       const { container } = renderButton({ registrationState: "hidden" });
       expect(container.firstChild).toBeNull();
+    });
+  });
+
+  // ── showSeatsCount ────────────────────────────────────────────────────────
+
+  describe("showSeatsCount prop", () => {
+    it("displays available seats when showSeatsCount is true and registration data is present", () => {
+      renderButton({
+        registrationState: "register",
+        project: makeProject("open", 15, 50),
+        showSeatsCount: true,
+      });
+      expect(screen.getByText(/15 \/ 50/)).toBeInTheDocument();
+      expect(screen.getByText(/seats available/i)).toBeInTheDocument();
+    });
+
+    it("does not display seats when showSeatsCount is false", () => {
+      renderButton({
+        registrationState: "register",
+        project: makeProject("open", 15, 50),
+        showSeatsCount: false,
+      });
+      expect(screen.queryByText(/seats available/i)).not.toBeInTheDocument();
+    });
+
+    it("does not display seats when available_seats is null", () => {
+      renderButton({
+        registrationState: "register",
+        project: makeProject("open", null, 50),
+        showSeatsCount: true,
+      });
+      expect(screen.queryByText(/seats available/i)).not.toBeInTheDocument();
+    });
+
+    it("does not display seats when max_participants is null", () => {
+      renderButton({
+        registrationState: "register",
+        project: makeProject("open", 15, null),
+        showSeatsCount: true,
+      });
+      expect(screen.queryByText(/seats available/i)).not.toBeInTheDocument();
+    });
+
+    it("displays seats for closed/full events when showSeatsCount is true", () => {
+      renderButton({
+        registrationState: "closed",
+        project: makeProject("full", 0, 50),
+        showSeatsCount: true,
+      });
+      expect(screen.getByText(/0 \/ 50/)).toBeInTheDocument();
+      expect(screen.getByText(/seats available/i)).toBeInTheDocument();
+    });
+
+    it("displays seats for cancel state when showSeatsCount is true", () => {
+      renderButton({
+        registrationState: "cancel",
+        project: makeProject("open", 15, 50),
+        showSeatsCount: true,
+      });
+      expect(screen.getByText(/15 \/ 50/)).toBeInTheDocument();
+      expect(screen.getByText(/seats available/i)).toBeInTheDocument();
     });
   });
 });

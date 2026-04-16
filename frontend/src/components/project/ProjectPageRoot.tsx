@@ -574,6 +574,7 @@ export default function ProjectPageRoot({
         hasAttended={hasUserAttended}
         adminCancelled={isAdminCancelled}
         handleCancelClick={handleCancelClick}
+        eventRegistration={currentEventRegistration}
       />
 
       <Container className={classes.tabsContainerWithoutPadding}>
@@ -632,6 +633,7 @@ export default function ProjectPageRoot({
           hasAttended={hasUserAttended}
           adminCancelled={isAdminCancelled}
           handleCancelClick={handleCancelClick}
+          eventRegistration={currentEventRegistration}
         />
       </Container>
 

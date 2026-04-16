@@ -1,9 +1,9 @@
 # Improve Event Registration UX
 
-**Status**: IN PROGRESS (Points 1-7 COMPLETED)
+**Status**: COMPLETED
 **Type**: Improvement
 **Date and time created**: 2026-04-15 09:00
-**Date Completed**: TBD
+**Date Completed**: 2026-04-16
 **GitHub Issue**: [#1885](https://github.com/climateconnect/climateconnect/issues/1885)
 **Epic**: [`EPIC_event_registration.md`](./EPIC_event_registration.md)  
 **Related Specs**:
@@ -19,7 +19,7 @@
 - ✅ Point 5: Remove Modal Steps - COMPLETED (2026-04-16)
 - ✅ Point 6: Show User Identity for Logged-In Users - COMPLETED (2026-04-16)
 - ✅ Point 7: Confirmation Message with Event Name - COMPLETED (2026-04-16)
-- ⏳ Point 8: Show Available Seats - PENDING
+- ✅ Point 8: Show Available Seats - COMPLETED (2026-04-16)
 
 ## Problem Statement
 

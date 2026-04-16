@@ -41,6 +41,7 @@ interface ProjectInteractionButtonsProps {
   hasAttended?: boolean;
   adminCancelled?: boolean;
   handleCancelClick?: () => void;
+  eventRegistration?: { available_seats: number | null; max_participants: number | null } | null;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -96,6 +97,7 @@ export default function ProjectInteractionButtons({
   hasAttended,
   adminCancelled,
   handleCancelClick,
+  eventRegistration,
 }: ProjectInteractionButtonsProps) {
   const classes = useStyles({
     visibleFooterHeight: visibleFooterHeight,
@@ -130,6 +132,8 @@ export default function ProjectInteractionButtons({
               handleRegisterClick={handleRegisterClick}
               handleCancelClick={handleCancelClick}
               className={classes.registerButton}
+              showSeatsCount={true}
+              eventRegistration={eventRegistration}
             />
           ) : (
             <FollowButton

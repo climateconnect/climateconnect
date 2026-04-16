@@ -239,7 +239,7 @@ export default function EventRegistrationModal({
       <Box className={classes.userInfo}>
         <Box className={classes.profilePreview}>
           <MiniProfilePreview
-            profile={{ ...user, thumbnail_image: user.image }}
+            profile={{ ...user, thumbnail_image: (user as any)?.image }}
             size="medium"
             nolink
           />
