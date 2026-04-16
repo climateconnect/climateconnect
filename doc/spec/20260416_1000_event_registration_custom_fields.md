@@ -69,71 +69,218 @@ The registrant-side flow (rendering fields on the registration form, capturing a
 
 ### AI Agent Insights and Additions
 
-- **Schema design — polymorphic fields**: the custom field definition needs to support multiple field types with different settings (checkbox has a description; option select has a title and child options). Consider a polymorphic approach: a single `RegistrationField` table with a `field_type` discriminator and a JSONB `settings` column, or separate per-type tables linked from a base `RegistrationField` row. Either approach is valid — choose the one that best fits Django's ORM and the forward-compatibility constraints. Note that the Inventory type (Phase 4b) requires per-option capacity tracking and per-registration `(option_id, quantity)` storage — the schema must support this without a full rewrite.
+- **Schema — single `RegistrationField` table with `settings` JSONField (JSONB)**: chosen over per-type tables. Django's `JSONField` is first-class on PostgreSQL. Adding Phase 4b field types means adding a new `field_type` choice — no new tables or migrations to the field definition layer. Options for `option_select` are stored as separate `RegistrationFieldOption` rows (not inside `settings`) so each option has an addressable `id` for the future answer FK.
 
-- **Schema design — answer storage (forward-compatible, not implemented here)**: although answer capture is out of scope for this task, the field definition schema should not force a redesign when that task arrives. A `RegistrationFieldAnswer` table with FK to `EventRegistration` and FK to `RegistrationField` is the natural shape. The answer value column should be able to accommodate future types — consider storing as JSONB or with a `value_text` + `value_integer` + `value_option_id` pattern so the Inventory type's `(option_id, quantity)` answer does not require a migration later.
+- **`settings` shape per field type**:
+  - Checkbox: `{ "description": "<HTML from MUI-tiptap>" }`
+  - Option select: `{}` (options are in `RegistrationFieldOption` rows; `settings` is reserved for future per-type metadata such as placeholder text)
 
-- **Field ordering**: the `order` field on `RegistrationField` must be unique within a given `EventRegistrationConfig`. Reordering all fields at once (e.g. a bulk reorder endpoint) is simpler than individual up/down moves at the API level. Alternatively, reordering can be handled as part of the event edit `PATCH` payload if the fields are sent as an ordered array. Either approach is acceptable — the implementing agent should choose based on the existing edit flow.
+- **Rich text — MUI-tiptap, stored as HTML**: the checkbox description uses MUI-tiptap (being integrated on a separate branch, not yet merged). Tiptap's default output is HTML via `getHTML()`. The toolbar is restricted to **Bold** and **Link** only — no other formatting. The `Link` extension allows the organiser to set custom link text (e.g. "Terms of Service"), which is why plain text + auto-linkify is insufficient. The HTML string is stored in `settings.description` and rendered safely in the registrant-side task (follow-up).
 
-- **Option select child options**: the `RegistrationFieldOption` (or equivalent) rows are child entities of a `RegistrationField`. They need a `title` and an `order`. Deleting a field should cascade-delete its options (options have no meaning without the parent field).
+- **Answer storage shape (forward-compatible, implemented in follow-up task)**: `RegistrationFieldAnswer` with `value_boolean` (nullable), `value_option` FK nullable → `RegistrationFieldOption`, and `value_json` JSONField nullable for Inventory's `(option_id, quantity)` and future types. This schema requires no migration when Phase 4b arrives.
 
-- **Rich text for checkbox description**: the description supports bold and links (a subset of rich text). Store in a format consistent with how other rich-text fields are handled elsewhere on the platform (check existing usage before choosing HTML, Markdown, or a structured editor format).
+- **Reorder via dedicated endpoint**: `POST /api/projects/{slug}/registration-config/fields/reorder/` accepts `[{id, order}, ...]`. The frontend sends the full ordered array after drag-and-drop; the backend validates uniqueness and updates atomically. Simpler than embedding reorder in every PATCH.
 
-- **Forward-compatibility hint — registration form templates**: the spec explicitly defers templates, but the schema should not make them hard to add later. Keeping field definitions decoupled from `EventRegistrationConfig` (e.g. via a through/join table or a `template_id` FK) would make templates easier to introduce without a schema rewrite.
+- **Fields in project detail response**: field definitions are included in `GET /api/projects/{slug}/` (read path) as a nested array on `event_registration_config`. No extra round-trip for the registrant-side task. Additive — no breaking change.
 
-- **UI — field builder**: the organiser's field builder UI is a new section within the event creation / edit flow (likely inside `EditEventRegistrationModal` or the `ShareProjectRoot` form). Google Forms is a strong UX reference — it shares Material Design and handles the same interaction patterns (type picker, per-field settings panel, drag-to-reorder, required toggle, delete). Consider breaking the implementation into focused sub-components (e.g. `RegistrationFieldList`, `RegistrationFieldEditor`, `OptionSelectFieldEditor`, `CheckboxFieldEditor`) to keep each one manageable.
+- **Feature toggle — `REGISTRATION_CUSTOM_FIELDS`**: a separate toggle from `EVENT_REGISTRATION` is required. `EVENT_REGISTRATION` will be flipped to production once Phase 3 is validated; Phase 4a may not be ready at that point. The new toggle is: dev ✅, staging ✅, production ❌. Flip condition: all Phase 4a tasks (this task + organiser view + registrant-side follow-up tasks) validated on staging simultaneously.
 
-- **Toggle strategy**: since `EVENT_REGISTRATION` may be flipped to production before Phase 4a is ready, a separate `REGISTRATION_CUSTOM_FIELDS` toggle (or equivalent) is likely needed. All four Phase 4a tasks (organiser create/edit fields, organiser view fields on event detail, and the two registrant-side follow-up tasks) need to be complete and validated before that toggle is flipped. Confirm the toggle name and strategy with the team early — it affects every frontend component in this task.
+- **UI — field builder sub-components**: `RegistrationFieldList` (ordered list, drag handle, delete), `RegistrationFieldEditor` (wrapper with type-specific inner form), `CheckboxFieldEditor` (MUI-tiptap + required toggle), `OptionSelectFieldEditor` (title input + options list with add/remove/reorder). Keep each component focused.
 
-- **Admin notification emails**: the admin notification email introduced in [#1888](https://github.com/climateconnect/climateconnect/issues/1888) does not need to include custom field definitions or answers in Phase 4a — that is a future enhancement.
+- **Admin notification emails**: not affected by this task — no field answers are captured here.
 
 ---
 
 ## System Impact
 
-> ⚠️ **This section is to be filled in by the system architect (Archie) before implementation begins.**
+- **Actors involved**:
+  - `Organiser / Team Admin` — creates, edits, reorders, and deletes custom registration fields on an event they manage.
+  - `System` — enforces the 5-field limit, validates field settings on publish, persists field definitions and options.
 
-- **Actors involved**: _TBD_
-- **Entities added or changed**: _TBD_
-- **Flows added or changed**: _TBD_
-- **Integration changes**: _TBD_
-- **Migrations required**: _TBD_
+- **Entities added**:
+  - `RegistrationField` (new) — one custom field on an event's registration form. FK → `EventRegistrationConfig`. Fields: `field_type` (discriminator), `order` (unique within config), `is_required`, `settings` (JSONField/JSONB).
+  - `RegistrationFieldOption` (new) — one selectable option within an `option_select` field. FK → `RegistrationField` (CASCADE). Fields: `title`, `order`.
+
+- **Entities changed**:
+  - `EventRegistrationConfig` — no schema change; gains a `fields` reverse relation. The serializer gains a nested `fields` array in read responses.
+
+- **Future entity (not created here, must be schema-compatible)**:
+  - `RegistrationFieldAnswer` — registrant's answer to a custom field. Will have: FK → `EventRegistration`, FK → `RegistrationField`, `value_boolean` (nullable), `value_option` FK → `RegistrationFieldOption` (nullable), `value_json` JSONField (nullable, for Inventory and future types).
+
+- **Flows added**:
+  - **Manage Registration Fields** — Organiser opens event create/edit → adds/edits/reorders/deletes custom fields → saves event. Fields are validated on publish.
+
+- **Flows changed**:
+  - **Create/Edit Event** — extended: the event form gains a "Registration fields" section (gated behind `REGISTRATION_CUSTOM_FIELDS` toggle). No change to the existing registration config save path.
+  - **View Event Detail** — extended: `GET /api/projects/{slug}/` response gains a `fields` array nested inside `event_registration_config`. Additive — no breaking change.
+
+- **Integration changes**:
+  - New feature toggle `REGISTRATION_CUSTOM_FIELDS` — data migration required (new `FeatureToggle` row).
+  - MUI-tiptap dependency (from separate branch, not yet in `main`) — must be merged before this task ships to production.
+
+- **Migrations required**:
+  - New table: `organization_registrationfield`
+  - New table: `organization_registrationfieldoption`
+  - New `FeatureToggle` row: `REGISTRATION_CUSTOM_FIELDS` (dev ✅, staging ✅, production ❌)
 
 ---
 
 ## Software Architecture
 
-> ⚠️ **This section is to be filled in during or after system impact analysis. The implementing agent (backend + frontend developer) owns the "how".**
+### Data Model
+
+**`RegistrationField`** — `organization/models/registration_field.py` (new)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `registration_config` | FK → `EventRegistrationConfig` (CASCADE) | `related_name="fields"` |
+| `field_type` | CharField (choices: `checkbox`, `option_select`) | Discriminator |
+| `order` | PositiveIntegerField | Position in the form. Unique together with `registration_config`. |
+| `is_required` | BooleanField | Default `False` |
+| `settings` | JSONField | Type-specific settings. Checkbox: `{"description": "<html>"}`. Option select: `{}` (reserved for future metadata). |
+| `created_at` | DateTimeField (auto_now_add) | |
+| `updated_at` | DateTimeField (auto_now) | |
+
+Constraints: `unique_together = [("registration_config", "order")]`. Max 5 fields per config enforced in serializer `validate()`.
+
+**`RegistrationFieldOption`** — `organization/models/registration_field.py` (new, same file)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `field` | FK → `RegistrationField` (CASCADE) | `related_name="options"` |
+| `title` | CharField (max 200) | Display label |
+| `order` | PositiveIntegerField | Sort order within this field |
+
+Constraints: `unique_together = [("field", "order")]`.
+
+**Forward-compatible answer storage shape** (not implemented here — for reference only):
+
+```
+RegistrationFieldAnswer
+  registration  → FK EventRegistration
+  field         → FK RegistrationField
+  value_boolean   BooleanField, nullable          (checkbox)
+  value_option  → FK RegistrationFieldOption, nullable  (option_select)
+  value_json      JSONField, nullable              (Inventory: {option_id, quantity}, future)
+```
 
 ### API
 
-_TBD — to be defined during implementation, guided by the system impact analysis above._
+**Field CRUD** (new endpoints, all require organiser/admin role):
 
-Key endpoints expected (non-prescriptive — exact shape TBD by implementing agent):
+| Method | URL | Description |
+|--------|-----|-------------|
+| `GET` | `/api/projects/{slug}/registration-config/fields/` | List fields in order |
+| `POST` | `/api/projects/{slug}/registration-config/fields/` | Create a field (with nested options for `option_select`) |
+| `PATCH` | `/api/projects/{slug}/registration-config/fields/{id}/` | Update a field and its options |
+| `DELETE` | `/api/projects/{slug}/registration-config/fields/{id}/` | Delete a field and cascade its options |
+| `POST` | `/api/projects/{slug}/registration-config/fields/reorder/` | Bulk reorder: `[{"id": 1, "order": 0}, ...]` |
 
-- CRUD for registration field definitions, scoped to a project's registration config
-- Bulk reorder endpoint or reorder-via-edit PATCH (implementing agent to choose)
-- Registration field definitions returned as part of the event detail or a dedicated endpoint
+**Permissions**: same inline `ProjectMember` queryset check used in `EditRegistrationConfigView`.
 
-### Frontend
+**Read — fields in project detail** (existing endpoint, additive change):
 
-_TBD — to be defined during implementation._
+`GET /api/projects/{slug}/` → `event_registration_config.fields` array added. Each element:
 
-Key UI area: field builder within event create/edit flow (organiser only).
+```json
+{
+  "id": 1,
+  "field_type": "checkbox",
+  "order": 0,
+  "is_required": true,
+  "settings": { "description": "<p>I agree to the <a href=\"...\">Terms</a></p>" },
+  "options": []
+}
+```
+
+For `option_select`:
+
+```json
+{
+  "id": 2,
+  "field_type": "option_select",
+  "order": 1,
+  "is_required": false,
+  "settings": {},
+  "options": [
+    { "id": 10, "title": "Vegetarian", "order": 0 },
+    { "id": 11, "title": "Vegan", "order": 1 }
+  ]
+}
+```
+
+**Validation (publish, `is_draft=false`)**:
+- Checkbox: `settings.description` must be non-empty and non-whitespace HTML.
+- Option select: must have at least one option; `title` must be non-empty on each.
+- All types: `order` values must be unique within the config; max 5 fields total.
+
+**Validation (draft)**: all publish validations are skipped.
+
+**Error responses**:
+
+| Status | Condition |
+|--------|-----------|
+| `400` | 6th field attempt; option select with 0 options on publish; missing required settings |
+| `401` | Unauthenticated |
+| `403` | Not organiser or team admin |
+| `404` | Project not found or no registration config |
 
 ### Backend
 
-_TBD — to be defined during implementation._
+- **New file**: `organization/models/registration_field.py` — `RegistrationField` and `RegistrationFieldOption` models; `RegistrationFieldType` choices enum.
+- **`organization/models/__init__.py`** — export new models.
+- **New file**: `organization/serializers/registration_field.py` — `RegistrationFieldSerializer` (with nested `options`), `RegistrationFieldOptionSerializer`, `ReorderFieldsSerializer`.
+- **`organization/serializers/event_registration.py`** — add `fields` nested array to `EventRegistrationConfigSerializer` read path (using `RegistrationFieldSerializer(many=True, read_only=True)`).
+- **New file**: `organization/views/registration_field_views.py` — `RegistrationFieldsView` (GET list / POST create), `RegistrationFieldDetailView` (PATCH / DELETE), `ReorderRegistrationFieldsView` (POST).
+- **`organization/urls.py`** — register the 5 new URL patterns under `projects/<str:url_slug>/registration-config/fields/`.
+- **Migrations**: two new tables + `FeatureToggle` data migration.
+
+### Frontend
+
+- **New section in `EventRegistrationSection.tsx`** (or a new `RegistrationFieldsSection.tsx` extracted from it) — field builder, gated behind `isEnabled("REGISTRATION_CUSTOM_FIELDS")`.
+- **New components** (all in `src/components/shareProject/` or `src/components/project/`):
+  - `RegistrationFieldList.tsx` — ordered list with drag-handle (MUI drag-and-drop or simple up/down arrows), delete button per row.
+  - `RegistrationFieldEditor.tsx` — wrapper that renders `CheckboxFieldEditor` or `OptionSelectFieldEditor` based on `field_type`.
+  - `CheckboxFieldEditor.tsx` — MUI-tiptap editor (Bold + Link toolbar only) + required toggle.
+  - `OptionSelectFieldEditor.tsx` — title `TextField` + ordered options list (add / remove / reorder options inline).
+- **Field type picker** — a `Select` or button group to choose `checkbox` or `option_select` when adding a new field.
+- **MUI-tiptap dependency** — must be available (merged from the parallel branch) before this component ships. The `CheckboxFieldEditor` depends on it.
+- **Text keys** — new keys in `public/texts/project_texts.tsx` for all UI labels (EN + DE).
+- **Toggle check** — `isEnabled("REGISTRATION_CUSTOM_FIELDS")` wraps the entire field builder section.
 
 ### Data / Migrations
 
-_TBD — new tables required for field definitions, field options, and field answers. Exact schema is the implementing agent's decision, subject to forward-compatibility constraints above._
+1. `organization/migrations/0NNN_add_registrationfield.py` — creates `organization_registrationfield` and `organization_registrationfieldoption` tables.
+2. `feature_toggles/migrations/0003_add_registration_custom_fields_toggle.py` — creates `REGISTRATION_CUSTOM_FIELDS` toggle row (dev ✅, staging ✅, production ❌).
 
 ---
 
 ## Files to Change
 
-> ⚠️ **To be filled in during implementation.**
+### Backend
+
+| File | Change |
+|------|--------|
+| `organization/models/registration_field.py` | **New** — `RegistrationField`, `RegistrationFieldOption`, `RegistrationFieldType` enum |
+| `organization/models/__init__.py` | Export new models |
+| `organization/serializers/registration_field.py` | **New** — `RegistrationFieldSerializer`, `RegistrationFieldOptionSerializer`, `ReorderFieldsSerializer` |
+| `organization/serializers/event_registration.py` | Add `fields` nested read-only array to `EventRegistrationConfigSerializer` |
+| `organization/views/registration_field_views.py` | **New** — `RegistrationFieldsView`, `RegistrationFieldDetailView`, `ReorderRegistrationFieldsView` |
+| `organization/urls.py` | Add 5 URL patterns for field CRUD and reorder |
+| `organization/migrations/0NNN_add_registrationfield.py` | **New** — creates both new tables |
+| `feature_toggles/migrations/0003_add_registration_custom_fields_toggle.py` | **New** — creates `REGISTRATION_CUSTOM_FIELDS` toggle row |
+| `organization/tests/test_event_registration.py` | Add tests for field CRUD, reorder, and validation |
+
+### Frontend
+
+| File | Change |
+|------|--------|
+| `src/components/shareProject/EventRegistrationSection.tsx` | Add `REGISTRATION_CUSTOM_FIELDS` toggle-gated field builder section |
+| `src/components/shareProject/RegistrationFieldList.tsx` | **New** — ordered field list with drag/reorder and delete |
+| `src/components/shareProject/RegistrationFieldEditor.tsx` | **New** — type-dispatching wrapper |
+| `src/components/shareProject/CheckboxFieldEditor.tsx` | **New** — MUI-tiptap (Bold + Link) + required toggle |
+| `src/components/shareProject/OptionSelectFieldEditor.tsx` | **New** — title input + options list |
+| `public/texts/project_texts.tsx` | Add new text keys (EN + DE) for all field builder labels |
 
 ---
 
@@ -198,4 +345,5 @@ _TBD — new tables required for field definitions, field options, and field ans
 ## Log
 
 - 2026-04-16 10:00 — Task created from GitHub issue [#1880](https://github.com/climateconnect/climateconnect/issues/1880). Phase 4a enabler task — foundational custom fields infrastructure (checkbox + option select), organiser side only. Registrant-side flow (form rendering + answer submission) is out of scope and will be delivered in a separate follow-up task. Forward-compatibility constraints for Inventory (Phase 4b) and registration form templates must be respected in the schema design. A dedicated feature toggle separate from `EVENT_REGISTRATION` is likely needed (all four Phase 4a tasks must go live together). Google Forms cited as UX reference for the field builder. Awaiting system impact analysis from Archie before implementation begins.
+- 2026-04-16 — System impact analysis complete (Archie). Decisions confirmed: single `RegistrationField` table + `settings` JSONField (JSONB); `RegistrationFieldOption` rows for option select choices; answer storage deferred to follow-up task but schema is forward-compatible (`value_boolean` + `value_option` FK + `value_json`). Rich text for checkbox description: MUI-tiptap (Bold + Link toolbar only), HTML output stored in `settings.description` — MUI-tiptap is on a separate branch not yet merged; must be merged before this task ships. New `REGISTRATION_CUSTOM_FIELDS` feature toggle (dev ✅, staging ✅, production ❌). Fields included in `GET /api/projects/{slug}/` detail response (additive). Reorder via dedicated `POST /fields/reorder/` endpoint. System Impact and Software Architecture sections filled in. Ready for implementation.
 
