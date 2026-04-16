@@ -70,29 +70,40 @@ This phase is the prerequisite for Event Registration Phase 3. All stories must 
 
 > **Full technical design** (LoginToken data model, rate limiting, security rules, Celery tasks, sequence diagram) is in [`doc/mosy/flows/passwordless-login-flow.md`](../mosy/flows/passwordless-login-flow.md).
 
-| Story | Notes | Status |
-|-------|-------|--------|
-| User enters email on combined auth page and is routed to login or signup | New page (e.g. `/login`) replaces `/signin` and `/signup` as the entry point. Step 1 is always email. Backend checks if email is known and responds accordingly (always HTTP 200 — prevents user enumeration). Old URLs redirect to new page. Hub theming (`?hub=`) and `?redirect=` param must work. | ⚪ |
-| Existing user logs in with OTP code | After email is identified as known, user requests a 6-digit OTP sent to their email. Backend issues `POST /api/auth/request-token` → returns `session_key` (stored in `sessionStorage`, tab-scoped). User enters code; `POST /api/auth/verify-token` validates it and returns Knox `{token, expiry}`. 15-minute expiry, single-use, 5 attempts max, constant-time comparison. Redirect and hub flows unchanged. Resend available after 60s. | ⚪ |
-| Existing user with a password can still log in with password | Backward compat. If user has a password, offer password login as an alternative on the login step. No user is forced to change their login method. | ⚪ |
-| New user completes signup within combined flow | After email is identified as unknown, user is guided through the signup steps (name, location, sectors — same data as today). Account created with no password (OTP-based by default). User is authenticated immediately after first OTP verification — no separate email verification step (inbox access is implicit proof of email ownership). | ⚪ |
+#### Tech Enablers (sequential — each unblocks the next)
+
+| # | Story | Notes | Status |
+|---|-------|-------|--------|
+| US-1 | `AUTH_UNIFICATION` feature toggle | Add `AUTH_UNIFICATION` to `FeatureToggle` using the existing pattern. Wire `/signin` and `/signup` to redirect to `/login` when on. No UI changes yet — just the toggle and redirect. Unblocks parallel frontend/backend work behind the flag. | ⚪ |
+| US-2 | `LoginToken` and `LoginAuditLog` models | Django models + migrations per data model spec below. Include `CleanupLoginTokens` (every 30 min) and `CleanupLoginAuditLogs` (purge >90 days) Celery beat tasks. Pure data layer — no endpoints yet. | ⚪ |
+| US-2b | `POST /api/auth/check-email` endpoint | Accepts `{ email }`. Looks up user, checks `has_usable_password()`. Always returns HTTP 200. Returns `{ user_status: "new" \| "returning_password" \| "returning_otp" }`. Rate-limited per IP. **Enumeration trade-off**: unlike `request-token`, this endpoint intentionally reveals whether an email is registered — necessary for routing. This is an accepted trade-off in combined login/signup flows; rate limiting per IP is the mitigation. No enumeration defence (always-200 body hiding) applies here. | ⚪ |
+| US-3 | `POST /api/auth/request-token` endpoint | Accepts `{ email, redirect_url }`. Validates `redirect_url` is a relative path. Generates OTP (`secrets.randbelow`) and `session_key` (`secrets.token_hex(32)`), stores hash only. Invalidates previous active token. Enqueues `SendLoginCodeEmail` Celery task (Mailjet) with raw code. Always returns HTTP 200 + `{ session_key }` (user enumeration prevention). Rate limiting: 3 req/email/10 min; 60s resend cooldown (same endpoint, issues new `session_key`). Writes to `LoginAuditLog` on every call. **New-user note**: in the combined flow, new users always go through `POST /signup/` before `request-token` is called (US-8), so the user will exist in the DB by the time this endpoint is hit. The nullable `user_id` on `LoginToken` is a safety net for the enumeration-prevention case only, not a new-user signup path. | ⚪ |
+| US-4 | `POST /api/auth/verify-token` endpoint | Accepts `{ session_key, code }`. Validates: not expired, not used, `attempt_count < 5`, constant-time hash compare (`hmac.compare_digest`). On failure: increment `attempt_count`, return 401 with message; lock at 5. On success: mark `used_at`, issue Knox `{token, expiry}`, return `{ token, expiry, user, redirect_url }`. Writes to `LoginAuditLog` on every call (all outcomes). | ⚪ |
+
+#### Frontend (US-7 and US-8 can be built in parallel once US-5 is done)
+
+| # | Story | Notes | Status |
+|---|-------|-------|--------|
+| US-5 | Combined auth page — email entry step | New page at `/login` (behind toggle). Email form calls `POST /api/auth/check-email`. Transitions page state based on `user_status` — no navigation, no URL change. Supports `?hub=` theming (`getHubTheme()` in `getServerSideProps`, same as today) and `?redirect=` param. Old `/signin` and `/signup` redirect here when toggle is on. *Depends on US-2b.* | ⚪ |
+| US-6 | OTP code entry + resend | Step 2 UI state on `/login`: 6-digit code input calls `POST /api/auth/verify-token`. On success: call `signIn()` in `UserContext`, redirect to `redirect_url` or home. "Resend" button: 60s disabled countdown, re-calls `request-token`, updates `session_key` in `sessionStorage`, clears input. Error messages per spec (attempts remaining, expired, session mismatch). *Depends on US-3, US-4, US-5.* | ⚪ |
+| US-7 | Password login option (backward compatibility) | **Parallelisable with US-8.** If `check-email` returns `returning_password`, show password field. Calls existing `POST /login/` — no change to that endpoint. "Use a code instead" link transitions to OTP flow (calls `request-token`, then shows US-6). *Depends on US-2b, US-3, US-5.* | ⚪ |
+| US-8 | New user signup within combined flow | **Parallelisable with US-7.** If `check-email` returns `new`, collect first/last name, location, then interest sectors (same fields as today's `/signup`). Call `POST /signup/` adapted to not require password — account is created unverified, same as today. Then trigger OTP via `request-token`; successful `verify-token` marks the account verified (OTP entry replaces the email link click). No separate verification email sent. *Depends on US-3, US-4, US-5.* | ⚪ |
+
+#### Post-launch cleanup (after `AUTH_UNIFICATION` toggle is flipped globally)
+
+| # | Story | Notes | Status |
+|---|-------|-------|--------|
+| US-A-cleanup | Remove legacy auth pages and toggle | Delete `/signin` and `/signup` pages, their components, and any code paths that only exist to support the old flow. Remove the `AUTH_UNIFICATION` `FeatureToggle` record and all toggle checks. Remove the now-redundant redirects added in US-1. Delete `POST /login/` if password login has been fully absorbed into the combined flow (confirm first). | ⚪ |
 
 ### 🔧 Phase B — Password Management in Settings
 
 Post-Phase A. Allows users to manage their auth method after account creation.
 
-| Story | Notes | Status |
-|-------|-------|--------|
-| User sets a password from account settings | Relevant for OTP-only users who want to add a password. Requires current authenticated session (no old password needed since they don't have one). | ⚪ |
-| User changes existing password from account settings | Existing password users update their password. Requires current password confirmation. | ⚪ |
-| User toggles between OTP-based and password-based login | Auth method preference stored on `UserProfile`. Toggle in account settings UI. If switching to password and none is set, prompt to set one first. | ⚪ |
-
-### 🔮 Phase C — Polish & Simplification (nice to have)
-
-| Story | Notes | Status |
-|-------|-------|--------|
-| Simplify or retire email verification step | With OTP-based auth, inbox access is implicit verification. Consider retiring the separate verification email for OTP-based users, or merging it with the first login code email. | ⚪ |
-| Password reset flow simplification | Once OTP-based auth is stable, the "forgot password" flow is unnecessary for users without a password. Consider simplifying or removing it for OTP-only users. | ⚪ |
+| # | Story | Notes | Status |
+|---|-------|-------|--------|
+| US-9 | `UserProfile.auth_method` field | Add `auth_method` to `UserProfile` (or derive from `has_usable_password()`). Expose via `PATCH /api/account_settings/`. Unblocks US-10 through US-12. | ⚪ |
+| US-10 | Set / change password from account settings | Update the existing change-password form: check `has_usable_password()` on the authenticated user. If no password is set, omit the current-password field (OTP-only users just enter and confirm the new password). If a password exists, keep the current-password confirmation as today. Backend validates accordingly and calls `set_password()`. | ⚪ |
+| US-11 | Toggle between OTP-based and password-based login | Toggle in account settings UI backed by `auth_method`. If switching to password and none set yet, prompt to set one first (links to US-10). | ⚪ |
 
 ---
 
@@ -142,6 +153,7 @@ Append-only audit table for security monitoring. Separate from `LoginToken` (whi
 
 | Endpoint | Method | Notes |
 |----------|--------|-------|
+| `POST /api/auth/check-email` | POST | Accepts `{ email }`. Looks up user and checks `has_usable_password()`. Always returns HTTP 200. Returns `{ user_status: "new" \| "returning_password" \| "returning_otp" }`. Rate-limited per IP. **Note**: intentionally reveals whether an email is registered — accepted trade-off for routing in a combined login/signup flow; rate limiting is the mitigation (unlike `request-token`, no body-level enumeration hiding applies here). |
 | `POST /api/auth/request-token` | POST | Accepts `{ email, redirect_url }`. Validates `redirect_url` is a relative path (starts with `/`, not `//`). Always returns HTTP 200 (user enumeration prevention). Returns `{ session_key }`. Also serves as the **resend** endpoint — enforces 60s cooldown per email, invalidates previous token, issues new `session_key`. |
 | `POST /api/auth/verify-token` | POST | Accepts `{ session_key, code }`. Validates expiry, single-use, attempt count, constant-time hash comparison. On success: marks token used, issues Knox `{token, expiry}`, returns `{ token, expiry, user, redirect_url }`. |
 
@@ -255,7 +267,7 @@ Phase A — Combined entry point + token login
     │
     └──▶ Phase B — Password management in settings
               │
-              └──▶ Phase C — Simplify verification / password reset (nice to have)
+              └──▶ Phase C — (removed; verification and password reset scope already handled by design)
 ```
 
 ---
