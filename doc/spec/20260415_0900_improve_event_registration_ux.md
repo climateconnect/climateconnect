@@ -1,6 +1,6 @@
 # Improve Event Registration UX
 
-**Status**: IN PROGRESS (Points 1-2 COMPLETED)
+**Status**: IN PROGRESS (Points 1-4 COMPLETED)
 **Type**: Improvement
 **Date and time created**: 2026-04-15 09:00
 **Date Completed**: TBD
@@ -15,7 +15,7 @@
 - ✅ Point 1: Button Text Uppercase - COMPLETED (2026-04-16)
 - ✅ Point 2: "Booked Out" Text - COMPLETED (2026-04-16)
 - ✅ Point 3: Language Redirect Fix - COMPLETED (2026-04-16)
-- ⏳ Point 4: Disable Card Hover Effect - PENDING
+- ✅ Point 4: Disable Card Hover Effect - COMPLETED (2026-04-16)
 - ⏳ Point 5: Remove Modal Steps - PENDING
 - ⏳ Point 6: Show User Identity for Logged-In Users - PENDING
 - ⏳ Point 7: Confirmation Message with Event Name - PENDING
@@ -170,21 +170,30 @@ Following the initial implementation of event registration (#1845), several UX i
 
 #### 4. Disable Card Hover Effect
 
-**Files to modify:**
+**Files modified:**
 
-- `/frontend/src/components/project/ProjectCard.tsx` or wherever hover state is managed
-- `/frontend/src/components/project/ProjectMetaData.tsx`
+- `/frontend/src/components/project/ProjectPreview.tsx` - Project card preview component
 
-**Changes needed:**
+**Changes implemented:**
 
-- Disable the hover expansion effect that causes the registration button to jump
-- Either set `hovering={false}` prop or add a feature flag to conditionally enable/disable
-- Keep the hover effect code in place with a comment explaining why it's disabled
+- Disabled hover state changes by setting `hovering = false` (constant instead of state)
+- Commented out `useState(false)` and hover handlers (`handleMouseEnter`, `handleMouseLeave`)
+- Commented out `onMouseEnter` and `onMouseLeave` props on Card component
+- Added clear comments explaining the change is due to Issue #1885 (registration button jump/shift)
+- All hover effect code kept in place for potential future re-enablement
+
+**Result:**
+
+- Project cards no longer expand on hover
+- Registration buttons remain in stable position
+- Short description stays hidden (no expansion)
+- Code can be easily re-enabled by uncommenting the marked sections
 
 **Testing:**
 
-- Verify hover on project cards no longer causes button position shift
-- Ensure code can be easily re-enabled if needed
+- Hover over project cards on browse page - no expansion occurs
+- Registration button stays in same position
+- Card styling remains consistent
 
 #### 5. Remove Modal Steps
 
