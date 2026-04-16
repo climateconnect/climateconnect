@@ -89,7 +89,12 @@ The registrant-side flow (rendering fields on the registration form, capturing a
 
 - **Answer storage shape (forward-compatible, implemented in follow-up task)**: `RegistrationFieldAnswer` with `value_boolean` (nullable), `value_option` FK nullable → `RegistrationFieldOption`, and `value_json` JSONField nullable for Inventory's `(option_id, quantity)` and future types. This schema requires no migration when Phase 4b arrives.
 
-- **Reorder via dedicated endpoint**: `POST /api/projects/{slug}/registration-config/fields/reorder/` accepts `[{id, order}, ...]`. The frontend sends the full ordered array after drag-and-drop; the backend validates uniqueness and updates atomically. Simpler than embedding reorder in every PATCH.
+- **Reorder via the PATCH payload, not a separate endpoint**: fields are sent as a full ordered array on every save. The `order` value on each item is the source of truth. No separate reorder endpoint is needed — the frontend manages local order state and sends the full desired state on save, same pattern as other nested data in this codebase.
+
+- **Fields as nested array in the config payload — full sync on save**: the UI manages fields as local state (add, edit, reorder, delete — all in memory before saving). On save, the full `fields` array is sent as part of the registration config payload. The backend syncs: items with an `id` are updated, items without an `id` are created, existing fields whose `id` is absent from the array are deleted. All in one atomic transaction. This matches the "send the desired state" pattern and avoids partial saves. Separate `/fields/` CRUD endpoints are **not** needed for the UI flow.
+
+  - **On create** (`POST /api/projects/`): `event_registration_config.fields` is accepted as a nested array. The view creates the config and all fields atomically.
+  - **On edit** (`PATCH /api/projects/{slug}/registration-config/`): `fields` is accepted alongside the existing config fields. The serializer syncs the field set. Guard: a field whose `id` is absent from the array is only deleted if it has no answers yet (enforced in this task; the follow-up registrant task will set the answer-guard behaviour).
 
 - **Fields in project detail response**: field definitions are included in `GET /api/projects/{slug}/` (read path) as a nested array on `event_registration_config`. No extra round-trip for the registrant-side task. Additive — no breaking change.
 
@@ -176,21 +181,52 @@ RegistrationFieldAnswer
 
 ### API
 
-**Field CRUD** (new endpoints, all require organiser/admin role):
+**Fields are managed via the existing create and edit endpoints — no new standalone field endpoints.**
 
-| Method | URL | Description |
-|--------|-----|-------------|
-| `GET` | `/api/projects/{slug}/registration-config/fields/` | List fields in order |
-| `POST` | `/api/projects/{slug}/registration-config/fields/` | Create a field (with nested options for `option_select`) |
-| `PATCH` | `/api/projects/{slug}/registration-config/fields/{id}/` | Update a field and its options |
-| `DELETE` | `/api/projects/{slug}/registration-config/fields/{id}/` | Delete a field and cascade its options |
-| `POST` | `/api/projects/{slug}/registration-config/fields/reorder/` | Bulk reorder: `[{"id": 1, "order": 0}, ...]` |
+**Create event with fields** (existing endpoint, extended):
 
-**Permissions**: same inline `ProjectMember` queryset check used in `EditRegistrationConfigView`.
+```
+POST /api/projects/
+body: {
+  ...project fields...,
+  event_registration_config: {
+    max_participants: 100,
+    registration_end_date: "...",
+    fields: [
+      { field_type: "checkbox", order: 0, is_required: true,
+        settings: { description: "<p>I agree to the <a href=\"...\">Terms</a></p>" } },
+      { field_type: "option_select", order: 1, is_required: false, settings: {},
+        options: [{ title: "Vegetarian", order: 0 }, { title: "Vegan", order: 1 }] }
+    ]
+  }
+}
+```
+
+All fields are created atomically with the project. No `id` on create items (they don't exist yet).
+
+**Edit registration config with fields** (existing endpoint, extended):
+
+```
+PATCH /api/projects/{slug}/registration-config/
+body: {
+  max_participants: 120,
+  fields: [
+    { id: 1, order: 0, settings: { description: "<p>Updated text</p>" } },  ← update
+    { id: 2, order: 1, options: [{ id: 10 }, { title: "New option", order: 2 }] },  ← update field + add option
+    { field_type: "checkbox", order: 2, is_required: true, settings: {} }  ← create (no id)
+    ← field id: 3 absent from array → deleted (only if no answers exist)
+  ]
+}
+```
+
+Sync rules (applied atomically in one transaction):
+- Item **with `id`** → update that field (and sync its `options` the same way)
+- Item **without `id`** → create as new field
+- Existing field **absent from the array** → delete if no answers exist; `400 Bad Request` if answers exist (guarded in this task; answer-guard behaviour finalised in the registrant-side follow-up task)
 
 **Read — fields in project detail** (existing endpoint, additive change):
 
-`GET /api/projects/{slug}/` → `event_registration_config.fields` array added. Each element:
+`GET /api/projects/{slug}/` → `event_registration_config.fields` array added, ordered by `order`. Each element:
 
 ```json
 {
@@ -203,34 +239,20 @@ RegistrationFieldAnswer
 }
 ```
 
-For `option_select`:
-
-```json
-{
-  "id": 2,
-  "field_type": "option_select",
-  "order": 1,
-  "is_required": false,
-  "settings": {},
-  "options": [
-    { "id": 10, "title": "Vegetarian", "order": 0 },
-    { "id": 11, "title": "Vegan", "order": 1 }
-  ]
-}
-```
+For `option_select`, `options` is a non-empty array of `{ "id": 10, "title": "Vegetarian", "order": 0 }`.
 
 **Validation (publish, `is_draft=false`)**:
 - Checkbox: `settings.description` must be non-empty and non-whitespace HTML.
-- Option select: must have at least one option; `title` must be non-empty on each.
+- Option select: must have at least one option with a non-empty `title`.
 - All types: `order` values must be unique within the config; max 5 fields total.
 
-**Validation (draft)**: all publish validations are skipped.
+**Validation (draft)**: all publish validations are skipped — consistent with existing draft-mode contract.
 
 **Error responses**:
 
 | Status | Condition |
 |--------|-----------|
-| `400` | 6th field attempt; option select with 0 options on publish; missing required settings |
+| `400` | 6th field; option select with 0 options on publish; missing required settings; delete attempted on field with existing answers |
 | `401` | Unauthenticated |
 | `403` | Not organiser or team admin |
 | `404` | Project not found or no registration config |
@@ -242,13 +264,13 @@ For `option_select`:
 - **New file**: `organization/serializers/registration_field.py` — contains:
   - `CheckboxSettingsSerializer` — declares `description` (CharField); strips unknown keys on write.
   - `OptionSelectSettingsSerializer` — empty for now; reserved for future per-type metadata.
-  - `FIELD_TYPE_SETTINGS_VALIDATORS` registry dict — maps `field_type` → settings serializer class. Adding a Phase 4b type = one new serializer + one registry entry.
-  - `RegistrationFieldOptionSerializer` — `id`, `title`, `order`.
-  - `RegistrationFieldSerializer` — main serializer with nested `options`; dispatches `settings` validation via the registry in `validate()`; applies publish-time non-empty check on `description` using `is_draft` from context.
-  - `ReorderFieldsSerializer` — validates `[{"id": int, "order": int}, ...]`.
-- **`organization/serializers/event_registration.py`** — add `fields` nested array to `EventRegistrationConfigSerializer` read path (using `RegistrationFieldSerializer(many=True, read_only=True)`).
-- **New file**: `organization/views/registration_field_views.py` — `RegistrationFieldsView` (GET list / POST create), `RegistrationFieldDetailView` (PATCH / DELETE), `ReorderRegistrationFieldsView` (POST).
-- **`organization/urls.py`** — register the 5 new URL patterns under `projects/<str:url_slug>/registration-config/fields/`.
+  - `FIELD_TYPE_SETTINGS_VALIDATORS` registry dict — maps `field_type` → settings serializer class.
+  - `RegistrationFieldOptionSerializer` — `id` (optional on write), `title`, `order`.
+  - `RegistrationFieldSerializer` — writable nested serializer with `options`; dispatches `settings` validation via the registry; applies publish-time non-empty check on `description` using `is_draft` from context; handles create/update/delete sync in `update()`.
+- **`organization/serializers/event_registration.py`** — extend `EventRegistrationConfigSerializer` and `EditEventRegistrationConfigSerializer` to accept a writable `fields` array; on read, return `fields` ordered by `order`; sync logic delegated to `RegistrationFieldSerializer`.
+- **`organization/views/project_views.py`** — ensure the project create view passes `is_draft` context to the nested config serializer (already present; verify it flows through to field validation).
+- **`organization/views/event_registration_views.py`** — ensure `EditRegistrationConfigView` passes `is_draft` context when calling the serializer.
+- **No new view file and no new URL patterns** — fields are handled inside the existing serializer layer.
 - **Migrations**: two new tables + `FeatureToggle` data migration.
 
 ### Frontend
@@ -279,13 +301,13 @@ For `option_select`:
 |------|--------|
 | `organization/models/registration_field.py` | **New** — `RegistrationField`, `RegistrationFieldOption`, `RegistrationFieldType` enum |
 | `organization/models/__init__.py` | Export new models |
-| `organization/serializers/registration_field.py` | **New** — `RegistrationFieldSerializer`, `RegistrationFieldOptionSerializer`, `ReorderFieldsSerializer` |
-| `organization/serializers/event_registration.py` | Add `fields` nested read-only array to `EventRegistrationConfigSerializer` |
-| `organization/views/registration_field_views.py` | **New** — `RegistrationFieldsView`, `RegistrationFieldDetailView`, `ReorderRegistrationFieldsView` |
-| `organization/urls.py` | Add 5 URL patterns for field CRUD and reorder |
+| `organization/serializers/registration_field.py` | **New** — settings serializers, registry, `RegistrationFieldSerializer`, `RegistrationFieldOptionSerializer` |
+| `organization/serializers/event_registration.py` | Extend `EventRegistrationConfigSerializer` and `EditEventRegistrationConfigSerializer` with writable `fields` array + read-time ordering |
+| `organization/views/event_registration_views.py` | Verify `is_draft` context flows to the serializer in `EditRegistrationConfigView` |
+| `organization/views/project_views.py` | Verify `is_draft` context flows through to nested config serializer on create |
 | `organization/migrations/0NNN_add_registrationfield.py` | **New** — creates both new tables |
 | `feature_toggles/migrations/0003_add_registration_custom_fields_toggle.py` | **New** — creates `REGISTRATION_CUSTOM_FIELDS` toggle row |
-| `organization/tests/test_event_registration.py` | Add tests for field CRUD, reorder, and validation |
+| `organization/tests/test_event_registration.py` | Add tests for field create/edit/sync, validation, and settings registry |
 
 ### Frontend
 
@@ -365,5 +387,6 @@ For `option_select`:
 ## Log
 
 - 2026-04-16 10:00 — Task created from GitHub issue [#1880](https://github.com/climateconnect/climateconnect/issues/1880). Phase 4a enabler task — foundational custom fields infrastructure (checkbox + option select), organiser side only. Registrant-side flow (form rendering + answer submission) is out of scope and will be delivered in a separate follow-up task. Forward-compatibility constraints for Inventory (Phase 4b) and registration form templates must be respected in the schema design. A dedicated feature toggle separate from `EVENT_REGISTRATION` is likely needed (all four Phase 4a tasks must go live together). Google Forms cited as UX reference for the field builder. Awaiting system impact analysis from Archie before implementation begins.
-- 2026-04-16 — System impact analysis complete (Archie). Decisions confirmed: single `RegistrationField` table + `settings` JSONField (JSONB); `RegistrationFieldOption` rows for option select choices; answer storage deferred to follow-up task but schema is forward-compatible (`value_boolean` + `value_option` FK + `value_json`). Rich text for checkbox description: MUI-tiptap (Bold + Link toolbar only), HTML output stored in `settings.description` — MUI-tiptap is on a separate branch not yet merged; must be merged before this task ships. New `REGISTRATION_CUSTOM_FIELDS` feature toggle (dev ✅, staging ✅, production ❌). Fields included in `GET /api/projects/{slug}/` detail response (additive). Reorder via dedicated `POST /fields/reorder/` endpoint. System Impact and Software Architecture sections filled in. Ready for implementation.
+- 2026-04-16 — System impact analysis complete (Archie). Decisions: single `RegistrationField` table + `settings` JSONField (JSONB); `RegistrationFieldOption` rows for option select choices; type-settings registry pattern for `settings` validation; answer storage deferred but schema forward-compatible (`value_boolean` + `value_option` FK + `value_json`). Rich text: MUI-tiptap (Bold + Link only), HTML stored in `settings.description` — MUI-tiptap branch not yet merged, must land before this ships. New `REGISTRATION_CUSTOM_FIELDS` toggle (dev ✅, staging ✅, prod ❌). Fields nested in `GET /api/projects/{slug}/` detail response (additive).
+- 2026-04-16 — API design revised: separate `/fields/` CRUD endpoints dropped in favour of fields as a nested writable array on the existing create (`POST /api/projects/`) and edit (`PATCH /api/projects/{slug}/registration-config/`) endpoints. Backend does a full sync (create/update/delete) atomically on save — items with `id` are updated, items without `id` are created, absent IDs are deleted (guarded against existing answers). No new URL patterns or view files required — all logic lives in the serializer layer. Matches the actual UI save pattern. Ready for implementation.
 
