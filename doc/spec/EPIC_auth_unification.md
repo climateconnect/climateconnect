@@ -56,7 +56,7 @@ Hub theming (custom colours, header images) is applied to both `/signin` and `/s
 
 - **Backward compatibility is non-negotiable**: existing users with passwords must be able to log in without any migration or forced re-authentication.
 - **Hub theming must be preserved**: the combined page must support `?hub=` and apply custom themes exactly as today.
-- **`?redirect=` param must work end-to-end**: the redirect flow is relied upon by the Event Registration epic (deep-linking to `/projects/{slug}/register`).
+- **`?redirect=` param must work end-to-end**: used by any feature that requires authentication before completing an action (e.g. following a project, commenting). After login/signup, the user is sent to the URL in `?redirect=`.
 - **Knox tokens stay**: the token mechanism does not change. Only *how* a user authenticates to obtain a token changes.
 - **`AUTO_VERIFY` setting**: staging/dev environments use `AUTO_VERIFY=True` to skip verification emails. This must continue to work with the new flow.
 

@@ -3,7 +3,7 @@
 **Type**: Epic  
 **Status**: IN PROGRESS  
 **Started**: 2026-03-05  
-**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872)  
+**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901)  
 **Owner**: CC
 
 ---
@@ -58,15 +58,16 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 | Organiser sets admin notification preference for registrations | [#1882](https://github.com/climateconnect/climateconnect/issues/1882)                                                                         |  | ✅ Done |
 | Admin notification emails on member registration / cancellation | [#1888](https://github.com/climateconnect/climateconnect/issues/1888)                                                                         |  | ✅ Done |
 
-### 🎯 Phase 3 — Guest Registration (go-live blocker)
+### 🎯 Phase 3 — Guest Registration + UX Polish (go-live blocker)
 
-> **Enabler dependency**: Requires **[EPIC: Auth Unification](./EPIC_auth_unification.md)** (Phase A) to be complete before this story can ship. The guest registration flow depends on the new combined login/signup and token-based auth that are delivered by that separate epic.
+> **Enabler dependency**: Requires **[EPIC: Auth Unification](./EPIC_auth_unification.md)** (Phase A) to be complete before the guest registration story can ship. The guest registration flow depends on the new combined login/signup and token-based auth that are delivered by that separate epic.
 >
 > **Toggle flip**: The `EVENT_REGISTRATION` production toggle is flipped **after** this phase is validated on staging — not after Phase 2.
 
-| Story | Status |
-|-------|--------|
-| Guest user registers for an event and becomes a platform member | ⚪ |
+| Story | GitHub Issue | Status |
+|-------|-------------|--------|
+| Guest user registers for an event and becomes a platform member | — | ⚪ |
+| Show registration status on project browse and similar projects sidebar | [#1901](https://github.com/climateconnect/climateconnect/issues/1901) | ⚪ |
 
 ### 🔧 Phase 4 — Custom Registration Fields (incremental)
 
@@ -76,13 +77,24 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 
 #### Phase 4a — Select & Checkbox Fields (first iteration)
 
-The foundational custom fields story. Organisers can add two field types — single-select (dropdown) and checkbox (boolean) — to their event's registration form. The `create` story covers adding fields during project creation; the `edit` story covers managing fields via the dedicated registration configuration UI in the share-project flow (separate pages, but reuses form components).
+The foundational custom fields story. Organisers can add up to **5 extra fields** — single-select (dropdown) and checkbox (boolean) — to their event's registration form, control field order, and mark fields as required.
 
-| Story | Status |
-|-------|--------|
-| Organiser creates event with custom registration fields (select, checkbox) | ⚪ |
-| Organiser edits event registration configuration with custom fields | ⚪ |
-| Member registers with custom fields (select, checkbox) | ⚪ |
+| Story | GitHub Issue | Status |
+|-------|-------------|--------|
+| Organiser creates/edits event with custom registration fields (select, checkbox) | [#1880](https://github.com/climateconnect/climateconnect/issues/1880) | ⚪ |
+| Member registers with custom fields (select, checkbox) | — | ⚪ |
+
+**#1880 field specs** (detail to be expanded in tech spec):
+
+| Field type | Registration value | Key settings |
+|------------|-------------------|--------------|
+| Checkbox | Boolean | Description (rich text — bold + links); required flag |
+| Option select (single) | Selected option | Title; 1–N options (each with title + order); required flag |
+
+**Forward-compatibility constraints from #1880** (must be kept in mind during design, not necessarily implemented now):
+- Response storage must accommodate a later **Inventory** field type that persists `(selected option, quantity)` — not just a single value.
+- Schema should not preclude a **Time slot select** field type with per-slot seat limits.
+- Architecture should support future **registration form templates** for reuse across events.
 
 #### Phase 4b — Inventory / Capacity Options
 
