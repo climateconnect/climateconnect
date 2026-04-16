@@ -1,15 +1,5 @@
-import React, { useContext, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import React, { useContext, useState } from "react";
+import { Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -134,35 +124,23 @@ export default function EventRegistrationModal({
   const [authStep, setAuthStep] = useState<"email" | "login" | "signup">("email");
   const [checkingEmail, setCheckingEmail] = useState(false);
 
-  const steps = useMemo(() => {
-    if (user) {
-      return [texts.event_registration, texts.confirmation];
+  // Render the appropriate content based on authentication and registration state
+  const renderContent = () => {
+    // Show success/error states regardless of authentication
+    if (state === "success") {
+      return renderSuccessContent();
     }
-    return [texts.authentication, texts.event_registration, texts.confirmation];
-  }, [user, texts]);
-
-  const activeStep = user ? (state === "success" || state === "error" ? 1 : 0) : 0; // Unauthenticated users are always on step 0 (authentication)
-
-  const getStepContent = (stepIndex: number) => {
-    if (user) {
-      // Authenticated user flow: Event Registration → Confirmation
-      switch (stepIndex) {
-        case 0:
-          return renderAuthenticatedContent();
-        case 1:
-          return state === "success" ? renderSuccessContent() : renderErrorContent();
-        default:
-          return null;
-      }
-    } else {
-      // Unauthenticated user flow: Authentication (auto-transitions to authenticated flow on login)
-      switch (stepIndex) {
-        case 0:
-          return renderUnauthenticatedContent();
-        default:
-          return null;
-      }
+    if (state === "error") {
+      return renderErrorContent();
     }
+
+    // Show registration form for authenticated users
+    if (user) {
+      return renderAuthenticatedContent();
+    }
+
+    // Show authentication flow for unauthenticated users
+    return renderUnauthenticatedContent();
   };
 
   const handleRegister = async () => {
@@ -414,16 +392,7 @@ export default function EventRegistrationModal({
 
   return (
     <GenericDialog open={open} onClose={handleClose} title={texts.register_for_event} maxWidth="sm">
-      <Box className={classes.modalContent}>
-        <Stepper activeStep={activeStep} orientation="vertical">
-          {steps.map((label, index) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-              <StepContent>{getStepContent(index)}</StepContent>
-            </Step>
-          ))}
-        </Stepper>
-      </Box>
+      <Box className={classes.modalContent}>{renderContent()}</Box>
     </GenericDialog>
   );
 }

@@ -1,6 +1,6 @@
 # Improve Event Registration UX
 
-**Status**: IN PROGRESS (Points 1-4 COMPLETED)
+**Status**: IN PROGRESS (Points 1-5 COMPLETED)
 **Type**: Improvement
 **Date and time created**: 2026-04-15 09:00
 **Date Completed**: TBD
@@ -16,7 +16,7 @@
 - ✅ Point 2: "Booked Out" Text - COMPLETED (2026-04-16)
 - ✅ Point 3: Language Redirect Fix - COMPLETED (2026-04-16)
 - ✅ Point 4: Disable Card Hover Effect - COMPLETED (2026-04-16)
-- ⏳ Point 5: Remove Modal Steps - PENDING
+- ✅ Point 5: Remove Modal Steps - COMPLETED (2026-04-16)
 - ⏳ Point 6: Show User Identity for Logged-In Users - PENDING
 - ⏳ Point 7: Confirmation Message with Event Name - PENDING
 - ⏳ Point 8: Show Available Seats - PENDING
@@ -197,22 +197,37 @@ Following the initial implementation of event registration (#1845), several UX i
 
 #### 5. Remove Modal Steps
 
-**Files to modify:**
+**Files modified:**
 
-- Event registration modal component (need to locate - likely in `/frontend/src/components/project/` or `/frontend/src/components/event/`)
+- `/frontend/src/components/project/EventRegistrationModal.tsx` - Event registration modal component
 
-**Changes needed:**
+**Changes implemented:**
 
-- Remove `<Stepper>` component from Material-UI
-- Remove step indicators (1/2, 2/2) from modal header/footer
-- Simplify modal to single-view form (no step transitions)
-- Remove step-related state variables (`activeStep`, `handleNext`, `handleBack`)
+- Removed Material-UI Stepper components: `Stepper`, `Step`, `StepLabel`, `StepContent`
+- Removed step-related code:
+  - `steps` useMemo that defined step labels
+  - `activeStep` variable that tracked current step
+  - `getStepContent()` function that switched between step content
+- Replaced with simplified `renderContent()` function that directly renders based on state:
+  - Success state → shows success message
+  - Error state → shows error message
+  - Authenticated user + initial state → shows registration form
+  - Unauthenticated user + initial state → shows authentication flow
+- Modal now displays single unified view without step indicators
+
+**Result:**
+
+- No step indicators (1/2, 2/2) displayed in modal
+- Cleaner, simpler UI
+- Same functionality maintained (authentication → registration → confirmation)
+- Code is more maintainable with less complexity
 
 **Testing:**
 
-- Verify modal displays single unified form
-- Ensure form submission still works correctly
-- Test both logged-in and guest user flows
+- Authenticated users see registration form immediately
+- Unauthenticated users see authentication flow first, then registration form after login
+- Success/error states display correctly
+- Form submission works as before
 
 #### 6. Show User Identity for Logged-In Users
 
