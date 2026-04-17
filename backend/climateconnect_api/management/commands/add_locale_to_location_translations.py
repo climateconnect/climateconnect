@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 
 import requests
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import QuerySet
 from tqdm import tqdm
@@ -16,10 +17,7 @@ from climateconnect_api.models.language import Language
 
 # from django.db import transaction
 from location.models import Location, LocationTranslation
-from django.conf import settings
-
 from location.utility import format_location_name
-from location.utility import format_translation_data
 
 NOMINATIM_DETAILS_URL = "https://nominatim.openstreetmap.org/lookup"
 MAPPING_TABLE_PATH = Path(__file__).parent / "osm_lookup_tables" / "mapping.csv"
@@ -160,31 +158,22 @@ def translate_locations(locs: list["Location"], locale: str):
 
             address = result.get("address", {})
             translation_data = {
-                "name_translation": result.get("localname"),
                 "city_translation": address.get("city")
                 or address.get("town")
                 or address.get("village"),
                 "state_translation": address.get("state"),
                 "country_translation": address.get("country"),
             }
-            # this is for the locations in palestine (id=2667, localname = None,
-            # the only address tag that is provided is "disputed")
-            if translation_data["name_translation"] is None:
-                translation_data["name_translation"] = address.get("disputed")
+
+            formatted_name = format_location_name(result).get("name")
 
             for loc in matching_locations:
-                name = translation_data["name_translation"]
+                name = formatted_name
                 if not name:
-                    formatted_translation = format_translation_data(translation_data)
-                    formatted_name_data = format_location_name(formatted_translation)
-                    name = (
-                        formatted_name_data.get("name") if formatted_name_data else None
+                    print(
+                        f"warning: could not generate name for location '{loc.name}' with id {loc.id}"
                     )
-                    if not name:
-                        print(
-                            f"warning: could not generate name for location '{loc.name}' with id {loc.id}"
-                        )
-                        continue
+                    continue
 
                 unique_key = (loc.id, language_id)
                 if unique_key not in unique_translations:

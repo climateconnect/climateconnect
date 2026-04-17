@@ -5,9 +5,8 @@ from celery import shared_task
 from django.conf import settings
 from django.db import IntegrityError, transaction
 
-from location.utility import format_location_name
-from location.utility import format_translation_data
 from climateconnect_api.models.language import Language
+from location.utility import format_location_name
 
 logger = logging.getLogger(__name__)
 
@@ -62,13 +61,13 @@ def fetch_and_create_location_translations(self, loc_id):
                 )
                 continue
 
-            address = data[0].get("address", {})
+            nominatim_result = data[0]
+            address = nominatim_result.get("address", {})
             translation_data["city_translation"] = (
                 address.get("city") or address.get("town") or address.get("village")
             )
             translation_data["state_translation"] = address.get("state")
             translation_data["country_translation"] = address.get("country")
-            translation_data["name_translation"] = data[0].get("localname")
 
         except requests.exceptions.RequestException as e:
             logger.error(
@@ -76,13 +75,8 @@ def fetch_and_create_location_translations(self, loc_id):
             )
             raise self.retry(exc=e, countdown=60 * (self.request.retries + 1))
 
-        if not translation_data.get("name_translation"):
-            formatted_translation = format_translation_data(translation_data)
-            translation_data["name_translation"] = format_location_name(
-                formatted_translation
-            ).get("name")
-            if not translation_data["name_translation"]:
-                translation_data["name_translation"] = instance.name
+        formatted_name = format_location_name(nominatim_result).get("name")
+        translation_data["name_translation"] = formatted_name or instance.name
 
         try:
             with transaction.atomic():

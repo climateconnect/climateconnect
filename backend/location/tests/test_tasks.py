@@ -91,7 +91,7 @@ class LocationTaskTest(TestCase):
         self.assertEqual(LocationTranslation.objects.count(), 2)
 
         en_translation = LocationTranslation.objects.get(language=self.language_en)
-        self.assertEqual(en_translation.name_translation, "Erlangen, Bavaria, Germany")
+        self.assertEqual(en_translation.name_translation, "Erlangen, Germany")
         self.assertEqual(en_translation.city_translation, "Erlangen")
         self.assertEqual(en_translation.country_translation, "Germany")
         self.assertEqual(en_translation.state_translation, "Bavaria")
@@ -100,7 +100,7 @@ class LocationTaskTest(TestCase):
 
         de_translation = LocationTranslation.objects.get(language=self.language_de)
         self.assertEqual(
-            de_translation.name_translation, "Erlangen, Bayern, Deutschland"
+            de_translation.name_translation, "Erlangen, Deutschland"
         )
         self.assertEqual(de_translation.country_translation, "Deutschland")
         self.assertEqual(de_translation.city_translation, "Erlangen")
