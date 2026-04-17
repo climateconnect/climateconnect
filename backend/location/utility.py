@@ -233,8 +233,9 @@ def format_location(location_string, already_loaded):
 
 CUSTOM_NAME_MAPPINGS = {"Scotland (state), Scotland": "Scotland"}
 
-# These countries are wrongly categorized as states in Nominatim. We want to show them as countries as this is more clear
-MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"]
+# These country codes have states that should be shown as the location's "country" part
+# because the actual country name is less meaningful for display (e.g. UK nations)
+MAP_STATE_TO_COUNTRY_CODES = {"gb"}
 
 
 # This function has an equivalent in backend/location/utility.py -> format_location_name
@@ -285,8 +286,9 @@ def format_location_name(location):
     )
     last_part = (
         location["address"]["state"]
-        if location["address"].get("state") in MAP_STATE_TO_COUNTRY
-        else location["address"]["country"]
+        if location["address"].get("country_code", "").lower() in MAP_STATE_TO_COUNTRY_CODES
+        and location["address"].get("state")
+        else location["address"].get("country", "")
     )
     name = build_location_name(first_part, middle_part, last_part)
 
@@ -297,7 +299,7 @@ def format_location_name(location):
     return {
         "city": first_part,
         "state": location["address"].get("state") or middle_part,
-        "country": location["address"]["country"],
+        "country": location["address"].get("country", ""),
         "name": name,
     }
 

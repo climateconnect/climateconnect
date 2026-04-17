@@ -109,6 +109,7 @@ class TestFormatLocationName(TestCase):
             "address": {
                 "state": "Scotland",
                 "country": "United Kingdom",
+                "country_code": "gb",
             },
             "display_name": "Scotland, United Kingdom",
         }
