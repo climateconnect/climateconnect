@@ -177,6 +177,7 @@ type Props = {
   hasAttended?: boolean;
   adminCancelled?: boolean;
   handleCancelClick?: () => void;
+  eventRegistration?: { available_seats: number | null; max_participants: number | null } | null;
 };
 
 export default function ProjectOverview({
@@ -210,6 +211,7 @@ export default function ProjectOverview({
   hasAttended,
   adminCancelled,
   handleCancelClick,
+  eventRegistration,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);
@@ -261,6 +263,7 @@ export default function ProjectOverview({
           hasAttended={hasAttended}
           adminCancelled={adminCancelled}
           handleCancelClick={handleCancelClick}
+          eventRegistration={eventRegistration}
         />
       )}
 
@@ -349,11 +352,6 @@ function ShortProjectInfo({ project, isWasseraktionswochenEnabled }) {
       <div className={classes.projectInfoEl}>
         <div className={classes.projectTypeContainer}>
           <ProjectTypeDisplay projectType={project.project_type} />
-          {project.registration_config?.available_seats != null && (
-            <Typography component="span" className={classes.availableSeatsText}>
-              · {project.registration_config.available_seats} {texts.seats_available}
-            </Typography>
-          )}
         </div>
       </div>
     </>
@@ -432,6 +430,7 @@ function LargeScreenOverview({
   hasAttended,
   adminCancelled,
   handleCancelClick,
+  eventRegistration,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   const { locale, user } = useContext(UserContext);
@@ -489,6 +488,8 @@ function LargeScreenOverview({
               handleRegisterClick={handleRegisterClick}
               handleCancelClick={handleCancelClick}
               className={classes.registerButton}
+              showSeatsCount={true}
+              eventRegistration={eventRegistration}
               fallback={
                 <FollowButton
                   isLoggedIn={!!user}

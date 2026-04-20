@@ -89,7 +89,6 @@ describe("getRegisterButtonText", () => {
   const mockTexts = {
     register_now: "Register Now",
     booked_out: "Booked Out",
-    registration_closed: "Registration Closed",
   };
 
   it('should return "Register Now" text when status is "open"', () => {
@@ -116,7 +115,7 @@ describe("getRegisterButtonText", () => {
     expect(result).toBe("Booked Out");
   });
 
-  it('should return "Registration Closed" text when status is "closed"', () => {
+  it('should return "Booked Out" text when status is "closed"', () => {
     const project = {
       registration_config: {
         status: "closed",
@@ -125,10 +124,10 @@ describe("getRegisterButtonText", () => {
 
     const result = getRegisterButtonText(project, mockTexts);
 
-    expect(result).toBe("Registration Closed");
+    expect(result).toBe("Booked Out");
   });
 
-  it('should return "Registration Closed" text when status is "ended"', () => {
+  it('should return "Booked Out" text when status is "ended"', () => {
     const project = {
       registration_config: {
         status: "ended",
@@ -137,25 +136,25 @@ describe("getRegisterButtonText", () => {
 
     const result = getRegisterButtonText(project, mockTexts);
 
-    expect(result).toBe("Registration Closed");
+    expect(result).toBe("Booked Out");
   });
 
-  it('should return "Registration Closed" text when registration_config is undefined', () => {
+  it('should return "Booked Out" text when registration_config is undefined', () => {
     const project = {} as Project;
 
     const result = getRegisterButtonText(project, mockTexts);
 
-    expect(result).toBe("Registration Closed");
+    expect(result).toBe("Booked Out");
   });
 
-  it('should return "Registration Closed" text when status is undefined', () => {
+  it('should return "Booked Out" text when status is undefined', () => {
     const project = {
       registration_config: {},
     } as Project;
 
     const result = getRegisterButtonText(project, mockTexts);
 
-    expect(result).toBe("Registration Closed");
+    expect(result).toBe("Booked Out");
   });
 });
 

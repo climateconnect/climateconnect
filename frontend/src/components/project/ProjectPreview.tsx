@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Link, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -113,7 +113,10 @@ export default function ProjectPreview({
   className,
   isUserRegistered,
 }: any) {
-  const [hovering, setHovering] = useState(false);
+  // DISABLED: Hover expansion effect causes registration button to jump/shift position (Issue #1885)
+  // Keeping code in place for potential future re-enablement
+  // const [hovering, setHovering] = useState(false);
+  const hovering = false; // Hover effect disabled
   const { locale } = useContext(UserContext);
   const { projectTypes } = useContext(BrowseContext);
   const projectType =
@@ -122,12 +125,15 @@ export default function ProjectPreview({
       : { name: project.project_type, type_id: project.project_type };
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
-  const handleMouseEnter = () => {
-    setHovering(true);
-  };
-  const handleMouseLeave = () => {
-    setHovering(false);
-  };
+
+  // DISABLED: Hover handlers (kept for potential future re-enablement)
+  // const handleMouseEnter = () => {
+  //   setHovering(true);
+  // };
+  // const handleMouseLeave = () => {
+  //   setHovering(false);
+  // };
+
   const queryString = hubUrl ? "?hub=" + hubUrl : "";
 
   return (
@@ -147,8 +153,9 @@ export default function ProjectPreview({
         <Card
           className={`${classes.root} ${className}`}
           variant="outlined"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          // DISABLED: Hover handlers (kept for potential future re-enablement)
+          // onMouseEnter={handleMouseEnter}
+          // onMouseLeave={handleMouseLeave}
           ref={projectRef}
         >
           <CardMedia
