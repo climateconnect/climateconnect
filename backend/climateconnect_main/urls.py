@@ -201,6 +201,8 @@ urls = [
     path("api/", include("climate_match.urls")),
     # Feature toggle APIs
     path("api/", include("feature_toggles.urls")),
+    # Auth app APIs
+    path("api/", include("auth_app.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls
