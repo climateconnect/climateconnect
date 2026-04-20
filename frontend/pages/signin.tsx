@@ -21,10 +21,10 @@ export async function getServerSideProps(ctx) {
     const queryParams = new URLSearchParams();
     if (ctx.query.redirect) queryParams.set("redirect", ctx.query.redirect);
     if (ctx.query.hub) queryParams.set("hub", ctx.query.hub);
-    if (ctx.query.message) queryParams.set("message", ctx.query.message);
-    if (ctx.query.message_type) queryParams.set("message_type", ctx.query.message_type);
 
-    const destination = `/login${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
+    const destination = `${getLocalePrefix(ctx.locale)}/login${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
     return {
       redirect: {
         destination,
