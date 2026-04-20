@@ -90,6 +90,13 @@ function renderModal({
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // Suppress console.error during tests to keep output clean
+  jest.spyOn(console, "error").mockImplementation(() => {});
+});
+
+afterEach(() => {
+  // Restore console.error after each test
+  jest.restoreAllMocks();
 });
 
 // ── Authenticated user ──────────────────────────────────────────────────────
