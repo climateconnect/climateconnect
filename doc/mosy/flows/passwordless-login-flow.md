@@ -122,8 +122,9 @@ Django's [`User.last_login`](https://docs.djangoproject.com/en/stable/ref/contri
 
 ### Step 0 — Email lookup (combined login/signup entry point)
 
-1. User arrives at `/login` and enters their email address.
-2. Frontend sends `POST /api/auth/check-email` with `{ email }`.
+1. User arrives at `/login`. The frontend captures the current URL as `redirect_url` and stores it in `sessionStorage` before rendering the login form.
+2. User enters their email address.
+3. Frontend sends `POST /api/auth/check-email` with `{ email }`.
 3. Backend looks up the `User` by email and reads `UserProfile.auth_method` (field added in the same migration as `LoginToken`; migration default: `password` for all existing users).
 4. Backend returns `{ user_status }` — one of:
    - `"new"` — email not found → frontend routes to the signup sub-flow.
@@ -135,19 +136,18 @@ Django's [`User.last_login`](https://docs.djangoproject.com/en/stable/ref/contri
 
 ### Step 1 — User requests a token
 
-1. User is on a protected page (e.g. `/projects/123/join`) and is prompted to log in. The frontend captures the current URL as `redirect_url` before showing the login form.
-2. User has already provided their email in Step 0; `check-email` has confirmed they are OTP-eligible.
-3. Frontend sends `POST /api/auth/request-token` with `{ email }`.
-4. Backend:
-   b. Looks up the `User` by email (if not found, still returns success to prevent user enumeration).
-   c. Generates a **cryptographically random** 6-digit code (e.g. `secrets.randbelow(1_000_000)` in Python, zero-padded to 6 digits).
-   d. Generates a **random `session_key`** (e.g. 32-byte hex string via `secrets.token_hex(32)`).
-   e. Hashes the raw code with SHA-256 (or bcrypt for extra safety).
-   f. Saves a `LoginToken` record: `{ email, token_hash, session_key, expires_at = now+15min }`.
-   g. Invalidates any previous active token for this email.
-   h. Enqueues an email via Mailjet (Celery task) with the raw 6-digit code.
-   i. Returns `{ session_key }` to the frontend (HTTP 200).
-5. Frontend stores `session_key` in `sessionStorage` (alongside `redirect_url`, which was captured from the page URL before the login form was shown) and transitions to the **code entry screen** (same page, different UI state — no navigation, no URL change).
+1. User has already provided their email in Step 0; `check-email` has confirmed they are OTP-eligible.
+2. Frontend sends `POST /api/auth/request-token` with `{ email }`.
+3. Backend:
+   a. Looks up the `User` by email (if not found, still returns success to prevent user enumeration).
+   b. Generates a **cryptographically random** 6-digit code (e.g. `secrets.randbelow(1_000_000)` in Python, zero-padded to 6 digits).
+   c. Generates a **random `session_key`** (e.g. 32-byte hex string via `secrets.token_hex(32)`).
+   d. Hashes the raw code with SHA-256 (or bcrypt for extra safety).
+   e. Saves a `LoginToken` record: `{ email, token_hash, session_key, expires_at = now+15min }`.
+   f. Invalidates any previous active token for this email.
+   g. Enqueues an email via Mailjet (Celery task) with the raw 6-digit code.
+   h. Returns `{ session_key }` to the frontend (HTTP 200).
+4. Frontend stores `session_key` in `sessionStorage` (alongside `redirect_url`, which was captured from the page URL in Step 0) and transitions to the **code entry screen** (same page, different UI state — no navigation, no URL change).
 
 ### Step 2 — User receives and enters the code
 

@@ -86,7 +86,7 @@ This phase is the prerequisite for Event Registration Phase 3. All stories must 
 |---|-------|-------|--------|
 | US-5 | Combined auth page — email entry step | New page at `/login` (behind toggle). Email form calls `POST /api/auth/check-email`. Transitions page state based on `user_status` — no navigation, no URL change. Supports `?hub=` theming (`getHubTheme()` in `getServerSideProps`, same as today) and `?redirect=` param. Old `/signin` and `/signup` redirect here when toggle is on. *Depends on US-2b.* | ⚪ |
 | US-6 | OTP code entry + resend | Step 2 UI state on `/login`: 6-digit code input calls `POST /api/auth/verify-token`. On success: call `signIn()` in `UserContext`, read `redirect_url` from `sessionStorage` and redirect (or home if absent). "Resend" button: 60s disabled countdown, re-calls `request-token`, updates `session_key` in `sessionStorage`, clears input. Error messages per spec (attempts remaining, expired, session mismatch). *Depends on US-3, US-4, US-5.* | ⚪ |
-| US-7 | Password login option (backward compatibility) | **Parallelisable with US-8.** If `check-email` returns `returning_password`, show password field. Calls existing `POST /login/` — no change to that endpoint. "Use a code instead" link transitions to OTP flow (calls `request-token`, then shows US-6). *Depends on US-2b, US-3, US-5.* | ⚪ |
+| US-7 | Password login option (backward compatibility) | **Parallelisable with US-8.** If `check-email` returns `returning_password`, show password field. Calls existing `POST /login/` — no change to that endpoint. Include a "Forgot password?" link to the existing `/resetpassword` page — no changes to the reset password flow. "Use a code instead" link transitions to OTP flow (calls `request-token`, then shows US-6). *Depends on US-2b, US-3, US-5.* | ⚪ |
 | US-8 | New user signup within combined flow | **Parallelisable with US-7.** If `check-email` returns `new`, collect first/last name, location, then interest sectors (same fields as today's `/signup`). Call `POST /signup/` adapted to not require password — account is created unverified, same as today. Then trigger OTP via `request-token`; successful `verify-token` marks the account verified (OTP entry replaces the email link click). No separate verification email sent. *Depends on US-3, US-4, US-5.* | ⚪ |
 
 #### Post-launch cleanup (after `AUTH_UNIFICATION` toggle is flipped globally)
@@ -184,6 +184,7 @@ Append-only audit table for security monitoring. Separate from `LoginToken` (whi
 - Hub theme fetching and application (`getHubTheme()`, `transformThemeData()`)
 - The `?redirect=` post-auth behaviour
 - `POST /login/` (kept for password-based login — Phase A backward compat)
+- Reset password flow (`POST /api/send_reset_password_email/` → `POST /api/set_new_password/` → `/resetpassword` page) — reused as-is; the combined login page links to `/resetpassword` exactly as the current `/signin` page does
 
 ---
 
