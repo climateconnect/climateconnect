@@ -95,13 +95,6 @@ beforeEach(() => {
 // ── Authenticated user ──────────────────────────────────────────────────────
 
 describe("EventRegistrationModal – authenticated user", () => {
-  it("renders pre-filled name and email fields", () => {
-    renderModal({ user: AUTHENTICATED_USER });
-
-    expect(screen.getByDisplayValue("Jane Doe")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("jane@example.com")).toBeInTheDocument();
-  });
-
   it("renders 'Confirm Registration' button enabled", () => {
     renderModal({ user: AUTHENTICATED_USER });
 

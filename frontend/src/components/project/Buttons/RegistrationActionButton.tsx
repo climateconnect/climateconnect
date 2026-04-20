@@ -65,7 +65,11 @@ export default function RegistrationActionButton({
   const registrationData = eventRegistration ?? project.registration_config;
   const availableSeats = registrationData?.available_seats ?? null;
   const maxParticipants = registrationData?.max_participants ?? null;
-  const shouldShowSeats = showSeatsCount && availableSeats !== null && maxParticipants !== null;
+  const shouldShowSeats =
+    showSeatsCount &&
+    registrationState === "register" &&
+    availableSeats !== null &&
+    maxParticipants !== null;
 
   const renderButton = () => {
     if (registrationState === "attended") {

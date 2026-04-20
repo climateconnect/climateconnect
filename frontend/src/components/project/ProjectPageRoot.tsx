@@ -135,7 +135,7 @@ export default function ProjectPageRoot({
     belowTiny: useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm")),
     belowSmall: useMediaQuery<Theme>((theme) => theme.breakpoints.down("md")),
     belowMedium: useMediaQuery<Theme>(
-      showSimilarProjects ? "(max-width:1300px)" : "(max-width:1100px)"
+      showSimilarProjects ? "(max-width:1360px)" : "(max-width:1100px)"
     ),
     // need refactor to change the names. this one should be 'belowLarge'
     betweenTinyAndLarg: useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg")),
