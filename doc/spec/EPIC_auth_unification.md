@@ -104,6 +104,7 @@ Post-Phase A. Allows users to manage their auth method after account creation.
 | US-9 | Expose `auth_method` via account settings API | `UserProfile.auth_method` is already in the DB (added in US-2). This story exposes it via `PATCH /api/account_settings/` and returns it in the account settings serializer. No model change needed — US-10 and US-11 can be started in parallel once US-2 is done. | ⚪ |
 | US-10 | Set / change password from account settings | Update the existing change-password form: check `has_usable_password()` on the authenticated user. If no password is set, omit the current-password field (OTP-only users just enter and confirm the new password). If a password exists, keep the current-password confirmation as today. Backend validates accordingly and calls `set_password()`. | ⚪ |
 | US-11 | Toggle between OTP-based and password-based login | Toggle in account settings UI backed by `auth_method`. If switching to password and none set yet, prompt to set one first (links to US-10).                                                                                                                                                                                                          | ⚪ |
+| US-12 | Wire password login to `LoginAuditLog` | Extend `POST /login/` to write a `LoginAuditLog` entry on every attempt (success → `verified`, wrong password → `failed`). Makes login history complete across both auth methods and enables unified abuse detection queries on the audit table. | ⚪ |
 
 ---
 
@@ -146,7 +147,8 @@ Append-only audit table for security monitoring. Separate from `LoginToken` (whi
 | `created_at` | DateTime | Auto |
 
 **Retention**: entries purged after 90 days by `CleanupLoginAuditLogs` Celery beat task.  
-**GDPR**: IP addresses must be anonymised; retention period and lawful basis (legitimate interest / security) must be documented in the privacy policy.
+**GDPR**: IP addresses must be anonymised; retention period and lawful basis (legitimate interest / security) must be documented in the privacy policy.  
+**Scope note**: Phase A logs OTP flow events only (`requested` / `verified` / `failed` / `expired` / `exhausted` / `resent`). Password-based login (via `POST /login/`) will be wired to write audit log entries in Phase B, giving a unified login history across both auth methods.
 
 ### New API Endpoints (Phase A)
 
