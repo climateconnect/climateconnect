@@ -22,8 +22,25 @@ import { transformThemeData } from "../src/themes/transformThemeData";
 import CustomAuthImage from "../src/components/hub/CustomAuthImage";
 import AddInterestArea from "./../src/components/signup/AddInterestArea";
 import { getSectorOptions } from "../public/lib/getOptions";
+import { getFeatureTogglesFromRequest, isFeatureEnabled } from "../src/hooks/featureToggles";
 
 export async function getServerSideProps(ctx) {
+  // Check if AUTH_UNIFICATION is enabled and redirect to /login if so
+  const { featureToggles } = await getFeatureTogglesFromRequest(ctx.req);
+  if (isFeatureEnabled("AUTH_UNIFICATION", featureToggles)) {
+    // Build query string preserving relevant parameters
+    const queryParams = new URLSearchParams();
+    if (ctx.query.redirect) queryParams.set("redirect", ctx.query.redirect);
+    if (ctx.query.hub) queryParams.set("hub", ctx.query.hub);
+
+    const destination = `/login${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
+    return {
+      redirect: {
+        destination,
+        statusCode: 307,
+      },
+    };
+  }
   const hubUrl = ctx.query.hub;
 
   const [hubThemeData, sectorOptions] = await Promise.all([
