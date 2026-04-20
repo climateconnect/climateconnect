@@ -227,24 +227,24 @@ describe("RegistrationActionButton", () => {
       expect(screen.queryByText(/seats available/i)).not.toBeInTheDocument();
     });
 
-    it("displays seats for closed/full events when showSeatsCount is true", () => {
+    it("does not display seats for closed/full events (seats only shown for register state)", () => {
       renderButton({
         registrationState: "closed",
         project: makeProject("full", 0, 50),
         showSeatsCount: true,
       });
-      expect(screen.getByText(/0 \/ 50/)).toBeInTheDocument();
-      expect(screen.getByText(/seats available/i)).toBeInTheDocument();
+      expect(screen.queryByText(/0 \/ 50/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/seats available/i)).not.toBeInTheDocument();
     });
 
-    it("displays seats for cancel state when showSeatsCount is true", () => {
+    it("does not display seats for cancel state (seats only shown for register state)", () => {
       renderButton({
         registrationState: "cancel",
         project: makeProject("open", 15, 50),
         showSeatsCount: true,
       });
-      expect(screen.getByText(/15 \/ 50/)).toBeInTheDocument();
-      expect(screen.getByText(/seats available/i)).toBeInTheDocument();
+      expect(screen.queryByText(/15 \/ 50/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/seats available/i)).not.toBeInTheDocument();
     });
   });
 });
