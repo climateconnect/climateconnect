@@ -161,6 +161,21 @@ Append-only audit table for security monitoring. Separate from `LoginToken` (whi
 
 - Add `auth_method` field (or derive from whether the user has a usable Django password): used to show correct login option on the combined page and to enforce the toggle in settings.
 
+### Rate Limiting Strategy (Phase A)
+
+**Library**: [`django-ratelimit`](https://django-ratelimit.readthedocs.io/) — added as a new dependency. Chosen over DRF's built-in throttling because `request-token` requires per-email keying (not just per-IP), and using one consistent library across all three auth endpoints is simpler than mixing two approaches. Backed by Redis (already in the stack).
+
+| Endpoint | Key | Limit | Notes |
+|---|---|---|---|
+| `POST /api/auth/check-email` | IP | `20/h` | Enumeration is IP-driven; per-email key adds nothing here |
+| `POST /api/auth/request-token` | `post:email` | `3/10m` | Prevents email flooding per address |
+| `POST /api/auth/request-token` | IP (secondary) | `30/h` | Catch distributed enumeration across many email addresses |
+| `POST /api/auth/verify-token` | DB `attempt_count` | 5 attempts → locked | DB-enforced: survives Redis flush, persists across restarts; no `django-ratelimit` decorator needed on this endpoint |
+
+**429 handling**: `block=True` on all decorators raises `Ratelimited`. Views catch it and return `HTTP 429` with a `Retry-After` header.
+
+**`verify-token` note**: the DB-level `attempt_count` lock on `LoginToken` is the primary and sufficient guard. An IP-level `django-ratelimit` layer on top is optional and can be added later if abuse patterns emerge.
+
 ### What does NOT change
 
 - Knox `AuthToken` format and storage (`{token, expiry}`, stored in cookies via `signIn()` in `UserContext`)
@@ -281,7 +296,7 @@ Phase A — Combined entry point + token login
 | Session binding | `session_key` stored in `sessionStorage` (tab-scoped) | Ties the OTP to the specific browser tab that requested it. Attacker who intercepts the email cannot redeem the code without the `session_key`. |
 | Token storage | Hash only (`sha256` or bcrypt) — raw code never stored | Prevents raw code exposure in case of database compromise. |
 | Attempt limiting | 5 failed attempts → token locked | Prevents brute-force of the 6-digit code space (1,000,000 possibilities). |
-| Rate limiting | 3 req/email/10 min (request); 60s cooldown/email (resend); IP-based secondary layer | Prevents email flooding and enumeration attacks. |
+| Rate limiting | `django-ratelimit` for all auth endpoints; per-email for `request-token`, per-IP for `check-email`; DB `attempt_count` for `verify-token` | Single library for consistency; per-email key requires `django-ratelimit` (DRF throttling is IP-only); DB lock on `verify-token` survives Redis flush. |
 | User enumeration | `POST /api/auth/request-token` always returns HTTP 200 | Prevents attackers from discovering which emails have accounts. |
 | Redirect URL safety | `redirect_url` validated server-side: must start with `/`, not `//` | Prevents open redirect attacks. |
 | Implicit email verification | OTP-based users are considered verified | Inbox access is proof of email ownership; eliminates the separate verification email step for new users. |
