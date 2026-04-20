@@ -1,6 +1,6 @@
 # US-2b: `POST /api/auth/check-email` Endpoint
 
-**Status**: READY FOR IMPLEMENTATION  
+**Status**: DONE  
 **Type**: Tech Enabler — backend endpoint  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Date created**: 2026-04-20 12:30  
