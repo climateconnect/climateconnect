@@ -52,7 +52,6 @@ LoginToken
 ├── email           String  — the address the token was sent to
 ├── token_hash      String  — bcrypt/SHA-256 hash of the raw token (never store plaintext)
 ├── session_key     String  — random key issued to the browser at request time
-├── redirect_url    String (nullable) — the URL the user was trying to reach before login
 ├── expires_at      DateTime — now + 15 minutes
 ├── used_at         DateTime (nullable) — set on first successful use
 ├── attempt_count   Integer (default 0) — failed validation attempts
@@ -138,19 +137,17 @@ Django's [`User.last_login`](https://docs.djangoproject.com/en/stable/ref/contri
 
 1. User is on a protected page (e.g. `/projects/123/join`) and is prompted to log in. The frontend captures the current URL as `redirect_url` before showing the login form.
 2. User has already provided their email in Step 0; `check-email` has confirmed they are OTP-eligible.
-3. Frontend sends `POST /api/auth/request-token` with `{ email, redirect_url }`.
+3. Frontend sends `POST /api/auth/request-token` with `{ email }`.
 4. Backend:
-   a. Validates the email format.
-   b. Validates `redirect_url` is a relative path on the same origin (prevents open redirect attacks).
-   c. Looks up the `User` by email (if not found, still returns success to prevent user enumeration).
-   d. Generates a **cryptographically random** 6-digit code (e.g. `secrets.randbelow(1_000_000)` in Python, zero-padded to 6 digits).
-   e. Generates a **random `session_key`** (e.g. 32-byte hex string via `secrets.token_hex(32)`).
-   f. Hashes the raw code with SHA-256 (or bcrypt for extra safety).
-   g. Saves a `LoginToken` record: `{ email, token_hash, session_key, redirect_url, expires_at = now+15min }`.
-   h. Invalidates any previous active token for this email.
-   i. Enqueues an email via Mailjet (Celery task) with the raw 6-digit code.
-   j. Returns `{ session_key }` to the frontend (HTTP 200).
-5. Frontend stores `session_key` in `sessionStorage` and transitions to the **code entry screen** (same page, different UI state — no navigation, no URL change).
+   b. Looks up the `User` by email (if not found, still returns success to prevent user enumeration).
+   c. Generates a **cryptographically random** 6-digit code (e.g. `secrets.randbelow(1_000_000)` in Python, zero-padded to 6 digits).
+   d. Generates a **random `session_key`** (e.g. 32-byte hex string via `secrets.token_hex(32)`).
+   e. Hashes the raw code with SHA-256 (or bcrypt for extra safety).
+   f. Saves a `LoginToken` record: `{ email, token_hash, session_key, expires_at = now+15min }`.
+   g. Invalidates any previous active token for this email.
+   h. Enqueues an email via Mailjet (Celery task) with the raw 6-digit code.
+   i. Returns `{ session_key }` to the frontend (HTTP 200).
+5. Frontend stores `session_key` in `sessionStorage` (alongside `redirect_url`, which was captured from the page URL before the login form was shown) and transitions to the **code entry screen** (same page, different UI state — no navigation, no URL change).
 
 ### Step 2 — User receives and enters the code
 
@@ -173,8 +170,8 @@ Django's [`User.last_login`](https://docs.djangoproject.com/en/stable/ref/contri
    - Sets `used_at = now` (invalidates the token).
    - Looks up the `User` by `email`.
    - Issues a Django session (or JWT) for the user.
-   - Returns `{ access_token, user, redirect_url }` (HTTP 200) — `redirect_url` is read from the `LoginToken` record.
-6. Frontend stores the session/token and navigates to `redirect_url` (or `/dashboard` if `redirect_url` is null). Because the user never left the original tab, this navigation happens in the same browser context where they started.
+   - Returns `{ access_token, user }` (HTTP 200).
+6. Frontend stores the session/token, reads `redirect_url` from `sessionStorage`, and navigates there (or `/dashboard` if absent). Because the user never left the original tab, this navigation happens in the same browser context where they started.
 
 ---
 
@@ -185,7 +182,7 @@ Users sometimes don't receive the email (spam filter, slow delivery) or the code
 ### What happens on resend
 
 1. User clicks "Resend code" on the code entry screen.
-2. Frontend calls `POST /api/auth/request-token` again with the **same `{ email, redirect_url }`** payload.
+2. Frontend calls `POST /api/auth/request-token` again with the **same `{ email }`** payload.
 3. Backend:
    a. Applies rate limiting — if the email has already received a code within the last **60 seconds**, return `429 Too Many Requests` with a `Retry-After` header. This prevents accidental double-sends and abuse.
    b. Invalidates the previous `LoginToken` for this email (sets `used_at = now` or deletes it — either approach works; marking it used is cleaner for audit).
@@ -203,7 +200,6 @@ Users sometimes don't receive the email (spam filter, slow delivery) or the code
 | **Old token invalidated immediately** | Prevents a race condition where both the old and new codes are valid simultaneously. Only one active token per email at any time. |
 | **60-second cooldown** | Prevents accidental double-clicks and limits email flooding. The frontend should also disable the "Resend" button for 60 seconds after each send and show a countdown. |
 | **Rate limit is per email, not per session** | An attacker cannot bypass the cooldown by opening a new tab and starting a fresh session for the same email. |
-| **`redirect_url` preserved** | The frontend already has `redirect_url` in its state (it was captured before the login form was shown), so it is simply re-submitted with the resend request. |
 
 ### Frontend UX pattern
 
@@ -247,7 +243,7 @@ sequenceDiagram
         LoginPage->>LoginPage: Capture current URL as redirect_url
         LoginPage->>LoginPage: Validate email format
         LoginPage->>AuthService: requestToken(email, redirect_url)
-        AuthService->>RequestAPI: POST { email, redirect_url }
+        AuthService->>RequestAPI: POST { email }
     end
 
     rect rgb(240, 255, 240)
@@ -320,15 +316,15 @@ sequenceDiagram
 
     rect rgb(240, 255, 240)
         Note over VerifyTokenAction, AuthController: Backend Response
-        VerifyTokenAction-->>AuthController: { access_token, user, redirect_url }
-        AuthController-->>VerifyAPI: 200 OK { access_token, user, redirect_url }
+        VerifyTokenAction-->>AuthController: { access_token, user }
+        AuthController-->>VerifyAPI: 200 OK { access_token, user }
     end
 
     rect rgb(230, 245, 255)
         Note over LoginPage, AuthService: Frontend - Authenticated
-        VerifyAPI-->>AuthService: { access_token, user, redirect_url }
+        VerifyAPI-->>AuthService: { access_token, user }
         AuthService-->>LoginPage: Login successful
-        LoginPage-->>User: Navigate to redirect_url or /dashboard
+        LoginPage-->>User: Read redirect_url from sessionStorage and navigate
     end
 ```
 
@@ -401,9 +397,11 @@ The key difference from a password reset is that **every login generates a visib
 
 This "leaves a trail" property is actually a security advantage: it makes account takeover detectable and creates an audit record of all login activity.
 
-### Redirect URL Safety
-- The `redirect_url` submitted by the frontend must be validated server-side to be a **relative path** (starts with `/`, no protocol, no host). This prevents open redirect attacks where an attacker crafts a login URL that redirects to a malicious external site after authentication.
-- Example validation: `redirect_url.startswith('/') and not redirect_url.startswith('//')`.
+### Redirect URL Handling
+
+`redirect_url` is captured by the frontend from the page URL before the login form is shown and stored in `sessionStorage` alongside `session_key`. It is **never sent to the backend**. After `verify-token` succeeds, the frontend reads `redirect_url` from `sessionStorage` and navigates there (or to `/` if absent).
+
+This eliminates server-side open redirect risk entirely. Since session binding (`session_key` in tab-scoped `sessionStorage`) already prevents cross-device OTP redemption, there is no scenario where the server needs to hold the redirect URL.
 
 ### Email Security
 - The email should contain:
@@ -434,16 +432,16 @@ This "leaves a trail" property is actually a security advantage: it makes accoun
 - [ ] `UserProfile.auth_method` field (`password` / `otp`; migration default: `password` for all existing users)
 - [ ] `POST /api/auth/check-email` — accepts `{ email }`, reads `UserProfile.auth_method`, always returns HTTP 200 with `{ user_status: "new" | "returning_password" | "returning_otp" }`; rate-limited `20/h` per IP via `django-ratelimit`
 - [ ] `LoginToken` model with `token_hash`, `session_key`, `redirect_url`, `expires_at`, `used_at`, `attempt_count`
-- [ ] `POST /api/auth/request-token` — accepts `{ email, redirect_url }`, validates `redirect_url` is a relative path, generates token, returns `{ session_key }` — also serves as the **resend** endpoint (invalidates previous token, issues new `session_key`, enforces 60s cooldown per email)
-- [ ] `POST /api/auth/verify-token` — validates `(session_key, code)`, issues session, returns `{ access_token, user, redirect_url }`
+- [ ] `POST /api/auth/request-token` — accepts `{ email }`, generates token, returns `{ session_key }` — also serves as the **resend** endpoint (invalidates previous token, issues new `session_key`, enforces 60s cooldown per email)
+- [ ] `POST /api/auth/verify-token` — validates `(session_key, code)`, issues session, returns `{ access_token, user }`
 - [ ] Celery task: `SendLoginCodeEmail` via Mailjet
 - [ ] Celery beat task: `CleanupLoginTokens` — deletes used tokens older than 24h and expired unused tokens older than 1h past expiry (runs every 30 minutes)
 - [ ] Rate limiting via `django-ratelimit`: `20/h` per IP on `check-email`; `3/10m` per email + `30/h` per IP on `request-token`; DB `attempt_count` (no decorator) on `verify-token`
-- [ ] Frontend: `sessionStorage` for `session_key`, single-page state machine (email entry → code entry → authenticated → navigate to `redirect_url`)
+- [ ] Frontend: `sessionStorage` for `session_key` and `redirect_url` (captured from page URL before login form is shown); single-page state machine (email entry → code entry → authenticated → navigate to `redirect_url`)
 - [ ] Frontend: "Resend code" button on code entry screen — disabled for 60s with countdown, updates `session_key` in `sessionStorage` on success, clears code input field
 - [ ] Constant-time comparison (`hmac.compare_digest`) in token validation
 - [ ] User enumeration protection on request endpoint (always HTTP 200)
-- [ ] Open redirect protection: validate `redirect_url` starts with `/` and not `//`
+- [ ] `redirect_url` stored in `sessionStorage` only — never sent to backend; no server-side open redirect validation needed
 - [ ] Email template with expiry notice and "didn't request this?" copy — no clickable login link
 - [ ] `LoginAuditLog` model — append-only, records all outcomes (requested / verified / failed / expired / exhausted / resent)
 - [ ] Write audit log entry on every token request and verification attempt
