@@ -75,7 +75,7 @@ This phase is the prerequisite for Event Registration Phase 3. All stories must 
 | # | Story | Notes | Status |
 |---|-------|-------|--------|
 | US-1 | `AUTH_UNIFICATION` feature toggle | Add `AUTH_UNIFICATION` to `FeatureToggle` using the existing pattern. Wire `/signin` and `/signup` to redirect to `/login` when on. No UI changes yet — just the toggle and redirect. Unblocks parallel frontend/backend work behind the flag. | ⚪ |
-| US-2 | `LoginToken` and `LoginAuditLog` models | Django models + migrations per data model spec below. Include `CleanupLoginTokens` (every 30 min) and `CleanupLoginAuditLogs` (purge >90 days) Celery beat tasks. Pure data layer — no endpoints yet. | ⚪ |
+| US-2 | `LoginToken`, `LoginAuditLog` models + `UserProfile.auth_method` | Django models + migrations per data model spec below. Include `CleanupLoginTokens` (every 30 min) and `CleanupLoginAuditLogs` (purge >90 days) Celery beat tasks. Also add `auth_method` field to `UserProfile` (values: `password` / `otp`; migration default: `password` — safe for all existing users). Pure data layer — no endpoints yet. Adding `auth_method` here means the frontend login flow (US-5/US-7) can read the correct auth method from day one, and US-10/US-11 can be worked on in parallel without waiting for a later model change. | ⚪ |
 | US-2b | `POST /api/auth/check-email` endpoint | Accepts `{ email }`. Looks up user, checks `has_usable_password()`. Always returns HTTP 200. Returns `{ user_status: "new" \| "returning_password" \| "returning_otp" }`. Rate-limited per IP. **Enumeration trade-off**: unlike `request-token`, this endpoint intentionally reveals whether an email is registered — necessary for routing. This is an accepted trade-off in combined login/signup flows; rate limiting per IP is the mitigation. No enumeration defence (always-200 body hiding) applies here. | ⚪ |
 | US-3 | `POST /api/auth/request-token` endpoint | Accepts `{ email, redirect_url }`. Validates `redirect_url` is a relative path. Generates OTP (`secrets.randbelow`) and `session_key` (`secrets.token_hex(32)`), stores hash only. Invalidates previous active token. Enqueues `SendLoginCodeEmail` Celery task (Mailjet) with raw code. Always returns HTTP 200 + `{ session_key }` (user enumeration prevention). Rate limiting: 3 req/email/10 min; 60s resend cooldown (same endpoint, issues new `session_key`). Writes to `LoginAuditLog` on every call. **New-user note**: in the combined flow, new users always go through `POST /signup/` before `request-token` is called (US-8), so the user will exist in the DB by the time this endpoint is hit. The nullable `user_id` on `LoginToken` is a safety net for the enumeration-prevention case only, not a new-user signup path. | ⚪ |
 | US-4 | `POST /api/auth/verify-token` endpoint | Accepts `{ session_key, code }`. Validates: not expired, not used, `attempt_count < 5`, constant-time hash compare (`hmac.compare_digest`). On failure: increment `attempt_count`, return 401 with message; lock at 5. On success: mark `used_at`, issue Knox `{token, expiry}`, return `{ token, expiry, user, redirect_url }`. Writes to `LoginAuditLog` on every call (all outcomes). | ⚪ |
@@ -99,11 +99,11 @@ This phase is the prerequisite for Event Registration Phase 3. All stories must 
 
 Post-Phase A. Allows users to manage their auth method after account creation.
 
-| # | Story | Notes | Status |
-|---|-------|-------|--------|
-| US-9 | `UserProfile.auth_method` field | Add `auth_method` to `UserProfile` (or derive from `has_usable_password()`). Expose via `PATCH /api/account_settings/`. Unblocks US-10 through US-12. | ⚪ |
+| # | Story | Notes                                                                                                                                                                                                                                                                                                                                                | Status |
+|---|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|
+| US-9 | Expose `auth_method` via account settings API | `UserProfile.auth_method` is already in the DB (added in US-2). This story exposes it via `PATCH /api/account_settings/` and returns it in the account settings serializer. No model change needed — US-10 and US-11 can be started in parallel once US-2 is done. | ⚪ |
 | US-10 | Set / change password from account settings | Update the existing change-password form: check `has_usable_password()` on the authenticated user. If no password is set, omit the current-password field (OTP-only users just enter and confirm the new password). If a password exists, keep the current-password confirmation as today. Backend validates accordingly and calls `set_password()`. | ⚪ |
-| US-11 | Toggle between OTP-based and password-based login | Toggle in account settings UI backed by `auth_method`. If switching to password and none set yet, prompt to set one first (links to US-10). | ⚪ |
+| US-11 | Toggle between OTP-based and password-based login | Toggle in account settings UI backed by `auth_method`. If switching to password and none set yet, prompt to set one first (links to US-10).                                                                                                                                                                                                          | ⚪ |
 
 ---
 
@@ -157,9 +157,9 @@ Append-only audit table for security monitoring. Separate from `LoginToken` (whi
 | `POST /api/auth/request-token` | POST | Accepts `{ email, redirect_url }`. Validates `redirect_url` is a relative path (starts with `/`, not `//`). Always returns HTTP 200 (user enumeration prevention). Returns `{ session_key }`. Also serves as the **resend** endpoint — enforces 60s cooldown per email, invalidates previous token, issues new `session_key`. |
 | `POST /api/auth/verify-token` | POST | Accepts `{ session_key, code }`. Validates expiry, single-use, attempt count, constant-time hash comparison. On success: marks token used, issues Knox `{token, expiry}`, returns `{ token, expiry, user, redirect_url }`. |
 
-### `UserProfile` changes (Phase B)
+### `UserProfile` changes (Phase A — added in US-2)
 
-- Add `auth_method` field (or derive from whether the user has a usable Django password): used to show correct login option on the combined page and to enforce the toggle in settings.
+- `auth_method` field (values: `password` / `otp`; migration default: `password`). Added in US-2 alongside the `LoginToken`/`LoginAuditLog` models so that the login flow (US-5/US-7) and settings stories (US-10/US-11) can all read it from day one without a later model migration blocking them. Exposed via API in Phase B US-9.
 
 ### Rate Limiting Strategy (Phase A)
 

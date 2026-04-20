@@ -121,10 +121,23 @@ Django's [`User.last_login`](https://docs.djangoproject.com/en/stable/ref/contri
 
 ## Flow Description
 
+### Step 0 — Email lookup (combined login/signup entry point)
+
+1. User arrives at `/login` and enters their email address.
+2. Frontend sends `POST /api/auth/check-email` with `{ email }`.
+3. Backend looks up the `User` by email and reads `UserProfile.auth_method` (field added in the same migration as `LoginToken`; migration default: `password` for all existing users).
+4. Backend returns `{ user_status }` — one of:
+   - `"new"` — email not found → frontend routes to the signup sub-flow.
+   - `"returning_password"` — user exists and `auth_method = "password"` → frontend shows the password form; OTP path is available as an opt-in via "Use a code instead".
+   - `"returning_otp"` — user exists and `auth_method = "otp"` → frontend proceeds directly to Step 1 below.
+5. `check-email` intentionally reveals whether an email is registered (necessary for routing). This is an accepted trade-off; IP-based rate limiting (`20/h` via `django-ratelimit`) is the mitigation.
+
+> **Note**: for users who choose "Use a code instead" from the password form (`returning_password`), the frontend skips the password step and proceeds to Step 1.
+
 ### Step 1 — User requests a token
 
 1. User is on a protected page (e.g. `/projects/123/join`) and is prompted to log in. The frontend captures the current URL as `redirect_url` before showing the login form.
-2. User enters their email address and submits.
+2. User has already provided their email in Step 0; `check-email` has confirmed they are OTP-eligible.
 3. Frontend sends `POST /api/auth/request-token` with `{ email, redirect_url }`.
 4. Backend:
    a. Validates the email format.
@@ -358,9 +371,13 @@ The `session_key` is:
 - Increment `attempt_count` on every failed attempt and lock after 5 failures.
 
 ### Rate Limiting
-- **Token request endpoint**: max 3 requests per email per 10 minutes (prevents email flooding).
-- **Token verification endpoint**: max 5 attempts per `session_key` (enforced in DB via `attempt_count`).
-- Apply IP-based rate limiting as a secondary layer.
+
+**Library**: `django-ratelimit` (backed by Redis). See the full rate limiting strategy in [`EPIC_auth_unification.md`](../../spec/EPIC_auth_unification.md#rate-limiting-strategy-phase-a).
+
+- **`check-email`**: `20/h` per IP — IP-based only (email existence is intentionally revealed here).
+- **`request-token`**: `3/10m` per email + `30/h` per IP as secondary layer.
+- **`verify-token`**: DB-enforced via `attempt_count` (5 attempts → token locked); no `django-ratelimit` decorator needed.
+- All rate-limited views return `HTTP 429` with a `Retry-After` header.
 
 ### Token Lifetime
 - **15 minutes** is the recommended expiry for OTP codes.
@@ -414,12 +431,14 @@ This "leaves a trail" property is actually a security advantage: it makes accoun
 
 ## Implementation Checklist
 
+- [ ] `UserProfile.auth_method` field (`password` / `otp`; migration default: `password` for all existing users)
+- [ ] `POST /api/auth/check-email` — accepts `{ email }`, reads `UserProfile.auth_method`, always returns HTTP 200 with `{ user_status: "new" | "returning_password" | "returning_otp" }`; rate-limited `20/h` per IP via `django-ratelimit`
 - [ ] `LoginToken` model with `token_hash`, `session_key`, `redirect_url`, `expires_at`, `used_at`, `attempt_count`
 - [ ] `POST /api/auth/request-token` — accepts `{ email, redirect_url }`, validates `redirect_url` is a relative path, generates token, returns `{ session_key }` — also serves as the **resend** endpoint (invalidates previous token, issues new `session_key`, enforces 60s cooldown per email)
 - [ ] `POST /api/auth/verify-token` — validates `(session_key, code)`, issues session, returns `{ access_token, user, redirect_url }`
 - [ ] Celery task: `SendLoginCodeEmail` via Mailjet
 - [ ] Celery beat task: `CleanupLoginTokens` — deletes used tokens older than 24h and expired unused tokens older than 1h past expiry (runs every 30 minutes)
-- [ ] Rate limiting middleware on both endpoints (3 requests/email/10min on request; 5 attempts/session_key on verify)
+- [ ] Rate limiting via `django-ratelimit`: `20/h` per IP on `check-email`; `3/10m` per email + `30/h` per IP on `request-token`; DB `attempt_count` (no decorator) on `verify-token`
 - [ ] Frontend: `sessionStorage` for `session_key`, single-page state machine (email entry → code entry → authenticated → navigate to `redirect_url`)
 - [ ] Frontend: "Resend code" button on code entry screen — disabled for 60s with countdown, updates `session_key` in `sessionStorage` on success, clears code input field
 - [ ] Constant-time comparison (`hmac.compare_digest`) in token validation
