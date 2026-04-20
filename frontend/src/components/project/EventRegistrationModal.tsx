@@ -1,15 +1,5 @@
-import React, { useContext, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import React, { useContext, useState } from "react";
+import { Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -21,10 +11,10 @@ import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
+import MiniProfilePreview from "../profile/MiniProfilePreview";
 
 const useStyles = makeStyles((theme: Theme) => ({
   modalContent: {
-    minHeight: 400,
     display: "flex",
     flexDirection: "column",
   },
@@ -36,6 +26,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   userInfo: {
     marginBottom: theme.spacing(3),
+  },
+  profilePreview: {
+    marginBottom: theme.spacing(2),
+  },
+  confirmationMessage: {
+    marginBottom: theme.spacing(2),
+    fontWeight: 500,
   },
   infoField: {
     marginBottom: theme.spacing(2),
@@ -120,7 +117,7 @@ export default function EventRegistrationModal({
 }: Props) {
   const classes = useStyles();
   const { locale, user, signIn } = useContext(UserContext);
-  const texts = getTexts({ page: "project", locale });
+  const texts = getTexts({ page: "project", locale, project });
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
 
@@ -134,35 +131,23 @@ export default function EventRegistrationModal({
   const [authStep, setAuthStep] = useState<"email" | "login" | "signup">("email");
   const [checkingEmail, setCheckingEmail] = useState(false);
 
-  const steps = useMemo(() => {
-    if (user) {
-      return [texts.event_registration, texts.confirmation];
+  // Render the appropriate content based on authentication and registration state
+  const renderContent = () => {
+    // Show success/error states regardless of authentication
+    if (state === "success") {
+      return renderSuccessContent();
     }
-    return [texts.authentication, texts.event_registration, texts.confirmation];
-  }, [user, texts]);
-
-  const activeStep = user ? (state === "success" || state === "error" ? 1 : 0) : 0; // Unauthenticated users are always on step 0 (authentication)
-
-  const getStepContent = (stepIndex: number) => {
-    if (user) {
-      // Authenticated user flow: Event Registration → Confirmation
-      switch (stepIndex) {
-        case 0:
-          return renderAuthenticatedContent();
-        case 1:
-          return state === "success" ? renderSuccessContent() : renderErrorContent();
-        default:
-          return null;
-      }
-    } else {
-      // Unauthenticated user flow: Authentication (auto-transitions to authenticated flow on login)
-      switch (stepIndex) {
-        case 0:
-          return renderUnauthenticatedContent();
-        default:
-          return null;
-      }
+    if (state === "error") {
+      return renderErrorContent();
     }
+
+    // Show registration form for authenticated users
+    if (user) {
+      return renderAuthenticatedContent();
+    }
+
+    // Show authentication flow for unauthenticated users
+    return renderUnauthenticatedContent();
   };
 
   const handleRegister = async () => {
@@ -252,20 +237,16 @@ export default function EventRegistrationModal({
   const renderAuthenticatedContent = () => (
     <Box className={classes.formContainer}>
       <Box className={classes.userInfo}>
-        <TextField
-          fullWidth
-          label={texts.name}
-          value={`${user?.first_name || ""} ${user?.last_name || ""}`}
-          disabled
-          className={classes.infoField}
-        />
-        <TextField
-          fullWidth
-          label={texts.email}
-          value={user?.email || ""}
-          disabled
-          className={classes.infoField}
-        />
+        <Box className={classes.profilePreview}>
+          <MiniProfilePreview
+            profile={{ ...user, thumbnail_image: (user as any)?.image }}
+            size="medium"
+            nolink
+          />
+        </Box>
+        <Typography variant="body1" className={classes.confirmationMessage}>
+          {texts.confirm_your_registration_for}
+        </Typography>
       </Box>
 
       <Box className={classes.actionRow}>
@@ -414,16 +395,7 @@ export default function EventRegistrationModal({
 
   return (
     <GenericDialog open={open} onClose={handleClose} title={texts.register_for_event} maxWidth="sm">
-      <Box className={classes.modalContent}>
-        <Stepper activeStep={activeStep} orientation="vertical">
-          {steps.map((label, index) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-              <StepContent>{getStepContent(index)}</StepContent>
-            </Step>
-          ))}
-        </Stepper>
-      </Box>
+      <Box className={classes.modalContent}>{renderContent()}</Box>
     </GenericDialog>
   );
 }

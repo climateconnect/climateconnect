@@ -1443,12 +1443,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Jetzt anmelden",
     },
     booked_out: {
-      en: "Booked out",
+      en: "Booked Out",
       de: "Ausgebucht",
-    },
-    registration_closed: {
-      en: "Registration closed",
-      de: "Anmeldung geschlossen",
     },
     authentication: {
       en: "Authentication",
@@ -1481,6 +1477,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     confirm_registration: {
       en: "Confirm Registration",
       de: "Anmeldung bestätigen",
+    },
+    confirm_your_registration_for: {
+      en: `Confirm your registration for ${project?.name}`,
+      de: `Bestätige deine Anmeldung für ${project?.name}`,
     },
     to_register_please_login_or_signup: {
       en: "To register for this event, please log in or sign up!",
