@@ -351,6 +351,24 @@ class UserProfile(models.Model):
         "hubs.Hub", related_name="user_related_hubs", blank=True
     )
 
+    class AuthMethod(models.TextChoices):
+        PASSWORD = "password", "Password"
+        OTP = "otp", "OTP"
+
+    auth_method = models.CharField(
+        max_length=8,
+        choices=AuthMethod.choices,
+        default=AuthMethod.PASSWORD,
+        null=False,
+        blank=False,
+        help_text=(
+            "Authentication method preferred by the user. "
+            "'password' = password-based login (default for all existing users); "
+            "'otp' = passwordless OTP-based login."
+        ),
+        verbose_name="Auth Method",
+    )
+
     class Meta:
         app_label = "climateconnect_api"
         verbose_name = "User Profile"

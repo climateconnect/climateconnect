@@ -15,9 +15,10 @@ This document provides comprehensive documentation of the main domain entities i
 5. [Idea Entities](#5-idea-entities-ideas)
 6. [Location Entities](#6-location-entities-location)
 7. [Climate Match Entities](#7-climate-match-entities-climate_match)
-8. [Cross-Cutting Patterns](#8-cross-cutting-patterns)
-9. [Entity Relationship Summary](#9-entity-relationship-summary)
-10. [Key Design Principles](#10-key-design-principles)
+8. [Auth Entities](#8-auth-entities-auth_app)
+9. [Cross-Cutting Patterns](#9-cross-cutting-patterns)
+10. [Entity Relationship Summary](#10-entity-relationship-summary)
+11. [Key Design Principles](#11-key-design-principles)
 
 ---
 
@@ -34,6 +35,9 @@ This document provides comprehensive documentation of the main domain entities i
 - **ForeignKey**: `Location` (geographic location), `Availability` (time commitment), `Language` (preferred language)
 - **ManyToMany**: `Skill` (user skills), `Hub` (related_hubs - hubs user follows)
 - **Referenced by**: `UserProfileTranslation`, `UserProfileSectorMapping`, `ProjectMember`, `OrganizationMember`, `Donation`, `Notification`, `UserBadge`
+
+**Auth fields (added US-2)**:
+- `auth_method` — `password` (default) or `otp`. Determines which login flow the user is routed to. Exposed via API in Phase B US-9.
 
 ---
 
@@ -650,7 +654,68 @@ Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row re
 
 ---
 
-## 8. Cross-Cutting Patterns
+## 8. Auth Entities (auth_app)
+
+> Added in US-2 (Auth Unification epic). Pure data layer — no API endpoints yet.
+
+### LoginToken
+
+**Summary**: Short-lived operational token used in the OTP (passwordless) login flow.
+
+**App**: `auth_app`  
+**Table**: `auth_app_logintoken`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | UUID PK | Prevents ID enumeration |
+| `user` | FK → `auth.User`, nullable | Set after lookup; null for unrecognised emails (enumeration prevention) |
+| `email` | EmailField, indexed | Address the code was sent to |
+| `token_hash` | CharField(64) | SHA-256 hash of the raw 6-digit code — raw code never stored |
+| `session_key` | CharField(64), unique | 32-byte hex random value; ties the token to the browser tab |
+| `expires_at` | DateTimeField, indexed | `now + 15 minutes` |
+| `used_at` | DateTimeField, nullable | Set on first successful use; null = not yet used |
+| `attempt_count` | PositiveSmallIntegerField | Default 0; token locked at 5 failed attempts |
+| `created_at` | DateTimeField, auto | Creation timestamp |
+
+**Key rules**:
+- One active token per email at a time (enforced in service/view layer).
+- Raw code never persisted — only its hash.
+- `session_key` is the security anchor, stored in browser `sessionStorage`.
+
+**Retention** (via `cleanup_login_tokens` Celery task, every 30 min):
+- Used tokens deleted 24 h after `used_at`.
+- Unused expired tokens deleted 1 h after `expires_at`.
+
+---
+
+### LoginAuditLog
+
+**Summary**: Append-only audit table for security monitoring of OTP login events.
+
+**App**: `auth_app`  
+**Table**: `auth_app_loginauditlog`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | UUID PK | |
+| `user` | FK → `auth.User`, nullable | Null if email not found |
+| `email` | EmailField, indexed | Email used in the attempt |
+| `outcome` | CharField(choices) | `requested` / `verified` / `failed` / `expired` / `exhausted` / `resent` |
+| `ip_address` | GenericIPAddressField, nullable | Anonymised (last octet zeroed for IPv4, GDPR) |
+| `user_agent` | TextField, nullable | Optional user-agent string |
+| `created_at` | DateTimeField, auto, indexed | Event timestamp |
+
+**Key rules**:
+- Append-only — rows must never be mutated after writing.
+- IP anonymisation applied in the view/service layer before saving.
+- Django Admin is read-only; no add/change/delete permissions.
+
+**Retention** (via `cleanup_login_audit_logs` Celery task, daily at 03:00 UTC):
+- Entries purged after 90 days.
+
+---
+
+## 9. Cross-Cutting Patterns
 
 ### Translation Support
 
