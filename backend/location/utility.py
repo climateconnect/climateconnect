@@ -140,7 +140,7 @@ def get_location(location_object):
     centre_point = None
     multipolygon = None
     if location_object["type"] == "Point":
-        point = GEOSGeometry(str(location_object["geojson"]))
+        point = GEOSGeometry(json.dumps(location_object["geojson"]))
         coords = list(point)
         centre_point = Point(coords[1], coords[0])
 
@@ -182,7 +182,8 @@ def get_location(location_object):
 
 
 def get_multipolygon_from_geojson(geojson):
-    input_polygon = GEOSGeometry(str(geojson))
+    geojson_str = geojson if isinstance(geojson, str) else json.dumps(geojson)
+    input_polygon = GEOSGeometry(geojson_str)
 
     if isinstance(input_polygon, Polygon):
         return MultiPolygon(get_polygon_with_switched_coordinates(input_polygon))
@@ -359,30 +360,30 @@ def get_middle_part(address, order, suffixes):
 
 def get_location_with_range(query_params):
     filter_place_id = query_params.get("place_id")
-    location_type = query_params.get("osm_type") 
+    filter_osm_type = query_params.get("osm_type") 
     filter_osm_id = query_params.get("osm_id")
     filter_osm_class = query_params.get("osm_class")
 
     location = None
     if (
         _has_non_empty_value(filter_osm_id)
-        and _has_non_empty_value(location_type)
+        and _has_non_empty_value(filter_osm_type)
         and _has_non_empty_value(filter_osm_class)
     ):
         location = _get_newest_location_by_osm_composite(
             osm_id=filter_osm_id,
-            osm_type=location_type,
+            osm_type=filter_osm_type,
             osm_class=filter_osm_class,
         )
 
     if not location and _has_non_empty_value(filter_osm_id) and _has_non_empty_value(
-        location_type
+        filter_osm_type
     ):
         # Backward-compatible fallback for requests without osm_class.
         location = (
             Location.objects.filter(
                 osm_id=filter_osm_id,
-                osm_type=_osm_type_char(location_type),
+                osm_type=_osm_type_char(filter_osm_type),
             )
             .order_by("-id")
             .first()
@@ -400,7 +401,7 @@ def get_location_with_range(query_params):
     distance = -1  # distance in meter
     buffer_width = distance / 40000000.0 * 360.0
 
-    normalized_osm_type = _osm_type_char(location_type)
+    normalized_osm_type = _osm_type_char(filter_osm_type)
 
     if not location:
         url_root = settings.LOCATION_SERVICE_BASE_URL + "/lookup?osm_ids="
@@ -439,13 +440,13 @@ def get_location_with_range(query_params):
         location = get_location(format_location(location_object, False))
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)
-            if normalized_osm_type == "R"
+            if normalized_osm_type == "R" and location.multi_polygon is not None
             else location.centre_point
         )
     else:
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)
-            if normalized_osm_type == "R"
+            if normalized_osm_type == "R" and location.multi_polygon is not None
             else location.centre_point
         )
     radius = 0
@@ -456,20 +457,20 @@ def get_location_with_range(query_params):
 
 
 def get_global_location():
-    global_location = Location.objects.filter(name="Global").order_by("-id")
-    if global_location.exists():
-        return global_location[0]
-    else:
-        global_location = Location.objects.create(
-            name="Global",
-            city="global",
-            country="global",
-            display_name="Global",
-            osm_id=-1,
-            osm_type="R",
-            osm_class="global",
-            osm_class_type="global",
-            place_id=1,
-            is_formatted=True,
-        )
-        return global_location
+    # Look up by the synthetic OSM composite key, not by name.
+    # This ensures legacy "Global" rows without OSM fields are not returned.
+    global_location, _ = Location.objects.get_or_create(
+        osm_id=-1,
+        osm_type="R",
+        osm_class="global",
+        defaults={
+            "name": "Global",
+            "city": "global",
+            "country": "global",
+            "display_name": "Global",
+            "osm_class_type": "global",
+            "place_id": 1,
+            "is_formatted": True,
+        },
+    )
+    return global_location

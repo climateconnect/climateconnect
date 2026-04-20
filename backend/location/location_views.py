@@ -77,8 +77,47 @@ class GetLocationView(APIView):
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         }
-        response = requests.get(url, headers=headers)
-        location_object = json.loads(response.text)[0]
+
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+        except requests.RequestException as exc:
+            logger.error("Error calling location service for url %s: %s", url, exc, exc_info=True)
+            return Response(
+                {"message": "Upstream location service is unavailable."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        if response.status_code != 200:
+            logger.warning(
+                "Location service returned non-200 status for url %s: %s",
+                url,
+                response.status_code,
+            )
+            return Response(
+                {
+                    "message": "Upstream location service returned an error.",
+                    "upstream_status": response.status_code,
+                },
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        try:
+            data = json.loads(response.text)
+        except ValueError:
+            logger.error("Invalid JSON from location service for url %s", url, exc_info=True)
+            return Response(
+                {"message": "Invalid response from upstream location service."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+        if not isinstance(data, list) or not data:
+            logger.info(
+                "Location not found in upstream service for osm_id=%s, osm_type=%s",
+                osm_id,
+                osm_type_char,
+            )
+            return Response(
+                {"message": "Location not found for the given identifiers."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        location_object = data[0]
         location = get_location(format_location(location_object, False))
         serializer = LocationStubSerializer(location)
         return Response(serializer.data, status=status.HTTP_200_OK)

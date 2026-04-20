@@ -203,8 +203,12 @@ export default function LocationSearchBar({
 
           const options = data.map((option) => ({
             ...option,
+            // Nominatim returns "class" but our app uses "osm_class" consistently.
+            // Same with "type" and "osm_type". 
+            osm_class: option.osm_class ?? option.class,
+            osm_class_type: option.osm_class_type ?? option.type,
             simple_name: getSimpleName(option, enableExactLocation),
-            key: `${option.osm_id || "na"}-${option.osm_type}-${option.osm_class || "na"}`,
+            key: `${option.osm_id || "na"}-${option.osm_type}-${option.osm_class ?? option.class ?? "na"}`,
           }));
           setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);
