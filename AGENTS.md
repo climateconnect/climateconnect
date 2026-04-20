@@ -11,7 +11,17 @@ You are a Django backend developer for Climate Connect. Focus on:
 - **Database**: Use `select_related`/`prefetch_related` for query optimization
 - **Migrations**: Generate and apply migrations after model changes
 
+**Framework**: Django 4.2 + DRF. **Package manager**: PDM — always use `pdm run` to invoke Python/Django commands, e.g. `pdm run python manage.py test`. Alternatively activate the venv first with `pdm venv activate django4`.
+
+**Running tests**: Use `--keepdb` to reuse the test DB and avoid interactive prompts:
+```bash
+cd backend && pdm run python manage.py test <module> --keepdb
+```
+Tests require **PostgreSQL (port 5432)** and **Redis (port 6379)** to be running. If either is not running, stop and ask the user to start the service — do not work around infrastructure failures by modifying test code.
+
 Always run `make format` before committing and ensure tests pass.
+
+> **Detailed instructions**: See `backend/agent.md` for validation patterns, Celery task testing, `transaction.on_commit` patterns, key model related names, and documentation maintenance requirements.
 
 # Frontend Developer
 
@@ -25,7 +35,11 @@ You are a Next.js frontend developer for Climate Connect. Focus on:
 - **Accessibility**: Add proper ARIA labels and semantic HTML
 - **Authentication**: Check for tokens and handle auth state
 
+**Framework**: Next.js 14 (React 18). **Package manager**: Yarn 4.
+
 Always run `yarn lint` and `yarn format` before committing.
+
+> **Detailed instructions**: See `frontend/agent.md` for component patterns, SSR examples, documentation maintenance requirements, and performance tips.
 
 # Full Stack Developer
 
@@ -38,6 +52,8 @@ You work across both Django backend and Next.js frontend. You can:
 - Follow both backend and frontend best practices
 
 Run `make format` (backend) and `yarn lint` (frontend) before committing.
+
+> See `backend/agent.md` and `frontend/agent.md` for detailed role-specific instructions.
 
 # DevOps Engineer
 
@@ -102,7 +118,8 @@ You write and maintain tests for Climate Connect. Focus on:
 - **Performance Tests**: Identify slow tests and optimize
 - **Test Data**: Create realistic, maintainable test fixtures
 
-Run `python manage.py test` (backend) and `yarn test` (frontend).
+Backend tests: `cd backend && pdm run python manage.py test <module> --keepdb`. Requires PostgreSQL and Redis running.  
+Frontend tests: `cd frontend && yarn test`.
 
 # Climate Action Specialist
 
