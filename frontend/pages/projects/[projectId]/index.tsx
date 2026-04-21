@@ -172,10 +172,15 @@ export default function ProjectPage({
   const [likingChangePending, setLikingChangePending] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(project?.number_of_likes);
   const [numberOfFollowers, setNumberOfFollowers] = useState(project?.number_of_followers);
-  const { CUSTOM_HUB_URLS, locale } = useContext(UserContext);
+  const { CUSTOM_HUB_URLS, locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = useState(true);
   const [projectTypes, setProjectTypes] = useState([]);
+
+  // Get registered event slugs from user profile for showing "Registered ✓" status
+  const registeredEventSlugs = React.useMemo(() => {
+    return new Set(user?.registered_event_slugs || []);
+  }, [user?.registered_event_slugs]);
 
   const retrieveAndSetProjectTypes = async () => {
     const projectTypeOptions = await getProjectTypeOptions(locale);
@@ -345,6 +350,7 @@ export default function ProjectPage({
                   hubSupporters={hubSupporters}
                   hubName={hubUrl}
                   isSmallScreen={false}
+                  registeredEventSlugs={registeredEventSlugs}
                 />
               )}
             </div>

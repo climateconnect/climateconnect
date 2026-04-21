@@ -111,7 +111,7 @@ export default function ProjectPreview({
   projectRef,
   hubUrl,
   className,
-  isUserRegistered,
+  registeredEventSlugs,
 }: any) {
   // DISABLED: Hover expansion effect causes registration button to jump/shift position (Issue #1885)
   // Keeping code in place for potential future re-enablement
@@ -125,6 +125,9 @@ export default function ProjectPreview({
       : { name: project.project_type, type_id: project.project_type };
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
+
+  // Compute if user is registered for this event
+  const isUserRegistered = registeredEventSlugs?.has(project.url_slug) ?? false;
 
   // DISABLED: Hover handlers (kept for potential future re-enablement)
   // const handleMouseEnter = () => {
