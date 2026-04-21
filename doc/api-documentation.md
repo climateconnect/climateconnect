@@ -302,6 +302,76 @@ In Swagger UI, endpoints with a 🔒 lock icon require authentication.
 
 ## Common Endpoints
 
+### Auth
+
+| Endpoint | Method | Auth Required | Description |
+|----------|--------|---------------|-------------|
+| `/api/auth/check-email` | POST | No | Check whether an email is new or returning (US-2b) |
+| `/api/auth/request-token` | POST | No | Request a 6-digit OTP login code by email (US-3) |
+| `/api/auth/verify-token` | POST | No | Verify the OTP code and receive a Knox auth token (US-4) |
+
+#### POST `/api/auth/verify-token` — Verify OTP code and issue Knox token
+
+Validates the 6-digit code the user received by email and, on success, issues an authenticated Knox token. This is the final step of the OTP login flow. Also serves the new-user account verification use case: when a new user completes signup and verifies their inbox via OTP, `is_profile_verified` is set to `True` atomically with the Knox token issuance.
+
+**Authentication**: Not required (`AllowAny`).
+
+**Request body**:
+```json
+{
+  "session_key": "a3f8...64-char hex string",
+  "code": "123456"
+}
+```
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `session_key` | string | Yes | The `session_key` returned by `POST /api/auth/request-token` |
+| `code` | string | Yes | The 6-digit code from the email |
+
+**Success response** (200 OK):
+```json
+{
+  "token": "<knox raw token>",
+  "expiry": "2026-08-19T09:00:00Z",
+  "user": { ... }
+}
+```
+The `user` object uses the same `PersonalProfileSerializer` shape as `POST /login/`. The Knox `token` is a long alphanumeric string; `expiry` is an ISO 8601 datetime.
+
+**Validation order**: checks are enforced sequentially — expired → already used → attempt limit → code hash. The first failing check returns immediately.
+
+**Error responses**:
+| Status | `detail` | Condition |
+|--------|----------|-----------|
+| 400 Bad Request | Field error | `session_key` or `code` missing or blank |
+| 401 Unauthorized | `"Invalid or expired session."` | `session_key` not found |
+| 401 Unauthorized | `"This code has expired. Please request a new one."` | Token `expires_at` is in the past |
+| 401 Unauthorized | `"Invalid or expired session."` | Token already used (`used_at` is set) |
+| 401 Unauthorized | `"Too many failed attempts. Please request a new code."` | `attempt_count ≥ 5` before submission |
+| 401 Unauthorized | `"Invalid code. N attempt(s) remaining."` | Wrong code; N attempts left |
+| 401 Unauthorized | `"Too many failed attempts. Please request a new code."` | Wrong code pushed `attempt_count` to 5 |
+| 401 Unauthorized | `"Invalid or expired session."` | Race condition: concurrent request consumed the same token first |
+
+**Security notes**:
+- Code comparison uses `hmac.compare_digest` (constant-time) to prevent timing attacks.
+- Failed attempts are incremented with a DB-level `F("attempt_count") + 1` expression to avoid read-modify-write races.
+- The single-use guard uses `UPDATE … WHERE used_at IS NULL` and checks affected rows — if two concurrent requests both pass the checks, only the first one gets a Knox token; the second receives 401.
+- IP address is anonymised (last octet zeroed for IPv4) before being stored in `LoginAuditLog`.
+
+**Audit logging**: `LoginAuditLog` is written on every call regardless of outcome (`verified`, `failed`, `expired`, `exhausted`).
+
+**New-user verification**: if `UserProfile.is_profile_verified` is `False` at success time, it is set to `True` before the Knox token is created. No separate email-link verification step is needed.
+
+**curl example**:
+```bash
+curl -X POST http://localhost:8000/api/auth/verify-token \
+  -H "Content-Type: application/json" \
+  -d '{"session_key": "a3f8...", "code": "123456"}'
+```
+
+---
+
 ### Projects
 
 | Endpoint | Method | Auth Required | Description |
@@ -746,5 +816,5 @@ If you encounter issues or have questions about the API:
 
 ---
 
-**Last Updated**: April 21, 2026 — Added `POST /api/auth/request-token` endpoint (US-3). Accepts `{ email }`, always returns HTTP 200 with `{ session_key }` (enumeration-safe). Generates a cryptographically secure 6-digit OTP (SHA-256 hash stored only), ties it to a browser tab via a 64-char hex `session_key`, and enqueues `send_login_code_email` Celery task. Invalidates any previous active `LoginToken` for the same email before creating the new one. Resend cooldown: 429 with `Retry-After` if a token was created in the last 60 s. Rate limits: 3 req/10 min per email (`Retry-After: 600`), 30 req/h per IP (`Retry-After: 3600`). Writes a `LoginAuditLog` entry (outcome `requested` or `resent`) on every call, including when email is not found. Requires no authentication (`AllowAny`). New settings: `LOGIN_CODE_EMAIL_TEMPLATE_ID`, `LOGIN_CODE_EMAIL_TEMPLATE_ID_DE` (default blank; dev fallback logs OTP to console). Previous: April 20, 2026 — Added `POST /api/auth/check-email` endpoint (US-2b). Returns `{ user_status: "new" | "returning_password" | "returning_otp" }` based on whether the email exists and which `auth_method` the `UserProfile` has. Always HTTP 200. Rate-limited to 20 requests/hour/IP (HTTP 429 + `Retry-After: 3600` on breach). Requires no authentication (`AllowAny`). Backend lookup is case-sensitive; frontend must lowercase before calling. Previous: April 9, 2026 — Added member self-cancellation (`DELETE /api/projects/{slug}/registrations/`, issue #1850) and admin cancel guest (`DELETE /api/projects/{slug}/registrations/{id}/`, issue #1872). `EventRegistrationSerializer` now includes `id` and `cancelled_at`. `GET /registrations/` returns all rows (active + cancelled). `POST /registrations/` supports re-registration after self-cancellation (201) and blocks re-registration after admin-cancellation (403). All seat-count queries filter `cancelled_at IS NULL`. `GET /projects/{slug}/my_interactions/` now returns `has_attended` and `admin_cancelled` booleans; `is_registered` filtered by `cancelled_at IS NULL`. Bulk email endpoint now excludes cancelled registrations. New Mailjet templates: `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` (EN/DE). Previous: April 2, 2026 — Renamed API surface: `POST /api/projects/{slug}/register/` → `POST /api/projects/{slug}/registrations/`; `PATCH /api/projects/{slug}/registration/` → `PATCH /api/projects/{slug}/registration-config/`; JSON key `event_registration` → `registration_config` on all project endpoints. Previous: March 31, 2026 — Added fully-booked reopen guard to `PATCH /api/projects/{slug}/registration-config/`: `status = "open"` is now rejected with `400 Bad Request` when participant count ≥ effective `max_participants` after this PATCH (applies to both `closed → open` and `full → open` transitions when the event is actually at capacity). An organiser can reopen a booked-out event by including a higher `max_participants` in the same request. Three new tests added. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration-config/` updated (issue #1851): `status` is now writable (`"open"` / `"closed"`); `"full"` and `"ended"` are rejected with 400 (system-managed); reopen guard returns 400 when `effective_status == "ended"` (extend deadline first); auto-adjustment skipped when `status` is explicit. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration-config/` now returns `available_seats` in the response body (always computed). Previous: March 31, 2026 — Added status auto-adjustment to `PATCH /api/projects/{slug}/registration-config/`. Previous: March 31, 2026 — Added computed `"ended"` status to `registration_config.status`. Previous: March 30, 2026 — Added `PATCH /api/projects/{slug}/registration-config/` endpoint (issue #1848). Previous: March 30, 2026 — Added `POST /api/projects/{slug}/registrations/` endpoint (issue #1845). Previous: March 19, 2026 — Added `status` field to `registration_config`. Previous: Added `registration_config` nested object to project endpoints (issue #43)
+**Last Updated**: April 21, 2026 — Added `POST /api/auth/verify-token` endpoint (US-4). Accepts `{ session_key, code }`. On success returns `{ token, expiry, user }` (Knox token + `PersonalProfileSerializer` user shape). Validates in order: expiry → single-use → attempt limit → constant-time hash comparison. Failed attempts incremented atomically via `F()` expression; response includes remaining attempts or locked message. Race condition guard via `UPDATE … WHERE used_at IS NULL` affected-rows check. New users (`is_profile_verified=False`) are marked verified atomically with Knox token issuance. `LoginAuditLog` written on every outcome (`verified`, `failed`, `expired`, `exhausted`). Added Auth section to Common Endpoints listing all three OTP-flow endpoints. Previous: April 21, 2026 — Added `POST /api/auth/request-token` endpoint (US-3). Accepts `{ email }`, always returns HTTP 200 with `{ session_key }` (enumeration-safe). Generates a cryptographically secure 6-digit OTP (SHA-256 hash stored only), ties it to a browser tab via a 64-char hex `session_key`, and enqueues `send_login_code_email` Celery task. Invalidates any previous active `LoginToken` for the same email before creating the new one. Resend cooldown: 429 with `Retry-After` if a token was created in the last 60 s. Rate limits: 3 req/10 min per email (`Retry-After: 600`), 30 req/h per IP (`Retry-After: 3600`). Writes a `LoginAuditLog` entry (outcome `requested` or `resent`) on every call, including when email is not found. Requires no authentication (`AllowAny`). New settings: `LOGIN_CODE_EMAIL_TEMPLATE_ID`, `LOGIN_CODE_EMAIL_TEMPLATE_ID_DE` (default blank; dev fallback logs OTP to console). Previous: April 20, 2026 — Added `POST /api/auth/check-email` endpoint (US-2b). Returns `{ user_status: "new" | "returning_password" | "returning_otp" }` based on whether the email exists and which `auth_method` the `UserProfile` has. Always HTTP 200. Rate-limited to 20 requests/hour/IP (HTTP 429 + `Retry-After: 3600` on breach). Requires no authentication (`AllowAny`). Backend lookup is case-sensitive; frontend must lowercase before calling. Previous: April 9, 2026 — Added member self-cancellation (`DELETE /api/projects/{slug}/registrations/`, issue #1850) and admin cancel guest (`DELETE /api/projects/{slug}/registrations/{id}/`, issue #1872). `EventRegistrationSerializer` now includes `id` and `cancelled_at`. `GET /registrations/` returns all rows (active + cancelled). `POST /registrations/` supports re-registration after self-cancellation (201) and blocks re-registration after admin-cancellation (403). All seat-count queries filter `cancelled_at IS NULL`. `GET /projects/{slug}/my_interactions/` now returns `has_attended` and `admin_cancelled` booleans; `is_registered` filtered by `cancelled_at IS NULL`. Bulk email endpoint now excludes cancelled registrations. New Mailjet templates: `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` (EN/DE). Previous: April 2, 2026 — Renamed API surface: `POST /api/projects/{slug}/register/` → `POST /api/projects/{slug}/registrations/`; `PATCH /api/projects/{slug}/registration/` → `PATCH /api/projects/{slug}/registration-config/`; JSON key `event_registration` → `registration_config` on all project endpoints. Previous: March 31, 2026 — Added fully-booked reopen guard to `PATCH /api/projects/{slug}/registration-config/`: `status = "open"` is now rejected with `400 Bad Request` when participant count ≥ effective `max_participants` after this PATCH (applies to both `closed → open` and `full → open` transitions when the event is actually at capacity). An organiser can reopen a booked-out event by including a higher `max_participants` in the same request. Three new tests added. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration-config/` updated (issue #1851): `status` is now writable (`"open"` / `"closed"`); `"full"` and `"ended"` are rejected with 400 (system-managed); reopen guard returns 400 when `effective_status == "ended"` (extend deadline first); auto-adjustment skipped when `status` is explicit. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration-config/` now returns `available_seats` in the response body (always computed). Previous: March 31, 2026 — Added status auto-adjustment to `PATCH /api/projects/{slug}/registration-config/`. Previous: March 31, 2026 — Added computed `"ended"` status to `registration_config.status`. Previous: March 30, 2026 — Added `PATCH /api/projects/{slug}/registration-config/` endpoint (issue #1848). Previous: March 30, 2026 — Added `POST /api/projects/{slug}/registrations/` endpoint (issue #1845). Previous: March 19, 2026 — Added `status` field to `registration_config`. Previous: Added `registration_config` nested object to project endpoints (issue #43)
 
