@@ -1,13 +1,15 @@
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { Project, Organization } from "../../types";
 import ProjectTypeSelector from "./ProjectTypeSelector";
 import getTexts from "../../../public/texts/texts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import Switcher from "../general/Switcher";
 import SelectField from "../general/SelectField";
 import { useTheme } from "@mui/material/styles";
+import NavigationButtons from "../general/NavigationButtons";
 
 const useStyles = makeStyles((theme) => ({
   orgBottomLink: {
@@ -32,10 +34,6 @@ const useStyles = makeStyles((theme) => ({
   },
   field: {
     marginTop: theme.spacing(3),
-  },
-  button: {
-    float: "right",
-    marginTop: theme.spacing(2),
   },
 }));
 
@@ -67,6 +65,7 @@ export default function Share({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, hubName: hubName });
+  const projectTypeTexts = getProjectTypeTexts(texts);
   const theme = useTheme();
 
   const onChangeSwitch = () => {
@@ -99,10 +98,9 @@ export default function Share({
 
   return (
     <div className={classes.form}>
-      {locale === "en" && <PleaseOnlyUseEnglishAppeal />}
       <Switcher
-        trueLabel={texts.organizations_project}
-        falseLabel={texts.personal_project}
+        trueLabel={projectTypeTexts.organizations[project.project_type?.type_id]}
+        falseLabel={projectTypeTexts.personal[project.project_type?.type_id]}
         value={project.is_organization_project}
         required={false}
         className={classes.field}
@@ -132,33 +130,7 @@ export default function Share({
         types={projectTypeOptions}
         color={mainColor}
       />
-      <Button
-        variant="contained"
-        color="primary"
-        className={classes.button}
-        onClick={onClickNextStep}
-      >
-        {texts.next_step}
-      </Button>
+      <NavigationButtons onClickNextStep={onClickNextStep} sticky />
     </div>
   );
 }
-
-const PleaseOnlyUseEnglishAppeal = () => {
-  const classes = useStyles();
-  return (
-    <div className={classes.appealBox}>
-      <Typography color="secondary" className={classes.appealText}>
-        Please make sure to{" "}
-        <Typography component="span" className={classes.bold}>
-          only use English when sharing a project
-        </Typography>
-        .
-      </Typography>
-      <Typography className={classes.appealText}>
-        This enables more people to contribute to your ideas and experiences to fight climate change
-        together!
-      </Typography>
-    </div>
-  );
-};

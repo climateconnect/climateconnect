@@ -51,6 +51,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "Role in organisation",
       de: "Rolle in der Organisation",
     },
+    role_in_idea: {
+      en: "Role in idea",
+      de: "Rolle bei der Idee",
+    },
+    role_in_event: {
+      en: "Role in event",
+      de: "Rolle beim Event",
+    },
     pick_or_describe_role_in_organization: {
       en: "Pick or describe what the user's role in the organisation is.",
       de: "Wähle oder beschreibe, welche Rolle der/die Benutzer*in in der Organisation hat.",
@@ -58,6 +66,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     pick_or_describe_role_in_project: {
       en: "Pick or describe what the user's role in the project is.",
       de: "Wähle oder beschreibe, welche Rolle der/die Benutzer*in im Projekt hat.",
+    },
+    pick_or_describe_role_in_idea: {
+      en: "Pick or describe what the user's role in the idea is.",
+      de: "Wähle oder beschreibe, welche Rolle der/die Benutzer*in bei der Idee hat.",
+    },
+    pick_or_describe_role_in_event: {
+      en: "Pick or describe what the user's role in the event is.",
+      de: "Wähle oder beschreibe, welche Rolle der/die Benutzer*in beim Event hat.",
     },
     pick_or_type_users_role: {
       en: "Pick or type user's role",
@@ -122,8 +138,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: ", um die vollständigen Informationen dieses/dieser Benutzer*in zu sehen",
     },
     your_projects: {
-      en: "Your climate projects",
-      de: "Deine Klimaschutzprojekte",
+      en: "Your climate projects, ideas and events",
+      de: "Deine Projekte, Ideen und Events",
     },
     this_users_projects: {
       en: `${profile?.first_name}'s Climate Projects`,
@@ -158,6 +174,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     not_involved_in_any_organizations_yet: {
       en: "not involved in any organisations yet!",
       de: "noch in keiner Organisation engagiert!",
+    },
+    your_registered_events: {
+      en: "Events you registered for",
+      de: "Veranstaltungen für die du dich angemeldet hast",
+    },
+    no_registered_events_yet: {
+      en: "You haven't registered for any upcoming events yet.",
+      de: "Du hast dich bisher für keine bevorstehenden Veranstaltungen angemeldet.",
     },
     sign_up_message: {
       en: "You are now a Climate Connect member. On this page you can customize your profile.",

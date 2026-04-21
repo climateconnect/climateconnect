@@ -1,8 +1,9 @@
-import { Box, Collapse, Container, Theme, Tooltip, Typography } from "@mui/material";
+import { Box, Collapse, Container, Theme, Tooltip, Typography, Button } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
 import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
@@ -13,6 +14,12 @@ import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
 import BrowseContext from "../context/BrowseContext";
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
+import { useFeatureToggles } from "../featureToggle";
+import {
+  shouldShowRegisterButton,
+  getRegisterButtonText,
+  isRegisterButtonDisabled,
+} from "../../utils/eventRegistrationHelpers";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
@@ -87,10 +94,27 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
     marginLeft: 2,
     marginRight: 6,
   },
+  registerButton: {
+    marginLeft: "auto",
+    fontSize: 11,
+    padding: "4px 12px",
+    height: 24,
+    whiteSpace: "nowrap",
+  },
 }));
 
-type Props = { project: Project; hovering: boolean; withDescription?: boolean };
-export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
+type Props = {
+  project: Project;
+  hovering: boolean;
+  withDescription?: boolean;
+  isUserRegistered?: boolean;
+};
+export default function ProjectMetaData({
+  project,
+  hovering,
+  withDescription,
+  isUserRegistered,
+}: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
@@ -104,6 +128,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
         hovering={hovering}
         main_project_sector={main_project_sector}
         texts={texts}
+        isUserRegistered={isUserRegistered}
       />
     );
   }
@@ -115,6 +140,7 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
       project={project}
       main_project_sector={main_project_sector}
       texts={texts}
+      isUserRegistered={isUserRegistered}
     />
   );
 }
@@ -126,6 +152,7 @@ const WithDescription = ({
   project,
   main_project_sector,
   texts,
+  isUserRegistered,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -154,7 +181,7 @@ const WithDescription = ({
               iconClassName={classes.cardIcon}
             />
           )}
-          <AdditionalPreviewInfo project={project} />
+          <AdditionalPreviewInfo project={project} isUserRegistered={isUserRegistered} />
         </Box>
       </Container>
       {hovering && (
@@ -175,6 +202,7 @@ const WithOutDescription = ({
   project,
   main_project_sector,
   texts,
+  isUserRegistered,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -196,7 +224,7 @@ const WithOutDescription = ({
             projectSectorClassName={classes.metadataText}
             iconClassName={classes.cardIcon}
           />
-          <AdditionalPreviewInfo project={project} />
+          <AdditionalPreviewInfo project={project} isUserRegistered={isUserRegistered} />
         </Box>
       </Container>
     </Box>
@@ -248,30 +276,53 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
   );
 };
 
-const AdditionalPreviewInfo = ({ project }) => {
+const AdditionalPreviewInfo = ({ project, isUserRegistered }) => {
   const classes = useStyles({});
   const { projectTypes } = useContext(BrowseContext);
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "project", locale });
+  const { isEnabled } = useFeatureToggles();
+
   const projectType =
     projectTypes && projectTypes.length > 0
       ? projectTypes.find((t) => t.type_id === project.project_type)
       : { name: project.project_type, type_id: project.project_type };
 
+  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
+  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
+
+  const getRegisterButtonConfig = () => {
+    if (!showRegisterButton) return null;
+
+    const buttonText = getRegisterButtonText(project, texts, isUserRegistered);
+    const disabled = isRegisterButtonDisabled(project, isUserRegistered);
+
+    return {
+      label: buttonText,
+      disabled: disabled,
+      variant: disabled ? "outlined" : "contained",
+      color: disabled ? "secondary" : "primary",
+    };
+  };
+
+  const buttonConfig = getRegisterButtonConfig();
+
   return (
     <Box className={classes.additionalInfoContainer}>
-      {project.number_of_comments > 0 && (
+      {(project.number_of_comments ?? 0) > 0 && (
         <Box className={classes.additionalInfoIcon}>
           <ModeCommentIcon />
           <span className={classes.additionalInfoCounter}> {project.number_of_comments} </span>
         </Box>
       )}
-      {project.number_of_likes > 2 && (
+      {(project.number_of_likes ?? 0) > 2 && (
         <Box className={classes.additionalInfoIcon}>
           <FavoriteIcon />
           <span className={classes.additionalInfoCounter}> {project.number_of_likes}</span>
         </Box>
       )}
       <Box className={classes.additionalInfoIcon}>
-        {(project.number_of_comments > 0 || project.number_of_likes > 2) && (
+        {((project.number_of_comments ?? 0) > 0 || (project.number_of_likes ?? 0) > 2) && (
           <>
             {" • "}
             <div className={classes.horizontalSpacing} />
@@ -284,6 +335,22 @@ const AdditionalPreviewInfo = ({ project }) => {
           hasChildren={project.has_children}
         />
       </Box>
+      {buttonConfig && (
+        <Button
+          className={classes.registerButton}
+          variant={buttonConfig.variant as any}
+          color={buttonConfig.color as any}
+          size="small"
+          disabled={buttonConfig.disabled}
+          href={
+            buttonConfig.disabled
+              ? undefined
+              : `${getLocalePrefix(locale)}/projects/${project.url_slug}/register`
+          }
+        >
+          {buttonConfig.label}
+        </Button>
+      )}
     </Box>
   );
 };

@@ -1,5 +1,30 @@
-import { apiRequest } from "./apiOperations";
+import { apiRequest, getLocalePrefix } from "./apiOperations";
 import { GetServerSidePropsContext } from "next";
+import { getHubData } from "./getHubData";
+import { LocaleType } from "../../src/types";
+
+/**
+ * Factory that creates a `getServerSideProps` function for a static hub landing page.
+ * If the hub data cannot be fetched the user is redirected to the hub's browse page.
+ */
+export function createHubLandingPageServerSideProps(hubUrl: string) {
+  return async (ctx: GetServerSidePropsContext) => {
+    const locale = ctx.locale;
+    const hubData = await getHubData(hubUrl, locale as LocaleType);
+
+    if (!hubData) {
+      const localePrefix = getLocalePrefix(locale ?? "en");
+      return {
+        redirect: {
+          destination: `${localePrefix}/hubs/${hubUrl}/browse`,
+          permanent: false,
+        },
+      };
+    }
+
+    return { props: { hubData } };
+  };
+}
 
 export function extractHubUrlsFromContext(ctx: GetServerSidePropsContext) {
   const hubUrl = ctx.query.hubUrl;

@@ -108,6 +108,13 @@ module.exports = withBundleAnalyzer({
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
+    // Suppress conflicting star export warnings from Webflow DevLink's auto-generated barrel
+    // (devlink/index.js re-exports Boolean and Number value modules that share the same export names).
+    // This is a known issue in the Webflow DevLink code generator and cannot be fixed on our side.
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      { message: /conflicting star exports/ },
+    ];
     return config;
   },
 });

@@ -111,6 +111,8 @@ dependencies = [
     "gunicorn>=20.1.0",
     "user-agents>=2.2.0",
     "drf-spectacular>=0.29.0",
+    "timezonefinder>=8.2.2",
+    "django-ratelimit>=4.1.0",
 ]
 requires-python = ">=3.11"
 license = { text = "AGPL" }
@@ -146,13 +148,39 @@ extend-exclude = '''
 ^.*\b(migrations)\b.*$
 '''
 
-[tool.pdm.dev-dependencies]
+[tool.coverage.run]
+source = [
+    "climateconnect_api",
+    "climateconnect_main",
+    "organization",
+    "hubs",
+    "ideas",
+    "climate_match",
+    "location",
+    "translations",
+    "chat_messages",
+    "feature_toggles",
+]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/tests.py",
+    "climateconnect_main/settings.py",
+    "climateconnect_main/wsgi.py",
+    "climateconnect_main/asgi.py",
+    "manage.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+precision = 1
+
+[dependency-groups]
 dev = [
     "ruff>=0.0.271",
     "django-debug-toolbar>=3.5.0",
+    "coverage[toml]>=7.13.5",
 ]
 
-[tool.pdm]
-# Disable inherit_metadata to ensure cross-platform lock files
-# This prevents platform-specific markers and exact Python version locks
-strategy = ["no_inherit_metadata"]
+

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Link, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -106,8 +106,17 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProjectPreview({ project, projectRef, hubUrl, className }: any) {
-  const [hovering, setHovering] = useState(false);
+export default function ProjectPreview({
+  project,
+  projectRef,
+  hubUrl,
+  className,
+  isUserRegistered,
+}: any) {
+  // DISABLED: Hover expansion effect causes registration button to jump/shift position (Issue #1885)
+  // Keeping code in place for potential future re-enablement
+  // const [hovering, setHovering] = useState(false);
+  const hovering = false; // Hover effect disabled
   const { locale } = useContext(UserContext);
   const { projectTypes } = useContext(BrowseContext);
   const projectType =
@@ -116,12 +125,15 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
       : { name: project.project_type, type_id: project.project_type };
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
-  const handleMouseEnter = () => {
-    setHovering(true);
-  };
-  const handleMouseLeave = () => {
-    setHovering(false);
-  };
+
+  // DISABLED: Hover handlers (kept for potential future re-enablement)
+  // const handleMouseEnter = () => {
+  //   setHovering(true);
+  // };
+  // const handleMouseLeave = () => {
+  //   setHovering(false);
+  // };
+
   const queryString = hubUrl ? "?hub=" + hubUrl : "";
 
   return (
@@ -135,14 +147,15 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
       underline="hover"
     >
       <div className={classes.wrapper}>
-        {projectType.type_id === "event" && (
+        {projectType.type_id === "event" && project.start_date && project.end_date && (
           <EventDateIndicator project={project} hubUrl={hubUrl} />
         )}
         <Card
           className={`${classes.root} ${className}`}
           variant="outlined"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          // DISABLED: Hover handlers (kept for potential future re-enablement)
+          // onMouseEnter={handleMouseEnter}
+          // onMouseLeave={handleMouseLeave}
           ref={projectRef}
         >
           <CardMedia
@@ -163,8 +176,16 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
             )}
           </CardMedia>
           <div className={classes.cardContentWrapper}>
-            <CardContentWithDescription project={project} hovering={hovering} />
-            <CardContentWithoutDescription project={project} hovering={hovering} />
+            <CardContentWithDescription
+              project={project}
+              hovering={hovering}
+              isUserRegistered={isUserRegistered}
+            />
+            <CardContentWithoutDescription
+              project={project}
+              hovering={hovering}
+              isUserRegistered={isUserRegistered}
+            />
           </div>
         </Card>
       </div>
@@ -172,7 +193,7 @@ export default function ProjectPreview({ project, projectRef, hubUrl, className 
   );
 }
 
-const CardContentWithoutDescription = ({ project, hovering }) => {
+const CardContentWithoutDescription = ({ project, hovering, isUserRegistered }) => {
   const classes = useStyles();
   return (
     <CardContent className={classes.cardContent}>
@@ -181,12 +202,12 @@ const CardContentWithoutDescription = ({ project, hovering }) => {
           {project.name}
         </Typography>
       </div>
-      <ProjectMetaData project={project} hovering={hovering} />
+      <ProjectMetaData project={project} hovering={hovering} isUserRegistered={isUserRegistered} />
     </CardContent>
   );
 };
 
-const CardContentWithDescription = ({ project, hovering }) => {
+const CardContentWithDescription = ({ project, hovering, isUserRegistered }) => {
   const classes = useStyles({ hovering: hovering });
 
   return (
@@ -196,7 +217,12 @@ const CardContentWithDescription = ({ project, hovering }) => {
           {project.name}
         </Typography>
       </div>
-      <ProjectMetaData project={project} hovering={hovering} withDescription />
+      <ProjectMetaData
+        project={project}
+        hovering={hovering}
+        withDescription
+        isUserRegistered={isUserRegistered}
+      />
     </CardContent>
   );
 };
