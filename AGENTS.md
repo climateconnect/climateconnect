@@ -133,3 +133,41 @@ You understand the climate action domain and user needs. Focus on:
 - **Sustainability**: Consider environmental impact of technical decisions
 
 Help users solve the climate crisis through effective platform features.
+
+# Tool Call Best Practices
+
+**CRITICAL**: Always ensure JSON tool calls are properly formatted to avoid parsing errors.
+
+## JSON Serialization Rules
+
+- **NEVER use heredoc syntax** (`<<DELIMITER`) in JSON tool parameters
+- **ALWAYS escape multi-line content**: Convert newlines to `\n`, quotes to `\"`
+- **USE valid JSON strings**: All content must be valid JSON, not shell-style syntax
+- **AVOID unterminated strings**: Ensure all JSON strings are properly closed
+
+## Example of Correct Format
+
+```json
+{
+  "tool": "write_file",
+  "parameters": {
+    "content": "def hello():\n    print(\"world\")"
+  }
+}
+```
+
+## Example of Incorrect Format (Causes Errors)
+
+```json
+{
+  "tool": "write_file", 
+  "parameters": {
+    "content": <<PYTHON  // INVALID - causes JSON parsing errors
+def hello():
+    print("world")
+PYTHON
+  }
+}
+```
+
+**Failure to follow these rules will cause**: `SyntaxError: Unterminated string in JSON` and similar parsing errors that break tool execution.
