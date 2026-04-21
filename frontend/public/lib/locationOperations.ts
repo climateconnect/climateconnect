@@ -419,7 +419,7 @@ export function getLocationValue(values, locationKey) {
  * present for the filter to be considered active.
  */
 export async function getLocationFilteredBy(query) {
-  const osmRequired = ["osm_id", "osm_type", "osm_class"];
+  const osmRequired = getLocationFilterKeys(true);
   const hasOsmComposite = osmRequired.every((param) => Object.keys(query).includes(param));
   const hasPlaceId = Object.keys(query).includes("place_id");
 
