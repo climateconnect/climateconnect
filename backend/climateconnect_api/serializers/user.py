@@ -1,3 +1,7 @@
+from django.conf import settings
+from django.utils.translation import get_language
+from rest_framework import serializers
+
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.donation import Donation
 from climateconnect_api.models.user import UserProfileTranslation
@@ -9,13 +13,10 @@ from climateconnect_api.serializers.common import (
 from climateconnect_api.serializers.translation import UserProfileTranslationSerializer
 from climateconnect_api.utility.badges import get_badges, get_oldest_relevant_donation
 from climateconnect_api.utility.user import get_user_profile_biography
-from django.conf import settings
-from django.utils.translation import get_language
-from rest_framework import serializers
+from organization.serializers.sector import UserProfileSectorMappingSerializer
 from organization.utility.sector import (
     get_sectors_based_on_hub,
 )
-from organization.serializers.sector import UserProfileSectorMappingSerializer
 
 
 class PersonalProfileSerializer(serializers.ModelSerializer):
@@ -27,6 +28,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     availability = AvailabilitySerializer()
     skills = SkillSerializer(many=True)
     badges = serializers.SerializerMethodField()
+    registered_event_slugs = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -46,6 +48,7 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
             "has_logged_in",
             "website",
             "badges",
+            "registered_event_slugs",
         )
 
     def get_id(self, obj):
@@ -72,6 +75,31 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
             return serializer.data
         else:
             return None
+
+    def get_registered_event_slugs(self, obj):
+        """
+        Return a list of url_slugs for upcoming events the user is registered for.
+
+        Only includes active registrations (not cancelled) for events that have not
+        yet ended. This allows the frontend to display "Registered ✓" on browse
+        pages and similar project lists without additional API calls.
+        """
+        from django.utils import timezone
+
+        from organization.models import EventRegistration
+
+        # Query active registrations for upcoming events
+        registrations = (
+            EventRegistration.objects.filter(
+                user=obj.user,
+                cancelled_at__isnull=True,  # Active registrations only
+                registration_config__project__end_date__gte=timezone.now(),  # Upcoming events
+            )
+            .select_related("registration_config__project")
+            .values_list("registration_config__project__url_slug", flat=True)
+        )
+
+        return list(registrations)
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
