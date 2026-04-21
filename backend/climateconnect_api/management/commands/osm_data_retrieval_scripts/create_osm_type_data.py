@@ -1,12 +1,12 @@
-import requests
-
 # import time
 import csv
 from pathlib import Path
+
+import requests
 from tqdm import tqdm
 
 LOCATIONS_URL = "https://nominatim.openstreetmap.org/lookup"
-HEADERS = {"User-Agent": "DjangoProjekt/1.0 (<someone>@climateconnect.earth)"}
+HEADERS = {"User-Agent": "ClimateConnect/1.0 (contact@climateconnect.earth)"}
 
 
 def discover_osm_type(osm_ids: list) -> tuple[dict, set] | None:

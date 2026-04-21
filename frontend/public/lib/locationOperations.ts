@@ -6,7 +6,7 @@ const CUSTOM_NAME_MAPPINGS = {
 };
 
 //These countries are wrongly categorized as states in Nominatim. We want to show them as countries as this is more clear
-const MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"];
+const MAP_STATE_AS_COUNTRY_CODES = new Set(["gb"]);
 
 const buildLocationName = (firstPart: string, middlePart: string, lastPart: string): string => {
   const parts: string[] = [];
@@ -100,9 +100,11 @@ export function getDisplayLocationFromLocation(location): DisplayLocation {
   const middlePartSuffixes = ["town", "city", "county", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
   const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes);
-  const lastPart = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
-    ? location.address.state
-    : location.address.country;
+  const lastPart =
+    MAP_STATE_AS_COUNTRY_CODES.has(location?.address?.country_code?.toLowerCase()) &&
+    location?.address?.state
+      ? location.address.state
+      : location.address.country;
   let name = buildLocationName(firstPart, middlePart, lastPart);
   //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
   if (Object.keys(CUSTOM_NAME_MAPPINGS).includes(name)) {
@@ -162,9 +164,11 @@ export function getDisplayLocationFromExactLocation(location): DisplayLocation {
   const firstPart = isConcretePlace ? getPlaceSpecificName(location) : "";
   const middlePart = isConcretePlace ? buildStreetAddress(location) : "";
   const city = getCityOrCountyName(location.address);
-  const country = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
-    ? location.address.state
-    : location.address.country;
+  const country =
+    MAP_STATE_AS_COUNTRY_CODES.has(location?.address?.country_code?.toLowerCase()) &&
+    location?.address?.state
+      ? location.address.state
+      : location.address.country;
   const cityAndCountry = buildCityAndCountryPart(city, country, firstPart);
 
   let name = buildLocationName(firstPart, middlePart, cityAndCountry);
