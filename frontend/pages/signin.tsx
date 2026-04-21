@@ -11,8 +11,27 @@ import { Container, Link, Theme, useMediaQuery } from "@mui/material";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import Login from "../src/components/signup/Login";
+import { getFeatureTogglesFromRequest, isFeatureEnabled } from "../src/hooks/featureToggles";
 
 export async function getServerSideProps(ctx) {
+  // Check if AUTH_UNIFICATION is enabled and redirect to /login if so
+  const { featureToggles } = await getFeatureTogglesFromRequest(ctx.req);
+  if (isFeatureEnabled("AUTH_UNIFICATION", featureToggles)) {
+    // Build query string preserving all parameters
+    const queryParams = new URLSearchParams();
+    if (ctx.query.redirect) queryParams.set("redirect", ctx.query.redirect);
+    if (ctx.query.hub) queryParams.set("hub", ctx.query.hub);
+
+    const destination = `${getLocalePrefix(ctx.locale)}/login${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+    return {
+      redirect: {
+        destination,
+        statusCode: 307,
+      },
+    };
+  }
   const hubSlug = ctx.query.hub;
   const message = ctx.query.message;
   const message_type = ctx.query.message_type;
