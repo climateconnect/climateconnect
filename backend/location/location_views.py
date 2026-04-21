@@ -34,7 +34,9 @@ class GetLocationView(APIView):
 
         # OSM composite key has precedence over place_id.
         if osm_id is not None and osm_type is not None and osm_class:
-            location = _get_newest_location_by_osm_composite(osm_id, osm_type, osm_class)
+            location = _get_newest_location_by_osm_composite(
+                osm_id, osm_type, osm_class
+            )
 
         if location is None and osm_id is not None and osm_type is not None:
             # Backward-compatible fallback when osm_class is not available yet.
@@ -71,7 +73,9 @@ class GetLocationView(APIView):
         try:
             response = requests.get(url, headers=headers, timeout=5)
         except requests.RequestException as exc:
-            logger.error("Error calling location service for url %s: %s", url, exc, exc_info=True)
+            logger.error(
+                "Error calling location service for url %s: %s", url, exc, exc_info=True
+            )
             return Response(
                 {"message": "Upstream location service is unavailable."},
                 status=status.HTTP_502_BAD_GATEWAY,
@@ -92,7 +96,9 @@ class GetLocationView(APIView):
         try:
             data = json.loads(response.text)
         except ValueError:
-            logger.error("Invalid JSON from location service for url %s", url, exc_info=True)
+            logger.error(
+                "Invalid JSON from location service for url %s", url, exc_info=True
+            )
             return Response(
                 {"message": "Invalid response from upstream location service."},
                 status=status.HTTP_502_BAD_GATEWAY,

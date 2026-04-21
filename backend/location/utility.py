@@ -372,7 +372,7 @@ def get_middle_part(address, order, suffixes):
 
 def get_location_with_range(query_params):
     filter_place_id = query_params.get("place_id")
-    filter_osm_type = query_params.get("osm_type") 
+    filter_osm_type = query_params.get("osm_type")
     filter_osm_id = query_params.get("osm_id")
     filter_osm_class = query_params.get("osm_class")
 
@@ -388,11 +388,15 @@ def get_location_with_range(query_params):
             osm_class=filter_osm_class,
         )
 
-    if not location and _has_non_empty_value(filter_osm_id) and _has_non_empty_value(
-        filter_osm_type
+    if (
+        not location
+        and _has_non_empty_value(filter_osm_id)
+        and _has_non_empty_value(filter_osm_type)
     ):
         # Backward-compatible fallback for requests without osm_class.
-        location = _get_newest_location_by_osm_id_and_type(filter_osm_id, filter_osm_type)
+        location = _get_newest_location_by_osm_id_and_type(
+            filter_osm_id, filter_osm_type
+        )
 
     if not location and _has_non_empty_value(filter_place_id):
         logger.warning(
