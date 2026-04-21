@@ -7,3 +7,8 @@ class CheckEmailSerializer(serializers.Serializer):
 
 class RequestTokenSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+
+
+class VerifyTokenSerializer(serializers.Serializer):
+    session_key = serializers.CharField(required=True)
+    code = serializers.CharField(required=True)

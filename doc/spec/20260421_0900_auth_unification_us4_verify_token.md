@@ -1,6 +1,6 @@
 # US-4: `POST /api/auth/verify-token` Endpoint
 
-**Status**: DRAFT  
+**Status**: IMPLEMENTED
 **Type**: Tech Enabler — backend endpoint  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Date created**: 2026-04-21 09:00  
@@ -19,22 +19,22 @@ The endpoint must also serve the **new-user account verification** use case (US-
 
 ## Acceptance Criteria
 
-- [ ] `POST /api/auth/verify-token` accepts `{ session_key, code }` and processes the request.
-- [ ] On success: returns HTTP 200 with `{ token, expiry, user }`, where `token` and `expiry` are the Knox `AuthToken` values and `user` contains the authenticated user data (consistent with the shape returned by `POST /login/`).
-- [ ] `session_key` is looked up in `LoginToken`. If no matching record exists, returns HTTP 401.
-- [ ] Validation checks are enforced in this order:
+- [x] `POST /api/auth/verify-token` accepts `{ session_key, code }` and processes the request.
+- [x] On success: returns HTTP 200 with `{ token, expiry, user }`, where `token` and `expiry` are the Knox `AuthToken` values and `user` contains the authenticated user data (consistent with the shape returned by `POST /login/`).
+- [x] `session_key` is looked up in `LoginToken`. If no matching record exists, returns HTTP 401.
+- [x] Validation checks are enforced in this order:
   - Token is not expired (`expires_at > now`). Failure → HTTP 401, outcome `expired`.
   - Token is not already used (`used_at IS NULL`). Failure → HTTP 401, outcome `failed` (treat as an invalid attempt; no new state transition needed beyond rejecting it).
   - `attempt_count < 5`. Failure → HTTP 401, outcome `exhausted` (token locked; do not increment further).
   - Code hash matches `token_hash` using constant-time comparison (`hmac.compare_digest`). Failure → HTTP 401, outcome `failed`; `attempt_count` incremented; if the increment brings `attempt_count` to 5, outcome is `exhausted`.
-- [ ] On a failed code comparison: `attempt_count` is incremented atomically (use `F()` expression to avoid race conditions). The response body includes the number of attempts remaining (e.g. `{ "detail": "Invalid code. 3 attempts remaining." }`), or a locked message when exhausted (`"detail": "Too many failed attempts. Please request a new code."`).
-- [ ] On success: `used_at` is set to `now` before the Knox token is issued. This is the authoritative single-use guard.
-- [ ] On success for a new user (account not yet verified — `UserProfile.is_profile_verified = False`): the endpoint marks the profile verified (`is_profile_verified = True`) before issuing the Knox token. No separate verification email step is needed.
-- [ ] Knox token is issued via `AuthToken.objects.create(user)` (same mechanism as `POST /login/`). The raw token and expiry are returned to the frontend.
-- [ ] `LoginAuditLog` is written on **every** call (all outcomes: `verified`, `failed`, `expired`, `exhausted`). IP address anonymised using the `anonymise_ip()` utility from `auth_app/utility/ip.py` (established in US-3).
-- [ ] Endpoint requires no authentication (`AllowAny`).
-- [ ] Both `session_key` and `code` are required fields. Returns HTTP 400 for missing or malformed input.
-- [ ] Tests cover all scenarios listed in the Steps section.
+- [x] On a failed code comparison: `attempt_count` is incremented atomically (use `F()` expression to avoid race conditions). The response body includes the number of attempts remaining (e.g. `{ "detail": "Invalid code. 3 attempts remaining." }`), or a locked message when exhausted (`"detail": "Too many failed attempts. Please request a new code."`).
+- [x] On success: `used_at` is set to `now` before the Knox token is issued. This is the authoritative single-use guard.
+- [x] On success for a new user (account not yet verified — `UserProfile.is_profile_verified = False`): the endpoint marks the profile verified (`is_profile_verified = True`) before issuing the Knox token. No separate verification email step is needed.
+- [x] Knox token is issued via `AuthToken.objects.create(user)` (same mechanism as `POST /login/`). The raw token and expiry are returned to the frontend.
+- [x] `LoginAuditLog` is written on **every** call (all outcomes: `verified`, `failed`, `expired`, `exhausted`). IP address anonymised using the `anonymise_ip()` utility from `auth_app/utility/ip.py` (established in US-3).
+- [x] Endpoint requires no authentication (`AllowAny`).
+- [x] Both `session_key` and `code` are required fields. Returns HTTP 400 for missing or malformed input.
+- [x] Tests cover all scenarios listed in the Steps section. (10/11 pass; concurrent duplicate-request test is pending.)
 
 ---
 
@@ -207,4 +207,5 @@ For the `is_profile_verified` test: assert the field value on the `UserProfile` 
 ## Log
 
 - 2026-04-21 09:00 — Spec created. Core OTP verification endpoint; issues Knox token on success. Depends on US-3 for `LoginToken` records and `anonymise_ip()` utility.
+- 2026-04-21 — Implemented. `VerifyTokenSerializer`, `VerifyTokenView`, URL registered. 10/11 tests pass (concurrent duplicate-request test pending). `doc/api-documentation.md` updated with full endpoint reference.
 
