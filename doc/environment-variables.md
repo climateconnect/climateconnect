@@ -253,6 +253,7 @@ All email template variables follow the pattern: `{TEMPLATE_NAME}_TEMPLATE_ID[_D
 - `EMAIL_VERIFICATION_TEMPLATE_ID` - Email verification on signup
 - `NEW_EMAIL_VERIFICATION_TEMPLATE_ID` - Email change verification
 - `RESET_PASSWORD_TEMPLATE_ID` - Password reset
+- `LOGIN_CODE_EMAIL_TEMPLATE_ID` - OTP login code (passwordless flow). **Default: blank.** When blank, no email is sent and the raw 6-digit code is logged to the Celery worker console at `WARNING` level (`[LOGIN CODE] No Mailjet template configured. OTP for <email>: <code>`). This is intentional for local development — no Mailjet account needed. Set this to a real template ID in staging/production.
 - `FEEDBACK_TEMPLATE_ID` - User feedback submission
 - `PRIVATE_MESSAGE_TEMPLATE_ID` - Private chat message notification
 - `GROUP_MESSAGE_TEMPLATE_ID` - Group chat message notification
