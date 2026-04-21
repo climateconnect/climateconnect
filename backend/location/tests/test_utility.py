@@ -1,4 +1,4 @@
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.test import TestCase, override_settings
 
 from location.models import Location
@@ -315,17 +315,18 @@ class TestGetLocation(TestCase):
 class TestGetLocationWithRange(TestCase):
     """Tests for get_location_with_range, specifically the newest-record selection."""
 
-    def _make_location(self, name, country, place_id, osm_id=62422):
+    def _make_location(self, name, country, place_id, osm_id=62422, osm_type="W", multi_polygon=None):
         """Helper to create a Location with a centre_point geometry."""
         return Location.objects.create(
             name=name,
             city="Berlin",
             country=country,
             osm_id=osm_id,
-            osm_type="W",
+            osm_type=osm_type,
             osm_class="boundary",
             place_id=place_id,
             centre_point=Point(13.4050, 52.5200),
+            multi_polygon=multi_polygon,
         )
 
     @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
@@ -362,3 +363,24 @@ class TestGetLocationWithRange(TestCase):
         )
 
         self.assertEqual(result["country"], location.country)
+
+    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    def test_place_id_only_relation_uses_multi_polygon(self):
+        """When resolved via place_id and the location is a Relation with a
+        multi_polygon, get_location_with_range must use multi_polygon (not
+        centre_point) even though osm_type was not in the query params."""
+        poly = Polygon(((0, 0), (1, 0), (1, 1), (0, 1), (0, 0)))
+        multi_poly = MultiPolygon(poly)
+        self._make_location(
+            "Berlin Relation",
+            "Germany",
+            place_id=777,
+            osm_type="R",
+            multi_polygon=multi_poly,
+        )
+
+        result = get_location_with_range({"place_id": 777})
+
+        # The returned geometry must be the buffered multi_polygon, not a Point.
+        from django.contrib.gis.geos import MultiPolygon as MP
+        self.assertIsInstance(result["location"], MP)

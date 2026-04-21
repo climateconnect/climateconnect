@@ -465,7 +465,10 @@ def get_location_with_range(query_params):
             else location.centre_point
         )
     else:
-        is_area = normalized_osm_type == "R" and location.multi_polygon is not None
+        # For place_id-only requests normalized_osm_type may be None;
+        # fall back to the resolved location's own osm_type.
+        effective_osm_type = normalized_osm_type or location.osm_type
+        is_area = effective_osm_type == "R" and location.multi_polygon is not None
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)
             if is_area

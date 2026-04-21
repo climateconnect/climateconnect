@@ -411,15 +411,17 @@ export function getLocationValue(values, locationKey) {
 /**
  * When filtering by location, the URL stores identifiers and not full location data.
  * We resolve it from the backend using OSM-first lookup and place_id fallback.
+ * Either all three OSM identifiers (osm_id, osm_type, osm_class) OR a place_id must be
+ * present for the filter to be considered active.
  */
 export async function getLocationFilteredBy(query) {
-  const required_params = getLocationFilterKeys(true);
-  //Return no if we didn't filter by any location
-  for (const param of required_params) {
-    if (!Object.keys(query).includes(param)) {
-      console.log(`${param} is missing!`);
-      return null;
-    }
+  const osmRequired = ["osm_id", "osm_type", "osm_class"];
+  const hasOsmComposite = osmRequired.every((param) => Object.keys(query).includes(param));
+  const hasPlaceId = Object.keys(query).includes("place_id");
+
+  // Return null if neither identifier set is present — not filtering by location.
+  if (!hasOsmComposite && !hasPlaceId) {
+    return null;
   }
   const url = `/api/get_location/`;
   const payload = {
