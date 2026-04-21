@@ -1,6 +1,6 @@
 # US-2: `LoginToken`, `LoginAuditLog` Models + `UserProfile.auth_method`
 
-**Status**: READY FOR IMPLEMENTATION  
+**Status**: DONE  
 **Type**: Tech Enabler — pure data layer, no endpoints  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Date created**: 2026-04-20 12:15  
