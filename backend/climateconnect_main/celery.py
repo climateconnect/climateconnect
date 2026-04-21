@@ -36,4 +36,12 @@ app.conf.beat_schedule = {
         "task": "climateconnect_api.tasks.schedule_automated_update_to_project_ranks",
         "schedule": crontab(hour=2, minute=0),  # 3 am Central European Time is 2 am UTC
     },
+    "cleanup_login_tokens": {
+        "task": "auth_app.tasks.cleanup_login_tokens",
+        "schedule": crontab(minute="*/30"),
+    },
+    "cleanup_login_audit_logs": {
+        "task": "auth_app.tasks.cleanup_login_audit_logs",
+        "schedule": crontab(hour=3, minute=0),
+    },
 }

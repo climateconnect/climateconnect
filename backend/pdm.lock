@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:f0030f2554896492ebef3d8ac38c0df6151f566b8d2769b505aa8b2655cc9cf6"
+content_hash = "sha256:546d6c6f5fec89d25f605037b2a91068d58774464c3eb8fb9903e780e112b588"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -964,6 +964,16 @@ dependencies = [
 files = [
     {file = "django_filter-25.1-py3-none-any.whl", hash = "sha256:4fa48677cf5857b9b1347fed23e355ea792464e0fe07244d1fdfb8a806215b80"},
     {file = "django_filter-25.1.tar.gz", hash = "sha256:1ec9eef48fa8da1c0ac9b411744b16c3f4c31176c867886e4c48da369c407153"},
+]
+
+[[package]]
+name = "django-ratelimit"
+version = "4.1.0"
+requires_python = ">=3.7"
+summary = "Cache-based rate-limiting for Django."
+files = [
+    {file = "django-ratelimit-4.1.0.tar.gz", hash = "sha256:555943b283045b917ad59f196829530d63be2a39adb72788d985b90c81ba808b"},
+    {file = "django_ratelimit-4.1.0-py2.py3-none-any.whl", hash = "sha256:d047a31cf94d83ef1465d7543ca66c6fc16695559b5f8d814d1b51df15110b92"},
 ]
 
 [[package]]
