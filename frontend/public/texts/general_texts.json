@@ -168,8 +168,8 @@
     "de": "Teilen"
   },
   "share_a_project": {
-    "en": "Share",
-    "de": "Teilen"
+    "en": "Create",
+    "de": "Erstellen"
   },
   "inbox": {
     "en": "Inbox",
@@ -620,8 +620,8 @@
     "de": "Wähle 1-3 Themenfelder, die zu deinem Projekt passen"
   },
   "project_details": {
-    "en": "Project Details",
-    "de": "Projektdetails"
+    "en": "Details",
+    "de": "Details"
   },
   "add_your_team": {
     "en": "Add your team",

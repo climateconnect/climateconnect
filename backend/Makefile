@@ -26,9 +26,26 @@ install:
 	pdm install
 
 test:
-	python3 manage.py test --keepdb
+	python3 manage.py test --keepdb --noinput
 test-clean:
 	python3 manage.py test --noinput
+
+coverage:
+	$(info )
+	$(info -- Running tests with coverage --)
+	$(info )
+	coverage run manage.py test --keepdb --noinput
+	coverage report
+
+coverage-html:
+	$(info )
+	$(info -- Running tests with coverage (HTML report) --)
+	$(info )
+	coverage run manage.py test --keepdb --noinput
+	coverage html
+	$(info )
+	$(info -- Report written to htmlcov/index.html --)
+	$(info )
 
 docker:
 	docker-compose up -d

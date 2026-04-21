@@ -155,6 +155,8 @@ export default function ProjectContent({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
   hubUrl,
+  eventRegistration,
+  onEventRegistrationUpdated,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { locale } = useContext(UserContext);
@@ -209,6 +211,8 @@ export default function ProjectContent({
             requestedToJoinProject={requestedToJoinProject}
             leaveProject={leaveProject}
             hubUrl={hubUrl}
+            eventRegistration={eventRegistration}
+            onEventRegistrationUpdated={onEventRegistrationUpdated}
           />
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>

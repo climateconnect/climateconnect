@@ -150,9 +150,7 @@ export default function GenericDialog({
             <CloseIcon />
           </IconButton>
         )}
-        <Typography component="h2" className={`${titleTextClassName} ${classes.titleText}`}>
-          {title}
-        </Typography>
+        <Typography className={`${titleTextClassName} ${classes.titleText}`}>{title}</Typography>
         {useApplyButton && applyText && !showApplyAtBottom && (
           <>
             {applyIcon && isSmallScreen ? (

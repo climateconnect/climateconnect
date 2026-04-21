@@ -1,37 +1,43 @@
 import logging
 from typing import Dict, Union
 
+import pandas as pd
+from django.contrib.auth.models import User
+from django.db.models import Q
+
+from climateconnect_api.models import Role
 from climateconnect_api.models.language import Language
+from climateconnect_api.utility.common import create_unique_slug
 from climateconnect_api.utility.translation import get_translations
 from climateconnect_main.utility.general import get_image_from_data_url
+from hubs.models.hub import Hub
 from location.utility import get_location
-from climateconnect_api.utility.common import create_unique_slug
-
-from organization.models import Project, ProjectMember, Organization
+from organization.models import Organization, Project, ProjectMember
 from organization.models.tags import ProjectTags
 from organization.models.type import ProjectTypesChoices
-from hubs.models.hub import Hub
-from django.contrib.auth.models import User
-
-
-from django.db.models import Q
-from climateconnect_api.models import Role
-
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 
 
 def create_new_project(data: Dict, source_language: Language) -> Project:
-    project_type = ProjectTypesChoices[data["project_type"]["type_id"]]
-    project = Project.objects.create(
-        name=data["name"],
-        short_description=data["short_description"],
-        collaborators_welcome=data["collaborators_welcome"],
-        status_id=data["status"],
-        project_type=project_type,
-    )
+    project_kwargs = {
+        "name": data["name"],
+    }
+
+    if "collaborators_welcome" in data:
+        project_kwargs["collaborators_welcome"] = data["collaborators_welcome"]
+    if "status" in data:
+        project_kwargs["status_id"] = data["status"]
+    project_type_data = data.get("project_type")
+    if project_type_data and "type_id" in project_type_data:
+        project_kwargs["project_type"] = ProjectTypesChoices[
+            project_type_data["type_id"]
+        ]
+
+    project = Project.objects.create(**project_kwargs)
     # Add all non required parameters if they exists in the request.
+    if "short_description" in data:
+        project.short_description = data["short_description"]
     if "start_date" in data:
         project.start_date = data["start_date"]
     if "loc" in data:
@@ -58,11 +64,14 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
     if "additional_loc_info" in data:
         project.additional_loc_info = data["additional_loc_info"]
 
-    hub = Hub.objects.filter(url_slug=data["hubName"]).first()
-    if hub:
-        project.related_hubs.add(hub)
+    hub_name = data.get("hubName")
+    if hub_name:
+        hub = Hub.objects.filter(url_slug=hub_name).first()
+        if hub:
+            project.related_hubs.add(hub)
 
-    project.language = source_language
+    if source_language:
+        project.language = source_language
 
     project.url_slug = create_unique_slug(project.name, project.id, Project.objects)
 
@@ -126,7 +135,9 @@ def get_projecttag_name(tag: ProjectTags, language_code: str) -> str:
 
 
 def get_project_translations(data: Dict):
-    texts = {"name": data["name"], "short_description": data["short_description"]}
+    texts = {"name": data["name"]}
+    if "short_description" in data:
+        texts["short_description"] = data["short_description"]
     if "description" in data:
         texts["description"] = data["description"]
     try:

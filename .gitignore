@@ -43,5 +43,6 @@ frontend/devlink/
 
 /CLAUDE.md
 .kilocode/
+.kilo/
 
 private*

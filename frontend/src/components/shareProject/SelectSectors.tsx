@@ -76,9 +76,9 @@ export default function SelectSectors({
         </Container>
       </div>
       <NavigationButtons
-        className={classes.block}
         onClickPreviousStep={onClickPreviousStep}
         onClickNextStep={onClickNextStep}
+        sticky
       />
     </Container>
   );

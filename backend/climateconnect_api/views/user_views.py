@@ -48,10 +48,13 @@ from ideas.models.support import IdeaSupporter
 from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
 from location.models import Location
 from location.utility import get_location, get_location_with_range
-from organization.models import Sector, UserProfileSectorMapping
+from organization.models import Project, Sector, UserProfileSectorMapping
 from organization.models.members import OrganizationMember, ProjectMember
 from organization.serializers.organization import OrganizationsFromOrganizationMember
-from organization.serializers.project import ProjectFromProjectMemberSerializer
+from organization.serializers.project import (
+    ProjectFromProjectMemberSerializer,
+    ProjectStubSerializer,
+)
 from organization.utility.sector import sanitize_sector_inputs
 
 logger = logging.getLogger(__name__)
@@ -431,6 +434,43 @@ class ListMemberOrganizationsView(ListAPIView):
         ).order_by("id")
 
 
+class ListMemberRegisteredEventsView(ListAPIView):
+    """
+    GET /api/members/me/registered-events/
+
+    Returns upcoming events (start_date >= today) that the authenticated user
+    has an active registration for, ordered by start_date ascending.
+    Auth required (401 if unauthenticated). Page size: 12 (MembersPagination).
+    Only returns events for the currently authenticated user.
+    """
+
+    permission_classes = [IsAuthenticated]
+    pagination_class = MembersPagination
+    serializer_class = ProjectStubSerializer
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        return (
+            Project.objects.filter(
+                registration_config__registrations__user=self.request.user,
+                registration_config__registrations__cancelled_at__isnull=True,
+                start_date__isnull=False,
+                start_date__date__gte=today,
+            )
+            .select_related("loc", "language", "status", "registration_config")
+            .prefetch_related(
+                "tag_project",
+                "project_liked",
+                "project_comment",
+                "project_collaborator",
+                "project_parent",
+                "project_sector_mapping",
+            )
+            .order_by("start_date")
+            .distinct()
+        )
+
+
 class EditUserProfile(APIView):
     permission_classes = [UserPermission]
 
@@ -574,8 +614,6 @@ class EditUserProfile(APIView):
                                     sector_key
                                 )
                             )
-
-                pass
 
         user_profile.save()
 

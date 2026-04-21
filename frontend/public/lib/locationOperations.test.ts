@@ -246,6 +246,7 @@ describe("getNameFromLocation", () => {
       address: {
         country: "United Kingdom",
         state: "Scotland",
+        country_code: "gb",
       },
     };
 

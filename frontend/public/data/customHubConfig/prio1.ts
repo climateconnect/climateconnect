@@ -1,6 +1,7 @@
 import { Link } from "../customHubtypes";
-import { EnPrio1Welcome, DePrio1Willkommen } from "../../../devlink";
 import { getSharedLinks, getStaticLinks, StaticLinkConfig } from "./customHubLinks";
+import { EnPrio1Welcome } from "../../../devlink/EnPrio1Welcome";
+import { DePrio1Willkommen } from "../../../devlink/DePrio1Willkommen";
 
 const PRIO1_BASE_URL = "https://prio1-klima.net";
 

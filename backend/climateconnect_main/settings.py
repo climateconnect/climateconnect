@@ -12,16 +12,17 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import ssl
+import sys
 from datetime import timedelta
 
-from dotenv import find_dotenv, load_dotenv
-
-from climateconnect_main.utility.general import get_allowed_hosts
+import django.conf
 import sentry_sdk
+from dotenv import find_dotenv, load_dotenv
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
-import django.conf
+
+from climateconnect_main.utility.general import get_allowed_hosts
 
 load_dotenv(find_dotenv(".backend_env"))
 
@@ -63,6 +64,7 @@ CUSTOM_APPS = [
     "ideas",
     "climate_match",
     "feature_toggles",
+    "auth_app",
 ]
 
 LIBRARY_APPS = [
@@ -235,7 +237,7 @@ STATIC_URL = (
 STATIC_ROOT = (
     env("STATIC_ROOT") if env("ENVIRONMENT") in ("development", "test") else "static/"
 )
-MEDIA_ROOT = env("MEDIA_ROOT")
+MEDIA_ROOT = env("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
@@ -301,6 +303,26 @@ ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID = env("ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_
 ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID_DE = env(
     "ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID_DE"
 )
+EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID = env(
+    "EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID", ""
+)
+EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE = env(
+    "EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE", ""
+)
+EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID = env("EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID", "")
+EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE = env(
+    "EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE", ""
+)
+ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID = env("ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID", "")
+ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE = env(
+    "ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE", ""
+)
+ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID = env(
+    "ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID", ""
+)
+ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID_DE = env(
+    "ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID_DE", ""
+)
 
 FRONTEND_URL = env("FRONTEND_URL", "")
 LOCATION_SERVICE_BASE_URL = env("LOCATION_SERVICE_BASE_URL")
@@ -329,7 +351,12 @@ CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 if env("ENVIRONMENT") == "production":
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
 CELERY_TIMEZONE = "UTC"
-LOCALES = ["en", "de"]
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+NOMINATIM_LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
+CUSTOM_USER_AGENT = "ClimateConnect/1.0 (contact@climateconnect.earth)"
 
 LOCALE_PATHS = [
     BASE_DIR + "/translations",
@@ -343,6 +370,9 @@ LOGGING = {
     "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
     "loggers": {"django": {"handlers": ["console"], "level": "INFO"}},
 }
+
+# Custom test runner to set up global test data
+TEST_RUNNER = "climateconnect_main.test_runner.ClimateConnectTestRunner"
 
 # Setting up cache
 CACHES = {
@@ -386,3 +416,20 @@ sentry_sdk.init(
 CLIMATE_CONNECT_CONTACT_EMAIL = env(
     "CLIMATE_CONNECT_CONTACT_EMAIL", "contact@climateconnect.earth"
 )
+# --- GLOBAL TEST SETTINGS ---
+# This ensures that tests don't require a running Redis/RabbitMQ broker
+if "test" in sys.argv or env("ENVIRONMENT") == "test":
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
+
+# --- END GLOBAL TEST SETTINGS ---

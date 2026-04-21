@@ -1,9 +1,11 @@
-from django.contrib.gis.db import models
+import logging
 
+from django.contrib.gis.db import models
 from climateconnect_api.models.language import Language
 
+logger = logging.getLogger(__name__)
 
-# Create your models here.
+
 class Location(models.Model):
     name = models.CharField(
         help_text="Points to the (shortened) name of the location",
@@ -127,6 +129,7 @@ class Location(models.Model):
             models.Index(fields=["osm_id", "osm_type", "osm_class"], name="location_loc_osm_id_b7b8a5_idx"),
             models.Index(fields=["place_id"], name="location_place_id_idx"),
         ]
+        app_label = "location"
 
     def __str__(self):
         return "%s" % (self.name)
@@ -185,6 +188,7 @@ class LocationTranslation(models.Model):
         verbose_name = "Location translation"
         verbose_name_plural = "Location translations"
         unique_together = [["location", "language"]]
+        app_label = "location"
 
     def __str__(self):
         return "{}: {} of location {}".format(

@@ -2,10 +2,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Badge, useMediaQuery, IconButton } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "universal-cookie";
+import dayjs from "dayjs";
 
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import EditIcon from "@mui/icons-material/Edit";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 import UserContext from "../../context/UserContext";
 import ROLE_TYPES from "../../../../public/data/role_types";
@@ -15,6 +17,8 @@ import ProjectRequestersDialog from "../../dialogs/ProjectRequestersDialog";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import JoinButton from "./JoinButton";
 import theme from "../../../themes/theme";
+import { useFeatureToggles } from "../../featureToggle";
+import EditEventRegistrationModal from "../EditEventRegistrationModal";
 
 const useStyles = makeStyles((theme) => ({
   memberButtons: {
@@ -72,6 +76,8 @@ export default function ProjectContentSideButtons({
   requestedToJoinProject,
   leaveProject,
   hubUrl,
+  eventRegistration,
+  onEventRegistrationUpdated,
 }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
@@ -81,6 +87,10 @@ export default function ProjectContentSideButtons({
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("md"));
 
+  // Feature toggle
+  const { isEnabled } = useFeatureToggles();
+  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
+
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
@@ -88,6 +98,17 @@ export default function ProjectContentSideButtons({
   const hasAdminPermissions = [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(
     user_permission
   );
+
+  const [editRegistrationOpen, setEditRegistrationOpen] = useState(false);
+
+  const isEventEnded = project.end_date ? dayjs(project.end_date).isBefore(dayjs()) : false;
+
+  const showRegistrationButtons =
+    isEventRegistrationEnabled &&
+    project.project_type?.type_id === "event" &&
+    eventRegistration != null &&
+    hasAdminPermissions &&
+    !isEventEnded;
 
   const [requesters, setRequesters] = useState([]);
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
@@ -137,6 +158,7 @@ export default function ProjectContentSideButtons({
             className={`${classes.editProjectButton} ${classes.showRequestsButton}`}
             variant="contained"
             onClick={toggleShowRequests}
+            fullWidth
           >
             {texts.review_join_requests}
           </Button>
@@ -164,6 +186,33 @@ export default function ProjectContentSideButtons({
           href={getLocalePrefix(locale) + "/editProject/" + project.url_slug + queryString}
         >
           {project.is_draft ? texts.edit_draft : texts.edit}
+        </Button>
+      );
+    }
+  };
+
+  const EditRegistrationButton = () => {
+    if (isNarrowScreen) {
+      return (
+        <IconButton
+          size="large"
+          className={classes.iconButton}
+          onClick={() => setEditRegistrationOpen(true)}
+          aria-label={texts.edit_registration_settings}
+        >
+          <SettingsIcon />
+        </IconButton>
+      );
+    } else {
+      return (
+        <Button
+          className={classes.editProjectButton}
+          variant="outlined"
+          color="primary"
+          onClick={() => setEditRegistrationOpen(true)}
+          aria-label={texts.edit_registration_settings}
+        >
+          {texts.edit_registration_settings}
         </Button>
       );
     }
@@ -198,6 +247,7 @@ export default function ProjectContentSideButtons({
               {/* Badge is dynamic based on the number of membership requesters */}
               <ShowRequestsButton />
               <EditProjectButton isCustomHub={isCustomHub} />
+              {showRegistrationButtons && <EditRegistrationButton />}
             </>
           )}
           {/* Otherwise if not a project admin, just show the Leave Project button */}
@@ -228,6 +278,17 @@ export default function ProjectContentSideButtons({
         loading={!requestersRetrieved}
         user_permission={user_permission}
       />
+
+      {/* Edit event registration settings modal */}
+      {showRegistrationButtons && eventRegistration && (
+        <EditEventRegistrationModal
+          open={editRegistrationOpen}
+          onClose={() => setEditRegistrationOpen(false)}
+          onSaved={onEventRegistrationUpdated}
+          project={project}
+          eventRegistration={eventRegistration}
+        />
+      )}
     </div>
   );
 }
