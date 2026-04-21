@@ -49,6 +49,18 @@ def _get_newest_location_by_osm_composite(osm_id, osm_type, osm_class):
     )
 
 
+def _get_newest_location_by_osm_id_and_type(osm_id, osm_type):
+    """Backward-compatible fallback when osm_class is not yet available."""
+    return (
+        Location.objects.filter(
+            osm_id=osm_id,
+            osm_type=_osm_type_char(osm_type),
+        )
+        .order_by("-id")
+        .first()
+    )
+
+
 def _get_newest_location_by_place_id(place_id):
     if not _has_non_empty_value(place_id):
         return None
@@ -380,14 +392,7 @@ def get_location_with_range(query_params):
         filter_osm_type
     ):
         # Backward-compatible fallback for requests without osm_class.
-        location = (
-            Location.objects.filter(
-                osm_id=filter_osm_id,
-                osm_type=_osm_type_char(filter_osm_type),
-            )
-            .order_by("-id")
-            .first()
-        )
+        location = _get_newest_location_by_osm_id_and_type(filter_osm_id, filter_osm_type)
 
     if not location and _has_non_empty_value(filter_place_id):
         logger.warning(
@@ -419,9 +424,24 @@ def get_location_with_range(query_params):
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         }
-        response = requests.get(url, headers=headers)
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+        except requests.RequestException as exc:
+            raise ValidationError(
+                f"Error while fetching location from upstream service: {exc}"
+            ) from exc
         if response.status_code == 200:
-            location_object = json.loads(response.text)[0]
+            try:
+                data = json.loads(response.text)
+            except ValueError as exc:
+                raise ValidationError(
+                    "Invalid JSON response from upstream location service."
+                ) from exc
+            if not isinstance(data, list) or not data:
+                raise ValidationError(
+                    f"Location not found in upstream service for osm_id={filter_osm_id}, osm_type={normalized_osm_type}"
+                )
+            location_object = data[0]
         else:
             logger.error(
                 "Error while fetching location: " + "\nresponse:" + response.text
@@ -438,15 +458,17 @@ def get_location_with_range(query_params):
             location_object = query_params.get("location")
 
         location = get_location(format_location(location_object, False))
+        is_area = normalized_osm_type == "R" and location.multi_polygon is not None
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)
-            if normalized_osm_type == "R" and location.multi_polygon is not None
+            if is_area
             else location.centre_point
         )
     else:
+        is_area = normalized_osm_type == "R" and location.multi_polygon is not None
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)
-            if normalized_osm_type == "R" and location.multi_polygon is not None
+            if is_area
             else location.centre_point
         )
     radius = 0

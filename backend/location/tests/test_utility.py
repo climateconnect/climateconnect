@@ -350,3 +350,15 @@ class TestGetLocationWithRange(TestCase):
         result = get_location_with_range({"place_id": 999})
 
         self.assertEqual(result["country"], location.country)
+
+    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
+    def test_osm_id_and_type_fallback_without_osm_class(self):
+        """When osm_id and osm_type are provided but osm_class is absent,
+        the intermediate fallback must still resolve the correct location."""
+        location = self._make_location("Berlin", "Germany", place_id=200)
+
+        result = get_location_with_range(
+            {"osm_id": 62422, "osm_type": "way"}
+        )
+
+        self.assertEqual(result["country"], location.country)

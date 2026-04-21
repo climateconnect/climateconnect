@@ -8,9 +8,15 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from location.models import Location
 from location.serializers import LocationStubSerializer
-from location.utility import format_location, get_location, _osm_type_char
+from location.utility import (
+    _get_newest_location_by_osm_composite,
+    _get_newest_location_by_osm_id_and_type,
+    _get_newest_location_by_place_id,
+    _osm_type_char,
+    format_location,
+    get_location,
+)
 
 logger = logging.getLogger("django")
 
@@ -27,41 +33,25 @@ class GetLocationView(APIView):
         location = None
 
         # OSM composite key has precedence over place_id.
-        osm_lookup_type = osm_type 
-        osm_type_char = _osm_type_char(osm_lookup_type)
-        if osm_id is not None and osm_type_char and osm_class:
-            location = (
-                Location.objects.filter(
-                    osm_id=osm_id,
-                    osm_type=osm_type_char,
-                    osm_class=osm_class,
-                )
-                .order_by("-id")
-                .first()
-            )
+        if osm_id is not None and osm_type is not None and osm_class:
+            location = _get_newest_location_by_osm_composite(osm_id, osm_type, osm_class)
 
-        if location is None and osm_id is not None and osm_type_char:
+        if location is None and osm_id is not None and osm_type is not None:
             # Backward-compatible fallback when osm_class is not available yet.
-            location = (
-                Location.objects.filter(
-                    osm_id=osm_id,
-                    osm_type=osm_type_char,
-                )
-                .order_by("-id")
-                .first()
-            )
+            location = _get_newest_location_by_osm_id_and_type(osm_id, osm_type)
 
         if location is None and place_id is not None:
             logger.warning(
                 "Using deprecated place_id lookup in /api/get_location/. place_id=%s",
                 place_id,
             )
-            location = Location.objects.filter(place_id=place_id).order_by("-id").first()
+            location = _get_newest_location_by_place_id(place_id)
 
         if location is not None:
             serializer = LocationStubSerializer(location)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
+        osm_type_char = _osm_type_char(osm_type)
         if osm_id is None or not osm_type_char:
             return Response(
                 {
