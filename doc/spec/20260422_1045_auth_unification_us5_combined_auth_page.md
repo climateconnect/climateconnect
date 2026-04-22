@@ -1,6 +1,6 @@
 # US-5: Combined Auth Page — Email Entry Step
 
-**Status**: DRAFT  
+**Status**: IMPLEMENTED  
 **Type**: Frontend — new page  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Date created**: 2026-04-22  
