@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -178,7 +178,7 @@ export default function ProjectPage({
   const [projectTypes, setProjectTypes] = useState([]);
 
   // Get registered event slugs from user profile for showing "Registered ✓" status
-  const registeredEventSlugs = React.useMemo(() => {
+  const registeredEventSlugs = useMemo(() => {
     return new Set(user?.registered_event_slugs || []);
   }, [user?.registered_event_slugs]);
 

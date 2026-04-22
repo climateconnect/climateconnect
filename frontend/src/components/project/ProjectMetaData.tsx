@@ -109,16 +109,18 @@ type Props = {
   withDescription?: boolean;
   isUserRegistered?: boolean;
 };
-export default function ProjectMetaData({
-  project,
-  hovering,
-  withDescription,
-  isUserRegistered,
-}: Props) {
-  const { locale } = useContext(UserContext);
+export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
   const main_project_sector = project.sectors!.map((t) => t.name)[0];
+  // Convert registered event slugs to a Set for O(1) lookup
+  const registeredEventSlugs = user?.registered_event_slugs
+    ? new Set(user.registered_event_slugs)
+    : new Set<string>();
+  // Compute if user is registered for this event
+  const isUserRegistered = registeredEventSlugs?.has(project.url_slug) ?? false;
+
   if (withDescription) {
     return (
       <WithDescription

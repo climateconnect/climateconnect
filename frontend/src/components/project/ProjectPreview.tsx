@@ -106,13 +106,7 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProjectPreview({
-  project,
-  projectRef,
-  hubUrl,
-  className,
-  registeredEventSlugs,
-}: any) {
+export default function ProjectPreview({ project, projectRef, hubUrl, className }: any) {
   // DISABLED: Hover expansion effect causes registration button to jump/shift position (Issue #1885)
   // Keeping code in place for potential future re-enablement
   // const [hovering, setHovering] = useState(false);
@@ -125,9 +119,6 @@ export default function ProjectPreview({
       : { name: project.project_type, type_id: project.project_type };
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
-
-  // Compute if user is registered for this event
-  const isUserRegistered = registeredEventSlugs?.has(project.url_slug) ?? false;
 
   // DISABLED: Hover handlers (kept for potential future re-enablement)
   // const handleMouseEnter = () => {
@@ -179,16 +170,8 @@ export default function ProjectPreview({
             )}
           </CardMedia>
           <div className={classes.cardContentWrapper}>
-            <CardContentWithDescription
-              project={project}
-              hovering={hovering}
-              isUserRegistered={isUserRegistered}
-            />
-            <CardContentWithoutDescription
-              project={project}
-              hovering={hovering}
-              isUserRegistered={isUserRegistered}
-            />
+            <CardContentWithDescription project={project} hovering={hovering} />
+            <CardContentWithoutDescription project={project} hovering={hovering} />
           </div>
         </Card>
       </div>
@@ -196,7 +179,7 @@ export default function ProjectPreview({
   );
 }
 
-const CardContentWithoutDescription = ({ project, hovering, isUserRegistered }) => {
+const CardContentWithoutDescription = ({ project, hovering }) => {
   const classes = useStyles();
   return (
     <CardContent className={classes.cardContent}>
@@ -205,12 +188,12 @@ const CardContentWithoutDescription = ({ project, hovering, isUserRegistered }) 
           {project.name}
         </Typography>
       </div>
-      <ProjectMetaData project={project} hovering={hovering} isUserRegistered={isUserRegistered} />
+      <ProjectMetaData project={project} hovering={hovering} />
     </CardContent>
   );
 };
 
-const CardContentWithDescription = ({ project, hovering, isUserRegistered }) => {
+const CardContentWithDescription = ({ project, hovering }) => {
   const classes = useStyles({ hovering: hovering });
 
   return (
@@ -220,12 +203,7 @@ const CardContentWithDescription = ({ project, hovering, isUserRegistered }) => 
           {project.name}
         </Typography>
       </div>
-      <ProjectMetaData
-        project={project}
-        hovering={hovering}
-        withDescription
-        isUserRegistered={isUserRegistered}
-      />
+      <ProjectMetaData project={project} hovering={hovering} withDescription />
     </CardContent>
   );
 };

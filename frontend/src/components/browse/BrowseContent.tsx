@@ -91,7 +91,6 @@ type BrowseContentProps = {
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
   fromPage?: "hub";
-  registeredEventSlugs?: Set<string>;
 };
 
 export default function BrowseContent({
@@ -113,7 +112,6 @@ export default function BrowseContent({
   isLocationHub,
   linkedHubs,
   fromPage,
-  registeredEventSlugs,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -574,7 +572,6 @@ export default function BrowseContent({
               projects={state.items.projects}
               hubUrl={hubUrl}
               isLoading={isFetchingMoreData}
-              registeredEventSlugs={registeredEventSlugs}
             />
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>

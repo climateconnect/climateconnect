@@ -54,12 +54,7 @@ export async function getServerSideProps(ctx) {
 export default function Browse({ filterChoices, hubs, initialLocationFilter, projectTypes }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
-  const { locale, user } = useContext(UserContext);
-
-  // Convert registered event slugs to a Set for O(1) lookup
-  const registeredEventSlugs = user?.registered_event_slugs
-    ? new Set(user.registered_event_slugs)
-    : new Set<string>();
+  const { locale } = useContext(UserContext);
 
   const isScrollingUp = !useScrollTrigger({
     disableHysteresis: false,
@@ -82,11 +77,7 @@ export default function Browse({ filterChoices, hubs, initialLocationFilter, pro
             locale={locale}
             token={token}
           >
-            <BrowseContent
-              filterChoices={filterChoices}
-              allHubs={hubs}
-              registeredEventSlugs={registeredEventSlugs}
-            />
+            <BrowseContent filterChoices={filterChoices} allHubs={hubs} />
           </FilterProvider>
         </BrowseContext.Provider>
       </WideLayout>

@@ -160,7 +160,7 @@ export default function HubBrowsePage({
   linkedHubs,
 }: HubBrowsePageProps) {
   // donationGoal was removed in PR #1560?
-  const { locale, CUSTOM_HUB_URLS, user } = useContext(UserContext);
+  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale, hubName: name });
@@ -171,11 +171,6 @@ export default function HubBrowsePage({
   // Do we need this? this line was removed on PR ##1560
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
-
-  // Convert registered event slugs to a Set for O(1) lookup
-  const registeredEventSlugs = user?.registered_event_slugs
-    ? new Set(user.registered_event_slugs)
-    : new Set<string>();
 
   useEffect(() => {
     (async () => {
@@ -318,7 +313,6 @@ export default function HubBrowsePage({
                 linkedHubs={linkedHubs}
                 isLocationHub={isLocationHub}
                 fromPage="hub"
-                registeredEventSlugs={registeredEventSlugs}
               />
             </FilterProvider>
           </BrowseContext.Provider>
