@@ -396,5 +396,45 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "Areas of interest",
       de: "Interessensgebiete",
     },
+    enter_your_code: {
+      en: "Enter your code",
+      de: "Code eingeben",
+    },
+    we_sent_a_code_to: {
+      en: "We sent a 6-digit code to",
+      de: "Wir haben einen 6-stelligen Code gesendet an",
+    },
+    verify: {
+      en: "Verify",
+      de: "Bestätigen",
+    },
+    resend_code: {
+      en: "Resend code",
+      de: "Code erneut senden",
+    },
+    back: {
+      en: "Back",
+      de: "Zurück",
+    },
+    this_code_has_expired_please_request_a_new_one: {
+      en: "This code has expired. Please request a new one.",
+      de: "Dieser Code ist abgelaufen. Bitte fordere einen neuen an.",
+    },
+    too_many_attempts_please_request_a_new_code: {
+      en: "Too many attempts. Please request a new code.",
+      de: "Zu viele Versuche. Bitte fordere einen neuen Code an.",
+    },
+    incorrect_code_please_try_again: {
+      en: "Incorrect code. Please try again.",
+      de: "Falscher Code. Bitte versuche es erneut.",
+    },
+    please_wait_before_requesting_a_new_code: {
+      en: "Please wait before requesting a new code.",
+      de: "Bitte warte, bevor du einen neuen Code anforderst.",
+    },
+    connection_error_please_try_again: {
+      en: "Connection error. Please try again.",
+      de: "Verbindungsfehler. Bitte versuche es erneut.",
+    },
   };
 }

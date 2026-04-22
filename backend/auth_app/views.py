@@ -141,9 +141,17 @@ class RequestTokenView(APIView):
         email = serializer.validated_data["email"]
         now = timezone.now()
 
-        # Resend cooldown: check the most recent token for this email
+        # Resend cooldown: check the most recent active (non-exhausted, non-used, non-expired) token.
+        # Exhausted tokens (attempt_count >= 5) should not block the user from requesting a new code.
         recent_token = (
-            LoginToken.objects.filter(email=email).order_by("-created_at").first()
+            LoginToken.objects.filter(
+                email=email,
+                used_at__isnull=True,
+                expires_at__gt=now,
+                attempt_count__lt=5,
+            )
+            .order_by("-created_at")
+            .first()
         )
         if recent_token is not None:
             seconds_since = (now - recent_token.created_at).total_seconds()

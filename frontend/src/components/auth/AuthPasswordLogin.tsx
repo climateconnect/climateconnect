@@ -6,12 +6,14 @@ import UserContext from "../context/UserContext";
 interface AuthPasswordLoginPlaceholderProps {
   email: string;
   onBack: () => void;
+  onSuccess?: () => void;
   hubUrl?: string;
 }
 
 export default function AuthPasswordLogin({
   email,
   onBack,
+  onSuccess: _onSuccess,
   hubUrl,
 }: AuthPasswordLoginPlaceholderProps) {
   const { locale } = useContext(UserContext);

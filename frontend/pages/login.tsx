@@ -146,9 +146,15 @@ export default function Login({
     setCurrentStep("email_entry");
   };
 
+  const handleAuthSuccess = () => {
+    const storedRedirect = window.sessionStorage.getItem("auth_redirect_url");
+    router.push(storedRedirect || getLocalePrefix(locale || "en") + "/");
+  };
+
   const commonProps = {
     email,
     onBack: handleBack,
+    onSuccess: handleAuthSuccess,
     hubUrl: hubSlug || undefined,
   };
 
