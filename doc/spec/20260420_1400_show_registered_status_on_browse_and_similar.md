@@ -28,11 +28,6 @@ A logged-in member browsing projects or viewing similar projects on an event pag
 
 - **Performance requirement**: The browse query must not be slowed down by fetching registration data per project. The solution must avoid N+1 queries or per-row registration checks.
 
-**Explicitly Out of Scope (this iteration):**
-- Showing registration status to unauthenticated users (not applicable — you must be logged in to register).
-- Showing how many events a user is registered for (aggregate count).
-- Real-time updates when registration status changes (acceptable for the user to refresh the page).
-
 ### Non Functional Requirements
 
 - **Performance**: The browse page must not add per-project database queries to determine registration status. The solution must include all registered event IDs in the user's profile data, fetched once and cached client-side.
