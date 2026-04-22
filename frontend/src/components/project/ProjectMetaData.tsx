@@ -119,7 +119,9 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
     ? new Set(user.registered_event_slugs)
     : new Set<string>();
   // Compute if user is registered for this event
-  const isUserRegistered = registeredEventSlugs?.has(project.url_slug) ?? false;
+  const isUserRegistered = project.url_slug
+    ? registeredEventSlugs?.has(project.url_slug) ?? false
+    : false;
 
   if (withDescription) {
     return (
