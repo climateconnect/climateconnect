@@ -384,6 +384,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "Your areas of interest",
       de: "Deine Interessensgebiete",
     },
+    welcome_to_climate_connect: {
+      en: "Welcome!",
+      de: "Willkommen!",
+    },
+    welcome_to_climate_connect_subtitle: {
+      en: "Enter your email to login or register.",
+      de: "Gib deine E-Mail-Adresse ein, um dich einzuloggen oder dich zu registrieren.",
+    },
     area_of_interest: {
       en: "Areas of interest",
       de: "Interessensgebiete",

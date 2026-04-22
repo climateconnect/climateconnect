@@ -1,0 +1,98 @@
+import React, { useContext, useState } from "react";
+import { Alert, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import { apiRequest } from "../../../public/lib/apiOperations";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
+
+interface AuthEmailStepProps {
+  onUserStatusDetermined: (
+    _status: "new" | "returning_password" | "returning_otp",
+    _email: string
+  ) => void;
+  hubUrl?: string;
+}
+
+export default function AuthEmailStep({ onUserStatusDetermined, hubUrl }: AuthEmailStepProps) {
+  const { locale } = useContext(UserContext);
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    try {
+      const response = await apiRequest({
+        method: "post",
+        url: "/api/auth/check-email",
+        payload: { email: normalizedEmail },
+        locale: locale,
+      });
+
+      onUserStatusDetermined(response.data.user_status, normalizedEmail);
+    } catch (err: any) {
+      if (err.response?.data?.detail) {
+        setErrorMessage(err.response.data.detail);
+      } else if (err.response?.data?.message) {
+        setErrorMessage(err.response.data.message);
+      } else if (err.response?.data?.email) {
+        // Field-level validation error from Django (e.g. {"email": ["Enter a valid email address."]})
+        const emailErrors = err.response.data.email;
+        setErrorMessage(Array.isArray(emailErrors) ? emailErrors[0] : emailErrors);
+      } else {
+        setErrorMessage(texts.server_error || "Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
+        {texts.welcome_to_climate_connect}
+      </Typography>
+      <Typography variant="body1" style={{ marginBottom: 24 }}>
+        {texts.welcome_to_climate_connect_subtitle}
+      </Typography>
+
+      <form onSubmit={handleSubmit} noValidate>
+        <TextField
+          id="auth-email-input"
+          label={texts.email || "Email"}
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          fullWidth
+          autoComplete="email"
+          aria-label={texts.email || "Email address"}
+          disabled={isLoading}
+          style={{ marginBottom: 16 }}
+        />
+
+        {errorMessage && (
+          <Alert severity="error" role="alert" style={{ marginBottom: 16 }}>
+            {errorMessage}
+          </Alert>
+        )}
+
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={isLoading || !email.trim()}
+          aria-busy={isLoading}
+        >
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : texts.next || "Next"}
+        </Button>
+      </form>
+    </>
+  );
+}
