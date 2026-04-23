@@ -5,7 +5,6 @@ from climateconnect_api.models.role import Role
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
-from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
 
@@ -168,12 +167,9 @@ class EditOrganizationSerializer(OrganizationSerializer):
     name = serializers.SerializerMethodField()
 
     def get_location(self, obj):
-        if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
-            return {"city": obj.location.city, "country": obj.location.country}
-        else:
-            if obj.location is None:
-                return None
-            return obj.location.name
+        if obj.location is None:
+            return None
+        return obj.location.name
 
     def get_translations(self, obj):
         translations = OrganizationTranslation.objects.filter(organization=obj)

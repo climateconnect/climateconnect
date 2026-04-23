@@ -355,14 +355,6 @@ Azure Blob Storage is used in production for media file storage.
 - **Example**: `"https://..."`
 - **Usage**: Geocoding addresses to coordinates, location search
 
-#### ENABLE_LEGACY_LOCATION_FORMAT
-- **Required**: ❌ No
-- **Type**: Boolean (string)
-- **Description**: Disable geocoding API and use legacy location format
-- **Values**: `"True"` (disable API) | `"False"` (use API)
-- **Default**: `"False"`
-- **Usage**: Set to `"True"` to bypass external geocoding service
-
 #### DEEPL_API_KEY
 - **Required**: ⚠️ Conditional (if using translation features)
 - **Type**: String
@@ -473,14 +465,6 @@ Frontend environment variables are stored in `.env` file in the `frontend/` dire
 ---
 
 ### Feature Configuration
-
-#### ENABLE_LEGACY_LOCATION_FORMAT
-- **Required**: ❌ No
-- **Type**: Boolean (string)
-- **Description**: Use legacy location format instead of geocoding API
-- **Values**: `"True"` | `"False"`
-- **Default**: `"False"`
-- **Usage**: Must match backend setting for consistency
 
 #### ENABLE_DEVLINK
 - **Required**: ❌ No
@@ -602,7 +586,6 @@ Frontend environment variables are stored in `.env` file in the `frontend/` dire
    CELERY_BROKER_URL="redis://localhost"
 
    LOCATION_SERVICE_BASE_URL="https://..."
-   ENABLE_LEGACY_LOCATION_FORMAT="False"
 
    CACHE_BACHED_RANK_REQUEST="true"
    ```

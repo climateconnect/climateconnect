@@ -105,33 +105,7 @@ def _get_newest_location_by_place_id(place_id):
     return Location.objects.filter(place_id=place_id).order_by("-id").first()
 
 
-def get_legacy_location(location_object):
-    required_params = ["country"]
-
-    for param in required_params:
-        if param not in location_object:
-            raise ValidationError("Required parameter is missing:" + param)
-
-    if "city" in location_object:
-        city = location_object["city"]
-    else:
-        city = ""
-    loc = Location.objects.filter(city=city, country=location_object["country"])
-    if loc.exists():
-        return loc[0]
-    else:
-        loc = Location.objects.create(
-            city=location_object["city"],
-            country=location_object["country"],
-            name=location_object["city"] + ", " + location_object["country"],
-        )
-        return loc
-
-
 def get_location(location_object):
-    if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
-        return get_legacy_location(location_object)
-
     if location_object.get("type") == "global":
         return get_global_location()
 
@@ -354,7 +328,8 @@ def format_location_name(location):
     )
     last_part = (
         location["address"]["state"]
-        if location["address"].get("country_code", "").lower() in MAP_STATE_TO_COUNTRY_CODES
+        if location["address"].get("country_code", "").lower()
+        in MAP_STATE_TO_COUNTRY_CODES
         and location["address"].get("state")
         else location["address"].get("country", "")
     )

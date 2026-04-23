@@ -179,9 +179,7 @@ class TestGetLocation(TestCase):
             "geojson": {"type": "Point", "coordinates": [13.405, 52.52]},
         }
 
-    @override_settings(
-        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
-    )
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_osm_fields_saved_correctly(self):
         """Test that osm_id, osm_type, osm_class, osm_class_type and display_name are saved."""
         location = get_location(self.valid_location_object)
@@ -192,9 +190,7 @@ class TestGetLocation(TestCase):
         self.assertEqual(location.osm_class_type, "administrative")
         self.assertEqual(location.display_name, "Berlin, Germany")
 
-    @override_settings(
-        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
-    )
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_osm_type_mapping_way(self):
         """Test that osm_type 'way' is correctly mapped to 'W'."""
         self.valid_location_object["osm_type"] = "way"
@@ -202,9 +198,7 @@ class TestGetLocation(TestCase):
 
         self.assertEqual(location.osm_type, "W")
 
-    @override_settings(
-        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
-    )
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_osm_type_mapping_node(self):
         """Test that osm_type 'node' is correctly mapped to 'N'."""
         self.valid_location_object["osm_type"] = "node"
@@ -212,9 +206,7 @@ class TestGetLocation(TestCase):
 
         self.assertEqual(location.osm_type, "N")
 
-    @override_settings(
-        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
-    )
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_osm_type_mapping_relation(self):
         """Test that osm_type 'relation' is correctly mapped to 'R'."""
         self.valid_location_object["osm_type"] = "relation"
@@ -222,9 +214,7 @@ class TestGetLocation(TestCase):
 
         self.assertEqual(location.osm_type, "R")
 
-    @override_settings(
-        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
-    )
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_existing_location_returned(self):
         """Test that existing location is returned instead of creating a new one."""
         # Create first location
@@ -236,9 +226,7 @@ class TestGetLocation(TestCase):
         self.assertEqual(location1.id, location2.id)
         self.assertEqual(Location.objects.filter(place_id=12345).count(), 1)
 
-    @override_settings(
-        ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
-    )
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_optional_fields_default_to_empty_string(self):
         """Test that optional fields default to empty strings when not provided."""
         # Remove optional fields
@@ -252,7 +240,6 @@ class TestGetLocation(TestCase):
         self.assertEqual(location.place_name, "")
         self.assertEqual(location.exact_address, "")
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
     def test_returns_newest_for_duplicate_osm_composite(self):
         """When duplicates exist for one OSM composite key, newest (highest id) is returned."""
         older = Location.objects.create(
@@ -279,7 +266,6 @@ class TestGetLocation(TestCase):
         self.assertEqual(result.id, newer.id)
         self.assertNotEqual(result.id, older.id)
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
     def test_get_location_prefers_osm_composite_over_place_id(self):
         """OSM composite lookup must take precedence when both OSM and place_id are available."""
         Location.objects.create(
@@ -305,7 +291,6 @@ class TestGetLocation(TestCase):
         result = get_location(self.valid_location_object)
         self.assertEqual(result.id, expected.id)
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
     def test_global_location_has_synthetic_osm_fields(self):
         global_location = get_global_location()
 
@@ -314,17 +299,6 @@ class TestGetLocation(TestCase):
         self.assertEqual(global_location.osm_type, "R")
         self.assertEqual(global_location.osm_class, "global")
         self.assertEqual(global_location.osm_class_type, "global")
-        
-    @override_settings(
-        ENABLE_LEGACY_LOCATION_FORMAT="True", CELERY_TASK_ALWAYS_EAGER=True
-    )
-    def test_legacy_location_format(self):
-        """Test that legacy format still works."""
-        legacy_location = {"city": "Berlin", "country": "Germany"}
-        location = get_location(legacy_location)
-
-        self.assertEqual(location.city, "Berlin")
-        self.assertEqual(location.country, "Germany")
 
 
 class TestGetLocationWithRange(TestCase):
@@ -346,7 +320,6 @@ class TestGetLocationWithRange(TestCase):
             multi_polygon=multi_polygon,
         )
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
     def test_returns_newest_for_duplicate_osm_composite(self):
         """When multiple records share the same OSM composite key,
         get_location_with_range must use the newest (highest ID) record."""
@@ -359,7 +332,6 @@ class TestGetLocationWithRange(TestCase):
 
         self.assertEqual(result["country"], newer.country)
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
     def test_place_id_fallback_resolves_location(self):
         """When only place_id is provided (no OSM params), the existing
         location must still be resolved via the deprecated place_id path."""
@@ -369,7 +341,6 @@ class TestGetLocationWithRange(TestCase):
 
         self.assertEqual(result["country"], location.country)
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
     def test_osm_id_and_type_fallback_without_osm_class(self):
         """When osm_id and osm_type are provided but osm_class is absent,
         the intermediate fallback must still resolve the correct location."""
@@ -379,7 +350,6 @@ class TestGetLocationWithRange(TestCase):
 
         self.assertEqual(result["country"], location.country)
 
-    @override_settings(ENABLE_LEGACY_LOCATION_FORMAT="False")
     def test_place_id_only_relation_uses_multi_polygon(self):
         """When resolved via place_id and the location is a Relation with a
         multi_polygon, get_location_with_range must use multi_polygon (not
@@ -399,7 +369,6 @@ class TestGetLocationWithRange(TestCase):
         # The returned geometry must be the buffered multi_polygon, not a Point.
         # Note: .buffer() on a MultiPolygon may return a Polygon (when the buffer
         # collapses multiple rings into one), so we accept any area geometry here.
-        
 
         self.assertIsInstance(result["location"], GEOSGeometry)
         self.assertNotIsInstance(result["location"], Point)

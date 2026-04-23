@@ -9,7 +9,6 @@ from climateconnect_api.serializers.common import (
 from climateconnect_api.serializers.translation import UserProfileTranslationSerializer
 from climateconnect_api.utility.badges import get_badges, get_oldest_relevant_donation
 from climateconnect_api.utility.user import get_user_profile_biography
-from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
 from organization.utility.sector import (
@@ -152,12 +151,9 @@ class EditUserProfileSerializer(UserProfileSerializer):
     biography = serializers.SerializerMethodField()
 
     def get_location(self, obj):
-        if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
-            return {"city": obj.location.city, "country": obj.location.country}
-        else:
-            if obj.location is None:
-                return None
-            return obj.location.name
+        if obj.location is None:
+            return None
+        return obj.location.name
 
     def get_translations(self, obj):
         translations = UserProfileTranslation.objects.filter(user_profile=obj)
