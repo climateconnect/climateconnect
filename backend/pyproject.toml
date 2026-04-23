@@ -113,6 +113,7 @@ dependencies = [
     "drf-spectacular>=0.29.0",
     "timezonefinder>=8.2.2",
     "django-ratelimit>=4.1.0",
+    "tqdm>=4.67.3",
 ]
 requires-python = ">=3.11"
 license = { text = "AGPL" }
