@@ -146,6 +146,10 @@ export default function Login({
     setCurrentStep("email_entry");
   };
 
+  const handleSwitchToOtp = () => {
+    setCurrentStep("otp_entry");
+  };
+
   const commonProps = {
     email,
     onBack: handleBack,
@@ -164,7 +168,7 @@ export default function Login({
       case "signup_step1":
         return <AuthSignupStep {...commonProps} />;
       case "password_login":
-        return <AuthPasswordLogin {...commonProps} />;
+        return <AuthPasswordLogin {...commonProps} onSwitchToOtp={handleSwitchToOtp} />;
       case "otp_entry":
         return <AuthOtp {...commonProps} />;
     }
