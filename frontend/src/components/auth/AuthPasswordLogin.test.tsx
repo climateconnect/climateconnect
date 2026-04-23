@@ -39,6 +39,8 @@ const defaultProps = {
   email: "user@example.com",
   onBack: jest.fn(),
   onSwitchToOtp: jest.fn(),
+  onForgotPassword: jest.fn(),
+  onSuccess: jest.fn(),
 };
 
 function renderComponent(props: Partial<typeof defaultProps> & { locale?: "en" | "de" } = {}) {
@@ -89,10 +91,9 @@ describe("AuthPasswordLogin", () => {
       expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
     });
 
-    it("renders the Forgot password link with correct href", () => {
+    it("renders the Forgot password button", () => {
       renderComponent();
-      const link = screen.getByRole("link", { name: /forgot your password/i });
-      expect(link).toHaveAttribute("href", "/resetpassword?email=user%40example.com");
+      expect(screen.getByRole("button", { name: /forgot your password/i })).toBeInTheDocument();
     });
 
     it("renders the Use a code instead button", () => {
@@ -154,6 +155,19 @@ describe("AuthPasswordLogin", () => {
       });
     });
 
+    it("calls onSuccess after signIn on success", async () => {
+      mockApiRequest.mockResolvedValueOnce({ data: { token: "tok", expiry: "exp" } });
+      const onSuccess = jest.fn();
+      renderComponent({ onSuccess });
+
+      fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "pass" } });
+      fireEvent.click(screen.getByRole("button", { name: /log in/i }));
+
+      await waitFor(() => {
+        expect(onSuccess).toHaveBeenCalledTimes(1);
+      });
+    });
+
     it("does not show an error message on success", async () => {
       mockApiRequest.mockResolvedValueOnce({ data: { token: "tok", expiry: "exp" } });
       renderComponent();
@@ -165,6 +179,20 @@ describe("AuthPasswordLogin", () => {
 
       await waitFor(() => expect(mockSignIn).toHaveBeenCalled());
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+    it("does not call onSuccess on failure", async () => {
+      mockApiRequest.mockRejectedValueOnce({
+        response: { status: 400, data: { message: "Bad credentials." } },
+      });
+      const onSuccess = jest.fn();
+      renderComponent({ onSuccess });
+
+      fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "wrong" } });
+      fireEvent.click(screen.getByRole("button", { name: /log in/i }));
+
+      await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
+      expect(onSuccess).not.toHaveBeenCalled();
     });
   });
 
@@ -284,12 +312,22 @@ describe("AuthPasswordLogin", () => {
     });
   });
 
-  describe("forgot password link", () => {
-    it("encodes special characters in the email in the href", () => {
-      renderComponent({ email: "user+test@example.com" });
+  describe("forgot password callback", () => {
+    it("calls onForgotPassword when Forgot your password is clicked", () => {
+      const onForgotPassword = jest.fn();
+      renderComponent({ onForgotPassword });
 
-      const link = screen.getByRole("link", { name: /forgot your password/i });
-      expect(link).toHaveAttribute("href", "/resetpassword?email=user%2Btest%40example.com");
+      fireEvent.click(screen.getByRole("button", { name: /forgot your password/i }));
+
+      expect(onForgotPassword).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not call the API when Forgot your password is clicked", () => {
+      renderComponent();
+
+      fireEvent.click(screen.getByRole("button", { name: /forgot your password/i }));
+
+      expect(mockApiRequest).not.toHaveBeenCalled();
     });
   });
 });

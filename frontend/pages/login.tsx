@@ -16,9 +16,10 @@ import { getFeatureTogglesFromRequest, isFeatureEnabled } from "../src/hooks/fea
 import AuthEmailStep from "../src/components/auth/AuthEmailStep";
 import AuthSignupStep from "../src/components/auth/AuthSignupStep";
 import AuthPasswordLogin from "../src/components/auth/AuthPasswordLogin";
+import AuthForgotPassword from "../src/components/auth/AuthForgotPassword";
 import AuthOtp from "../src/components/auth/AuthOtp";
 
-type AuthStep = "email_entry" | "signup_step1" | "password_login" | "otp_entry";
+type AuthStep = "email_entry" | "signup_step1" | "password_login" | "forgot_password" | "otp_entry";
 
 interface LoginProps {
   hubThemeData: any;
@@ -146,13 +147,27 @@ export default function Login({
     setCurrentStep("email_entry");
   };
 
+  const handleAuthSuccess = () => {
+    const storedRedirect = window.sessionStorage.getItem("auth_redirect_url");
+    router.push(storedRedirect || getLocalePrefix(locale || "en") + "/");
+  };
+
   const handleSwitchToOtp = () => {
     setCurrentStep("otp_entry");
+  };
+
+  const handleForgotPassword = () => {
+    setCurrentStep("forgot_password");
+  };
+
+  const handleBackToPasswordLogin = () => {
+    setCurrentStep("password_login");
   };
 
   const commonProps = {
     email,
     onBack: handleBack,
+    onSuccess: handleAuthSuccess,
     hubUrl: hubSlug || undefined,
   };
 
@@ -168,7 +183,22 @@ export default function Login({
       case "signup_step1":
         return <AuthSignupStep {...commonProps} />;
       case "password_login":
-        return <AuthPasswordLogin {...commonProps} onSwitchToOtp={handleSwitchToOtp} />;
+        return (
+          <AuthPasswordLogin
+            {...commonProps}
+            onSwitchToOtp={handleSwitchToOtp}
+            onForgotPassword={handleForgotPassword}
+          />
+        );
+      case "forgot_password":
+        return (
+          <AuthForgotPassword
+            email={email}
+            onBack={handleBackToPasswordLogin}
+            onSwitchToOtp={handleSwitchToOtp}
+            hubUrl={hubSlug || undefined}
+          />
+        );
       case "otp_entry":
         return <AuthOtp {...commonProps} />;
     }

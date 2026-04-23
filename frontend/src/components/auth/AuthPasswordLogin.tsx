@@ -1,21 +1,25 @@
 import React, { useContext, useState } from "react";
-import { Alert, Box, Button, CircularProgress, Link, TextField, Typography } from "@mui/material";
-import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
+import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
 interface AuthPasswordLoginProps {
   email: string;
   onBack: () => void;
-  hubUrl?: string;
+  onSuccess: () => void;
+  onForgotPassword: () => void;
   onSwitchToOtp: () => void;
+  hubUrl?: string;
 }
 
 export default function AuthPasswordLogin({
   email,
   onBack,
-  hubUrl,
+  onSuccess,
+  onForgotPassword,
   onSwitchToOtp,
+  hubUrl,
 }: AuthPasswordLoginProps) {
   const { locale, signIn } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -43,7 +47,7 @@ export default function AuthPasswordLogin({
         locale: locale,
       });
       await signIn(response.data.token, response.data.expiry);
-      // Redirect is handled by the page-level useEffect watching the user context.
+      onSuccess();
     } catch (err: any) {
       setPassword("");
       if (err.response?.data?.type === "not_verified") {
@@ -59,10 +63,6 @@ export default function AuthPasswordLogin({
       setIsLoading(false);
     }
   };
-
-  const forgotPasswordHref = `${getLocalePrefix(locale)}/resetpassword?email=${encodeURIComponent(
-    email
-  )}`;
 
   return (
     <>
@@ -114,9 +114,9 @@ export default function AuthPasswordLogin({
         alignItems="center"
         style={{ marginBottom: 16 }}
       >
-        <Link href={forgotPasswordHref} underline="hover" variant="body2">
+        <Button variant="text" size="small" onClick={onForgotPassword} disabled={isLoading}>
           {texts.forgot_your_password || "Forgot your password?"}
-        </Link>
+        </Button>
 
         <Button variant="text" size="small" onClick={onSwitchToOtp} disabled={isLoading}>
           {texts.use_a_code_instead || "Use a code instead"}

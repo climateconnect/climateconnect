@@ -396,5 +396,80 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "Areas of interest",
       de: "Interessensgebiete",
     },
+    enter_your_code: {
+      en: "Enter your code",
+      de: "Code eingeben",
+    },
+    we_sent_a_code_to: {
+      en: "We sent a 6-digit code to",
+      de: "Wir haben einen 6-stelligen Code gesendet an",
+    },
+    verify: {
+      en: "Verify",
+      de: "Bestätigen",
+    },
+    resend_code: {
+      en: "Resend code",
+      de: "Code erneut senden",
+    },
+    back: {
+      en: "Back",
+      de: "Zurück",
+    },
+    this_code_has_expired_please_request_a_new_one: {
+      en: "This code has expired. Please request a new one.",
+      de: "Dieser Code ist abgelaufen. Bitte fordere einen neuen an.",
+    },
+    too_many_attempts_please_request_a_new_code: {
+      en: "Too many attempts. Please request a new code.",
+      de: "Zu viele Versuche. Bitte fordere einen neuen Code an.",
+    },
+    incorrect_code_please_try_again: {
+      en: "Incorrect code. Please try again.",
+      de: "Falscher Code. Bitte versuche es erneut.",
+    },
+    please_wait_before_requesting_a_new_code: {
+      en: "Please wait before requesting a new code.",
+      de: "Bitte warte, bevor du einen neuen Code anforderst.",
+    },
+    connection_error_please_try_again: {
+      en: "Connection error. Please try again.",
+      de: "Verbindungsfehler. Bitte versuche es erneut.",
+    },
+    // --- Auth unification (US-7, US-8 etc.) ---
+    reset_password: {
+      en: "Reset password",
+      de: "Passwort zurücksetzen",
+    },
+    sending_reset_link: {
+      en: "Sending a reset link to {email}…",
+      de: "Sende einen Link zum Zurücksetzen an {email}…",
+    },
+    check_your_inbox: {
+      en: "Check your inbox",
+      de: "Überprüfe deinen Posteingang",
+    },
+    reset_link_sent_to: {
+      en:
+        "We've sent a password reset link to {email}. Follow the link in the email to set a new password.",
+      de:
+        "Wir haben einen Link zum Zurücksetzen des Passworts an {email} gesendet. Folge dem Link in der E-Mail, um ein neues Passwort festzulegen.",
+    },
+    use_a_code_instead: {
+      en: "Use a code instead",
+      de: "Stattdessen einen Code anfordern",
+    },
+    server_error: {
+      en: "Something went wrong. Please try again.",
+      de: "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    },
+    please_enter_your_password: {
+      en: "Please enter your password.",
+      de: "Bitte gib dein Passwort ein.",
+    },
+    too_many_attempts: {
+      en: "Too many attempts. Please try again later.",
+      de: "Zu viele Versuche. Bitte versuche es später erneut.",
+    },
   };
 }
