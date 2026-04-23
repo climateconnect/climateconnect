@@ -354,7 +354,8 @@ def format_location_name(location):
     )
     last_part = (
         location["address"]["state"]
-        if location["address"].get("country_code", "").lower() in MAP_STATE_TO_COUNTRY_CODES
+        if location["address"].get("country_code", "").lower()
+        in MAP_STATE_TO_COUNTRY_CODES
         and location["address"].get("state")
         else location["address"].get("country", "")
     )

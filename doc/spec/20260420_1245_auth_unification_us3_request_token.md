@@ -1,6 +1,6 @@
 # US-3: `POST /api/auth/request-token` Endpoint
 
-**Status**: READY FOR IMPLEMENTATION  
+**Status**: IMPLEMENTED  
 **Type**: Tech Enabler — backend endpoint  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Date created**: 2026-04-20 12:45  
@@ -269,4 +269,5 @@ For token generation: mock `secrets.randbelow` and `secrets.token_hex` only if n
 
 - 2026-04-20 12:45 — Spec created. Core OTP token generation endpoint; also serves as the resend endpoint. Depends on US-2 for `auth_app`, `LoginToken`, and `LoginAuditLog` models.
 - 2026-04-20 13:00 — Step 8 expanded with full email implementation: `send_login_code_email_to_user()` helper using `send_email()` from `climateconnect_api.utility.email_setup`, `subjects_by_language`, Mailjet template variables (`FirstName`, `Code`, `ExpiryMinutes`), new settings (`LOGIN_CODE_EMAIL_TEMPLATE_ID` / `_DE`), email copy requirements, and dev-mode console fallback when template ID is not configured.
+- 2026-04-21 — Implemented. All 8 tests passing. Dev-mode fallback confirmed working: when `LOGIN_CODE_EMAIL_TEMPLATE_ID` is blank, the Celery worker logs the OTP at WARNING level (`[LOGIN CODE] No Mailjet template configured. OTP for <email>: <code>`). Documented in `doc/environment-variables.md`.
 
