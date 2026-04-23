@@ -536,8 +536,9 @@ def get_location_with_range(query_params):
 
 
 def get_global_location():
-    # Look up by the synthetic OSM composite key, not by name.
-    # This ensures legacy "Global" rows without OSM fields are not returned.
+    # The data migration 0018 ensures the existing "Global" row already has these
+    # synthetic OSM fields populated, so get_or_create will find it rather than
+    # create a duplicate.
     global_location, _ = Location.objects.get_or_create(
         osm_id=-1,
         osm_type="R",
