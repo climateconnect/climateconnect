@@ -1,9 +1,9 @@
 import csv
 from pathlib import Path
-from create_osm_type_data import create_csv_lookup_table
+from .create_osm_type_data import create_csv_lookup_table
 
-# from find_osm_id_for_locatios_with_invalid_osm_id import create_csv_lookup_table as cclt
-from backend.climateconnect_api.management.commands.osm_data_retrieval_scripts.find_osm_id_for_locations_with_invalid_osm_id import (
+# from .find_osm_id_for_locations_with_invalid_osm_id import create_csv_lookup_table as cclt
+from .find_osm_id_for_locations_with_invalid_osm_id import (
     getLocations,
 )
 
