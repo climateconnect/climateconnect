@@ -6,10 +6,16 @@ import UserContext from "../context/UserContext";
 interface AuthSignupStepPlaceholderProps {
   email: string;
   onBack: () => void;
+  onSuccess?: () => void;
   hubUrl?: string;
 }
 
-export default function AuthSignupStep({ email, onBack, hubUrl }: AuthSignupStepPlaceholderProps) {
+export default function AuthSignupStep({
+  email,
+  onBack,
+  onSuccess: _onSuccess,
+  hubUrl,
+}: AuthSignupStepPlaceholderProps) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
 
