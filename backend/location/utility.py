@@ -18,6 +18,44 @@ from location.models import Location
 logger = logging.getLogger("django")
 
 
+# Adapter: Converts a Django Location instance to a dict compatible with format_location_name
+def location_obj_to_dict(location):
+    """
+    Converts a Django Location model instance to a dict with the structure expected by format_location_name.
+    """
+    # Compose a fake Nominatim-like dict
+    address = {
+        "city": location.city or "",
+        "state": location.state or "",
+        "country": location.country or "",
+    }
+    # Add more address fields if needed
+    display_name = (
+        location.display_name
+        if hasattr(location, "display_name") and location.display_name
+        else location.name
+    )
+    type = getattr(location, "type", "administrative")
+    return {
+        "type": type,
+        "address": address,
+        "display_name": display_name,
+    }
+
+
+def format_translation_data(translation_data: dict) -> dict:
+    formatted_data = {}
+    formatted_data["address"] = {
+        "city": translation_data.get("city_translation") or "",
+        "state": translation_data.get("state_translation") or "",
+        "country": translation_data.get("country_translation") or "",
+    }
+
+    formatted_data["display_name"] = translation_data.get("name_translation") or ""
+
+    return formatted_data
+
+
 def _osm_type_char(v):
     if v is None:
         return None
@@ -195,8 +233,9 @@ def format_location(location_string, already_loaded):
 
 CUSTOM_NAME_MAPPINGS = {"Scotland (state), Scotland": "Scotland"}
 
-# These countries are wrongly categorized as states in Nominatim. We want to show them as countries as this is more clear
-MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"]
+# These country codes have states that should be shown as the location's "country" part
+# because the actual country name is less meaningful for display (e.g. UK nations)
+MAP_STATE_TO_COUNTRY_CODES = {"gb"}
 
 
 # This function has an equivalent in backend/location/utility.py -> format_location_name
@@ -247,18 +286,21 @@ def format_location_name(location):
     )
     last_part = (
         location["address"]["state"]
-        if location["address"].get("state") in MAP_STATE_TO_COUNTRY
-        else location["address"]["country"]
+        if location["address"].get("country_code", "").lower()
+        in MAP_STATE_TO_COUNTRY_CODES
+        and location["address"].get("state")
+        else location["address"].get("country", "")
     )
     name = build_location_name(first_part, middle_part, last_part)
 
-    # For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
+    # For certain locations our automatic name generation doesn't work. In this case we
+    # want to override the name with a custom one
     if name in CUSTOM_NAME_MAPPINGS:
         name = CUSTOM_NAME_MAPPINGS[name]
     return {
         "city": first_part,
         "state": location["address"].get("state") or middle_part,
-        "country": location["address"]["country"],
+        "country": location["address"].get("country", ""),
         "name": name,
     }
 
@@ -275,8 +317,16 @@ def build_location_name(first_part, middle_part, last_part):
 
 
 def is_country(location):
-    if location["type"] != "administrative":
+    if location.get("addresstype") == "state":
         return False
+
+    if location.get("type") == "administrative":
+        # treat as country if the address contains only country info
+        for key in location["address"].keys():
+            if key not in ["country", "country_code"]:
+                return False
+        return True
+
     # short circuit if the address contains any information other than country and country code
     for key in location["address"].keys():
         if key not in ["country", "country_code"]:
@@ -316,9 +366,7 @@ def get_location_with_range(query_params):
         osm_id_param = query_params.get("loc_type")[0].upper() + query_params.get("osm")
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root + osm_id_param + params
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
+        headers = {"User-Agent": settings.CUSTOM_USER_AGENT}
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             location_object = json.loads(response.text)[0]
