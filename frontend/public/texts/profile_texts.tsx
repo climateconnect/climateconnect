@@ -457,7 +457,7 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     },
     use_a_code_instead: {
       en: "Use a code instead",
-      de: "Stattdessen einen Code anfordern",
+      de: "Stattdessen mit Code einloggen",
     },
     server_error: {
       en: "Something went wrong. Please try again.",

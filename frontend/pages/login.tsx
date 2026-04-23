@@ -195,7 +195,6 @@ export default function Login({
           <AuthForgotPassword
             email={email}
             onBack={handleBackToPasswordLogin}
-            onSwitchToOtp={handleSwitchToOtp}
             hubUrl={hubSlug || undefined}
           />
         );

@@ -8,18 +8,12 @@ import UserContext from "../context/UserContext";
 interface AuthForgotPasswordProps {
   email: string;
   onBack: () => void;
-  onSwitchToOtp: () => void;
   hubUrl?: string;
 }
 
 type Status = "loading" | "success" | "error";
 
-export default function AuthForgotPassword({
-  email,
-  onBack,
-  onSwitchToOtp,
-  hubUrl,
-}: AuthForgotPasswordProps) {
+export default function AuthForgotPassword({ email, onBack, hubUrl }: AuthForgotPasswordProps) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale, hubName: hubUrl });
 
@@ -96,17 +90,6 @@ export default function AuthForgotPassword({
           {errorMessage}
         </Alert>
       )}
-
-      <Button
-        variant="text"
-        color="primary"
-        fullWidth
-        onClick={onSwitchToOtp}
-        style={{ marginBottom: 8 }}
-        disabled={status === "loading"}
-      >
-        {texts.use_a_code_instead || "Use a code instead"}
-      </Button>
 
       <Button variant="outlined" fullWidth onClick={onBack} disabled={status === "loading"}>
         {texts.back || "Back"}

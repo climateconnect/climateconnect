@@ -35,7 +35,6 @@ function makeContextValue(locale: "en" | "de" = "en") {
 const defaultProps = {
   email: "user@example.com",
   onBack: jest.fn(),
-  onSwitchToOtp: jest.fn(),
 };
 
 function renderComponent(props: Partial<typeof defaultProps> & { locale?: "en" | "de" } = {}) {
@@ -97,11 +96,10 @@ describe("AuthForgotPassword", () => {
       expect(screen.getByRole("progressbar")).toBeInTheDocument();
     });
 
-    it("disables navigation buttons while loading", () => {
+    it("disables the Back button while loading", () => {
       mockApiRequest.mockReturnValueOnce(new Promise(() => {}));
       renderComponent();
 
-      expect(screen.getByRole("button", { name: /use a code instead/i })).toBeDisabled();
       expect(screen.getByRole("button", { name: /back/i })).toBeDisabled();
     });
   });
@@ -123,12 +121,11 @@ describe("AuthForgotPassword", () => {
       await waitFor(() => expect(screen.queryByRole("progressbar")).not.toBeInTheDocument());
     });
 
-    it("enables navigation buttons after success", async () => {
+    it("enables the Back button after success", async () => {
       mockApiRequest.mockResolvedValueOnce({ data: {} });
       renderComponent();
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /use a code instead/i })).not.toBeDisabled();
         expect(screen.getByRole("button", { name: /back/i })).not.toBeDisabled();
       });
     });
@@ -193,19 +190,6 @@ describe("AuthForgotPassword", () => {
   });
 
   describe("navigation callbacks", () => {
-    it("calls onSwitchToOtp when Use a code instead is clicked", async () => {
-      mockApiRequest.mockResolvedValueOnce({ data: {} });
-      const onSwitchToOtp = jest.fn();
-      renderComponent({ onSwitchToOtp });
-
-      await waitFor(() =>
-        expect(screen.getByRole("button", { name: /use a code instead/i })).not.toBeDisabled()
-      );
-      fireEvent.click(screen.getByRole("button", { name: /use a code instead/i }));
-
-      expect(onSwitchToOtp).toHaveBeenCalledTimes(1);
-    });
-
     it("calls onBack when Back is clicked", async () => {
       mockApiRequest.mockResolvedValueOnce({ data: {} });
       const onBack = jest.fn();
