@@ -187,5 +187,6 @@ dev = [
 
 [tool.deptry]
 ignore = ["DEP002"]
+package_module_name_map = {djangorestframework = "rest_framework", django-rest-knox = "knox"}
 
 

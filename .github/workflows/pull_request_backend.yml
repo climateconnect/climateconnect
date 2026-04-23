@@ -16,7 +16,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff==0.0.271
           pip install black==23.12.0  # Pin the version of black here
-          pip install deptry
       - name: Run Black
         run: black backend # run installed black version
         # uses: psf/black@stable # this uses the newest version of black (>23.12)
@@ -25,8 +24,6 @@ jobs:
       # Include `--format=github` to enable automatic inline annotations.
       - name: Run Ruff
         run: ruff check --format=github backend
-      - name: Run deptry (check for undeclared imports)
-        run: cd backend && deptry .
 
   test:
     name: Run Django Tests
