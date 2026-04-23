@@ -67,7 +67,7 @@ class GetLocationView(APIView):
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root + osm_id_param + params
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            "User-Agent": settings.CUSTOM_USER_AGENT,
         }
 
         try:
