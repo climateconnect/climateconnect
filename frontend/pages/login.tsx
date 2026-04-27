@@ -164,6 +164,10 @@ export default function Login({
     setCurrentStep("password_login");
   };
 
+  const handleSignupComplete = () => {
+    setCurrentStep("otp_entry");
+  };
+
   const commonProps = {
     email,
     onBack: handleBack,
@@ -181,7 +185,7 @@ export default function Login({
           />
         );
       case "signup_step1":
-        return <AuthSignupStep {...commonProps} />;
+        return <AuthSignupStep {...commonProps} onSignupComplete={handleSignupComplete} />;
       case "password_login":
         return (
           <AuthPasswordLogin
