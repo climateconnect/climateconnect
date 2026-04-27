@@ -33,8 +33,8 @@ The result: new users complete account creation and are logged in using the same
 | Signup data collected | Same fields as today's `/signup` (first/last name, location, interest areas) | Preserves existing onboarding flow; no user confusion or data gaps. |
 | Password field | **Omitted entirely** | OTP is the default auth method for new users; passwords can be added later in account settings (Phase B). |
 | Account verification | OTP code entry **replaces** email verification link | Entering a correct OTP proves email ownership; eliminates a redundant email interaction. `UserProfile.is_profile_verified` is set immediately after the OTP is verified, not by clicking an email link. |
-| `send_newsletter` default | False (opt-in checkbox on step 1) | Same as today's `/signup`. |
-| Privacy/terms acceptance | Required checkbox on step 1 | Required field matching today's implementation: "I agree to the terms of service and privacy policy". |
+| `send_newsletter` default | False (opt-in via combined checkbox on step 1) | Combined with privacy/terms acceptance into a single checkbox. |
+| Privacy/terms and newsletter acceptance | Required combined checkbox on step 1 | Required field: "I agree to the terms of service and privacy policy and would like to receive emails about updates, news and interesting projects". Checking this box sets both `terms_accepted = True` and `send_newsletter = True`. |
 | Location field | Autocomplete search using existing location API | Same UX as `/signup` — reuses `LocationSearchTypeahead` component. |
 | Interest areas | Multi-select checkboxes, **optional** | Same UX as `/signup` — reuses existing sector/category components. Users can skip this step (same as today). |
 | Backend changes | Adapt `POST /api/signup/` to make `password` optional | Today the endpoint requires `password` (400 if missing). The endpoint must accept `password: null` or absent, set the account with `set_unusable_password()`, set `UserProfile.auth_method = "otp"`. All other required fields remain the same: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `terms_accepted`, `source_language`. |
@@ -52,8 +52,11 @@ The result: new users complete account creation and are logged in using the same
 ├────────────────────────────────────────────────────────────┤
 │  STATE: "signup_step1"                                     │
 │  Collect: first name, last name, location                 │
-│  Checkbox: "Send newsletter" (default: unchecked)         │
-│  Checkbox: "I agree to terms/privacy" (required)          │
+│  Checkbox: "I agree to the terms of service and privacy   │
+│            policy and would like to receive emails about  │
+│            updates, news and interesting projects"        │
+│            (required - sets both terms_accepted and       │
+│             send_newsletter to true)                      │
 │  Button: "Continue"                                        │
 │                      ↓                                     │
 ├────────────────────────────────────────────────────────────┤
@@ -162,10 +165,9 @@ The result: new users complete account creation and are logged in using the same
 - First name: text input, required.
 - Last name: text input, required.
 - Location: autocomplete search using `LocationSearchTypeahead` component (same as `/signup`).
-- Newsletter checkbox: "I would like to receive emails about updates, news and interesting projects" — optional, default **unchecked** (opt-in).
-- Privacy/terms checkbox: "I agree to the terms of service and privacy policy" — **required**, with link to `/terms` and `/privacy`.
+- Combined checkbox: "I agree to the terms of service and privacy policy and would like to receive emails about updates, news and interesting projects" — **required**, with links to `/terms` and `/privacy`. When checked, this sets both `terms_accepted = true` and `send_newsletter = true`.
 - "Back" button → calls `onBack()` → returns to email entry.
-- "Continue" button → validates fields (name, location, and terms checkbox all required), calls `onContinue({ first_name, last_name, location, send_newsletter, terms_accepted })`.
+- "Continue" button → validates fields (name, location, and combined checkbox all required), calls `onContinue({ first_name, last_name, location, send_newsletter: true, terms_accepted: true })`.
 
 **Reuse**: the existing `LocationSearchTypeahead` component from `src/components/location/` can be used directly — it returns a location object with `id`. Extract the `id` and pass it to the parent.
 
@@ -224,7 +226,7 @@ The result: new users complete account creation and are logged in using the same
 
 ### Frontend
 - [ ] When `check-email` returns `"new"`, transition to `signup_step1`.
-- [ ] Step 1: collect first name, last name, location, newsletter checkbox (opt-in, default unchecked), privacy/terms checkbox (required).
+- [ ] Step 1: collect first name, last name, location, combined privacy/terms and newsletter checkbox (required, sets both `terms_accepted` and `send_newsletter` to true when checked).
 - [ ] Step 2: collect interest sectors only (optional).
 - [ ] "Back" button on each step returns to previous step (step 1 → email entry, step 2 → step 1).
 - [ ] "Create account" button calls `POST /api/signup/` with no `password` field.
@@ -251,8 +253,7 @@ The result: new users complete account creation and are logged in using the same
 - [ ] Frontend: test OTP entry step renders after signup completes.
 - [ ] Frontend: test back button navigation (step 2 → step 1 → email entry).
 - [ ] Frontend: test error handling for signup API 400 response.
-- [ ] Frontend: test newsletter checkbox on step 1 (default unchecked, opt-in).
-- [ ] Frontend: test privacy/terms checkbox on step 1 is required (cannot proceed without it).
+- [ ] Frontend: test combined privacy/terms and newsletter checkbox on step 1 is required (cannot proceed without it, sets both fields to true when checked).
 
 ---
 
@@ -269,7 +270,7 @@ The result: new users complete account creation and are logged in using the same
 
 ### Phase 2 — Frontend Components
 
-1. **Create `SignupPersonalInfoStep.tsx`**: name + location form, newsletter checkbox (opt-in), privacy/terms checkbox (required), reuse `LocationSearchTypeahead`.
+1. **Create `SignupPersonalInfoStep.tsx`**: name + location form, combined privacy/terms and newsletter checkbox (required, sets both `terms_accepted` and `send_newsletter` to true), reuse `LocationSearchTypeahead`.
 2. **Create `SignupInterestsStep.tsx`**: interest sectors multi-select only, reuse existing sector selection component.
 3. **Wire state machine in `login.tsx`**:
    - Add `signup_step1` and `signup_step2` states.
@@ -340,7 +341,7 @@ The result: new users complete account creation and are logged in using the same
 |----------|--------|-----------|
 | Number of signup steps | 2 (same as today) | Keeps cognitive load low; interest sectors can be edited later in profile settings. |
 | Password field placement | Omitted entirely | OTP is default; passwords added in account settings (Phase B US-10). |
-| Newsletter opt-in default | Unchecked (opt-in) on step 1 | Same as today's `/signup` (opt-in model). |
+| Newsletter opt-in | Always enabled via combined checkbox | Combined with privacy/terms acceptance; checking the required checkbox opts user into newsletter. |
 | Location field type | Autocomplete search | Same UX as today; reuses `LocationSearchTypeahead` component. |
 | Interest sectors field | Multi-select checkboxes | Same UX as today; reuses existing sector selection component. |
 | OTP trigger point | After `POST /api/signup/` succeeds | Account must exist before `request-token` is called (it looks up user by email). |
@@ -358,3 +359,8 @@ The result: new users complete account creation and are logged in using the same
   - Moved newsletter checkbox from step 2 to step 1 (opt-in model, default unchecked)
   - Step 2 now contains only interest areas selection (optional), making it simpler and more focused
   - This structure better aligns with current implementation and improves reusability for event registration flow
+- 2026-04-27 — Combined privacy/terms and newsletter into single required checkbox:
+  - Single checkbox now contains both terms acceptance and newsletter opt-in text
+  - Checking this box sets both `terms_accepted = true` and `send_newsletter = true`
+  - Simplifies UI while maintaining same API contract (both fields still sent to backend)
+  - Note: Backend never validated the privacy checkbox separately, so no API changes needed
