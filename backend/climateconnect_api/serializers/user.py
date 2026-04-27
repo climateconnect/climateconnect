@@ -13,12 +13,7 @@ from climateconnect_api.serializers.common import (
 from climateconnect_api.serializers.translation import UserProfileTranslationSerializer
 from climateconnect_api.utility.badges import get_badges, get_oldest_relevant_donation
 from climateconnect_api.utility.user import get_user_profile_biography
-<<<<<<< remove_legacy_format_from_backend
-from django.utils.translation import get_language
-from rest_framework import serializers
-=======
 from organization.serializers.sector import UserProfileSectorMappingSerializer
->>>>>>> master
 from organization.utility.sector import (
     get_sectors_based_on_hub,
 )
