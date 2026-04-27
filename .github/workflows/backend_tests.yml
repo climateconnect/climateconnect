@@ -65,8 +65,12 @@
        - name: Install dependencies and create venv
          working-directory: backend
          run: |
-           pdm install --prod
+           pdm install
            $(pdm venv activate)
+
+       - name: Run deptry (check for undeclared imports)
+         working-directory: backend
+         run: pdm run deptry .
 
        - name: Wait for PostgreSQL
          run: |

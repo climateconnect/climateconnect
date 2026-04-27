@@ -1,7 +1,11 @@
-from django.utils import timezone
+import logging
 from datetime import timedelta
 
+from django.utils import timezone
+
 from climateconnect_main.celery import app
+
+logger = logging.getLogger(__name__)
 
 
 @app.task
@@ -36,6 +40,30 @@ def cleanup_login_tokens():
         "deleted_used": deleted_used,
         "deleted_expired": deleted_expired,
     }
+
+
+@app.task(bind=True, max_retries=3)
+def send_login_code_email(self, user_id: int, code: str):
+    """
+    Send the OTP login code email to the user.
+
+    Accepts user_id (not the User object) so the task is JSON-serialisable.
+    Retries up to 3 times on failure.
+    """
+    from django.contrib.auth.models import User
+
+    from auth_app.utility.email import send_login_code_email_to_user
+
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        logger.warning(f"[send_login_code_email] User {user_id} not found, skipping.")
+        return
+    try:
+        send_login_code_email_to_user(user=user, code=code)
+    except Exception as exc:
+        logger.error(f"[send_login_code_email] Failed for user {user_id}: {exc}")
+        raise self.retry(exc=exc)
 
 
 @app.task

@@ -74,6 +74,7 @@ export default function ProjectSideBar({
   hubName,
   siblingProjects,
   isWasseraktionswochenEnabled,
+  registeredEventSlugs,
 }) {
   const classes = useStyles({
     isSmallScreen: isSmallScreen,
@@ -141,6 +142,7 @@ export default function ProjectSideBar({
               displayOnePreviewInRow={shouldDisplayOneProjectInRow}
               projects={projectsToDisplay}
               hubUrl={hubName}
+              registeredEventSlugs={registeredEventSlugs}
             />
             <Button variant="outlined" className={classes.showAllProjectsButton} href={showAllLink}>
               <SearchIcon />

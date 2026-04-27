@@ -146,6 +146,17 @@ export default function MyApp({
     });
   };
 
+  const refreshUser = async () => {
+    const token = cookies.get("auth_token");
+    if (token) {
+      const user = await getLoggedInUser(token);
+      setState((prevState) => ({
+        ...prevState,
+        user: user,
+      }));
+    }
+  };
+
   const signIn = async (token, expiry) => {
     const cookieProps = getCookieProps(expiry);
 
@@ -275,6 +286,7 @@ export default function MyApp({
     chatSocket: webSocketClient,
     notifications: state.notifications,
     refreshNotifications: refreshNotifications,
+    refreshUser: refreshUser,
     API_URL: API_URL,
     ENVIRONMENT: ENVIRONMENT,
     SOCKET_URL: SOCKET_URL,

@@ -113,12 +113,28 @@ export default function ProjectMetaData({
   project,
   hovering,
   withDescription,
-  isUserRegistered,
+  isUserRegistered: isUserRegisteredProp,
 }: Props) {
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
   const main_project_sector = project.sectors!.map((t) => t.name)[0];
+
+  // Use prop if provided, otherwise compute from user context as fallback
+  // The prop should now always be passed from parent components
+  let isUserRegistered: boolean | undefined;
+  if (isUserRegisteredProp !== undefined) {
+    // Use the explicit prop (computed from registeredEventSlugs in parent)
+    isUserRegistered = isUserRegisteredProp;
+  } else if (user?.registered_event_slugs) {
+    // Fallback: compute from user context if prop not provided
+    const registeredEventSlugs = new Set(user.registered_event_slugs);
+    isUserRegistered = project.url_slug ? registeredEventSlugs.has(project.url_slug) : false;
+  } else {
+    // No user or no registration data
+    isUserRegistered = undefined;
+  }
+
   if (withDescription) {
     return (
       <WithDescription
@@ -292,7 +308,12 @@ const AdditionalPreviewInfo = ({ project, isUserRegistered }) => {
   const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
 
   const getRegisterButtonConfig = () => {
+    // Don't show button if registration is not enabled for this event
     if (!showRegisterButton) return null;
+
+    // Don't show button while we're still determining registration status
+    // This prevents flashing "Register Now" when user is actually registered
+    if (isUserRegistered === undefined) return null;
 
     const buttonText = getRegisterButtonText(project, texts, isUserRegistered);
     const disabled = isRegisterButtonDisabled(project, isUserRegistered);

@@ -1,0 +1,233 @@
+import { ThemeProvider } from "@emotion/react";
+import { Card, CardContent, Container, Theme, useMediaQuery } from "@mui/material";
+import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+import React, { useContext, useEffect, useState } from "react";
+import UserContext from "../src/components/context/UserContext";
+import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
+import CustomAuthImage from "../src/components/hub/CustomAuthImage";
+import WideLayout from "../src/components/layouts/WideLayout";
+import { themeSignUp } from "../src/themes/signupTheme";
+import getHubTheme from "../src/themes/fetchHubTheme";
+import { transformThemeData } from "../src/themes/transformThemeData";
+import getTexts from "../public/texts/texts";
+import { getLocalePrefix } from "../public/lib/apiOperations";
+import { getFeatureTogglesFromRequest, isFeatureEnabled } from "../src/hooks/featureToggles";
+import AuthEmailStep from "../src/components/auth/AuthEmailStep";
+import AuthSignupStep from "../src/components/auth/AuthSignupStep";
+import AuthPasswordLogin from "../src/components/auth/AuthPasswordLogin";
+import AuthForgotPassword from "../src/components/auth/AuthForgotPassword";
+import AuthOtp from "../src/components/auth/AuthOtp";
+
+type AuthStep = "email_entry" | "signup_step1" | "password_login" | "forgot_password" | "otp_entry";
+
+interface LoginProps {
+  hubThemeData: any;
+  hubSlug: string | null;
+  featureToggles: Record<string, boolean>;
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  // Check if AUTH_UNIFICATION is enabled and redirect to /signin if not
+  const { featureToggles } = await getFeatureTogglesFromRequest(ctx.req);
+  if (!isFeatureEnabled("AUTH_UNIFICATION", featureToggles)) {
+    const queryParams = new URLSearchParams();
+    if (ctx.query.redirect) queryParams.set("redirect", ctx.query.redirect as string);
+    if (ctx.query.hub) queryParams.set("hub", ctx.query.hub as string);
+
+    const destination = `${getLocalePrefix(ctx.locale || "en")}/signin${
+      queryParams.toString() ? `?${queryParams.toString()}` : ""
+    }`;
+    return {
+      redirect: {
+        destination,
+        statusCode: 307,
+      },
+    };
+  }
+
+  const hubSlug = ctx.query.hub as string | undefined;
+
+  // Early return if no hub — avoids fetching /undefined/theme
+  if (!hubSlug) {
+    return {
+      props: {
+        hubThemeData: null,
+        hubSlug: null,
+        featureToggles,
+      },
+    };
+  }
+
+  const hubThemeData = await getHubTheme(hubSlug);
+
+  // Early return if hub is not found
+  if (!hubThemeData) {
+    return {
+      props: {
+        hubThemeData: null,
+        hubSlug: hubSlug || null,
+        featureToggles,
+      },
+    };
+  }
+
+  return {
+    props: {
+      hubThemeData: hubThemeData || null,
+      hubSlug: hubSlug || null,
+      featureToggles,
+    },
+  };
+};
+
+export default function Login({
+  hubThemeData,
+  hubSlug,
+  featureToggles: _featureToggles,
+}: LoginProps) {
+  const { user, locale } = useContext(UserContext);
+  const router = useRouter();
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+
+  // Determine redirect URL from query params
+  const redirectUrl = (() => {
+    if (router.query.redirect) {
+      const decodedRedirect = decodeURIComponent(router.query.redirect as string);
+      const prefix = getLocalePrefix(locale || "en");
+      return decodedRedirect.startsWith("/") ? prefix + decodedRedirect : decodedRedirect;
+    }
+    if (hubSlug) {
+      return getLocalePrefix(locale || "en") + "/hubs/" + hubSlug + "/browse";
+    }
+    return undefined;
+  })();
+
+  const texts = getTexts({
+    page: "profile",
+    locale: locale || "en",
+    hubName: hubSlug || undefined,
+  });
+
+  // Step state machine — no URL change on transition
+  const [currentStep, setCurrentStep] = useState<AuthStep>("email_entry");
+  const [email, setEmail] = useState("");
+
+  // Redirect to home if already logged in
+  useEffect(() => {
+    if (user) {
+      const destination = redirectUrl || getLocalePrefix(locale || "en") + "/";
+      router.push(destination);
+    }
+  }, [user, redirectUrl, locale, router]);
+
+  const handleUserStatusDetermined = (
+    status: "new" | "returning_password" | "returning_otp",
+    determinedEmail: string
+  ) => {
+    // Persist redirect URL in sessionStorage so subsequent steps can use it
+    if (redirectUrl) {
+      window.sessionStorage.setItem("auth_redirect_url", redirectUrl);
+    }
+    setEmail(determinedEmail);
+    switch (status) {
+      case "new":
+        setCurrentStep("signup_step1");
+        break;
+      case "returning_password":
+        setCurrentStep("password_login");
+        break;
+      case "returning_otp":
+        setCurrentStep("otp_entry");
+        break;
+    }
+  };
+
+  const handleBack = () => {
+    setCurrentStep("email_entry");
+  };
+
+  const handleAuthSuccess = () => {
+    const storedRedirect = window.sessionStorage.getItem("auth_redirect_url");
+    router.push(storedRedirect || getLocalePrefix(locale || "en") + "/");
+  };
+
+  const handleSwitchToOtp = () => {
+    setCurrentStep("otp_entry");
+  };
+
+  const handleForgotPassword = () => {
+    setCurrentStep("forgot_password");
+  };
+
+  const handleBackToPasswordLogin = () => {
+    setCurrentStep("password_login");
+  };
+
+  const commonProps = {
+    email,
+    onBack: handleBack,
+    onSuccess: handleAuthSuccess,
+    hubUrl: hubSlug || undefined,
+  };
+
+  const getStepContent = () => {
+    switch (currentStep) {
+      case "email_entry":
+        return (
+          <AuthEmailStep
+            onUserStatusDetermined={handleUserStatusDetermined}
+            hubUrl={hubSlug || undefined}
+          />
+        );
+      case "signup_step1":
+        return <AuthSignupStep {...commonProps} />;
+      case "password_login":
+        return (
+          <AuthPasswordLogin
+            {...commonProps}
+            onSwitchToOtp={handleSwitchToOtp}
+            onForgotPassword={handleForgotPassword}
+          />
+        );
+      case "forgot_password":
+        return (
+          <AuthForgotPassword
+            email={email}
+            onBack={handleBackToPasswordLogin}
+            hubUrl={hubSlug || undefined}
+          />
+        );
+      case "otp_entry":
+        return <AuthOtp {...commonProps} />;
+    }
+  };
+
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+
+  return (
+    <WideLayout hideAlert noSpaceBottom customTheme={customTheme} hubUrl={hubSlug || undefined}>
+      <ThemeProvider theme={customTheme || themeSignUp}>
+        <Container maxWidth="lg" style={{ paddingTop: 32, paddingBottom: 32 }}>
+          {isSmallScreen ? (
+            <Card variant="outlined">
+              <CardContent>{getStepContent()}</CardContent>
+            </Card>
+          ) : (
+            <ContentImageSplitView
+              minHeight="75vh"
+              content={
+                <Card variant="outlined">
+                  <CardContent>{getStepContent()}</CardContent>
+                </Card>
+              }
+              leftGridSizes={{ md: 7 }}
+              rightGridSizes={{ md: 5 }}
+              image={<CustomAuthImage hubUrl={hubSlug || undefined} texts={texts} />}
+            />
+          )}
+        </Container>
+      </ThemeProvider>
+    </WideLayout>
+  );
+}

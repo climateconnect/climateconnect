@@ -125,8 +125,6 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
           const osmValue = locationFilter.osm_id ?? "";
           const osmTypeValue = locationFilter.osm_type ?? "";
           const osmClassValue = locationFilter.osm_class ?? "";
-          // Send osm_type as the canonical OSM element type; include loc_type with the same
-          // value for backwards compatibility with legacy parameters.
           const encodedFragment = `place_id=${placeValue}&osm_id=${osmValue}&osm_type=${osmTypeValue}&osm_class=${osmClassValue}&`;
           queryParamFragment += encodedFragment;
         }

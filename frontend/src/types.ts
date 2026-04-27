@@ -16,6 +16,7 @@ export type User = {
   last_name?: string;
   url_slug?: string;
   email?: string;
+  registered_event_slugs?: string[];
 };
 
 export type Role = {
