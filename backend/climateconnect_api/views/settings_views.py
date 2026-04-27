@@ -45,6 +45,29 @@ class UserAccountSettingsView(APIView):
                     "Incorrect password. Did you forget your password?"
                 )
 
+        if "auth_method" in request.data:
+            auth_method = request.data["auth_method"]
+            if auth_method not in [
+                UserProfile.AuthMethod.PASSWORD,
+                UserProfile.AuthMethod.OTP,
+            ]:
+                return Response(
+                    {"message": "auth_method must be either 'password' or 'otp'."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if (
+                auth_method == UserProfile.AuthMethod.PASSWORD
+                and not user.has_usable_password()
+            ):
+                return Response(
+                    {
+                        "message": "Cannot set auth_method to password because no password is set."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            user.user_profile.auth_method = auth_method
+            user.user_profile.save()
+
         if "email" in request.data:
             new_verification_key = uuid.uuid4()
             user.user_profile.verification_key = new_verification_key

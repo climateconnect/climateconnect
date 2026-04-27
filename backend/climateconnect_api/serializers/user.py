@@ -316,11 +316,14 @@ class DonorProfileSerializer(UserProfileStubSerializer):
 
 class UserAccountSettingsSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()
+    has_password = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
         fields = (
             "email",
+            "auth_method",
+            "has_password",
             "send_newsletter",
             "url_slug",
             "email_on_private_chat_message",
@@ -339,6 +342,9 @@ class UserAccountSettingsSerializer(serializers.ModelSerializer):
 
     def get_email(self, obj):
         return obj.user.email
+
+    def get_has_password(self, obj):
+        return obj.user.has_usable_password()
 
 
 class UserProfileSitemapEntrySerializer(serializers.ModelSerializer):
