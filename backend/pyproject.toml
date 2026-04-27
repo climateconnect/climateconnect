@@ -113,6 +113,7 @@ dependencies = [
     "drf-spectacular>=0.29.0",
     "timezonefinder>=8.2.2",
     "django-ratelimit>=4.1.0",
+    "tqdm>=4.67.3",
 ]
 requires-python = ">=3.11"
 license = { text = "AGPL" }
@@ -181,6 +182,11 @@ dev = [
     "ruff>=0.0.271",
     "django-debug-toolbar>=3.5.0",
     "coverage[toml]>=7.13.5",
+    "deptry>=0.25.1",
 ]
+
+[tool.deptry]
+ignore = ["DEP002"]
+package_module_name_map = {djangorestframework = "rest_framework", django-rest-knox = "knox"}
 
 

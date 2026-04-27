@@ -612,8 +612,6 @@ class EditUserProfile(APIView):
                                 )
                             )
 
-                pass
-
         user_profile.save()
 
         items_to_translate = [
