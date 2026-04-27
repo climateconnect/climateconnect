@@ -15,7 +15,7 @@
 When a user enters an email address on the `/login` page and `POST /api/auth/check-email` returns `user_status: "new"`, the combined flow must:
 
 1. Collect the same signup information as today's `/signup` page:
-   - **Step 1**: First name, last name, location (city/country search)
+   - **Step 1**: First name, last name, location (city/country search), newsletter opt-in, privacy/terms acceptance
    - **Step 2**: Interest areas (climate action sectors/categories)
 2. Create the user account by calling `POST /api/signup/` **without requiring a password**.
 3. Immediately trigger the OTP flow: call `POST /api/auth/request-token` to send a login code to the user's email.
@@ -33,10 +33,11 @@ The result: new users complete account creation and are logged in using the same
 | Signup data collected | Same fields as today's `/signup` (first/last name, location, interest areas) | Preserves existing onboarding flow; no user confusion or data gaps. |
 | Password field | **Omitted entirely** | OTP is the default auth method for new users; passwords can be added later in account settings (Phase B). |
 | Account verification | OTP code entry **replaces** email verification link | Entering a correct OTP proves email ownership; eliminates a redundant email interaction. `UserProfile.is_profile_verified` is set immediately after the OTP is verified, not by clicking an email link. |
-| `send_newsletter` default | True (opt-out checkbox) | Same as today's `/signup`. |
+| `send_newsletter` default | False (opt-in checkbox on step 1) | Same as today's `/signup`. |
+| Privacy/terms acceptance | Required checkbox on step 1 | Required field matching today's implementation: "I agree to the terms of service and privacy policy". |
 | Location field | Autocomplete search using existing location API | Same UX as `/signup` — reuses `LocationSearchTypeahead` component. |
 | Interest areas | Multi-select checkboxes, **optional** | Same UX as `/signup` — reuses existing sector/category components. Users can skip this step (same as today). |
-| Backend changes | Adapt `POST /api/signup/` to make `password` optional | Today the endpoint requires `password` (400 if missing). The endpoint must accept `password: null` or absent, set the account with `set_unusable_password()`, set `UserProfile.auth_method = "otp"`. All other required fields remain the same: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `source_language`. |
+| Backend changes | Adapt `POST /api/signup/` to make `password` optional | Today the endpoint requires `password` (400 if missing). The endpoint must accept `password: null` or absent, set the account with `set_unusable_password()`, set `UserProfile.auth_method = "otp"`. All other required fields remain the same: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `terms_accepted`, `source_language`. |
 | Account unverified state | Same as today — `is_profile_verified = False` initially | The account is created unverified. `POST /api/auth/verify-token` marks it verified after OTP entry succeeds. This preserves the `AUTO_VERIFY` setting behaviour for dev/staging environments. |
 
 ---
@@ -51,17 +52,19 @@ The result: new users complete account creation and are logged in using the same
 ├────────────────────────────────────────────────────────────┤
 │  STATE: "signup_step1"                                     │
 │  Collect: first name, last name, location                 │
+│  Checkbox: "Send newsletter" (default: unchecked)         │
+│  Checkbox: "I agree to terms/privacy" (required)          │
 │  Button: "Continue"                                        │
 │                      ↓                                     │
 ├────────────────────────────────────────────────────────────┤
 │  STATE: "signup_step2"                                     │
 │  Collect: interest areas (sectors/categories)             │
-│  Checkbox: "Send newsletter" (default: checked)           │
 │  Button: "Create account"                                 │
 │                      ↓                                     │
 │  API: POST /api/signup/                                    │
 │       { email, first_name, last_name, location,           │
-│         send_newsletter, interest_sectors, source_language}│
+│         send_newsletter, terms_accepted, interest_sectors,│
+│         source_language}                                   │
 │       → Returns { user }                                   │
 │                      ↓                                     │
 │  API: POST /api/auth/request-token                         │
@@ -96,7 +99,7 @@ The result: new users complete account creation and are logged in using the same
 - `password` field becomes **optional** (nullable).
 - If `password` is provided: behave exactly as today — call `user.set_password(password)`, set `UserProfile.auth_method = "password"`.
 - If `password` is absent or null: call `user.set_unusable_password()`, set `UserProfile.auth_method = "otp"`.
-- All other fields remain required: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `source_language`.
+- All other fields remain required: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `terms_accepted`, `source_language`.
 - `interest_sectors` (or `sectors` in the backend) is **optional** — same as today's `/signup`.
 - Validation logic unchanged: email uniqueness, location lookup, sector IDs must exist if provided.
 - Account created with `is_profile_verified = False` — same as today.
@@ -145,32 +148,34 @@ The result: new users complete account creation and are logged in using the same
 - Step "otp_entry": render `AuthOtpStep` component (from US-6) → user enters code, calls `verify-token`, on success navigates to `redirect_url` or home.
 
 **State management** (lifted to page level):
-- `signupData`: `{ email, first_name, last_name, location, interest_sectors, send_newsletter }`
+- `signupData`: `{ email, first_name, last_name, location, interest_sectors, send_newsletter, terms_accepted }`
 - `sessionKey`: set from `request-token` response, passed to `AuthOtpStep`.
 
 ### 2. Create `SignupPersonalInfoStep` component
 
 **File**: `frontend/src/components/auth/SignupPersonalInfoStep.tsx` (new)
 
-**Props**: Component receives `email` (string, pre-filled and read-only), `onContinue` callback (receives `first_name`, `last_name`, and `location` ID), and `onBack` callback.
+**Props**: Component receives `email` (string, pre-filled and read-only), `onContinue` callback (receives `first_name`, `last_name`, `location` ID, `send_newsletter`, and `terms_accepted`), and `onBack` callback.
 
 **UI**:
-- Email field: pre-filled, disabled (user cannot change it — it's from step 1).
+- Email field: pre-filled, disabled (user cannot change it — it's from email entry step).
 - First name: text input, required.
 - Last name: text input, required.
 - Location: autocomplete search using `LocationSearchTypeahead` component (same as `/signup`).
+- Newsletter checkbox: "I would like to receive emails about updates, news and interesting projects" — optional, default **unchecked** (opt-in).
+- Privacy/terms checkbox: "I agree to the terms of service and privacy policy" — **required**, with link to `/terms` and `/privacy`.
 - "Back" button → calls `onBack()` → returns to email entry.
-- "Continue" button → validates fields (all required), calls `onContinue({ first_name, last_name, location })`.
+- "Continue" button → validates fields (name, location, and terms checkbox all required), calls `onContinue({ first_name, last_name, location, send_newsletter, terms_accepted })`.
 
 **Reuse**: the existing `LocationSearchTypeahead` component from `src/components/location/` can be used directly — it returns a location object with `id`. Extract the `id` and pass it to the parent.
 
-**Validation**: client-side only at this stage — backend will validate on `POST /api/signup/`. Display inline error messages for empty fields.
+**Validation**: client-side only at this stage — backend will validate on `POST /api/signup/`. Display inline error messages for empty required fields (name, location, terms checkbox).
 
 ### 3. Create `SignupInterestsStep` component
 
 **File**: `frontend/src/components/auth/SignupInterestsStep.tsx` (new)
 
-**Props**: Component receives `email`, `first_name`, `last_name`, and `location` ID (for display), `onSubmit` callback (receives `interest_sectors` array and `send_newsletter` boolean), and `onBack` callback.
+**Props**: Component receives `email`, `first_name`, `last_name`, `location` ID, and `send_newsletter` (for display), `onSubmit` callback (receives `interest_sectors` array), and `onBack` callback.
 
 **UI**:
 - Display user's name and location (read-only summary from step 1) — gives context.
@@ -178,9 +183,8 @@ The result: new users complete account creation and are logged in using the same
   - **Reuse existing component**: `src/components/signup/InterestAreasSelection.tsx` (or similar) — same as today's `/signup` page.
   - Each sector has an ID; collect selected IDs as `interest_sectors: number[]`.
   - **Optional** — users can skip and proceed without selecting any sectors (same as today).
-- Newsletter checkbox: "Send me updates about climate action opportunities" — default **checked** (opt-out).
 - "Back" button → calls `onBack()` → returns to step 1.
-- "Create account" button → calls `onSubmit({ interest_sectors, send_newsletter })`. Disabled only if sectors field is invalid (not because it's empty).
+- "Create account" button → calls `onSubmit({ interest_sectors })`. Not disabled even if no sectors selected (optional field).
 
 **API calls** (triggered by `onSubmit` callback in parent):
 1. `POST /api/signup/` with full signup payload (no password field).
@@ -220,8 +224,8 @@ The result: new users complete account creation and are logged in using the same
 
 ### Frontend
 - [ ] When `check-email` returns `"new"`, transition to `signup_step1`.
-- [ ] Step 1: collect first name, last name, location.
-- [ ] Step 2: collect interest sectors, newsletter opt-out (default: checked).
+- [ ] Step 1: collect first name, last name, location, newsletter checkbox (opt-in, default unchecked), privacy/terms checkbox (required).
+- [ ] Step 2: collect interest sectors only (optional).
 - [ ] "Back" button on each step returns to previous step (step 1 → email entry, step 2 → step 1).
 - [ ] "Create account" button calls `POST /api/signup/` with no `password` field.
 - [ ] On signup success, immediately call `POST /api/auth/request-token`.
@@ -247,7 +251,8 @@ The result: new users complete account creation and are logged in using the same
 - [ ] Frontend: test OTP entry step renders after signup completes.
 - [ ] Frontend: test back button navigation (step 2 → step 1 → email entry).
 - [ ] Frontend: test error handling for signup API 400 response.
-- [ ] Frontend: test newsletter checkbox default (checked).
+- [ ] Frontend: test newsletter checkbox on step 1 (default unchecked, opt-in).
+- [ ] Frontend: test privacy/terms checkbox on step 1 is required (cannot proceed without it).
 
 ---
 
@@ -264,8 +269,8 @@ The result: new users complete account creation and are logged in using the same
 
 ### Phase 2 — Frontend Components
 
-1. **Create `SignupPersonalInfoStep.tsx`**: name + location form, reuse `LocationSearchTypeahead`.
-2. **Create `SignupInterestsStep.tsx`**: interest sectors multi-select, reuse existing sector selection component, newsletter checkbox.
+1. **Create `SignupPersonalInfoStep.tsx`**: name + location form, newsletter checkbox (opt-in), privacy/terms checkbox (required), reuse `LocationSearchTypeahead`.
+2. **Create `SignupInterestsStep.tsx`**: interest sectors multi-select only, reuse existing sector selection component.
 3. **Wire state machine in `login.tsx`**:
    - Add `signup_step1` and `signup_step2` states.
    - Render `SignupPersonalInfoStep` when `currentStep = "signup_step1"`.
@@ -290,7 +295,7 @@ The result: new users complete account creation and are logged in using the same
 1. **Backward compatibility**: existing password-based signup (old `/signup` page when toggle off) must continue to work without changes.
 2. **No verification email for OTP signups**: replaced by OTP code entry.
 3. **Verification email still sent for password signups**: preserves existing flow for legacy page.
-4. **Required fields match today's signup**: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `source_language` are required. `password` and `interest_sectors` are both optional (same as today for sectors).
+4. **Required fields match today's signup**: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `terms_accepted`, `source_language` are required. `password` and `interest_sectors` are both optional (same as today for sectors).
 5. **OTP entry step uses US-6 component**: no duplication of OTP UI code.
 6. **Hub theming preserved**: all signup steps apply hub colors/images via props from parent page.
 7. **`session_key` binding**: the OTP sent during signup is tied to the same browser tab via `session_key` (same security model as US-6).
@@ -335,7 +340,7 @@ The result: new users complete account creation and are logged in using the same
 |----------|--------|-----------|
 | Number of signup steps | 2 (same as today) | Keeps cognitive load low; interest sectors can be edited later in profile settings. |
 | Password field placement | Omitted entirely | OTP is default; passwords added in account settings (Phase B US-10). |
-| Newsletter opt-in default | Checked (opt-out) | Same as today's `/signup`; increases newsletter engagement. |
+| Newsletter opt-in default | Unchecked (opt-in) on step 1 | Same as today's `/signup` (opt-in model). |
 | Location field type | Autocomplete search | Same UX as today; reuses `LocationSearchTypeahead` component. |
 | Interest sectors field | Multi-select checkboxes | Same UX as today; reuses existing sector selection component. |
 | OTP trigger point | After `POST /api/signup/` succeeds | Account must exist before `request-token` is called (it looks up user by email). |
@@ -348,3 +353,8 @@ The result: new users complete account creation and are logged in using the same
 ## Log
 
 - 2026-04-27 15:30 — Spec created. Builds on US-5 page structure and US-6 OTP component. Backend and frontend changes are tightly coupled; implement atomically. Unblocks Event Registration Phase 3 guest signup when complete.
+- 2026-04-27 — Updated spec based on review feedback:
+  - Added missing privacy/terms acceptance checkbox to step 1 (required field, matching current `/signup` implementation)
+  - Moved newsletter checkbox from step 2 to step 1 (opt-in model, default unchecked)
+  - Step 2 now contains only interest areas selection (optional), making it simpler and more focused
+  - This structure better aligns with current implementation and improves reusability for event registration flow
