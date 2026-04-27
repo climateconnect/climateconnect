@@ -65,8 +65,6 @@ def _osm_type_char(v):
 
 def _has_non_empty_value(value):
     return value is not None and value != ""
-<<<<<<< remove_legacy_format_from_backend
-=======
 
 
 def _has_osm_composite_key(location_object):
@@ -105,11 +103,6 @@ def _get_newest_location_by_place_id(place_id):
     if not _has_non_empty_value(place_id):
         return None
     return Location.objects.filter(place_id=place_id).order_by("-id").first()
-
-
-def get_legacy_location(location_object):
-    required_params = ["country"]
->>>>>>> master
 
 
 def _has_osm_composite_key(location_object):
@@ -179,8 +172,6 @@ def get_location(location_object):
         if loc:
             return loc
 
-<<<<<<< remove_legacy_format_from_backend
-=======
     if location_object.get("type") == "global":
         return get_global_location()
 
@@ -209,7 +200,6 @@ def get_location(location_object):
         if loc:
             return loc
 
->>>>>>> master
     # Location not found in DB; validate required fields before creating a new record.
     required_params = [
         "country",
@@ -405,11 +395,7 @@ def format_location_name(location):
     last_part = (
         location["address"]["state"]
         if location["address"].get("country_code", "").lower()
-<<<<<<< remove_legacy_format_from_backend
         in MAP_STATE_AS_COUNTRY_CODES
-=======
-        in MAP_STATE_TO_COUNTRY_CODES
->>>>>>> master
         and location["address"].get("state")
         else location["address"].get("country", "")
     )
@@ -521,7 +507,6 @@ def get_location_with_range(query_params):
         if not _has_non_empty_value(filter_osm_id) or not _has_non_empty_value(
             normalized_osm_type
         ):
-<<<<<<< remove_legacy_format_from_backend
             logger.warning(
                 "Deprecated or missing location lookup parameters: osm_id and osm_type are required. "
                 "Received osm_id=%s, osm_type=%s. Returning empty result.",
@@ -529,11 +514,6 @@ def get_location_with_range(query_params):
                 filter_osm_type,
             )
             return None
-=======
-            raise ValidationError(
-                "Missing location lookup parameters: osm_id and osm_type are required"
-            )
->>>>>>> master
 
         # Append osm_id to first letter of osm_type as uppercase letter
         osm_id_param = normalized_osm_type + str(filter_osm_id)
@@ -600,14 +580,9 @@ def get_location_with_range(query_params):
 
 
 def get_global_location():
-<<<<<<< remove_legacy_format_from_backend
-    # Look up by the synthetic OSM composite key, not by name.
-    # This ensures legacy "Global" rows without OSM fields are not returned.
-=======
     # The data migration 0018 ensures the existing "Global" row already has these
     # synthetic OSM fields populated, so get_or_create will find it rather than
     # create a duplicate.
->>>>>>> master
     global_location, _ = Location.objects.get_or_create(
         osm_id=-1,
         osm_type="R",

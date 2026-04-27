@@ -1,17 +1,20 @@
-from django.contrib.gis.geos.point import Point
-from location.utility import get_global_location, get_multipolygon_from_geojson
-from location.utility import format_location, get_location
+import json
 from typing import Any
-from django.conf import settings
-from django.core.management.base import BaseCommand
+
 import requests
+from django.conf import settings
+from django.contrib.gis.geos.point import Point
+from django.core.management.base import BaseCommand
 
 from climateconnect_api.models import UserProfile
-from organization.models import Organization, Project
-
 from location.models import Location
-
-import json
+from location.utility import (
+    format_location,
+    get_global_location,
+    get_location,
+    get_multipolygon_from_geojson,
+)
+from organization.models import Organization, Project
 
 
 class Command(BaseCommand):
@@ -145,15 +148,18 @@ def get_location_results(res):
 
 
 def get_unknown_location():
-    unknown_location = Location.objects.filter(name="Unknown")
-    if unknown_location.exists():
-        return unknown_location[0]
-    else:
-        unknown_location = Location.objects.create(
-            name="Unknown",
-            city="unknown",
-            country="unknown",
-            place_id=2,
-            is_formatted=True,
-        )
-        return unknown_location
+    unknown_location, _ = Location.objects.get_or_create(
+        osm_id=-2,
+        osm_type="R",
+        osm_class="unknown",
+        defaults={
+            "name": "Unknown",
+            "city": "unknown",
+            "country": "unknown",
+            "osm_class_type": "unknown",
+            "display_name": "Unknown",
+            "place_id": 2,
+            "is_formatted": True,
+        },
+    )
+    return unknown_location
