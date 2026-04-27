@@ -314,7 +314,7 @@ class TestGetLocation(TestCase):
         self.assertEqual(global_location.osm_type, "R")
         self.assertEqual(global_location.osm_class, "global")
         self.assertEqual(global_location.osm_class_type, "global")
-        
+
     @override_settings(
         ENABLE_LEGACY_LOCATION_FORMAT="True", CELERY_TASK_ALWAYS_EAGER=True
     )
@@ -399,7 +399,6 @@ class TestGetLocationWithRange(TestCase):
         # The returned geometry must be the buffered multi_polygon, not a Point.
         # Note: .buffer() on a MultiPolygon may return a Polygon (when the buffer
         # collapses multiple rings into one), so we accept any area geometry here.
-        
 
         self.assertIsInstance(result["location"], GEOSGeometry)
         self.assertNotIsInstance(result["location"], Point)

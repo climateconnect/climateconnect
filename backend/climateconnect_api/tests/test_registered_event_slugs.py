@@ -47,7 +47,7 @@ class PersonalProfileRegisteredEventSlugsTest(APITestCase):
         self.mock_cache = self.cache_patcher.start()
         self.mock_cache.keys.return_value = []
         self.mock_cache.delete_many.return_value = None
-        
+
         # Create test user and profile
         self.user = User.objects.create_user(
             username="testuser",
