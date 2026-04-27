@@ -105,73 +105,7 @@ def _get_newest_location_by_place_id(place_id):
     return Location.objects.filter(place_id=place_id).order_by("-id").first()
 
 
-def _has_osm_composite_key(location_object):
-    return (
-        _has_non_empty_value(location_object.get("osm_id"))
-        and _has_non_empty_value(_osm_type_char(location_object.get("osm_type")))
-        and _has_non_empty_value(location_object.get("osm_class"))
-    )
-
-
-def _get_newest_location_by_osm_composite(osm_id, osm_type, osm_class):
-    return (
-        Location.objects.filter(
-            osm_id=osm_id,
-            osm_type=_osm_type_char(osm_type),
-            osm_class=osm_class,
-        )
-        .order_by("-id")
-        .first()
-    )
-
-
-def _get_newest_location_by_osm_id_and_type(osm_id, osm_type):
-    """Backward-compatible fallback when osm_class is not yet available."""
-    return (
-        Location.objects.filter(
-            osm_id=osm_id,
-            osm_type=_osm_type_char(osm_type),
-        )
-        .order_by("-id")
-        .first()
-    )
-
-
-def _get_newest_location_by_place_id(place_id):
-    if not _has_non_empty_value(place_id):
-        return None
-    return Location.objects.filter(place_id=place_id).order_by("-id").first()
-
-
 def get_location(location_object):
-    if location_object.get("type") == "global":
-        return get_global_location()
-
-    # --- Try DB first (before validating required fields for creation) ---
-    # This allows backward-compatible place_id-only requests to resolve
-    # to an existing record even when OSM fields are not provided.
-    has_osm_composite_key = _has_osm_composite_key(location_object)
-
-    if has_osm_composite_key:
-        # Migration note: OSM composite key is the primary, stable identifier.
-        # If duplicates still exist for the same key, we always use the newest row.
-        loc = _get_newest_location_by_osm_composite(
-            osm_id=location_object.get("osm_id"),
-            osm_type=location_object.get("osm_type"),
-            osm_class=location_object.get("osm_class"),
-        )
-        if loc:
-            return loc
-
-    place_id = location_object.get("place_id")
-    if _has_non_empty_value(place_id):
-        logger.warning(
-            "Using deprecated place_id lookup for location. place_id=%s", place_id
-        )
-        loc = _get_newest_location_by_place_id(place_id)
-        if loc:
-            return loc
-
     if location_object.get("type") == "global":
         return get_global_location()
 
@@ -509,11 +443,13 @@ def get_location_with_range(query_params):
         ):
             logger.warning(
                 "Deprecated or missing location lookup parameters: osm_id and osm_type are required. "
-                "Received osm_id=%s, osm_type=%s. Returning empty result.",
+                "Received osm_id=%s, osm_type=%s.",
                 filter_osm_id,
                 filter_osm_type,
             )
-            return None
+            raise ValidationError(
+                "Missing required location lookup parameters: osm_id and osm_type are required."
+            )
 
         # Append osm_id to first letter of osm_type as uppercase letter
         osm_id_param = normalized_osm_type + str(filter_osm_id)
