@@ -6,6 +6,7 @@ which events they are registered for when browsing projects.
 """
 
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.test import override_settings
@@ -14,7 +15,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from climateconnect_api.models import UserProfile
+from climateconnect_api.models import Language, Role, UserProfile
 from location.models import Location
 from organization.models import (
     EventRegistration,
@@ -34,13 +35,19 @@ _DUMMY_CACHE = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCa
 class PersonalProfileRegisteredEventSlugsTest(APITestCase):
     """
     Test the registered_event_slugs field in the PersonalProfileSerializer.
-    
+
     Verifies that the /api/my_profile/ endpoint returns a list of event URL slugs
     for events the authenticated user is registered for.
     """
 
     def setUp(self):
         """Set up test data: user, organization, and events."""
+        # Patch the cache to avoid signal handler errors with DummyCache
+        self.cache_patcher = patch("climateconnect_api.models.user.cache")
+        self.mock_cache = self.cache_patcher.start()
+        self.mock_cache.keys.return_value = []
+        self.mock_cache.delete_many.return_value = None
+        
         # Create test user and profile
         self.user = User.objects.create_user(
             username="testuser",
@@ -61,6 +68,12 @@ class PersonalProfileRegisteredEventSlugsTest(APITestCase):
             city="Test City", country="Test Country"
         )
 
+        # Create a role for organization members
+        self.role = Role.objects.create(
+            name="Admin",
+            role_type=Role.ALL_TYPE,
+        )
+
         # Create an organization with the user as a member
         self.organization = Organization.objects.create(
             name="Test Organization",
@@ -70,7 +83,13 @@ class PersonalProfileRegisteredEventSlugsTest(APITestCase):
         OrganizationMember.objects.create(
             user=self.user,
             organization=self.organization,
-            role=OrganizationMember.CREATOR_ROLE,
+            role=self.role,
+        )
+
+        # Get or create language
+        self.language, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
         )
 
         # Get or create the "Event" project status
@@ -80,7 +99,7 @@ class PersonalProfileRegisteredEventSlugsTest(APITestCase):
                 "name_de_translation": "Veranstaltung",
                 "has_start_date": True,
                 "has_end_date": True,
-            }
+            },
         )
 
         # Create test events (projects)
@@ -133,17 +152,22 @@ class PersonalProfileRegisteredEventSlugsTest(APITestCase):
         # URL for the my_profile endpoint
         self.url = reverse("user-profile-api")
 
+    def tearDown(self):
+        """Clean up patches."""
+        self.cache_patcher.stop()
+
     def _create_event(self, name, url_slug, start_date, end_date):
         """Helper method to create an event project."""
         return Project.objects.create(
             name=name,
             url_slug=url_slug,
-            organization=self.organization,
             status=self.event_status,
             start_date=start_date,
             end_date=end_date,
-            location=self.location,
             is_draft=False,
+            is_active=True,
+            language=self.language,
+            project_type="EV",
         )
 
     def test_no_registrations_returns_empty_list(self):
@@ -224,7 +248,7 @@ class PersonalProfileRegisteredEventSlugsTest(APITestCase):
     def test_mixed_registrations_only_returns_active_future_events(self):
         """
         Test that only active registrations for future events are included.
-        
+
         Creates:
         - Active registration for future event 1 (should be included)
         - Active registration for future event 2 (should be included)
@@ -236,13 +260,13 @@ class PersonalProfileRegisteredEventSlugsTest(APITestCase):
             user=self.user,
             registration_config=self.reg_config_1,
         )
-        
+
         # Active future event 2 - should be included
         EventRegistration.objects.create(
             user=self.user,
             registration_config=self.reg_config_2,
         )
-        
+
         # Active past event - should NOT be included
         EventRegistration.objects.create(
             user=self.user,
@@ -254,7 +278,7 @@ class PersonalProfileRegisteredEventSlugsTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         slugs = response.data["registered_event_slugs"]
-        
+
         # Should only include the two future events
         self.assertEqual(len(slugs), 2)
         self.assertIn("future-event-1", slugs)
