@@ -3,7 +3,7 @@ import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
 import Cookies from "universal-cookie";
 import { useLongPress } from "use-long-press";
 import ROLE_TYPES from "../../../public/data/role_types";
@@ -163,6 +163,11 @@ export default function ProjectPageRoot({
   const [isUserRegistered, setIsUserRegistered] = useState(isRegistered ?? false);
   const hasUserAttended = hasAttended ?? false;
   const isAdminCancelled = adminCancelled ?? false;
+
+  // Get registered event slugs from user profile for sidebar projects
+  const registeredEventSlugs = useMemo(() => {
+    return new Set(user?.registered_event_slugs || []);
+  }, [user?.registered_event_slugs]);
 
   // Registration modal state
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
@@ -698,7 +703,7 @@ export default function ProjectPageRoot({
               hubName={hubPage}
               siblingProjects={siblingProjects}
               isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
-              isUserRegistered={isUserRegistered}
+              registeredEventSlugs={registeredEventSlugs}
             />
           </>
         )}

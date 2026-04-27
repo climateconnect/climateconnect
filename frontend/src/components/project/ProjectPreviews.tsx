@@ -28,7 +28,7 @@ export default function ProjectPreviews({
   isLoading = false,
   displayOnePreviewInRow,
   parentHandlesGridItems,
-  isUserRegistered,
+  registeredEventSlugs,
 }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -36,7 +36,12 @@ export default function ProjectPreviews({
 
   const toProjectPreviews = (projects) =>
     (projects || []).map((p) => (
-      <GridItem key={p.url_slug} project={p} hubUrl={hubUrl} isUserRegistered={isUserRegistered} />
+      <GridItem
+        key={p.url_slug}
+        project={p}
+        hubUrl={hubUrl}
+        registeredEventSlugs={registeredEventSlugs}
+      />
     ));
 
   const [gridItems, setGridItems] = useState(toProjectPreviews(projects));
@@ -86,7 +91,15 @@ export default function ProjectPreviews({
               ref={isLastElement ? lastElementRef : null}
               className={classes.items}
             >
-              {project.props ? project : <ProjectPreview project={project} hubUrl={hubUrl} />}
+              {project.props ? (
+                project
+              ) : (
+                <ProjectPreview
+                  project={project}
+                  hubUrl={hubUrl}
+                  registeredEventSlugs={registeredEventSlugs}
+                />
+              )}
             </Grid>
           );
         })}
@@ -96,6 +109,8 @@ export default function ProjectPreviews({
   );
 }
 
-function GridItem({ project, hubUrl, isUserRegistered }) {
-  return <ProjectPreview project={project} hubUrl={hubUrl} isUserRegistered={isUserRegistered} />;
+function GridItem({ project, hubUrl, registeredEventSlugs }) {
+  return (
+    <ProjectPreview project={project} hubUrl={hubUrl} registeredEventSlugs={registeredEventSlugs} />
+  );
 }

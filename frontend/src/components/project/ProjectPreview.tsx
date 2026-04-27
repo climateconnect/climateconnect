@@ -111,7 +111,7 @@ export default function ProjectPreview({
   projectRef,
   hubUrl,
   className,
-  isUserRegistered,
+  registeredEventSlugs,
 }: any) {
   // DISABLED: Hover expansion effect causes registration button to jump/shift position (Issue #1885)
   // Keeping code in place for potential future re-enablement
@@ -179,12 +179,12 @@ export default function ProjectPreview({
             <CardContentWithDescription
               project={project}
               hovering={hovering}
-              isUserRegistered={isUserRegistered}
+              registeredEventSlugs={registeredEventSlugs}
             />
             <CardContentWithoutDescription
               project={project}
               hovering={hovering}
-              isUserRegistered={isUserRegistered}
+              registeredEventSlugs={registeredEventSlugs}
             />
           </div>
         </Card>
@@ -193,8 +193,12 @@ export default function ProjectPreview({
   );
 }
 
-const CardContentWithoutDescription = ({ project, hovering, isUserRegistered }) => {
+const CardContentWithoutDescription = ({ project, hovering, registeredEventSlugs }) => {
   const classes = useStyles();
+  const isUserRegistered =
+    registeredEventSlugs && project.url_slug
+      ? registeredEventSlugs.has(project.url_slug)
+      : undefined;
   return (
     <CardContent className={classes.cardContent}>
       <div className={classes.projectNameWrapper}>
@@ -207,8 +211,12 @@ const CardContentWithoutDescription = ({ project, hovering, isUserRegistered }) 
   );
 };
 
-const CardContentWithDescription = ({ project, hovering, isUserRegistered }) => {
+const CardContentWithDescription = ({ project, hovering, registeredEventSlugs }) => {
   const classes = useStyles({ hovering: hovering });
+  const isUserRegistered =
+    registeredEventSlugs && project.url_slug
+      ? registeredEventSlugs.has(project.url_slug)
+      : undefined;
 
   return (
     <CardContent className={`${classes.cardContentWithDescription} ${classes.cardContent}`}>

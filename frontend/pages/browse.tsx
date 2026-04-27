@@ -1,7 +1,7 @@
 // 3rd party or built-in imports
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import NextCookies from "next-cookies";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Cookies from "universal-cookie";
 import {
   getOrganizationTagsOptions,
@@ -54,7 +54,28 @@ export async function getServerSideProps(ctx) {
 export default function Browse({ filterChoices, hubs, initialLocationFilter, projectTypes }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
-  const { locale } = useContext(UserContext);
+  const { locale, refreshUser } = useContext(UserContext);
+
+  // Refresh user data when returning to this page
+  useEffect(() => {
+    if (refreshUser && token) {
+      refreshUser();
+    }
+  }, []); // Run once when component mounts
+
+  // Also refresh when page becomes visible (e.g., when coming back from event page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && refreshUser && token) {
+        refreshUser();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [refreshUser, token]);
 
   const isScrollingUp = !useScrollTrigger({
     disableHysteresis: false,
