@@ -436,5 +436,40 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "Connection error. Please try again.",
       de: "Verbindungsfehler. Bitte versuche es erneut.",
     },
+    // --- Auth unification (US-7, US-8 etc.) ---
+    reset_password: {
+      en: "Reset password",
+      de: "Passwort zurücksetzen",
+    },
+    sending_reset_link: {
+      en: "Sending a reset link to {email}…",
+      de: "Sende einen Link zum Zurücksetzen an {email}…",
+    },
+    check_your_inbox: {
+      en: "Check your inbox",
+      de: "Überprüfe deinen Posteingang",
+    },
+    reset_link_sent_to: {
+      en:
+        "We've sent a password reset link to {email}. Follow the link in the email to set a new password.",
+      de:
+        "Wir haben einen Link zum Zurücksetzen des Passworts an {email} gesendet. Folge dem Link in der E-Mail, um ein neues Passwort festzulegen.",
+    },
+    use_a_code_instead: {
+      en: "Use a code instead",
+      de: "Stattdessen mit Code einloggen",
+    },
+    server_error: {
+      en: "Something went wrong. Please try again.",
+      de: "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    },
+    please_enter_your_password: {
+      en: "Please enter your password.",
+      de: "Bitte gib dein Passwort ein.",
+    },
+    too_many_attempts: {
+      en: "Too many attempts. Please try again later.",
+      de: "Zu viele Versuche. Bitte versuche es später erneut.",
+    },
   };
 }

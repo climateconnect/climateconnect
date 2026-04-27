@@ -16,9 +16,10 @@ import { getFeatureTogglesFromRequest, isFeatureEnabled } from "../src/hooks/fea
 import AuthEmailStep from "../src/components/auth/AuthEmailStep";
 import AuthSignupStep from "../src/components/auth/AuthSignupStep";
 import AuthPasswordLogin from "../src/components/auth/AuthPasswordLogin";
+import AuthForgotPassword from "../src/components/auth/AuthForgotPassword";
 import AuthOtp from "../src/components/auth/AuthOtp";
 
-type AuthStep = "email_entry" | "signup_step1" | "password_login" | "otp_entry";
+type AuthStep = "email_entry" | "signup_step1" | "password_login" | "forgot_password" | "otp_entry";
 
 interface LoginProps {
   hubThemeData: any;
@@ -151,6 +152,18 @@ export default function Login({
     router.push(storedRedirect || getLocalePrefix(locale || "en") + "/");
   };
 
+  const handleSwitchToOtp = () => {
+    setCurrentStep("otp_entry");
+  };
+
+  const handleForgotPassword = () => {
+    setCurrentStep("forgot_password");
+  };
+
+  const handleBackToPasswordLogin = () => {
+    setCurrentStep("password_login");
+  };
+
   const commonProps = {
     email,
     onBack: handleBack,
@@ -170,7 +183,21 @@ export default function Login({
       case "signup_step1":
         return <AuthSignupStep {...commonProps} />;
       case "password_login":
-        return <AuthPasswordLogin {...commonProps} />;
+        return (
+          <AuthPasswordLogin
+            {...commonProps}
+            onSwitchToOtp={handleSwitchToOtp}
+            onForgotPassword={handleForgotPassword}
+          />
+        );
+      case "forgot_password":
+        return (
+          <AuthForgotPassword
+            email={email}
+            onBack={handleBackToPasswordLogin}
+            hubUrl={hubSlug || undefined}
+          />
+        );
       case "otp_entry":
         return <AuthOtp {...commonProps} />;
     }
