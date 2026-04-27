@@ -106,3 +106,139 @@ class UserAccountSettingsPostTest(TestCase):
         user.user_profile.refresh_from_db()
         # has_password is computed, so it should still be True
         self.assertTrue(user.has_usable_password())
+
+    def test_post_sets_password_when_user_has_no_password(self):
+        user = _make_user("setpass@example.com", password="")
+        self.client.force_login(user)
+        response = self.client.post(
+            URL,
+            {"password": "newpass123", "confirm_password": "newpass123"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.has_usable_password())
+        self.assertTrue(user.check_password("newpass123"))
+
+    def test_post_rejects_set_password_when_passwords_do_not_match(self):
+        user = _make_user("mismatch@example.com", password="")
+        self.client.force_login(user)
+        response = self.client.post(
+            URL,
+            {"password": "newpass123", "confirm_password": "different"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        user.refresh_from_db()
+        self.assertFalse(user.has_usable_password())
+
+    def test_post_rejects_password_change_without_old_password_when_user_has_one(self):
+        user = _make_user("haspass@example.com", password="oldpass123")
+        self.client.force_login(user)
+        response = self.client.post(
+            URL,
+            {"password": "newpass123", "confirm_password": "newpass123"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Old password is required", response.json()[0])
+        user.refresh_from_db()
+        self.assertTrue(user.check_password("oldpass123"))
+
+    def test_post_changes_password_with_old_password(self):
+        user = _make_user("changepass@example.com", password="oldpass123")
+        self.client.force_login(user)
+        response = self.client.post(
+            URL,
+            {
+                "old_password": "oldpass123",
+                "password": "newpass123",
+                "confirm_password": "newpass123",
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.check_password("newpass123"))
+
+    def test_post_rejects_password_change_with_wrong_old_password(self):
+        user = _make_user("wrongold@example.com", password="oldpass123")
+        self.client.force_login(user)
+        response = self.client.post(
+            URL,
+            {
+                "old_password": "wrongpass",
+                "password": "newpass123",
+                "confirm_password": "newpass123",
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Incorrect password", response.json()[0])
+        user.refresh_from_db()
+        self.assertTrue(user.check_password("oldpass123"))
+
+    def test_post_rejects_password_change_when_new_passwords_do_not_match(self):
+        user = _make_user("newmismatch@example.com", password="oldpass123")
+        self.client.force_login(user)
+        response = self.client.post(
+            URL,
+            {
+                "old_password": "oldpass123",
+                "password": "newpass123",
+                "confirm_password": "different",
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Password do not match", response.json()[0])
+        user.refresh_from_db()
+        self.assertTrue(user.check_password("oldpass123"))
+
+    def test_post_set_password_and_switch_auth_method_to_password(self):
+        user = _make_user("setandswitch@example.com", auth_method="otp", password="")
+        self.client.force_login(user)
+        # Set password
+        response = self.client.post(
+            URL,
+            {"password": "newpass123", "confirm_password": "newpass123"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertTrue(user.has_usable_password())
+        # Re-login because set_password() invalidates the session
+        self.client.force_login(user)
+        # Switch auth method to password
+        response = self.client.post(
+            URL, {"auth_method": "password"}, content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.user_profile.refresh_from_db()
+        self.assertEqual(user.user_profile.auth_method, "password")
+
+    def test_post_set_password_does_not_change_auth_method(self):
+        user = _make_user("keepotp@example.com", auth_method="otp", password="")
+        self.client.force_login(user)
+        response = self.client.post(
+            URL,
+            {"password": "newpass123", "confirm_password": "newpass123"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.user_profile.refresh_from_db()
+        self.assertEqual(user.user_profile.auth_method, "otp")
+
+    def test_post_set_password_preserves_existing_auth_method_password(self):
+        user = _make_user(
+            "keeppassword@example.com", auth_method="password", password=""
+        )
+        self.client.force_login(user)
+        response = self.client.post(
+            URL,
+            {"password": "newpass123", "confirm_password": "newpass123"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.user_profile.refresh_from_db()
+        self.assertEqual(user.user_profile.auth_method, "password")
