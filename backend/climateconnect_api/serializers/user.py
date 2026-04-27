@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
 
