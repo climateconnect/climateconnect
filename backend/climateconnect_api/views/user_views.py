@@ -114,7 +114,6 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             "email",
-            "password",
             "first_name",
             "last_name",
             "location",
@@ -138,7 +137,14 @@ class SignUpView(APIView):
             is_active=True,
         )
 
-        user.set_password(request.data["password"])
+        # Handle password-based vs passwordless signup
+        password = request.data.get("password")
+        if password:
+            user.set_password(password)
+            auth_method = UserProfile.AuthMethod.PASSWORD
+        else:
+            user.set_unusable_password()
+            auth_method = UserProfile.AuthMethod.OTP
         user.save()
 
         full_name = user.first_name + "-" + user.last_name
@@ -155,6 +161,7 @@ class SignUpView(APIView):
             verification_key=uuid.uuid4(),
             send_newsletter=request.data["send_newsletter"],
             language=source_language,
+            auth_method=auth_method,
         )
         if "is_activist" in request.data:
             user_profile.is_activist = request.data["is_activist"]
@@ -172,10 +179,19 @@ class SignUpView(APIView):
             user_profile.is_profile_verified = True
             message = "Congratulations! Your account has been created"
         else:
-            send_user_verification_email(user, user_profile.verification_key, hub_url)
-            message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
-                user.email
-            )  # NOQA
+            # Only send verification email for password-based signups
+            # OTP-based signups use the OTP code entry as verification
+            if auth_method == UserProfile.AuthMethod.PASSWORD:
+                send_user_verification_email(
+                    user, user_profile.verification_key, hub_url
+                )
+                message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
+                    user.email
+                )  # NOQA
+            else:
+                # For OTP signups, account is created unverified
+                # It will be verified when they complete the OTP flow
+                message = "Account created successfully"
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
