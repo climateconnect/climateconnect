@@ -63,6 +63,48 @@ def _osm_type_char(v):
     return mapping.get(str(v).lower())
 
 
+def _has_non_empty_value(value):
+    return value is not None and value != ""
+
+
+def _has_osm_composite_key(location_object):
+    return (
+        _has_non_empty_value(location_object.get("osm_id"))
+        and _has_non_empty_value(_osm_type_char(location_object.get("osm_type")))
+        and _has_non_empty_value(location_object.get("osm_class"))
+    )
+
+
+def _get_newest_location_by_osm_composite(osm_id, osm_type, osm_class):
+    return (
+        Location.objects.filter(
+            osm_id=osm_id,
+            osm_type=_osm_type_char(osm_type),
+            osm_class=osm_class,
+        )
+        .order_by("-id")
+        .first()
+    )
+
+
+def _get_newest_location_by_osm_id_and_type(osm_id, osm_type):
+    """Backward-compatible fallback when osm_class is not yet available."""
+    return (
+        Location.objects.filter(
+            osm_id=osm_id,
+            osm_type=_osm_type_char(osm_type),
+        )
+        .order_by("-id")
+        .first()
+    )
+
+
+def _get_newest_location_by_place_id(place_id):
+    if not _has_non_empty_value(place_id):
+        return None
+    return Location.objects.filter(place_id=place_id).order_by("-id").first()
+
+
 def get_legacy_location(location_object):
     required_params = ["country"]
 
@@ -90,8 +132,36 @@ def get_location(location_object):
     if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
         return get_legacy_location(location_object)
 
+    if location_object.get("type") == "global":
+        return get_global_location()
+
+    # --- Try DB first (before validating required fields for creation) ---
+    # This allows backward-compatible place_id-only requests to resolve
+    # to an existing record even when OSM fields are not provided.
+    has_osm_composite_key = _has_osm_composite_key(location_object)
+
+    if has_osm_composite_key:
+        # Migration note: OSM composite key is the primary, stable identifier.
+        # If duplicates still exist for the same key, we always use the newest row.
+        loc = _get_newest_location_by_osm_composite(
+            osm_id=location_object.get("osm_id"),
+            osm_type=location_object.get("osm_type"),
+            osm_class=location_object.get("osm_class"),
+        )
+        if loc:
+            return loc
+
+    place_id = location_object.get("place_id")
+    if _has_non_empty_value(place_id):
+        logger.warning(
+            "Using deprecated place_id lookup for location. place_id=%s", place_id
+        )
+        loc = _get_newest_location_by_place_id(place_id)
+        if loc:
+            return loc
+
+    # Location not found in DB; validate required fields before creating a new record.
     required_params = [
-        "place_id",
         "country",
         "name",
         "type",
@@ -107,23 +177,20 @@ def get_location(location_object):
         if param not in location_object:
             raise ValidationError("Required parameter is missing:" + param)
 
-    loc = Location.objects.filter(place_id=location_object["place_id"])
+    if not location_object.get("is_stub") and not has_osm_composite_key:
+        raise ValidationError(
+            "Required OSM composite key is missing: osm_id, osm_type, osm_class"
+        )
+
     optional_attribute_names = ["city", "state", "place_name", "exact_address"]
 
     for attr in optional_attribute_names:
         location_object[attr] = location_object.get(attr, "")
 
-    if loc.exists():
-        return loc[0]
-
-    if location_object["type"] == "global":
-        loc = get_global_location()
-        return loc
-
     centre_point = None
     multipolygon = None
     if location_object["type"] == "Point":
-        point = GEOSGeometry(str(location_object["geojson"]))
+        point = GEOSGeometry(json.dumps(location_object["geojson"]))
         coords = list(point)
         centre_point = Point(coords[1], coords[0])
 
@@ -144,15 +211,15 @@ def get_location(location_object):
         raise Exception("Unsupported location type")
 
     loc = Location.objects.create(
-        osm_id=location_object["osm_id"],
-        osm_type=_osm_type_char(location_object["osm_type"]),
-        osm_class=location_object["osm_class"],
-        osm_class_type=location_object["osm_class_type"],
-        place_id=location_object["place_id"],
+        osm_id=location_object.get("osm_id"),
+        osm_type=_osm_type_char(location_object.get("osm_type")),
+        osm_class=location_object.get("osm_class"),
+        osm_class_type=location_object.get("osm_class_type"),
+        place_id=location_object.get("place_id"),
         city=location_object["city"],
         state=location_object["state"],
         place_name=location_object["place_name"],
-        display_name=location_object["display_name"],
+        display_name=location_object.get("display_name"),
         exact_address=location_object["exact_address"],
         country=location_object["country"],
         name=location_object["name"],
@@ -165,7 +232,8 @@ def get_location(location_object):
 
 
 def get_multipolygon_from_geojson(geojson):
-    input_polygon = GEOSGeometry(str(geojson))
+    geojson_str = geojson if isinstance(geojson, str) else json.dumps(geojson)
+    input_polygon = GEOSGeometry(geojson_str)
 
     if isinstance(input_polygon, Polygon):
         return MultiPolygon(get_polygon_with_switched_coordinates(input_polygon))
@@ -353,23 +421,81 @@ def get_middle_part(address, order, suffixes):
 
 
 def get_location_with_range(query_params):
-    filter_place_id = query_params.get("place")
-    location_type = query_params.get("loc_type")
-    locations = Location.objects.filter(place_id=filter_place_id)
+    filter_place_id = query_params.get("place_id")
+    filter_osm_type = query_params.get("osm_type")
+    filter_osm_id = query_params.get("osm_id")
+    filter_osm_class = query_params.get("osm_class")
+
+    location = None
+    if (
+        _has_non_empty_value(filter_osm_id)
+        and _has_non_empty_value(filter_osm_type)
+        and _has_non_empty_value(filter_osm_class)
+    ):
+        location = _get_newest_location_by_osm_composite(
+            osm_id=filter_osm_id,
+            osm_type=filter_osm_type,
+            osm_class=filter_osm_class,
+        )
+
+    if (
+        not location
+        and _has_non_empty_value(filter_osm_id)
+        and _has_non_empty_value(filter_osm_type)
+    ):
+        # Backward-compatible fallback for requests without osm_class.
+        location = _get_newest_location_by_osm_id_and_type(
+            filter_osm_id, filter_osm_type
+        )
+
+    if not location and _has_non_empty_value(filter_place_id):
+        logger.warning(
+            "Using deprecated place_id lookup in location range filter. place_id=%s",
+            filter_place_id,
+        )
+        location = _get_newest_location_by_place_id(filter_place_id)
+
     # shrink polygon by 1 meter to exclude places that share a border
     # Example: Don't show projects from the USA when searching for Mexico
     distance = -1  # distance in meter
     buffer_width = distance / 40000000.0 * 360.0
-    if not locations.exists():
+
+    normalized_osm_type = _osm_type_char(filter_osm_type)
+
+    if not location:
         url_root = settings.LOCATION_SERVICE_BASE_URL + "/lookup?osm_ids="
+        if not _has_non_empty_value(filter_osm_id) or not _has_non_empty_value(
+            normalized_osm_type
+        ):
+            raise ValidationError(
+                "Missing location lookup parameters: osm_id and osm_type are required"
+            )
+
         # Append osm_id to first letter of osm_type as uppercase letter
-        osm_id_param = query_params.get("loc_type")[0].upper() + query_params.get("osm")
+        osm_id_param = normalized_osm_type + str(filter_osm_id)
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"
         url = url_root + osm_id_param + params
-        headers = {"User-Agent": settings.CUSTOM_USER_AGENT}
-        response = requests.get(url, headers=headers)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        }
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+        except requests.RequestException as exc:
+            raise ValidationError(
+                f"Error while fetching location from upstream service: {exc}"
+            ) from exc
         if response.status_code == 200:
-            location_object = json.loads(response.text)[0]
+            try:
+                data = json.loads(response.text)
+            except ValueError as exc:
+                raise ValidationError(
+                    "Invalid JSON response from upstream location service."
+                ) from exc
+            if not isinstance(data, list) or not data:
+                raise ValidationError(
+                    f"Location not found in upstream service for osm_id={filter_osm_id}, osm_type={normalized_osm_type}"
+                )
+            location_object = data[0]
         else:
             logger.error(
                 "Error while fetching location: " + "\nresponse:" + response.text
@@ -386,16 +512,20 @@ def get_location_with_range(query_params):
             location_object = query_params.get("location")
 
         location = get_location(format_location(location_object, False))
+        is_area = normalized_osm_type == "R" and location.multi_polygon is not None
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)
-            if location_type == "relation"
+            if is_area
             else location.centre_point
         )
     else:
-        location = locations[0]
+        # For place_id-only requests normalized_osm_type may be None;
+        # fall back to the resolved location's own osm_type.
+        effective_osm_type = normalized_osm_type or location.osm_type
+        is_area = effective_osm_type == "R" and location.multi_polygon is not None
         location_in_db = (
             location.multi_polygon.buffer(buffer_width)
-            if location_type == "relation"
+            if is_area
             else location.centre_point
         )
     radius = 0
@@ -406,15 +536,21 @@ def get_location_with_range(query_params):
 
 
 def get_global_location():
-    global_location = Location.objects.filter(name="Global")
-    if global_location.exists():
-        return global_location[0]
-    else:
-        global_location = Location.objects.create(
-            name="Global",
-            city="global",
-            country="global",
-            place_id=1,
-            is_formatted=True,
-        )
-        return global_location
+    # The data migration 0018 ensures the existing "Global" row already has these
+    # synthetic OSM fields populated, so get_or_create will find it rather than
+    # create a duplicate.
+    global_location, _ = Location.objects.get_or_create(
+        osm_id=-1,
+        osm_type="R",
+        osm_class="global",
+        defaults={
+            "name": "Global",
+            "city": "global",
+            "country": "global",
+            "display_name": "Global",
+            "osm_class_type": "global",
+            "place_id": 1,
+            "is_formatted": True,
+        },
+    )
+    return global_location

@@ -190,7 +190,7 @@ export default function EditAccountRoot({
 }
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
-  const availability = availabilityOptions.find((o) => o.key == profile.info.availability);
+  const availability = availabilityOptions?.find((o) => o.key == profile.info.availability);
   const image = profile.image;
   const thumbnail = profile.thumbnail_image;
   const background = profile.background_image;

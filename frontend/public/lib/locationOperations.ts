@@ -413,30 +413,35 @@ export function getLocationValue(values, locationKey) {
 }
 
 /**
- * When filtering by location, the url only holds the place_id, osm_id and loc_type, but not the name. This is used to retrieve the whole location object
+ * When filtering by location, the URL stores identifiers and not full location data.
+ * We resolve it from the backend using OSM-first lookup and place_id fallback.
+ * Either all three OSM identifiers (osm_id, osm_type, osm_class) OR a place_id must be
+ * present for the filter to be considered active.
  */
 export async function getLocationFilteredBy(query) {
-  const required_params = getLocationFilterKeys(true);
-  //Return no if we didn't filter by any location
-  for (const param of required_params) {
-    if (!Object.keys(query).includes(param)) {
-      console.log(`${param} is missing!`);
-      return null;
-    }
+  const osmRequired = getLocationFilterKeys(true);
+  const hasOsmComposite = osmRequired.every((param) => Object.keys(query).includes(param));
+  const hasPlaceId = Object.keys(query).includes("place_id");
+
+  // Return null if neither identifier set is present — not filtering by location.
+  if (!hasOsmComposite && !hasPlaceId) {
+    return null;
   }
   const url = `/api/get_location/`;
   const payload = {
-    place: query.place,
-    osm: query.osm,
-    loc_type: query.loc_type,
+    place_id: query.place_id,
+    osm_id: query.osm_id,
+    osm_type: query.osm_type,
+    osm_class: query.osm_class,
   };
   try {
     const res = await apiRequest({ method: "post", url: url, payload: payload });
     const full_location = {
       ...res.data,
-      place_id: query.place,
-      osm_id: query.osm,
-      osm_type: query.loc_type,
+      place_id: res.data?.place_id || query.place_id,
+      osm_id: res.data?.osm_id || query.osm_id,
+      osm_type: res.data?.osm_type || query.osm_type,
+      osm_class: res.data?.osm_class || query.osm_class,
     };
     return full_location;
   } catch (e) {

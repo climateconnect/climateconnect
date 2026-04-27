@@ -125,6 +125,13 @@ class Location(models.Model):
     class Meta:
         verbose_name = "Location"
         verbose_name_plural = "Location"
+        indexes = [
+            models.Index(
+                fields=["osm_id", "osm_type", "osm_class"],
+                name="location_loc_osm_id_b7b8a5_idx",
+            ),
+            models.Index(fields=["place_id"], name="location_place_id_idx"),
+        ]
         app_label = "location"
 
     def __str__(self):

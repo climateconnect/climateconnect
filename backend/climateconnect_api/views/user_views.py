@@ -309,7 +309,10 @@ class ListMemberProfilesView(ListAPIView):
             user_profiles = user_profiles.filter(skills__in=skills).distinct()
             # user_profiles = user_profiles.filter(id__in=user_profiles.filter(skills__in=skills).values('id'))
 
-        if "place" in self.request.query_params and "osm" in self.request.query_params:
+        if (
+            "osm_id" in self.request.query_params
+            and "osm_type" in self.request.query_params
+        ) or "place_id" in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
             user_profiles = (
                 user_profiles.filter(
