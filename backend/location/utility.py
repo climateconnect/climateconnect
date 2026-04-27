@@ -35,9 +35,9 @@ def location_obj_to_dict(location):
         if hasattr(location, "display_name") and location.display_name
         else location.name
     )
-    type = getattr(location, "type", "administrative")
+    loc_type = getattr(location, "type", "administrative")
     return {
-        "type": type,
+        "type": loc_type,
         "address": address,
         "display_name": display_name,
     }
@@ -277,7 +277,7 @@ CUSTOM_NAME_MAPPINGS = {"Scotland (state), Scotland": "Scotland"}
 
 # These country codes have states that should be shown as the location's "country" part
 # because the actual country name is less meaningful for display (e.g. UK nations)
-MAP_STATE_TO_COUNTRY_CODES = {"gb"}
+MAP_STATE_AS_COUNTRY_CODES = {"gb"}
 
 
 # This function has an equivalent in backend/location/utility.py -> format_location_name
@@ -329,7 +329,7 @@ def format_location_name(location):
     last_part = (
         location["address"]["state"]
         if location["address"].get("country_code", "").lower()
-        in MAP_STATE_TO_COUNTRY_CODES
+        in MAP_STATE_AS_COUNTRY_CODES
         and location["address"].get("state")
         else location["address"].get("country", "")
     )
@@ -441,9 +441,13 @@ def get_location_with_range(query_params):
         if not _has_non_empty_value(filter_osm_id) or not _has_non_empty_value(
             normalized_osm_type
         ):
-            raise ValidationError(
-                "Missing location lookup parameters: osm_id and osm_type are required"
+            logger.warning(
+                "Deprecated or missing location lookup parameters: osm_id and osm_type are required. "
+                "Received osm_id=%s, osm_type=%s. Returning empty result.",
+                filter_osm_id,
+                filter_osm_type,
             )
+            return None
 
         # Append osm_id to first letter of osm_type as uppercase letter
         osm_id_param = normalized_osm_type + str(filter_osm_id)
