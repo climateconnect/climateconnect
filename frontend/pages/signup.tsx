@@ -76,7 +76,6 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
   });
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
   const steps = ["basicinfo", "personalinfo", "interestAreaInfo"];
@@ -217,6 +216,7 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
   };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+
   const customThemeSignUp = hubThemeData
     ? transformThemeData(hubThemeData, themeSignUp)
     : themeSignUp;

@@ -88,6 +88,7 @@ export default function Login({
 }: LoginProps) {
   const { user, locale } = useContext(UserContext);
   const router = useRouter();
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   // Determine redirect URL from query params
@@ -216,11 +217,27 @@ export default function Login({
   };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
 
   return (
-    <WideLayout hideAlert noSpaceBottom customTheme={customTheme} hubUrl={hubSlug || undefined}>
-      <ThemeProvider theme={customTheme || themeSignUp}>
-        <Container maxWidth="lg" style={{ paddingTop: 32, paddingBottom: 32 }}>
+    <WideLayout
+      hideAlert
+      noSpaceBottom
+      isHubPage={hubSlug !== null}
+      customTheme={customTheme}
+      hubUrl={hubSlug || undefined}
+      headerBackground={
+        customTheme && isSmallScreen ? customTheme.palette.header.background : "transparent"
+      }
+      footerTextColor={hubSlug && !isSmallScreen ? "white" : undefined}
+    >
+      <ThemeProvider theme={customThemeSignUp}>
+        <Container
+          maxWidth={hugeScreen ? "xl" : "lg"}
+          style={{ paddingTop: 32, paddingBottom: 32 }}
+        >
           {isSmallScreen ? (
             <Card variant="outlined">
               <CardContent>{getStepContent()}</CardContent>
