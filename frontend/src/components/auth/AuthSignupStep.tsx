@@ -22,7 +22,6 @@ interface PersonalInfoData {
   first_name: string;
   last_name: string;
   location: any;
-  terms_accepted: boolean;
   send_newsletter: boolean;
 }
 
@@ -76,36 +75,28 @@ export default function AuthSignupStep({
     setErrorMessage(null);
 
     try {
-      // Step 1: Create account via POST /api/signup/
+      // Create account via POST /api/signup/
       const signupPayload = {
         email: email.trim().toLowerCase(),
         first_name: personalInfo.first_name,
         last_name: personalInfo.last_name,
         location: parseLocation(personalInfo.location),
         send_newsletter: personalInfo.send_newsletter,
-        terms_accepted: personalInfo.terms_accepted,
         source_language: locale,
         sectors: data.interest_sectors,
-        hub: hubUrl || undefined,
+        hub: hubUrl || "",
         // Note: password field is intentionally omitted for OTP-based signup
       };
 
       await apiRequest({
         method: "post",
-        url: "/api/signup/",
+        url: "/signup/",
         payload: signupPayload,
         locale: locale,
       });
 
-      // Step 2: Request OTP via POST /api/auth/request-token
-      await apiRequest({
-        method: "post",
-        url: "/api/auth/request-token",
-        payload: { email: email.trim().toLowerCase() },
-        locale: locale,
-      });
-
-      // Step 3: Notify parent to transition to OTP entry
+      // Notify parent to transition to OTP entry
+      // Note: OTP request will be handled by AuthOtp component on mount
       onSignupComplete();
     } catch (err: any) {
       console.error("Signup error:", err);

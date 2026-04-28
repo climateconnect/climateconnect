@@ -28,17 +28,17 @@ The result: new users complete account creation and are logged in using the same
 
 ## Key Design Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Signup data collected | Same fields as today's `/signup` (first/last name, location, interest areas) | Preserves existing onboarding flow; no user confusion or data gaps. |
-| Password field | **Omitted entirely** | OTP is the default auth method for new users; passwords can be added later in account settings (Phase B). |
-| Account verification | OTP code entry **replaces** email verification link | Entering a correct OTP proves email ownership; eliminates a redundant email interaction. `UserProfile.is_profile_verified` is set immediately after the OTP is verified, not by clicking an email link. |
-| `send_newsletter` default | False (opt-in via combined checkbox on step 1) | Combined with privacy/terms acceptance into a single checkbox. |
-| Privacy/terms and newsletter acceptance | Required combined checkbox on step 1 | Required field: "I agree to the terms of service and privacy policy and would like to receive emails about updates, news and interesting projects". Checking this box sets both `terms_accepted = True` and `send_newsletter = True`. |
-| Location field | Autocomplete search using existing location API | Same UX as `/signup` — reuses `LocationSearchTypeahead` component. |
-| Interest areas | Multi-select checkboxes, **optional** | Same UX as `/signup` — reuses existing sector/category components. Users can skip this step (same as today). |
-| Backend changes | Adapt `POST /api/signup/` to make `password` optional | Today the endpoint requires `password` (400 if missing). The endpoint must accept `password: null` or absent, set the account with `set_unusable_password()`, set `UserProfile.auth_method = "otp"`. All other required fields remain the same: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `terms_accepted`, `source_language`. |
-| Account unverified state | Same as today — `is_profile_verified = False` initially | The account is created unverified. `POST /api/auth/verify-token` marks it verified after OTP entry succeeds. This preserves the `AUTO_VERIFY` setting behaviour for dev/staging environments. |
+| Decision                                | Choice                                                                       | Rationale                                                                                                                                                                                                                                                                                                                              |
+| --------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Signup data collected                   | Same fields as today's `/signup` (first/last name, location, interest areas) | Preserves existing onboarding flow; no user confusion or data gaps.                                                                                                                                                                                                                                                                    |
+| Password field                          | **Omitted entirely**                                                         | OTP is the default auth method for new users; passwords can be added later in account settings (Phase B).                                                                                                                                                                                                                              |
+| Account verification                    | OTP code entry **replaces** email verification link                          | Entering a correct OTP proves email ownership; eliminates a redundant email interaction. `UserProfile.is_profile_verified` is set immediately after the OTP is verified, not by clicking an email link.                                                                                                                                |
+| `send_newsletter` default               | False (opt-in via combined checkbox on step 1)                               | Combined with privacy/terms acceptance into a single checkbox.                                                                                                                                                                                                                                                                         |
+| Privacy/terms and newsletter acceptance | Required combined checkbox on step 1                                         | Required field: "I agree to the terms of service and privacy policy and would like to receive emails about updates, news and interesting projects". Checking this box sets `send_newsletter = True`. The backend does not receive or validate a separate `terms_accepted` field — the combined checkbox text implies legal acceptance. |
+| Location field                          | Autocomplete search using existing location API                              | Same UX as `/signup` — reuses `LocationSearchTypeahead` component.                                                                                                                                                                                                                                                                     |
+| Interest areas                          | Multi-select checkboxes, **optional**                                        | Same UX as `/signup` — reuses existing sector/category components. Users can skip this step (same as today).                                                                                                                                                                                                                           |
+| Backend changes                         | Adapt `POST /api/signup/` to make `password` optional                        | Today the endpoint requires `password` (400 if missing). The endpoint must accept `password: null` or absent, set the account with `set_unusable_password()`, set `UserProfile.auth_method = "otp"`. All other required fields remain the same: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `source_language`.  |
+| Account unverified state                | Same as today — `is_profile_verified = False` initially                      | The account is created unverified. `POST /api/auth/verify-token` marks it verified after OTP entry succeeds. This preserves the `AUTO_VERIFY` setting behaviour for dev/staging environments.                                                                                                                                          |
 
 ---
 
@@ -55,8 +55,7 @@ The result: new users complete account creation and are logged in using the same
 │  Checkbox: "I agree to the terms of service and privacy   │
 │            policy and would like to receive emails about  │
 │            updates, news and interesting projects"        │
-│            (required - sets both terms_accepted and       │
-│             send_newsletter to true)                      │
+│            (required - sets send_newsletter to true)      │
 │  Button: "Continue"                                        │
 │                      ↓                                     │
 ├────────────────────────────────────────────────────────────┤
@@ -66,9 +65,10 @@ The result: new users complete account creation and are logged in using the same
 │                      ↓                                     │
 │  API: POST /api/signup/                                    │
 │       { email, first_name, last_name, location,           │
-│         send_newsletter, terms_accepted, interest_sectors,│
-│         source_language}                                   │
+│         send_newsletter, interest_sectors,                │
+│         source_language, hub }                            │
 │       → Returns { user }                                   │
+│       Note: hub is always sent (empty string if no hub)   │
 │                      ↓                                     │
 │  API: POST /api/auth/request-token                         │
 │       { email }                                            │
@@ -99,17 +99,21 @@ The result: new users complete account creation and are logged in using the same
 **Today's behaviour**: `password` is a required field; 400 if missing. Account is created with `user.set_password(password)`.
 
 **New behaviour**:
+
 - `password` field becomes **optional** (nullable).
 - If `password` is provided: behave exactly as today — call `user.set_password(password)`, set `UserProfile.auth_method = "password"`.
 - If `password` is absent or null: call `user.set_unusable_password()`, set `UserProfile.auth_method = "otp"`.
-- All other fields remain required: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `terms_accepted`, `source_language`.
+- All other fields remain required: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `source_language`.
 - `interest_sectors` (or `sectors` in the backend) is **optional** — same as today's `/signup`.
+- `hub` is **always sent by the frontend** — when the user comes from a hub (e.g., `?hub=berlin`), the hub URL slug is sent; otherwise, an empty string is sent. The backend checks if the hub exists and associates it with the user's `related_hubs` if valid. Empty strings or invalid slugs are silently ignored (no hub association).
+- **Note**: The backend does not receive or validate a `terms_accepted` field. The frontend checkbox combines privacy/terms acceptance with newsletter opt-in, but only `send_newsletter` is sent to the API.
 - Validation logic unchanged: email uniqueness, location lookup, sector IDs must exist if provided.
 - Account created with `is_profile_verified = False` — same as today.
 - **No verification email is sent** when `auth_method = "otp"` — the OTP flow replaces it.
 - `AUTO_VERIFY` setting: if `AUTO_VERIFY = True` (dev/staging), set `is_profile_verified = True` immediately — same behaviour as today.
 
 **Implementation requirements**:
+
 - Update the signup serializer to make `password` optional (`required=False, allow_null=True`).
 - Update signup view to check if `password` is provided: if yes, call `user.set_password(password)` and set `auth_method = "password"`; if no, call `user.set_unusable_password()` and set `auth_method = "otp"`.
 - Conditionally send verification email: only send for `auth_method = "password"` when `AUTO_VERIFY = False`.
@@ -122,12 +126,14 @@ The result: new users complete account creation and are logged in using the same
 **Today's behaviour** (from US-4): validates OTP, marks `LoginToken.used_at`, issues Knox token, returns `{ token, expiry, user }`.
 
 **New behaviour**:
+
 - After issuing the Knox token, check if `user.userprofile.is_profile_verified == False`.
 - If unverified: set `is_profile_verified = True` and save.
 - This replaces the email verification link click for OTP-based signups.
 - **Rate this operation as minimal risk**: `verify-token` already has transaction safety (US-4 spec); adding a profile update inside the same transaction is idempotent and safe.
 
 **Implementation requirements**:
+
 - After issuing the Knox token in `verify-token`, check if `user.userprofile.is_profile_verified == False`.
 - If unverified, set `is_profile_verified = True` and save (use `update_fields=['is_profile_verified']` for efficiency).
 - Must be within the existing `@transaction.atomic` block from US-4.
@@ -145,29 +151,32 @@ The result: new users complete account creation and are logged in using the same
 **New states**: `signup_step1`, `signup_step2`
 
 **Flow**:
+
 - When `check-email` returns `user_status: "new"`, set `currentStep = "signup_step1"`.
 - Step 1: render `SignupPersonalInfoStep` component → collects name + location → "Continue" button sets `currentStep = "signup_step2"`.
 - Step 2: render `SignupInterestsStep` component → collects interest sectors + newsletter opt-out → "Create account" button calls `POST /api/signup/`, then `POST /api/auth/request-token`, then sets `currentStep = "otp_entry"`.
 - Step "otp_entry": render `AuthOtpStep` component (from US-6) → user enters code, calls `verify-token`, on success navigates to `redirect_url` or home.
 
 **State management** (lifted to page level):
-- `signupData`: `{ email, first_name, last_name, location, interest_sectors, send_newsletter, terms_accepted }`
+
+- `signupData`: `{ email, first_name, last_name, location, interest_sectors, send_newsletter }`
 - `sessionKey`: set from `request-token` response, passed to `AuthOtpStep`.
 
 ### 2. Create `SignupPersonalInfoStep` component
 
 **File**: `frontend/src/components/auth/SignupPersonalInfoStep.tsx` (new)
 
-**Props**: Component receives `email` (string, pre-filled and read-only), `onContinue` callback (receives `first_name`, `last_name`, `location` ID, `send_newsletter`, and `terms_accepted`), and `onBack` callback.
+**Props**: Component receives `email` (string, pre-filled and read-only), `onContinue` callback (receives `first_name`, `last_name`, `location` ID, and `send_newsletter`), and `onBack` callback.
 
 **UI**:
+
 - Email field: pre-filled, disabled (user cannot change it — it's from email entry step).
 - First name: text input, required.
 - Last name: text input, required.
 - Location: autocomplete search using `LocationSearchTypeahead` component (same as `/signup`).
-- Combined checkbox: "I agree to the terms of service and privacy policy and would like to receive emails about updates, news and interesting projects" — **required**, with links to `/terms` and `/privacy`. When checked, this sets both `terms_accepted = true` and `send_newsletter = true`.
+- Combined checkbox: "I agree to the terms of service and privacy policy and would like to receive emails about updates, news and interesting projects" — **required**, with links to `/terms` and `/privacy`. When checked, this sets `send_newsletter = true`.
 - "Back" button → calls `onBack()` → returns to email entry.
-- "Continue" button → validates fields (name, location, and combined checkbox all required), calls `onContinue({ first_name, last_name, location, send_newsletter: true, terms_accepted: true })`.
+- "Continue" button → validates fields (name, location, and combined checkbox all required), calls `onContinue({ first_name, last_name, location, send_newsletter: true })`.
 
 **Reuse**: the existing `LocationSearchTypeahead` component from `src/components/location/` can be used directly — it returns a location object with `id`. Extract the `id` and pass it to the parent.
 
@@ -180,6 +189,7 @@ The result: new users complete account creation and are logged in using the same
 **Props**: Component receives `email`, `first_name`, `last_name`, `location` ID, and `send_newsletter` (for display), `onSubmit` callback (receives `interest_sectors` array), and `onBack` callback.
 
 **UI**:
+
 - Display user's name and location (read-only summary from step 1) — gives context.
 - Interest areas: multi-select checkboxes for climate action sectors/categories.
   - **Reuse existing component**: `src/components/signup/InterestAreasSelection.tsx` (or similar) — same as today's `/signup` page.
@@ -189,11 +199,13 @@ The result: new users complete account creation and are logged in using the same
 - "Create account" button → calls `onSubmit({ interest_sectors })`. Not disabled even if no sectors selected (optional field).
 
 **API calls** (triggered by `onSubmit` callback in parent):
+
 1. `POST /api/signup/` with full signup payload (no password field).
 2. On 201 response: immediately call `POST /api/auth/request-token` with `{ email }`.
 3. On `request-token` success: store `session_key` in page state, transition to `otp_entry` step.
 
 **Error handling**:
+
 - `POST /api/signup/` errors (email already exists, invalid location, etc.) → display inline below form.
 - `POST /api/auth/request-token` errors (rate limit) → display inline; user can retry after cooldown.
 
@@ -204,6 +216,7 @@ The result: new users complete account creation and are logged in using the same
 **No new component needed** — the `AuthOtpStep` component from US-6 is reused.
 
 **Parent state** (`login.tsx`):
+
 - When `signup_step2` calls `onSubmit` and both API calls succeed, transition to `currentStep = "otp_entry"`.
 - Pass `sessionKey` (from `request-token`) and `email` to `AuthOtpStep`.
 - `AuthOtpStep` handles code entry, verification, and navigation to `redirect_url`.
@@ -215,6 +228,7 @@ The result: new users complete account creation and are logged in using the same
 ## Acceptance Criteria
 
 ### Backend
+
 - [ ] `POST /api/signup/` accepts `password` as optional (nullable).
 - [ ] When `password` is absent: account created with `set_unusable_password()`, `UserProfile.auth_method = "otp"`.
 - [ ] When `password` is provided: behaves exactly as today — `set_password()`, `auth_method = "password"`.
@@ -225,8 +239,9 @@ The result: new users complete account creation and are logged in using the same
 - [ ] Existing `POST /api/signup/` callers (old `/signup` page with toggle off) continue to work without changes.
 
 ### Frontend
+
 - [ ] When `check-email` returns `"new"`, transition to `signup_step1`.
-- [ ] Step 1: collect first name, last name, location, combined privacy/terms and newsletter checkbox (required, sets both `terms_accepted` and `send_newsletter` to true when checked).
+- [ ] Step 1: collect first name, last name, location, combined privacy/terms and newsletter checkbox (required, sets `send_newsletter` to true when checked; no separate `terms_accepted` field sent to backend).
 - [ ] Step 2: collect interest sectors only (optional).
 - [ ] "Back" button on each step returns to previous step (step 1 → email entry, step 2 → step 1).
 - [ ] "Create account" button calls `POST /api/signup/` with no `password` field.
@@ -240,6 +255,7 @@ The result: new users complete account creation and are logged in using the same
 - [ ] Mobile responsive: steps render correctly on mobile (single column), tablet, and desktop.
 
 ### Tests
+
 - [ ] Backend: test `POST /api/signup/` with `password=null` creates OTP account.
 - [ ] Backend: test `POST /api/signup/` with `password="..."` creates password account (backward compat).
 - [ ] Backend: test `POST /api/signup/` succeeds with no `interest_sectors` field (optional).
@@ -253,7 +269,7 @@ The result: new users complete account creation and are logged in using the same
 - [ ] Frontend: test OTP entry step renders after signup completes.
 - [ ] Frontend: test back button navigation (step 2 → step 1 → email entry).
 - [ ] Frontend: test error handling for signup API 400 response.
-- [ ] Frontend: test combined privacy/terms and newsletter checkbox on step 1 is required (cannot proceed without it, sets both fields to true when checked).
+- [ ] Frontend: test combined privacy/terms and newsletter checkbox on step 1 is required (cannot proceed without it, sets `send_newsletter` to true when checked).
 
 ---
 
@@ -270,7 +286,7 @@ The result: new users complete account creation and are logged in using the same
 
 ### Phase 2 — Frontend Components
 
-1. **Create `SignupPersonalInfoStep.tsx`**: name + location form, combined privacy/terms and newsletter checkbox (required, sets both `terms_accepted` and `send_newsletter` to true), reuse `LocationSearchTypeahead`.
+1. **Create `SignupPersonalInfoStep.tsx`**: name + location form, combined privacy/terms and newsletter checkbox (required, sets `send_newsletter` to true), reuse `LocationSearchTypeahead`.
 2. **Create `SignupInterestsStep.tsx`**: interest sectors multi-select only, reuse existing sector selection component.
 3. **Wire state machine in `login.tsx`**:
    - Add `signup_step1` and `signup_step2` states.
@@ -296,7 +312,7 @@ The result: new users complete account creation and are logged in using the same
 1. **Backward compatibility**: existing password-based signup (old `/signup` page when toggle off) must continue to work without changes.
 2. **No verification email for OTP signups**: replaced by OTP code entry.
 3. **Verification email still sent for password signups**: preserves existing flow for legacy page.
-4. **Required fields match today's signup**: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `terms_accepted`, `source_language` are required. `password` and `interest_sectors` are both optional (same as today for sectors).
+4. **Required fields match today's signup**: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `source_language`, `hub` are sent in the API request. `password` and `interest_sectors` are optional. **Note**: `terms_accepted` is not sent to the backend — the combined checkbox text implies legal acceptance. The `hub` field is always sent (as empty string when user is not from a hub).
 5. **OTP entry step uses US-6 component**: no duplication of OTP UI code.
 6. **Hub theming preserved**: all signup steps apply hub colors/images via props from parent page.
 7. **`session_key` binding**: the OTP sent during signup is tied to the same browser tab via `session_key` (same security model as US-6).
@@ -306,13 +322,13 @@ The result: new users complete account creation and are logged in using the same
 
 ## Known Risks & Mitigations
 
-| Risk | Mitigation |
-|------|------------|
-| User enters typo in email during step 1 | No mitigation in this story — email is locked after step 1. Future enhancement: add "change email" option on step 2 summary. |
-| User closes tab during signup steps | Frontend state is lost; user must restart. Acceptable for Phase A — signup is fast (2 steps). Future: persist partial signup state in `sessionStorage`. |
-| `request-token` rate limit hit during signup | Display error message inline; user must wait for cooldown. Same UX as returning user OTP flow (US-6). |
-| Account created but OTP send fails | Account exists in DB unverified. User can restart flow; `POST /api/signup/` will return 400 "email already exists". User must use password reset or contact support. Future: add "resend verification OTP" endpoint (out of scope for Phase A). |
-| `verify-token` fails after account created | User can use resend button (US-6 component) — no additional logic needed. |
+| Risk                                         | Mitigation                                                                                                                                                                                                                                      |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| User enters typo in email during step 1      | No mitigation in this story — email is locked after step 1. Future enhancement: add "change email" option on step 2 summary.                                                                                                                    |
+| User closes tab during signup steps          | Frontend state is lost; user must restart. Acceptable for Phase A — signup is fast (2 steps). Future: persist partial signup state in `sessionStorage`.                                                                                         |
+| `request-token` rate limit hit during signup | Display error message inline; user must wait for cooldown. Same UX as returning user OTP flow (US-6).                                                                                                                                           |
+| Account created but OTP send fails           | Account exists in DB unverified. User can restart flow; `POST /api/signup/` will return 400 "email already exists". User must use password reset or contact support. Future: add "resend verification OTP" endpoint (out of scope for Phase A). |
+| `verify-token` fails after account created   | User can use resend button (US-6 component) — no additional logic needed.                                                                                                                                                                       |
 
 ---
 
@@ -337,17 +353,17 @@ The result: new users complete account creation and are logged in using the same
 
 ## Resolved Architecture Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Number of signup steps | 2 (same as today) | Keeps cognitive load low; interest sectors can be edited later in profile settings. |
-| Password field placement | Omitted entirely | OTP is default; passwords added in account settings (Phase B US-10). |
-| Newsletter opt-in | Always enabled via combined checkbox | Combined with privacy/terms acceptance; checking the required checkbox opts user into newsletter. |
-| Location field type | Autocomplete search | Same UX as today; reuses `LocationSearchTypeahead` component. |
-| Interest sectors field | Multi-select checkboxes | Same UX as today; reuses existing sector selection component. |
-| OTP trigger point | After `POST /api/signup/` succeeds | Account must exist before `request-token` is called (it looks up user by email). |
-| Profile verification logic | In `verify-token` endpoint | Single source of truth; avoids frontend conditional logic. |
-| Back button from OTP step | Disabled | Account already created; user must complete verification. Resend button is the path forward. |
-| Email editing after step 1 | Not supported (Phase A) | Simplifies state management; users can restart if needed. Future enhancement. |
+| Decision                   | Choice                               | Rationale                                                                                         |
+| -------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| Number of signup steps     | 2 (same as today)                    | Keeps cognitive load low; interest sectors can be edited later in profile settings.               |
+| Password field placement   | Omitted entirely                     | OTP is default; passwords added in account settings (Phase B US-10).                              |
+| Newsletter opt-in          | Always enabled via combined checkbox | Combined with privacy/terms acceptance; checking the required checkbox opts user into newsletter. |
+| Location field type        | Autocomplete search                  | Same UX as today; reuses `LocationSearchTypeahead` component.                                     |
+| Interest sectors field     | Multi-select checkboxes              | Same UX as today; reuses existing sector selection component.                                     |
+| OTP trigger point          | After `POST /api/signup/` succeeds   | Account must exist before `request-token` is called (it looks up user by email).                  |
+| Profile verification logic | In `verify-token` endpoint           | Single source of truth; avoids frontend conditional logic.                                        |
+| Back button from OTP step  | Disabled                             | Account already created; user must complete verification. Resend button is the path forward.      |
+| Email editing after step 1 | Not supported (Phase A)              | Simplifies state management; users can restart if needed. Future enhancement.                     |
 
 ---
 
@@ -361,6 +377,10 @@ The result: new users complete account creation and are logged in using the same
   - This structure better aligns with current implementation and improves reusability for event registration flow
 - 2026-04-27 — Combined privacy/terms and newsletter into single required checkbox:
   - Single checkbox now contains both terms acceptance and newsletter opt-in text
-  - Checking this box sets both `terms_accepted = true` and `send_newsletter = true`
-  - Simplifies UI while maintaining same API contract (both fields still sent to backend)
-  - Note: Backend never validated the privacy checkbox separately, so no API changes needed
+  - Checking this box sets `send_newsletter = true` (only field sent to backend)
+  - Simplifies UI and API contract — `terms_accepted` field removed from API payload
+  - Backend never validated the privacy checkbox separately; combined text implies legal acceptance
+- 2026-04-28 — Clarified that only `send_newsletter` is sent to backend:
+  - Removed `terms_accepted` from all API payloads and required fields lists
+  - Checkbox text still combines both concepts for user clarity
+  - Backend does not receive or validate a separate `terms_accepted` field

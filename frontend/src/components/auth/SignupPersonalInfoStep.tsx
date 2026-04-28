@@ -20,7 +20,6 @@ interface SignupPersonalInfoStepProps {
     first_name: string;
     last_name: string;
     location: any;
-    terms_accepted: boolean;
     send_newsletter: boolean;
   }) => void;
   onBack: () => void;
@@ -89,7 +88,6 @@ export default function SignupPersonalInfoStep({
       first_name: firstName.trim(),
       last_name: lastName.trim(),
       location: location,
-      terms_accepted: true,
       send_newsletter: true, // Both set to true when combined checkbox is checked
     });
   };
