@@ -4,15 +4,11 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 import { Sector } from "../../types";
-import { getDisplayLocationFromLocation } from "../../../public/lib/locationOperations";
 import { getSectorOptions } from "../../../public/lib/getOptions";
 import LoadingSpinner from "../general/LoadingSpinner";
 
 interface SignupInterestsStepProps {
   email: string;
-  firstName: string;
-  lastName: string;
-  location: any;
   onSubmit: (_data: { interest_sectors: string[] }) => void;
   onBack: () => void;
   hubUrl?: string;
@@ -22,9 +18,6 @@ interface SignupInterestsStepProps {
 
 export default function SignupInterestsStep({
   email: _email,
-  firstName,
-  lastName,
-  location,
   onSubmit,
   onBack,
   hubUrl,
@@ -86,11 +79,6 @@ export default function SignupInterestsStep({
     (sector) => !selectedSectors.some((selected) => selected.key === sector.key)
   );
 
-  // Get location display name
-  const locationDisplay = location
-    ? getDisplayLocationFromLocation(location).name
-    : texts.no_location;
-
   return (
     <Box>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
@@ -100,17 +88,6 @@ export default function SignupInterestsStep({
       <Typography variant="body1" sx={{ mb: 3 }}>
         {texts.signup_step_3_headline}
       </Typography>
-
-      {/* Summary of user info from step 1 */}
-      <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-        <Typography variant="body2" color="text.secondary">
-          <strong>{texts.name}:</strong> {firstName} {lastName}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>{texts.location}:</strong> {locationDisplay}
-        </Typography>
-      </Box>
-
       {/* Interest sectors selection */}
       <Box sx={{ mb: 3 }}>
         {isLoadingSectors ? (

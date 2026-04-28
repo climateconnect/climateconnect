@@ -64,25 +64,17 @@ jest.mock("../general/LoadingSpinner", () => {
   };
 });
 
-// Mock location operations
-jest.mock("../../../public/lib/locationOperations", () => ({
-  getDisplayLocationFromLocation: (location: any) => ({
-    name: location ? `${location.city}, ${location.country}` : "No location",
-  }),
-}));
-
 // Mock getTexts
 jest.mock("../../../public/texts/texts", () => {
   return jest.fn(() => ({
     your_area_of_interest: "Your area of interest",
-    signup_step_2_headline: "Select the climate action areas you're interested in.",
+    signup_step_3_headline:
+      "Let the climate community know what you are already doing or which fields interest you the most.",
     name: "Name",
-    location: "Location",
     select_your_interest_areas: "Select your interest areas (optional)",
     back: "Back",
     create_account: "Create account",
     creating_account: "Creating account...",
-    no_location: "No location",
   }));
 });
 
@@ -110,9 +102,6 @@ const mockSectors = [
 
 function renderSignupInterestsStep({
   email = "test@example.com",
-  firstName = "Test",
-  lastName = "User",
-  location = { city: "Berlin", country: "Germany" },
   onSubmit = jest.fn(),
   onBack = jest.fn(),
   hubUrl = undefined,
@@ -125,9 +114,6 @@ function renderSignupInterestsStep({
       <UserContext.Provider value={makeContextValue(locale) as any}>
         <SignupInterestsStep
           email={email}
-          firstName={firstName}
-          lastName={lastName}
-          location={location}
           onSubmit={onSubmit}
           onBack={onBack}
           hubUrl={hubUrl}
@@ -163,21 +149,8 @@ describe("SignupInterestsStep", () => {
           "Your area of interest"
         );
         expect(
-          screen.getByText(/select the climate action areas you're interested in/i)
+          screen.getByText(/let the climate community know what you are already doing/i)
         ).toBeInTheDocument();
-      });
-    });
-
-    it("displays user info summary from step 1", async () => {
-      renderSignupInterestsStep({
-        firstName: "John",
-        lastName: "Doe",
-        location: { city: "Munich", country: "Germany" },
-      });
-
-      await waitFor(() => {
-        expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
-        expect(screen.getByText(/Munich, Germany/i)).toBeInTheDocument();
       });
     });
 

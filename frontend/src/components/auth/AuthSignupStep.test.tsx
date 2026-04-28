@@ -51,9 +51,6 @@ jest.mock("./SignupPersonalInfoStep", () => {
 jest.mock("./SignupInterestsStep", () => {
   return function MockSignupInterestsStep({
     email,
-    firstName,
-    lastName,
-    location,
     onSubmit,
     onBack,
     isLoading,
@@ -62,10 +59,6 @@ jest.mock("./SignupInterestsStep", () => {
     return (
       <div data-testid="signup-interests-step">
         <div>Email: {email}</div>
-        <div>
-          Name: {firstName} {lastName}
-        </div>
-        <div>Location: {location.city}</div>
         {errorMessage && <div role="alert">{errorMessage}</div>}
         <button onClick={onBack} disabled={isLoading}>
           Back
@@ -172,8 +165,7 @@ describe("AuthSignupStep", () => {
       fireEvent.click(screen.getByRole("button", { name: /continue/i }));
 
       await waitFor(() => {
-        expect(screen.getByText("Name: Test User")).toBeInTheDocument();
-        expect(screen.getByText("Location: Berlin")).toBeInTheDocument();
+        expect(screen.getByTestId("signup-interests-step")).toBeInTheDocument();
       });
     });
 

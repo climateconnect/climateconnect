@@ -114,9 +114,6 @@ export default function AuthSignupStep({
     return (
       <SignupInterestsStep
         email={email}
-        firstName={personalInfo.first_name}
-        lastName={personalInfo.last_name}
-        location={personalInfo.location}
         onSubmit={handleCreateAccount}
         onBack={handleBackToPersonalInfo}
         hubUrl={hubUrl}

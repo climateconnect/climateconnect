@@ -345,9 +345,10 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       ),
     },
     signup_step_2_headline: {
-      en: "Add your Name and Location. This way People can find you and know where you are from.",
+      en:
+        "Select the climate action areas you're interested in. This helps us connect you with relevant projects and people. You can skip this step and add interests later.",
       de:
-        "Füge deinen Namen und deinen Standort hinzu. So können dich andere finden und wissen, woher du kommst.",
+        "Wähle die Klimaschutz-Bereiche aus, die dich interessieren. Das hilft uns, dich mit relevanten Projekten und Personen zu verbinden. Du kannst diesen Schritt überspringen und später Interessen hinzufügen.",
     },
     signup_step_3_headline: {
       en:
