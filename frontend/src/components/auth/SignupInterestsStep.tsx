@@ -89,26 +89,25 @@ export default function SignupInterestsStep({
   // Get location display name
   const locationDisplay = location
     ? getDisplayLocationFromLocation(location).name
-    : texts.no_location || "No location";
+    : texts.no_location;
 
   return (
     <Box>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
-        {texts.your_area_of_interest || "Your area of interest"}
+        {texts.your_area_of_interest}
       </Typography>
 
       <Typography variant="body1" sx={{ mb: 3 }}>
-        {texts.signup_step_2_headline ||
-          "Select the climate action areas you're interested in. This helps us connect you with relevant projects and people. You can skip this step and add interests later."}
+        {texts.signup_step_3_headline}
       </Typography>
 
       {/* Summary of user info from step 1 */}
       <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
         <Typography variant="body2" color="text.secondary">
-          <strong>{texts.name || "Name"}:</strong> {firstName} {lastName}
+          <strong>{texts.name}:</strong> {firstName} {lastName}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          <strong>{texts.location || "Location"}:</strong> {locationDisplay}
+          <strong>{texts.location}:</strong> {locationDisplay}
         </Typography>
       </Box>
 
@@ -123,7 +122,7 @@ export default function SignupInterestsStep({
             onSelectNewSector={handleSectorSelection}
             onClickRemoveSector={handleSectorRemoval}
             hideTitle={false}
-            title={texts.select_your_interest_areas || "Select your interest areas (optional)"}
+            title={texts.select_your_interest_areas}
           />
         )}
       </Box>
@@ -138,7 +137,7 @@ export default function SignupInterestsStep({
       {/* Action buttons */}
       <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
         <Button variant="outlined" onClick={onBack} disabled={isLoading}>
-          {texts.back || "Back"}
+          {texts.back}
         </Button>
         <Button
           variant="contained"
@@ -147,9 +146,7 @@ export default function SignupInterestsStep({
           disabled={isLoading}
           sx={{ flex: 1 }}
         >
-          {isLoading
-            ? texts.creating_account || "Creating account..."
-            : texts.create_account || "Create account"}
+          {isLoading ? texts.creating_account : texts.create_account}
         </Button>
       </Box>
     </Box>

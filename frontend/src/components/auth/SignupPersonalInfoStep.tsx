@@ -62,20 +62,16 @@ export default function SignupPersonalInfoStep({
 
     // Validate required fields
     if (!firstName.trim()) {
-      newErrors.firstName = texts.first_name_is_required || "First name is required";
+      newErrors.firstName = texts.first_name_is_required;
     }
     if (!lastName.trim()) {
-      newErrors.lastName = texts.last_name_is_required || "Last name is required";
+      newErrors.lastName = texts.last_name_is_required;
     }
     if (!isLocationValid(location)) {
-      newErrors.location =
-        texts.please_choose_one_of_the_location_options ||
-        "Please choose a valid location from the dropdown";
+      newErrors.location = texts.please_choose_one_of_the_location_options;
     }
     if (!termsAccepted) {
-      newErrors.terms =
-        texts.you_must_accept_terms_and_privacy_policy ||
-        "You must accept the terms of service and privacy policy";
+      newErrors.terms = texts.you_must_accept_terms_and_privacy_policy;
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -95,29 +91,28 @@ export default function SignupPersonalInfoStep({
   return (
     <Box>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
-        {texts.create_your_account || "Create your account"}
+        {texts.create_your_account}
       </Typography>
 
       <Typography variant="body1" sx={{ mb: 3 }}>
-        {texts.signup_step_1_headline ||
-          "Tell us a bit about yourself to get started on Climate Connect."}
+        {texts.signup_step_1_headline}
       </Typography>
 
       {/* Email field - read-only */}
       <TextField
         fullWidth
-        label={texts.email || "Email"}
+        label={texts.email}
         value={email}
         disabled
         sx={{ mb: 2 }}
-        helperText={texts.email_cannot_be_changed || "This is the email you'll use to log in"}
+        helperText={texts.email_cannot_be_changed}
       />
 
       {/* First name */}
       <TextField
         fullWidth
         required
-        label={texts.first_name || "First name"}
+        label={texts.first_name}
         value={firstName}
         onChange={(e) => {
           setFirstName(e.target.value);
@@ -134,7 +129,7 @@ export default function SignupPersonalInfoStep({
       <TextField
         fullWidth
         required
-        label={texts.last_name || "Last name"}
+        label={texts.last_name}
         value={lastName}
         onChange={(e) => {
           setLastName(e.target.value);
@@ -149,7 +144,7 @@ export default function SignupPersonalInfoStep({
 
       {/* Location */}
       <LocationSearchBar
-        label={texts.location || "Location"}
+        label={texts.location}
         required
         value={location}
         onSelect={handleLocationChange}
@@ -180,16 +175,15 @@ export default function SignupPersonalInfoStep({
           }
           label={
             <Typography variant="body2">
-              {texts.i_agree_to_the || "I agree to the"}{" "}
+              {texts.i_agree_to_the}{" "}
               <Link href="/terms" target="_blank" rel="noopener">
-                {texts.terms_of_service || "terms of service"}
+                {texts.terms_of_service}
               </Link>{" "}
-              {texts.and || "and"}{" "}
+              {texts.and}{" "}
               <Link href="/privacy" target="_blank" rel="noopener">
-                {texts.privacy_policy || "privacy policy"}
+                {texts.privacy_policy}
               </Link>{" "}
-              {texts.and_would_like_to_receive_emails ||
-                "and would like to receive emails about updates, news and interesting projects"}
+              {texts.and_would_like_to_receive_emails}
             </Typography>
           }
         />
@@ -203,10 +197,10 @@ export default function SignupPersonalInfoStep({
       {/* Action buttons */}
       <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
         <Button variant="outlined" onClick={onBack}>
-          {texts.back || "Back"}
+          {texts.back}
         </Button>
         <Button variant="contained" color="primary" onClick={handleContinue} sx={{ flex: 1 }}>
-          {texts.continue || "Continue"}
+          {texts.continue}
         </Button>
       </Box>
     </Box>
