@@ -5330,16 +5330,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webflow/data-types@npm:^1.2.2":
-  version: 1.2.2
-  resolution: "@webflow/data-types@npm:1.2.2"
-  checksum: 10c0/591419295786c9496033276faf25ef855f35ea50a3e9b80d8c558a75171ad9aaeb4c0f53af3c76e96d1c46079318ea200b113247ca013b1459e891c5885203a1
+"@webflow/data-types@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "@webflow/data-types@npm:1.3.0"
+  checksum: 10c0/8f1afe546978205134a93f78b3bfb3abec1d4910e156aaf13c2f67e979218985889c9208777fd4852cfa9ac97741aa739809eb4d860655eadd2b6614871f73bf
   languageName: node
   linkType: hard
 
-"@webflow/webflow-cli@npm:^1.13.0":
-  version: 1.13.0
-  resolution: "@webflow/webflow-cli@npm:1.13.0"
+"@webflow/webflow-cli@npm:^1.18.0":
+  version: 1.18.0
+  resolution: "@webflow/webflow-cli@npm:1.18.0"
   dependencies:
     "@babel/preset-env": "npm:^7.26.9"
     "@babel/preset-react": "npm:^7.26.3"
@@ -5348,7 +5348,7 @@ __metadata:
     "@inquirer/prompts": "npm:^7.9.0"
     "@module-federation/enhanced": "npm:0.20.0"
     "@rspack/core": "npm:^1.7.8"
-    "@webflow/data-types": "npm:^1.2.2"
+    "@webflow/data-types": "npm:^1.3.0"
     ajv: "npm:^8.17.1"
     archiver: "npm:^5.3.1"
     babel-loader: "npm:^10.0.0"
@@ -5363,6 +5363,7 @@ __metadata:
     fork-ts-checker-webpack-plugin: "npm:9.1.0"
     form-data: "npm:4.0.4"
     fs-extra: "npm:^11.3.0"
+    jsdom: "npm:^26.0.0"
     jsonc-parser: "npm:^3.2.0"
     md5: "npm:^2.2.1"
     memfs: "npm:4.17.0"
@@ -5384,13 +5385,13 @@ __metadata:
     tsconfig-paths-webpack-plugin: "npm:^4.2.0"
     unionfs: "npm:^4.5.4"
     webflow-api: "npm:3.2.2"
-    webpack: "npm:^5.99.7"
+    webpack: "npm:>=5.99.7 <5.106.0"
     webpack-merge: "npm:^6.0.1"
     webpack-node-externals: "npm:^3.0.0"
     zod: "npm:^3.22.4"
   bin:
     webflow: dist/index.js
-  checksum: 10c0/d2e2ddaeba83e0e0c3696cf4091b13822e1563f3ef57dcb6b7aa3a2a7869402106c66e53b9564fc2bbcabf263fea40202efa0edf3600c2a826aff11584cc9f63
+  checksum: 10c0/c25593e3fbc4652dbe207bd420d91f9a1ce5ef3aeda07e3636761da2129e080e8a70cdf2c88610f1e31bc2b0f5c30e900e939762f9f60b89e31eb668dc5c1d53
   languageName: node
   linkType: hard
 
@@ -5488,6 +5489,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10c0/dec73ff59b7d6628a01eebaece7f2bdb8bb62b9b5926dcad0f8931f2b8b79c2be21f6c68ac095592adb5adb15831a3635d9343e6a91d028bbe85d564875ec3ec
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.16.0":
+  version: 8.16.0
+  resolution: "acorn@npm:8.16.0"
+  bin:
+    acorn: bin/acorn
+  checksum: 10c0/c9c52697227661b68d0debaf972222d4f622aa06b185824164e153438afa7b08273432ca43ea792cadb24dada1d46f6f6bb1ef8de9956979288cc1b96bf9914e
   languageName: node
   linkType: hard
 
@@ -6910,7 +6920,7 @@ __metadata:
     "@types/react-linkify": "npm:^1.0.1"
     "@types/react-mentions": "npm:^4.1.8"
     "@types/react-timeago": "npm:^4.1.3"
-    "@webflow/webflow-cli": "npm:^1.13.0"
+    "@webflow/webflow-cli": "npm:^1.18.0"
     "@zeit/next-css": "npm:^1.0.1"
     axios: "npm:^1.15.1"
     babel-loader: "npm:^8.2.2"
@@ -8066,7 +8076,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.17.4, enhanced-resolve@npm:^5.7.0":
+"enhanced-resolve@npm:^5.20.0":
+  version: 5.21.0
+  resolution: "enhanced-resolve@npm:5.21.0"
+  dependencies:
+    graceful-fs: "npm:^4.2.4"
+    tapable: "npm:^2.3.3"
+  checksum: 10c0/8d25b9eb7cbaaf6bac7ca52cefb6aa8a723a3cea754aa3c52f269bdae3b6d5f3219fadbaf4362ed7d53f027e0b83bfbeb4c646640123cf62e6dbe52f28604c77
+  languageName: node
+  linkType: hard
+
+"enhanced-resolve@npm:^5.7.0":
   version: 5.18.4
   resolution: "enhanced-resolve@npm:5.18.4"
   dependencies:
@@ -11333,7 +11353,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsdom@npm:^26.1.0":
+"jsdom@npm:^26.0.0, jsdom@npm:^26.1.0":
   version: 26.1.0
   resolution: "jsdom@npm:26.1.0"
   dependencies:
@@ -15174,15 +15194,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serialize-javascript@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "serialize-javascript@npm:6.0.2"
-  dependencies:
-    randombytes: "npm:^2.1.0"
-  checksum: 10c0/2dd09ef4b65a1289ba24a788b1423a035581bef60817bea1f01eda8e3bda623f86357665fe7ac1b50f6d4f583f97db9615b3f07b2a2e8cbcb75033965f771dd2
-  languageName: node
-  linkType: hard
-
 "serve-handler@npm:^6.1.5":
   version: 6.1.6
   resolution: "serve-handler@npm:6.1.6"
@@ -15995,6 +16006,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tapable@npm:^2.3.3":
+  version: 2.3.3
+  resolution: "tapable@npm:2.3.3"
+  checksum: 10c0/47992e861053f861154e92fb4a98ac4ab47b6463717e60792dd1e8c755da0c4964cd8bb68c308a9066d6da89000b6310457b4d5d985c30de4ccc29066068cc17
+  languageName: node
+  linkType: hard
+
 "tar-stream@npm:^2.2.0":
   version: 2.2.0
   resolution: "tar-stream@npm:2.2.0"
@@ -16048,14 +16066,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:^5.3.16":
-  version: 5.3.16
-  resolution: "terser-webpack-plugin@npm:5.3.16"
+"terser-webpack-plugin@npm:^5.3.17":
+  version: 5.5.0
+  resolution: "terser-webpack-plugin@npm:5.5.0"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.25"
     jest-worker: "npm:^27.4.5"
     schema-utils: "npm:^4.3.0"
-    serialize-javascript: "npm:^6.0.2"
     terser: "npm:^5.31.1"
   peerDependencies:
     webpack: ^5.1.0
@@ -16066,7 +16083,7 @@ __metadata:
       optional: true
     uglify-js:
       optional: true
-  checksum: 10c0/39e37c5b3015c1a5354a3633f77235677bfa06eac2608ce26d258b1d1a74070a99910319a6f2f2c437eb61dc321f66434febe01d78e73fa96b4d4393b813f4cf
+  checksum: 10c0/ea2277cc6c80981fd8ce170016b1cd92d33cdf89d50e81ad387218dd46db55b8d69c8f736a35d7deb238962dbe003dd084f0a2494cbbd55f46a9c9d3e90e583a
   languageName: node
   linkType: hard
 
@@ -16817,13 +16834,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"watchpack@npm:^2.4.4":
-  version: 2.5.0
-  resolution: "watchpack@npm:2.5.0"
+"watchpack@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "watchpack@npm:2.5.1"
   dependencies:
     glob-to-regexp: "npm:^0.4.1"
     graceful-fs: "npm:^4.1.2"
-  checksum: 10c0/19944a2c05f8905b4b76dbbb317ae0efb18defa3eb7d3281caf1bb128c01302d00875a2fa0e48ec0242645d2e7e5c62c4efe8c60f9d30f176517f97dad1455f9
+  checksum: 10c0/dffbb483d1f61be90dc570630a1eb308581e2227d507d783b1d94a57ac7b705ecd9a1a4b73d73c15eab596d39874e5276a3d9cb88bbb698bafc3f8d08c34cf17
   languageName: node
   linkType: hard
 
@@ -16904,16 +16921,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-sources@npm:^3.3.3":
-  version: 3.3.3
-  resolution: "webpack-sources@npm:3.3.3"
-  checksum: 10c0/ab732f6933b513ba4d505130418995ddef6df988421fccf3289e53583c6a39e205c4a0739cee98950964552d3006604912679c736031337fb4a9d78d8576ed40
+"webpack-sources@npm:^3.3.4":
+  version: 3.4.0
+  resolution: "webpack-sources@npm:3.4.0"
+  checksum: 10c0/a37214f85e9b81897b46b27063f12ddb80adeef3249d10502f7e8279357d1fc812d40429df7a726e26ac21a6f5e22448e1d00d53aa15c1b2827a5929ba261969
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.99.7":
-  version: 5.104.1
-  resolution: "webpack@npm:5.104.1"
+"webpack@npm:>=5.99.7 <5.106.0":
+  version: 5.105.4
+  resolution: "webpack@npm:5.105.4"
   dependencies:
     "@types/eslint-scope": "npm:^3.7.7"
     "@types/estree": "npm:^1.0.8"
@@ -16921,11 +16938,11 @@ __metadata:
     "@webassemblyjs/ast": "npm:^1.14.1"
     "@webassemblyjs/wasm-edit": "npm:^1.14.1"
     "@webassemblyjs/wasm-parser": "npm:^1.14.1"
-    acorn: "npm:^8.15.0"
+    acorn: "npm:^8.16.0"
     acorn-import-phases: "npm:^1.0.3"
     browserslist: "npm:^4.28.1"
     chrome-trace-event: "npm:^1.0.2"
-    enhanced-resolve: "npm:^5.17.4"
+    enhanced-resolve: "npm:^5.20.0"
     es-module-lexer: "npm:^2.0.0"
     eslint-scope: "npm:5.1.1"
     events: "npm:^3.2.0"
@@ -16937,15 +16954,15 @@ __metadata:
     neo-async: "npm:^2.6.2"
     schema-utils: "npm:^4.3.3"
     tapable: "npm:^2.3.0"
-    terser-webpack-plugin: "npm:^5.3.16"
-    watchpack: "npm:^2.4.4"
-    webpack-sources: "npm:^3.3.3"
+    terser-webpack-plugin: "npm:^5.3.17"
+    watchpack: "npm:^2.5.1"
+    webpack-sources: "npm:^3.3.4"
   peerDependenciesMeta:
     webpack-cli:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 10c0/ea78c57f80bbd7684f4f1bb38a18408ab0ef4c5b962e25ad382c595d10b9e9701e077f5248a8cef5f127a55902698664c18837e64243bb972fbecf4e5d9aaab0
+  checksum: 10c0/e9896d20bac351b119d59942b7efae5b117056ecf203acc0d1a84ecbf0a5a9a80ca733735f96bd163e3530be6ab7f615cd67e5320bd3c47d709c9bfe376c3280
   languageName: node
   linkType: hard
 
