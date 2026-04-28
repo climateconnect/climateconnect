@@ -36,7 +36,7 @@ The result: new users complete account creation and are logged in using the same
 | `send_newsletter` default               | False (opt-in via combined checkbox on step 1)                               | Combined with privacy/terms acceptance into a single checkbox.                                                                                                                                                                                                                                                                         |
 | Privacy/terms and newsletter acceptance | Required combined checkbox on step 1                                         | Required field: "I agree to the terms of service and privacy policy and would like to receive emails about updates, news and interesting projects". Checking this box sets `send_newsletter = True`. The backend does not receive or validate a separate `terms_accepted` field — the combined checkbox text implies legal acceptance. |
 | Location field                          | Autocomplete search using existing location API                              | Same UX as `/signup` — reuses `LocationSearchTypeahead` component.                                                                                                                                                                                                                                                                     |
-| Interest areas                          | Multi-select checkboxes, **optional**                                        | Same UX as `/signup` — reuses existing sector/category components. Users can skip this step (same as today).                                                                                                                                                                                                                           |
+| Interest areas                          | Multi-select checkboxes, **optional**                                        | Same UX as `/signup` — reuses existing sector/category components. Users can skip this step (same as today). **Performance**: Sectors fetched on step 2 mount (lazy loading), not in parent, ensuring step 1 appears immediately.                                                                                                      |
 | Backend changes                         | Adapt `POST /api/signup/` to make `password` optional                        | Today the endpoint requires `password` (400 if missing). The endpoint must accept `password: null` or absent, set the account with `set_unusable_password()`, set `UserProfile.auth_method = "otp"`. All other required fields remain the same: `email`, `first_name`, `last_name`, `location`, `send_newsletter`, `source_language`.  |
 | Account unverified state                | Same as today — `is_profile_verified = False` initially                      | The account is created unverified. `POST /api/auth/verify-token` marks it verified after OTP entry succeeds. This preserves the `AUTO_VERIFY` setting behaviour for dev/staging environments.                                                                                                                                          |
 
@@ -60,6 +60,9 @@ The result: new users complete account creation and are logged in using the same
 │                      ↓                                     │
 ├────────────────────────────────────────────────────────────┤
 │  STATE: "signup_step2"                                     │
+│  [On mount: fetch sector options via getSectorOptions()]  │
+│  [While loading: show LoadingSpinner inline]              │
+│  [Once loaded: show ActiveSectorsSelector]                │
 │  Collect: interest areas (sectors/categories)             │
 │  Button: "Create account"                                 │
 │                      ↓                                     │
@@ -154,13 +157,18 @@ The result: new users complete account creation and are logged in using the same
 
 - When `check-email` returns `user_status: "new"`, set `currentStep = "signup_step1"`.
 - Step 1: render `SignupPersonalInfoStep` component → collects name + location → "Continue" button sets `currentStep = "signup_step2"`.
-- Step 2: render `SignupInterestsStep` component → collects interest sectors + newsletter opt-out → "Create account" button calls `POST /api/signup/`, then `POST /api/auth/request-token`, then sets `currentStep = "otp_entry"`.
+- Step 2: render `SignupInterestsStep` component:
+  - Component fetches sector options on mount (lazy loading).
+  - Shows `LoadingSpinner` inline while fetching.
+  - Once loaded, displays `ActiveSectorsSelector` for user to select interests.
+  - "Create account" button calls `POST /api/signup/`, then `POST /api/auth/request-token`, then sets `currentStep = "otp_entry"`.
 - Step "otp_entry": render `AuthOtpStep` component (from US-6) → user enters code, calls `verify-token`, on success navigates to `redirect_url` or home.
 
 **State management** (lifted to page level):
 
 - `signupData`: `{ email, first_name, last_name, location, interest_sectors, send_newsletter }`
 - `sessionKey`: set from `request-token` response, passed to `AuthOtpStep`.
+- **Note**: Sector options are managed within `SignupInterestsStep` component, not at page level (component-level state for better performance).
 
 ### 2. Create `SignupPersonalInfoStep` component
 
@@ -188,15 +196,25 @@ The result: new users complete account creation and are logged in using the same
 
 **Props**: Component receives `email`, `first_name`, `last_name`, `location` ID, and `send_newsletter` (for display), `onSubmit` callback (receives `interest_sectors` array), and `onBack` callback.
 
+**Performance optimization**: The component fetches sector options **when it mounts**, not when the parent component mounts. This ensures sectors are only loaded when the user actually reaches this step (lazy loading), eliminating the loading delay when transitioning from email entry to personal info step.
+
 **UI**:
 
 - Display user's name and location (read-only summary from step 1) — gives context.
 - Interest areas: multi-select checkboxes for climate action sectors/categories.
-  - **Reuse existing component**: `src/components/signup/InterestAreasSelection.tsx` (or similar) — same as today's `/signup` page.
+  - **Reuse existing component**: `src/components/hub/ActiveSectorsSelector.tsx` — same as used elsewhere in the app.
   - Each sector has an ID; collect selected IDs as `interest_sectors: number[]`.
   - **Optional** — users can skip and proceed without selecting any sectors (same as today).
+  - **Loading state**: Show `LoadingSpinner` component inline while fetching sectors (displays in place of the selector, while keeping the header, description, and buttons visible). Once loaded, display the `ActiveSectorsSelector`.
 - "Back" button → calls `onBack()` → returns to step 1.
 - "Create account" button → calls `onSubmit({ interest_sectors })`. Not disabled even if no sectors selected (optional field).
+
+**Data fetching**:
+
+- On component mount: fetch sector options via `getSectorOptions(locale, hubUrl)`.
+- Display `LoadingSpinner` in place of sector selector while fetching.
+- Once loaded, render `ActiveSectorsSelector` with fetched options.
+- Error handling: if fetch fails, log error and show empty sector list (user can still proceed without selecting sectors).
 
 **API calls** (triggered by `onSubmit` callback in parent):
 
@@ -264,6 +282,8 @@ The result: new users complete account creation and are logged in using the same
 - [ ] Backend: test `AUTO_VERIFY = True` sets `is_profile_verified = True` immediately.
 - [ ] Frontend: test email entry → `"new"` → signup step 1 renders.
 - [ ] Frontend: test step 1 → step 2 transition with valid data.
+- [ ] Frontend: test step 2 fetches sectors on mount and shows `LoadingSpinner` inline while loading.
+- [ ] Frontend: test step 2 displays `ActiveSectorsSelector` once sectors are loaded.
 - [ ] Frontend: test step 2 "Create account" calls both APIs in sequence.
 - [ ] Frontend: test step 2 allows proceeding without selecting any interest sectors.
 - [ ] Frontend: test OTP entry step renders after signup completes.
@@ -287,12 +307,17 @@ The result: new users complete account creation and are logged in using the same
 ### Phase 2 — Frontend Components
 
 1. **Create `SignupPersonalInfoStep.tsx`**: name + location form, combined privacy/terms and newsletter checkbox (required, sets `send_newsletter` to true), reuse `LocationSearchTypeahead`.
-2. **Create `SignupInterestsStep.tsx`**: interest sectors multi-select only, reuse existing sector selection component.
+2. **Create `SignupInterestsStep.tsx`**:
+   - Interest sectors multi-select only, reuse `ActiveSectorsSelector` component.
+   - Fetch sector options on component mount (lazy loading) — not in parent component.
+   - Show `LoadingSpinner` inline while fetching sectors, then display selector once loaded.
+   - This ensures step 1 (personal info) appears immediately without waiting for sector data.
 3. **Wire state machine in `login.tsx`**:
    - Add `signup_step1` and `signup_step2` states.
    - Render `SignupPersonalInfoStep` when `currentStep = "signup_step1"`.
    - Render `SignupInterestsStep` when `currentStep = "signup_step2"`.
    - Handle `onContinue` / `onSubmit` callbacks to collect data and transition states.
+   - **Note**: Parent component (`AuthSignupStep`) does not manage sector data or loading state — that's handled by `SignupInterestsStep` itself.
 4. **API call sequence**: in `onSubmit` of step 2, call `POST /api/signup/` then `POST /api/auth/request-token`, then transition to `otp_entry`.
 5. **Error handling**: inline error messages for API failures on both signup and request-token.
 
@@ -360,6 +385,7 @@ The result: new users complete account creation and are logged in using the same
 | Newsletter opt-in          | Always enabled via combined checkbox | Combined with privacy/terms acceptance; checking the required checkbox opts user into newsletter. |
 | Location field type        | Autocomplete search                  | Same UX as today; reuses `LocationSearchTypeahead` component.                                     |
 | Interest sectors field     | Multi-select checkboxes              | Same UX as today; reuses existing sector selection component.                                     |
+| Sector data loading        | Component-level, on step 2 mount     | Lazy loading: fetch only when needed, not upfront. Eliminates loading delay on step 1 transition. |
 | OTP trigger point          | After `POST /api/signup/` succeeds   | Account must exist before `request-token` is called (it looks up user by email).                  |
 | Profile verification logic | In `verify-token` endpoint           | Single source of truth; avoids frontend conditional logic.                                        |
 | Back button from OTP step  | Disabled                             | Account already created; user must complete verification. Resend button is the path forward.      |
@@ -384,3 +410,10 @@ The result: new users complete account creation and are logged in using the same
   - Removed `terms_accepted` from all API payloads and required fields lists
   - Checkbox text still combines both concepts for user clarity
   - Backend does not receive or validate a separate `terms_accepted` field
+- 2026-04-28 — Performance optimization implementation:
+  - **Lazy loading**: `SignupInterestsStep` component now fetches sector options on its own mount, not in parent component
+  - This eliminates the loading delay when transitioning from email entry to personal info step
+  - Users see step 1 immediately; sectors load in background only when reaching step 2
+  - **Inline loading**: Replaced full-page `CircularProgress` with `LoadingSpinner` component shown inline in place of sector selector
+  - Page structure (header, description, user info summary, buttons) remains visible during sector loading
+  - Uses existing `LoadingSpinner` component from `src/components/general/` for consistency
