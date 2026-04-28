@@ -545,7 +545,7 @@ function NormalScreenLinks({
             </Fragment>
           );
       })}
-      {loggedInUser && (
+      {loggedInUser && loggedInUser.url_slug && (
         <LoggedInNormalScreen
           loggedInUser={loggedInUser}
           handleLogout={handleLogout}
@@ -839,6 +839,7 @@ function NarrowScreenLinks({
                 }
               })}
               {loggedInUser &&
+                loggedInUser.url_slug &&
                 getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString }).map(
                   (link, index) => {
                     const Icon: any = link.iconForDrawer;
