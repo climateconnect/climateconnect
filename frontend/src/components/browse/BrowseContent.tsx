@@ -368,27 +368,27 @@ export default function BrowseContent({
         hubUrl: hubData?.url_slug,
       });
 
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         nextPages: {
-          ...state.nextPages,
-          [type]: state.nextPages[type] + 1,
+          ...prevState.nextPages,
+          [type]: prevState.nextPages[type] + 1,
         },
         hasMore: {
-          ...state.hasMore,
+          ...prevState.hasMore,
           [type]: res.hasMore,
         },
         items: {
-          ...state.items,
-          [type]: [...state.items[type], ...res.newData],
+          ...prevState.items,
+          [type]: [...prevState.items[type], ...res.newData],
         },
-      });
+      }));
       return [...res.newData];
     } catch (e) {
-      setState({
-        ...state,
-        hasMore: { ...state.hasMore, [type]: false },
-      });
+      setState((prevState) => ({
+        ...prevState,
+        hasMore: { ...prevState.hasMore, [type]: false },
+      }));
     } finally {
       setIsFetchingMoreData(false);
     }
@@ -435,13 +435,13 @@ export default function BrowseContent({
       else setFiltersExpanded(false);
     }
     if (res?.filteredItemsObject) {
-      setState({
-        ...state,
-        items: { ...state.items, [type]: res.filteredItemsObject[type] },
-        hasMore: { ...state.hasMore, [type]: res.filteredItemsObject.hasMore },
+      setState((prevState) => ({
+        ...prevState,
+        items: { ...prevState.items, [type]: res.filteredItemsObject[type] },
+        hasMore: { ...prevState.hasMore, [type]: res.filteredItemsObject.hasMore },
         urlEnding: res.newUrlEnding,
-        nextPages: { ...state.nextPages, [type]: 2 },
-      });
+        nextPages: { ...prevState.nextPages, [type]: 2 },
+      }));
     }
     setIsFiltering(false);
   };
@@ -472,13 +472,13 @@ export default function BrowseContent({
     }
 
     if (res?.filteredItemsObject) {
-      setState({
-        ...state,
-        items: { ...state.items, [type]: res.filteredItemsObject[type] },
-        hasMore: { ...state.hasMore, [type]: res.filteredItemsObject.hasMore },
+      setState((prevState) => ({
+        ...prevState,
+        items: { ...prevState.items, [type]: res.filteredItemsObject[type] },
+        hasMore: { ...prevState.hasMore, [type]: res.filteredItemsObject.hasMore },
         urlEnding: res.newUrlEnding,
-        nextPages: { ...state.nextPages, [type]: 2 },
-      });
+        nextPages: { ...prevState.nextPages, [type]: 2 },
+      }));
     }
   };
 
