@@ -1,17 +1,18 @@
 import { Box, Button, Typography } from "@mui/material";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 import { Sector } from "../../types";
 import { getDisplayLocationFromLocation } from "../../../public/lib/locationOperations";
+import { getSectorOptions } from "../../../public/lib/getOptions";
+import LoadingSpinner from "../general/LoadingSpinner";
 
 interface SignupInterestsStepProps {
   email: string;
   firstName: string;
   lastName: string;
   location: any;
-  sectorOptions: Sector[];
   onSubmit: (_data: { interest_sectors: string[] }) => void;
   onBack: () => void;
   hubUrl?: string;
@@ -24,7 +25,6 @@ export default function SignupInterestsStep({
   firstName,
   lastName,
   location,
-  sectorOptions,
   onSubmit,
   onBack,
   hubUrl,
@@ -35,6 +35,26 @@ export default function SignupInterestsStep({
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
 
   const [selectedSectors, setSelectedSectors] = useState<Sector[]>([]);
+  const [sectorOptions, setSectorOptions] = useState<Sector[]>([]);
+  const [isLoadingSectors, setIsLoadingSectors] = useState(true);
+
+  // Fetch sector options when component mounts
+  useEffect(() => {
+    const fetchSectors = async () => {
+      setIsLoadingSectors(true);
+      try {
+        const sectors = await getSectorOptions(locale, hubUrl);
+        setSectorOptions(sectors || []);
+      } catch (err) {
+        console.error("Error fetching sector options:", err);
+        setSectorOptions([]);
+      } finally {
+        setIsLoadingSectors(false);
+      }
+    };
+
+    fetchSectors();
+  }, [locale, hubUrl]);
 
   const handleSectorSelection = (event: ChangeEvent<HTMLSelectElement | { value: string }>) => {
     event.preventDefault();
@@ -94,14 +114,18 @@ export default function SignupInterestsStep({
 
       {/* Interest sectors selection */}
       <Box sx={{ mb: 3 }}>
-        <ActiveSectorsSelector
-          selectedSectors={selectedSectors}
-          sectorsToSelectFrom={availableSectors}
-          onSelectNewSector={handleSectorSelection}
-          onClickRemoveSector={handleSectorRemoval}
-          hideTitle={false}
-          title={texts.select_your_interest_areas || "Select your interest areas (optional)"}
-        />
+        {isLoadingSectors ? (
+          <LoadingSpinner isLoading />
+        ) : (
+          <ActiveSectorsSelector
+            selectedSectors={selectedSectors}
+            sectorsToSelectFrom={availableSectors}
+            onSelectNewSector={handleSectorSelection}
+            onClickRemoveSector={handleSectorRemoval}
+            hideTitle={false}
+            title={texts.select_your_interest_areas || "Select your interest areas (optional)"}
+          />
+        )}
       </Box>
 
       {/* Error message */}

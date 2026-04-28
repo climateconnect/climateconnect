@@ -1,12 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import { CircularProgress, Box } from "@mui/material";
+import { useContext, useState } from "react";
 import UserContext from "../context/UserContext";
 import SignupPersonalInfoStep from "./SignupPersonalInfoStep";
 import SignupInterestsStep from "./SignupInterestsStep";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
-import { getSectorOptions } from "../../../public/lib/getOptions";
-import { Sector } from "../../types";
 import getTexts from "../../../public/texts/texts";
 
 interface AuthSignupStepProps {
@@ -36,27 +33,8 @@ export default function AuthSignupStep({
 
   const [currentStep, setCurrentStep] = useState<SignupStep>("personal_info");
   const [personalInfo, setPersonalInfo] = useState<PersonalInfoData | null>(null);
-  const [sectorOptions, setSectorOptions] = useState<Sector[]>([]);
-  const [isLoadingSectors, setIsLoadingSectors] = useState(true);
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  // Fetch sector options on mount
-  useEffect(() => {
-    const fetchSectors = async () => {
-      try {
-        const sectors = await getSectorOptions(locale, hubUrl);
-        setSectorOptions(sectors || []);
-      } catch (err) {
-        console.error("Error fetching sector options:", err);
-        setSectorOptions([]);
-      } finally {
-        setIsLoadingSectors(false);
-      }
-    };
-
-    fetchSectors();
-  }, [locale, hubUrl]);
 
   const handlePersonalInfoContinue = (data: PersonalInfoData) => {
     setPersonalInfo(data);
@@ -120,15 +98,6 @@ export default function AuthSignupStep({
     }
   };
 
-  // Show loading state while fetching sectors
-  if (isLoadingSectors) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   // Render appropriate step
   if (currentStep === "personal_info") {
     return (
@@ -148,7 +117,6 @@ export default function AuthSignupStep({
         firstName={personalInfo.first_name}
         lastName={personalInfo.last_name}
         location={personalInfo.location}
-        sectorOptions={sectorOptions}
         onSubmit={handleCreateAccount}
         onBack={handleBackToPersonalInfo}
         hubUrl={hubUrl}
