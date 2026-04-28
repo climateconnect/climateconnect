@@ -103,7 +103,7 @@ export default function Signup({ hubUrl, hubThemeData, sectorOptions }) {
         : hubUrl
         ? `${getLocalePrefix(locale)}/hubs/${hubUrl}/browse`
         : "/";
-      redirectOnLogin(user, redirectUrl, locale);
+      redirectOnLogin(user, redirectUrl, locale, hubUrl);
     }
   });
 

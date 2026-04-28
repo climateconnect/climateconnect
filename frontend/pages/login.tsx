@@ -113,6 +113,13 @@ export default function Login({
   const [currentStep, setCurrentStep] = useState<AuthStep>("email_entry");
   const [email, setEmail] = useState("");
 
+  // Clear old redirect from sessionStorage if no redirect/hub in current URL
+  useEffect(() => {
+    if (!router.query.redirect && !hubSlug) {
+      window.sessionStorage.removeItem("auth_redirect_url");
+    }
+  }, [router.query.redirect, hubSlug]);
+
   // Redirect to home if already logged in
   useEffect(() => {
     if (user) {
@@ -149,6 +156,7 @@ export default function Login({
 
   const handleAuthSuccess = () => {
     const storedRedirect = window.sessionStorage.getItem("auth_redirect_url");
+    window.sessionStorage.removeItem("auth_redirect_url"); // Clear after using
     router.push(storedRedirect || getLocalePrefix(locale || "en") + "/");
   };
 

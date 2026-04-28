@@ -50,18 +50,16 @@ const convertUndefinedToNull = (inputObject) => {
   return outputObject;
 };
 
-export function redirectOnLogin(user, redirectUrl, locale) {
+export function redirectOnLogin(user, redirectUrl, locale, hubUrl = null) {
   const texts = getTexts({ page: "profile", locale: locale });
   const SIGN_UP_MESSAGE = texts.sign_up_message;
-  const urlParams = new URLSearchParams(window.location.search);
-  const hub = urlParams.get("hub");
 
   if (user.has_logged_in < 2) {
     router.push({
       pathname: "/editprofile",
       query: {
         message: SIGN_UP_MESSAGE,
-        hub: hub,
+        ...(hubUrl && { hub: hubUrl }),
       },
     });
   } else if (redirectUrl) {

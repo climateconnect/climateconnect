@@ -62,7 +62,7 @@ export default function ProfileVerified({ successMessage, errorMessage }) {
   const texts = getTexts({ page: "settings", locale: locale });
   useEffect(function () {
     if (user) {
-      redirectOnLogin(user, "/", locale);
+      redirectOnLogin(user, "/", locale, null);
     }
   });
   return (
