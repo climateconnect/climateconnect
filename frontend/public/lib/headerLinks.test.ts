@@ -77,6 +77,7 @@ describe("getLinks", () => {
       hubUrl: "prio1",
       texts,
       path_to_redirect: "/hubs/prio1",
+      isAuthUnificationEnabled: false,
     });
   });
 
