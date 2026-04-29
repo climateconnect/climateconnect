@@ -57,6 +57,9 @@ from organization.serializers.project import (
 )
 from organization.utility.sector import sanitize_sector_inputs
 
+from auth_app.models import LoginAuditLog
+from auth_app.utility.ip import anonymise_ip
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +73,8 @@ class LoginView(KnoxLoginView):
             message = "Must include 'username' and 'password'"
             return Response({"message": message}, status=status.HTTP_400_BAD_REQUEST)
 
+        username = request.data.get("username", "")
+
         # First, authenticate the user
         user = authenticate(
             username=request.data["username"], password=request.data["password"]
@@ -78,6 +83,13 @@ class LoginView(KnoxLoginView):
         if user:
             user_profile = UserProfile.objects.filter(user=user)[0]
             if not user_profile.is_profile_verified:
+                LoginAuditLog.objects.create(
+                    email=username,
+                    user=user,
+                    outcome=LoginAuditLog.Outcome.FAILED,
+                    ip_address=anonymise_ip(request.META.get("REMOTE_ADDR")),
+                    user_agent=request.META.get("HTTP_USER_AGENT", "")[:512],
+                )
                 message = "You first have to activate your account by clicking the link we sent to your E-Mail."
                 return Response(
                     {"message": message, "type": "not_verified"},
@@ -96,8 +108,24 @@ class LoginView(KnoxLoginView):
                 user_profile.has_logged_in = user_profile.has_logged_in + 1
                 user_profile.save()
 
+            LoginAuditLog.objects.create(
+                email=username,
+                user=user,
+                outcome=LoginAuditLog.Outcome.VERIFIED,
+                ip_address=anonymise_ip(request.META.get("REMOTE_ADDR")),
+                user_agent=request.META.get("HTTP_USER_AGENT", "")[:512],
+            )
+
             return super(LoginView, self).post(request, format=None)
         else:
+            looked_up_user = User.objects.filter(username=username).first()
+            LoginAuditLog.objects.create(
+                email=username,
+                user=looked_up_user,
+                outcome=LoginAuditLog.Outcome.FAILED,
+                ip_address=anonymise_ip(request.META.get("REMOTE_ADDR")),
+                user_agent=request.META.get("HTTP_USER_AGENT", "")[:512],
+            )
             return Response(
                 {"message": _("Invalid email or password")},
                 status=status.HTTP_401_UNAUTHORIZED,

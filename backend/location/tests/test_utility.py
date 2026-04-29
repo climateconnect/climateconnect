@@ -1,7 +1,10 @@
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon, GEOSGeometry
 from django.test import TestCase, override_settings
 
+from django.db.models.signals import post_save
+
 from location.models import Location
+from location.signals import find_location_translations
 from location.utility import (
     _get_newest_location_by_osm_composite,
     _osm_type_char,
@@ -164,6 +167,7 @@ class TestGetLocation(TestCase):
     """Tests for the get_location function with OSM data."""
 
     def setUp(self):
+        post_save.disconnect(find_location_translations, sender=Location)
         self.valid_location_object = {
             "place_id": 12345,
             "country": "Germany",
@@ -178,6 +182,9 @@ class TestGetLocation(TestCase):
             "display_name": "Berlin, Germany",
             "geojson": {"type": "Point", "coordinates": [13.405, 52.52]},
         }
+
+    def tearDown(self):
+        post_save.connect(find_location_translations, sender=Location)
 
     @override_settings(
         ENABLE_LEGACY_LOCATION_FORMAT="False", CELERY_TASK_ALWAYS_EAGER=True
@@ -329,6 +336,12 @@ class TestGetLocation(TestCase):
 
 class TestGetLocationWithRange(TestCase):
     """Tests for get_location_with_range, specifically the newest-record selection."""
+
+    def setUp(self):
+        post_save.disconnect(find_location_translations, sender=Location)
+
+    def tearDown(self):
+        post_save.connect(find_location_translations, sender=Location)
 
     def _make_location(
         self, name, country, place_id, osm_id=62422, osm_type="W", multi_polygon=None
