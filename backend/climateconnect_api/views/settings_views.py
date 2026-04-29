@@ -28,22 +28,34 @@ class UserAccountSettingsView(APIView):
     def post(self, request):
         user = request.user
         # set and confirm password.
-        if (
-            "password" in request.data
-            and "confirm_password" in request.data
-            and "old_password" in request.data
-        ):
-            check_existing_password = user.check_password(request.data["old_password"])
-            if check_existing_password:
-                if request.data["password"] == request.data["confirm_password"]:
-                    user.set_password(request.data["password"])
-                    user.save()
-                else:
-                    raise ValidationError("Password do not match.")
-            else:
-                raise ValidationError(
-                    "Incorrect password. Did you forget your password?"
+        if "password" in request.data and "confirm_password" in request.data:
+            if "old_password" in request.data:
+                # User already has a password — require old password confirmation.
+                check_existing_password = user.check_password(
+                    request.data["old_password"]
                 )
+                if check_existing_password:
+                    if request.data["password"] == request.data["confirm_password"]:
+                        user.set_password(request.data["password"])
+                        user.save()
+                    else:
+                        raise ValidationError("Password do not match.")
+                else:
+                    raise ValidationError(
+                        "Incorrect password. Did you forget your password?"
+                    )
+            else:
+                # User has no password — allow setting one directly.
+                if not user.has_usable_password():
+                    if request.data["password"] == request.data["confirm_password"]:
+                        user.set_password(request.data["password"])
+                        user.save()
+                    else:
+                        raise ValidationError("Password do not match.")
+                else:
+                    raise ValidationError(
+                        "Old password is required to change your password."
+                    )
 
         if "auth_method" in request.data:
             auth_method = request.data["auth_method"]

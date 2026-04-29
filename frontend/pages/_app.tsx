@@ -16,7 +16,7 @@ import type { CcEnvironment } from "../public/lib/environmentOperations";
 import theme from "../src/themes/theme";
 import { CcLocale, DonationGoal } from "../src/types";
 import * as Sentry from "@sentry/react";
-import "../devlink/global.css";
+import "../devlink/css/global.css";
 import { getHubslugFromUrl } from "../public/lib/hubOperations";
 
 // initialize sentry

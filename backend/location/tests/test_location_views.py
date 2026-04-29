@@ -1,14 +1,20 @@
+from django.db.models.signals import post_save
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from location.models import Location
+from location.signals import find_location_translations
 
 
 class TestGetLocationView(APITestCase):
 
     def setUp(self):
+        post_save.disconnect(find_location_translations, sender=Location)
         self.url = reverse("location:get-location")
+
+    def tearDown(self):
+        post_save.connect(find_location_translations, sender=Location)
 
     def test_get_location_uses_osm_composite_when_both_osm_and_place_are_provided(self):
         place_match = Location.objects.create(
