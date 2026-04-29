@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock, patch
-
+from auth_app.models import LoginAuditLog
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
-from django.test import TransactionTestCase, override_settings, tag
+from django.test import TestCase, TransactionTestCase, override_settings, tag
 from django.urls import reverse
 from rest_framework import status
 
@@ -462,3 +462,85 @@ class MemberLocationHubFilterTest(TransactionTestCase):
         )
 
         self.assertEqual(len(slugs), 6)
+
+
+_counter_login = 0
+
+
+def _make_user_for_login(email, verified=True, password="testpassword"):
+    global _counter_login
+    _counter_login += 1
+    user = User.objects.create_user(username=email, email=email, password=password)
+    UserProfile.objects.create(
+        user=user,
+        url_slug="login-slug-{}".format(_counter_login),
+        is_profile_verified=verified,
+    )
+    return user
+
+
+class LoginViewAuditLogTest(TestCase):
+    """
+    Test that POST /login/ writes a LoginAuditLog entry on every attempt.
+    """
+
+    def setUp(self):
+        LoginAuditLog.objects.all().delete()
+        self.url = reverse("login-api")
+
+    def test_successful_login_writes_verified_audit_log(self):
+        user = _make_user_for_login("ok@example.com")
+        resp = self.client.post(
+            self.url,
+            {"username": "ok@example.com", "password": "testpassword"},
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(LoginAuditLog.objects.count(), 1)
+        log = LoginAuditLog.objects.first()
+        self.assertEqual(log.email, "ok@example.com")
+        self.assertEqual(log.user, user)
+        self.assertEqual(log.outcome, LoginAuditLog.Outcome.VERIFIED)
+
+    def test_wrong_password_writes_failed_audit_log_with_user(self):
+        user = _make_user_for_login("wrong@example.com")
+        resp = self.client.post(
+            self.url,
+            {"username": "wrong@example.com", "password": "badpassword"},
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(LoginAuditLog.objects.count(), 1)
+        log = LoginAuditLog.objects.first()
+        self.assertEqual(log.email, "wrong@example.com")
+        self.assertEqual(log.user, user)
+        self.assertEqual(log.outcome, LoginAuditLog.Outcome.FAILED)
+
+    def test_unknown_email_writes_failed_audit_log_with_no_user(self):
+        resp = self.client.post(
+            self.url,
+            {"username": "unknown@example.com", "password": "anypassword"},
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(LoginAuditLog.objects.count(), 1)
+        log = LoginAuditLog.objects.first()
+        self.assertEqual(log.email, "unknown@example.com")
+        self.assertIsNone(log.user)
+        self.assertEqual(log.outcome, LoginAuditLog.Outcome.FAILED)
+
+    def test_unverified_account_writes_failed_audit_log(self):
+        user = _make_user_for_login("unverified@example.com", verified=False)
+        resp = self.client.post(
+            self.url,
+            {"username": "unverified@example.com", "password": "testpassword"},
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        data = resp.json()
+        self.assertEqual(data.get("type"), "not_verified")
+        self.assertEqual(LoginAuditLog.objects.count(), 1)
+        log = LoginAuditLog.objects.first()
+        self.assertEqual(log.email, "unverified@example.com")
+        self.assertEqual(log.user, user)
+        self.assertEqual(log.outcome, LoginAuditLog.Outcome.FAILED)

@@ -70,7 +70,7 @@ if (fs.existsSync(cssPath)) {
 // Update scripts/devlink-global.css if fonts, CSS variables, or typography change.
 // TODO find a solution that doesn't require copying the file
 const stableGlobalCss = path.join(__dirname, "devlink-global.css");
-const globalCssPath = path.join(devlinkDir, "global.css");
+const globalCssPath = path.join(devlinkDir, "css/global.css");
 if (fs.existsSync(stableGlobalCss)) {
   fs.copyFileSync(stableGlobalCss, globalCssPath);
   console.log("fix-devlink: restored global.css from scripts/devlink-global.css");

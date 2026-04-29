@@ -432,5 +432,7 @@ if "test" in sys.argv or env("ENVIRONMENT") == "test":
             "BACKEND": "channels.layers.InMemoryChannelLayer",
         }
     }
+    # Never call the real Nominatim API from tests.
+    NOMINATIM_LOOKUP_URL = "http://testserver/nominatim/lookup"
 
 # --- END GLOBAL TEST SETTINGS ---

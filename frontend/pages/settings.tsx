@@ -10,10 +10,12 @@ import Layout from "../src/components/layouts/layout";
 import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import theme from "../src/themes/theme";
+import { getFeatureTogglesFromRequest } from "../src/hooks/featureToggles";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const [settings, hubThemeData] = await Promise.all([
+  const [{ featureToggles }, settings, hubThemeData] = await Promise.all([
+    getFeatureTogglesFromRequest(ctx.req),
     getSettings(auth_token, ctx.locale),
     getHubTheme(ctx.query.hub),
   ]);
@@ -23,14 +25,17 @@ export async function getServerSideProps(ctx) {
       settings: settings,
       hubThemeData: hubThemeData || null,
       hubUrl: ctx.query.hub || null,
+      featureToggles: featureToggles || null,
     },
   };
 }
 
-export default function Settings({ settings, hubThemeData, hubUrl }) {
+export default function Settings({ settings, hubThemeData, hubUrl, featureToggles }) {
   const token = new Cookies().get("auth_token");
   const { user } = useContext(UserContext);
   const [message, setMessage] = useState("");
+  // log settings
+  console.log(settings);
   const [currentSettings, setCurrentSettings] = useState(settings);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
@@ -50,6 +55,7 @@ export default function Settings({ settings, hubThemeData, hubUrl }) {
           setSettings={setCurrentSettings}
           token={token}
           setMessage={setMessage}
+          featureToggles={featureToggles}
         />
       </Layout>
     );
