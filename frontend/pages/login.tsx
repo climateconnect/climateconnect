@@ -19,7 +19,13 @@ import AuthPasswordLogin from "../src/components/auth/AuthPasswordLogin";
 import AuthForgotPassword from "../src/components/auth/AuthForgotPassword";
 import AuthOtp from "../src/components/auth/AuthOtp";
 
-type AuthStep = "email_entry" | "signup_step1" | "password_login" | "forgot_password" | "otp_entry";
+type AuthStep =
+  | "email_entry"
+  | "signup_step1"
+  | "password_login"
+  | "forgot_password"
+  | "otp_entry"
+  | "success";
 
 interface LoginProps {
   hubThemeData: any;
@@ -88,6 +94,7 @@ export default function Login({
 }: LoginProps) {
   const { user, locale } = useContext(UserContext);
   const router = useRouter();
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   // Determine redirect URL from query params
@@ -112,6 +119,13 @@ export default function Login({
   // Step state machine — no URL change on transition
   const [currentStep, setCurrentStep] = useState<AuthStep>("email_entry");
   const [email, setEmail] = useState("");
+
+  // Clear old redirect from sessionStorage if no redirect/hub in current URL
+  useEffect(() => {
+    if (!router.query.redirect && !hubSlug) {
+      window.sessionStorage.removeItem("auth_redirect_url");
+    }
+  }, [router.query.redirect, hubSlug]);
 
   // Redirect to home if already logged in
   useEffect(() => {
@@ -148,7 +162,9 @@ export default function Login({
   };
 
   const handleAuthSuccess = () => {
+    setCurrentStep("success");
     const storedRedirect = window.sessionStorage.getItem("auth_redirect_url");
+    window.sessionStorage.removeItem("auth_redirect_url"); // Clear after using
     router.push(storedRedirect || getLocalePrefix(locale || "en") + "/");
   };
 
@@ -162,6 +178,10 @@ export default function Login({
 
   const handleBackToPasswordLogin = () => {
     setCurrentStep("password_login");
+  };
+
+  const handleSignupComplete = () => {
+    setCurrentStep("otp_entry");
   };
 
   const commonProps = {
@@ -181,7 +201,7 @@ export default function Login({
           />
         );
       case "signup_step1":
-        return <AuthSignupStep {...commonProps} />;
+        return <AuthSignupStep {...commonProps} onSignupComplete={handleSignupComplete} />;
       case "password_login":
         return (
           <AuthPasswordLogin
@@ -200,15 +220,33 @@ export default function Login({
         );
       case "otp_entry":
         return <AuthOtp {...commonProps} />;
+      case "success":
+        return null;
     }
   };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
 
   return (
-    <WideLayout hideAlert noSpaceBottom customTheme={customTheme} hubUrl={hubSlug || undefined}>
-      <ThemeProvider theme={customTheme || themeSignUp}>
-        <Container maxWidth="lg" style={{ paddingTop: 32, paddingBottom: 32 }}>
+    <WideLayout
+      hideAlert
+      noSpaceBottom
+      isHubPage={hubSlug !== null}
+      customTheme={customTheme}
+      hubUrl={hubSlug || undefined}
+      headerBackground={
+        customTheme && isSmallScreen ? customTheme.palette.header.background : "transparent"
+      }
+      footerTextColor={hubSlug && !isSmallScreen ? "white" : undefined}
+    >
+      <ThemeProvider theme={customThemeSignUp}>
+        <Container
+          maxWidth={hugeScreen ? "xl" : "lg"}
+          style={{ paddingTop: 32, paddingBottom: 32 }}
+        >
           {isSmallScreen ? (
             <Card variant="outlined">
               <CardContent>{getStepContent()}</CardContent>

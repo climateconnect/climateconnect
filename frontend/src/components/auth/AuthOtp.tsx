@@ -77,7 +77,13 @@ export default function AuthOtp({ email, onBack, onSuccess, hubUrl }: AuthOtpPro
 
   // Request token on mount
   useEffect(() => {
-    requestToken();
+    const existingKey = sessionStorage.getItem(SESSION_KEY);
+    if (existingKey) {
+      setSessionKey(existingKey);
+      startCountdown();
+    } else {
+      requestToken();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -97,6 +103,7 @@ export default function AuthOtp({ email, onBack, onSuccess, hubUrl }: AuthOtpPro
       });
 
       const { token, expiry } = response.data;
+      sessionStorage.removeItem(SESSION_KEY);
       await signIn(token, expiry);
       if (onSuccess) onSuccess();
     } catch (err: any) {

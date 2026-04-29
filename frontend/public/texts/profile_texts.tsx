@@ -345,9 +345,10 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       ),
     },
     signup_step_2_headline: {
-      en: "Add your Name and Location. This way People can find you and know where you are from.",
+      en:
+        "Select the climate action areas you're interested in. This helps us connect you with relevant projects and people. You can skip this step and add interests later.",
       de:
-        "Füge deinen Namen und deinen Standort hinzu. So können dich andere finden und wissen, woher du kommst.",
+        "Wähle die Klimaschutz-Bereiche aus, die dich interessieren. Das hilft uns, dich mit relevanten Projekten und Personen zu verbinden. Du kannst diesen Schritt überspringen und später Interessen hinzufügen.",
     },
     signup_step_3_headline: {
       en:
@@ -470,6 +471,67 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     too_many_attempts: {
       en: "Too many attempts. Please try again later.",
       de: "Zu viele Versuche. Bitte versuche es später erneut.",
+    },
+    // --- Signup Flow ---
+    create_your_account: {
+      en: "Create your account",
+      de: "Erstelle dein Konto",
+    },
+    signup_step_1_headline: {
+      en: "Enter your personal information to get started.",
+      de: "Gib deine persönlichen Informationen ein, um loszulegen.",
+    },
+    email_cannot_be_changed: {
+      en: "This is the email you'll use to log in",
+      de: "Dies ist die E-Mail-Adresse, mit der du dich einloggst",
+    },
+    first_name_is_required: {
+      en: "First name is required",
+      de: "Vorname ist erforderlich",
+    },
+    last_name_is_required: {
+      en: "Last name is required",
+      de: "Nachname ist erforderlich",
+    },
+    i_agree_to_the: {
+      en: "I agree to the",
+      de: "Ich stimme den",
+    },
+    terms_of_service: {
+      en: "terms of service",
+      de: "Nutzungsbedingungen",
+    },
+    and_would_like_to_receive_emails: {
+      en: "and would like to receive emails about updates, news and interesting projects",
+      de: "zu und möchte E-Mails über Updates, Neuigkeiten und interessante Projekte erhalten",
+    },
+    you_must_accept_terms_and_privacy_policy: {
+      en: "You must accept the terms of service and privacy policy",
+      de: "Du musst die Nutzungsbedingungen und Datenschutzrichtlinien akzeptieren",
+    },
+    continue: {
+      en: "Continue",
+      de: "Weiter",
+    },
+    no_location: {
+      en: "No location",
+      de: "Kein Standort",
+    },
+    name: {
+      en: "Name",
+      de: "Name",
+    },
+    select_your_interest_areas: {
+      en: "Select your interest areas (optional)",
+      de: "Wähle deine Interessensbereiche (optional)",
+    },
+    creating_account: {
+      en: "Creating account...",
+      de: "Konto wird erstellt...",
+    },
+    create_account: {
+      en: "Create account",
+      de: "Konto erstellen",
     },
   };
 }
