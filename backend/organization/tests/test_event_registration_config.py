@@ -12,7 +12,7 @@ Contains:
 from datetime import timedelta
 
 from django.contrib.auth.models import User
-from django.test import override_settings, tag
+from django.test import tag
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
@@ -30,7 +30,6 @@ from organization.models.event_registration import (
 from ._helpers import _make_black_image_b64
 
 
-@override_settings(ENABLE_LEGACY_LOCATION_FORMAT="True")
 class TestEventRegistrationCreate(APITestCase):
     """Tests for creating an event with registration_config via POST /api/projects/."""
 
@@ -488,7 +487,6 @@ class TestEventRegistrationRead(APITestCase):
         self.assertEqual(response.json()["registration_config"]["status"], "closed")
 
 
-@override_settings(ENABLE_LEGACY_LOCATION_FORMAT="True")
 class TestEventRegistrationStatus(APITestCase):
     """Tests for the status field on EventRegistrationConfig."""
 
@@ -509,6 +507,11 @@ class TestEventRegistrationStatus(APITestCase):
         self.user = User.objects.create_user(
             username="statususer_er",
             password="testpassword",
+        )
+        Location.objects.get_or_create(
+            city="Status City",
+            country="Statusland",
+            defaults={"name": "Status City, Statusland", "place_id": 7777},
         )
         self.role = Role.objects.create(
             name="Admin_er_status",

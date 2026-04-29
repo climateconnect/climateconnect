@@ -196,7 +196,7 @@ class LocationTaskTest(TestCase):
         self.assertTrue(
             any(
                 "already exists" in call[0][0]
-                for call in mock_logger.warning.call_args_list
+                for call in mock_logger.debug.call_args_list
             )
         )
 
