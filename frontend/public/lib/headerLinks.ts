@@ -252,7 +252,7 @@ const getLinks = (
   }
   const effectiveIsLocationHub = isLocationHub || isCustomHub;
   return isCustomHub
-    ? getCustomHubData({ hubUrl, texts, path_to_redirect })?.headerLinks
+    ? getCustomHubData({ hubUrl, texts, path_to_redirect, isAuthUnificationEnabled })?.headerLinks
     : getDefaultLinks(
         path_to_redirect,
         texts,

@@ -1,8 +1,9 @@
 # 20260429_1525_update_header_links_auth_unification
 
 **Type**: Story  
-**Status**: VALIDATION  
+**Status**: COMPLETED  
 **Started**: 2026-04-29 15:25  
+**Completed**: 2026-04-29 15:35  
 **Owner**: —  
 **Depends on**: [EPIC: Auth Unification](./EPIC_auth_unification.md) — AUTH_UNIFICATION feature toggle must be active.  
 **Blocks**: —  
