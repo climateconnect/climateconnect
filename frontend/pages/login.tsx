@@ -19,7 +19,13 @@ import AuthPasswordLogin from "../src/components/auth/AuthPasswordLogin";
 import AuthForgotPassword from "../src/components/auth/AuthForgotPassword";
 import AuthOtp from "../src/components/auth/AuthOtp";
 
-type AuthStep = "email_entry" | "signup_step1" | "password_login" | "forgot_password" | "otp_entry";
+type AuthStep =
+  | "email_entry"
+  | "signup_step1"
+  | "password_login"
+  | "forgot_password"
+  | "otp_entry"
+  | "success";
 
 interface LoginProps {
   hubThemeData: any;
@@ -156,6 +162,7 @@ export default function Login({
   };
 
   const handleAuthSuccess = () => {
+    setCurrentStep("success");
     const storedRedirect = window.sessionStorage.getItem("auth_redirect_url");
     window.sessionStorage.removeItem("auth_redirect_url"); // Clear after using
     router.push(storedRedirect || getLocalePrefix(locale || "en") + "/");
@@ -213,6 +220,8 @@ export default function Login({
         );
       case "otp_entry":
         return <AuthOtp {...commonProps} />;
+      case "success":
+        return null;
     }
   };
 
