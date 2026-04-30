@@ -1,11 +1,12 @@
 import { Box, Button, Typography } from "@mui/material";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ActiveSectorsSelector from "../hub/ActiveSectorsSelector";
 import { Sector } from "../../types";
 import { getSectorOptions } from "../../../public/lib/getOptions";
 import LoadingSpinner from "../general/LoadingSpinner";
+import { trackAuthEvent } from "../../utils/analytics";
 
 interface SignupInterestsStepProps {
   email: string;
@@ -24,12 +25,14 @@ export default function SignupInterestsStep({
   isLoading = false,
   errorMessage,
 }: SignupInterestsStepProps) {
-  const { locale } = useContext(UserContext);
+  const { locale, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
 
   const [selectedSectors, setSelectedSectors] = useState<Sector[]>([]);
   const [sectorOptions, setSectorOptions] = useState<Sector[]>([]);
   const [isLoadingSectors, setIsLoadingSectors] = useState(true);
+
+  const trackedFieldFilled = useRef(false);
 
   // Fetch sector options when component mounts
   useEffect(() => {
@@ -57,6 +60,15 @@ export default function SignupInterestsStep({
     if (selectedSector && !selectedSectors.some((s) => s.key === selectedSector.key)) {
       const updatedSectors = [...selectedSectors, selectedSector];
       setSelectedSectors(updatedSectors);
+
+      if (!trackedFieldFilled.current) {
+        trackedFieldFilled.current = true;
+        trackAuthEvent(
+          "auth_signup_field_filled",
+          { locale, hub_slug: hubUrl, field_name: "interests", step: "interests" },
+          ReactGA
+        );
+      }
     }
   };
 
@@ -71,6 +83,11 @@ export default function SignupInterestsStep({
 
   const handleCreateAccount = () => {
     const sectorIds = selectedSectors.map((sector) => sector.key);
+    trackAuthEvent(
+      "auth_signup_interests_submitted",
+      { locale, hub_slug: hubUrl, sector_count: sectorIds.length },
+      ReactGA
+    );
     onSubmit({ interest_sectors: sectorIds });
   };
 
