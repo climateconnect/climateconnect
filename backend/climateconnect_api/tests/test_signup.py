@@ -17,7 +17,6 @@ from climateconnect_api.models.language import Language
 from location.models import Location
 
 
-@override_settings(ENABLE_LEGACY_LOCATION_FORMAT="True")
 class SignupViewTest(TestCase):
     """Tests for POST /api/signup/ endpoint"""
 
@@ -40,8 +39,17 @@ class SignupViewTest(TestCase):
             country="Germany",
         )
 
+        # Mock get_location so the view receives a valid Location instance
+        # without requiring a full OSM payload in every test.
+        self.get_location_patcher = patch(
+            "climateconnect_api.views.user_views.get_location",
+            return_value=self.location,
+        )
+        self.get_location_patcher.start()
+        self.addCleanup(self.get_location_patcher.stop)
+
         # Base signup data (without password)
-        # Note: location field expects a dictionary with city/country, not an ID
+        # The location dict here is irrelevant because get_location is mocked.
         self.base_signup_data = {
             "email": "newuser@example.com",
             "first_name": "Test",

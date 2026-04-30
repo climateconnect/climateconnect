@@ -56,7 +56,9 @@ class CheckEmailView(APIView):
             method=RATELIMIT_ALL,
             increment=True,
         ):
-            return ratelimited_response(request, "IP rate limit exceeded (20/h)", retry_after=3600)
+            return ratelimited_response(
+                request, "IP rate limit exceeded (20/h)", retry_after=3600
+            )
         return super().dispatch(request, *args, **kwargs)
 
     @extend_schema(
@@ -112,7 +114,9 @@ class RequestTokenView(APIView):
             method=RATELIMIT_ALL,
             increment=True,
         ):
-            return ratelimited_response(request, "Per-email rate limit exceeded (3/10m)", retry_after=600)
+            return ratelimited_response(
+                request, "Per-email rate limit exceeded (3/10m)", retry_after=600
+            )
         # Per-IP rate limit: 30 requests per hour
         if is_ratelimited(
             request,
@@ -122,7 +126,9 @@ class RequestTokenView(APIView):
             method=RATELIMIT_ALL,
             increment=True,
         ):
-            return ratelimited_response(request, "IP rate limit exceeded (30/h)", retry_after=3600)
+            return ratelimited_response(
+                request, "IP rate limit exceeded (30/h)", retry_after=3600
+            )
         return super().dispatch(request, *args, **kwargs)
 
     @extend_schema(
