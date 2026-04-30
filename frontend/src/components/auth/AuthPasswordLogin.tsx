@@ -3,6 +3,7 @@ import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mu
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { trackAuthEvent } from "../../utils/analytics";
 
 interface AuthPasswordLoginProps {
   email: string;
@@ -21,7 +22,7 @@ export default function AuthPasswordLogin({
   onSwitchToOtp,
   hubUrl,
 }: AuthPasswordLoginProps) {
-  const { locale, signIn } = useContext(UserContext);
+  const { locale, signIn, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
 
   const [password, setPassword] = useState("");
@@ -46,19 +47,35 @@ export default function AuthPasswordLogin({
         payload: { username: email.toLowerCase(), password },
         locale: locale,
       });
+      trackAuthEvent("auth_password_entered", { locale, hub_slug: hubUrl }, ReactGA);
       await signIn(response.data.token, response.data.expiry);
+      trackAuthEvent(
+        "auth_completed",
+        { locale, hub_slug: hubUrl, auth_type: "password", user_type: "returning" },
+        ReactGA
+      );
       onSuccess();
     } catch (err: any) {
       setPassword("");
+      let failureReason: string;
       if (err.response?.data?.type === "not_verified") {
+        failureReason = "not_verified";
         setErrorMessage(texts.not_verified_error_message);
       } else if (err.response?.status === 429) {
+        failureReason = "rate_limit";
         setErrorMessage(texts.too_many_attempts || "Too many attempts. Please try again later.");
       } else if (err.response?.data?.message) {
+        failureReason = "invalid_credentials";
         setErrorMessage(err.response.data.message);
       } else {
+        failureReason = "network";
         setErrorMessage(texts.server_error || "Something went wrong. Please try again.");
       }
+      trackAuthEvent(
+        "auth_password_failed",
+        { locale, hub_slug: hubUrl, failure_reason: failureReason },
+        ReactGA
+      );
     } finally {
       setIsLoading(false);
     }
@@ -114,11 +131,27 @@ export default function AuthPasswordLogin({
         alignItems="center"
         style={{ marginBottom: 16 }}
       >
-        <Button variant="text" size="small" onClick={onForgotPassword} disabled={isLoading}>
+        <Button
+          variant="text"
+          size="small"
+          onClick={() => {
+            trackAuthEvent("auth_password_forgot_clicked", { locale, hub_slug: hubUrl }, ReactGA);
+            onForgotPassword();
+          }}
+          disabled={isLoading}
+        >
           {texts.forgot_your_password || "Forgot your password?"}
         </Button>
 
-        <Button variant="text" size="small" onClick={onSwitchToOtp} disabled={isLoading}>
+        <Button
+          variant="text"
+          size="small"
+          onClick={() => {
+            trackAuthEvent("auth_switch_to_otp_clicked", { locale, hub_slug: hubUrl }, ReactGA);
+            onSwitchToOtp();
+          }}
+          disabled={isLoading}
+        >
           {texts.use_a_code_instead || "Use a code instead"}
         </Button>
       </Box>

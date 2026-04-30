@@ -5,6 +5,7 @@ import SignupInterestsStep from "./SignupInterestsStep";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
+import { trackAuthEvent } from "../../utils/analytics";
 
 interface AuthSignupStepProps {
   email: string;
@@ -28,7 +29,7 @@ export default function AuthSignupStep({
   onSignupComplete,
   hubUrl,
 }: AuthSignupStepProps) {
-  const { locale } = useContext(UserContext);
+  const { locale, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
 
   const [currentStep, setCurrentStep] = useState<SignupStep>("personal_info");
@@ -78,6 +79,19 @@ export default function AuthSignupStep({
       onSignupComplete();
     } catch (err: any) {
       console.error("Signup error:", err);
+
+      let errorType = "network";
+      if (err.response?.status >= 500) {
+        errorType = "server_error";
+      } else if (err.response?.status === 400 || err.response?.data?.email) {
+        errorType = "validation";
+      }
+
+      trackAuthEvent(
+        "auth_signup_error",
+        { locale, hub_slug: hubUrl, error_type: errorType, step: currentStep },
+        ReactGA
+      );
 
       // Handle signup errors
       if (err.response?.data?.message) {
