@@ -12,7 +12,6 @@ from climateconnect_api.serializers.common import (
 )
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
-from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
@@ -206,12 +205,9 @@ class EditProjectSerializer(ProjectSerializer):
     related_hubs = serializers.SerializerMethodField()
 
     def get_loc(self, obj):
-        if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
-            return {"city": obj.loc.city, "country": obj.loc.country}
-        else:
-            if obj.loc is None:
-                return None
-            return obj.loc.name
+        if obj.loc is None:
+            return None
+        return obj.loc.name
 
     def get_translations(self, obj):
         translations = ProjectTranslation.objects.filter(project=obj)

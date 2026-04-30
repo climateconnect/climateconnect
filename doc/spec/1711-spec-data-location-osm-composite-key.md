@@ -15,6 +15,8 @@ This specification defines the requirements for migrating location lookup logic 
 
 **Purpose**: Transitioning location lookup and identification logic from `place_id` to a composite key of OSM ID, OSM Type, and OSM Class to ensure stable, reliable location identification.
 
+**Note**: The legacy location format (`ENABLE_LEGACY_LOCATION_FORMAT`) has been fully removed as of spec [1712-spec-process-remove-legacy-location-format.md](1712-spec-process-remove-legacy-location-format.md). All references to the legacy format in this document have been cleaned up accordingly.
+
 **Scope**: This specification covers:
 - Updates to location lookup and creation logic in the backend
 - Handling of duplicate location records (selecting newest by ID)
@@ -46,7 +48,6 @@ This specification defines the requirements for migrating location lookup logic 
 - **OSM Class Type** (`osm_class_type`): The sub-category within the OSM Class (e.g., "administrative", "city", "town")
 - **Composite Key**: A unique identifier composed of multiple fields; in this case: osm_id + osm_type + osm_class
 - **Nominatim**: OpenStreetMap's geocoding service that translates addresses to coordinates and vice versa
-- **Legacy Location**: Locations created with only city and country fields (when `ENABLE_LEGACY_LOCATION_FORMAT=True`)
 - **Stub Location**: A location created without complete geocoordinate data (marked with `is_stub=True`)
 
 ## 3. Requirements, Constraints & Guidelines
@@ -66,9 +67,6 @@ This specification defines the requirements for migrating location lookup logic 
 - **REQ-006**: The system MUST handle special cases where OSM data may be missing or invalid:
   - "Global" location with synthetic identifiers
   - Stub locations marked with `is_stub=True`
-  - Legacy locations when `ENABLE_LEGACY_LOCATION_FORMAT=True` (TO BE DISCUSSED)
-
-- **REQ-007**: Legacy location format (city + country only) MUST continue to function when `ENABLE_LEGACY_LOCATION_FORMAT=True`  (TO BE DISCUSSED)
 
 ### API Endpoint Requirements
 

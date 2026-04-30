@@ -9,7 +9,7 @@ Contains:
 from datetime import timedelta
 
 from django.contrib.auth.models import User
-from django.test import override_settings, tag
+from django.test import tag
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
@@ -200,7 +200,6 @@ class TestNotifyAdminsField(APITestCase):
         self.assertTrue(response.data["notify_admins"])
 
 
-@override_settings(ENABLE_LEGACY_LOCATION_FORMAT="True")
 class TestNotifyAdminsCreateProject(APITestCase):
     """
     Tests for notify_admins during event creation via POST /api/projects/.

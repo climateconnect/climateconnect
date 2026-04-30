@@ -20,6 +20,8 @@ jest.mock("../../../public/lib/apiOperations", () => ({
 // Helpers
 // ---------------------------------------------------------------------------
 
+const mockReactGAEvent = jest.fn();
+
 function makeContextValue(locale: "en" | "de" = "en") {
   return {
     locale: locale,
@@ -29,6 +31,7 @@ function makeContextValue(locale: "en" | "de" = "en") {
     donationGoals: [],
     hubUrl: "",
     signIn: jest.fn(),
+    ReactGA: { event: mockReactGAEvent },
   };
 }
 
@@ -70,7 +73,9 @@ describe("AuthEmailStep", () => {
       renderAuthEmailStep();
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Welcome!");
-      expect(screen.getByText(/enter your email to login or register/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/register or log in with your existing climate connect account/i)
+      ).toBeInTheDocument();
     });
 
     it("renders the email input field", () => {
@@ -285,8 +290,87 @@ describe("AuthEmailStep", () => {
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Willkommen!");
       expect(
-        screen.getByText(/gib deine e-mail-adresse ein, um dich einzuloggen/i)
+        screen.getByText(/anmelden oder mit bestehendem climate connect account einloggen/i)
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("analytics", () => {
+    beforeEach(() => {
+      mockReactGAEvent.mockClear();
+    });
+
+    it("tracks auth_email_entered on successful submission", async () => {
+      mockApiRequest.mockResolvedValueOnce({ data: { user_status: "new" } });
+      renderAuthEmailStep();
+
+      fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
+        target: { value: "newuser@example.com" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+      await waitFor(() => {
+        expect(mockReactGAEvent).toHaveBeenCalledWith("auth_email_entered", {
+          locale: "en",
+          user_status: "new",
+        });
+      });
+    });
+
+    it("tracks auth_email_entered with hub_slug when provided", async () => {
+      mockApiRequest.mockResolvedValueOnce({ data: { user_status: "returning_otp" } });
+      renderAuthEmailStep({ hubUrl: "berlin" });
+
+      fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
+        target: { value: "user@example.com" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+      await waitFor(() => {
+        expect(mockReactGAEvent).toHaveBeenCalledWith("auth_email_entered", {
+          locale: "en",
+          hub_slug: "berlin",
+          user_status: "returning_otp",
+        });
+      });
+    });
+
+    it("tracks auth_email_error on API failure", async () => {
+      mockApiRequest.mockRejectedValueOnce({
+        response: { status: 429, data: { detail: "Too many requests" } },
+      });
+      renderAuthEmailStep();
+
+      fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
+        target: { value: "user@example.com" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+      await waitFor(() => {
+        expect(mockReactGAEvent).toHaveBeenCalledWith("auth_email_error", {
+          locale: "en",
+          error_type: "rate_limit",
+        });
+      });
+    });
+
+    it("tracks auth_email_error with validation type on field error", async () => {
+      mockApiRequest.mockRejectedValueOnce({
+        response: { data: { email: ["Enter a valid email address."] } },
+      });
+      renderAuthEmailStep();
+
+      fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
+        target: { value: "bad-email" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+      await waitFor(() => {
+        expect(mockReactGAEvent).toHaveBeenCalledWith("auth_email_error", {
+          locale: "en",
+          error_type: "validation",
+        });
+      });
     });
   });
 });

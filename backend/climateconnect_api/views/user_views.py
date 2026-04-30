@@ -57,6 +57,9 @@ from organization.serializers.project import (
 )
 from organization.utility.sector import sanitize_sector_inputs
 
+from auth_app.models import LoginAuditLog
+from auth_app.utility.ip import anonymise_ip
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +73,8 @@ class LoginView(KnoxLoginView):
             message = "Must include 'username' and 'password'"
             return Response({"message": message}, status=status.HTTP_400_BAD_REQUEST)
 
+        username = request.data.get("username", "")
+
         # First, authenticate the user
         user = authenticate(
             username=request.data["username"], password=request.data["password"]
@@ -78,6 +83,13 @@ class LoginView(KnoxLoginView):
         if user:
             user_profile = UserProfile.objects.filter(user=user)[0]
             if not user_profile.is_profile_verified:
+                LoginAuditLog.objects.create(
+                    email=username,
+                    user=user,
+                    outcome=LoginAuditLog.Outcome.FAILED,
+                    ip_address=anonymise_ip(request.META.get("REMOTE_ADDR")),
+                    user_agent=request.META.get("HTTP_USER_AGENT", "")[:512],
+                )
                 message = "You first have to activate your account by clicking the link we sent to your E-Mail."
                 return Response(
                     {"message": message, "type": "not_verified"},
@@ -96,8 +108,24 @@ class LoginView(KnoxLoginView):
                 user_profile.has_logged_in = user_profile.has_logged_in + 1
                 user_profile.save()
 
+            LoginAuditLog.objects.create(
+                email=username,
+                user=user,
+                outcome=LoginAuditLog.Outcome.VERIFIED,
+                ip_address=anonymise_ip(request.META.get("REMOTE_ADDR")),
+                user_agent=request.META.get("HTTP_USER_AGENT", "")[:512],
+            )
+
             return super(LoginView, self).post(request, format=None)
         else:
+            looked_up_user = User.objects.filter(username=username).first()
+            LoginAuditLog.objects.create(
+                email=username,
+                user=looked_up_user,
+                outcome=LoginAuditLog.Outcome.FAILED,
+                ip_address=anonymise_ip(request.META.get("REMOTE_ADDR")),
+                user_agent=request.META.get("HTTP_USER_AGENT", "")[:512],
+            )
             return Response(
                 {"message": _("Invalid email or password")},
                 status=status.HTTP_401_UNAUTHORIZED,
@@ -114,7 +142,6 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             "email",
-            "password",
             "first_name",
             "last_name",
             "location",
@@ -138,7 +165,14 @@ class SignUpView(APIView):
             is_active=True,
         )
 
-        user.set_password(request.data["password"])
+        # Handle password-based vs passwordless signup
+        password = request.data.get("password")
+        if password:
+            user.set_password(password)
+            auth_method = UserProfile.AuthMethod.PASSWORD
+        else:
+            user.set_unusable_password()
+            auth_method = UserProfile.AuthMethod.OTP
         user.save()
 
         full_name = user.first_name + "-" + user.last_name
@@ -155,6 +189,7 @@ class SignUpView(APIView):
             verification_key=uuid.uuid4(),
             send_newsletter=request.data["send_newsletter"],
             language=source_language,
+            auth_method=auth_method,
         )
         if "is_activist" in request.data:
             user_profile.is_activist = request.data["is_activist"]
@@ -172,10 +207,19 @@ class SignUpView(APIView):
             user_profile.is_profile_verified = True
             message = "Congratulations! Your account has been created"
         else:
-            send_user_verification_email(user, user_profile.verification_key, hub_url)
-            message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
-                user.email
-            )  # NOQA
+            # Only send verification email for password-based signups
+            # OTP-based signups use the OTP code entry as verification
+            if auth_method == UserProfile.AuthMethod.PASSWORD:
+                send_user_verification_email(
+                    user, user_profile.verification_key, hub_url
+                )
+                message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
+                    user.email
+                )  # NOQA
+            else:
+                # For OTP signups, account is created unverified
+                # It will be verified when they complete the OTP flow
+                message = "Account created successfully"
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]

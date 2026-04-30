@@ -136,7 +136,7 @@ export default function Signin({ hubSlug, hubThemeData, message, message_type })
       //TODO: remove router
     }
     if (user) {
-      redirectOnLogin(user, redirectUrl, locale);
+      redirectOnLogin(user, redirectUrl, locale, hubSlug);
     }
   });
 

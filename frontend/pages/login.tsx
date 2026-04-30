@@ -2,8 +2,9 @@ import { ThemeProvider } from "@emotion/react";
 import { Card, CardContent, Container, Theme, useMediaQuery } from "@mui/material";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import UserContext from "../src/components/context/UserContext";
+import { trackAuthEvent } from "../src/utils/analytics";
 import ContentImageSplitView from "../src/components/layouts/ContentImageSplitLayout";
 import CustomAuthImage from "../src/components/hub/CustomAuthImage";
 import WideLayout from "../src/components/layouts/WideLayout";
@@ -19,7 +20,13 @@ import AuthPasswordLogin from "../src/components/auth/AuthPasswordLogin";
 import AuthForgotPassword from "../src/components/auth/AuthForgotPassword";
 import AuthOtp from "../src/components/auth/AuthOtp";
 
-type AuthStep = "email_entry" | "signup_step1" | "password_login" | "forgot_password" | "otp_entry";
+type AuthStep =
+  | "email_entry"
+  | "signup_step1"
+  | "password_login"
+  | "forgot_password"
+  | "otp_entry"
+  | "success";
 
 interface LoginProps {
   hubThemeData: any;
@@ -86,8 +93,9 @@ export default function Login({
   hubSlug,
   featureToggles: _featureToggles,
 }: LoginProps) {
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, ReactGA } = useContext(UserContext);
   const router = useRouter();
+  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
   const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
 
   // Determine redirect URL from query params
@@ -112,6 +120,46 @@ export default function Login({
   // Step state machine — no URL change on transition
   const [currentStep, setCurrentStep] = useState<AuthStep>("email_entry");
   const [email, setEmail] = useState("");
+  const isNewUserForOtp = useRef(false);
+
+  // Track step views for funnel analysis
+  useEffect(() => {
+    if (currentStep === "success") return;
+
+    const stepMapping: Record<Exclude<AuthStep, "success">, string> = {
+      email_entry: "email_entry",
+      signup_step1: "signup_personal_info",
+      password_login: "password_login",
+      forgot_password: "forgot_password",
+      otp_entry: "otp_entry",
+    };
+
+    trackAuthEvent(
+      "auth_step_viewed",
+      {
+        locale: locale || "en",
+        hub_slug: hubSlug || undefined,
+        step: stepMapping[currentStep as Exclude<AuthStep, "success">],
+        user_status: currentStep === "signup_step1" ? "new" : undefined,
+      },
+      ReactGA
+    );
+
+    if (currentStep === "signup_step1") {
+      trackAuthEvent(
+        "auth_signup_started",
+        { locale: locale || "en", hub_slug: hubSlug || undefined },
+        ReactGA
+      );
+    }
+  }, [currentStep, hubSlug, locale, ReactGA]);
+
+  // Clear old redirect from sessionStorage if no redirect/hub in current URL
+  useEffect(() => {
+    if (!router.query.redirect && !hubSlug) {
+      window.sessionStorage.removeItem("auth_redirect_url");
+    }
+  }, [router.query.redirect, hubSlug]);
 
   // Redirect to home if already logged in
   useEffect(() => {
@@ -132,12 +180,14 @@ export default function Login({
     setEmail(determinedEmail);
     switch (status) {
       case "new":
+        isNewUserForOtp.current = true;
         setCurrentStep("signup_step1");
         break;
       case "returning_password":
         setCurrentStep("password_login");
         break;
       case "returning_otp":
+        isNewUserForOtp.current = false;
         setCurrentStep("otp_entry");
         break;
     }
@@ -148,11 +198,14 @@ export default function Login({
   };
 
   const handleAuthSuccess = () => {
+    setCurrentStep("success");
     const storedRedirect = window.sessionStorage.getItem("auth_redirect_url");
+    window.sessionStorage.removeItem("auth_redirect_url"); // Clear after using
     router.push(storedRedirect || getLocalePrefix(locale || "en") + "/");
   };
 
   const handleSwitchToOtp = () => {
+    isNewUserForOtp.current = false;
     setCurrentStep("otp_entry");
   };
 
@@ -162,6 +215,10 @@ export default function Login({
 
   const handleBackToPasswordLogin = () => {
     setCurrentStep("password_login");
+  };
+
+  const handleSignupComplete = () => {
+    setCurrentStep("otp_entry");
   };
 
   const commonProps = {
@@ -181,7 +238,7 @@ export default function Login({
           />
         );
       case "signup_step1":
-        return <AuthSignupStep {...commonProps} />;
+        return <AuthSignupStep {...commonProps} onSignupComplete={handleSignupComplete} />;
       case "password_login":
         return (
           <AuthPasswordLogin
@@ -199,16 +256,36 @@ export default function Login({
           />
         );
       case "otp_entry":
-        return <AuthOtp {...commonProps} />;
+        return (
+          <AuthOtp {...commonProps} userType={isNewUserForOtp.current ? "new" : "returning"} />
+        );
+      case "success":
+        return null;
     }
   };
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const customThemeSignUp = hubThemeData
+    ? transformThemeData(hubThemeData, themeSignUp)
+    : themeSignUp;
 
   return (
-    <WideLayout hideAlert noSpaceBottom customTheme={customTheme} hubUrl={hubSlug || undefined}>
-      <ThemeProvider theme={customTheme || themeSignUp}>
-        <Container maxWidth="lg" style={{ paddingTop: 32, paddingBottom: 32 }}>
+    <WideLayout
+      hideAlert
+      noSpaceBottom
+      isHubPage={hubSlug !== null}
+      customTheme={customTheme}
+      hubUrl={hubSlug || undefined}
+      headerBackground={
+        customTheme && isSmallScreen ? customTheme.palette.header.background : "transparent"
+      }
+      footerTextColor={hubSlug && !isSmallScreen ? "white" : undefined}
+    >
+      <ThemeProvider theme={customThemeSignUp}>
+        <Container
+          maxWidth={hugeScreen ? "xl" : "lg"}
+          style={{ paddingTop: 32, paddingBottom: 32 }}
+        >
           {isSmallScreen ? (
             <Card variant="outlined">
               <CardContent>{getStepContent()}</CardContent>

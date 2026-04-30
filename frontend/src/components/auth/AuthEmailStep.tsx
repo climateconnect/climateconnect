@@ -3,6 +3,7 @@ import { Alert, Button, CircularProgress, TextField, Typography } from "@mui/mat
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { trackAuthEvent } from "../../utils/analytics";
 
 interface AuthEmailStepProps {
   onUserStatusDetermined: (
@@ -10,10 +11,15 @@ interface AuthEmailStepProps {
     _email: string
   ) => void;
   hubUrl?: string;
+  showHeader?: boolean;
 }
 
-export default function AuthEmailStep({ onUserStatusDetermined, hubUrl }: AuthEmailStepProps) {
-  const { locale } = useContext(UserContext);
+export default function AuthEmailStep({
+  onUserStatusDetermined,
+  hubUrl,
+  showHeader = true,
+}: AuthEmailStepProps) {
+  const { locale, ReactGA } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -34,8 +40,28 @@ export default function AuthEmailStep({ onUserStatusDetermined, hubUrl }: AuthEm
         locale: locale,
       });
 
+      trackAuthEvent(
+        "auth_email_entered",
+        { locale, hub_slug: hubUrl, user_status: response.data.user_status },
+        ReactGA
+      );
       onUserStatusDetermined(response.data.user_status, normalizedEmail);
     } catch (err: any) {
+      let errorType = "network";
+      if (err.response?.status === 429) {
+        errorType = "rate_limit";
+      } else if (err.response?.status >= 500) {
+        errorType = "server_error";
+      } else if (err.response?.data?.email) {
+        errorType = "validation";
+      }
+
+      trackAuthEvent(
+        "auth_email_error",
+        { locale, hub_slug: hubUrl, error_type: errorType },
+        ReactGA
+      );
+
       if (err.response?.data?.detail) {
         setErrorMessage(err.response.data.detail);
       } else if (err.response?.data?.message) {
@@ -54,13 +80,16 @@ export default function AuthEmailStep({ onUserStatusDetermined, hubUrl }: AuthEm
 
   return (
     <>
-      <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
-        {texts.welcome_to_climate_connect}
-      </Typography>
+      {showHeader && (
+        <>
+          <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
+            {texts.welcome_to_climate_connect}
+          </Typography>
+        </>
+      )}
       <Typography variant="body1" style={{ marginBottom: 24 }}>
         {texts.welcome_to_climate_connect_subtitle}
       </Typography>
-
       <form onSubmit={handleSubmit} noValidate>
         <TextField
           id="auth-email-input"

@@ -35,9 +35,9 @@ def location_obj_to_dict(location):
         if hasattr(location, "display_name") and location.display_name
         else location.name
     )
-    type = getattr(location, "type", "administrative")
+    loc_type = getattr(location, "type", "administrative")
     return {
-        "type": type,
+        "type": loc_type,
         "address": address,
         "display_name": display_name,
     }
@@ -137,33 +137,7 @@ def _get_newest_location_by_place_id(place_id):
     return Location.objects.filter(place_id=place_id).order_by("-id").first()
 
 
-def get_legacy_location(location_object):
-    required_params = ["country"]
-
-    for param in required_params:
-        if param not in location_object:
-            raise ValidationError("Required parameter is missing:" + param)
-
-    if "city" in location_object:
-        city = location_object["city"]
-    else:
-        city = ""
-    loc = Location.objects.filter(city=city, country=location_object["country"])
-    if loc.exists():
-        return loc[0]
-    else:
-        loc = Location.objects.create(
-            city=location_object["city"],
-            country=location_object["country"],
-            name=location_object["city"] + ", " + location_object["country"],
-        )
-        return loc
-
-
 def get_location(location_object):
-    if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
-        return get_legacy_location(location_object)
-
     if location_object.get("type") == "global":
         return get_global_location()
 
@@ -335,7 +309,7 @@ CUSTOM_NAME_MAPPINGS = {"Scotland (state), Scotland": "Scotland"}
 
 # These country codes have states that should be shown as the location's "country" part
 # because the actual country name is less meaningful for display (e.g. UK nations)
-MAP_STATE_TO_COUNTRY_CODES = {"gb"}
+MAP_STATE_AS_COUNTRY_CODES = {"gb"}
 
 
 # This function has an equivalent in backend/location/utility.py -> format_location_name
@@ -387,7 +361,7 @@ def format_location_name(location):
     last_part = (
         location["address"]["state"]
         if location["address"].get("country_code", "").lower()
-        in MAP_STATE_TO_COUNTRY_CODES
+        in MAP_STATE_AS_COUNTRY_CODES
         and location["address"].get("state")
         else location["address"].get("country", "")
     )
@@ -499,8 +473,14 @@ def get_location_with_range(query_params):
         if not _has_non_empty_value(filter_osm_id) or not _has_non_empty_value(
             normalized_osm_type
         ):
+            logger.warning(
+                "Deprecated or missing location lookup parameters: osm_id and osm_type are required. "
+                "Received osm_id=%s, osm_type=%s.",
+                filter_osm_id,
+                filter_osm_type,
+            )
             raise ValidationError(
-                "Missing location lookup parameters: osm_id and osm_type are required"
+                "Missing required location lookup parameters: osm_id and osm_type are required."
             )
 
         # Append osm_id to first letter of osm_type as uppercase letter

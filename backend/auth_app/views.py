@@ -30,7 +30,12 @@ from auth_app.utility.ip import anonymise_ip
 logger = logging.getLogger(__name__)
 
 
-def ratelimited_response(request, retry_after: int = 3600):
+def ratelimited_response(request, reason: str, retry_after: int = 3600):
+    logger.info(
+        "Rate limited request from IP %s: %s",
+        anonymise_ip(request.META.get("REMOTE_ADDR")),
+        reason,
+    )
     response = JsonResponse(
         {"detail": "Too many requests. Please try again later."},
         status=429,
@@ -51,7 +56,9 @@ class CheckEmailView(APIView):
             method=RATELIMIT_ALL,
             increment=True,
         ):
-            return ratelimited_response(request, retry_after=3600)
+            return ratelimited_response(
+                request, "IP rate limit exceeded (20/h)", retry_after=3600
+            )
         return super().dispatch(request, *args, **kwargs)
 
     @extend_schema(
@@ -107,7 +114,9 @@ class RequestTokenView(APIView):
             method=RATELIMIT_ALL,
             increment=True,
         ):
-            return ratelimited_response(request, retry_after=600)
+            return ratelimited_response(
+                request, "Per-email rate limit exceeded (3/10m)", retry_after=600
+            )
         # Per-IP rate limit: 30 requests per hour
         if is_ratelimited(
             request,
@@ -117,7 +126,9 @@ class RequestTokenView(APIView):
             method=RATELIMIT_ALL,
             increment=True,
         ):
-            return ratelimited_response(request, retry_after=3600)
+            return ratelimited_response(
+                request, "IP rate limit exceeded (30/h)", retry_after=3600
+            )
         return super().dispatch(request, *args, **kwargs)
 
     @extend_schema(
@@ -169,6 +180,11 @@ class RequestTokenView(APIView):
                     status=429,
                 )
                 response["Retry-After"] = str(retry_after)
+                logger.info(
+                    "Rate limited request from IP %s: %s",
+                    anonymise_ip(request.META.get("REMOTE_ADDR")),
+                    "Resend cooldown",
+                )
                 return response
 
         # User lookup (enumeration-safe: always returns 200)

@@ -25,7 +25,7 @@ def fetch_and_create_location_translations(self, loc_id):
         return
 
     if not instance.osm_id or not instance.osm_type:
-        logger.warning(
+        logger.debug(
             f"Location {loc_id} has no osm_id or osm_type. Skipping translation."
         )
         return
@@ -56,7 +56,7 @@ def fetch_and_create_location_translations(self, loc_id):
             data = response.json()
 
             if not data or not data[0]:
-                logger.warning(
+                logger.debug(
                     f"No Nominatim-Data found for location_id: {loc_id} ({locale})."
                 )
                 continue
@@ -90,7 +90,7 @@ def fetch_and_create_location_translations(self, loc_id):
                 )
                 logger.info(f"Translation created for {instance.pk} in {locale}.")
         except IntegrityError as e:
-            logger.warning(
+            logger.debug(
                 f"Translation for ID {loc_id} and {language.id} already exists: {e}"
             )
             continue

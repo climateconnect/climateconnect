@@ -34,7 +34,6 @@ MEDIA_ROOT=/workspaces/climateconnect/backend/media
 DEBUG=True
 AUTO_VERIFY=True
 LOCATION_SERVICE_BASE_URL=https://nominatim.openstreetmap.org
-ENABLE_LEGACY_LOCATION_FORMAT=True
 CELERY_BROKER_URL=redis://redis
 
 CACHE_BACHED_RANK_REQUEST=true

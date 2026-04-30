@@ -19,6 +19,20 @@ import { parseProjectStubs } from "../../public/lib/parsingOperations";
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
+  // Prevent API calls with undefined slug
+  // see https://github.com/climateconnect/climateconnect/issues/1796
+  if (profileUrl === "undefined") {
+    return {
+      props: nullifyUndefinedValues({
+        profile: null,
+        organizations: null,
+        projects: null,
+        projectTypes: null,
+        hubUrl: ctx.query.hub,
+        hubThemeData: null,
+      }),
+    };
+  }
   const hubUrl = ctx.query.hub;
   const [profile, organizations, projects, projectTypes, hubThemeData] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, auth_token, ctx.locale),

@@ -252,6 +252,10 @@ class Project(models.Model):
             created_at=self.created_at,
         )
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete(generate_project_ranking_cache_key(project_id=self.id))
+
     def clean(self):
         """Validate parent/child relationships."""
         super().clean()
