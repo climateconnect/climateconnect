@@ -11,6 +11,7 @@ interface AuthPasswordLoginProps {
   onForgotPassword: () => void;
   onSwitchToOtp: () => void;
   hubUrl?: string;
+  showHeader?: boolean;
 }
 
 export default function AuthPasswordLogin({
@@ -20,6 +21,7 @@ export default function AuthPasswordLogin({
   onForgotPassword,
   onSwitchToOtp,
   hubUrl,
+  showHeader = true,
 }: AuthPasswordLoginProps) {
   const { locale, signIn } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -66,12 +68,14 @@ export default function AuthPasswordLogin({
 
   return (
     <>
-      <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
-        {texts.log_in || "Log in"}
-      </Typography>
+      {showHeader && (
+        <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
+          {texts.log_in || "Log in"}
+        </Typography>
+      )}
 
-      <Typography variant="body2" color="textSecondary" style={{ marginBottom: 24 }}>
-        {email}
+      <Typography variant="body1" style={{ marginBottom: 24 }}>
+        {texts.enter_password}
       </Typography>
 
       <form onSubmit={handleSubmit} noValidate aria-busy={isLoading}>

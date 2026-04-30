@@ -12,6 +12,7 @@ interface AuthSignupStepProps {
   onSignupComplete: () => void;
   hubUrl?: string;
   skipInterests?: boolean;
+  showHeader?: boolean;
 }
 
 type SignupStep = "personal_info" | "interests";
@@ -29,6 +30,7 @@ export default function AuthSignupStep({
   onSignupComplete,
   hubUrl,
   skipInterests = false,
+  showHeader = true,
 }: AuthSignupStepProps) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -118,6 +120,7 @@ export default function AuthSignupStep({
         onBack={onBack}
         hubUrl={hubUrl}
         isLoading={isCreatingAccount}
+        showHeader={showHeader}
       />
     );
   }
@@ -131,6 +134,7 @@ export default function AuthSignupStep({
         hubUrl={hubUrl}
         isLoading={isCreatingAccount}
         errorMessage={errorMessage || undefined}
+        showHeader={showHeader}
       />
     );
   }

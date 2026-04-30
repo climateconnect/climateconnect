@@ -126,6 +126,7 @@ function renderModal({
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockApiRequest.mockReset();
   mockSessionStorage.clear();
   // Suppress console.error during tests to keep output clean
   jest.spyOn(console, "error").mockImplementation(() => {});
@@ -281,7 +282,7 @@ describe("EventRegistrationModal – unauthenticated user", () => {
     fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/create your account/i)).toBeInTheDocument();
+      expect(screen.getByText(/you don't have an account yet/i)).toBeInTheDocument();
     });
   });
 
@@ -401,7 +402,7 @@ describe("EventRegistrationModal – unauthenticated user", () => {
     fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/create your account/i)).toBeInTheDocument();
+      expect(screen.getByText(/you don't have an account yet/i)).toBeInTheDocument();
     });
 
     // Fill personal info

@@ -21,6 +21,7 @@
     "start:local": "PORT=3000 NODE_ENV=production node server.js",
     "test:watch": "jest --watch",
     "test": "jest",
+    "test-coverage": "jest --coverage",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {

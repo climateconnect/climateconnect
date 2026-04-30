@@ -26,6 +26,7 @@ interface SignupPersonalInfoStepProps {
   onBack: () => void;
   hubUrl?: string;
   isLoading?: boolean;
+  showHeader?: boolean;
 }
 
 export default function SignupPersonalInfoStep({
@@ -34,6 +35,7 @@ export default function SignupPersonalInfoStep({
   onBack,
   hubUrl,
   isLoading = false,
+  showHeader = true,
 }: SignupPersonalInfoStepProps) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -93,9 +95,11 @@ export default function SignupPersonalInfoStep({
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
-        {texts.create_your_account}
-      </Typography>
+      {showHeader && (
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
+          {texts.create_your_account}
+        </Typography>
+      )}
 
       <Typography variant="body1" sx={{ mb: 3 }}>
         {texts.signup_step_1_headline}

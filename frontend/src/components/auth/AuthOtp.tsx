@@ -12,9 +12,16 @@ interface AuthOtpProps {
   onBack: () => void;
   onSuccess?: () => void;
   hubUrl?: string;
+  showHeader?: boolean;
 }
 
-export default function AuthOtp({ email, onBack, onSuccess, hubUrl }: AuthOtpProps) {
+export default function AuthOtp({
+  email,
+  onBack,
+  onSuccess,
+  hubUrl,
+  showHeader = true,
+}: AuthOtpProps) {
   const { locale, signIn } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale, hubName: hubUrl });
 
@@ -159,11 +166,13 @@ export default function AuthOtp({ email, onBack, onSuccess, hubUrl }: AuthOtpPro
 
   return (
     <Box component="form" onSubmit={handleSubmit} aria-busy={isLoading}>
-      <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
-        {texts.enter_your_code || "Enter your code"}
-      </Typography>
+      {showHeader && (
+        <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
+          {texts.enter_your_code || "Enter your code"}
+        </Typography>
+      )}
       <Typography variant="body1" style={{ marginBottom: 24 }}>
-        {texts.we_sent_a_code_to || "We sent a 6-digit code to"} {email}
+        {texts.we_sent_a_code_to.replace("{email}", email)}
       </Typography>
 
       {errorMessage && (

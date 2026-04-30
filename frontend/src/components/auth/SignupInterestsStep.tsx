@@ -14,6 +14,7 @@ interface SignupInterestsStepProps {
   hubUrl?: string;
   isLoading?: boolean;
   errorMessage?: string;
+  showHeader?: boolean;
 }
 
 export default function SignupInterestsStep({
@@ -23,6 +24,7 @@ export default function SignupInterestsStep({
   hubUrl,
   isLoading = false,
   errorMessage,
+  showHeader = true,
 }: SignupInterestsStepProps) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -81,9 +83,11 @@ export default function SignupInterestsStep({
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
-        {texts.your_area_of_interest}
-      </Typography>
+      {showHeader && (
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
+          {texts.your_area_of_interest}
+        </Typography>
+      )}
 
       <Typography variant="body1" sx={{ mb: 3 }}>
         {texts.signup_step_3_headline}

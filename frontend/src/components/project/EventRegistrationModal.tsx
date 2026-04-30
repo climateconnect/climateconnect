@@ -243,6 +243,7 @@ export default function EventRegistrationModal({
           <AuthEmailStep
             onUserStatusDetermined={handleUserStatusDetermined}
             hubUrl={project.hubUrl}
+            showHeader={false}
           />
         );
       case "password":
@@ -261,6 +262,7 @@ export default function EventRegistrationModal({
             }}
             onSwitchToOtp={() => setAuthStep("otp")}
             hubUrl={project.hubUrl}
+            showHeader={false}
           />
         );
       case "otp":
@@ -274,6 +276,7 @@ export default function EventRegistrationModal({
               // to the authenticated registration confirmation step.
             }}
             hubUrl={project.hubUrl}
+            showHeader={false}
           />
         );
       case "signup":
@@ -284,6 +287,7 @@ export default function EventRegistrationModal({
             onSignupComplete={() => setAuthStep("otp")}
             hubUrl={project.hubUrl}
             skipInterests={true}
+            showHeader={false}
           />
         );
       default:
