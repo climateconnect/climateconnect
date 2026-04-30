@@ -1,3 +1,5 @@
+from typing import Any, List, Optional, Tuple, Union
+
 from hubs.models.hub import Hub
 from organization.models.sector import (
     OrganizationSectorMapping,
@@ -5,7 +7,6 @@ from organization.models.sector import (
     Sector,
     UserProfileSectorMapping,
 )
-from typing import Any, List, Tuple, Optional, Union
 
 
 def get_sector_name(sector: Sector, language_code: str) -> str:
@@ -159,6 +160,7 @@ def create_context_for_hub_specific_sector(
     """
     Create a context for the hub specific sector.
     """
+    ctx: dict[str, Any] = {"request": request}
     if "hub" in request.query_params:
         hub = (
             Hub.objects.filter(url_slug=request.query_params["hub"])
@@ -166,8 +168,6 @@ def create_context_for_hub_specific_sector(
             .first()
         )
         if not hub:
-            return {}
-        return {
-            "hub": hub,
-        }
-    return {}
+            return ctx
+        ctx["hub"] = hub
+    return ctx

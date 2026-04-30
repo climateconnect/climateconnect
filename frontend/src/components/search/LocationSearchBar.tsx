@@ -11,6 +11,7 @@ import {
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { getLocaleHeader } from "../../utils/locationUtils";
 
 const useStyles = makeStyles((theme) => ({
   additionalInfos: {
@@ -120,11 +121,11 @@ export default function LocationSearchBar({
           : searchValue;
         let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
           searchParam
-        )}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`;
+        )}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001`;
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
-        const response = await axios.get(url);
+        const response = await axios.get(url, { headers: getLocaleHeader(locale) });
         const bannedClasses = [
           "tourism",
           "railway",

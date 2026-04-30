@@ -1,19 +1,17 @@
-from organization.utility.sector import (
-    get_sectors_based_on_hub,
-)
-from climateconnect_api.models.role import Role
-from climateconnect_api.models.user import UserProfile
-from climateconnect_api.serializers.role import RoleSerializer
-from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
 
+from climateconnect_api.models.role import Role
+from climateconnect_api.models.user import UserProfile
+from climateconnect_api.serializers.role import RoleSerializer
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from location.utility import get_language_code_from_context, get_translated_location_name
 from organization.models import (
     Organization,
+    OrganizationFollower,
     OrganizationMember,
     OrganizationTranslation,
-    OrganizationFollower,
 )
 from organization.models.project import ProjectParents
 from organization.serializers.sector import OrganizationSectorMappingSerializer
@@ -21,9 +19,12 @@ from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.serializers.translation import OrganizationTranslationSerializer
 from organization.utility.organization import (
     get_organization_about_section,
+    get_organization_get_involved,
     get_organization_name,
     get_organization_short_description,
-    get_organization_get_involved,
+)
+from organization.utility.sector import (
+    get_sectors_based_on_hub,
 )
 
 
@@ -41,7 +42,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(obj.location, get_language_code_from_context(self.context))
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -117,7 +118,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(obj.location, get_language_code_from_context(self.context))
 
     def get_language(self, obj):
         if obj.language:
@@ -239,7 +240,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(obj.location, get_language_code_from_context(self.context))
 
     def get_short_description(self, obj):
         return get_organization_short_description(obj, get_language())

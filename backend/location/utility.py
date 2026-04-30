@@ -43,6 +43,38 @@ def location_obj_to_dict(location):
     }
 
 
+def get_translated_location_name(location, language_code: str) -> str:
+    """
+    Return the translated name for a location in the given language_code.
+
+    Falls back to the canonical English name (``location.name``) when no
+    translation exists for the requested language.
+
+    Expects ``location.translate_location`` to be pre-fetched (via
+    ``prefetch_related("translate_location__language")``) to avoid N+1 queries.
+    """
+    if language_code:
+        # Normalise to the primary subtag, e.g. "de-DE" → "de"
+        primary_tag = language_code.split("-")[0].lower()
+        for translation in location.translate_location.all():
+            if translation.language.language_code.lower() == primary_tag:
+                if translation.name_translation:
+                    return translation.name_translation
+                break
+    return location.name
+
+
+def get_language_code_from_context(context: dict) -> str:
+    """
+    Extract the best language code from a DRF serializer context dict.
+
+    Reads ``request.LANGUAGE_CODE`` (set by Django's LocaleMiddleware) and
+    falls back to ``"en"`` when no request or language code is available.
+    """
+    request = context.get("request") if context else None
+    return (getattr(request, "LANGUAGE_CODE", None) or "en") if request else "en"
+
+
 def format_translation_data(translation_data: dict) -> dict:
     formatted_data = {}
     formatted_data["address"] = {

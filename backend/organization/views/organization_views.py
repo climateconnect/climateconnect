@@ -139,6 +139,7 @@ class ListOrganizationsAPIView(ListAPIView):
                     ),
                 ),
                 "organization_member",
+                "location__translate_location__language",
             )
             .select_related("language", "location")
         )
@@ -590,7 +591,11 @@ class OrganizationAPIView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
-            organization = Organization.objects.get(url_slug=str(url_slug))
+            organization = (
+                Organization.objects.select_related("location")
+                .prefetch_related("location__translate_location__language")
+                .get(url_slug=str(url_slug))
+            )
         except Organization.DoesNotExist:
             return Response(
                 {"message": _("Organization not found:") + url_slug},

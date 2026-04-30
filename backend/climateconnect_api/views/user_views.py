@@ -249,7 +249,7 @@ class ListMemberProfilesView(ListAPIView):
     def get_queryset(self):
         user_profiles = (
             UserProfile.objects.filter(is_profile_verified=True)
-            .prefetch_related("user", "location")
+            .prefetch_related("user", "location", "location__translate_location__language")
             .annotate(is_image_null=Count("image", filter=Q(image="")))
             .order_by("is_image_null", "-id")
         )
@@ -376,17 +376,21 @@ class MemberProfileView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
-            profile = UserProfile.objects.get(url_slug=str(url_slug))
+            profile = (
+                UserProfile.objects.select_related("location")
+                .prefetch_related("location__translate_location__language")
+                .get(url_slug=str(url_slug))
+            )
         except UserProfile.DoesNotExist:
             return Response(
                 {"message": "Profile not found."}, status=status.HTTP_404_NOT_FOUND
             )
 
         if self.request.user.is_authenticated:
-            serializer = UserProfileSerializer(profile)
+            serializer = UserProfileSerializer(profile, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            serializer = UserProfileMinimalSerializer(profile)
+            serializer = UserProfileMinimalSerializer(profile, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -476,11 +480,15 @@ class EditUserProfile(APIView):
 
     def get(self, request):
         try:
-            user_profile = UserProfile.objects.get(user=self.request.user)
+            user_profile = (
+                UserProfile.objects.select_related("location")
+                .prefetch_related("location__translate_location__language")
+                .get(user=self.request.user)
+            )
         except UserProfile.DoesNotExist:
             raise NotFound("User not found.")
 
-        serializer = EditUserProfileSerializer(user_profile)
+        serializer = EditUserProfileSerializer(user_profile, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):

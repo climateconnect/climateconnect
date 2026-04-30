@@ -16,6 +16,7 @@ from location.utility import (
     _osm_type_char,
     format_location,
     get_location,
+    get_translated_location_name,
 )
 
 logger = logging.getLogger("django")
@@ -50,7 +51,13 @@ class GetLocationView(APIView):
             location = _get_newest_location_by_place_id(place_id)
 
         if location is not None:
-            serializer = LocationStubSerializer(location)
+            # Prefetch translations to avoid N+1 queries in the locale-aware serializer
+            from location.models import Location as LocationModel
+            location = (
+                LocationModel.objects.prefetch_related("translate_location__language")
+                .get(pk=location.pk)
+            )
+            serializer = LocationStubSerializer(location, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         osm_type_char = _osm_type_char(osm_type)
@@ -115,5 +122,10 @@ class GetLocationView(APIView):
             )
         location_object = data[0]
         location = get_location(format_location(location_object, False))
-        serializer = LocationStubSerializer(location)
+        from location.models import Location as LocationModel
+        location = (
+            LocationModel.objects.prefetch_related("translate_location__language")
+            .get(pk=location.pk)
+        )
+        serializer = LocationStubSerializer(location, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)

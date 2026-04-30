@@ -193,6 +193,7 @@ class ListProjectsView(ListAPIView):
             Project.objects.filter(is_draft=False, is_active=True)
             .select_related("loc", "language", "status", "registration_config")
             .prefetch_related(
+                "loc__translate_location__language",
                 "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
                     "project_comment",
@@ -779,8 +780,10 @@ class ProjectAPIView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
-            project = Project.objects.select_related("registration_config").get(
-                url_slug=str(url_slug)
+            project = (
+                Project.objects.select_related("loc", "registration_config")
+                .prefetch_related("loc__translate_location__language")
+                .get(url_slug=str(url_slug))
             )
         except Project.DoesNotExist:
             return Response(
