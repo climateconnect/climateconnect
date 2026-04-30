@@ -3,6 +3,7 @@ import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mu
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { trackAuthEvent } from "../../utils/analytics";
 
 const SESSION_KEY = "auth_session_key";
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -12,6 +13,7 @@ interface AuthOtpProps {
   onBack: () => void;
   onSuccess?: () => void;
   hubUrl?: string;
+  userType?: "new" | "returning";
   showHeader?: boolean;
 }
 
@@ -20,9 +22,10 @@ export default function AuthOtp({
   onBack,
   onSuccess,
   hubUrl,
+  userType = "returning",
   showHeader = true,
 }: AuthOtpProps) {
-  const { locale, signIn } = useContext(UserContext);
+  const { locale, signIn, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale, hubName: hubUrl });
 
   const [sessionKey, setSessionKey] = useState<string | null>(null);
@@ -53,7 +56,7 @@ export default function AuthOtp({
     };
   }, []);
 
-  const requestToken = async () => {
+  const requestToken = async (isResend = false) => {
     setIsSendingCode(true);
     try {
       const response = await apiRequest({
@@ -66,6 +69,11 @@ export default function AuthOtp({
       setSessionKey(key);
       sessionStorage.setItem(SESSION_KEY, key);
       startCountdown();
+      trackAuthEvent(
+        "auth_otp_requested",
+        { locale, hub_slug: hubUrl, is_resend: isResend },
+        ReactGA
+      );
     } catch (err: any) {
       if (err.response?.status === 429) {
         setErrorMessage(
@@ -89,7 +97,7 @@ export default function AuthOtp({
       setSessionKey(existingKey);
       startCountdown();
     } else {
-      requestToken();
+      requestToken(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -100,6 +108,8 @@ export default function AuthOtp({
 
     setIsLoading(true);
     setErrorMessage(null);
+
+    trackAuthEvent("auth_otp_code_entered", { locale, hub_slug: hubUrl }, ReactGA);
 
     try {
       const response = await apiRequest({
@@ -112,37 +122,55 @@ export default function AuthOtp({
       const { token, expiry } = response.data;
       sessionStorage.removeItem(SESSION_KEY);
       await signIn(token, expiry);
+      trackAuthEvent("auth_otp_verified", { locale, hub_slug: hubUrl, auth_type: "otp" }, ReactGA);
+      trackAuthEvent(
+        "auth_completed",
+        { locale, hub_slug: hubUrl, auth_type: "otp", user_type: userType },
+        ReactGA
+      );
       if (onSuccess) onSuccess();
     } catch (err: any) {
       const detail: string = err.response?.data?.detail ?? "";
       setCode("");
 
+      let failureReason: string;
       if (detail.toLowerCase().includes("expired")) {
+        failureReason = "expired";
         setErrorMessage(
           texts.this_code_has_expired_please_request_a_new_one ||
             "This code has expired. Please request a new one."
         );
         startCountdown();
       } else if (detail.toLowerCase().includes("too many")) {
+        failureReason = "max_attempts";
         setErrorMessage(
           texts.too_many_attempts_please_request_a_new_code ||
             "Too many attempts. Please request a new code."
         );
         startCountdown();
       } else if (detail.toLowerCase().includes("invalid")) {
+        failureReason = "invalid_code";
         setErrorMessage(
           texts.incorrect_code_please_try_again || "Incorrect code. Please try again."
         );
       } else if (err.response?.status === 429) {
+        failureReason = "rate_limit";
         setErrorMessage(
           texts.please_wait_before_requesting_a_new_code ||
             "Please wait before requesting a new code."
         );
       } else {
+        failureReason = "network";
         setErrorMessage(
           texts.connection_error_please_try_again || "Connection error. Please try again."
         );
       }
+
+      trackAuthEvent(
+        "auth_otp_failed",
+        { locale, hub_slug: hubUrl, failure_reason: failureReason },
+        ReactGA
+      );
     } finally {
       setIsLoading(false);
     }
@@ -151,7 +179,7 @@ export default function AuthOtp({
   const handleResend = async () => {
     setCode("");
     setErrorMessage(null);
-    await requestToken();
+    await requestToken(true);
   };
 
   const handleBack = () => {

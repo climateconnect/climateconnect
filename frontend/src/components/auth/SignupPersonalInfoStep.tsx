@@ -14,6 +14,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LocationSearchBar from "../search/LocationSearchBar";
 import { isLocationValid } from "../../../public/lib/locationOperations";
+import { trackAuthEvent } from "../../utils/analytics";
 
 interface SignupPersonalInfoStepProps {
   email: string;
@@ -37,7 +38,7 @@ export default function SignupPersonalInfoStep({
   isLoading = false,
   showHeader = true,
 }: SignupPersonalInfoStepProps) {
-  const { locale } = useContext(UserContext);
+  const { locale, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
 
   const [firstName, setFirstName] = useState("");
@@ -53,12 +54,63 @@ export default function SignupPersonalInfoStep({
     terms?: string;
   }>({});
 
+  // Track field interactions only once per session to avoid flooding GA4
+  const trackedFields = useRef<Set<string>>(new Set());
+
   const locationInputRef = useRef(null);
+
+  const trackFieldEvent = (
+    eventName: "auth_signup_field_focused" | "auth_signup_field_filled" | "auth_signup_field_error",
+    fieldName: string
+  ) => {
+    const key = `${eventName}_${fieldName}`;
+    if (trackedFields.current.has(key)) return;
+    trackedFields.current.add(key);
+
+    trackAuthEvent(
+      eventName,
+      { locale, hub_slug: hubUrl, field_name: fieldName, step: "personal_info" },
+      ReactGA
+    );
+  };
+
+  const handleFirstNameChange = (value: string) => {
+    setFirstName(value);
+    if (errors.firstName) {
+      setErrors({ ...errors, firstName: undefined });
+    }
+    if (value.trim()) {
+      trackFieldEvent("auth_signup_field_filled", "first_name");
+    }
+  };
+
+  const handleLastNameChange = (value: string) => {
+    setLastName(value);
+    if (errors.lastName) {
+      setErrors({ ...errors, lastName: undefined });
+    }
+    if (value.trim()) {
+      trackFieldEvent("auth_signup_field_filled", "last_name");
+    }
+  };
 
   const handleLocationChange = (newLocation: any) => {
     setLocation(newLocation);
     if (errors.location) {
       setErrors({ ...errors, location: undefined });
+    }
+    if (isLocationValid(newLocation)) {
+      trackFieldEvent("auth_signup_field_filled", "location");
+    }
+  };
+
+  const handleTermsChange = (checked: boolean) => {
+    setTermsAccepted(checked);
+    if (errors.terms) {
+      setErrors({ ...errors, terms: undefined });
+    }
+    if (checked) {
+      trackFieldEvent("auth_signup_field_filled", "terms");
     }
   };
 
@@ -68,21 +120,27 @@ export default function SignupPersonalInfoStep({
     // Validate required fields
     if (!firstName.trim()) {
       newErrors.firstName = texts.first_name_is_required;
+      trackFieldEvent("auth_signup_field_error", "first_name");
     }
     if (!lastName.trim()) {
       newErrors.lastName = texts.last_name_is_required;
+      trackFieldEvent("auth_signup_field_error", "last_name");
     }
     if (!isLocationValid(location)) {
       newErrors.location = texts.please_choose_one_of_the_location_options;
+      trackFieldEvent("auth_signup_field_error", "location");
     }
     if (!termsAccepted) {
       newErrors.terms = texts.you_must_accept_terms_and_privacy_policy;
+      trackFieldEvent("auth_signup_field_error", "terms");
     }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
+
+    trackAuthEvent("auth_signup_personal_info_submitted", { locale, hub_slug: hubUrl }, ReactGA);
 
     // All valid - proceed
     onContinue({
@@ -121,12 +179,8 @@ export default function SignupPersonalInfoStep({
         required
         label={texts.first_name}
         value={firstName}
-        onChange={(e) => {
-          setFirstName(e.target.value);
-          if (errors.firstName) {
-            setErrors({ ...errors, firstName: undefined });
-          }
-        }}
+        onFocus={() => trackFieldEvent("auth_signup_field_focused", "first_name")}
+        onChange={(e) => handleFirstNameChange(e.target.value)}
         error={!!errors.firstName}
         helperText={errors.firstName}
         sx={{ mb: 2 }}
@@ -138,12 +192,8 @@ export default function SignupPersonalInfoStep({
         required
         label={texts.last_name}
         value={lastName}
-        onChange={(e) => {
-          setLastName(e.target.value);
-          if (errors.lastName) {
-            setErrors({ ...errors, lastName: undefined });
-          }
-        }}
+        onFocus={() => trackFieldEvent("auth_signup_field_focused", "last_name")}
+        onChange={(e) => handleLastNameChange(e.target.value)}
         error={!!errors.lastName}
         helperText={errors.lastName}
         sx={{ mb: 2 }}
@@ -171,12 +221,7 @@ export default function SignupPersonalInfoStep({
           control={
             <Checkbox
               checked={termsAccepted}
-              onChange={(e) => {
-                setTermsAccepted(e.target.checked);
-                if (errors.terms) {
-                  setErrors({ ...errors, terms: undefined });
-                }
-              }}
+              onChange={(e) => handleTermsChange(e.target.checked)}
               color="primary"
             />
           }
