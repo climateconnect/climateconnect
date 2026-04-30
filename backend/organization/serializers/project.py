@@ -158,6 +158,10 @@ class ProjectSerializer(serializers.ModelSerializer):
             return None
         return get_translated_location_name(obj.loc, get_language_code_from_context(self.context))
 
+    def get_status(self, obj):
+        serializer = ProjectStatusSerializer(obj.status, many=False)
+        return serializer.data["name"]
+
     def get_language(self, obj):
         return obj.language.language_code
 

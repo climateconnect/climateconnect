@@ -418,7 +418,7 @@ export function getLocationValue(values, locationKey) {
  * Either all three OSM identifiers (osm_id, osm_type, osm_class) OR a place_id must be
  * present for the filter to be considered active.
  */
-export async function getLocationFilteredBy(query) {
+export async function getLocationFilteredBy(query, locale?: string) {
   const osmRequired = getLocationFilterKeys(true);
   const hasOsmComposite = osmRequired.every((param) => Object.keys(query).includes(param));
   const hasPlaceId = Object.keys(query).includes("place_id");
@@ -435,7 +435,7 @@ export async function getLocationFilteredBy(query) {
     osm_class: query.osm_class,
   };
   try {
-    const res = await apiRequest({ method: "post", url: url, payload: payload });
+    const res = await apiRequest({ method: "post", url: url, payload: payload, locale: locale as any });
     const full_location = {
       ...res.data,
       place_id: res.data?.place_id || query.place_id,

@@ -158,7 +158,16 @@ def create_context_for_hub_specific_sector(
     request: Any,
 ) -> Optional[dict[str, Any]]:
     """
-    Create a context for the hub specific sector.
+    Build a serializer context dict for hub-specific sector resolution.
+
+    The returned dict always contains ``{"request": request}`` so that
+    locale-aware serializers (e.g. location name translation) can access
+    ``request.LANGUAGE_CODE``.  An optional ``"hub"`` key is added when
+    the ``hub`` query parameter is present and resolves to an existing Hub.
+
+    Note: callers that use ``get_serializer_context()`` (DRF ViewSets)
+    already receive ``request`` from the DRF default — the ``update()``
+    call in those cases is a harmless no-op.
     """
     ctx: dict[str, Any] = {"request": request}
     if "hub" in request.query_params:
