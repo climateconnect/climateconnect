@@ -186,9 +186,7 @@ class TestGetLocation(TestCase):
     def tearDown(self):
         post_save.connect(find_location_translations, sender=Location)
 
-    @override_settings(
-        CELERY_TASK_ALWAYS_EAGER=True
-    )
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_osm_fields_saved_correctly(self):
         """Test that osm_id, osm_type, osm_class, osm_class_type and display_name are saved."""
         location = get_location(self.valid_location_object)
