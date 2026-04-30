@@ -66,7 +66,7 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 
 | Story | GitHub Issue | Status |
 |-------|-------------|--------|
-| Guest user registers for an event and becomes a platform member | — | ⚪ |
+| Guest user registers for an event and becomes a platform member | — | [`20260430_0936_...`](./20260430_0936_guest_event_registration_auth_integration.md) |
 | Show registration status on project browse and similar projects sidebar | [#1901](https://github.com/climateconnect/climateconnect/issues/1901) | ⚪ |
 
 ### 🔧 Phase 4 — Custom Registration Fields (incremental)

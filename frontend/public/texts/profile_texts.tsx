@@ -390,8 +390,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Willkommen!",
     },
     welcome_to_climate_connect_subtitle: {
-      en: "Enter your email to login or register.",
-      de: "Gib deine E-Mail-Adresse ein, um dich einzuloggen oder dich zu registrieren.",
+      en: "Register or log in with your existing Climate Connect account:",
+      de: "Anmelden oder mit bestehendem Climate Connect Account einloggen:",
     },
     area_of_interest: {
       en: "Areas of interest",
@@ -401,9 +401,14 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "Enter your code",
       de: "Code eingeben",
     },
+    enter_password: {
+      en: "We found your account. Please enter your password to login and continue.",
+      de:
+        "Wir haben deinen Account gefunden. Gib bitte dein Passwort ein, um dich einzuloggen und fortzufahren.",
+    },
     we_sent_a_code_to: {
-      en: "We sent a 6-digit code to",
-      de: "Wir haben einen 6-stelligen Code gesendet an",
+      en: "We found your account and sent a 6-digit code to {email}.",
+      de: "Wir haben deinen Account gefunden und an {email} einen 6-stelligen Code gesendet.",
     },
     verify: {
       en: "Verify",
@@ -478,8 +483,10 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Erstelle dein Konto",
     },
     signup_step_1_headline: {
-      en: "Enter your personal information to get started.",
-      de: "Gib deine persönlichen Informationen ein, um loszulegen.",
+      en:
+        "You don't have an account yet. Please enter tell us your name and where you live to get started. ☺️",
+      de:
+        "Du hast noch keinen Account. Verrate uns bitte wie du heißt und wo do wohnst, um loszulegen. ☺️",
     },
     email_cannot_be_changed: {
       en: "This is the email you'll use to log in",

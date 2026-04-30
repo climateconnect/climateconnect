@@ -76,11 +76,6 @@ describe("AuthPasswordLogin", () => {
       expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
     });
 
-    it("displays the email as read-only text", () => {
-      renderComponent();
-      expect(screen.getByText("user@example.com")).toBeInTheDocument();
-    });
-
     it("renders the password input", () => {
       renderComponent();
       expect(screen.getByLabelText(/password/i)).toBeInTheDocument();

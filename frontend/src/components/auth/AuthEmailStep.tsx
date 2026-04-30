@@ -11,9 +11,14 @@ interface AuthEmailStepProps {
     _email: string
   ) => void;
   hubUrl?: string;
+  showHeader?: boolean;
 }
 
-export default function AuthEmailStep({ onUserStatusDetermined, hubUrl }: AuthEmailStepProps) {
+export default function AuthEmailStep({
+  onUserStatusDetermined,
+  hubUrl,
+  showHeader = true,
+}: AuthEmailStepProps) {
   const { locale, ReactGA } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -75,13 +80,16 @@ export default function AuthEmailStep({ onUserStatusDetermined, hubUrl }: AuthEm
 
   return (
     <>
-      <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
-        {texts.welcome_to_climate_connect}
-      </Typography>
+      {showHeader && (
+        <>
+          <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
+            {texts.welcome_to_climate_connect}
+          </Typography>
+        </>
+      )}
       <Typography variant="body1" style={{ marginBottom: 24 }}>
         {texts.welcome_to_climate_connect_subtitle}
       </Typography>
-
       <form onSubmit={handleSubmit} noValidate>
         <TextField
           id="auth-email-input"

@@ -14,6 +14,7 @@ interface AuthOtpProps {
   onSuccess?: () => void;
   hubUrl?: string;
   userType?: "new" | "returning";
+  showHeader?: boolean;
 }
 
 export default function AuthOtp({
@@ -22,6 +23,7 @@ export default function AuthOtp({
   onSuccess,
   hubUrl,
   userType = "returning",
+  showHeader = true,
 }: AuthOtpProps) {
   const { locale, signIn, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale, hubName: hubUrl });
@@ -192,11 +194,13 @@ export default function AuthOtp({
 
   return (
     <Box component="form" onSubmit={handleSubmit} aria-busy={isLoading}>
-      <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
-        {texts.enter_your_code || "Enter your code"}
-      </Typography>
+      {showHeader && (
+        <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
+          {texts.enter_your_code || "Enter your code"}
+        </Typography>
+      )}
       <Typography variant="body1" style={{ marginBottom: 24 }}>
-        {texts.we_sent_a_code_to || "We sent a 6-digit code to"} {email}
+        {texts.we_sent_a_code_to.replace("{email}", email)}
       </Typography>
 
       {errorMessage && (

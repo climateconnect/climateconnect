@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   FormControlLabel,
   FormHelperText,
   Link,
@@ -25,6 +26,8 @@ interface SignupPersonalInfoStepProps {
   }) => void;
   onBack: () => void;
   hubUrl?: string;
+  isLoading?: boolean;
+  showHeader?: boolean;
 }
 
 export default function SignupPersonalInfoStep({
@@ -32,6 +35,8 @@ export default function SignupPersonalInfoStep({
   onContinue,
   onBack,
   hubUrl,
+  isLoading = false,
+  showHeader = true,
 }: SignupPersonalInfoStepProps) {
   const { locale, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -148,9 +153,11 @@ export default function SignupPersonalInfoStep({
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
-        {texts.create_your_account}
-      </Typography>
+      {showHeader && (
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
+          {texts.create_your_account}
+        </Typography>
+      )}
 
       <Typography variant="body1" sx={{ mb: 3 }}>
         {texts.signup_step_1_headline}
@@ -244,8 +251,14 @@ export default function SignupPersonalInfoStep({
         <Button variant="outlined" onClick={onBack}>
           {texts.back}
         </Button>
-        <Button variant="contained" color="primary" onClick={handleContinue} sx={{ flex: 1 }}>
-          {texts.continue}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleContinue}
+          sx={{ flex: 1 }}
+          disabled={isLoading}
+        >
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : texts.continue}
         </Button>
       </Box>
     </Box>
