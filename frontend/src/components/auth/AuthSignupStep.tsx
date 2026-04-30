@@ -11,6 +11,7 @@ interface AuthSignupStepProps {
   onBack: () => void;
   onSignupComplete: () => void;
   hubUrl?: string;
+  skipInterests?: boolean;
 }
 
 type SignupStep = "personal_info" | "interests";
@@ -27,6 +28,7 @@ export default function AuthSignupStep({
   onBack,
   onSignupComplete,
   hubUrl,
+  skipInterests = false,
 }: AuthSignupStepProps) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -38,7 +40,12 @@ export default function AuthSignupStep({
 
   const handlePersonalInfoContinue = (data: PersonalInfoData) => {
     setPersonalInfo(data);
-    setCurrentStep("interests");
+    if (skipInterests) {
+      // Skip interests and create account directly with empty sectors
+      handleCreateAccount({ interest_sectors: [] }, data);
+    } else {
+      setCurrentStep("interests");
+    }
   };
 
   const handleBackToPersonalInfo = () => {
@@ -46,8 +53,12 @@ export default function AuthSignupStep({
     setErrorMessage(null);
   };
 
-  const handleCreateAccount = async (data: { interest_sectors: string[] }) => {
-    if (!personalInfo) return;
+  const handleCreateAccount = async (
+    data: { interest_sectors: string[] },
+    info?: PersonalInfoData
+  ) => {
+    const infoData = info || personalInfo;
+    if (!infoData) return;
 
     setIsCreatingAccount(true);
     setErrorMessage(null);
@@ -56,10 +67,10 @@ export default function AuthSignupStep({
       // Create account via POST /api/signup/
       const signupPayload = {
         email: email.trim().toLowerCase(),
-        first_name: personalInfo.first_name,
-        last_name: personalInfo.last_name,
-        location: parseLocation(personalInfo.location),
-        send_newsletter: personalInfo.send_newsletter,
+        first_name: infoData.first_name,
+        last_name: infoData.last_name,
+        location: parseLocation(infoData.location),
+        send_newsletter: infoData.send_newsletter,
         source_language: locale,
         sectors: data.interest_sectors,
         hub: hubUrl || "",
@@ -106,6 +117,7 @@ export default function AuthSignupStep({
         onContinue={handlePersonalInfoContinue}
         onBack={onBack}
         hubUrl={hubUrl}
+        isLoading={isCreatingAccount}
       />
     );
   }

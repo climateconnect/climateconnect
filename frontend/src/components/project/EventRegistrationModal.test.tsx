@@ -21,6 +21,42 @@ jest.mock("../../../public/lib/apiOperations", () => ({
   apiRequest: (...args: any[]) => mockApiRequest(...args),
 }));
 
+// Mock LocationSearchBar so signup form can be filled without async location fetching
+jest.mock("../search/LocationSearchBar", () => {
+  return function MockLocationSearchBar({ onSelect, label }: any) {
+    return (
+      <input
+        aria-label={label}
+        data-testid="location-search-bar"
+        onChange={(e) =>
+          onSelect(e.target.value ? { name: e.target.value, simple_name: e.target.value } : null)
+        }
+      />
+    );
+  };
+});
+
+// Mock sessionStorage for AuthOtp
+const mockSessionStorage = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: jest.fn((key: string) => store[key] || null),
+    setItem: jest.fn((key: string, value: string) => {
+      store[key] = value;
+    }),
+    removeItem: jest.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: jest.fn(() => {
+      store = {};
+    }),
+  };
+})();
+
+Object.defineProperty(window, "sessionStorage", {
+  value: mockSessionStorage,
+});
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -90,6 +126,7 @@ function renderModal({
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockSessionStorage.clear();
   // Suppress console.error during tests to keep output clean
   jest.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -180,59 +217,89 @@ describe("EventRegistrationModal – authenticated user", () => {
 // ── Unauthenticated user ────────────────────────────────────────────────────
 
 describe("EventRegistrationModal – unauthenticated user", () => {
-  it("shows the email field and prompt message", () => {
+  it("shows the email entry step (AuthEmailStep)", () => {
     renderModal({ user: null });
 
-    expect(
-      screen.getByText(/to register for this event, please log in or sign up/i)
-    ).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: /email/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^next$/i })).toBeInTheDocument();
   });
 
-  it("'Continue' button is disabled when email is empty", () => {
+  it("'Next' button is disabled when email is empty", () => {
     renderModal({ user: null });
 
-    expect(screen.getByRole("button", { name: /continue/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /^next$/i })).toBeDisabled();
   });
 
-  it("enables 'Continue' button when email is entered", () => {
-    renderModal({ user: null });
-
-    fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
-      target: { value: "new@user.com" },
-    });
-
-    expect(screen.getByRole("button", { name: /continue/i })).not.toBeDisabled();
-  });
-
-  it("shows the login form after submitting email", async () => {
+  it("enables 'Next' button when email is entered", () => {
     renderModal({ user: null });
 
     fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
       target: { value: "new@user.com" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /continue/i }));
+
+    expect(screen.getByRole("button", { name: /^next$/i })).not.toBeDisabled();
+  });
+
+  it("shows the password login form for returning_password users", async () => {
+    mockApiRequest.mockResolvedValueOnce({ data: { user_status: "returning_password" } });
+    renderModal({ user: null });
+
+    fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
+      target: { value: "returning@user.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /^log in$/i })).toBeInTheDocument();
     });
-    // Password field appears
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
   });
 
+  it("shows the OTP form for returning_otp users", async () => {
+    mockApiRequest.mockResolvedValueOnce({ data: { user_status: "returning_otp" } });
+    mockApiRequest.mockResolvedValueOnce({ data: { session_key: "session-123" } });
+    renderModal({ user: null });
+
+    fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
+      target: { value: "returning@user.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /^verify$/i })).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText(/6-digit code/i)).toBeInTheDocument();
+  });
+
+  it("shows the signup form for new users", async () => {
+    mockApiRequest.mockResolvedValueOnce({ data: { user_status: "new" } });
+    renderModal({ user: null });
+
+    fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
+      target: { value: "new@user.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/create your account/i)).toBeInTheDocument();
+    });
+  });
+
   it("submits email via Enter key and shows login form", async () => {
+    mockApiRequest.mockResolvedValueOnce({ data: { user_status: "returning_password" } });
     renderModal({ user: null });
 
     const emailInput = screen.getByRole("textbox", { name: /email/i });
     fireEvent.change(emailInput, { target: { value: "user@test.com" } });
-    fireEvent.keyDown(emailInput, { key: "Enter" });
+    fireEvent.submit(emailInput.closest("form")!);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /^log in$/i })).toBeInTheDocument();
     });
   });
 
   it("shows inline error on failed login", async () => {
+    mockApiRequest.mockResolvedValueOnce({ data: { user_status: "returning_password" } });
     mockApiRequest.mockRejectedValueOnce({
       response: { data: { message: "Invalid credentials" } },
     });
@@ -242,23 +309,24 @@ describe("EventRegistrationModal – unauthenticated user", () => {
     fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
       target: { value: "user@test.com" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /continue/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
 
     await waitFor(() => screen.getByLabelText(/password/i));
 
     fireEvent.change(screen.getByLabelText(/password/i), {
       target: { value: "wrongpass" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /log in/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^log in$/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
     });
   });
 
-  it("calls signIn and transitions to authenticated view on successful login", async () => {
+  it("calls signIn on successful password login", async () => {
     const token = "abc123";
     const expiry = "2099-12-31";
+    mockApiRequest.mockResolvedValueOnce({ data: { user_status: "returning_password" } });
     mockApiRequest.mockResolvedValueOnce({ data: { token, expiry } });
     mockSignIn.mockResolvedValueOnce(undefined);
 
@@ -268,7 +336,7 @@ describe("EventRegistrationModal – unauthenticated user", () => {
     fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
       target: { value: "user@test.com" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /continue/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
 
     await waitFor(() => screen.getByLabelText(/password/i));
 
@@ -276,7 +344,97 @@ describe("EventRegistrationModal – unauthenticated user", () => {
       target: { value: "correctpass" },
     });
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /log in/i }));
+      fireEvent.click(screen.getByRole("button", { name: /^log in$/i }));
+    });
+
+    expect(mockSignIn).toHaveBeenCalledWith(token, expiry);
+  });
+
+  it("calls signIn on successful OTP verification", async () => {
+    const token = "otp-token-123";
+    const expiry = "2099-12-31";
+    mockApiRequest.mockResolvedValueOnce({ data: { user_status: "returning_otp" } });
+    mockApiRequest.mockResolvedValueOnce({ data: { session_key: "session-otp" } }); // request-token
+    mockApiRequest.mockResolvedValueOnce({ data: { token, expiry } }); // verify-token
+    mockSignIn.mockResolvedValueOnce(undefined);
+
+    renderModal({ user: null });
+
+    // Enter email and proceed to OTP
+    fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
+      target: { value: "otp@user.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
+
+    await waitFor(() => screen.getByLabelText(/6-digit code/i));
+
+    fireEvent.change(screen.getByLabelText(/6-digit code/i), {
+      target: { value: "123456" },
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /^verify$/i }));
+    });
+
+    expect(mockSignIn).toHaveBeenCalledWith(token, expiry);
+  });
+
+  it("transitions from signup to OTP after account creation and then calls signIn", async () => {
+    const token = "signup-token-456";
+    const expiry = "2099-12-31";
+
+    // 1. check-email → new
+    mockApiRequest.mockResolvedValueOnce({ data: { user_status: "new" } });
+    // 2. signup
+    mockApiRequest.mockResolvedValueOnce({ status: 200 });
+    // 3. request-token (called by AuthOtp on mount)
+    mockApiRequest.mockResolvedValueOnce({ data: { session_key: "session-signup" } });
+    // 4. verify-token
+    mockApiRequest.mockResolvedValueOnce({ data: { token, expiry } });
+    mockSignIn.mockResolvedValueOnce(undefined);
+
+    renderModal({ user: null });
+
+    // Enter email and proceed to signup
+    fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
+      target: { value: "new@user.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/create your account/i)).toBeInTheDocument();
+    });
+
+    // Fill personal info
+    fireEvent.change(screen.getByRole("textbox", { name: /first name/i }), {
+      target: { value: "John" },
+    });
+    fireEvent.change(screen.getByRole("textbox", { name: /last name/i }), {
+      target: { value: "Doe" },
+    });
+    fireEvent.change(screen.getByTestId("location-search-bar"), {
+      target: { value: "Berlin" },
+    });
+
+    // Accept terms
+    const checkbox = screen.getByRole("checkbox");
+    fireEvent.click(checkbox);
+
+    // Submit personal info → triggers signup → transitions to OTP
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /^continue$/i }));
+    });
+
+    // Should now be on OTP step
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /^verify$/i })).toBeInTheDocument();
+    });
+
+    // Enter OTP code
+    fireEvent.change(screen.getByLabelText(/6-digit code/i), {
+      target: { value: "654321" },
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /^verify$/i }));
     });
 
     expect(mockSignIn).toHaveBeenCalledWith(token, expiry);
@@ -349,7 +507,8 @@ describe("EventRegistrationModal – close behaviour", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("resets email/password fields after closing unauthenticated flow", async () => {
+  it("resets auth state after closing unauthenticated flow", async () => {
+    mockApiRequest.mockResolvedValueOnce({ data: { user_status: "returning_password" } });
     const onClose = jest.fn();
     const { rerender } = renderModal({ user: null, onClose });
 
@@ -357,11 +516,11 @@ describe("EventRegistrationModal – close behaviour", () => {
     fireEvent.change(screen.getByRole("textbox", { name: /email/i }), {
       target: { value: "user@test.com" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /continue/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^next$/i }));
     await waitFor(() => screen.getByLabelText(/password/i));
 
-    // Cancel/close
-    fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    // Close via the dialog close button (X icon)
+    fireEvent.click(screen.getByLabelText("close"));
     expect(onClose).toHaveBeenCalledTimes(1);
 
     // Reopen – email step should be shown again with empty field

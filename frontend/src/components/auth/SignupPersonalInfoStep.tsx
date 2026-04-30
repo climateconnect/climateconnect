@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   FormControlLabel,
   FormHelperText,
   Link,
@@ -24,6 +25,7 @@ interface SignupPersonalInfoStepProps {
   }) => void;
   onBack: () => void;
   hubUrl?: string;
+  isLoading?: boolean;
 }
 
 export default function SignupPersonalInfoStep({
@@ -31,6 +33,7 @@ export default function SignupPersonalInfoStep({
   onContinue,
   onBack,
   hubUrl,
+  isLoading = false,
 }: SignupPersonalInfoStepProps) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -199,8 +202,14 @@ export default function SignupPersonalInfoStep({
         <Button variant="outlined" onClick={onBack}>
           {texts.back}
         </Button>
-        <Button variant="contained" color="primary" onClick={handleContinue} sx={{ flex: 1 }}>
-          {texts.continue}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleContinue}
+          sx={{ flex: 1 }}
+          disabled={isLoading}
+        >
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : texts.continue}
         </Button>
       </Box>
     </Box>

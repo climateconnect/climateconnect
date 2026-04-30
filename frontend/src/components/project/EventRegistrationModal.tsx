@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -12,6 +12,10 @@ import { Project } from "../../types";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
+import AuthEmailStep from "../auth/AuthEmailStep";
+import AuthPasswordLogin from "../auth/AuthPasswordLogin";
+import AuthOtp from "../auth/AuthOtp";
+import AuthSignupStep from "../auth/AuthSignupStep";
 
 const useStyles = makeStyles((theme: Theme) => ({
   modalContent: {
@@ -116,7 +120,7 @@ export default function EventRegistrationModal({
   onRegistrationSuccess,
 }: Props) {
   const classes = useStyles();
-  const { locale, user, signIn } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale, project });
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -127,9 +131,7 @@ export default function EventRegistrationModal({
 
   // Authentication flow state
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [authStep, setAuthStep] = useState<"email" | "login" | "signup">("email");
-  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [authStep, setAuthStep] = useState<"email" | "password" | "otp" | "signup">("email");
 
   // Render the appropriate content based on authentication and registration state
   const renderContent = () => {
@@ -179,49 +181,17 @@ export default function EventRegistrationModal({
     }
   };
 
-  const handleCheckEmail = async () => {
-    if (!email) return;
-
-    setCheckingEmail(true);
-    // TODO: Implement email check API call
-    // For now, just show login form
-    setAuthStep("login");
-    setCheckingEmail(false);
-  };
-
-  const handleLogin = async () => {
-    if (!email || !password) return;
-
-    setLoading(true);
-    setErrorMessage("");
-
-    try {
-      const response = await apiRequest({
-        method: "post",
-        url: "/login/",
-        payload: {
-          username: email.toLowerCase(),
-          password: password,
-        },
-        locale: locale,
-      });
-
-      // Sign in the user - this will update the UserContext
-      await signIn(response.data.token, response.data.expiry);
-
-      // After signIn updates the context, the modal will automatically re-render
-      // and show the authenticated registration form instead of login form
-    } catch (error: any) {
-      console.error("Login error:", error);
-      if (error.response?.data?.type === "not_verified") {
-        setErrorMessage(error.response.data.message || "Account not verified");
-      } else {
-        setErrorMessage(
-          error.response?.data?.message || "Login failed. Please check your credentials."
-        );
-      }
-    } finally {
-      setLoading(false);
+  const handleUserStatusDetermined = (
+    status: "new" | "returning_password" | "returning_otp",
+    determinedEmail: string
+  ) => {
+    setEmail(determinedEmail);
+    if (status === "new") {
+      setAuthStep("signup");
+    } else if (status === "returning_password") {
+      setAuthStep("password");
+    } else if (status === "returning_otp") {
+      setAuthStep("otp");
     }
   };
 
@@ -229,7 +199,6 @@ export default function EventRegistrationModal({
     setState("initial");
     setErrorMessage("");
     setEmail("");
-    setPassword("");
     setAuthStep("email");
     onClose();
   };
@@ -267,96 +236,60 @@ export default function EventRegistrationModal({
     </Box>
   );
 
-  const renderUnauthenticatedContent = () => (
-    <Box className={classes.formContainer}>
-      <Box>
-        <Typography variant="body1" className={classes.authMessage}>
-          {texts.to_register_please_login_or_signup}
-        </Typography>
-
-        {errorMessage && (
-          <Typography variant="body2" className={classes.errorText}>
-            {errorMessage}
-          </Typography>
-        )}
-
-        {authStep === "email" && (
-          <Box className={classes.authFieldsContainer}>
-            <TextField
-              fullWidth
-              label={texts.email}
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setErrorMessage("");
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && email) {
-                  handleCheckEmail();
-                }
-              }}
-              disabled={checkingEmail}
-            />
-            <Button
-              onClick={handleCheckEmail}
-              variant="contained"
-              color="primary"
-              disabled={!email || checkingEmail}
-              fullWidth
-            >
-              {checkingEmail ? <CircularProgress size={24} /> : texts.continue}
-            </Button>
-          </Box>
-        )}
-
-        {authStep === "login" && (
-          <Box className={classes.authFieldsContainer}>
-            <TextField fullWidth label={texts.email} type="email" value={email} disabled />
-            <TextField
-              fullWidth
-              label={texts.password}
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setErrorMessage("");
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && password) {
-                  handleLogin();
-                }
-              }}
-              disabled={loading}
-            />
-            <Button
-              onClick={handleLogin}
-              variant="contained"
-              color="primary"
-              disabled={!password || loading}
-              fullWidth
-            >
-              {loading ? <CircularProgress size={24} /> : texts.log_in}
-            </Button>
-          </Box>
-        )}
-
-        {authStep === "signup" && (
-          <Box className={classes.authButtons}>
-            <Typography variant="body2" className={classes.helperText}>
-              {texts.signup_flow_coming_soon}
-            </Typography>
-          </Box>
-        )}
-      </Box>
-
-      <Box className={classes.actionRow}>
-        <Button onClick={handleClose} variant="outlined" fullWidth>
-          {texts.cancel}
-        </Button>
-      </Box>
-    </Box>
-  );
+  const renderUnauthenticatedContent = () => {
+    switch (authStep) {
+      case "email":
+        return (
+          <AuthEmailStep
+            onUserStatusDetermined={handleUserStatusDetermined}
+            hubUrl={project.hubUrl}
+          />
+        );
+      case "password":
+        return (
+          <AuthPasswordLogin
+            email={email}
+            onBack={() => setAuthStep("email")}
+            onSuccess={() => {
+              // signIn() inside AuthPasswordLogin updates UserContext.
+              // The modal detects user is present and auto-transitions
+              // to the authenticated registration confirmation step.
+            }}
+            onForgotPassword={() => {
+              // Return to email entry; forgot-password flow is not supported inside the modal.
+              setAuthStep("email");
+            }}
+            onSwitchToOtp={() => setAuthStep("otp")}
+            hubUrl={project.hubUrl}
+          />
+        );
+      case "otp":
+        return (
+          <AuthOtp
+            email={email}
+            onBack={() => setAuthStep("email")}
+            onSuccess={() => {
+              // signIn() inside AuthOtp updates UserContext.
+              // The modal detects user is present and auto-transitions
+              // to the authenticated registration confirmation step.
+            }}
+            hubUrl={project.hubUrl}
+          />
+        );
+      case "signup":
+        return (
+          <AuthSignupStep
+            email={email}
+            onBack={() => setAuthStep("email")}
+            onSignupComplete={() => setAuthStep("otp")}
+            hubUrl={project.hubUrl}
+            skipInterests={true}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   const renderSuccessContent = () => (
     <Box className={classes.confirmationContainer}>
