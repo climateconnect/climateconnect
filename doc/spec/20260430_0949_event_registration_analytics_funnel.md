@@ -1,14 +1,15 @@
 # Event Registration Analytics Funnel Tracking
 
-**Status**: DRAFT  
-**Type**: Frontend — analytics instrumentation  
-**Epic**: [EPIC: Event Registration](./EPIC_event_registration.md)  
-**Date created**: 2026-04-30  
+**Status**: DRAFT
+**Type**: Frontend — analytics instrumentation
+**Epic**: [EPIC: Event Registration](./EPIC_event_registration.md)
+**Date created**: 2026-04-30
+**Updated**: 2026-05-04 — tracking events migrated to [Analytics Events Reference](../mosy/metrics/analytics_events.md)
 **Depends on**:
 - [`20260430_0936_guest_event_registration_auth_integration.md`](./20260430_0936_guest_event_registration_auth_integration.md) — guest auth flow inside modal must be implemented first so tracking points are known
 - [`20260428_1430_auth_unification_analytics_funnel_tracking.md`](./20260428_1430_auth_unification_analytics_funnel_tracking.md) — auth analytics helper/utils should be in place
 
----
+> **Note**: Event definitions are maintained in the permanent [Analytics Events Reference](../mosy/metrics/analytics_events.md). This spec provides implementation context only.
 
 ## Problem Statement
 

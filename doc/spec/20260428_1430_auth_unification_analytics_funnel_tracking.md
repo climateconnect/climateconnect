@@ -1,10 +1,13 @@
 # US-13: Auth Funnel Analytics Tracking
 
-**Status**: DRAFT  
-**Type**: Frontend + Backend — analytics instrumentation  
-**Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
-**Date created**: 2026-04-28  
+**Status**: DRAFT
+**Type**: Frontend + Backend — analytics instrumentation
+**Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)
+**Date created**: 2026-04-28
+**Updated**: 2026-05-04 — tracking events migrated to [Analytics Events Reference](../mosy/metrics/analytics_events.md)
 **Depends on**: US-5 (combined auth page), US-6 (OTP code entry), US-7 (password login), US-8 (new user signup) — all auth flow steps must be implemented first to identify exact tracking points
+
+> **Note**: Implementation details (event schema, helper function, component locations) are maintained in the permanent [Analytics Events Reference](../mosy/metrics/analytics_events.md). This spec provides context and acceptance criteria only.
 
 ---
 
