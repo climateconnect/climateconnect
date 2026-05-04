@@ -1,6 +1,6 @@
 # Guest Event Registration with Auth Integration
 
-**Status**: DRAFT  
+**Status**: COMPLETED  
 **Type**: Feature  
 **Date created**: 2026-04-30  
 **Epic**: [EPIC: Event Registration](./EPIC_event_registration.md) — Phase 3  
