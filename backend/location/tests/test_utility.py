@@ -405,9 +405,9 @@ class TestGetTranslatedLocationName(TestCase):
             display_name="Munich, Germany",
             is_formatted=True,
         )
-        self.language_de = Language.objects.create(
+        self.language_de, _ = Language.objects.get_or_create(
             language_code="de",
-            name="German",
+            defaults={"name": "German"},
         )
         LocationTranslation.objects.create(
             location=self.location,
