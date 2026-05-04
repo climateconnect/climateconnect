@@ -68,14 +68,17 @@ def get_language_code_from_context(context: dict) -> str:
     """
     Extract the best language code from a DRF serializer context dict.
 
-    Reads ``request.LANGUAGE_CODE`` (set by Django's LocaleMiddleware) and
-    falls back to ``"en"`` when no request or language code is available.
+    Priority:
+    1. ``request.LANGUAGE_CODE`` (set by Django's LocaleMiddleware)
+    2. ``context["language_code"]``
+    3. ``"en"`` as the final fallback
     """
     request = context.get("request") if context else None
-    lang = (getattr(request, "LANGUAGE_CODE", None) or "en") if request else None
+    lang = getattr(request, "LANGUAGE_CODE", None) if request else None
     if lang:
         return lang
-    return (context.get("language_code") or "en") if context else "en"
+    lang = context.get("language_code") if context else None
+    return lang or "en"
 
 
 def format_translation_data(translation_data: dict) -> dict:
