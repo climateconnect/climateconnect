@@ -1,6 +1,6 @@
 # US-6: OTP Code Entry + Resend
 
-**Status**: READY FOR IMPLEMENTATION  
+**Status**: COMPLETED  
 **Type**: Frontend — step component (pure frontend; backend endpoints exist)  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Date created**: 2026-04-22  

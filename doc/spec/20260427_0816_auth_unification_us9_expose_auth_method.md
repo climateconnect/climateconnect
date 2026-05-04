@@ -3,7 +3,7 @@
 **Type**: User Story Spec  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Depends on**: [US-2](./20260420_1215_auth_unification_us2_data_layer.md) (`UserProfile.auth_method` model field)  
-**Status**: DRAFT  
+**Status**: COMPLETED  
 **Created**: 2026-04-27  
 
 ---

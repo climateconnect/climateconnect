@@ -1,6 +1,6 @@
 # US-7: Password Login Option (Backward Compatibility)
 
-**Status**: READY FOR IMPLEMENTATION  
+**Status**: COMPLETED  
 **Type**: Frontend — step component (pure frontend; backend endpoint exists unchanged)  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Date created**: 2026-04-23  

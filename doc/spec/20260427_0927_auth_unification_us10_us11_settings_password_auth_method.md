@@ -3,7 +3,7 @@
 **Type**: User Story Spec  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Depends on**: [US-9](./20260427_0816_auth_unification_us9_expose_auth_method.md) (`auth_method` and `has_password` exposed via `/api/account_settings/`)  
-**Status**: DRAFT  
+**Status**: COMPLETED  
 **Created**: 2026-04-27  
 
 ---

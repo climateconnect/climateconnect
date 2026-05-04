@@ -1,6 +1,6 @@
 # US-8: New User Signup within Combined Flow
 
-**Status**: READY FOR IMPLEMENTATION  
+**Status**: COMPLETED   
 **Type**: Frontend + Backend — signup flow integration  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
 **Date created**: 2026-04-27  

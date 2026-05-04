@@ -2,7 +2,7 @@
 
 **Type**: User Story — pure backend change  
 **Epic**: [EPIC: Auth Unification](./EPIC_auth_unification.md)  
-**Status**: DRAFT  
+**Status**: COMPLETED  
 **Created**: 2026-04-28  
 **Depends on**: US-2 (`LoginToken` and `LoginAuditLog` models exist in `auth_app`)  
 
