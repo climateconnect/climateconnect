@@ -1,17 +1,19 @@
-from django.contrib.gis.geos import MultiPolygon, Point, Polygon, GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Point, Polygon
+from django.db.models.signals import post_save
 from django.test import TestCase, override_settings
 
-from django.db.models.signals import post_save
-
-from location.models import Location
+from climateconnect_api.models.language import Language
+from location.models import Location, LocationTranslation
 from location.signals import find_location_translations
 from location.utility import (
     _get_newest_location_by_osm_composite,
     _osm_type_char,
     format_location_name,
     get_global_location,
+    get_language_code_from_context,
     get_location,
     get_location_with_range,
+    get_translated_location_name,
 )
 
 
@@ -385,3 +387,110 @@ class TestGetLocationWithRange(TestCase):
 
         self.assertIsInstance(result["location"], GEOSGeometry)
         self.assertNotIsInstance(result["location"], Point)
+
+
+class TestGetTranslatedLocationName(TestCase):
+    def setUp(self):
+        from django.db.models.signals import post_save
+
+        post_save.disconnect(find_location_translations, sender=Location)
+        self.location = Location.objects.create(
+            name="Munich",
+            city="Munich",
+            country="Germany",
+            osm_id=62428,
+            osm_type="R",
+            osm_class="boundary",
+            osm_class_type="administrative",
+            display_name="Munich, Germany",
+            is_formatted=True,
+        )
+        self.language_de = Language.objects.create(
+            language_code="de",
+            name="German",
+        )
+        LocationTranslation.objects.create(
+            location=self.location,
+            language=self.language_de,
+            name_translation="München",
+            city_translation="München",
+            country_translation="Deutschland",
+        )
+        # Re-fetch with prefetch so translate_location is cached
+        self.location = Location.objects.prefetch_related(
+            "translate_location__language"
+        ).get(pk=self.location.pk)
+
+    def test_returns_translation_for_matching_language_code(self):
+        """Exact language code match returns the translated name."""
+        result = get_translated_location_name(self.location, "de")
+        self.assertEqual(result, "München")
+
+    def test_normalises_full_locale_to_primary_subtag(self):
+        """'de-DE' should be normalised to 'de' and match the German translation."""
+        result = get_translated_location_name(self.location, "de-DE")
+        self.assertEqual(result, "München")
+
+    def test_fallback_when_no_matching_language(self):
+        """Falls back to location.name when no translation exists for the language."""
+        result = get_translated_location_name(self.location, "fr")
+        self.assertEqual(result, "Munich")
+
+    def test_fallback_when_name_translation_is_empty(self):
+        """Falls back to location.name when the translation record exists but name_translation is empty."""
+        self.location.translate_location.filter(language=self.language_de).update(
+            name_translation=""
+        )
+        location = Location.objects.prefetch_related(
+            "translate_location__language"
+        ).get(pk=self.location.pk)
+        result = get_translated_location_name(location, "de")
+        self.assertEqual(result, "Munich")
+
+    def test_fallback_when_language_code_is_none(self):
+        """Falls back to location.name when language_code is None."""
+        result = get_translated_location_name(self.location, None)
+        self.assertEqual(result, "Munich")
+
+    def test_fallback_when_language_code_is_empty_string(self):
+        """Falls back to location.name when language_code is an empty string."""
+        result = get_translated_location_name(self.location, "")
+        self.assertEqual(result, "Munich")
+
+
+class TestGetLanguageCodeFromContext(TestCase):
+    def _make_request(self, language_code):
+        """Return a minimal mock request with LANGUAGE_CODE set."""
+
+        class FakeRequest:
+            LANGUAGE_CODE = language_code
+
+        return FakeRequest()
+
+    def test_returns_language_code_from_request(self):
+        """Returns the request's LANGUAGE_CODE when present."""
+        ctx = {"request": self._make_request("de")}
+        self.assertEqual(get_language_code_from_context(ctx), "de")
+
+    def test_returns_full_locale_from_request(self):
+        """Returns the full locale string as-is (subtag normalisation is the caller's job)."""
+        ctx = {"request": self._make_request("de-AT")}
+        self.assertEqual(get_language_code_from_context(ctx), "de-AT")
+
+    def test_falls_back_to_en_when_no_request(self):
+        """Falls back to 'en' when context has no request key."""
+        self.assertEqual(get_language_code_from_context({}), "en")
+
+    def test_falls_back_to_en_when_context_is_none(self):
+        """Falls back to 'en' when context itself is None."""
+        self.assertEqual(get_language_code_from_context(None), "en")
+
+    def test_falls_back_to_context_language_code_when_request_has_none(self):
+        """Uses context['language_code'] when request.LANGUAGE_CODE is None."""
+        ctx = {"request": self._make_request(None), "language_code": "fr"}
+        self.assertEqual(get_language_code_from_context(ctx), "fr")
+
+    def test_falls_back_to_en_when_all_sources_empty(self):
+        """Falls back to 'en' when request.LANGUAGE_CODE and context language_code are both absent."""
+        ctx = {"request": self._make_request(None)}
+        self.assertEqual(get_language_code_from_context(ctx), "en")

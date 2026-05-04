@@ -515,6 +515,7 @@ class ListMemberRegisteredEventsView(ListAPIView):
             )
             .select_related("loc", "language", "status", "registration_config")
             .prefetch_related(
+                "loc__translate_location__language",
                 "tag_project",
                 "project_liked",
                 "project_comment",

@@ -224,7 +224,7 @@ export default function LocationSearchBar({
     return () => {
       active = false;
     };
-  }, [searchValue]);
+  }, [searchValue, locale, hubUrl]);
 
   const getOptionsWithoutRedundancies = (options) => {
     //For the classes_without_hierarchy we simply return the first element if there is a redundancy
