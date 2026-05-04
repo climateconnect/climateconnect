@@ -194,19 +194,92 @@ When adding new analytics events, follow this checklist:
 
 ## Viewing Funnels in GA4
 
-### Auth Funnel
+### Prerequisites: Custom Dimensions
 
-1. Go to GA4 → **Explore**
-2. Create **Funnel exploration**
-3. Add steps in sequence:
-   - **Step 1**: Event `auth_step_viewed` with parameter `step: "email_entry"`
-   - **Step 2**: Event `auth_email_entered`
-   - **Step 3**: Event `auth_step_viewed` with parameter `step: "signup_personal_info"` (for new users) **OR** `auth_step_viewed` with parameter `step: "password_login"` (for returning password) **OR** `auth_step_viewed` with parameter `step: "otp_entry"` (for returning OTP)
-   - **Step 4**: Event `auth_signup_personal_info_submitted` (new users) **OR** `auth_password_entered` (returning password)
-   - **Step 5**: Event `auth_step_viewed` with parameter `step: "signup_interests"` (new users) **OR** `auth_otp_code_entered` (OTP path)
-   - **Step 6**: Event `auth_signup_interests_submitted` (new users only)
-   - **Final step**: Event `auth_completed`
-4. Break down by `user_status` or `auth_type` to compare paths
+Before creating funnels, register these custom dimensions in GA4:
+
+1. Go to **Configure → Custom definitions → Custom dimensions**
+2. Create the following dimensions with the matching parameter names:
+   - `step` (for `auth_step_viewed` step parameter)
+   - `user_status` (for auth event user status)
+   - `auth_type` (for completion auth type)
+
+These dimensions are required for funnel step conditions and breakdowns.
+
+---
+
+### Auth Funnel (3 Separate Funnels)
+
+The auth flow has 3 distinct paths. Create **separate funnel explorations** for each to accurately track drop-offs:
+
+#### Funnel 1: New User Signup
+
+| Step | Event | Condition |
+|------|-------|-----------|
+| Step 1 | `auth_step_viewed` | `step` equals `email_entry` |
+| Step 2 | `auth_email_entered` | `user_status` equals `new` |
+| Step 3 | `auth_step_viewed` | `step` equals `signup_personal_info` |
+| Step 4 | `auth_signup_personal_info_submitted` | — |
+| Step 5 | `auth_step_viewed` | `step` equals `signup_interests` |
+| Step 6 | `auth_signup_interests_submitted` | — |
+| Step 7 | `auth_step_viewed` | `step` equals `otp_entry` |
+| Step 8 | `auth_otp_code_entered` | — |
+| Step 9 | `auth_otp_verified` | — |
+| Final step | `auth_completed` | `user_type` equals `new` |
+
+#### Funnel 2: Returning User (Password Login)
+
+| Step | Event | Condition |
+|------|-------|-----------|
+| Step 1 | `auth_step_viewed` | `step` equals `email_entry` |
+| Step 2 | `auth_email_entered` | `user_status` equals `returning_password` |
+| Step 3 | `auth_step_viewed` | `step` equals `password_login` |
+| Step 4 | `auth_password_entered` | — |
+| Final step | `auth_completed` | `auth_type` equals `password` |
+
+#### Funnel 3: Returning User (OTP Login)
+
+| Step | Event | Condition |
+|------|-------|-----------|
+| Step 1 | `auth_step_viewed` | `step` equals `email_entry` |
+| Step 2 | `auth_email_entered` | `user_status` equals `returning_otp` |
+| Step 3 | `auth_step_viewed` | `step` equals `otp_entry` |
+| Step 4 | `auth_otp_code_entered` | — |
+| Step 5 | `auth_otp_verified` | — |
+| Final step | `auth_completed` | `auth_type` equals `otp` |
+
+---
+
+### GA4 Funnel Step Configuration
+
+For each step in GA4 Funnel Exploration:
+
+1. **Event name**: Enter the exact event name (e.g., `auth_step_viewed`)
+2. **Add condition** (optional): Click "Add condition" to filter by parameter
+   - Select the dimension (e.g., `step`, `user_status`)
+   - Condition: `equals`
+   - Value: the expected value (e.g., `email_entry`)
+3. **Step name**: Arbitrary label for your reference (not used for matching)
+4. **"Indirectly followed by"** vs **"Directly followed by"**:
+   - **Directly followed by** (default): User must complete this step and then immediately the next step, with no other events in between
+   - **Indirectly followed by**: User must complete this step, then at some later point complete the next step (other events may occur in between)
+
+**Recommendation**: For the auth funnel, use **"Directly followed by"** for most steps since the flow is linear with no branching. However, if you observe users appearing to skip steps unexpectedly, switch to **"Indirectly followed by"** to account for any side events firing between steps.
+
+**Note**: Conditions in funnel steps use AND logic — the user must match all conditions for the step.
+
+---
+
+### Alternative: Single Funnel with Breakdown
+
+Instead of 3 separate funnels, you can create **one funnel** with all shared steps and use "Break down by" to separate paths:
+
+1. Create funnel with shared steps: `auth_step_viewed` (email_entry) → `auth_email_entered` → `auth_completed`
+2. After creating the funnel, click **"Break down by"**
+3. Select `user_status` or `auth_type`
+4. GA4 will show separate columns for each value
+
+**Limitation**: This works best when paths share most steps. Since the 3 auth flows diverge significantly after Step 2, separate funnels (above) provide cleaner drop-off analysis.
 
 ### Field-Level Drop-off Analysis (Auth)
 
