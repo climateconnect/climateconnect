@@ -435,7 +435,12 @@ export async function getLocationFilteredBy(query, locale?: string) {
     osm_class: query.osm_class,
   };
   try {
-    const res = await apiRequest({ method: "post", url: url, payload: payload, locale: locale as any });
+    const res = await apiRequest({
+      method: "post",
+      url: url,
+      payload: payload,
+      locale: locale as any,
+    });
     const full_location = {
       ...res.data,
       place_id: res.data?.place_id || query.place_id,

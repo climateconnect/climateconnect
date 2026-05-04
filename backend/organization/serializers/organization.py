@@ -1,4 +1,3 @@
-from django.conf import settings
 from organization.utility.sector import (
     get_sectors_based_on_hub,
 )
@@ -9,10 +8,6 @@ from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.utils.translation import get_language
 from rest_framework import serializers
 
-from climateconnect_api.models.role import Role
-from climateconnect_api.models.user import UserProfile
-from climateconnect_api.serializers.role import RoleSerializer
-from climateconnect_api.serializers.user import UserProfileStubSerializer
 from location.utility import get_language_code_from_context, get_translated_location_name
 from organization.models import (
     Organization,

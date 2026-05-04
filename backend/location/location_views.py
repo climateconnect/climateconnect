@@ -17,7 +17,6 @@ from location.utility import (
     _osm_type_char,
     format_location,
     get_location,
-    get_translated_location_name,
 )
 
 logger = logging.getLogger("django")

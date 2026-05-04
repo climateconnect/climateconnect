@@ -75,7 +75,7 @@ export interface HubBrowsePageProps {
 
 export async function getHubBrowseServerSideProps(ctx: GetServerSidePropsContext) {
   const locale = ctx.locale as LocaleType;
-  let hubUrl = Array.isArray(ctx.query.hubUrl) ? ctx.query.hubUrl[0] : (ctx.query.hubUrl ?? "");
+  let hubUrl = Array.isArray(ctx.query.hubUrl) ? ctx.query.hubUrl[0] : ctx.query.hubUrl ?? "";
   const { subHub } = extractHubUrlsFromContext(ctx);
 
   if (subHub) {

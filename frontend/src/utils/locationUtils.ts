@@ -21,9 +21,6 @@
 export function getLocaleHeader(locale: string | undefined): Record<string, string> {
   const primary = (locale ?? "en").split("-")[0].toLowerCase();
   // Build a standard quality-factor list with English as the canonical fallback.
-  const value =
-    primary === "en"
-      ? "en-US,en;q=0.9"
-      : `${primary};q=1.0,en-US;q=0.8,en;q=0.7`;
+  const value = primary === "en" ? "en-US,en;q=0.9" : `${primary};q=1.0,en-US;q=0.8,en;q=0.7`;
   return { "Accept-Language": value };
 }
