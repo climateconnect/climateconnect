@@ -1,10 +1,7 @@
-from organization.utility.sector import (
-    get_sectors_based_on_hub,
-)
-from organization.serializers.sector import (
-    ProjectSectorMappingSerializer,
-)
-from organization.models.members import MembershipRequests
+from django.utils.translation import get_language
+from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
+
 from climateconnect_api.models import UserProfile
 from climateconnect_api.models.role import Role
 from climateconnect_api.serializers.common import (
@@ -12,14 +9,10 @@ from climateconnect_api.serializers.common import (
 )
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
-from django.utils.translation import get_language
-from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField
 from location.utility import (
     get_language_code_from_context,
     get_translated_location_name,
 )
-
 from organization.models import (
     Project,
     ProjectCollaborators,
@@ -28,15 +21,20 @@ from organization.models import (
     ProjectMember,
     ProjectParents,
 )
-from organization.models.translations import ProjectTranslation
 from organization.models.event_registration import EventRegistrationConfig
+from organization.models.members import MembershipRequests
+from organization.models.translations import ProjectTranslation
+from organization.models.type import PROJECT_TYPES
 from organization.serializers.event_registration import (
     EventRegistrationConfigSerializer,
 )
 from organization.serializers.organization import OrganizationStubSerializer
+from organization.serializers.sector import (
+    ProjectSectorMappingSerializer,
+)
 from organization.serializers.status import (
-    ProjectTypesSerializer,
     ProjectStatusSerializer,
+    ProjectTypesSerializer,
 )
 from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
@@ -45,7 +43,9 @@ from organization.utility.project import (
     get_project_name,
     get_project_short_description,
 )
-from organization.models.type import PROJECT_TYPES
+from organization.utility.sector import (
+    get_sectors_based_on_hub,
+)
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -123,7 +123,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         return get_project_description(obj, get_language())
 
     def get_collaborating_organizations(self, obj):
-        serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
+        serializer = ProjectCollaboratorsSerializer(
+            obj.project_collaborator, many=True, context=self.context
+        )
         return serializer.data
 
     def get_project_parents(self, obj):
@@ -261,7 +263,9 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 
     def get_parent_organization(self, obj):
         if obj.parent_organization:
-            return OrganizationStubSerializer(obj.parent_organization).data
+            return OrganizationStubSerializer(
+                obj.parent_organization, context=self.context
+            ).data
 
     def get_parent_user(self, obj):
         if obj.parent_user:
@@ -294,7 +298,9 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         return get_project_name(obj, get_language())
 
     def get_project_parents(self, obj):
-        serializer = ProjectParentsSerializer(obj.project_parent, many=True)
+        serializer = ProjectParentsSerializer(
+            obj.project_parent, many=True, context=self.context
+        )
         return serializer.data
 
     def get_location(self, obj):
@@ -369,7 +375,9 @@ class ProjectStubSerializer(serializers.ModelSerializer):
                 {
                     "parent_user": None,
                     "parent_organization": (
-                        OrganizationStubSerializer(parent.parent_organization)
+                        OrganizationStubSerializer(
+                            parent.parent_organization, context=self.context
+                        )
                     ).data,
                 }
             ]
@@ -433,7 +441,9 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return obj.project_liked.count()
 
     def get_collaborating_organizations(self, obj):
-        serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
+        serializer = ProjectCollaboratorsSerializer(
+            obj.project_collaborator, many=True, context=self.context
+        )
         return serializer.data
 
     def get_registration_config(self, obj):
@@ -486,7 +496,9 @@ class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
         fields = ["collaborating_organization"]
 
     def get_collaborating_organization(self, obj):
-        serializer = OrganizationStubSerializer(obj.collaborating_organization)
+        serializer = OrganizationStubSerializer(
+            obj.collaborating_organization, context=self.context
+        )
         return serializer.data
 
 
@@ -498,7 +510,7 @@ class ProjectFromProjectParentsSerializer(serializers.ModelSerializer):
         fields = ("project",)
 
     def get_project(self, obj):
-        serializer = ProjectStubSerializer(obj.project)
+        serializer = ProjectStubSerializer(obj.project, context=self.context)
         return serializer.data
 
 
@@ -510,7 +522,7 @@ class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
         fields = ("project",)
 
     def get_project(self, obj):
-        serializer = ProjectStubSerializer(obj.project)
+        serializer = ProjectStubSerializer(obj.project, context=self.context)
         return serializer.data
 
 

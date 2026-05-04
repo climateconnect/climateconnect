@@ -72,7 +72,10 @@ def get_language_code_from_context(context: dict) -> str:
     falls back to ``"en"`` when no request or language code is available.
     """
     request = context.get("request") if context else None
-    return (getattr(request, "LANGUAGE_CODE", None) or "en") if request else "en"
+    lang = (getattr(request, "LANGUAGE_CODE", None) or "en") if request else None
+    if lang:
+        return lang
+    return (context.get("language_code") or "en") if context else "en"
 
 
 def format_translation_data(translation_data: dict) -> dict:

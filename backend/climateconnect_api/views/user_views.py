@@ -23,6 +23,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from auth_app.models import LoginAuditLog
+from auth_app.utility.ip import anonymise_ip
 from climateconnect_api.models import Availability, Skill, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination, MembersSitemapPagination
@@ -56,9 +58,6 @@ from organization.serializers.project import (
     ProjectStubSerializer,
 )
 from organization.utility.sector import sanitize_sector_inputs
-
-from auth_app.models import LoginAuditLog
-from auth_app.utility.ip import anonymise_ip
 
 logger = logging.getLogger(__name__)
 
@@ -479,6 +478,11 @@ class ListMemberOrganizationsView(ListAPIView):
     search_fields = ["parent_organization__url_slug"]
     pagination_class = MembersPagination
     serializer_class = OrganizationsFromOrganizationMember
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["language_code"] = self.request.LANGUAGE_CODE
+        return context
 
     def get_queryset(self):
         return OrganizationMember.objects.filter(
