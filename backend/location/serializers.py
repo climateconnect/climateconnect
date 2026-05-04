@@ -1,7 +1,10 @@
 from rest_framework import serializers
 
 from location.models import Location
-from location.utility import get_language_code_from_context, get_translated_location_name
+from location.utility import (
+    get_language_code_from_context,
+    get_translated_location_name,
+)
 
 
 class LocationStubSerializer(serializers.ModelSerializer):
@@ -23,7 +26,9 @@ class LocationStubSerializer(serializers.ModelSerializer):
         )
 
     def get_name(self, obj):
-        return get_translated_location_name(obj, get_language_code_from_context(self.context))
+        return get_translated_location_name(
+            obj, get_language_code_from_context(self.context)
+        )
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -47,4 +52,6 @@ class LocationSerializer(serializers.ModelSerializer):
         )
 
     def get_name(self, obj):
-        return get_translated_location_name(obj, get_language_code_from_context(self.context))
+        return get_translated_location_name(
+            obj, get_language_code_from_context(self.context)
+        )

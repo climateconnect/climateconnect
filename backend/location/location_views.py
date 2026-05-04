@@ -52,10 +52,9 @@ class GetLocationView(APIView):
 
         if location is not None:
             # Prefetch translations to avoid N+1 queries in the locale-aware serializer
-            location = (
-                LocationModel.objects.prefetch_related("translate_location__language")
-                .get(pk=location.pk)
-            )
+            location = LocationModel.objects.prefetch_related(
+                "translate_location__language"
+            ).get(pk=location.pk)
             serializer = LocationStubSerializer(location, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -121,9 +120,8 @@ class GetLocationView(APIView):
             )
         location_object = data[0]
         location = get_location(format_location(location_object, False))
-        location = (
-            LocationModel.objects.prefetch_related("translate_location__language")
-            .get(pk=location.pk)
-        )
+        location = LocationModel.objects.prefetch_related(
+            "translate_location__language"
+        ).get(pk=location.pk)
         serializer = LocationStubSerializer(location, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)

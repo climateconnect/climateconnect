@@ -293,7 +293,9 @@ class ListMemberProfilesView(ListAPIView):
     def get_queryset(self):
         user_profiles = (
             UserProfile.objects.filter(is_profile_verified=True)
-            .prefetch_related("user", "location", "location__translate_location__language")
+            .prefetch_related(
+                "user", "location", "location__translate_location__language"
+            )
             .annotate(is_image_null=Count("image", filter=Q(image="")))
             .order_by("is_image_null", "-id")
         )
@@ -434,7 +436,9 @@ class MemberProfileView(APIView):
             serializer = UserProfileSerializer(profile, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            serializer = UserProfileMinimalSerializer(profile, context={"request": request})
+            serializer = UserProfileMinimalSerializer(
+                profile, context={"request": request}
+            )
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -532,7 +536,9 @@ class EditUserProfile(APIView):
         except UserProfile.DoesNotExist:
             raise NotFound("User not found.")
 
-        serializer = EditUserProfileSerializer(user_profile, context={"request": request})
+        serializer = EditUserProfileSerializer(
+            user_profile, context={"request": request}
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):

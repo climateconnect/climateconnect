@@ -15,7 +15,10 @@ from climateconnect_api.serializers.user import UserProfileStubSerializer
 from django.utils.translation import get_language
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
-from location.utility import get_language_code_from_context, get_translated_location_name
+from location.utility import (
+    get_language_code_from_context,
+    get_translated_location_name,
+)
 
 from organization.models import (
     Project,
@@ -151,12 +154,16 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_loc(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(obj.loc, get_language_code_from_context(self.context))
+        return get_translated_location_name(
+            obj.loc, get_language_code_from_context(self.context)
+        )
 
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(obj.loc, get_language_code_from_context(self.context))
+        return get_translated_location_name(
+            obj.loc, get_language_code_from_context(self.context)
+        )
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
@@ -293,7 +300,9 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(obj.loc, get_language_code_from_context(self.context))
+        return get_translated_location_name(
+            obj.loc, get_language_code_from_context(self.context)
+        )
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
@@ -401,7 +410,9 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(obj.loc, get_language_code_from_context(self.context))
+        return get_translated_location_name(
+            obj.loc, get_language_code_from_context(self.context)
+        )
 
     def get_project_type(self, obj):
         possible_project_types = list(PROJECT_TYPES.values())
