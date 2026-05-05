@@ -5,16 +5,19 @@ import {
   CircularProgress,
   FormControlLabel,
   FormHelperText,
+  IconButton,
   Link,
   TextField,
   Typography,
 } from "@mui/material";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 import { useContext, useRef, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LocationSearchBar from "../search/LocationSearchBar";
 import { isLocationValid } from "../../../public/lib/locationOperations";
 import { trackAuthEvent } from "../../utils/analytics";
+import makeStyles from "@mui/styles/makeStyles";
 
 interface SignupPersonalInfoStepProps {
   email: string;
@@ -30,6 +33,19 @@ interface SignupPersonalInfoStepProps {
   showHeader?: boolean;
 }
 
+const useStyles = makeStyles((theme) => ({
+  header: {
+    color: theme.palette.background.default_contrastText,
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(4),
+      paddingBottom: theme.spacing(2),
+      textAlign: "center",
+      fontSize: 35,
+      fontWeight: "bold",
+    },
+  },
+}));
+
 export default function SignupPersonalInfoStep({
   email,
   onContinue,
@@ -40,7 +56,7 @@ export default function SignupPersonalInfoStep({
 }: SignupPersonalInfoStepProps) {
   const { locale, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
-
+  const classes = useStyles();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [location, setLocation] = useState<any>(null);
@@ -154,12 +170,17 @@ export default function SignupPersonalInfoStep({
   return (
     <Box>
       {showHeader && (
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
-          {texts.create_your_account}
-        </Typography>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+          <IconButton aria-label="go back" onClick={onBack} size="small" style={{ marginRight: 8 }}>
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h1" className={classes.header}>
+            {texts.create_your_account}
+          </Typography>
+        </div>
       )}
 
-      <Typography variant="body1" sx={{ mb: 3 }}>
+      <Typography variant="body1" sx={{ mb: 2 }}>
         {texts.signup_step_1_headline}
       </Typography>
 
@@ -248,9 +269,6 @@ export default function SignupPersonalInfoStep({
 
       {/* Action buttons */}
       <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
-        <Button variant="outlined" onClick={onBack}>
-          {texts.back}
-        </Button>
         <Button
           variant="contained"
           color="primary"

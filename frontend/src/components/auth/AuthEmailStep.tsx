@@ -1,9 +1,11 @@
 import React, { useContext, useState } from "react";
-import { Alert, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import { Alert, Button, CircularProgress, IconButton, TextField, Typography } from "@mui/material";
+import Close from "@mui/icons-material/Close";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { trackAuthEvent } from "../../utils/analytics";
+import makeStyles from "@mui/styles/makeStyles";
 
 interface AuthEmailStepProps {
   onUserStatusDetermined: (
@@ -13,6 +15,19 @@ interface AuthEmailStepProps {
   hubUrl?: string;
   showHeader?: boolean;
 }
+
+const useStyles = makeStyles((theme) => ({
+  header: {
+    color: theme.palette.background.default_contrastText,
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(4),
+      paddingBottom: theme.spacing(2),
+      textAlign: "center",
+      fontSize: 35,
+      fontWeight: "bold",
+    },
+  },
+}));
 
 export default function AuthEmailStep({
   onUserStatusDetermined,
@@ -24,6 +39,7 @@ export default function AuthEmailStep({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
+  const classes = useStyles();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,14 +98,21 @@ export default function AuthEmailStep({
     <>
       {showHeader && (
         <>
-          <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+            <IconButton aria-label="close" onClick={() => window.history.back()} size="small">
+              <Close />
+            </IconButton>
+          </div>
+          <Typography variant="h1" className={classes.header}>
             {texts.welcome_to_climate_connect}
           </Typography>
         </>
       )}
+
       <Typography variant="body1" style={{ marginBottom: 24 }}>
         {texts.welcome_to_climate_connect_subtitle}
       </Typography>
+
       <form onSubmit={handleSubmit} noValidate>
         <TextField
           id="auth-email-input"

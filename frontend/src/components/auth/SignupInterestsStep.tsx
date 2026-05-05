@@ -1,4 +1,5 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -7,6 +8,7 @@ import { Sector } from "../../types";
 import { getSectorOptions } from "../../../public/lib/getOptions";
 import LoadingSpinner from "../general/LoadingSpinner";
 import { trackAuthEvent } from "../../utils/analytics";
+import makeStyles from "@mui/styles/makeStyles";
 
 interface SignupInterestsStepProps {
   email: string;
@@ -17,6 +19,19 @@ interface SignupInterestsStepProps {
   errorMessage?: string;
   showHeader?: boolean;
 }
+
+const useStyles = makeStyles((theme) => ({
+  header: {
+    color: theme.palette.background.default_contrastText,
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(4),
+      paddingBottom: theme.spacing(2),
+      textAlign: "center",
+      fontSize: 35,
+      fontWeight: "bold",
+    },
+  },
+}));
 
 export default function SignupInterestsStep({
   email: _email,
@@ -29,7 +44,7 @@ export default function SignupInterestsStep({
 }: SignupInterestsStepProps) {
   const { locale, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
-
+  const classes = useStyles();
   const [selectedSectors, setSelectedSectors] = useState<Sector[]>([]);
   const [sectorOptions, setSectorOptions] = useState<Sector[]>([]);
   const [isLoadingSectors, setIsLoadingSectors] = useState(true);
@@ -101,9 +116,14 @@ export default function SignupInterestsStep({
   return (
     <Box>
       {showHeader && (
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 3 }}>
-          {texts.your_area_of_interest}
-        </Typography>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+          <IconButton aria-label="go back" onClick={onBack} size="small" style={{ marginRight: 8 }}>
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h1" gutterBottom className={classes.header}>
+            {texts.your_area_of_interest}
+          </Typography>
+        </div>
       )}
 
       <Typography variant="body1" sx={{ mb: 3 }}>
@@ -134,9 +154,6 @@ export default function SignupInterestsStep({
 
       {/* Action buttons */}
       <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
-        <Button variant="outlined" onClick={onBack} disabled={isLoading}>
-          {texts.back}
-        </Button>
         <Button
           variant="contained"
           color="primary"

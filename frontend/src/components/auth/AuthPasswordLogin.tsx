@@ -1,9 +1,19 @@
 import React, { useContext, useState } from "react";
-import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { trackAuthEvent } from "../../utils/analytics";
+import makeStyles from "@mui/styles/makeStyles";
 
 interface AuthPasswordLoginProps {
   email: string;
@@ -14,6 +24,19 @@ interface AuthPasswordLoginProps {
   hubUrl?: string;
   showHeader?: boolean;
 }
+
+const useStyles = makeStyles((theme) => ({
+  header: {
+    color: theme.palette.background.default_contrastText,
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(4),
+      paddingBottom: theme.spacing(2),
+      textAlign: "center",
+      fontSize: 35,
+      fontWeight: "bold",
+    },
+  },
+}));
 
 export default function AuthPasswordLogin({
   email,
@@ -26,6 +49,7 @@ export default function AuthPasswordLogin({
 }: AuthPasswordLoginProps) {
   const { locale, signIn, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
+  const classes = useStyles();
 
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -86,9 +110,14 @@ export default function AuthPasswordLogin({
   return (
     <>
       {showHeader && (
-        <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
-          {texts.log_in || "Log in"}
-        </Typography>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
+          <IconButton aria-label="go back" onClick={onBack} size="small" style={{ marginRight: 8 }}>
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h1" className={classes.header}>
+            {texts.log_in}
+          </Typography>
+        </div>
       )}
 
       <Typography variant="body1" style={{ marginBottom: 24 }}>
@@ -159,10 +188,6 @@ export default function AuthPasswordLogin({
           {texts.use_a_code_instead || "Use a code instead"}
         </Button>
       </Box>
-
-      <Button variant="outlined" onClick={onBack} disabled={isLoading} fullWidth>
-        {texts.back || "Back"}
-      </Button>
     </>
   );
 }

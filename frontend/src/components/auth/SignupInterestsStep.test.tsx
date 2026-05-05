@@ -145,7 +145,7 @@ describe("SignupInterestsStep", () => {
       renderSignupInterestsStep();
 
       await waitFor(() => {
-        expect(screen.getByRole("heading", { level: 4 })).toHaveTextContent(
+        expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
           "Your area of interest"
         );
         expect(
@@ -154,11 +154,10 @@ describe("SignupInterestsStep", () => {
       });
     });
 
-    it("renders Back and Create account buttons", async () => {
+    it("renders Create account buttons", async () => {
       renderSignupInterestsStep();
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /create account/i })).toBeInTheDocument();
       });
     });
@@ -349,14 +348,6 @@ describe("SignupInterestsStep", () => {
 
       expect(onBack).toHaveBeenCalled();
     });
-
-    it("disables Back button when isLoading is true", async () => {
-      renderSignupInterestsStep({ isLoading: true });
-
-      await waitFor(() => {
-        expect(screen.getByRole("button", { name: /back/i })).toBeDisabled();
-      });
-    });
   });
 
   describe("error handling", () => {
@@ -385,7 +376,6 @@ describe("SignupInterestsStep", () => {
       renderSignupInterestsStep({ isLoading: true });
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /back/i })).toBeDisabled();
         expect(screen.getByRole("button", { name: /creating account/i })).toBeDisabled();
       });
     });
