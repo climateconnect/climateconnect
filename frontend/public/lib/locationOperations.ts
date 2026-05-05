@@ -52,11 +52,6 @@ export function getDisplayLocationFromLocation(location): DisplayLocation {
       state: location.state,
       country: location.country,
     };
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true")
-    return {
-      ...DEFAULT_DISPLAY_LOCATION,
-      name: location.city + "" + location.country,
-    };
   if (!location.address || !location.address.country)
     return { ...DEFAULT_DISPLAY_LOCATION, name: location.display_name };
   const firstPartOrder = [
@@ -223,8 +218,6 @@ const isCountry = (location) => {
 };
 
 export function isLocationValid(location) {
-  //In legacy mode form control handles validation
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") return true;
   if (!location || typeof location == "string") return false;
   else return true;
 }
@@ -269,10 +262,6 @@ export function parseLocation(location, isConcretePlace = false) {
   const displayLocation = isConcretePlace
     ? getDisplayLocationFromExactLocation(location)
     : getDisplayLocationFromLocation(location);
-  //don't return anything if in legacy mode
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return location;
-  }
   //don't do anything if location is already parsed
   if (typeof location === "object" && alreadyParsed(location)) {
     return location;
@@ -368,26 +357,6 @@ export function getLocationFields({
   locationKey,
   texts,
 }) {
-  //in legacy mode, return a city and a country field
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return [
-      {
-        required: true,
-        label: texts.city,
-        type: "text",
-        key: "city",
-        value: values[locationKey].city,
-      },
-      {
-        required: true,
-        label: texts.country,
-        type: "text",
-        key: "country",
-        value: values[locationKey].country,
-      },
-    ];
-  }
-  //normally, just return a location field
   return [
     {
       required: true,
@@ -403,12 +372,6 @@ export function getLocationFields({
 }
 
 export function getLocationValue(values, locationKey) {
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return {
-      country: values.country,
-      city: values.city,
-    };
-  }
   return values[locationKey];
 }
 

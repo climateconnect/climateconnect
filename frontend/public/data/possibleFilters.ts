@@ -34,24 +34,6 @@ export default function getFilters({ key, filterChoices, locale }) {
 }
 
 const getLocationFilters = (texts) => {
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return [
-      {
-        icon: LocationOnOutlinedIcon,
-        iconName: "LocationOnOutlinedIcon",
-        title: texts.city,
-        type: "text",
-        key: "city",
-      },
-      {
-        icon: LocationOnOutlinedIcon,
-        iconName: "LocationOnOutlinedIcon",
-        title: texts.country,
-        type: "text",
-        key: "country",
-      },
-    ];
-  }
   return [
     {
       icon: LocationOnOutlinedIcon,

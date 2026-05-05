@@ -46,7 +46,6 @@ export default function EditAccountRoot({
   );
   const [sourceLanguage] = useState(profile.language);
   const [targetLanguage] = useState(locales.find((l) => l !== sourceLanguage)!);
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const [editedProfile, setEditedProfile] = useState({ ...profile });
   const STEPS = ["edit_profile", "edit_translations"];
   const [step, setStep] = useState(STEPS[0]);
@@ -80,7 +79,6 @@ export default function EditAccountRoot({
     if (
       editedAccount?.info?.location === user?.info?.location &&
       !isLocationValid(editedAccount?.info?.location) &&
-      !legacyModeEnabled &&
       !isTranslationsStep
     ) {
       indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, setErrorMessage, texts);
