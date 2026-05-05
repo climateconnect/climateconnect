@@ -128,7 +128,7 @@ describe("SignupPersonalInfoStep", () => {
     it("renders heading and description", () => {
       renderSignupPersonalInfoStep();
 
-      expect(screen.getByRole("heading", { level: 4 })).toHaveTextContent("Create your account");
+      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Create your account");
       expect(screen.getByText(/tell us a bit about yourself/i)).toBeInTheDocument();
     });
 

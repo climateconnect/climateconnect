@@ -1,9 +1,19 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { trackAuthEvent } from "../../utils/analytics";
+import makeStyles from "@mui/styles/makeStyles";
 
 const SESSION_KEY = "auth_session_key";
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -17,6 +27,19 @@ interface AuthOtpProps {
   showHeader?: boolean;
 }
 
+const useStyles = makeStyles((theme) => ({
+  header: {
+    color: theme.palette.background.default_contrastText,
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(4),
+      paddingBottom: theme.spacing(2),
+      textAlign: "center",
+      fontSize: 35,
+      fontWeight: "bold",
+    },
+  },
+}));
+
 export default function AuthOtp({
   email,
   onBack,
@@ -27,7 +50,7 @@ export default function AuthOtp({
 }: AuthOtpProps) {
   const { locale, signIn, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale, hubName: hubUrl });
-
+  const classes = useStyles();
   const [sessionKey, setSessionKey] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -195,9 +218,21 @@ export default function AuthOtp({
   return (
     <Box component="form" onSubmit={handleSubmit} aria-busy={isLoading}>
       {showHeader && (
-        <Typography variant="h1" style={{ fontWeight: "bold", marginBottom: 8 }}>
-          {texts.enter_your_code || "Enter your code"}
-        </Typography>
+        <>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
+            <IconButton
+              aria-label="go back"
+              onClick={handleBack}
+              size="small"
+              style={{ marginRight: 8 }}
+            >
+              <ArrowBack />
+            </IconButton>
+            <Typography variant="h1" className={classes.header}>
+              {texts.enter_your_code}
+            </Typography>
+          </div>
+        </>
       )}
       <Typography variant="body1" style={{ marginBottom: 24 }}>
         {texts.we_sent_a_code_to.replace("{email}", email)}
@@ -245,10 +280,6 @@ export default function AuthOtp({
         style={{ marginBottom: 8 }}
       >
         {isSendingCode ? <CircularProgress size={20} color="inherit" /> : resendLabel}
-      </Button>
-
-      <Button variant="outlined" fullWidth onClick={handleBack} disabled={isLoading}>
-        {texts.back || "Back"}
       </Button>
     </Box>
   );

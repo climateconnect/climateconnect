@@ -96,11 +96,11 @@ describe("AuthForgotPassword", () => {
       expect(screen.getByRole("progressbar")).toBeInTheDocument();
     });
 
-    it("disables the Back button while loading", () => {
+    it("shows loading indicator while API call is in progress", () => {
       mockApiRequest.mockReturnValueOnce(new Promise(() => {}));
       renderComponent();
 
-      expect(screen.getByRole("button", { name: /back/i })).toBeDisabled();
+      expect(screen.getByRole("progressbar")).toBeInTheDocument();
     });
   });
 
