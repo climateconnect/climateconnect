@@ -12,7 +12,7 @@ from rest_framework.test import APITestCase
 
 from climateconnect_api.models import Language, Role
 from hubs.models.hub import Hub
-from location.models import Location
+from location.models import Location, LocationTranslation
 from organization.models import (
     Project,
     ProjectMember,
@@ -647,6 +647,41 @@ class TestProjectApi(APITestCase):
         self.assertIsNotNone(res)
         self.assertContains(response, "Test Project")
         self.assertNotContains(response, "decoy")
+
+    @tag("projects", "location")
+    def test_get_project_by_url_slug_returns_translated_location_name(self):
+        location = Location.objects.create(
+            name="Munich",
+            city="Munich",
+            country="Germany",
+        )
+        LocationTranslation.objects.create(
+            location=location,
+            language=Language.objects.get(language_code="de"),
+            name_translation="München",
+        )
+        self.project.loc = location
+        self.project.save()
+
+        response = self.client.get(self.url, HTTP_ACCEPT_LANGUAGE="de")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["location"], "München")
+
+    @tag("projects", "location")
+    def test_get_project_by_url_slug_falls_back_to_english_location_name(self):
+        location = Location.objects.create(
+            name="Cologne",
+            city="Cologne",
+            country="Germany",
+        )
+        self.project.loc = location
+        self.project.save()
+
+        response = self.client.get(self.url, HTTP_ACCEPT_LANGUAGE="de")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["location"], "Cologne")
 
     @tag("sectors", "projects")
     def test_get_project_by_url_slug_includes_sector(self):

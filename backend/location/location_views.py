@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from location.serializers import LocationStubSerializer
+from location.models import Location as LocationModel
 from location.utility import (
     _get_newest_location_by_osm_composite,
     _get_newest_location_by_osm_id_and_type,
@@ -50,7 +51,11 @@ class GetLocationView(APIView):
             location = _get_newest_location_by_place_id(place_id)
 
         if location is not None:
-            serializer = LocationStubSerializer(location)
+            # Prefetch translations to avoid N+1 queries in the locale-aware serializer
+            location = LocationModel.objects.prefetch_related(
+                "translate_location__language"
+            ).get(pk=location.pk)
+            serializer = LocationStubSerializer(location, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         osm_type_char = _osm_type_char(osm_type)
@@ -115,5 +120,8 @@ class GetLocationView(APIView):
             )
         location_object = data[0]
         location = get_location(format_location(location_object, False))
-        serializer = LocationStubSerializer(location)
+        location = LocationModel.objects.prefetch_related(
+            "translate_location__language"
+        ).get(pk=location.pk)
+        serializer = LocationStubSerializer(location, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
