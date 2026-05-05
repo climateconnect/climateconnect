@@ -500,17 +500,37 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "Last name is required",
       de: "Nachname ist erforderlich",
     },
-    i_agree_to_the: {
-      en: "I agree to the",
-      de: "Ich stimme den",
-    },
-    terms_of_service: {
-      en: "terms of service",
-      de: "Nutzungsbedingungen",
-    },
-    and_would_like_to_receive_emails: {
-      en: "and would like to receive emails about updates, news and interesting projects",
-      de: "zu und möchte E-Mails über Updates, Neuigkeiten und interessante Projekte erhalten",
+    agree_to_tos_and_privacy_policy_with_email_consent: {
+      en: (
+        <>
+          I agree to the{" "}
+          <Link href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
+            Terms of Use
+          </Link>{" "}
+          and{" "}
+          <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
+            Privacy policy
+          </Link>
+          . I consent to the processing of my personal data and agree to receive emails containing
+          information that is functionally necessary and relevant to me regarding the use of the
+          platform.
+        </>
+      ),
+      de: (
+        <>
+          Ich stimme den{" "}
+          <Link href={getLocalePrefix(locale) + "/terms"} target="_blank" rel="noreferrer">
+            Nutzungsbedingungen
+          </Link>{" "}
+          und der{" "}
+          <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
+            Datenschutzerklärung
+          </Link>{" "}
+          zu. Ich willige ein, dass meine personenbezogenen Daten verarbeitet werden und ich per
+          E-Mail über funktionell notwendige und für mich relevante Informationen zur
+          Plattformnutzung informiert werde.
+        </>
+      ),
     },
     you_must_accept_terms_and_privacy_policy: {
       en: "You must accept the terms of service and privacy policy",

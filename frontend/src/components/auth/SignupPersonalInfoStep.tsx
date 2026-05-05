@@ -6,7 +6,6 @@ import {
   FormControlLabel,
   FormHelperText,
   IconButton,
-  Link,
   TextField,
   Typography,
 } from "@mui/material";
@@ -248,15 +247,7 @@ export default function SignupPersonalInfoStep({
           }
           label={
             <Typography variant="body2">
-              {texts.i_agree_to_the}{" "}
-              <Link href="/terms" target="_blank" rel="noopener">
-                {texts.terms_of_service}
-              </Link>{" "}
-              {texts.and}{" "}
-              <Link href="/privacy" target="_blank" rel="noopener">
-                {texts.privacy_policy}
-              </Link>{" "}
-              {texts.and_would_like_to_receive_emails}
+              {texts.agree_to_tos_and_privacy_policy_with_email_consent}
             </Typography>
           }
         />
