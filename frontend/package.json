@@ -37,7 +37,6 @@
     "@sentry/react": "^7.46.0",
     "@svgr/webpack": "^8.1.0",
     "@types/node": "^18.11.18",
-    "@zeit/next-css": "^1.0.1",
     "axios": "^1.15.1",
     "babel-plugin-lodash": "^3.3.4",
     "browser-image-compression": "^2.0.2",
