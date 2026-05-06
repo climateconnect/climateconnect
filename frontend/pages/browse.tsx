@@ -31,7 +31,7 @@ export async function getServerSideProps(ctx) {
   ] = await Promise.all([
     getOrganizationTagsOptions(ctx.locale),
     getAllHubs(ctx.locale),
-    getLocationFilteredBy(ctx.query),
+    getLocationFilteredBy(ctx.query, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getSectorOptions(ctx.locale),
     getSkillsOptions(ctx.locale),

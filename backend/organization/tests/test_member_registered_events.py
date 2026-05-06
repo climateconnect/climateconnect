@@ -22,6 +22,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from climateconnect_api.models import Language
+from location.models import Location, LocationTranslation
 from organization.models import Project, ProjectStatus
 from organization.models.event_registration import (
     EventRegistration,
@@ -120,6 +121,10 @@ class TestRegisteredEventsCore(APITestCase):
     def setUp(self):
         self.ps = _create_project_status()
         self.lang = _get_language()
+        self.language_de, _ = Language.objects.get_or_create(
+            language_code="de",
+            defaults={"name": "German", "native_name": "Deutsch"},
+        )
         self.user = User.objects.create_user(username="member", password="pass")
         self.client.login(username="member", password="pass")
 
@@ -252,3 +257,24 @@ class TestRegisteredEventsCore(APITestCase):
 
         slugs = [item["url_slug"] for item in response.data["results"]]
         self.assertNotIn("no-start-date-event", slugs)
+
+    @tag("registered_events", "location")
+    def test_registered_events_return_translated_location_name(self):
+        location = Location.objects.create(
+            name="Munich",
+            city="Munich",
+            country="Germany",
+        )
+        LocationTranslation.objects.create(
+            location=location,
+            language=self.language_de,
+            name_translation="München",
+        )
+        event = _create_event("translated-event", self.ps, self.lang, loc=location)
+        er_config = _create_open_er(event)
+        _register_user(self.user, er_config)
+
+        response = self.client.get(_REGISTERED_EVENTS_URL, HTTP_ACCEPT_LANGUAGE="de")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["results"][0]["location"], "München")

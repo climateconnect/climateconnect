@@ -16,6 +16,10 @@ from organization.serializers.sector import UserProfileSectorMappingSerializer
 from organization.utility.sector import (
     get_sectors_based_on_hub,
 )
+from location.utility import (
+    get_language_code_from_context,
+    get_translated_location_name,
+)
 
 
 class PersonalProfileSerializer(serializers.ModelSerializer):
@@ -65,7 +69,9 @@ class PersonalProfileSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(
+            obj.location, get_language_code_from_context(self.context)
+        )
 
     def get_badges(self, obj):
         badges = get_badges(obj)
@@ -146,7 +152,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(
+            obj.location, get_language_code_from_context(self.context)
+        )
 
     def get_language(self, obj):
         return obj.language.language_code
@@ -233,7 +241,9 @@ class UserProfileMinimalSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(
+            obj.location, get_language_code_from_context(self.context)
+        )
 
     def get_badges(self, obj):
         badges = get_badges(obj)
@@ -285,7 +295,9 @@ class UserProfileStubSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(
+            obj.location, get_language_code_from_context(self.context)
+        )
 
     def get_badges(self, obj):
         badges = get_badges(obj)
