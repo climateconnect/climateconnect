@@ -28,15 +28,15 @@ const COMMON_LINKS = {
     // Fixed issue where missing href caused redirection issues on mobile.
     onlyShowOnNormalScreen: true,
   },
-  SHARE: {
-    href: "/share",
+  SHARE: (hubUrl?: string) => ({
+    href: hubUrl ? `/share?hub=${hubUrl}` : `/share`,
     iconForDrawer: AddCircleIcon,
     icon: AddCircleOutlineIcon,
     hideDesktopIconUnderSm: true,
     isFilledInHeader: true,
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
-  },
+  }),
   AUTH_LINKS: (path_to_redirect, texts, queryString, isAuthUnificationEnabled) => {
     if (isAuthUnificationEnabled) {
       return [
@@ -183,7 +183,7 @@ const getWasseraktionswochenLinks = ({
     }),
     buildDonateLink({ texts, hubUrl }),
     {
-      ...COMMON_LINKS.SHARE,
+      ...COMMON_LINKS.SHARE(hubUrl),
       text: texts.share_a_project,
       hideOnMediumScreen: false,
       onlyShowIconOnNormalScreen: true,
@@ -209,14 +209,13 @@ const getDefaultLinks = (
 ) => {
   const isOnLandingPage = isLandingPagePath(path_to_redirect, hubUrl);
   const queryString = isLocationHub && hubUrl ? `hub=${hubUrl}` : "";
-
   {
     return [
       buildBrowseLink({ texts, isLocationHub, isOnLandingPage, hasHubLandingPage }),
       buildAboutLink({ texts, isLocationHub, hasHubLandingPage, isOnLandingPage, hubUrl }),
       buildDonateLink({ texts, hubUrl }),
       {
-        ...COMMON_LINKS.SHARE,
+        ...COMMON_LINKS.SHARE(isLocationHub ? hubUrl : undefined),
         text: texts.share_a_project,
         hideOnMediumScreen: isLocationHub,
       },
