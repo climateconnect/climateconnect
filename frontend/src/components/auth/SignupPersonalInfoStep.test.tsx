@@ -64,6 +64,8 @@ jest.mock("../../../public/texts/texts", () => {
     terms_of_service: "terms of service",
     and: "and",
     privacy_policy: "privacy policy",
+    agree_to_tos_and_privacy_policy_with_email_consent:
+      "I agree to the terms of service and privacy policy and would like to receive emails about updates, news and interesting projects",
     and_would_like_to_receive_emails:
       "and would like to receive emails about updates, news and interesting projects",
     you_must_accept_terms_and_privacy_policy:
@@ -162,7 +164,9 @@ describe("SignupPersonalInfoStep", () => {
       renderSignupPersonalInfoStep();
 
       expect(screen.getByRole("checkbox")).toBeInTheDocument();
-      expect(screen.getByText(/i agree to the/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/i agree to the terms of service and privacy policy/i)
+      ).toBeInTheDocument();
       expect(screen.getByText(/terms of service/i)).toBeInTheDocument();
       expect(screen.getByText(/privacy policy/i)).toBeInTheDocument();
     });
