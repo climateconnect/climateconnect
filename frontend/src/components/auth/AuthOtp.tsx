@@ -235,7 +235,10 @@ export default function AuthOtp({
         </>
       )}
       <Typography variant="body1" style={{ marginBottom: 24 }}>
-        {texts.we_sent_a_code_to.replace("{email}", email)}
+        {(userType === "new" ? texts.we_sent_a_code_to_new_user : texts.we_sent_a_code_to).replace(
+          "{email}",
+          email
+        )}
       </Typography>
 
       {errorMessage && (
