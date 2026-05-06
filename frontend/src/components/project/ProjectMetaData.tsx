@@ -295,7 +295,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
 const AdditionalPreviewInfo = ({ project, isUserRegistered }) => {
   const classes = useStyles({});
   const { projectTypes } = useContext(BrowseContext);
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
   const { isEnabled } = useFeatureToggles();
 
@@ -311,12 +311,15 @@ const AdditionalPreviewInfo = ({ project, isUserRegistered }) => {
     // Don't show button if registration is not enabled for this event
     if (!showRegisterButton) return null;
 
-    // Don't show button while we're still determining registration status
-    // This prevents flashing "Register Now" when user is actually registered
-    if (isUserRegistered === undefined) return null;
+    // For logged-in users, wait until registration status is known to avoid
+    // flashing "Register Now" when the user is actually registered.
+    if (user && isUserRegistered === undefined) return null;
 
-    const buttonText = getRegisterButtonText(project, texts, isUserRegistered);
-    const disabled = isRegisterButtonDisabled(project, isUserRegistered);
+    // Anonymous users can safely be treated as not registered.
+    const resolvedIsUserRegistered = isUserRegistered ?? false;
+
+    const buttonText = getRegisterButtonText(project, texts, resolvedIsUserRegistered);
+    const disabled = isRegisterButtonDisabled(project, resolvedIsUserRegistered);
 
     return {
       label: buttonText,
