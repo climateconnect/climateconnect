@@ -48,22 +48,6 @@ export default function getProfileInfoMetadata(locale) {
       missingMessage: texts.location_user_profile_missing_message,
       type: "location",
       weight: 0,
-      legacy: {
-        city: {
-          icon: PlaceIcon,
-          iconName: "PlaceIcon",
-          name: texts.city,
-          type: "text",
-          key: "city",
-        },
-        country: {
-          icon: PlaceIcon,
-          iconName: "PlaceIcon",
-          name: texts.country,
-          key: "country",
-          type: "text",
-        },
-      },
     },
   };
 }

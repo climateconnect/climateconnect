@@ -89,22 +89,6 @@ function getLocationField(texts) {
     type: "location",
     key: "location",
     weight: 0,
-    legacy: {
-      city: {
-        icon: PlaceIcon,
-        iconName: "PlaceIcon",
-        name: texts.city,
-        type: "text",
-        key: "city",
-      },
-      country: {
-        icon: PlaceIcon,
-        iconName: "PlaceIcon",
-        name: texts.country,
-        key: "country",
-        type: "text",
-      },
-    },
   };
 }
 

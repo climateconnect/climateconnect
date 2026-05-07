@@ -213,7 +213,6 @@ export default function EditAccountPage({
   const closeIconRef = useRef<SVGSVGElement | null>(null);
   const [editedAccount, setEditedAccount] = useState({ ...account });
   const isOrganization = type === "organization";
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles(editedAccount);
   const [tempImages, setTempImages] = useState({
     background_image: editedAccount.background_image
@@ -385,19 +384,6 @@ export default function EditAccountPage({
         });
       };
 
-      const handleChangeLegacyLocation = (key, event) => {
-        setEditedAccount({
-          ...editedAccount,
-          info: {
-            ...editedAccount.info,
-            location: {
-              ...editedAccount.info.location,
-              [key]: event.target.value,
-            },
-          },
-        });
-      };
-
       const handleSetParentOrganization = (newOrg) => {
         setEditedAccount({
           ...editedAccount,
@@ -472,27 +458,6 @@ export default function EditAccountPage({
           </div>
         );
       } else if (i.type === "location") {
-        //return legacy field options (city, country) instead of the location field when location legacy mode is enabled
-        if (legacyModeEnabled) {
-          return (
-            <>
-              {Object.keys(i.legacy).map((k) => {
-                const field = i.legacy[k];
-                return (
-                  <div key={field.key} className={classes.infoElement}>
-                    <TextField
-                      label={field.name}
-                      variant="outlined"
-                      required
-                      onChange={(event) => handleChangeLegacyLocation(field.key, event)}
-                      value={editedAccount?.info?.location[field.key]}
-                    />
-                  </div>
-                );
-              })}
-            </>
-          );
-        }
         return (
           <div className={classes.infoElement} key={i.key}>
             <LocationSearchBar

@@ -143,7 +143,6 @@ export default function BrowseContent({
     handleApplyNewFilters: applyNewFilters,
   } = useContext(FilterContext);
 
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
   const TYPES_BY_TAB_VALUE: BrowseTab[] = hideMembers
     ? ["projects", "organizations"] // TODO: add "events" here, after implementing event calendar
@@ -413,7 +412,7 @@ export default function BrowseContent({
     // Only push state if there's a URL change. Be sure to account for the
     // hash link / fragment on the end of the URL (e.g. #skills).
 
-    if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
+    if (newFilters.location && !isLocationValid(newFilters.location)) {
       indicateWrongLocation(
         locationInputRefs[type],
         setLocationOptionsOpen,

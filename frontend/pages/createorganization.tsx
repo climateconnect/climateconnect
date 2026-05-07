@@ -77,8 +77,6 @@ export default function CreateOrganization({
     detailledOrganizationInfo: "",
   });
 
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
-
   const handleSetErrorMessages = (newErrorMessages) => {
     setErrorMessages(newErrorMessages);
     window.scrollTo(0, 0);
@@ -165,8 +163,8 @@ export default function CreateOrganization({
         return;
       }
 
-      //short circuit if the location is invalid and we're not in legacy mode
-      if (!legacyModeEnabled && !isLocationValid(values.location)) {
+      //short circuit if the location is invalid
+      if (!isLocationValid(values.location)) {
         indicateWrongLocation(
           locationInputRef,
           setLocationOptionsOpen,
@@ -255,7 +253,7 @@ export default function CreateOrganization({
       hubUrl
     );
 
-    if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
+    if (!isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
         setLocationOptionsOpen,
