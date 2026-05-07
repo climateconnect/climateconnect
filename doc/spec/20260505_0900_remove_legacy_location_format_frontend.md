@@ -1,9 +1,9 @@
 # Remove ENABLE_LEGACY_LOCATION_FORMAT Feature Flag from Frontend
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Cleanup / Technical Debt
 **Date and time created**: 2026-05-05 09:00 UTC
-**Date Completed**: TBD
+**Date Completed**: 2026-05-05
 **Related GitHub Issue**: https://github.com/climateconnect/climateconnect/issues/1932
 **Related Specs**:
 - [`doc/spec/1712-spec-process-remove-legacy-location-format.md`](1712-spec-process-remove-legacy-location-format.md) (backend counterpart, completed)
