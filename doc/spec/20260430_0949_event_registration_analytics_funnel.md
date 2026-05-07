@@ -85,7 +85,7 @@ Event Page View
 - **No PII in events**: `event_slug` is acceptable; never include user email or name.
 - **Consistent parameter naming**: reuse parameter names from the auth analytics spec where applicable (`user_type`, `auth_path`, etc.).
 - **De-duplication guard**: `event_registration_success` must fire only once per actual registration, even if the user clicks "Try again" after an error.
-
+- **No regression**: The login flow event tracking must not be affected by this change. Since this is touching the same components that are being used in two different flows.
 ---
 
 ## AI Agent Insights and Additions

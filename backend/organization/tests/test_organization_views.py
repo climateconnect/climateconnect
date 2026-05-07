@@ -12,7 +12,7 @@ from rest_framework.test import APITestCase
 
 from climateconnect_api.models import Language, Role, UserProfile
 from hubs.models import Hub
-from location.models import Location
+from location.models import Location, LocationTranslation
 from organization.models import (
     Organization,
     OrganizationMember,
@@ -601,6 +601,26 @@ class TestOrganizationAPIView(APITestCase):
         self.assertContains(response, self.org.name)
         self.assertNotContains(response, self.org_decoy.name)
         pass
+
+    @tag("organization", "location")
+    def test_get_organization_by_url_slug_returns_translated_location_name(self):
+        location = Location.objects.create(
+            name="Munich",
+            city="Munich",
+            country="Germany",
+        )
+        LocationTranslation.objects.create(
+            location=location,
+            language=Language.objects.get(language_code="de"),
+            name_translation="München",
+        )
+        self.org.location = location
+        self.org.save()
+
+        response = self.client.get(self.url, HTTP_ACCEPT_LANGUAGE="de")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["location"], "München")
 
     @tag("organiztaion", "sectors")
     def test_get_organization_by_url_slug_includes_sectors(self):

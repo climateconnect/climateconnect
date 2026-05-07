@@ -88,7 +88,7 @@ describe("getLinks", () => {
     expect(links).toHaveLength(7);
     expect(links[0]).toMatchObject({ href: "/hubs/em/", text: texts.about_climatehub });
     expect(links[1]).toMatchObject({ href: "/donate", text: texts.donate });
-    expect(links[2]).toMatchObject({ href: "/share", text: texts.share_a_project });
+    expect(links[2]).toMatchObject({ href: "/share?hub=em", text: texts.share_a_project });
   });
 
   it("returns only login link when AUTH_UNIFICATION is enabled", () => {

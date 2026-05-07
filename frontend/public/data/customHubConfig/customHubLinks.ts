@@ -23,8 +23,7 @@ export const getSharedLinks = (
     className: "btnIconTextColor",
   },
   {
-    ...COMMON_LINKS.SHARE,
-    href: `/share?hub=${options.hubKey}`,
+    ...COMMON_LINKS.SHARE(options.hubKey),
     text: texts.share_a_project,
     hideOnMediumScreen: true,
   },

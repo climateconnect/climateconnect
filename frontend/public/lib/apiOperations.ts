@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import { default as router } from "next/router";
 import { CcLocale } from "../../src/types";
+import { getLocaleHeader } from "../../src/utils/locationUtils";
 import tokenConfig from "../config/tokenConfig";
 import type { UrlObject } from "url";
 import { ParsedUrlQueryInput } from "querystring";
@@ -19,13 +20,8 @@ type Args = {
 export const apiRequest = async <T = any>(args: Args) => {
   const { method, url, token, payload, locale, headers = {} } = args;
 
-  const acceptLanguageHeadersByLocale = {
-    de: "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-    en: "en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7",
-  };
-
-  if (locale && acceptLanguageHeadersByLocale[locale]) {
-    headers["Accept-Language"] = acceptLanguageHeadersByLocale[locale];
+  if (locale) {
+    Object.assign(headers, getLocaleHeader(locale));
   }
   const config: AxiosRequestConfig = tokenConfig(token, headers);
 

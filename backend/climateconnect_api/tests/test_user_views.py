@@ -1,14 +1,15 @@
 from unittest.mock import MagicMock, patch
-from auth_app.models import LoginAuditLog
+
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.test import TestCase, TransactionTestCase, override_settings, tag
 from django.urls import reverse
 from rest_framework import status
 
-from climateconnect_api.models import UserProfile
+from auth_app.models import LoginAuditLog
+from climateconnect_api.models import Language, UserProfile
 from hubs.models import Hub
-from location.models import Location
+from location.models import Location, LocationTranslation
 
 # from climateconnect_api.factories import UserFactory
 
@@ -75,6 +76,51 @@ def _create_verified_member(username, location, url_slug):
         name=username,
         is_profile_verified=True,
     )
+
+
+class MemberProfileLocaleTest(TestCase):
+    def setUp(self):
+        self.url = reverse(
+            "get-member-profile-api",
+            kwargs={"url_slug": "translated-member"},
+        )
+        self.language_de = Language.objects.get(language_code="de")
+        self.location = Location.objects.create(
+            name="Munich",
+            city="Munich",
+            country="Germany",
+        )
+        LocationTranslation.objects.create(
+            location=self.location,
+            language=self.language_de,
+            name_translation="München",
+        )
+        self.profile = _create_verified_member(
+            "translated_member",
+            self.location,
+            "translated-member",
+        )
+
+    @tag("members", "location")
+    def test_member_profile_returns_translated_location_name(self):
+        response = self.client.get(self.url, HTTP_ACCEPT_LANGUAGE="de")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["location"], "München")
+
+    @tag("members", "location")
+    def test_member_profile_falls_back_to_english_location_name(self):
+        self.profile.location = Location.objects.create(
+            name="Cologne",
+            city="Cologne",
+            country="Germany",
+        )
+        self.profile.save()
+
+        response = self.client.get(self.url, HTTP_ACCEPT_LANGUAGE="de")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["location"], "Cologne")
 
 
 @override_settings(
