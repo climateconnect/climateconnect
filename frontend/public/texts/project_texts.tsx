@@ -1486,7 +1486,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "To register for this event, please log in or sign up!",
       de: "Um dich für diese Veranstaltung anzumelden, melde dich bitte an oder registriere dich!",
     },
-    log_in: {
+    auth_log_in: {
       en: "Log In",
       de: "Anmelden",
     },

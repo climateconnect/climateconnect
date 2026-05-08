@@ -179,6 +179,10 @@
     "en": "Log in",
     "de": "Einloggen"
   },
+  "auth_log_in": {
+    "en": "Log in",
+    "de": "Anmelden"
+  },
   "log_out": {
     "en": "Log out",
     "de": "Ausloggen"

@@ -44,7 +44,7 @@ const COMMON_LINKS = {
           href: `/login?redirect=${encodeURIComponent(path_to_redirect)}${
             queryString ? `&${queryString}` : ""
           }`,
-          text: texts.log_in,
+          text: texts.auth_log_in,
           iconForDrawer: AccountCircleIcon,
           isOutlinedInHeader: true,
           onlyShowLoggedOut: true,
