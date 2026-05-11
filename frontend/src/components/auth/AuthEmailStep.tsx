@@ -46,6 +46,9 @@ export default function AuthEmailStep({
     setIsLoading(true);
     setErrorMessage(null);
 
+    // Reset any existing auth session to ensure fresh flow
+    sessionStorage.removeItem("auth_session_key");
+
     const normalizedEmail = email.toLowerCase().trim();
 
     try {
