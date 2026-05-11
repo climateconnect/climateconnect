@@ -410,6 +410,12 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "We found your account and sent a 6-digit code to {email}.",
       de: "Wir haben deinen Account gefunden und an {email} einen 6-stelligen Code gesendet.",
     },
+    we_sent_a_code_to_new_user: {
+      en:
+        "We created your account and sent a 6-digit code to {email} to verify your email address.",
+      de:
+        "Wir haben deinen Account erstellt und einen 6-stelligen Code an {email} gesendet, um deine E-Mail-Adresse zu bestätigen.",
+    },
     verify: {
       en: "Verify",
       de: "Bestätigen",

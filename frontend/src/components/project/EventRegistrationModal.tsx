@@ -132,6 +132,7 @@ export default function EventRegistrationModal({
   // Authentication flow state
   const [email, setEmail] = useState("");
   const [authStep, setAuthStep] = useState<"email" | "password" | "otp" | "signup">("email");
+  const [isNewUserOtp, setIsNewUserOtp] = useState(false);
 
   // Render the appropriate content based on authentication and registration state
   const renderContent = () => {
@@ -191,6 +192,7 @@ export default function EventRegistrationModal({
     } else if (status === "returning_password") {
       setAuthStep("password");
     } else if (status === "returning_otp") {
+      setIsNewUserOtp(false);
       setAuthStep("otp");
     }
   };
@@ -260,7 +262,10 @@ export default function EventRegistrationModal({
               // Return to email entry; forgot-password flow is not supported inside the modal.
               setAuthStep("email");
             }}
-            onSwitchToOtp={() => setAuthStep("otp")}
+            onSwitchToOtp={() => {
+              setIsNewUserOtp(false);
+              setAuthStep("otp");
+            }}
             hubUrl={project.hubUrl}
             showHeader={false}
           />
@@ -277,6 +282,7 @@ export default function EventRegistrationModal({
             }}
             hubUrl={project.hubUrl}
             showHeader={false}
+            userType={isNewUserOtp ? "new" : "returning"}
           />
         );
       case "signup":
@@ -284,7 +290,10 @@ export default function EventRegistrationModal({
           <AuthSignupStep
             email={email}
             onBack={() => setAuthStep("email")}
-            onSignupComplete={() => setAuthStep("otp")}
+            onSignupComplete={() => {
+              setIsNewUserOtp(true);
+              setAuthStep("otp");
+            }}
             hubUrl={project.hubUrl}
             skipInterests={true}
             showHeader={false}

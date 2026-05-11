@@ -60,12 +60,8 @@ jest.mock("../../../public/texts/texts", () => {
     last_name_is_required: "Last name is required",
     location: "Location",
     please_choose_one_of_the_location_options: "Please choose a valid location from the dropdown",
-    i_agree_to_the: "I agree to the",
-    terms_of_service: "terms of service",
-    and: "and",
-    privacy_policy: "privacy policy",
-    and_would_like_to_receive_emails:
-      "and would like to receive emails about updates, news and interesting projects",
+    agree_to_tos_and_privacy_policy_with_email_consent:
+      "I agree to the terms of service and privacy policy and would like to receive emails about updates, news and interesting projects",
     you_must_accept_terms_and_privacy_policy:
       "You must accept the terms of service and privacy policy",
     back: "Back",
