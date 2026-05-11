@@ -18,6 +18,7 @@ const buildTexts = () => ({
   share_a_project: "Share a project",
   inbox: "Inbox",
   log_in: "Log in",
+  auth_log_in: "Log in",
   sign_up: "Sign up",
 });
 
@@ -99,7 +100,7 @@ describe("getLinks", () => {
     expect(authLinks).toHaveLength(1);
     expect(authLinks[0]).toMatchObject({
       href: "/login?redirect=%2Fprojects",
-      text: texts.log_in,
+      text: texts.auth_log_in,
     });
   });
 
@@ -112,7 +113,7 @@ describe("getLinks", () => {
     expect(authLinks).toHaveLength(1);
     expect(authLinks[0]).toMatchObject({
       href: `/login?redirect=%2Fhubs%2Ferlangen%2Fbrowse&hub=erlangen`,
-      text: texts.log_in,
+      text: texts.auth_log_in,
     });
   });
 
