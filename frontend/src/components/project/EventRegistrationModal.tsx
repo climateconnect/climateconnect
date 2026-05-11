@@ -246,9 +246,6 @@ export default function EventRegistrationModal({
         >
           {loading ? <CircularProgress size={24} /> : texts.confirm_registration}
         </Button>
-        <Button onClick={handleClose} variant="outlined">
-          {texts.cancel}
-        </Button>
       </Box>
     </Box>
   );
