@@ -125,6 +125,9 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       display: "flex",
       alignItems: "center",
     },
+    attendedEventText: {
+      marginLeft: theme.spacing(1),
+    },
     availableSeatsText: {
       marginLeft: theme.spacing(0.5),
     },
@@ -217,6 +220,13 @@ export default function ProjectOverview({
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [gotParams, setGotParams] = useState(false);
+  const registrationState = getRegistrationUIState(
+    isEventRegistrationEnabled,
+    project,
+    isUserRegistered,
+    hasAttended,
+    adminCancelled
+  );
 
   useEffect(() => {
     if (!gotParams) {
@@ -234,6 +244,7 @@ export default function ProjectOverview({
     screenSize: screenSize,
     hubUrl: hubUrl,
     isWasseraktionswochenEnabled: isWasseraktionswochenEnabled,
+    showAttendedInPast: registrationState === "attended",
   };
 
   return (
@@ -257,11 +268,11 @@ export default function ProjectOverview({
           followingChangePending={followingChangePending}
           numberOfFollowers={numberOfFollowers}
           isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
-          isEventRegistrationEnabled={isEventRegistrationEnabled}
           handleRegisterClick={handleRegisterClick}
           isUserRegistered={isUserRegistered}
           hasAttended={hasAttended}
           adminCancelled={adminCancelled}
+          registrationState={registrationState}
           handleCancelClick={handleCancelClick}
           eventRegistration={eventRegistration}
         />
@@ -296,7 +307,7 @@ export default function ProjectOverview({
   );
 }
 
-function ShortProjectInfo({ project, isWasseraktionswochenEnabled }) {
+function ShortProjectInfo({ project, isWasseraktionswochenEnabled, showAttendedInPast = false }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -352,6 +363,12 @@ function ShortProjectInfo({ project, isWasseraktionswochenEnabled }) {
       <div className={classes.projectInfoEl}>
         <div className={classes.projectTypeContainer}>
           <ProjectTypeDisplay projectType={project.project_type} />
+          {showAttendedInPast && project.project_type?.type_id === "event" && (
+            <Typography component="span" variant="body2" className={classes.attendedEventText}>
+              {"\u2022 "}
+              {texts.you_attended_this_event}
+            </Typography>
+          )}
         </div>
       </div>
     </>
@@ -364,6 +381,7 @@ function SmallScreenOverview({
   projectAdmin,
   hubUrl,
   isWasseraktionswochenEnabled,
+  showAttendedInPast,
 }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
@@ -400,6 +418,7 @@ function SmallScreenOverview({
         <ShortProjectInfo
           project={project}
           isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+          showAttendedInPast={showAttendedInPast}
         />
       </div>
     </>
@@ -424,25 +443,15 @@ function LargeScreenOverview({
   followingChangePending,
   numberOfFollowers,
   isWasseraktionswochenEnabled,
-  isEventRegistrationEnabled,
   handleRegisterClick,
   isUserRegistered,
-  hasAttended,
-  adminCancelled,
+  registrationState,
   handleCancelClick,
   eventRegistration,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
-
-  const registrationState = getRegistrationUIState(
-    isEventRegistrationEnabled,
-    project,
-    isUserRegistered,
-    hasAttended,
-    adminCancelled
-  );
 
   return (
     <>
@@ -468,6 +477,7 @@ function LargeScreenOverview({
           <ShortProjectInfo
             project={project}
             isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+            showAttendedInPast={registrationState === "attended"}
           />
           <div className={classes.infoBottomBar}>
             <LikeButton
