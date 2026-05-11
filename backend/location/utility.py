@@ -43,6 +43,88 @@ def location_obj_to_dict(location):
     }
 
 
+CUSTOM_NAME_MAPPINGS = {
+    "Scotland (state), Scotland": "Scotland",
+}
+
+
+def _build_location_name(first_part: str, middle_part: str, last_part: str) -> str:
+    """
+    Mirror of the frontend ``buildLocationName`` function in locationOperations.ts.
+    Joins non-empty, non-duplicate parts with ", ".
+    """
+    parts = []
+    if first_part:
+        parts.append(first_part)
+    show_middle = middle_part and middle_part != first_part and middle_part != last_part
+    if show_middle:
+        parts.append(middle_part)
+    if last_part and last_part != first_part:
+        parts.append(last_part)
+    return ", ".join(parts)
+
+
+def format_exact_location_name(
+    place_name: str,
+    exact_address: str,
+    city: str,
+    state: str,
+    country: str,
+) -> str:
+    """
+    Build the exact-location display name for a project location, mirroring
+    the frontend's ``getDisplayLocationFromExactLocation`` logic.
+
+    Args:
+        place_name:    The specific venue / landmark name (stored on Location.place_name).
+        exact_address: The street address (stored on Location.exact_address).
+        city:          City name (translated if available).
+        state:         State name (unused for display but kept for signature parity).
+        country:       Country name (translated if available).
+
+    Returns:
+        A human-readable name such as "City Hall, Main Street 1, Berlin, Germany".
+    """
+    # Build "city, country" tail; omit city when it equals the place name
+    if city and city != place_name:
+        city_and_country = f"{city}, {country}" if country else city
+    else:
+        city_and_country = country or ""
+
+    name = _build_location_name(place_name or "", exact_address or "", city_and_country)
+    return CUSTOM_NAME_MAPPINGS.get(name, name)
+
+
+def get_translated_exact_location_name(location, language_code: str) -> str:
+    """
+    Return the exact-location display name for a project location, using
+    translated city/country when a matching ``LocationTranslation`` exists.
+
+    Expects ``location.translate_location`` to be pre-fetched.
+    Falls back to the untranslated Location fields when no translation is found.
+    """
+    city = location.city or ""
+    state = location.state or ""
+    country = location.country or ""
+
+    if language_code:
+        primary_tag = language_code.split("-")[0].lower()
+        for translation in location.translate_location.all():
+            if translation.language.language_code.lower() == primary_tag:
+                city = translation.city_translation or city
+                state = translation.state_translation or state
+                country = translation.country_translation or country
+                break
+
+    return format_exact_location_name(
+        place_name=location.place_name or "",
+        exact_address=location.exact_address or "",
+        city=city,
+        state=state,
+        country=country,
+    )
+
+
 def get_translated_location_name(location, language_code: str) -> str:
     """
     Return the translated name for a location in the given language_code.

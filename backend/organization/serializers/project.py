@@ -11,6 +11,7 @@ from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from location.utility import (
     get_language_code_from_context,
+    get_translated_exact_location_name,
     get_translated_location_name,
 )
 from organization.models import (
@@ -153,19 +154,21 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_number_of_likes(self, obj):
         return obj.project_liked.count()
 
+    def _get_location_name(self, loc):
+        lang = get_language_code_from_context(self.context)
+        if loc.place_name or loc.exact_address:
+            return get_translated_exact_location_name(loc, lang)
+        return get_translated_location_name(loc, lang)
+
     def get_loc(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
@@ -306,9 +309,10 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        lang = get_language_code_from_context(self.context)
+        if obj.loc.place_name or obj.loc.exact_address:
+            return get_translated_exact_location_name(obj.loc, lang)
+        return get_translated_location_name(obj.loc, lang)
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
@@ -418,9 +422,10 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        lang = get_language_code_from_context(self.context)
+        if obj.loc.place_name or obj.loc.exact_address:
+            return get_translated_exact_location_name(obj.loc, lang)
+        return get_translated_location_name(obj.loc, lang)
 
     def get_project_type(self, obj):
         possible_project_types = list(PROJECT_TYPES.values())
