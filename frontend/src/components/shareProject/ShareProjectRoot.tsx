@@ -479,7 +479,13 @@ const getDefaultProjectValues = (
 const formatProjectForRequest = async (project, translations) => {
   const { blobFromObjectUrl } = await import("../../../public/lib/imageOperations");
   // Destructure UI-only registration fields to exclude from the spread
-  const { registrationEnabled, max_participants, registration_end_date, ...projectRest } = project;
+  const {
+    registrationEnabled,
+    max_participants,
+    registration_end_date,
+    registration_fields,
+    ...projectRest
+  } = project;
   const hasLocation = project.loc && Object.keys(project.loc).length > 0;
   return {
     ...projectRest,
@@ -507,6 +513,8 @@ const formatProjectForRequest = async (project, translations) => {
             registration_end_date: registration_end_date
               ? dayjs(registration_end_date).toISOString()
               : undefined,
+            // Strip client-only _clientKey before sending to the API
+            fields: registration_fields?.map(({ _clientKey, ...field }) => field),
           }
         : undefined,
   };

@@ -31,10 +31,11 @@ class OptionSelectSettingsSerializer(serializers.Serializer):
     """
     Settings serializer for option_select fields.
 
-    Currently no type-specific settings — options live in RegistrationFieldOption
-    rows so each choice has an addressable id. Reserved for future per-type
-    metadata (e.g. display style).
+    title is the question label shown above the options (e.g. "Meal preference?").
+    Options themselves live in RegistrationFieldOption rows.
     """
+
+    title = serializers.CharField(required=False, allow_blank=True)
 
 
 FIELD_TYPE_SETTINGS_VALIDATORS = {

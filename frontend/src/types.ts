@@ -1,6 +1,26 @@
 import { Dayjs } from "dayjs";
 import type { PaletteColorOptions } from "@mui/material/styles";
 
+export type RegistrationFieldOption = {
+  id?: number | null;
+  title: string;
+  order: number;
+};
+
+export type RegistrationField = {
+  id?: number | null;
+  field_type: "checkbox" | "option_select";
+  order: number;
+  is_required: boolean;
+  settings: {
+    description?: string;
+    title?: string;
+  };
+  options?: RegistrationFieldOption[];
+  /** Client-only stable key for React list rendering before the field is saved. */
+  _clientKey?: string;
+};
+
 export type EventRegistrationData = {
   max_participants: number | null;
   available_seats: number | null;
@@ -75,6 +95,7 @@ export type Project = {
   max_participants?: number | null;
   registration_end_date?: Dayjs | null;
   notify_admins?: boolean;
+  registration_fields?: RegistrationField[];
   // Event registration data from the API (detail view)
   registration_config?: EventRegistrationData | null;
 };
