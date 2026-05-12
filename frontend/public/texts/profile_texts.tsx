@@ -486,7 +486,7 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     // --- Signup Flow ---
     create_your_account: {
       en: "Create your account",
-      de: "Erstelle dein Konto",
+      de: "Erstelle Deinen Account",
     },
     signup_step_1_headline: {
       en:
@@ -517,9 +517,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
           <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Privacy policy
           </Link>
-          . I consent to the processing of my personal data and agree to receive emails containing
-          information that is functionally necessary and relevant to me regarding the use of the
-          platform.
+          . I consent to the processing of my personal data and to receiving emails containing
+          necessary information and updates on local climate projects.
         </>
       ),
       de: (
@@ -533,8 +532,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
             Datenschutzerklärung
           </Link>{" "}
           zu. Ich willige ein, dass meine personenbezogenen Daten verarbeitet werden und ich per
-          E-Mail über funktionell notwendige und für mich relevante Informationen zur
-          Plattformnutzung informiert werde.
+          E-mail über funktionell notwendige Informationen und lokale Klimaprojekte informiert
+          werde.
         </>
       ),
     },
