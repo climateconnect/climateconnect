@@ -390,8 +390,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Willkommen!",
     },
     welcome_to_climate_connect_subtitle: {
-      en: "Register or log in with your existing Climate Connect account:",
-      de: "Anmelden oder mit bestehendem Climate Connect Account einloggen:",
+      en: "Register or log in with your existing account:",
+      de: "Anmelden oder mit bestehendem Account einloggen:",
     },
     area_of_interest: {
       en: "Areas of interest",
