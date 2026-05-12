@@ -6284,6 +6284,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"blueimp-canvas-to-blob@npm:^3.29.0":
+  version: 3.29.0
+  resolution: "blueimp-canvas-to-blob@npm:3.29.0"
+  checksum: 10c0/6c44cf20aa8287d4b31b2a6133074add338e4b8de092d2f7072a48cd5e04dead04814ffd34607f71dd7b3a285b5c8322c2e8c17776cfa20a1357df395862d646
+  languageName: node
+  linkType: hard
+
 "bn.js@npm:^4.0.0, bn.js@npm:^4.1.0, bn.js@npm:^4.11.9":
   version: 4.12.2
   resolution: "bn.js@npm:4.12.2"
@@ -6346,15 +6353,6 @@ __metadata:
   version: 1.1.0
   resolution: "brorand@npm:1.1.0"
   checksum: 10c0/6f366d7c4990f82c366e3878492ba9a372a73163c09871e80d82fb4ae0d23f9f8924cb8a662330308206e6b3b76ba1d528b4601c9ef73c2166b440b2ea3b7571
-  languageName: node
-  linkType: hard
-
-"browser-image-compression@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "browser-image-compression@npm:2.0.2"
-  dependencies:
-    uzip: "npm:0.20201231.0"
-  checksum: 10c0/32be07f8849f2de501a71f6dd07e691c085fc7a2055456eb120fe5d765e3fcf7de00696915a8d614527d4df10f34c31526304b7d18aae036bb1c58d801e3fcbd
   languageName: node
   linkType: hard
 
@@ -6925,8 +6923,8 @@ __metadata:
     axios: "npm:^1.15.1"
     babel-loader: "npm:^8.2.2"
     babel-plugin-lodash: "npm:^3.3.4"
-    browser-image-compression: "npm:^2.0.2"
     cheerio: "npm:^1.0.0-rc.10"
+    compressorjs: "npm:^1.3.0"
     date-fns: "npm:^2.12.0"
     dayjs: "npm:^1.11.7"
     dotenv: "npm:^8.2.0"
@@ -7139,6 +7137,16 @@ __metadata:
     normalize-path: "npm:^3.0.0"
     readable-stream: "npm:^3.6.0"
   checksum: 10c0/e5fa03cb374ed89028e20226c70481e87286240392d5c6856f4e7fef40605c1892748648e20ed56597d390d76513b1b9bb4dbd658a1bbff41c9fa60107c74d3f
+  languageName: node
+  linkType: hard
+
+"compressorjs@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "compressorjs@npm:1.3.0"
+  dependencies:
+    blueimp-canvas-to-blob: "npm:^3.29.0"
+    is-blob: "npm:^2.1.0"
+  checksum: 10c0/76fe13bac63a32ccc148a6b03f1cd9ac81b794a0b3dad0aefad6b63ab4dec887f8d03ff0ed195d363f4ce214f68c147d4aae404928d35263d9656e7749869d0d
   languageName: node
   linkType: hard
 
@@ -10342,6 +10350,13 @@ __metadata:
   dependencies:
     binary-extensions: "npm:^2.0.0"
   checksum: 10c0/a16eaee59ae2b315ba36fad5c5dcaf8e49c3e27318f8ab8fa3cdb8772bf559c8d1ba750a589c2ccb096113bb64497084361a25960899cb6172a6925ab6123d38
+  languageName: node
+  linkType: hard
+
+"is-blob@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "is-blob@npm:2.1.0"
+  checksum: 10c0/324eb4dc16a359acf14c56c0f65a031c9ddb6ec8ca651894783abe3f3252688facd9e02edeb756eddca0c8ddb5b1efd0af97ea7d3c7b8567fc29fa75f9b1a159
   languageName: node
   linkType: hard
 
@@ -16757,13 +16772,6 @@ __metadata:
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 10c0/41a5bdd214df2f6c3ecf8622745e4a366c4adced864bc3c833739791aeeeb1838119af7daed4ba36428114b5c67dcda034a79c882e97e43c03e66a4dd7389942
-  languageName: node
-  linkType: hard
-
-"uzip@npm:0.20201231.0":
-  version: 0.20201231.0
-  resolution: "uzip@npm:0.20201231.0"
-  checksum: 10c0/44b261b20ac7e4d71e7099d7a7c4885626044be61cd246e76cf548fa444a4a37c301d1a683679168bc29c91d2ec81d62b8c1c75217a26b37f6ce35223866c2d2
   languageName: node
   linkType: hard
 
