@@ -73,11 +73,7 @@ export default function RegistrationActionButton({
 
   const renderButton = () => {
     if (registrationState === "attended") {
-      return (
-        <Typography variant="body2" className={className}>
-          {texts.you_attended_this_event}
-        </Typography>
-      );
+      return null;
     }
 
     if (registrationState === "cancel") {
