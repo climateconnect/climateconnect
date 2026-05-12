@@ -62,11 +62,11 @@
            python -m pip install --upgrade pip
            pip install pdm
 
-       - name: Install dependencies and create venv
-         working-directory: backend
-         run: |
-           pdm install
-           $(pdm venv activate)
+      - name: Install dependencies and create venv
+        working-directory: backend
+        run: |
+          pdm install --dev
+          $(pdm venv activate)
 
        - name: Run deptry (check for undeclared imports)
          working-directory: backend
