@@ -364,7 +364,7 @@ function ShortProjectInfo({ project, isWasseraktionswochenEnabled, showAttendedI
         <div className={classes.projectTypeContainer}>
           <ProjectTypeDisplay projectType={project.project_type} />
           {showAttendedInPast && project.project_type?.type_id === "event" && (
-            <Typography component="span" variant="body2" className={classes.attendedEventText}>
+            <Typography component="span" className={classes.attendedEventText}>
               {"\u2022 "}
               {texts.you_attended_this_event}
             </Typography>
