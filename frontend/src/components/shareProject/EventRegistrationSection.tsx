@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Box, FormControlLabel, Switch, TextField, Typography } from "@mui/material";
+import { Box, Divider, FormControlLabel, Switch, TextField, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useTheme } from "@mui/styles";
 import dayjs, { Dayjs } from "dayjs";
@@ -7,12 +7,19 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import DatePicker from "../general/DatePicker";
 import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
-import { Project } from "../../types";
+import { Project, RegistrationField } from "../../types";
+import { useFeatureToggles } from "../featureToggle";
+import RegistrationFieldList from "./RegistrationFieldList";
 
 const useStyles = makeStyles((theme) => ({
   subHeader: {
     marginBottom: theme.spacing(2),
     fontSize: 20,
+    color: theme.palette.background.default_contrastText,
+  },
+  sectionHeader: {
+    fontSize: 16,
+    fontWeight: 600,
     color: theme.palette.background.default_contrastText,
   },
   datePicker: {
@@ -43,6 +50,7 @@ export default function EventRegistrationSection({
   const texts = getTexts({ page: "project", locale });
   const theme = useTheme();
   const backgroundContrastColor = getBackgroundContrastColor(theme);
+  const { isEnabled } = useFeatureToggles();
 
   const handleMaxParticipantsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value === "" ? null : Number(e.target.value);
@@ -55,6 +63,10 @@ export default function EventRegistrationSection({
 
   const handleNotifyAdminsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleSetProjectData({ notify_admins: e.target.checked });
+  };
+
+  const handleFieldsChange = (fields: RegistrationField[]) => {
+    handleSetProjectData({ registration_fields: fields });
   };
 
   return (
@@ -105,6 +117,18 @@ export default function EventRegistrationSection({
           label={texts.notify_admins_on_registration}
         />
       </Box>
+      {isEnabled("REGISTRATION_CUSTOM_FIELDS") && (
+        <>
+          <Divider sx={{ my: 2 }} />
+          <Typography component="h3" className={classes.sectionHeader} gutterBottom>
+            {texts.registration_custom_fields}
+          </Typography>
+          <RegistrationFieldList
+            fields={projectData.registration_fields ?? []}
+            onFieldsChange={handleFieldsChange}
+          />
+        </>
+      )}
     </>
   );
 }

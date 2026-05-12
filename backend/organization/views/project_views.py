@@ -593,14 +593,10 @@ class CreateProjectView(APIView):
 
         project = create_new_project(request.data, source_language)
 
-        # Create EventRegistrationConfig whenever the key is present in the payload.
-        # validated_data already contains correctly typed Python values —
-        # no int()/parse() conversions needed here.
+        # Create EventRegistrationConfig (and any nested custom fields) atomically.
+        # Using serializer.save() so the serializer's create() handles nested fields.
         if er_serializer is not None:
-            EventRegistrationConfig.objects.create(
-                project=project,
-                **er_serializer.validated_data,
-            )
+            er_serializer.save(project=project)
             logger.info(
                 "EventRegistrationConfig created for project %s", project.url_slug
             )

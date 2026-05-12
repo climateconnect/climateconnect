@@ -45,3 +45,9 @@ from organization.models.event_registration import (
     EventRegistrationConfig,
     RegistrationStatus,
 )
+
+from organization.models.registration_field import (
+    RegistrationField,
+    RegistrationFieldOption,
+    RegistrationFieldType,
+)

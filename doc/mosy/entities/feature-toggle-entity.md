@@ -95,7 +95,17 @@ Feature toggles can be managed via Django Admin at `/admin/feature_toggles/featu
 The system supports three environments:
 
 1. **production**: Live production environment
-2. **staging**: Staging/slot1 environment  
+2. **staging**: Staging/slot1 environment
 3. **development**: Local development machines
 
 Each toggle can be independently enabled/disabled per environment.
+
+## Known Feature Toggles
+
+| Name | Description | Production | Staging | Development |
+|------|-------------|------------|---------|-------------|
+| `EVENT_REGISTRATION` | End-to-end online event registration (Phases 1-3) | ❌ Disabled | ✅ Enabled | ✅ Enabled |
+| `REGISTRATION_CUSTOM_FIELDS` | Custom registration fields (Phase 4a) — organiser-side field builder | ❌ Disabled | ✅ Enabled | ✅ Enabled |
+| `AUTH_UNIFICATION` | Unified auth (email + password + OTP) flow | ❌ Disabled | ✅ Enabled | ✅ Enabled |
+
+> **Note**: `REGISTRATION_CUSTOM_FIELDS` is a separate toggle from `EVENT_REGISTRATION`. This allows Phase 4a to be developed and deployed behind the toggle independently. The custom fields toggle is flipped to production only when all Phase 4a tasks (organiser create/edit + organiser view + registrant-side follow-up) are validated on staging simultaneously.

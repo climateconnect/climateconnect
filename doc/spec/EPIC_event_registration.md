@@ -75,14 +75,14 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 >
 > **Organiser view and management capabilities** (what was previously called "detailed registration status" and "advanced management tasks") grow organically with each iteration — they are not separate stories but are included in the scope of each field-type story.
 
-#### Phase 4a — Select & Checkbox Fields (first iteration)
+#### Phase 4a — Select & Checkbox Fields (iteration 1 ✅)
 
 The foundational custom fields story. Organisers can add up to **5 extra fields** — single-select (dropdown) and checkbox (boolean) — to their event's registration form, control field order, and mark fields as required.
 
-| Story | GitHub Issue | Status |
-|-------|-------------|--------|
-| Organiser creates/edits event with custom registration fields (select, checkbox) | [#1880](https://github.com/climateconnect/climateconnect/issues/1880) | ⚪ |
-| Member registers with custom fields (select, checkbox) | — | ⚪ |
+| Story | GitHub Issue | Spec | Status |
+|-------|-------------|------|--------|
+| Organiser creates/edits event with custom registration fields (select, checkbox) | [#1880](https://github.com/climateconnect/climateconnect/issues/1880) | [`20260416_1000_event_registration_custom_fields.md`](./20260416_1000_event_registration_custom_fields.md) | ✅ Done |
+| Member registers with custom fields (select, checkbox) | — | — | ⚪ Pending |
 
 **#1880 field specs** (detail to be expanded in tech spec):
 
