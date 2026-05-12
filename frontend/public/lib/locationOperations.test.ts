@@ -166,21 +166,6 @@ describe("getNameFromLocation", () => {
     });
   });
 
-  it("should return legacy format when legacy format is enabled", () => {
-    process.env.ENABLE_LEGACY_LOCATION_FORMAT = "true";
-
-    const location = {
-      city: "Legacy City",
-      country: "Legacy Country",
-    };
-
-    const result = getDisplayLocationFromLocation(location);
-
-    expect(result.name).toBe("Legacy CityLegacy Country");
-
-    delete process.env.ENABLE_LEGACY_LOCATION_FORMAT;
-  });
-
   it("should return display_name if address or country is not present", () => {
     const location = {
       display_name: "Dummy Location Name",

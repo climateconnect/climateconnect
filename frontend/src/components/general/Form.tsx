@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   fields: {
     required?: boolean;
-    label?: string;
+    label?: string | ReactElement;
     type?: any;
     progressOnFill?: number;
     select?: any;

@@ -366,39 +366,9 @@ const InputLocation = ({
   handleSetLocationOptionsOpen,
 }) => {
   const classes = useStyles({});
-  const handleChangeLegacyLocationElement = (key, value) => {
-    handleChangeProject({ ...project.loc, [key]: value }, "loc");
-  };
-
   const handleChangeLocation = (newLocation) => {
     handleChangeProject(newLocation, "loc");
   };
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return (
-      <>
-        <TextField
-          label={texts.city}
-          variant="outlined"
-          fullWidth
-          className={classes.projectInfoEl}
-          value={project?.loc?.city}
-          type="text"
-          onChange={(event) => handleChangeLegacyLocationElement("city", event.target.value)}
-          required
-        />
-        <TextField
-          label={texts.country}
-          /*TODO(undefined) className={classes.projectInfoEl}*/
-          variant="outlined"
-          fullWidth
-          value={project?.loc?.country}
-          type="text"
-          onChange={(event) => handleChangeLegacyLocationElement("country", event.target.value)}
-          required
-        />
-      </>
-    );
-  }
   return (
     <div /*TODO(undefined) className={classes.projectInfoEl}*/>
       <FormControlLabel
