@@ -86,7 +86,7 @@ const perth_texts = {
     en: `Supported by Giraffe, this network builds on years of collaboration for a good food nation. It brings together a wide spectrum of those involved in producing, processing, delivering, cooking, sharing food and reducing food waste.
       To get involved and join the network updates, contact: food@climateconnect.scot`,
     de: `Unterstützt von Giraffe baut dieses Netzwerk auf jahrelanger Zusammenarbeit für eine gute Lebensmittelversorgung auf. Es bringt ein breites Spektrum von Menschen zusammen, die an der Produktion, Verarbeitung, Lieferung, Zubereitung, dem Teilen von Lebensmitteln und der Reduzierung von Lebensmittelverschwendung beteiligt sind.
-      Um Dich zu beteiligen und Updates zum Netzwerk zu erhalten, kontaktiere food@climateconnect.scot`,
+      Um dich zu beteiligen und Updates zum Netzwerk zu erhalten, kontaktiere food@climateconnect.scot`,
   },
 };
 

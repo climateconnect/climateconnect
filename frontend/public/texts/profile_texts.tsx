@@ -202,7 +202,7 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     },
     just_one_more_step_to_complete_your_signup: {
       en: "Congratulations! Just one more step to complete your signup!",
-      de: "Glückwunsch! Nur noch ein Schritt, um Deine Anmeldung abzuschließen!",
+      de: "Glückwunsch! Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
     },
     almost_done: {
       en: "Almost there!",
@@ -486,7 +486,7 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     // --- Signup Flow ---
     create_your_account: {
       en: "Create your account",
-      de: "Erstelle Deinen Account",
+      de: "Erstelle deinen Account",
     },
     signup_step_1_headline: {
       en:
