@@ -42,7 +42,7 @@
     "@tiptap/react": "^3.23.1",
     "@tiptap/starter-kit": "^3.23.1",
     "@types/node": "^18.11.18",
-    "axios": "^1.15.1",
+    "axios": "^1.15.2",
     "babel-plugin-lodash": "^3.3.4",
     "browser-image-compression": "^2.0.2",
     "cheerio": "^1.0.0-rc.10",
