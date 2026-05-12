@@ -37,7 +37,7 @@ The registrant-side flow (rendering fields on the registration form, capturing a
 
 - When creating or editing an event, the organiser can add up to **5 custom fields** to the registration form.
 - Each field has a **type** (checkbox or option select) chosen from a picker/selector.
-- The organiser can **reorder fields** (drag-and-drop or up/down controls — Google Forms is a good reference for the UX pattern, and since Material Design is also used there, it serves as a guiding example).
+- The organiser can **reorder fields** using up/down arrow controls (Google Forms is a good reference for the UX pattern, and since Material Design is also used there, it serves as a guiding example).
 - Each field can be marked as **required**.
 - **Checkbox field settings**: description (rich text, supports bold and links; required), required flag.
 - **Option select field settings**: title (string; required), 1 or more options (each with a title and an integer order; required), required flag. There is no upper limit on the number of options, but options must have unique order values within a field.
@@ -85,7 +85,7 @@ The registrant-side flow (rendering fields on the registration form, capturing a
 
   Publish-time non-empty check for `description` is a separate guard in the outer `validate()` using `is_draft` from context — same pattern as `EventRegistrationConfigSerializer`.
 
-- **Rich text — MUI-tiptap, stored as sanitized HTML**: the checkbox description uses MUI-tiptap (being integrated on a separate branch, not yet merged). Tiptap's default output is HTML via `getHTML()`. The toolbar is restricted to **Bold** and **Link** only — no other formatting. The `Link` extension allows the organiser to set custom link text (e.g. "Terms of Service"), which is why plain text + auto-linkify is insufficient.
+- **Rich text — MUI-tiptap, stored as sanitized HTML**: the checkbox description uses MUI-tiptap. The MUI-tiptap dependency will be added as part of this implementation. Tiptap's default output is HTML via `getHTML()`. The toolbar is restricted to **Bold** and **Link** only — no other formatting. The `Link` extension allows the organiser to set custom link text (e.g. "Terms of Service"), which is why plain text + auto-linkify is insufficient.
 
   **HTML sanitization**: the HTML string must be sanitized on write (in `CheckboxSettingsSerializer.validate_description()`) before being stored. A reusable `sanitize_html()` utility lives in `climateconnect_api/utility/html.py`. It uses **`bleach`** (new dependency) with an explicit allowlist of tags and attributes — the caller specifies exactly what is permitted, making it easy to reuse for any future rich-text field with a different allowed set.
 
@@ -145,7 +145,7 @@ The registrant-side flow (rendering fields on the registration form, capturing a
 
 - **Integration changes**:
   - New feature toggle `REGISTRATION_CUSTOM_FIELDS` — data migration required (new `FeatureToggle` row).
-  - MUI-tiptap dependency (from separate branch, not yet in `main`) — must be merged before this task ships to production.
+  - MUI-tiptap dependency — will be added as part of this implementation.
 
 - **Migrations required**:
   - New table: `organization_registrationfield`
@@ -290,14 +290,14 @@ For `option_select`, `options` is a non-empty array of `{ "id": 10, "title": "Ve
 
 ### Frontend
 
-- **New section in `EventRegistrationSection.tsx`** (or a new `RegistrationFieldsSection.tsx` extracted from it) — field builder, gated behind `isEnabled("REGISTRATION_CUSTOM_FIELDS")`.
+- **New section in `EventRegistrationSection.tsx`** — field builder, gated behind `isEnabled("REGISTRATION_CUSTOM_FIELDS")`.
 - **New components** (all in `src/components/shareProject/` or `src/components/project/`):
-  - `RegistrationFieldList.tsx` — ordered list with drag-handle (MUI drag-and-drop or simple up/down arrows), delete button per row.
+  - `RegistrationFieldList.tsx` — ordered list with up/down arrow controls for reordering, delete button per row.
   - `RegistrationFieldEditor.tsx` — wrapper that renders `CheckboxFieldEditor` or `OptionSelectFieldEditor` based on `field_type`.
   - `CheckboxFieldEditor.tsx` — MUI-tiptap editor (Bold + Link toolbar only) + required toggle.
   - `OptionSelectFieldEditor.tsx` — title `TextField` + ordered options list (add / remove / reorder options inline).
 - **Field type picker** — a `Select` or button group to choose `checkbox` or `option_select` when adding a new field.
-- **MUI-tiptap dependency** — must be available (merged from the parallel branch) before this component ships. The `CheckboxFieldEditor` depends on it.
+- **MUI-tiptap dependency** — will be added as part of this implementation. The `CheckboxFieldEditor` depends on it.
 - **Text keys** — new keys in `public/texts/project_texts.tsx` for all UI labels (EN + DE).
 - **Toggle check** — `isEnabled("REGISTRATION_CUSTOM_FIELDS")` wraps the entire field builder section.
 
