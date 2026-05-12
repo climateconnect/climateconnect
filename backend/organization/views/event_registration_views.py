@@ -18,12 +18,18 @@ from organization.models.event_registration import (
 from organization.serializers.event_registration import (
     EditEventRegistrationConfigSerializer,
     EventRegistrationSerializer,
+    EventRegistrationSubmissionSerializer,
     SendOrganizerEmailSerializer,
     _compute_effective_status,
+    sync_registration_answers,
 )
 from organization.tasks import (
     notify_admins_of_registration_change as _notify_admins_task,
+)
+from organization.tasks import (
     send_event_registration_confirmation_email as _send_registration_email,
+)
+from organization.tasks import (
     send_organizer_message_to_guests as _send_organizer_email_task,
 )
 from organization.utility.email import (
@@ -149,19 +155,36 @@ class EventRegistrationsView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        # ── 6. Create or re-activate EventRegistration ───────────────────────
+        # ── 6. Validate custom-field answers payload (if provided) ──────────
+        submission_serializer = EventRegistrationSubmissionSerializer(
+            data=request.data,
+            context={"registration_config": rc},
+        )
+        if not submission_serializer.is_valid():
+            return Response(
+                submission_serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        normalized_answers = submission_serializer.validated_data.get(
+            "normalized_answers", []
+        )
+
+        # ── 7. Create or re-activate EventRegistration ───────────────────────
+        registration = existing
         if existing is not None:
             # Re-registration: reset soft-delete fields on the existing row.
             existing.cancelled_at = None
             existing.cancelled_by = None
             existing.save(update_fields=["cancelled_at", "cancelled_by"])
         else:
-            EventRegistration.objects.create(
+            registration = EventRegistration.objects.create(
                 user=request.user,
                 registration_config=rc,
             )
 
-        # ── 7. Update status to FULL if last seat was just taken ─────────────
+        sync_registration_answers(registration, normalized_answers)
+
+        # ── 8. Update status to FULL if last seat was just taken ─────────────
         available_seats = None
         if rc.max_participants is not None:
             new_count = EventRegistration.objects.filter(
@@ -179,7 +202,7 @@ class EventRegistrationsView(APIView):
             project.url_slug,
         )
 
-        # ── 8. Dispatch async confirmation email ──────────────────────────────
+        # ── 9. Dispatch async confirmation email ──────────────────────────────
         # Capture values eagerly — lambda closes over variables by reference, so
         # evaluating request.user.id inside the lambda would run after the
         # transaction commits, at which point DRF may resolve a different user.
@@ -192,7 +215,7 @@ class EventRegistrationsView(APIView):
             )
         )
 
-        # ── 9. Dispatch async admin notification (only when notify_admins=True) ─
+        # ── 10. Dispatch async admin notification (only when notify_admins=True) ─
         # Re-check is done inside the task to handle flag toggling between
         # dispatch and execution.  No extra DB query here when flag is False.
         if rc.notify_admins:

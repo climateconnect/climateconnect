@@ -232,3 +232,51 @@ class EventRegistration(models.Model):
             f"{self.user.username} registered for "
             f"'{self.registration_config.project.name}'"
         )
+
+
+class RegistrationFieldAnswer(models.Model):
+    """
+    Stores one registrant answer for one custom registration field.
+
+    Exactly one row per (registration, field) pair. The value shape depends on
+    the field type:
+
+    - checkbox      -> value_boolean
+    - option_select -> value_option
+
+    Both foreign keys use CASCADE so deleting a field/option later removes
+    dependent answers automatically.
+    """
+
+    registration = models.ForeignKey(
+        EventRegistration,
+        on_delete=models.CASCADE,
+        related_name="field_answers",
+    )
+    field = models.ForeignKey(
+        "organization.RegistrationField",
+        on_delete=models.CASCADE,
+        related_name="answers",
+    )
+    value_boolean = models.BooleanField(null=True, blank=True)
+    value_option = models.ForeignKey(
+        "organization.RegistrationFieldOption",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="answers",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "organization"
+        verbose_name = "Registration Field Answer"
+        verbose_name_plural = "Registration Field Answers"
+        unique_together = [("registration", "field")]
+
+    def __str__(self) -> str:
+        return (
+            f"answer for registration {self.registration_id} "
+            f"field {self.field_id}"
+        )

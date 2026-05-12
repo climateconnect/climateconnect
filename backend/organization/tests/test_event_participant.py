@@ -12,6 +12,7 @@ Covers POST /api/projects/{slug}/registrations/ (EventRegistrationsView):
 """
 
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.test import override_settings, tag
@@ -19,14 +20,18 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
-from unittest.mock import patch
 
 from climateconnect_api.models import Language
 from organization.models import Project, ProjectStatus
 from organization.models.event_registration import (
     EventRegistration,
     EventRegistrationConfig,
+    RegistrationFieldAnswer,
     RegistrationStatus,
+)
+from organization.models.registration_field import (
+    RegistrationField,
+    RegistrationFieldOption,
 )
 
 # Use a dummy cache in all tests to avoid needing a live Redis connection.
@@ -480,3 +485,227 @@ class TestAvailableSeatsInSerializer(APITestCase):
         self.assertIsNotNone(er_data)
         self.assertIn("available_seats", er_data)
         self.assertIsNone(er_data["available_seats"])
+
+
+# ---------------------------------------------------------------------------
+# Custom registration field answers on POST /registrations/
+# ---------------------------------------------------------------------------
+
+
+@override_settings(CACHES=_DUMMY_CACHE, CACHE_BACHED_RANK_REQUEST=False)
+class TestRegisterForEventWithCustomFieldAnswers(APITestCase):
+    def setUp(self):
+        self.ps = _create_project_status()
+        self.lang = _get_language()
+        self.user = User.objects.create_user(
+            username="answers_user", password="testpassword"
+        )
+
+        self.event = _create_event("answers-event", self.ps, self.lang)
+        self.er = _create_open_er(self.event, max_participants=20)
+
+        self.checkbox_field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="checkbox",
+            order=0,
+            is_required=True,
+            settings={"description": "<p>I agree</p>"},
+        )
+        self.option_field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="option_select",
+            order=1,
+            is_required=True,
+            settings={"title": "Meal"},
+        )
+        self.option_veg = RegistrationFieldOption.objects.create(
+            field=self.option_field,
+            title="Vegetarian",
+            order=0,
+        )
+        self.option_vegan = RegistrationFieldOption.objects.create(
+            field=self.option_field,
+            title="Vegan",
+            order=1,
+        )
+        self.other_field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="option_select",
+            order=2,
+            is_required=False,
+            settings={"title": "Other"},
+        )
+        self.other_option = RegistrationFieldOption.objects.create(
+            field=self.other_field,
+            title="Other Option",
+            order=0,
+        )
+
+    @tag("event_participant", "registration", "custom_fields")
+    @patch(_TASK_PATH)
+    def test_valid_answers_create_registration_and_answer_rows(self, mock_task):
+        self.client.login(username="answers_user", password="testpassword")
+        response = self.client.post(
+            _register_url("answers-event"),
+            data={
+                "answers": [
+                    {"field": self.checkbox_field.id, "value_boolean": True},
+                    {"field": self.option_field.id, "value_option": self.option_veg.id},
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        registration = EventRegistration.objects.get(
+            user=self.user,
+            registration_config=self.er,
+        )
+        self.assertEqual(registration.field_answers.count(), 2)
+        self.assertTrue(
+            registration.field_answers.get(field=self.checkbox_field).value_boolean
+        )
+        self.assertEqual(
+            registration.field_answers.get(field=self.option_field).value_option_id,
+            self.option_veg.id,
+        )
+
+    @tag("event_participant", "registration", "custom_fields")
+    @patch(_TASK_PATH)
+    def test_missing_required_answer_returns_400(self, mock_task):
+        self.client.login(username="answers_user", password="testpassword")
+        response = self.client.post(
+            _register_url("answers-event"),
+            data={
+                "answers": [
+                    {"field": self.checkbox_field.id, "value_boolean": True},
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("answers", response.data)
+        self.assertEqual(
+            EventRegistration.objects.filter(
+                user=self.user, registration_config=self.er
+            ).count(),
+            0,
+        )
+
+    @tag("event_participant", "registration", "custom_fields")
+    @patch(_TASK_PATH)
+    def test_option_must_belong_to_selected_field(self, mock_task):
+        self.client.login(username="answers_user", password="testpassword")
+        response = self.client.post(
+            _register_url("answers-event"),
+            data={
+                "answers": [
+                    {"field": self.checkbox_field.id, "value_boolean": True},
+                    {
+                        "field": self.option_field.id,
+                        "value_option": self.other_option.id,
+                    },
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            EventRegistration.objects.filter(
+                user=self.user, registration_config=self.er
+            ).count(),
+            0,
+        )
+
+    @tag("event_participant", "registration", "custom_fields")
+    @patch(_TASK_PATH)
+    def test_active_reregistration_is_still_idempotent(self, mock_task):
+        self.client.login(username="answers_user", password="testpassword")
+        first = self.client.post(
+            _register_url("answers-event"),
+            data={
+                "answers": [
+                    {"field": self.checkbox_field.id, "value_boolean": True},
+                    {
+                        "field": self.option_field.id,
+                        "value_option": self.option_veg.id,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(first.status_code, status.HTTP_201_CREATED, first.data)
+
+        second = self.client.post(
+            _register_url("answers-event"),
+            data={
+                "answers": [
+                    {"field": self.checkbox_field.id, "value_boolean": False},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(second.status_code, status.HTTP_200_OK, second.data)
+
+        registration = EventRegistration.objects.get(
+            user=self.user,
+            registration_config=self.er,
+        )
+        self.assertEqual(registration.field_answers.count(), 2)
+        self.assertEqual(
+            registration.field_answers.get(field=self.option_field).value_option_id,
+            self.option_veg.id,
+        )
+
+    @tag("event_participant", "registration", "custom_fields")
+    @patch(_TASK_PATH)
+    def test_self_reregistration_syncs_answer_values(self, mock_task):
+        self.client.login(username="answers_user", password="testpassword")
+        first = self.client.post(
+            _register_url("answers-event"),
+            data={
+                "answers": [
+                    {"field": self.checkbox_field.id, "value_boolean": True},
+                    {
+                        "field": self.option_field.id,
+                        "value_option": self.option_veg.id,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(first.status_code, status.HTTP_201_CREATED, first.data)
+
+        registration = EventRegistration.objects.get(
+            user=self.user,
+            registration_config=self.er,
+        )
+        registration.cancelled_at = timezone.now()
+        registration.cancelled_by = self.user
+        registration.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        second = self.client.post(
+            _register_url("answers-event"),
+            data={
+                "answers": [
+                    {"field": self.checkbox_field.id, "value_boolean": True},
+                    {
+                        "field": self.option_field.id,
+                        "value_option": self.option_vegan.id,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(second.status_code, status.HTTP_201_CREATED, second.data)
+
+        registration.refresh_from_db()
+        self.assertIsNone(registration.cancelled_at)
+        self.assertIsNone(registration.cancelled_by)
+        self.assertEqual(
+            registration.field_answers.get(field=self.option_field).value_option_id,
+            self.option_vegan.id,
+        )
+        self.assertEqual(RegistrationFieldAnswer.objects.count(), 2)

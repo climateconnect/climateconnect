@@ -5,8 +5,10 @@ from rest_framework import serializers
 from organization.models.event_registration import (
     EventRegistration,
     EventRegistrationConfig,
+    RegistrationFieldAnswer,
     RegistrationStatus,
 )
+from organization.models.registration_field import RegistrationFieldType
 from organization.serializers.registration_field import (
     RegistrationFieldSerializer,
     create_fields,
@@ -290,6 +292,206 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
             return obj.user.user_profile.url_slug
         except AttributeError:
             return None
+
+
+class RegistrationFieldAnswerInputSerializer(serializers.Serializer):
+    """Validates one answer item in POST /registrations/ payload."""
+
+    field = serializers.IntegerField(min_value=1)
+    value_boolean = serializers.BooleanField(required=False, allow_null=True)
+    value_option = serializers.IntegerField(
+        required=False,
+        allow_null=True,
+        min_value=1,
+    )
+
+    def validate(self, attrs):
+        has_boolean = (
+            "value_boolean" in attrs and attrs.get("value_boolean") is not None
+        )
+        has_option = "value_option" in attrs and attrs.get("value_option") is not None
+
+        if has_boolean and has_option:
+            raise serializers.ValidationError(
+                "Provide either value_boolean or value_option, not both."
+            )
+        if not has_boolean and not has_option:
+            raise serializers.ValidationError(
+                "Provide one of value_boolean or value_option."
+            )
+        return attrs
+
+
+class EventRegistrationSubmissionSerializer(serializers.Serializer):
+    """
+    Validates the registration submission payload for POST /registrations/.
+
+    Payload shape:
+      {"answers": [{"field": <id>, "value_boolean": true}, ...]}
+    """
+
+    answers = RegistrationFieldAnswerInputSerializer(many=True, required=False)
+
+    def validate(self, attrs):
+        answers = attrs.get("answers", [])
+        registration_config = self.context["registration_config"]
+
+        fields = list(registration_config.fields.prefetch_related("options").all())
+        fields_by_id = {field.id: field for field in fields}
+
+        if not fields and answers:
+            raise serializers.ValidationError(
+                {"answers": "This event has no custom registration fields."}
+            )
+
+        errors = []
+        normalized_answers = []
+        seen_fields = set()
+        options_by_field_id = {
+            field.id: {option.id: option for option in field.options.all()}
+            for field in fields
+        }
+
+        for item in answers:
+            field_id = item["field"]
+            answer_error = {}
+
+            field = fields_by_id.get(field_id)
+            if field is None:
+                answer_error["field"] = "Field does not belong to this event."
+                errors.append(answer_error)
+                continue
+
+            if field_id in seen_fields:
+                answer_error["field"] = "Duplicate answer for this field."
+                errors.append(answer_error)
+                continue
+
+            seen_fields.add(field_id)
+
+            value_boolean = item.get("value_boolean", None)
+            value_option_id = item.get("value_option", None)
+
+            if field.field_type == RegistrationFieldType.CHECKBOX:
+                if value_option_id is not None:
+                    answer_error[
+                        "value_option"
+                    ] = "value_option is not allowed for checkbox fields."
+                if value_boolean is None:
+                    answer_error[
+                        "value_boolean"
+                    ] = "value_boolean is required for checkbox fields."
+                elif field.is_required and value_boolean is not True:
+                    answer_error[
+                        "value_boolean"
+                    ] = "This required checkbox must be checked."
+
+                if answer_error:
+                    errors.append(answer_error)
+                    continue
+
+                normalized_answers.append(
+                    {
+                        "field": field,
+                        "value_boolean": value_boolean,
+                        "value_option": None,
+                    }
+                )
+                continue
+
+            if field.field_type == RegistrationFieldType.OPTION_SELECT:
+                if value_boolean is not None:
+                    answer_error[
+                        "value_boolean"
+                    ] = "value_boolean is not allowed for option_select fields."
+                if value_option_id is None:
+                    answer_error[
+                        "value_option"
+                    ] = "value_option is required for option_select fields."
+                else:
+                    option = options_by_field_id[field_id].get(value_option_id)
+                    if option is None:
+                        answer_error[
+                            "value_option"
+                        ] = "Selected option does not belong to this field."
+
+                if answer_error:
+                    errors.append(answer_error)
+                    continue
+
+                normalized_answers.append(
+                    {
+                        "field": field,
+                        "value_boolean": None,
+                        "value_option": options_by_field_id[field_id][value_option_id],
+                    }
+                )
+                continue
+
+            errors.append({"field": "Unsupported field type."})
+
+        # Required fields must be present in the payload.
+        for field in fields:
+            if field.is_required and field.id not in seen_fields:
+                errors.append(
+                    {
+                        "field": field.id,
+                        "required": "Missing required answer for this field.",
+                    }
+                )
+
+        if errors:
+            raise serializers.ValidationError({"answers": errors})
+
+        attrs["normalized_answers"] = normalized_answers
+        return attrs
+
+
+def sync_registration_answers(registration, normalized_answers):
+    """
+    Sync answers for one registration to match the submitted answer list.
+
+    - existing field answer present in payload -> update
+    - payload field answer not in DB          -> create
+    - DB field answer omitted from payload    -> delete
+    """
+    existing = {
+        answer.field_id: answer
+        for answer in registration.field_answers.select_related("value_option").all()
+    }
+    incoming_field_ids = set()
+
+    create_rows = []
+    for item in normalized_answers:
+        field = item["field"]
+        incoming_field_ids.add(field.id)
+        current = existing.get(field.id)
+
+        if current is None:
+            create_rows.append(
+                RegistrationFieldAnswer(
+                    registration=registration,
+                    field=field,
+                    value_boolean=item["value_boolean"],
+                    value_option=item["value_option"],
+                )
+            )
+            continue
+
+        current.value_boolean = item["value_boolean"]
+        current.value_option = item["value_option"]
+        current.save(update_fields=["value_boolean", "value_option", "updated_at"])
+
+    if create_rows:
+        RegistrationFieldAnswer.objects.bulk_create(create_rows)
+
+    to_delete = [
+        answer.id
+        for field_id, answer in existing.items()
+        if field_id not in incoming_field_ids
+    ]
+    if to_delete:
+        RegistrationFieldAnswer.objects.filter(id__in=to_delete).delete()
 
     def get_user_thumbnail_image(self, obj):
         try:
