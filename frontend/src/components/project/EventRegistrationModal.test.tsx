@@ -469,7 +469,7 @@ describe("EventRegistrationModal – close behaviour", () => {
     const onClose = jest.fn();
     renderModal({ user: AUTHENTICATED_USER, onClose });
 
-    fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    fireEvent.click(screen.getByRole("button", { name: /close/i }));
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });

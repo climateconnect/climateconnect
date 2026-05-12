@@ -164,6 +164,13 @@ export default function ProjectPageRoot({
   const hasUserAttended = hasAttended ?? false;
   const isAdminCancelled = adminCancelled ?? false;
 
+  useEffect(() => {
+    // Clear registration state when auth context switches to logged out.
+    if (!user) {
+      setIsUserRegistered(false);
+    }
+  }, [user]);
+
   // Get registered event slugs from user profile for sidebar projects
   const registeredEventSlugs = useMemo(() => {
     return new Set(user?.registered_event_slugs || []);

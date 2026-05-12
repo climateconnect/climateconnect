@@ -74,9 +74,9 @@ describe("RegistrationActionButton", () => {
   // ── attended ──────────────────────────────────────────────────────────────
 
   describe('state: "attended"', () => {
-    it('renders the "You attended this event" label', () => {
+    it('does not render the "You attended this event" label in the button area', () => {
       renderButton({ registrationState: "attended" });
-      expect(screen.getByText("You attended this event")).toBeInTheDocument();
+      expect(screen.queryByText("You attended this event")).not.toBeInTheDocument();
     });
 
     it("does not render a button", () => {

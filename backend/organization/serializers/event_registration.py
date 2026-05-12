@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -5,6 +6,11 @@ from organization.models.event_registration import (
     EventRegistration,
     EventRegistrationConfig,
     RegistrationStatus,
+)
+from organization.serializers.registration_field import (
+    RegistrationFieldSerializer,
+    create_fields,
+    sync_fields,
 )
 
 
@@ -127,16 +133,17 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
         return super().get_available_seats(obj)
 
     def to_representation(self, instance):
-        """
-        Exclude ``notify_admins`` from list responses.
-
-        ``notify_admins`` is only included when ``context["include_seat_count"]``
-        is True (i.e. the detail endpoint).  The list endpoint omits it to keep
-        the payload lean and avoid leaking organiser-only settings to all callers.
-        """
         data = super().to_representation(instance)
         if not self.context.get("include_seat_count", False):
+            # List endpoint: omit organiser-only and heavy nested data.
             data.pop("notify_admins", None)
+        else:
+            # Detail endpoint: include field definitions so the registrant-side
+            # task can render the form without an extra round-trip.
+            qs = instance.fields.prefetch_related("options")
+            data["fields"] = RegistrationFieldSerializer(
+                qs, many=True, context=self.context
+            ).data
         return data
 
     def validate_status(self, value):
@@ -147,6 +154,23 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
                 "'full' and 'ended' are system-managed."
             )
         return value
+
+    def to_internal_value(self, data):
+        result = super().to_internal_value(data)
+
+        # Handle `fields` separately — it is not a model field and is not
+        # declared on the serializer (to avoid shadowing DRF's .fields property).
+        if isinstance(data, dict) and "fields" in data:
+            field_ser = RegistrationFieldSerializer(
+                data=data["fields"],
+                many=True,
+                context=self.context,
+            )
+            if not field_ser.is_valid():
+                raise serializers.ValidationError({"fields": field_ser.errors})
+            result["fields"] = field_ser.validated_data
+
+        return result
 
     def validate(self, attrs):
         # Read path: serializer instantiated without context — skip write checks.
@@ -201,7 +225,28 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
                     {"registration_end_date": "Required when publishing an event."}
                 )
 
+        # Field count and uniqueness checks.
+        if "fields" in attrs:
+            fields_data = attrs["fields"]
+            if len(fields_data) > 5:
+                raise serializers.ValidationError(
+                    {"fields": "Maximum 5 custom fields allowed per event."}
+                )
+            orders = [f.get("order") for f in fields_data if "order" in f]
+            if len(orders) != len(set(orders)):
+                raise serializers.ValidationError(
+                    {"fields": "Field order values must be unique within the event."}
+                )
+
         return attrs
+
+    @transaction.atomic
+    def create(self, validated_data):
+        fields_data = validated_data.pop("fields", [])
+        config = EventRegistrationConfig.objects.create(**validated_data)
+        if fields_data:
+            create_fields(config, fields_data)
+        return config
 
 
 class EventRegistrationSerializer(serializers.ModelSerializer):
@@ -344,14 +389,44 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
             )
         return value
 
+    def to_internal_value(self, data):
+        result = super().to_internal_value(data)
+
+        # Handle `fields` separately — not a model field and not declared on
+        # the serializer to avoid shadowing DRF's .fields property.
+        if isinstance(data, dict) and "fields" in data:
+            is_draft = self.context.get("is_draft", False)
+            field_ser = RegistrationFieldSerializer(
+                data=data["fields"],
+                many=True,
+                context={**self.context, "is_draft": is_draft},
+            )
+            if not field_ser.is_valid():
+                raise serializers.ValidationError({"fields": field_ser.errors})
+            result["fields"] = field_ser.validated_data
+
+        return result
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        qs = instance.fields.prefetch_related("options")
+        data["fields"] = RegistrationFieldSerializer(
+            qs, many=True, context=self.context
+        ).data
+        return data
+
+    @transaction.atomic
     def update(self, instance, validated_data):
         """
-        Save updated fields and auto-adjust status when max_participants changes.
+        Save updated config fields, sync custom registration fields, and
+        auto-adjust status when max_participants changes.
 
         Auto-adjustment is skipped when ``status`` is explicitly present in the
         request body — the organiser's explicit intent takes priority over the
         capacity-driven heuristic.
         """
+        fields_data = validated_data.pop("fields", None)
+
         explicit_status = validated_data.get("status")
 
         if "max_participants" in validated_data and explicit_status is None:
@@ -377,7 +452,12 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                 ):
                     # Capacity set to match filled seats (< is blocked by validate) → close.
                     instance.status = RegistrationStatus.FULL
-        return super().update(instance, validated_data)
+        result = super().update(instance, validated_data)
+
+        if fields_data is not None:
+            sync_fields(instance, fields_data)
+
+        return result
 
     def validate(self, attrs):
         project = self.context.get("project") or (
@@ -460,6 +540,34 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                                 "Cannot reopen: the event is fully booked. "
                                 "Please increase the maximum participants first."
                             )
+                        }
+                    )
+
+        # Field count, uniqueness, and ID existence checks.
+        if "fields" in attrs:
+            fields_data = attrs["fields"]
+            if len(fields_data) > 5:
+                raise serializers.ValidationError(
+                    {"fields": "Maximum 5 custom fields allowed per event."}
+                )
+            orders = [f.get("order") for f in fields_data if "order" in f]
+            if len(orders) != len(set(orders)):
+                raise serializers.ValidationError(
+                    {"fields": "Field order values must be unique within the event."}
+                )
+            # Verify that all provided field IDs actually belong to this config.
+            submitted_ids = [f["id"] for f in fields_data if f.get("id") is not None]
+            if submitted_ids and self.instance:
+                existing_ids = set(
+                    self.instance.fields.filter(id__in=submitted_ids).values_list(
+                        "id", flat=True
+                    )
+                )
+                unknown = set(submitted_ids) - existing_ids
+                if unknown:
+                    raise serializers.ValidationError(
+                        {
+                            "fields": f"Field IDs not found on this event: {sorted(unknown)}"
                         }
                     )
 

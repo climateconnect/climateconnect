@@ -7,6 +7,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import Cookies from "universal-cookie";
 
 import { apiRequest } from "../../../public/lib/apiOperations";
+import { getDateTime, getDateTimeRange } from "../../../public/lib/dateOperations";
 import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
@@ -21,6 +22,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   modalContent: {
     display: "flex",
     flexDirection: "column",
+  },
+  eventSubheader: {
+    marginBottom: theme.spacing(2),
+    color: theme.palette.text.secondary,
+  },
+  eventDateLine: {
+    marginTop: theme.spacing(0.5),
   },
   formContainer: {
     flex: 1,
@@ -134,6 +142,13 @@ export default function EventRegistrationModal({
   const [authStep, setAuthStep] = useState<"email" | "password" | "otp" | "signup">("email");
   const [isNewUserOtp, setIsNewUserOtp] = useState(false);
 
+  const eventDateText =
+    project.start_date && project.end_date
+      ? getDateTimeRange(project.start_date, project.end_date, locale)
+      : project.start_date
+      ? getDateTime(project.start_date)
+      : null;
+
   // Render the appropriate content based on authentication and registration state
   const renderContent = () => {
     // Show success/error states regardless of authentication
@@ -230,9 +245,6 @@ export default function EventRegistrationModal({
           className={classes.registerButton}
         >
           {loading ? <CircularProgress size={24} /> : texts.confirm_registration}
-        </Button>
-        <Button onClick={handleClose} variant="outlined">
-          {texts.cancel}
         </Button>
       </Box>
     </Box>
@@ -341,7 +353,19 @@ export default function EventRegistrationModal({
 
   return (
     <GenericDialog open={open} onClose={handleClose} title={texts.register_for_event} maxWidth="sm">
-      <Box className={classes.modalContent}>{renderContent()}</Box>
+      <Box className={classes.modalContent}>
+        {(project.name || eventDateText) && (
+          <Box className={classes.eventSubheader}>
+            {project.name && <Typography variant="body2">{project.name}</Typography>}
+            {eventDateText && (
+              <Typography variant="body2" className={classes.eventDateLine}>
+                {eventDateText}
+              </Typography>
+            )}
+          </Box>
+        )}
+        {renderContent()}
+      </Box>
     </GenericDialog>
   );
 }
