@@ -5,6 +5,8 @@ import {
   Divider,
   FormControlLabel,
   IconButton,
+  ListItemIcon,
+  ListItemText,
   Menu,
   MenuItem,
   Paper,
@@ -13,8 +15,10 @@ import {
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import ArrowDropDownCircleOutlinedIcon from "@mui/icons-material/ArrowDropDownCircleOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
@@ -122,11 +126,18 @@ export default function RegistrationFieldList({ fields, onFieldsChange }: Props)
           className={classes.fieldPaper}
         >
           <Box className={classes.fieldHeader}>
-            <Typography variant="subtitle2" color="textSecondary">
-              {field.field_type === "checkbox"
-                ? texts.field_type_checkbox
-                : texts.field_type_option_select}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {field.field_type === "checkbox" ? (
+                <CheckBoxOutlinedIcon fontSize="small" color="action" />
+              ) : (
+                <ArrowDropDownCircleOutlinedIcon fontSize="small" color="action" />
+              )}
+              <Typography variant="subtitle2" color="textSecondary">
+                {field.field_type === "checkbox"
+                  ? texts.field_type_checkbox
+                  : texts.field_type_option_select}
+              </Typography>
+            </Box>
             <Box className={classes.controlsRow}>
               <Tooltip title={texts.move_field_up}>
                 <span>
@@ -198,9 +209,17 @@ export default function RegistrationFieldList({ fields, onFieldsChange }: Props)
         {isAtMax ? texts.max_registration_fields_reached : texts.add_registration_field}
       </Button>
       <Menu anchorEl={addMenuAnchor} open={Boolean(addMenuAnchor)} onClose={handleCloseAddMenu}>
-        <MenuItem onClick={() => handleAddField("checkbox")}>{texts.field_type_checkbox}</MenuItem>
+        <MenuItem onClick={() => handleAddField("checkbox")}>
+          <ListItemIcon>
+            <CheckBoxOutlinedIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{texts.field_type_checkbox}</ListItemText>
+        </MenuItem>
         <MenuItem onClick={() => handleAddField("option_select")}>
-          {texts.field_type_option_select}
+          <ListItemIcon>
+            <ArrowDropDownCircleOutlinedIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>{texts.field_type_option_select}</ListItemText>
         </MenuItem>
       </Menu>
     </Box>
