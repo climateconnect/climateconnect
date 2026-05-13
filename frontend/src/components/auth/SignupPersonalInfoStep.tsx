@@ -30,6 +30,7 @@ interface SignupPersonalInfoStepProps {
   hubUrl?: string;
   isLoading?: boolean;
   showHeader?: boolean;
+  isEventSignup?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -52,6 +53,7 @@ export default function SignupPersonalInfoStep({
   hubUrl,
   isLoading = false,
   showHeader = true,
+  isEventSignup = false,
 }: SignupPersonalInfoStepProps) {
   const { locale, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -166,6 +168,10 @@ export default function SignupPersonalInfoStep({
     });
   };
 
+  const headlineText = isEventSignup
+    ? texts.event_signup_step_1_headline
+    : texts.signup_step_1_headline;
+
   return (
     <Box>
       {showHeader && (
@@ -180,7 +186,7 @@ export default function SignupPersonalInfoStep({
       )}
 
       <Typography variant="body1" sx={{ mb: 2 }}>
-        {texts.signup_step_1_headline}
+        {headlineText}
       </Typography>
 
       {/* Email field - read-only */}
