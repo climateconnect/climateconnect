@@ -170,15 +170,24 @@ export async function blobFromObjectUrl(objectUrl: string): Promise<string> {
     // Convert Blob to File to ensure all File properties (like name) exist
     const file = new File([originalBlob], fileName, { type: mimeType });
 
-    const options = {
-      maxSizeMB: 0.5,
-      useWebWorker: true,
-    };
+    const { default: Compressor } = await import("compressorjs");
 
-    // Import the default export from browser-image-compression
-    const { default: imageCompression } = await import("browser-image-compression");
-
-    const compressedBlob = await imageCompression(file, options);
+    const compressedBlob = await new Promise<Blob>((resolve, reject) => {
+      new Compressor(file, {
+        checkOrientation: true,
+        //compress images larger than 500KB, otherwise just return the original blob
+        convertSize: 500000,
+        mimeType,
+        quality: mimeType === "image/png" ? 0.9 : 0.8,
+        strict: true,
+        success(result) {
+          resolve(result);
+        },
+        error(error) {
+          reject(error);
+        },
+      });
+    });
 
     // Convert compressed blob to base64 data URL
     return new Promise((resolve, reject) => {
