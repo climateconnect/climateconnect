@@ -107,7 +107,7 @@ export default function EnterDetails({
 
   //scroll to top if there is an error
   useEffect(() => {
-    if (topRef?.current) {
+    if (topRef?.current && Object.values(errors).some((e) => e)) {
       topRef.current.scrollIntoView();
     }
   }, [errors]);
