@@ -247,19 +247,23 @@ export default function EditProjectContent({
             value={project.description ? project.description : ""}
           />
         </div>
-        <div className={classes.block}>
-          <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-            {projectTypeTexts.allow[project.project_type.type_id]}
-          </Typography>
-          <Switch
-            checked={project.collaborators_welcome}
-            onChange={(event) => handleChangeProject(event.target.checked, "collaborators_welcome")}
-            name="checkedA"
-            inputProps={{ "aria-label": "secondary checkbox" }}
-            color="primary"
-          />
-        </div>
-        {project.collaborators_welcome && (
+        {false && (
+          <div className={classes.block}>
+            <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
+              {projectTypeTexts.allow[project.project_type.type_id]}
+            </Typography>
+            <Switch
+              checked={project.collaborators_welcome}
+              onChange={(event) =>
+                handleChangeProject(event.target.checked, "collaborators_welcome")
+              }
+              name="checkedA"
+              inputProps={{ "aria-label": "secondary checkbox" }}
+              color="primary"
+            />
+          </div>
+        )}
+        {false && project.collaborators_welcome && (
           <>
             {isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
               <div className={classes.block}>

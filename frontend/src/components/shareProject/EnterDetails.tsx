@@ -335,28 +335,30 @@ export default function EnterDetails({
               />
             </div>
           )}
-          <div className={classes.block}>
-            <Typography
-              component="h2"
-              variant="subtitle2"
-              color="primary"
-              className={classes.subHeader}
-            >
-              {projectTypeTexts.allow[projectData.project_type.type_id]}
-              <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
-                <IconButton size="large">
-                  <HelpOutlineIcon />
-                </IconButton>
-              </Tooltip>
-            </Typography>
-            <Switch
-              checked={projectData.collaborators_welcome}
-              onChange={onAllowCollaboratorsChange}
-              name="checkedA"
-              inputProps={{ "aria-label": "secondary checkbox" }}
-              color={backgroundContrastColor}
-            />
-          </div>
+          {false && (
+            <div className={classes.block}>
+              <Typography
+                component="h2"
+                variant="subtitle2"
+                color="primary"
+                className={classes.subHeader}
+              >
+                {projectTypeTexts.allow[projectData.project_type.type_id]}
+                <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
+                  <IconButton size="large">
+                    <HelpOutlineIcon />
+                  </IconButton>
+                </Tooltip>
+              </Typography>
+              <Switch
+                checked={projectData.collaborators_welcome}
+                onChange={onAllowCollaboratorsChange}
+                name="checkedA"
+                inputProps={{ "aria-label": "secondary checkbox" }}
+                color={backgroundContrastColor}
+              />
+            </div>
+          )}
           {/* The Draft button appears after the project name is filled out */}
           <NavigationButtons
             onClickPreviousStep={onClickPreviousStep}
