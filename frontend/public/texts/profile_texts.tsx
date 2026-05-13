@@ -494,6 +494,12 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de:
         "Du hast noch keinen persönlichen Account. Verrate uns bitte, wie du heißt und wo do wohnst, um loszulegen. Du hast die Möglichkeit, eine Organisation zu erstellen/hinzuzufügen, sobald du dich angemeldet hast.",
     },
+    event_signup_step_1_headline: {
+      en:
+        "You don't have an account yet. Please enter tell us your name and where you live to register for this event.",
+      de:
+        "Du hast noch keinen persönlichen Account. Verrate uns bitte wie du heißt und in welcher Stadt du wohnst, um dich zur Veranstaltung anzumelden.",
+    },
     email_cannot_be_changed: {
       en: "This is the email you'll use to log in",
       de: "Dies ist die E-Mail-Adresse, mit der du dich einloggst",
