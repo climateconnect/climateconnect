@@ -578,6 +578,29 @@ class TestFormatExactLocationName(TestCase):
         )
         self.assertEqual(result, "")
 
+    def test_map_state_as_country_codes_gb(self):
+        """For GB locations the state (e.g. 'Scotland') is shown instead of 'United Kingdom'."""
+        result = format_exact_location_name(
+            place_name="Venue",
+            exact_address="",
+            city="Edinburgh",
+            state="Scotland",
+            country="United Kingdom",
+        )
+        self.assertEqual(result, "Venue, Edinburgh, Scotland")
+
+    def test_map_state_as_country_codes_explicit_country_code(self):
+        """Explicit country_code='gb' also triggers state substitution."""
+        result = format_exact_location_name(
+            place_name="",
+            exact_address="",
+            city="Edinburgh",
+            state="Scotland",
+            country="United Kingdom",
+            country_code="gb",
+        )
+        self.assertEqual(result, "Edinburgh, Scotland")
+
 
 class TestGetTranslatedExactLocationName(TestCase):
     """Integration tests for get_translated_exact_location_name."""
@@ -612,6 +635,9 @@ class TestGetTranslatedExactLocationName(TestCase):
         self.location = Location.objects.prefetch_related(
             "translate_location__language"
         ).get(pk=self.location.pk)
+
+    def tearDown(self):
+        post_save.connect(find_location_translations, sender=Location)
 
     def test_translated_name_uses_translated_city_and_country(self):
         """German translation: translated city + country appear in the result."""
