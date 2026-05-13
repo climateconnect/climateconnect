@@ -176,7 +176,6 @@ export default function ProjectPage({
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = useState(true);
   const [projectTypes, setProjectTypes] = useState([]);
-
   // Get registered event slugs from user profile for showing "Registered ✓" status
   const registeredEventSlugs = useMemo(() => {
     return new Set(user?.registered_event_slugs || []);

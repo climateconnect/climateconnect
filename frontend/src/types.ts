@@ -28,6 +28,15 @@ export type EventRegistrationData = {
   status: "open" | "closed" | "full" | "ended";
   /** When true, team admins receive an email on registration/cancellation. */
   notify_admins: boolean;
+  /** Custom registration fields configured by the organiser (Phase 4a). */
+  fields?: RegistrationField[];
+};
+
+/** Local form state for one custom-field answer while the user is filling in the modal. */
+export type RegistrationFieldAnswerValue = {
+  fieldId: number;
+  valueBoolean?: boolean;
+  valueOption?: number;
 };
 
 export type User = {

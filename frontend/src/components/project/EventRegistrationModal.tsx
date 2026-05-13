@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
@@ -9,14 +9,18 @@ import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { getDateTime, getDateTimeRange } from "../../../public/lib/dateOperations";
 import getTexts from "../../../public/texts/texts";
-import { Project } from "../../types";
+import { Project, RegistrationFieldAnswerValue } from "../../types";
 import UserContext from "../context/UserContext";
+import { useFeatureToggles } from "../featureToggle";
 import GenericDialog from "../dialogs/GenericDialog";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import AuthEmailStep from "../auth/AuthEmailStep";
 import AuthPasswordLogin from "../auth/AuthPasswordLogin";
 import AuthOtp from "../auth/AuthOtp";
 import AuthSignupStep from "../auth/AuthSignupStep";
+import RegistrationFieldAnswersForm, {
+  RegistrationFieldAnswersFormHandle,
+} from "./RegistrationFieldAnswersForm";
 
 const useStyles = makeStyles((theme: Theme) => ({
   modalContent: {
@@ -110,6 +114,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   registerButton: {
     whiteSpace: "nowrap",
   },
+  customFieldsScrollable: {
+    overflowY: "auto",
+    flex: 1,
+    paddingRight: theme.spacing(0.5),
+    marginBottom: theme.spacing(2),
+  },
+  stickyActionRow: {
+    position: "sticky",
+    bottom: 0,
+    backgroundColor: theme.palette.background.paper,
+    paddingTop: theme.spacing(1),
+    zIndex: 1,
+  },
 }));
 
 type Props = {
@@ -132,15 +149,26 @@ export default function EventRegistrationModal({
   const texts = getTexts({ page: "project", locale, project });
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
+  const { isEnabled } = useFeatureToggles();
 
   const [state, setState] = useState<RegistrationState>("initial");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  // Per-field server-side errors, keyed by field ID
+  const [fieldServerErrors, setFieldServerErrors] = useState<Record<number, string>>({});
+
+  // Ref to the custom fields form so we can call validate() on submit
+  const answersFormRef = useRef<RegistrationFieldAnswersFormHandle>(null);
 
   // Authentication flow state
   const [email, setEmail] = useState("");
   const [authStep, setAuthStep] = useState<"email" | "password" | "otp" | "signup">("email");
   const [isNewUserOtp, setIsNewUserOtp] = useState(false);
+
+  const showCustomFields =
+    isEnabled("EVENT_REGISTRATION") &&
+    isEnabled("REGISTRATION_CUSTOM_FIELDS") &&
+    (project.registration_config?.fields?.length ?? 0) > 0;
 
   const eventDateText =
     project.start_date && project.end_date
@@ -171,14 +199,40 @@ export default function EventRegistrationModal({
   const handleRegister = async () => {
     if (!user) return;
 
+    // Validate custom fields if present
+    let answers: RegistrationFieldAnswerValue[] | null = [];
+    if (showCustomFields && answersFormRef.current) {
+      answers = answersFormRef.current.validate();
+      if (answers === null) {
+        // Validation failed — errors are shown inline
+        return;
+      }
+    }
+
     setLoading(true);
     setErrorMessage("");
+    setFieldServerErrors({});
+
+    // Build the API payload
+    const payload: {
+      answers?: { field: number; value_boolean?: boolean; value_option?: number }[];
+    } = {};
+    if (showCustomFields && answers && answers.length > 0) {
+      payload.answers = answers.map((a) => {
+        const entry: { field: number; value_boolean?: boolean; value_option?: number } = {
+          field: a.fieldId,
+        };
+        if (a.valueBoolean !== undefined) entry.value_boolean = a.valueBoolean;
+        if (a.valueOption !== undefined) entry.value_option = a.valueOption;
+        return entry;
+      });
+    }
 
     try {
       const response = await apiRequest({
         method: "post",
         url: `/api/projects/${project.url_slug}/registrations/`,
-        payload: {},
+        payload,
         token: token,
         locale: locale,
       });
@@ -190,8 +244,17 @@ export default function EventRegistrationModal({
         }
       }
     } catch (error: any) {
+      // Try to map field-specific errors from the server response
+      const responseData = error?.response?.data;
+      if (responseData?.field_errors && typeof responseData.field_errors === "object") {
+        setFieldServerErrors(responseData.field_errors);
+        // Also surface a top-level message so the user knows what happened
+        setErrorMessage(responseData.message || texts.registration_failed_please_try_again);
+        // Stay on "initial" so the user can correct the field errors
+        return;
+      }
       setState("error");
-      setErrorMessage(error?.response?.data?.message || texts.registration_failed_please_try_again);
+      setErrorMessage(responseData?.message || texts.registration_failed_please_try_again);
     } finally {
       setLoading(false);
     }
@@ -215,6 +278,7 @@ export default function EventRegistrationModal({
   const handleClose = () => {
     setState("initial");
     setErrorMessage("");
+    setFieldServerErrors({});
     setEmail("");
     setAuthStep("email");
     onClose();
@@ -235,7 +299,28 @@ export default function EventRegistrationModal({
         </Typography>
       </Box>
 
-      <Box className={classes.actionRow}>
+      {showCustomFields && (
+        <Box className={classes.customFieldsScrollable}>
+          <RegistrationFieldAnswersForm
+            ref={answersFormRef}
+            fields={project.registration_config!.fields!}
+            serverErrors={fieldServerErrors}
+            texts={{
+              this_field_is_required: texts.this_field_is_required,
+              you_must_check_this_box: texts.you_must_check_this_box,
+              please_select_an_option: texts.please_select_an_option,
+            }}
+          />
+        </Box>
+      )}
+
+      {errorMessage && (
+        <Typography variant="body2" className={classes.errorText}>
+          {errorMessage}
+        </Typography>
+      )}
+
+      <Box className={`${classes.actionRow} ${showCustomFields ? classes.stickyActionRow : ""}`}>
         <Button
           onClick={handleRegister}
           variant="contained"
