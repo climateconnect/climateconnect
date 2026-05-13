@@ -62,6 +62,60 @@ This document defines the core system entities for Climate Connect, serving as t
   - Requires `Skill` (Matching).
   - Has Many `ProjectMember` (Team).
   - Has Many `Post` (Updates).
+  - Has One `EventRegistration` (Registration configuration, introduced in [#1820](https://github.com/climateconnect/climateconnect/issues/1820)).
+
+### EventRegistration
+- **Definition**: Event registration configuration. Presence of this record signals that registration is enabled for an event.
+- **Properties**:
+  - `max_participants`: PositiveInteger, nullable
+  - `registration_end_date`: DateTimeField, nullable
+  - `status`: Enum (`open`, `closed`, `full`)
+- **Relationships**:
+  - OneToOneFK → `Project`
+  - Has Many `EventParticipant` (Active registrations)
+  - Has Many `RegistrationField` (Custom registration fields, introduced in [#1880](https://github.com/climateconnect/climateconnect/issues/1880))
+
+### EventParticipant
+- **Definition**: A user's registration record for an event.
+- **Properties**:
+  - `registered_at`: DateTimeField
+  - `cancelled_at`: DateTimeField, nullable (NULL = active registration)
+- **Relationships**:
+  - FK → `User`
+  - FK → `EventRegistration`
+  - UNIQUE constraint: `(user, event_registration)`
+
+### RegistrationField (introduced in [#1880](https://github.com/climateconnect/climateconnect/issues/1880))
+- **Definition**: A custom field on an event's registration form (e.g., checkbox, option select).
+- **Properties**:
+  - `field_type`: CharField (choices: `checkbox`, `option_select`)
+  - `order`: PositiveIntegerField (position in the form)
+  - `is_required`: BooleanField
+  - `settings`: JSONField (type-specific settings; checkbox stores HTML description, option select stores optional title)
+- **Relationships**:
+  - FK → `EventRegistration` (CASCADE delete)
+  - Has Many `RegistrationFieldOption` (for option select fields)
+  - Has Many `RegistrationFieldAnswer` (future — registrant's answers)
+
+### RegistrationFieldOption (introduced in [#1880](https://github.com/climateconnect/climateconnect/issues/1880))
+- **Definition**: A selectable option within an option-select `RegistrationField`.
+- **Properties**:
+  - `title`: CharField (display label)
+  - `order`: PositiveIntegerField
+- **Relationships**:
+  - FK → `RegistrationField` (CASCADE delete)
+  - UNIQUE constraint: `(field, order)`
+
+### RegistrationFieldAnswer (forward-compatible — not yet implemented)
+- **Definition**: A registrant's answer to a custom `RegistrationField`.
+- **Properties**:
+  - `value_boolean`: BooleanField, nullable (for checkbox fields)
+  - `value_option`: FK → `RegistrationFieldOption`, nullable (for option select fields)
+  - `value_json`: JSONField, nullable (for future Inventory type: `{option_id, quantity}`)
+- **Relationships**:
+  - FK → `EventRegistration`
+  - FK → `RegistrationField`
+  - Future: accommodates Inventory field type with `(option_id, quantity)` shape
 
 ### MembershipRequest
 - **Definition**: A request from a user to join a Project or Organization.

@@ -1314,6 +1314,62 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Send a notification to team admins when someone registers or cancels.",
       de: "Sende eine Benachrichtigung an Team-Admins, wenn sich jemand an- oder abmeldet.",
     },
+    registration_custom_fields: {
+      en: "Additional registration fields",
+      de: "Zusätzliche Anmeldefelder",
+    },
+    add_registration_field: {
+      en: "Add field",
+      de: "Feld hinzufügen",
+    },
+    field_type_checkbox: {
+      en: "Checkbox",
+      de: "Checkbox",
+    },
+    field_type_option_select: {
+      en: "Single choice",
+      de: "Einfachauswahl",
+    },
+    registration_field_description: {
+      en: "Description",
+      de: "Beschreibung",
+    },
+    registration_field_required: {
+      en: "Required",
+      de: "Pflichtfeld",
+    },
+    option_select_title: {
+      en: "Title",
+      de: "Titel",
+    },
+    add_option: {
+      en: "Add option",
+      de: "Option hinzufügen",
+    },
+    option_placeholder: {
+      en: "Option label",
+      de: "Optionsbezeichnung",
+    },
+    delete_field: {
+      en: "Delete field",
+      de: "Feld löschen",
+    },
+    move_field_up: {
+      en: "Move up",
+      de: "Nach oben",
+    },
+    move_field_down: {
+      en: "Move down",
+      de: "Nach unten",
+    },
+    delete_option: {
+      en: "Delete option",
+      de: "Option löschen",
+    },
+    max_registration_fields_reached: {
+      en: "Maximum of 5 fields reached",
+      de: "Maximal 5 Felder erreicht",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",

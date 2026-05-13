@@ -1,6 +1,6 @@
 # Organiser Creates Event with Custom Registration Fields (Phase 4a)
 
-**Status**: DRAFT
+**Status**: IMPLEMENTED — pending staging validation and `REGISTRATION_CUSTOM_FIELDS` toggle flip to production
 **Type**: Feature
 **Date and time created**: 2026-04-16 10:00
 **GitHub Issue**: [#1880](https://github.com/climateconnect/climateconnect/issues/1880)

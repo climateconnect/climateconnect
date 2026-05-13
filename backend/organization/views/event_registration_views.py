@@ -462,11 +462,14 @@ class EditRegistrationConfigView(APIView):
             )
 
         # ── 4. Validate and save ─────────────────────────────────────────────
+        # is_draft is read from the request body so the client can save partial
+        # field data without triggering publish-time validation.
+        is_draft = request.data.get("is_draft", False) in (True, "true", "True", "1", 1)
         serializer = EditEventRegistrationConfigSerializer(
             rc,
             data=request.data,
             partial=True,
-            context={"project": project, "request": request},
+            context={"project": project, "request": request, "is_draft": is_draft},
         )
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

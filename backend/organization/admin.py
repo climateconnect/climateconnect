@@ -5,6 +5,8 @@ from organization.models import (
     CommentTranslation,
     EventRegistration,
     EventRegistrationConfig,
+    RegistrationField,
+    RegistrationFieldOption,
     Organization,
     OrganizationFieldTagging,
     OrganizationFollower,
@@ -294,3 +296,48 @@ class EventRegistrationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(EventRegistration, EventRegistrationAdmin)
+
+
+class RegistrationFieldOptionInline(admin.TabularInline):
+    model = RegistrationFieldOption
+    extra = 0
+    fields = ("title", "order")
+    ordering = ("order",)
+
+
+class RegistrationFieldAdmin(admin.ModelAdmin):
+    list_display = ("field_type", "order", "is_required", "get_event_name")
+    list_filter = ("field_type", "is_required")
+    search_fields = (
+        "registration_config__project__name",
+        "registration_config__project__url_slug",
+    )
+    raw_id_fields = ("registration_config",)
+    inlines = [RegistrationFieldOptionInline]
+
+    def get_event_name(self, obj):
+        return obj.registration_config.project.name
+
+    get_event_name.short_description = "Event"
+
+
+admin.site.register(RegistrationField, RegistrationFieldAdmin)
+
+
+class RegistrationFieldOptionAdmin(admin.ModelAdmin):
+    list_display = ("title", "order", "get_field_type", "get_event_name")
+    search_fields = ("title", "field__registration_config__project__name")
+    raw_id_fields = ("field",)
+
+    def get_field_type(self, obj):
+        return obj.field.field_type
+
+    get_field_type.short_description = "Field type"
+
+    def get_event_name(self, obj):
+        return obj.field.registration_config.project.name
+
+    get_event_name.short_description = "Event"
+
+
+admin.site.register(RegistrationFieldOption, RegistrationFieldOptionAdmin)
