@@ -137,7 +137,7 @@
   },
   "please_choose_one_of_the_location_options": {
     "en": "Please choose one of the location options. Choose the city you are in if the location is online.",
-    "de": "Bitte wähle eine der Optionen für den Ort. Wähle Deinen Standort, wenn der Ort \"Online\" ist."
+    "de": "Bitte wähle eine der Optionen für den Ort. Wähle deinen Standort, wenn der Ort \"Online\" ist."
   },
   "organization_type": {
     "en": "Organisation type",
@@ -365,7 +365,7 @@
   },
   "something_went_wrong": {
     "en": "Something went wrong. Please contact our support at contact@climateconnect.earth.",
-    "de": "Etwas ist schiefgelaufen. Bitte wende Dich an unseren Support unter contact@climateconnect.earth."
+    "de": "Etwas ist schiefgelaufen. Bitte wende dich an unseren Support unter contact@climateconnect.earth."
   },
   "get_inspired": {
     "en": "Get inspired",

@@ -75,7 +75,7 @@ The registrant-side flow (rendering fields on the registration form, capturing a
 
   ```
   CheckboxSettingsSerializer      → { description: CharField(allow_blank=True) }
-  OptionSelectSettingsSerializer  → { title: CharField(required=False, allow_blank=True) }
+  OptionSelectSettingsSerializer  → {}  (no settings yet; options are in RegistrationFieldOption rows)
 
   FIELD_TYPE_SETTINGS_VALIDATORS = {
       RegistrationFieldType.CHECKBOX:       CheckboxSettingsSerializer,
@@ -83,11 +83,9 @@ The registrant-side flow (rendering fields on the registration form, capturing a
   }
   ```
 
-  > **Implementation note**: `OptionSelectSettingsSerializer` was extended with an optional `title` field (the question label shown above the options, e.g. "Meal preference?"). This was added during implementation when building the frontend `OptionSelectFieldEditor` — the UI has a title input and the backend must preserve the value. The field is optional (`required=False`) so existing data and tests are unaffected.
-
   Publish-time non-empty check for `description` is a separate guard in the outer `validate()` using `is_draft` from context — same pattern as `EventRegistrationConfigSerializer`.
 
-- **Rich text — tiptap (direct) + custom MUI toolbar, stored as sanitized HTML**: the checkbox description uses tiptap via `@tiptap/react` + `@tiptap/starter-kit` + `@tiptap/extension-link` with a custom MUI-styled toolbar (Bold + Link only). `@sjdemartini/mui-tiptap` was evaluated but using tiptap directly gave simpler integration, direct control over the toolbar, and avoided an additional major dependency. `immediatelyRender: false` is set on `useEditor` for Next.js SSR safety. The Link toolbar button opens a small MUI `Dialog` for URL entry (avoids deprecated `window.prompt`). Tiptap's output is HTML via `getHTML()`. The `Link` extension allows the organiser to set custom link text (e.g. "Terms of Service"), which is why plain text + auto-linkify is insufficient.
+- **Rich text — MUI-tiptap, stored as sanitized HTML**: the checkbox description uses MUI-tiptap. The MUI-tiptap dependency will be added as part of this implementation. Tiptap's default output is HTML via `getHTML()`. The toolbar is restricted to **Bold** and **Link** only — no other formatting. The `Link` extension allows the organiser to set custom link text (e.g. "Terms of Service"), which is why plain text + auto-linkify is insufficient.
 
   **HTML sanitization**: the HTML string must be sanitized on write (in `CheckboxSettingsSerializer.validate_description()`) before being stored. A reusable `sanitize_html()` utility lives in `climateconnect_api/utility/html.py`. It uses **`bleach`** (new dependency) with an explicit allowlist of tags and attributes — the caller specifies exactly what is permitted, making it easy to reuse for any future rich-text field with a different allowed set.
 
@@ -389,18 +387,18 @@ For `option_select`, `options` is a non-empty array of `{ "id": 10, "title": "Ve
 
 ## Acceptance Criteria
 
-- [x] An organiser can add up to 5 custom fields to an event's registration form (checkbox and/or option select).
-- [x] The organiser can reorder fields; the order is preserved and returned by the API.
-- [x] Each field can be marked as required.
-- [x] **Checkbox**: has a rich-text description field supporting bold and links.
-- [x] **Option select**: has a title and at least one option; each option has a title and an order value.
-- [x] Attempting to add a 6th field is rejected server-side with `400 Bad Request`.
-- [x] An option select with zero options is rejected server-side on publish (`is_draft=false`); accepted on draft save.
-- [x] The custom field definitions are returned as part of the event API response, in configured order, with enough data for the future registrant-side task to render the form.
-- [x] All new frontend UI is gated behind the `REGISTRATION_CUSTOM_FIELDS` feature toggle (separate from `EVENT_REGISTRATION`).
-- [x] No breaking changes to existing API contracts.
-- [x] Migrations provided for all new tables.
-- [x] All tests pass.
+- [ ] An organiser can add up to 5 custom fields to an event's registration form (checkbox and/or option select).
+- [ ] The organiser can reorder fields; the order is preserved and returned by the API.
+- [ ] Each field can be marked as required.
+- [ ] **Checkbox**: has a rich-text description field supporting bold and links.
+- [ ] **Option select**: has a title and at least one option; each option has a title and an order value.
+- [ ] Attempting to add a 6th field is rejected server-side with `400 Bad Request`.
+- [ ] An option select with zero options is rejected server-side on publish (`is_draft=false`); accepted on draft save.
+- [ ] The custom field definitions are returned as part of the event API response, in configured order, with enough data for the future registrant-side task to render the form.
+- [ ] All new frontend UI is gated behind the appropriate feature toggle (separate from `EVENT_REGISTRATION` — to be confirmed with team).
+- [ ] No breaking changes to existing API contracts.
+- [ ] Migrations provided for all new tables.
+- [ ] All tests pass.
 - [ ] Code review approved.
 
 ---
@@ -410,6 +408,4 @@ For `option_select`, `options` is a non-empty array of `{ "id": 10, "title": "Ve
 - 2026-04-16 10:00 — Task created from GitHub issue [#1880](https://github.com/climateconnect/climateconnect/issues/1880). Phase 4a enabler task — foundational custom fields infrastructure (checkbox + option select), organiser side only. Registrant-side flow (form rendering + answer submission) is out of scope and will be delivered in a separate follow-up task. Forward-compatibility constraints for Inventory (Phase 4b) and registration form templates must be respected in the schema design. A dedicated feature toggle separate from `EVENT_REGISTRATION` is likely needed (all four Phase 4a tasks must go live together). Google Forms cited as UX reference for the field builder. Awaiting system impact analysis from Archie before implementation begins.
 - 2026-04-16 — System impact analysis complete (Archie). Decisions: single `RegistrationField` table + `settings` JSONField (JSONB); `RegistrationFieldOption` rows for option select choices; type-settings registry pattern for `settings` validation; answer storage deferred but schema forward-compatible (`value_boolean` + `value_option` FK + `value_json`). Rich text: MUI-tiptap (Bold + Link only), HTML stored in `settings.description` — MUI-tiptap branch not yet merged, must land before this ships. New `REGISTRATION_CUSTOM_FIELDS` toggle (dev ✅, staging ✅, prod ❌). Fields nested in `GET /api/projects/{slug}/` detail response (additive).
 - 2026-04-16 — API design revised: separate `/fields/` CRUD endpoints dropped in favour of fields as a nested writable array on the existing create (`POST /api/projects/`) and edit (`PATCH /api/projects/{slug}/registration-config/`) endpoints. Backend does a full sync (create/update/delete) atomically on save — items with `id` are updated, items without `id` are created, absent IDs are deleted (guarded against existing answers). No new URL patterns or view files required — all logic lives in the serializer layer. Matches the actual UI save pattern. Ready for implementation.
-- 2026-05-11 — Backend implemented. New models `RegistrationField` + `RegistrationFieldOption` with DEFERRED unique constraints on `(registration_config, order)` and `(field, order)` for safe atomic reordering. `RegistrationFieldType` TextChoices enum (`checkbox`, `option_select`). Settings validation via type-registry pattern (`FIELD_TYPE_SETTINGS_VALIDATORS`). `CheckboxSettingsSerializer` sanitizes HTML description using `bleach` (`sanitize_html()` utility). `OptionSelectSettingsSerializer` stores optional `title` in settings. `sync_fields()` + `create_fields()` helpers handle full sync atomically. Both `EventRegistrationConfigSerializer` and `EditEventRegistrationConfigSerializer` extended with writable `fields` via `to_internal_value()` override (avoids shadowing DRF's `.fields` property). `EditRegistrationConfigView` passes `is_draft` context. `project_views.py` uses `er_serializer.save()` for atomic nested create. Django admin extended with `RegistrationFieldAdmin` (inline options) and standalone `RegistrationFieldOptionAdmin`. 19 backend tests — all passing. New dependency: `bleach>=6.3.0` (PDM). Migrations: `0126_add_registrationfield.py` + `0004_add_registration_custom_fields_toggle.py`.
-- 2026-05-11 — Frontend implemented. New components in `src/components/shareProject/`: `RegistrationFieldList.tsx` (ordered list, up/down reorder, delete in footer, required toggle in footer), `RegistrationFieldEditor.tsx` (type dispatcher), `CheckboxFieldEditor.tsx` (tiptap rich text — Bold + Link only; custom MUI toolbar; link URL dialog; `immediatelyRender: false` for Next.js SSR safety), `OptionSelectFieldEditor.tsx` (title input + ordered options with add/remove/reorder). `EventRegistrationSection.tsx` extended with toggle-gated field builder section. `ShareProjectRoot.formatProjectForRequest` includes `fields` inside `registration_config`, stripping client-only `_clientKey`. New TS types: `RegistrationField`, `RegistrationFieldOption` in `types.ts`. New text keys added to `project_texts.tsx` (EN + DE). Tiptap packages added: `@tiptap/react`, `@tiptap/core`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-link`. 3 frontend test files — 36 tests, all passing. TypeScript and ESLint clean. Design: all field builder components are fully controlled (props-in / callbacks-out) for reuse in the future edit form task.
 

@@ -74,7 +74,7 @@ describe("AuthEmailStep", () => {
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Welcome!");
       expect(
-        screen.getByText(/register or log in with your existing climate connect account/i)
+        screen.getByText(/register or log in with your existing account/i)
       ).toBeInTheDocument();
     });
 
@@ -290,7 +290,7 @@ describe("AuthEmailStep", () => {
 
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Willkommen!");
       expect(
-        screen.getByText(/anmelden oder mit bestehendem climate connect account einloggen/i)
+        screen.getByText(/anmelden oder mit bestehendem account einloggen/i)
       ).toBeInTheDocument();
     });
   });

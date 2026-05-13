@@ -202,7 +202,7 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     },
     just_one_more_step_to_complete_your_signup: {
       en: "Congratulations! Just one more step to complete your signup!",
-      de: "Glückwunsch! Nur noch ein Schritt, um Deine Anmeldung abzuschließen!",
+      de: "Glückwunsch! Nur noch ein Schritt, um deine Anmeldung abzuschließen!",
     },
     almost_done: {
       en: "Almost there!",
@@ -390,8 +390,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Willkommen!",
     },
     welcome_to_climate_connect_subtitle: {
-      en: "Register or log in with your existing Climate Connect account:",
-      de: "Anmelden oder mit bestehendem Climate Connect Account einloggen:",
+      en: "Register or log in with your existing account:",
+      de: "Anmelden oder mit bestehendem Account einloggen:",
     },
     area_of_interest: {
       en: "Areas of interest",
@@ -486,13 +486,19 @@ export default function getProfileTexts({ profile, hubName, locale }) {
     // --- Signup Flow ---
     create_your_account: {
       en: "Create your account",
-      de: "Erstelle dein Konto",
+      de: "Erstelle deinen Account",
     },
     signup_step_1_headline: {
       en:
         "You don't have an account yet. Please enter tell us your name and where you live to get started. You will have an opportunity to create/add an organisation once signed up.",
       de:
-        "Du hast noch keinen persönlichen Account. Verrate uns bitte wie du heißt und wo do wohnst, um loszulegen. Du hast die Möglichkeit, eine Organisation zu erstellen/hinzuzufügen, sobald du dich angemeldet hast.",
+        "Du hast noch keinen persönlichen Account. Verrate uns bitte, wie du heißt und wo do wohnst, um loszulegen. Du hast die Möglichkeit, eine Organisation zu erstellen/hinzuzufügen, sobald du dich angemeldet hast.",
+    },
+    event_signup_step_1_headline: {
+      en:
+        "You don't have an account yet. Please enter tell us your name and where you live to register for this event.",
+      de:
+        "Du hast noch keinen persönlichen Account. Verrate uns bitte wie du heißt und in welcher Stadt du wohnst, um dich zur Veranstaltung anzumelden.",
     },
     email_cannot_be_changed: {
       en: "This is the email you'll use to log in",
@@ -517,9 +523,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
           <Link href={getLocalePrefix(locale) + "/privacy"} target="_blank" rel="noreferrer">
             Privacy policy
           </Link>
-          . I consent to the processing of my personal data and agree to receive emails containing
-          information that is functionally necessary and relevant to me regarding the use of the
-          platform.
+          . I consent to the processing of my personal data and to receiving emails containing
+          necessary information and updates on local climate projects.
         </>
       ),
       de: (
@@ -533,8 +538,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
             Datenschutzerklärung
           </Link>{" "}
           zu. Ich willige ein, dass meine personenbezogenen Daten verarbeitet werden und ich per
-          E-Mail über funktionell notwendige und für mich relevante Informationen zur
-          Plattformnutzung informiert werde.
+          E-mail über funktionell notwendige Informationen und lokale Klimaprojekte informiert
+          werde.
         </>
       ),
     },
