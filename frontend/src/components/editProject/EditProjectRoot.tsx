@@ -18,14 +18,18 @@ import {
   getTranslationsWithoutRedundantKeys,
 } from "../../../public/lib/translationOperations";
 import getTexts from "../../../public/texts/texts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
+import ROLE_TYPES from "../../../public/data/role_types";
 import { Project, Role, Sector } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
 import EditProjectContent from "./EditProjectContent";
 import EditProjectOverview from "./EditProjectOverview";
 import TranslateIcon from "@mui/icons-material/Translate";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -73,8 +77,11 @@ export default function EditProjectRoot({
   const token = new Cookies().get("auth_token");
   const { locale, locales, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+  const projectTypeTexts = getProjectTypeTexts(texts);
+  const typeId = project.project_type?.type_id ?? "project";
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const draftRequiredProperties = {
     name: texts.project_name,
   };
@@ -193,6 +200,17 @@ export default function EditProjectRoot({
     setStep(STEPS[1]);
   };
 
+  const handleDeleteDialogClose = (confirmed) => {
+    if (confirmed) {
+      deleteProject();
+    }
+    setDeleteDialogOpen(false);
+  };
+
+  const deleteButtonText = project.is_draft
+    ? texts.delete_draft
+    : projectTypeTexts.deleteProject[typeId];
+
   const additionalButtons = [
     {
       text: texts.check_translations,
@@ -208,6 +226,17 @@ export default function EditProjectRoot({
       argument: "save",
       onClick: onSaveDraft,
       icon: SaveAsIcon,
+    });
+  }
+
+  if (user_role.role_type === ROLE_TYPES.all_type) {
+    additionalButtons.push({
+      text: deleteButtonText,
+      argument: "delete",
+      onClick: () => setDeleteDialogOpen(true),
+      icon: DeleteIcon,
+      color: "error",
+      ariaLabel: deleteButtonText,
     });
   }
 
@@ -365,7 +394,6 @@ export default function EditProjectRoot({
             handleSetProject={handleSetProject}
             userOrganizations={userOrganizations}
             user_role={user_role}
-            deleteProject={deleteProject}
             errors={errors}
             contentRef={contentRef}
             projectTypeOptions={projectTypeOptions}
@@ -378,6 +406,14 @@ export default function EditProjectRoot({
             nextStepButtonType={project.is_draft ? "publish" : "save"}
             className={classes.navigationButtons}
             fixedOnMobile
+          />
+          <ConfirmDialog
+            open={deleteDialogOpen}
+            onClose={handleDeleteDialogClose}
+            cancelText={texts.no}
+            confirmText={texts.yes}
+            title={texts.do_you_really_want_to_delete_your_project}
+            text={texts.if_you_delete_your_project_it_will_be_lost}
           />
         </form>
       ) : (

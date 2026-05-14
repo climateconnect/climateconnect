@@ -206,9 +206,10 @@ export default function NavigationButtons({
             <Button
               key={index}
               variant="contained"
-              color="grey"
+              color={(b.color as any) || "grey"}
               onClick={b.onClick}
-              className={`${classes.backButton} ${classes.draftButton}`}
+              aria-label={fixedOnMobile && isNarrowScreen ? b.ariaLabel : undefined}
+              className={`${!b.color ? classes.backButton : ""} ${classes.draftButton}`}
             >
               {fixedOnMobile && isNarrowScreen ? <b.icon /> : b.text}
             </Button>
