@@ -233,7 +233,9 @@ def get_location(location_object):
         place_name=location_object["place_name"],
         display_name=location_object.get("display_name"),
         exact_address=location_object["exact_address"],
-        country=location_object["country"],
+        country=COUNTRY_NAME_TO_ENGLISH.get(
+            location_object["country"], location_object["country"]
+        ),
         name=location_object["name"],
         centre_point=centre_point,
         multi_polygon=multipolygon,
@@ -312,6 +314,15 @@ def format_location(location_string, already_loaded):
 
 
 CUSTOM_NAME_MAPPINGS = {"Scotland (state), Scotland": "Scotland"}
+
+# Maps localized country names to their English equivalents.
+# Used when persisting locations so that hub filtering (which
+# compares country strings) works consistently regardless of
+# the UI language that was active when the location was saved.
+COUNTRY_NAME_TO_ENGLISH = {
+    "Deutschland": "Germany",
+    "Vereinigtes Königreich": "United Kingdom",
+}
 
 # These country codes have states that should be shown as the location's "country" part
 # because the actual country name is less meaningful for display (e.g. UK nations)
