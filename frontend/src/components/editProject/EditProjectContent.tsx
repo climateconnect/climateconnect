@@ -1,18 +1,19 @@
-import { Switch, TextField, Typography, useMediaQuery, Theme } from "@mui/material";
+import { Button, Switch, TextField, Typography, useMediaQuery, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { RefObject, useContext, useState } from "react";
 import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import ConfirmDialog from "../dialogs/ConfirmDialog";
 import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
-import DeleteProjectButton from "./DeleteProjectButton";
 import { Project, Role } from "../../types";
 import { EditProjectTypeSelector } from "./EditProjectTypeSelector";
 import ProjectDateSection from "../shareProject/ProjectDateSection";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { useFeatureToggles } from "../featureToggle";
+import EditEventRegistrationModal from "../project/EditEventRegistrationModal";
 
 const useStyles = makeStyles<Theme>((theme) => ({
   select: {
@@ -64,15 +65,13 @@ const useStyles = makeStyles<Theme>((theme) => ({
   addButton: {
     marginTop: theme.spacing(2),
   },
-  deleteBtn: {
-    display: "block",
-    float: "none",
-    marginTop: theme.spacing(1),
-  },
   buttonsContainer: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  editRegistrationBtn: {
+    float: "right",
   },
   warning: {
     color: theme.palette.error.main,
@@ -84,7 +83,6 @@ type Args = {
   handleSetProject: Function;
   userOrganizations: any;
   user_role: Role;
-  deleteProject: Function;
   errors: any;
   contentRef?: RefObject<any>;
   projectTypeOptions?: any;
@@ -95,7 +93,6 @@ export default function EditProjectContent({
   handleSetProject,
   userOrganizations,
   user_role,
-  deleteProject,
   errors,
   contentRef,
   projectTypeOptions,
@@ -106,7 +103,8 @@ export default function EditProjectContent({
   const projectTypeTexts = getProjectTypeTexts(texts);
   const typeId = project.project_type?.type_id ?? "project";
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const [open, setOpen] = useState({ delete: false });
+  const { isEnabled } = useFeatureToggles();
+  const [editRegistrationOpen, setEditRegistrationOpen] = useState(false);
 
   const handleChangeProject = (newValue, key) => {
     handleSetProject({ ...project, [key]: newValue });
@@ -121,17 +119,6 @@ export default function EditProjectContent({
       ...project,
       ...newData,
     });
-  };
-
-  const handleClickDeleteProjectPopup = () => {
-    setOpen({ ...open, delete: true });
-  };
-
-  const handleDeleteProjectDialogClose = (confirmed) => {
-    if (confirmed) {
-      deleteProject();
-    }
-    setOpen({ ...open, delete: false });
   };
 
   const handleSwitchChange = (event) => {
@@ -158,6 +145,16 @@ export default function EditProjectContent({
     });
   };
 
+  const handleRegistrationSaved = (updated) => {
+    handleSetProject({ ...project, registration_config: updated });
+  };
+
+  const showEditRegistrationButton =
+    user_role.role_type === ROLE_TYPES.all_type &&
+    project.project_type?.type_id === "event" &&
+    isEnabled("EVENT_REGISTRATION") &&
+    !!project.registration_config;
+
   return (
     <div ref={contentRef}>
       <div className={classes.block}>
@@ -174,11 +171,17 @@ export default function EditProjectContent({
           />
           <Typography component="span">{projectTypeTexts.organizations[typeId]}</Typography>
         </div>
-        {!isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
-          <DeleteProjectButton
-            project={project}
-            handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
-          />
+        {showEditRegistrationButton && (
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<SettingsIcon />}
+            onClick={() => setEditRegistrationOpen(true)}
+            aria-label={texts.edit_registration_settings}
+            className={classes.editRegistrationBtn}
+          >
+            {texts.edit_registration_settings}
+          </Button>
         )}
         <div className={classes.block}>
           {project.is_personal_project ? (
@@ -247,48 +250,16 @@ export default function EditProjectContent({
             value={project.description ? project.description : ""}
           />
         </div>
-        <div className={classes.block}>
-          <Typography component="h2" variant="h6" color="primary" className={classes.subHeader}>
-            {projectTypeTexts.allow[project.project_type.type_id]}
-          </Typography>
-          <Switch
-            checked={project.collaborators_welcome}
-            onChange={(event) => handleChangeProject(event.target.checked, "collaborators_welcome")}
-            name="checkedA"
-            inputProps={{ "aria-label": "secondary checkbox" }}
-            color="primary"
-          />
-        </div>
-        {project.collaborators_welcome && (
-          <>
-            {isNarrowScreen && user_role.role_type === ROLE_TYPES.all_type && (
-              <div className={classes.block}>
-                <Typography
-                  component="h2"
-                  variant="subtitle2"
-                  color="primary"
-                  className={`${classes.warning} ${classes.subHeader}`}
-                >
-                  {texts.do_you_want_to_delete_your_project}
-                </Typography>
-                <DeleteProjectButton
-                  project={project}
-                  handleClickDeleteProjectPopup={handleClickDeleteProjectPopup}
-                  className={classes.deleteBtn}
-                />
-              </div>
-            )}
-          </>
-        )}
       </div>
-      <ConfirmDialog
-        open={open.delete}
-        onClose={handleDeleteProjectDialogClose}
-        cancelText={texts.no}
-        confirmText={texts.yes}
-        title={texts.do_you_really_want_to_delete_your_project}
-        text={texts.if_you_delete_your_project_it_will_be_lost}
-      />
+      {showEditRegistrationButton && editRegistrationOpen && (
+        <EditEventRegistrationModal
+          open={editRegistrationOpen}
+          onClose={() => setEditRegistrationOpen(false)}
+          onSaved={handleRegistrationSaved}
+          project={project}
+          eventRegistration={project.registration_config}
+        />
+      )}
     </div>
   );
 }

@@ -58,6 +58,17 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 | Organiser sets admin notification preference for registrations | [#1882](https://github.com/climateconnect/climateconnect/issues/1882)                                                                         |  | ✅ Done |
 | Admin notification emails on member registration / cancellation | [#1888](https://github.com/climateconnect/climateconnect/issues/1888)                                                                         |  | ✅ Done |
 
+### 🎯 Phase 2b — Pre-launch UX Polish (go-live blockers)
+
+Small frontend improvements required before the `EVENT_REGISTRATION` toggle is flipped to production. Tracked in [#1981](https://github.com/climateconnect/climateconnect/issues/1981).
+
+| Story | GitHub Issue | Spec | Status |
+|-------|-------------|------|--------|
+| Auto-set event registration end date on start date change | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1300_auto_set_event_registration_end_date.md`](./20260513_1300_auto_set_event_registration_end_date.md) | ⚪ |
+| Edit project form button reorganization (delete + registration config) | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1310_edit_project_form_button_reorganization.md`](./20260513_1310_edit_project_form_button_reorganization.md) | ⚪ |
+| Hide collaboration sections for events | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1320_hide_event_collaboration_sections.md`](./20260513_1320_hide_event_collaboration_sections.md) | ⚪ |
+| Fix page jump on create project details step | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1330_fix_create_project_details_page_jump.md`](./20260513_1330_fix_create_project_details_page_jump.md) | ⚪ |
+
 ### 🎯 Phase 3 — Guest Registration + UX Polish (go-live blocker)
 
 > **Enabler dependency**: Requires **[EPIC: Auth Unification](./EPIC_auth_unification.md)** (Phase A) to be complete before the guest registration story can ship. The guest registration flow depends on the new combined login/signup and token-based auth that are delivered by that separate epic.

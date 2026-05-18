@@ -45,6 +45,11 @@ export default function ProjectDateSection({ projectData, handleSetProjectData, 
     //This only does a check if we're changing the start date
     const endDateBeforeStartDate =
       prop === "start_date" && projectData.end_date && projectData.end_date < value;
+    const shouldAutoSetRegistrationEndDate =
+      prop === "start_date" &&
+      projectData.registrationEnabled &&
+      projectData.project_type.type_id === "event" &&
+      !projectData.registration_end_date;
     if (
       PROJECT_TYPE_DATE_OPTIONS[projectData.project_type.type_id].enableEndDate &&
       (noEndDateSet || endDateBeforeStartDate)
@@ -53,10 +58,12 @@ export default function ProjectDateSection({ projectData, handleSetProjectData, 
       handleSetProjectData({
         start_date: value,
         end_date: endDateSuggestion,
+        ...(shouldAutoSetRegistrationEndDate && { registration_end_date: value }),
       });
     } else {
       handleSetProjectData({
         [prop || "start_date"]: value,
+        ...(shouldAutoSetRegistrationEndDate && { registration_end_date: value }),
       });
     }
   };
