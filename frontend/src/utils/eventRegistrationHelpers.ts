@@ -12,6 +12,7 @@ export const shouldShowRegisterButton = (
 ): boolean => {
   return !!(
     isEventRegistrationEnabled &&
+    !project.is_draft &&
     project.registration_config &&
     project.registration_config.status !== "ended"
   );
@@ -84,6 +85,9 @@ export const getRegistrationUIState = (
   adminCancelled?: boolean
 ): RegistrationUIState => {
   if (!isEventRegistrationEnabled || !project.registration_config) return "hidden";
+
+  // Draft projects should never show a registration button
+  if (project.is_draft) return "hidden";
 
   // Priority 1 — always show attended label, even if status is ended
   if (hasAttended) return "attended";
