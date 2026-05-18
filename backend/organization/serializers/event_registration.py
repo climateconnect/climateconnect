@@ -386,17 +386,17 @@ class EventRegistrationSubmissionSerializer(serializers.Serializer):
 
             if field.field_type == RegistrationFieldType.CHECKBOX:
                 if value_option_id is not None:
-                    answer_error[
-                        "value_option"
-                    ] = "value_option is not allowed for checkbox fields."
+                    answer_error["value_option"] = (
+                        "value_option is not allowed for checkbox fields."
+                    )
                 if value_boolean is None:
-                    answer_error[
-                        "value_boolean"
-                    ] = "value_boolean is required for checkbox fields."
+                    answer_error["value_boolean"] = (
+                        "value_boolean is required for checkbox fields."
+                    )
                 elif field.is_required and value_boolean is not True:
-                    answer_error[
-                        "value_boolean"
-                    ] = "This required checkbox must be checked."
+                    answer_error["value_boolean"] = (
+                        "This required checkbox must be checked."
+                    )
 
                 if answer_error:
                     errors.append(answer_error)
@@ -413,19 +413,19 @@ class EventRegistrationSubmissionSerializer(serializers.Serializer):
 
             if field.field_type == RegistrationFieldType.OPTION_SELECT:
                 if value_boolean is not None:
-                    answer_error[
-                        "value_boolean"
-                    ] = "value_boolean is not allowed for option_select fields."
+                    answer_error["value_boolean"] = (
+                        "value_boolean is not allowed for option_select fields."
+                    )
                 if value_option_id is None:
-                    answer_error[
-                        "value_option"
-                    ] = "value_option is required for option_select fields."
+                    answer_error["value_option"] = (
+                        "value_option is required for option_select fields."
+                    )
                 else:
                     option = options_by_field_id[field_id].get(value_option_id)
                     if option is None:
-                        answer_error[
-                            "value_option"
-                        ] = "Selected option does not belong to this field."
+                        answer_error["value_option"] = (
+                            "Selected option does not belong to this field."
+                        )
 
                 if answer_error:
                     errors.append(answer_error)

@@ -345,7 +345,13 @@ admin.site.register(RegistrationFieldOption, RegistrationFieldOptionAdmin)
 
 
 class RegistrationFieldAnswerAdmin(admin.ModelAdmin):
-    list_display = ("registration", "field", "get_field_type", "get_value", "get_event_name")
+    list_display = (
+        "registration",
+        "field",
+        "get_field_type",
+        "get_value",
+        "get_event_name",
+    )
     list_filter = ("field__field_type", "registration__registered_at")
     search_fields = (
         "registration__user__username",

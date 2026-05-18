@@ -277,6 +277,5 @@ class RegistrationFieldAnswer(models.Model):
 
     def __str__(self) -> str:
         return (
-            f"answer for registration {self.registration_id} "
-            f"field {self.field_id}"
+            f"answer for registration {self.registration_id} " f"field {self.field_id}"
         )
