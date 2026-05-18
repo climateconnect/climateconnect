@@ -1,31 +1,14 @@
 import React from "react";
-import {
-  Box,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
+import { Box, FormHelperText } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import { RegistrationField } from "../../types";
+import SelectField from "../general/SelectField";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     marginBottom: theme.spacing(2),
-    paddingLeft: "10px",
-  },
-  label: {
-    fontSize: "0.875rem",
-    fontWeight: 500,
-    color: theme.palette.text.primary,
-    marginBottom: theme.spacing(0.5),
-  },
-  required: {
-    color: theme.palette.error.main,
-    marginLeft: theme.spacing(0.5),
+    paddingLeft: theme.spacing(1),
   },
   errorText: {
     color: theme.palette.error.main,
@@ -43,33 +26,40 @@ export default function RegistrationOptionSelectField({ field, value, onChange, 
   const classes = useStyles();
   const title = field.settings.title ?? "";
   const sortedOptions = [...(field.options ?? [])].sort((a, b) => a.order - b.order);
+  const selectedOption = sortedOptions.find((option) => option.id === value);
+
+  const handleChange = (event: any) => {
+    const selectedKey = event.target.selectedOptions?.[0]?.dataset?.key;
+
+    if (selectedKey) {
+      onChange(Number(selectedKey));
+      return;
+    }
+
+    const option = sortedOptions.find((item) => item.title === event.target.value);
+
+    const optionId = option?.id;
+
+    if (typeof optionId === "number") {
+      onChange(optionId);
+    }
+  };
 
   return (
     <Box className={classes.root}>
-      <FormControl component="fieldset" error={!!error} fullWidth>
-        <FormLabel component="legend" className={classes.label}>
-          {title}
-          {field.is_required && (
-            <span className={classes.required} aria-hidden="true">
-              {" *"}
-            </span>
-          )}
-        </FormLabel>
-        <RadioGroup
-          value={value !== undefined ? String(value) : ""}
-          onChange={(e) => onChange(Number(e.target.value))}
-        >
-          {sortedOptions.map((option) => (
-            <FormControlLabel
-              key={option.id}
-              value={String(option.id)}
-              control={<Radio color="primary" />}
-              label={option.title}
-            />
-          ))}
-        </RadioGroup>
-        {error && <FormHelperText className={classes.errorText}>{error}</FormHelperText>}
-      </FormControl>
+      <SelectField
+        controlled
+        controlledValue={
+          selectedOption
+            ? { name: selectedOption.title, key: String(selectedOption.id) }
+            : { name: "" }
+        }
+        options={sortedOptions.map((option) => ({ name: option.title, key: String(option.id) }))}
+        label={title}
+        onChange={handleChange}
+        required={field.is_required}
+      />
+      {error && <FormHelperText className={classes.errorText}>{error}</FormHelperText>}
     </Box>
   );
 }

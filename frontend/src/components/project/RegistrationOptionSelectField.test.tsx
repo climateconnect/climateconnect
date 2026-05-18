@@ -57,22 +57,21 @@ describe("RegistrationOptionSelectField", () => {
   });
 
   it("sorts options by order before rendering", () => {
-    const { container } = renderField();
-    const radios = Array.from(container.querySelectorAll('input[type="radio"]'));
-    expect(radios.map((radio) => radio.getAttribute("value"))).toEqual(["1", "2", "3"]);
+    renderField();
+    const options = screen.getAllByRole("option");
+    expect(options.map((option) => option.textContent)).toEqual(["First", "Second", "Third"]);
   });
 
-  it("marks the passed value option as checked", () => {
+  it("shows the passed value option as selected", () => {
     renderField({ value: 3 });
-    expect(screen.getByLabelText("Third")).toBeChecked();
-    expect(screen.getByLabelText("First")).not.toBeChecked();
+    expect(screen.getByDisplayValue("Third")).toBeInTheDocument();
   });
 
   it("calls onChange with numeric option id", () => {
     const onChange = jest.fn();
     renderField({ onChange });
 
-    fireEvent.click(screen.getByLabelText("Second"));
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "Second" } });
 
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith(2);
@@ -83,8 +82,8 @@ describe("RegistrationOptionSelectField", () => {
     expect(screen.getByText("Please select an option")).toBeInTheDocument();
   });
 
-  it("renders no radio options when field.options is undefined", () => {
-    const { container } = renderField({ field: makeField({ options: undefined }) });
-    expect(container.querySelectorAll('input[type="radio"]').length).toBe(0);
+  it("renders no options when field.options is undefined", () => {
+    renderField({ field: makeField({ options: undefined }) });
+    expect(screen.queryAllByRole("option")).toHaveLength(0);
   });
 });
