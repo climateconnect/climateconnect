@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 // eslint-disable-next-line import/no-named-as-default
 import StarterKit from "@tiptap/starter-kit";
-// eslint-disable-next-line import/no-named-as-default
-import Link from "@tiptap/extension-link";
 import CharacterCount from "@tiptap/extension-character-count";
 import { Box, Typography } from "@mui/material";
 import type { RichTextEditorRef } from "mui-tiptap";
@@ -33,10 +31,13 @@ const EXTENSIONS = [
     bulletList: false,
     orderedList: false,
     listItem: false,
-  }),
-  Link.configure({
-    openOnClick: false,
-    HTMLAttributes: { rel: "noopener noreferrer" },
+    // Configure the Link extension through StarterKit to avoid duplicate
+    // extension warnings. openOnClick: false prevents Tiptap from calling
+    // window.open() on click so the LinkBubbleMenu can handle it instead.
+    link: {
+      openOnClick: false,
+      HTMLAttributes: { rel: "noopener noreferrer" },
+    },
   }),
   LinkBubbleMenuHandler,
   CharacterCount.configure({ limit: CHARACTER_LIMIT }),
@@ -60,7 +61,6 @@ export default function CheckboxFieldEditor({ description, onChange }: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
   const rteRef = useRef<RichTextEditorRef>(null);
-  const editorDomRef = useRef<Element | null>(null);
   const [charCount, setCharCount] = useState(0);
 
   // Sync external description changes into the editor without affecting typing
@@ -75,21 +75,6 @@ export default function CheckboxFieldEditor({ description, onChange }: Props) {
     }
   }, [description]);
 
-  // Prevent link navigation inside the editor. We use a capture-phase listener on
-  // document so it fires before Next.js's own capture-phase routing interceptor.
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (
-        editorDomRef.current?.contains(e.target as Node) &&
-        (e.target as HTMLElement).closest("a")
-      ) {
-        e.preventDefault();
-      }
-    };
-    document.addEventListener("click", handleClick, { capture: true });
-    return () => document.removeEventListener("click", handleClick, { capture: true });
-  }, []);
-
   return (
     <>
       <Typography variant="body2" color="textSecondary" gutterBottom>
@@ -101,7 +86,6 @@ export default function CheckboxFieldEditor({ description, onChange }: Props) {
         extensions={EXTENSIONS}
         content={description || ""}
         onCreate={({ editor }) => {
-          editorDomRef.current = editor.view.dom;
           setCharCount(editor.storage.characterCount.characters());
         }}
         onUpdate={({ editor }) => {
