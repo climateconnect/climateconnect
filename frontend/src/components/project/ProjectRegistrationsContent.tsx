@@ -103,6 +103,7 @@ type ToolbarProps = {
   emailGuestsLabel?: string;
   csvFileName: string;
   csvFields: string[];
+  printFields: string[];
 };
 
 function CustomColumnMenu(props: GridColumnMenuProps) {
@@ -117,6 +118,7 @@ function RegistrationsToolbar({
   emailGuestsLabel,
   csvFileName,
   csvFields,
+  printFields,
 }: ToolbarProps) {
   return (
     <GridToolbarContainer sx={{ display: "flex", alignItems: "center", gap: 1, p: 1 }}>
@@ -145,7 +147,7 @@ function RegistrationsToolbar({
       )}
       <GridToolbarExport
         csvOptions={{ fileName: csvFileName, fields: csvFields }}
-        printOptions={{ hideFooter: true, hideToolbar: true }}
+        printOptions={{ hideFooter: true, hideToolbar: true, fields: printFields }}
       />
     </GridToolbarContainer>
   );
@@ -596,6 +598,7 @@ export default function ProjectRegistrationsContent({
                     "cancelled_at",
                     "cancelled_at_iso",
                   ],
+                  printFields: ["user_first_name", "user_last_name"],
                 } as ToolbarProps,
                 footer: {
                   total: participants.length,
