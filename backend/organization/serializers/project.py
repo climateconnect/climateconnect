@@ -56,6 +56,10 @@ class _LocationNameMixin:
     (when ``loc.place_name`` or ``loc.exact_address`` is set) versus the general
     translated name, so the logic lives in one place across
     ProjectSerializer, ProjectMinimalSerializer, and ProjectStubSerializer.
+
+    The provided ``loc`` must have its ``translate_location`` relation pre-fetched
+    via ``prefetch_related("loc__translate_location__language")`` on the queryset
+    to avoid N+1 queries when translation lookups occur.
     """
 
     def _get_location_name(self, loc):
