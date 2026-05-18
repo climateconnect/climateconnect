@@ -1445,9 +1445,9 @@ class ListFeaturedProjects(ListAPIView):
     serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
-        return Project.objects.filter(rating__lte=99, is_draft=False, is_active=True)[
-            0:4
-        ]
+        return Project.objects.filter(
+            rating__lte=99, is_draft=False, is_active=True
+        ).prefetch_related("loc__translate_location__language")[0:4]
 
 
 class ListProjectsForSitemap(ListAPIView):
@@ -1749,7 +1749,7 @@ class SimilarProjects(ListAPIView):
             is_draft=False,
             rating__gte=49,
             is_active=True,
-        )
+        ).prefetch_related("loc__translate_location__language")
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

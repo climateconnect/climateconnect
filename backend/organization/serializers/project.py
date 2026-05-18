@@ -11,6 +11,7 @@ from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from location.utility import (
     get_language_code_from_context,
+    get_translated_exact_location_name,
     get_translated_location_name,
 )
 from organization.models import (
@@ -48,7 +49,27 @@ from organization.utility.sector import (
 )
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class _LocationNameMixin:
+    """Mixin that provides a shared ``_get_location_name`` helper for project serializers.
+
+    Centralises the conditional logic that selects exact-location formatting
+    (when ``loc.place_name`` or ``loc.exact_address`` is set) versus the general
+    translated name, so the logic lives in one place across
+    ProjectSerializer, ProjectMinimalSerializer, and ProjectStubSerializer.
+
+    The provided ``loc`` must have its ``translate_location`` relation pre-fetched
+    via ``prefetch_related("loc__translate_location__language")`` on the queryset
+    to avoid N+1 queries when translation lookups occur.
+    """
+
+    def _get_location_name(self, loc):
+        lang = get_language_code_from_context(self.context)
+        if loc.place_name or loc.exact_address:
+            return get_translated_exact_location_name(loc, lang)
+        return get_translated_location_name(loc, lang)
+
+
+class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
@@ -156,16 +177,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_loc(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
@@ -275,7 +292,7 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
                 print(obj.parent_user)
 
 
-class ProjectMinimalSerializer(serializers.ModelSerializer):
+class ProjectMinimalSerializer(_LocationNameMixin, serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -306,16 +323,14 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
         return serializer.data["name"]
 
 
-class ProjectStubSerializer(serializers.ModelSerializer):
+class ProjectStubSerializer(_LocationNameMixin, serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     # TODO: remove tags
     sectors = serializers.SerializerMethodField()
@@ -418,9 +433,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_project_type(self, obj):
         possible_project_types = list(PROJECT_TYPES.values())
