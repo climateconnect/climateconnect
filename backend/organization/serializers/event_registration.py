@@ -293,6 +293,18 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
         except AttributeError:
             return None
 
+    def get_user_thumbnail_image(self, obj):
+        try:
+            profile = obj.user.user_profile
+            if not profile.thumbnail_image:
+                return None
+            request = self.context.get("request")
+            if request:
+                return request.build_absolute_uri(profile.thumbnail_image.url)
+            return profile.thumbnail_image.url
+        except AttributeError:
+            return None
+
 
 class RegistrationFieldAnswerInputSerializer(serializers.Serializer):
     """Validates one answer item in POST /registrations/ payload."""
@@ -492,18 +504,6 @@ def sync_registration_answers(registration, normalized_answers):
     ]
     if to_delete:
         RegistrationFieldAnswer.objects.filter(id__in=to_delete).delete()
-
-    def get_user_thumbnail_image(self, obj):
-        try:
-            profile = obj.user.user_profile
-            if not profile.thumbnail_image:
-                return None
-            request = self.context.get("request")
-            if request:
-                return request.build_absolute_uri(profile.thumbnail_image.url)
-            return profile.thumbnail_image.url
-        except AttributeError:
-            return None
 
 
 class SendOrganizerEmailSerializer(serializers.Serializer):
