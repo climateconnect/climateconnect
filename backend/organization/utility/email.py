@@ -2,7 +2,7 @@ import logging
 import re
 from organization.utility.project import get_project_name
 from organization.utility.organization import get_organization_name
-
+from location.utility import get_translated_location_name
 
 from climateconnect_api.utility.email_setup import send_email
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
@@ -415,16 +415,23 @@ def get_organiser_name(project, lang_code: str) -> str:
     return ""
 
 
-def get_location_name(project) -> str:
+def get_location_name(project, lang_code=None) -> str:
     """
     Return a human-readable location string for an event.
 
-    Returns ``"Online"`` for online events, ``Location.name`` when a location
-    row exists, or an empty string when neither applies.
+    Returns ``"Online"`` for online events, the translated location name when
+    a location row exists and *lang_code* is provided, or ``Location.name`` as
+    a fallback.  Returns an empty string when neither applies.
+
+    Expects ``location.translate_location__language`` to be pre-fetched (via
+    ``prefetch_related("loc__translate_location__language")``) to avoid N+1
+    queries when *lang_code* is passed.
     """
     if project.is_online:
         return "Online"
     if project.loc:
+        if lang_code:
+            return get_translated_location_name(project.loc, lang_code)
         return project.loc.name
     return ""
 
@@ -578,6 +585,7 @@ def send_event_registration_confirmation_to_user(user, project):
             ``select_related("loc", "language")`` and
             ``prefetch_related(
                 "translation_project__language",
+                "loc__translate_location__language",
                 "project_parent__parent_organization__language",
                 "project_parent__parent_organization__translation_org__language",
                 "project_parent__parent_user__user_profile",
@@ -605,7 +613,7 @@ def send_event_registration_confirmation_to_user(user, project):
         ),
         "StartDate": start_date_str,
         "OrganiserName": get_organiser_name(project, lang_code),
-        "LocationName": get_location_name(project),
+        "LocationName": get_location_name(project, lang_code),
     }
 
     send_email(

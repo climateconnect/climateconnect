@@ -349,23 +349,25 @@ export default function ProjectContent({
           hubUrl={hubUrl}
         />
       )}
-      <div className={classes.contentBlock}>
-        <Typography
-          component="h2"
-          variant="h6"
-          color={theme.palette.background.default_contrastText}
-          className={classes.subHeader}
-        >
-          {texts.collaboration}
-        </Typography>
-        {project.collaborators_welcome ? (
-          <CollaborateContent project={project} texts={texts} />
-        ) : (
-          <Typography className={classes.openToCollabBool}>
-            {texts.this_project_is_not_looking_for_collaborators_right_now}
+      {false && (
+        <div className={classes.contentBlock}>
+          <Typography
+            component="h2"
+            variant="h6"
+            color={theme.palette.background.default_contrastText}
+            className={classes.subHeader}
+          >
+            {texts.collaboration}
           </Typography>
-        )}
-      </div>
+          {project.collaborators_welcome ? (
+            <CollaborateContent project={project} texts={texts} />
+          ) : (
+            <Typography className={classes.openToCollabBool}>
+              {texts.this_project_is_not_looking_for_collaborators_right_now}
+            </Typography>
+          )}
+        </div>
+      )}
       <div className={classes.contentBlock}>
         <Typography
           component="h2"

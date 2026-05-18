@@ -676,8 +676,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Dein Projekt wurde veröffentlicht. Gute Arbeit!",
     },
     save_changes_as_draft: {
-      en: "Save Changes as draft",
-      de: "Veränderungen als Entwurf speichern",
+      en: "Save draft",
+      de: "Entwurf speichern",
     },
     save_as_draft: {
       en: "Save as draft",

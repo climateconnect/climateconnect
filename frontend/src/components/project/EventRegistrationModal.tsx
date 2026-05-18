@@ -394,6 +394,7 @@ export default function EventRegistrationModal({
             hubUrl={project.hubUrl}
             skipInterests={true}
             showHeader={false}
+            isEventSignup={true}
           />
         );
       default:

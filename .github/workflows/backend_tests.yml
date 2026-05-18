@@ -65,7 +65,7 @@
        - name: Install dependencies and create venv
          working-directory: backend
          run: |
-           pdm install
+           pdm install --dev
            $(pdm venv activate)
 
        - name: Run deptry (check for undeclared imports)

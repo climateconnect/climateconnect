@@ -14,6 +14,7 @@ interface AuthSignupStepProps {
   hubUrl?: string;
   skipInterests?: boolean;
   showHeader?: boolean;
+  isEventSignup?: boolean;
 }
 
 type SignupStep = "personal_info" | "interests";
@@ -32,6 +33,7 @@ export default function AuthSignupStep({
   hubUrl,
   skipInterests = false,
   showHeader = true,
+  isEventSignup = false,
 }: AuthSignupStepProps) {
   const { locale, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
@@ -135,6 +137,7 @@ export default function AuthSignupStep({
         hubUrl={hubUrl}
         isLoading={isCreatingAccount}
         showHeader={showHeader}
+        isEventSignup={isEventSignup}
       />
     );
   }
