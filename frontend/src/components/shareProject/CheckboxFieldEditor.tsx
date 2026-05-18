@@ -1,60 +1,52 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 // eslint-disable-next-line import/no-named-as-default
 import StarterKit from "@tiptap/starter-kit";
 // eslint-disable-next-line import/no-named-as-default
 import Link from "@tiptap/extension-link";
+import CharacterCount from "@tiptap/extension-character-count";
+import { Box, Typography } from "@mui/material";
+import type { RichTextEditorRef } from "mui-tiptap";
 import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import FormatBoldIcon from "@mui/icons-material/FormatBold";
-import LinkIcon from "@mui/icons-material/Link";
-import LinkOffIcon from "@mui/icons-material/LinkOff";
+  RichTextEditor,
+  MenuControlsContainer,
+  MenuButtonBold,
+  MenuButtonEditLink,
+  LinkBubbleMenu,
+  LinkBubbleMenuHandler,
+} from "mui-tiptap";
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 
+const CHARACTER_LIMIT = 500;
+
+// Defined outside component to avoid recreating extensions on each render
+const EXTENSIONS = [
+  StarterKit.configure({
+    italic: false,
+    strike: false,
+    code: false,
+    codeBlock: false,
+    heading: false,
+    horizontalRule: false,
+    blockquote: false,
+    bulletList: false,
+    orderedList: false,
+    listItem: false,
+  }),
+  Link.configure({
+    openOnClick: false,
+    HTMLAttributes: { rel: "noopener noreferrer" },
+  }),
+  LinkBubbleMenuHandler,
+  CharacterCount.configure({ limit: CHARACTER_LIMIT }),
+];
+
 const useStyles = makeStyles((theme) => ({
-  editorWrapper: {
-    border: `1px solid ${theme.palette.action.disabled}`,
-    borderRadius: theme.shape.borderRadius,
-    "&:focus-within": {
-      borderColor: theme.palette.primary.main,
-      borderWidth: 2,
-    },
-  },
-  toolbar: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    padding: theme.spacing(0.5),
-    display: "flex",
-    alignItems: "center",
-    gap: theme.spacing(0.5),
-    backgroundColor: theme.palette.action.hover,
-  },
-  editorContent: {
-    padding: theme.spacing(1.5),
-    "& .ProseMirror": {
-      outline: "none",
-      minHeight: 60,
-      "& p": { margin: 0 },
-      "& a": { color: theme.palette.primary.main },
-    },
-  },
-  toolbarButton: {
-    padding: 4,
-    borderRadius: theme.shape.borderRadius,
-  },
-  activeButton: {
-    backgroundColor: theme.palette.action.selected,
+  charCount: {
+    textAlign: "right",
+    padding: theme.spacing(0.5, 1.5),
+    borderTop: `1px solid ${theme.palette.divider}`,
   },
 }));
 
@@ -67,38 +59,13 @@ export default function CheckboxFieldEditor({ description, onChange }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
+  const rteRef = useRef<RichTextEditorRef>(null);
+  const editorDomRef = useRef<Element | null>(null);
+  const [charCount, setCharCount] = useState(0);
 
-  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
-  const [linkUrl, setLinkUrl] = useState("");
-
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions: [
-      StarterKit.configure({
-        italic: false,
-        strike: false,
-        code: false,
-        codeBlock: false,
-        heading: false,
-        horizontalRule: false,
-        blockquote: false,
-        bulletList: false,
-        orderedList: false,
-        listItem: false,
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: { rel: "noopener noreferrer" },
-      }),
-    ],
-    content: description || "",
-    onUpdate: ({ editor: ed }) => {
-      const html = ed.getHTML();
-      onChange(html === "<p></p>" ? "" : html);
-    },
-  });
-
+  // Sync external description changes into the editor without affecting typing
   useEffect(() => {
+    const editor = rteRef.current?.editor;
     if (editor && !editor.isFocused) {
       const currentHtml = editor.getHTML();
       const normalizedCurrent = currentHtml === "<p></p>" ? "" : currentHtml;
@@ -106,99 +73,64 @@ export default function CheckboxFieldEditor({ description, onChange }: Props) {
         editor.commands.setContent(description || "");
       }
     }
-  }, [description, editor]);
+  }, [description]);
 
-  const handleToggleBold = () => {
-    editor?.chain().focus().toggleBold().run();
-  };
-
-  const handleLinkButtonClick = () => {
-    if (!editor) return;
-    if (editor.isActive("link")) {
-      editor.chain().focus().unsetLink().run();
-    } else {
-      setLinkUrl("");
-      setLinkDialogOpen(true);
-    }
-  };
-
-  const handleApplyLink = () => {
-    if (linkUrl.trim() && editor) {
-      const href = linkUrl.trim().startsWith("http") ? linkUrl.trim() : `https://${linkUrl.trim()}`;
-      editor.chain().focus().setLink({ href }).run();
-    }
-    setLinkDialogOpen(false);
-  };
-
-  const handleCancelLink = () => {
-    setLinkDialogOpen(false);
-  };
+  // Prevent link navigation inside the editor. We use a capture-phase listener on
+  // document so it fires before Next.js's own capture-phase routing interceptor.
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (
+        editorDomRef.current?.contains(e.target as Node) &&
+        (e.target as HTMLElement).closest("a")
+      ) {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener("click", handleClick, { capture: true });
+    return () => document.removeEventListener("click", handleClick, { capture: true });
+  }, []);
 
   return (
     <>
       <Typography variant="body2" color="textSecondary" gutterBottom>
         {texts.registration_field_description}
       </Typography>
-      <Box className={classes.editorWrapper}>
-        <Box className={classes.toolbar}>
-          <Tooltip title="Bold">
-            <IconButton
-              size="small"
-              className={`${classes.toolbarButton} ${
-                editor?.isActive("bold") ? classes.activeButton : ""
-              }`}
-              onClick={handleToggleBold}
-              aria-label="Bold"
-            >
-              <FormatBoldIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Link">
-            <IconButton
-              size="small"
-              className={`${classes.toolbarButton} ${
-                editor?.isActive("link") ? classes.activeButton : ""
-              }`}
-              onClick={handleLinkButtonClick}
-              aria-label="Link"
-            >
-              {editor?.isActive("link") ? (
-                <LinkOffIcon fontSize="small" />
-              ) : (
-                <LinkIcon fontSize="small" />
-              )}
-            </IconButton>
-          </Tooltip>
-        </Box>
-        <Box className={classes.editorContent}>
-          <EditorContent editor={editor} />
-        </Box>
-      </Box>
-      <Dialog open={linkDialogOpen} onClose={handleCancelLink} maxWidth="xs" fullWidth>
-        <DialogTitle>Insert link</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            fullWidth
-            label="URL"
-            value={linkUrl}
-            onChange={(e) => setLinkUrl(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleApplyLink();
-            }}
-            placeholder="https://example.com"
-            variant="outlined"
-            size="small"
-            sx={{ mt: 1 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelLink}>Cancel</Button>
-          <Button onClick={handleApplyLink} variant="contained" disabled={!linkUrl.trim()}>
-            Apply
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <RichTextEditor
+        ref={rteRef}
+        immediatelyRender={false}
+        extensions={EXTENSIONS}
+        content={description || ""}
+        onCreate={({ editor }) => {
+          editorDomRef.current = editor.view.dom;
+          setCharCount(editor.storage.characterCount.characters());
+        }}
+        onUpdate={({ editor }) => {
+          const html = editor.getHTML();
+          onChange(html === "<p></p>" ? "" : html);
+          setCharCount(editor.storage.characterCount.characters());
+        }}
+        renderControls={() => (
+          <MenuControlsContainer>
+            <MenuButtonBold />
+            <MenuButtonEditLink />
+          </MenuControlsContainer>
+        )}
+        RichTextFieldProps={{
+          footer: (
+            <Box className={classes.charCount}>
+              <Typography
+                variant="caption"
+                color={charCount >= CHARACTER_LIMIT ? "error" : "textSecondary"}
+              >
+                {charCount}/{CHARACTER_LIMIT}
+              </Typography>
+            </Box>
+          ),
+        }}
+      >
+        {/* render prop ensures LinkBubbleMenu re-renders on every editor transaction */}
+        {() => <LinkBubbleMenu />}
+      </RichTextEditor>
     </>
   );
 }
