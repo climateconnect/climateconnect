@@ -1634,5 +1634,17 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Failed to cancel registration. Please try again.",
       de: "Stornierung fehlgeschlagen. Bitte versuche es erneut.",
     },
+    this_field_is_required: {
+      en: "This field is required.",
+      de: "Dieses Feld ist erforderlich.",
+    },
+    you_must_check_this_box: {
+      en: "You must check this box to proceed.",
+      de: "Du musst dieses Kontrollkästchen ankreuzen, um fortzufahren.",
+    },
+    please_select_an_option: {
+      en: "Please select an option.",
+      de: "Bitte wähle eine Option aus.",
+    },
   };
 }

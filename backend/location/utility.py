@@ -89,7 +89,9 @@ def format_exact_location_name(
     # Apply MAP_STATE_AS_COUNTRY_CODES: for certain countries (e.g. GB) show the
     # state (e.g. "Scotland") as the country part rather than the full country name.
     resolved_code = (country_code or MAP_COUNTRY_TO_CODE.get(country, "")).lower()
-    display_country = state if (resolved_code in MAP_STATE_AS_COUNTRY_CODES and state) else country
+    display_country = (
+        state if (resolved_code in MAP_STATE_AS_COUNTRY_CODES and state) else country
+    )
 
     # Build "city, country" tail; omit city when it equals the place name
     if city and city != place_name:
