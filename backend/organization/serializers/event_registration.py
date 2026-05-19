@@ -848,6 +848,33 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                                     }
                                 )
 
+                        elif (
+                            field_type == RegistrationFieldType.INVENTORY
+                            and settings is not None
+                        ):
+                            submitted_title = settings.get("title")
+                            stored_title = (existing_field.settings or {}).get(
+                                "title", ""
+                            )
+                            if (
+                                submitted_title is not None
+                                and submitted_title != stored_title
+                            ):
+                                raise serializers.ValidationError(
+                                    {
+                                        "fields": {
+                                            i: {
+                                                "settings": {
+                                                    "title": (
+                                                        "Cannot change question title after "
+                                                        "registrants have answered this field."
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
+
                     # Per-option answer-lock: option title is immutable once any
                     # registrant has selected that option.
                     options_data = field_data.get("options")

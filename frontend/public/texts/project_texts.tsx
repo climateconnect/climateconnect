@@ -1330,6 +1330,22 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Single choice",
       de: "Einfachauswahl",
     },
+    field_type_inventory: {
+      en: "Inventory",
+      de: "Inventar",
+    },
+    inventory_available_amount: {
+      en: "Available amount",
+      de: "Verfügbare Menge",
+    },
+    inventory_max_per_guest: {
+      en: "Max per guest",
+      de: "Max. pro Gast",
+    },
+    inventory_description: {
+      en: "Description",
+      de: "Beschreibung",
+    },
     registration_field_description: {
       en: "Description",
       de: "Beschreibung",

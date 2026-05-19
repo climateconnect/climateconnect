@@ -81,14 +81,19 @@ export default function RegistrationFieldList({
     setAddMenuAnchor(null);
   };
 
-  const handleAddField = (fieldType: "checkbox" | "option_select") => {
+  const handleAddField = (fieldType: "checkbox" | "option_select" | "inventory") => {
     const newOrder = fields.length;
     const newField: RegistrationField = {
       field_type: fieldType,
       order: newOrder,
       is_required: false,
-      settings: fieldType === "checkbox" ? { description: "" } : { title: "" },
-      options: fieldType === "option_select" ? [] : undefined,
+      settings:
+        fieldType === "checkbox"
+          ? { description: "" }
+          : fieldType === "inventory"
+          ? { title: "", description: "" }
+          : { title: "" },
+      options: fieldType === "option_select" || fieldType === "inventory" ? [] : undefined,
       _clientKey: `new_${Date.now()}_${Math.random()}`,
     };
     onFieldsChange([...fields, newField]);
@@ -143,6 +148,8 @@ export default function RegistrationFieldList({
             <Typography variant="subtitle2" color="textSecondary">
               {field.field_type === "checkbox"
                 ? texts.field_type_checkbox
+                : field.field_type === "inventory"
+                ? texts.field_type_inventory
                 : texts.field_type_option_select}
             </Typography>
             <Box className={classes.controlsRow}>
@@ -224,6 +231,9 @@ export default function RegistrationFieldList({
         <MenuItem onClick={() => handleAddField("checkbox")}>{texts.field_type_checkbox}</MenuItem>
         <MenuItem onClick={() => handleAddField("option_select")}>
           {texts.field_type_option_select}
+        </MenuItem>
+        <MenuItem onClick={() => handleAddField("inventory")}>
+          {texts.field_type_inventory}
         </MenuItem>
       </Menu>
     </Box>
