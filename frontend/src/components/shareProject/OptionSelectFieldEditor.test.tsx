@@ -23,11 +23,19 @@ function renderEditor({
   title = "",
   options = [] as RegistrationFieldOption[],
   onChange = jest.fn(),
+  onRequestDeleteOption = undefined as jest.Mock | undefined,
+  titleDisabled = false,
 } = {}) {
   return render(
     <ThemeProvider theme={theme}>
       <UserContext.Provider value={defaultContext as any}>
-        <OptionSelectFieldEditor title={title} options={options} onChange={onChange} />
+        <OptionSelectFieldEditor
+          title={title}
+          options={options}
+          onChange={onChange}
+          onRequestDeleteOption={onRequestDeleteOption}
+          titleDisabled={titleDisabled}
+        />
       </UserContext.Provider>
     </ThemeProvider>
   );
@@ -160,6 +168,64 @@ describe("OptionSelectFieldEditor", () => {
       expect(options).toHaveLength(2);
       expect(options[0]).toMatchObject({ title: "A", order: 0 });
       expect(options[1]).toMatchObject({ title: "C", order: 1 });
+    });
+  });
+
+  // ── Answer-lock: titleDisabled ────────────────────────────────────────────
+
+  describe("titleDisabled prop", () => {
+    it("disables the title input when titleDisabled is true", () => {
+      renderEditor({ title: "Meal?", titleDisabled: true });
+      expect(screen.getByRole("textbox", { name: /title/i })).toBeDisabled();
+    });
+
+    it("leaves the title input enabled when titleDisabled is false", () => {
+      renderEditor({ title: "Meal?", titleDisabled: false });
+      expect(screen.getByRole("textbox", { name: /title/i })).not.toBeDisabled();
+    });
+  });
+
+  // ── Answer-lock: per-option disabled ──────────────────────────────────────
+
+  describe("option title disabled when has_answers", () => {
+    it("disables the option title input when option has_answers is true", () => {
+      renderEditor({ options: [{ id: 1, title: "Vegan", order: 0, has_answers: true }] });
+      expect(screen.getByDisplayValue("Vegan")).toBeDisabled();
+    });
+
+    it("leaves the option title input enabled when option has_answers is false", () => {
+      renderEditor({ options: [{ id: 1, title: "Vegan", order: 0, has_answers: false }] });
+      expect(screen.getByDisplayValue("Vegan")).not.toBeDisabled();
+    });
+  });
+
+  // ── Answer-lock: delete confirmation ─────────────────────────────────────
+
+  describe("delete confirmation for options with answers", () => {
+    it("calls onRequestDeleteOption instead of immediate delete when option has_answers is true", () => {
+      const onChange = jest.fn();
+      const onRequestDeleteOption = jest.fn();
+      renderEditor({
+        options: [{ id: 1, title: "Vegan", order: 0, has_answers: true }],
+        onChange,
+        onRequestDeleteOption,
+      });
+      fireEvent.click(screen.getByRole("button", { name: /delete option/i }));
+      expect(onRequestDeleteOption).toHaveBeenCalledWith(0, expect.objectContaining({ id: 1 }));
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("deletes immediately when option has_answers is false even if option has an id", () => {
+      const onChange = jest.fn();
+      const onRequestDeleteOption = jest.fn();
+      renderEditor({
+        options: [{ id: 1, title: "Vegan", order: 0, has_answers: false }],
+        onChange,
+        onRequestDeleteOption,
+      });
+      fireEvent.click(screen.getByRole("button", { name: /delete option/i }));
+      expect(onRequestDeleteOption).not.toHaveBeenCalled();
+      expect(onChange).toHaveBeenCalled();
     });
   });
 

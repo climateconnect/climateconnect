@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from climateconnect_api.utility.html import sanitize_html
+from organization.models.event_registration import RegistrationFieldAnswer
 from organization.models.registration_field import (
     RegistrationField,
     RegistrationFieldOption,
@@ -56,17 +57,26 @@ class RegistrationFieldOptionSerializer(serializers.ModelSerializer):
     id is optional on write:
       - Absent → create new option.
       - Present → identify an existing option for update.
+
+    has_answers (read-only): True if any RegistrationFieldAnswer row references
+    this option as value_option. The frontend uses this to lock the title field.
     """
 
     id = serializers.IntegerField(required=False, allow_null=True)
+    has_answers = serializers.SerializerMethodField()
 
     class Meta:
         model = RegistrationFieldOption
-        fields = ["id", "title", "order"]
+        fields = ["id", "title", "order", "has_answers"]
         extra_kwargs = {
             "title": {"max_length": 200},
             "order": {"min_value": 0},
         }
+
+    def get_has_answers(self, obj):
+        if not obj.pk:
+            return False
+        return RegistrationFieldAnswer.objects.filter(value_option=obj).exists()
 
 
 # ---------------------------------------------------------------------------
@@ -91,6 +101,10 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
     options is optional on write. When absent, existing options are left
     untouched (only relevant for updates). When present (even as []), the
     full option set for the field is synced.
+
+    has_answers (read-only): True if any RegistrationFieldAnswer row references
+    this field. The frontend uses this to lock text inputs (checkbox description,
+    option select title) that cannot be changed once answers exist.
     """
 
     id = serializers.IntegerField(required=False, allow_null=True)
@@ -99,14 +113,28 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
     )
     settings = serializers.JSONField(required=False)
     options = RegistrationFieldOptionSerializer(many=True, required=False)
+    has_answers = serializers.SerializerMethodField()
 
     class Meta:
         model = RegistrationField
-        fields = ["id", "field_type", "order", "is_required", "settings", "options"]
+        fields = [
+            "id",
+            "field_type",
+            "order",
+            "is_required",
+            "settings",
+            "options",
+            "has_answers",
+        ]
         extra_kwargs = {
             "order": {"min_value": 0},
             "is_required": {"required": False, "default": False},
         }
+
+    def get_has_answers(self, obj):
+        if not obj.pk:
+            return False
+        return RegistrationFieldAnswer.objects.filter(field=obj).exists()
 
     def validate(self, attrs):
         field_id = attrs.get("id")
@@ -240,9 +268,7 @@ def sync_fields(registration_config, fields_data):
                     RegistrationFieldOption.objects.create(field=field, **opt_data)
 
     # Delete fields absent from the submitted array.
-    # Guard: RegistrationFieldAnswer does not exist yet in Phase 4a, so all
-    # deletions are safe. The follow-up registrant task will add answer-based
-    # protection before Phase 4a ships.
+    # RegistrationFieldAnswer rows are removed automatically via DB CASCADE.
     to_delete = [fid for fid in existing if fid not in incoming_ids]
     if to_delete:
         RegistrationField.objects.filter(id__in=to_delete).delete()

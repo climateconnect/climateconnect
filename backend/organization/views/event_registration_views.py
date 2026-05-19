@@ -485,9 +485,10 @@ class EditRegistrationConfigView(APIView):
             )
 
         # ── 4. Validate and save ─────────────────────────────────────────────
-        # is_draft is read from the request body so the client can save partial
-        # field data without triggering publish-time validation.
-        is_draft = request.data.get("is_draft", False) in (True, "true", "True", "1", 1)
+        # Derive is_draft from the project's stored state, not the request body.
+        # Draft events skip publish-time field validation (e.g. empty checkbox
+        # description) without requiring the frontend to pass extra state.
+        is_draft = project.is_draft
         serializer = EditEventRegistrationConfigSerializer(
             rc,
             data=request.data,
