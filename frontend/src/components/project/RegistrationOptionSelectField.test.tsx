@@ -5,6 +5,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../themes/theme";
 import RegistrationOptionSelectField from "./RegistrationOptionSelectField";
 import { RegistrationField } from "../../types";
+import UserContext from "../context/UserContext";
 
 function makeField(overrides: Partial<RegistrationField> = {}): RegistrationField {
   return {
@@ -34,14 +35,16 @@ function renderField({
   error?: string;
 } = {}) {
   return render(
-    <ThemeProvider theme={theme}>
-      <RegistrationOptionSelectField
-        field={field}
-        value={value}
-        onChange={onChange}
-        error={error}
-      />
-    </ThemeProvider>
+    <UserContext.Provider value={{ locale: "en" } as any}>
+      <ThemeProvider theme={theme}>
+        <RegistrationOptionSelectField
+          field={field}
+          value={value}
+          onChange={onChange}
+          error={error}
+        />
+      </ThemeProvider>
+    </UserContext.Provider>
   );
 }
 

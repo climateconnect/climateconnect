@@ -7,6 +7,7 @@ import RegistrationFieldAnswersForm, {
   RegistrationFieldAnswersFormHandle,
 } from "./RegistrationFieldAnswersForm";
 import { RegistrationField } from "../../types";
+import UserContext from "../context/UserContext";
 
 const texts = {
   this_field_is_required: "This field is required",
@@ -50,14 +51,16 @@ function renderForm({
   ref?: React.RefObject<RegistrationFieldAnswersFormHandle>;
 }) {
   return render(
-    <ThemeProvider theme={theme}>
-      <RegistrationFieldAnswersForm
-        ref={ref}
-        fields={fields}
-        serverErrors={serverErrors}
-        texts={texts}
-      />
-    </ThemeProvider>
+    <UserContext.Provider value={{ locale: "en" } as any}>
+      <ThemeProvider theme={theme}>
+        <RegistrationFieldAnswersForm
+          ref={ref}
+          fields={fields}
+          serverErrors={serverErrors}
+          texts={texts}
+        />
+      </ThemeProvider>
+    </UserContext.Provider>
   );
 }
 
@@ -105,7 +108,7 @@ describe("RegistrationFieldAnswersForm", () => {
     });
 
     fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByLabelText("S"));
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "M" } });
 
     expect(screen.queryByText(texts.you_must_check_this_box)).not.toBeInTheDocument();
     expect(screen.queryByText(texts.please_select_an_option)).not.toBeInTheDocument();
@@ -117,7 +120,7 @@ describe("RegistrationFieldAnswersForm", () => {
 
     expect(answers).toEqual([
       { fieldId: 11, valueBoolean: true },
-      { fieldId: 22, valueOption: 101 },
+      { fieldId: 22, valueOption: 102 },
     ]);
   });
 
