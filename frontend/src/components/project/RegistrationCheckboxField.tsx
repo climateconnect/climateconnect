@@ -9,7 +9,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: theme.spacing(2),
   },
   checkbox: {
-    paddingLeft: theme.spacing(0.65),
+    marginLeft: theme.spacing(-0.15),
+    paddingLeft: 0,
   },
   content: {
     display: "flex",

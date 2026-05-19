@@ -8,7 +8,7 @@ import SelectField from "../general/SelectField";
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     marginBottom: theme.spacing(2),
-    paddingLeft: theme.spacing(1),
+    paddingLeft: 0,
   },
   label: {
     fontWeight: 500,
