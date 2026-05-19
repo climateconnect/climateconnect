@@ -3,7 +3,7 @@
 **Type**: Epic  
 **Status**: IN PROGRESS  
 **Started**: 2026-03-05  
-**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901)  
+**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901), [#1995](https://github.com/climateconnect/climateconnect/issues/1995)  
 **Owner**: CC
 
 ---
@@ -111,10 +111,10 @@ The foundational custom fields story. Organisers can add up to **5 extra fields*
 
 Organisers can define options with **limited availability** — e.g. workshop slots, shuttle seats, meal choices. Each option has a capacity (stock limit). The system tracks remaining availability per option and stores per-guest what they booked (option + quantity). This requires capacity tracking at the option level and a per-participant response record. Guests cannot select an option once it is fully booked.
 
-| Story | Status |
-|-------|--------|
-| Organiser creates/edits event with inventory options (capacity per option) | ⚪ |
-| Member selects inventory options when registering; system enforces per-option capacity | ⚪ |
+| Story | GitHub Issue | Spec | Status |
+|-------|-------------|------|--------|
+| Organiser creates/edits event with inventory options (capacity per option) | [#1995](https://github.com/climateconnect/climateconnect/issues/1995) | [`20260519_1328_inventory_field_type_event_registration.md`](./20260519_1328_inventory_field_type_event_registration.md) | ⚪ |
+| Member selects inventory options when registering; system enforces per-option capacity | ⚪ | — | ⚪ |
 
 #### Phase 4c+ — Further Field Types (TBD)
 
