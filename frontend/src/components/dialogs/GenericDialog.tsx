@@ -31,11 +31,14 @@ const useStyles = makeStyles<
     [theme.breakpoints.down("lg")]: {
       padding: theme.spacing(2),
       paddingTop: 0,
+      paddingBottom: 0,
     },
   }),
   scrollDialogContent: {
     height: "auto",
-    overflow: "auto",
+    flex: "1 1 auto",
+    minHeight: 0,
+    overflowY: "auto",
   },
   closeButtonLeft: {
     marginLeft: theme.spacing(-1),
@@ -86,6 +89,7 @@ type Props = PropsWithChildren<{
   showApplyAtBottom?: boolean;
   buttonAsLink?: string;
   PaperProps?: any;
+  scroll?: "body" | "paper";
 }>;
 /**
  * Simple base wrapper on top of the Material UI (MUI)
@@ -114,12 +118,14 @@ export default function GenericDialog({
   showApplyAtBottom,
   buttonAsLink,
   PaperProps,
+  scroll,
 }: Props) {
   const classes = useStyles({
     useApplyButton,
     fullScreen,
     closeButtonRightSide,
   });
+  const dialogScrollMode = scroll || "paper";
 
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
@@ -129,7 +135,9 @@ export default function GenericDialog({
 
   return (
     <Dialog
-      className={`${classes.dialog} ${topBarFixed && classes.noScrollDialog}`}
+      className={`${classes.dialog} ${
+        topBarFixed && dialogScrollMode === "paper" && classes.noScrollDialog
+      }`}
       onClose={handleCancel}
       open={open}
       maxWidth={maxWidth ? maxWidth : "md"}
@@ -138,6 +146,7 @@ export default function GenericDialog({
         paper: paperClassName,
       }}
       PaperProps={PaperProps}
+      scroll={dialogScrollMode}
     >
       <DialogTitle className={classes.dialogTitle}>
         {onClose && !closeButtonRightSide && (
@@ -182,7 +191,7 @@ export default function GenericDialog({
       </DialogTitle>
       <div
         className={`${classes.dialogContent} ${
-          topBarFixed && classes.scrollDialogContent
+          (topBarFixed || dialogScrollMode === "paper") && classes.scrollDialogContent
         } ${dialogContentClass}`}
       >
         {children}

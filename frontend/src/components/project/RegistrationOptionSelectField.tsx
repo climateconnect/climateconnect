@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, FormHelperText } from "@mui/material";
+import { Box, FormHelperText, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import { RegistrationField } from "../../types";
@@ -9,6 +9,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     marginBottom: theme.spacing(2),
     paddingLeft: theme.spacing(1),
+  },
+  label: {
+    fontWeight: 500,
+    color: theme.palette.text.primary,
+    marginBottom: theme.spacing(1),
+  },
+  required: {
+    color: theme.palette.error.main,
+    marginLeft: theme.spacing(0.5),
   },
   errorText: {
     color: theme.palette.error.main,
@@ -47,6 +56,14 @@ export default function RegistrationOptionSelectField({ field, value, onChange, 
 
   return (
     <Box className={classes.root}>
+      <Typography component="div" variant="body2" className={classes.label}>
+        {title}
+        {field.is_required && (
+          <span className={classes.required} aria-hidden="true">
+            {" *"}
+          </span>
+        )}
+      </Typography>
       <SelectField
         controlled
         controlledValue={
@@ -55,7 +72,7 @@ export default function RegistrationOptionSelectField({ field, value, onChange, 
             : { name: "" }
         }
         options={sortedOptions.map((option) => ({ name: option.title, key: String(option.id) }))}
-        label={title}
+        label=""
         onChange={handleChange}
         required={field.is_required}
       />

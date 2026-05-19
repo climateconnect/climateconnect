@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   eventSubheader: {
     marginBottom: theme.spacing(2),
     color: theme.palette.text.secondary,
+    paddingLeft: theme.spacing(1),
   },
   eventDateLine: {
     marginTop: theme.spacing(0.5),
@@ -42,6 +43,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   userInfo: {
     marginBottom: theme.spacing(3),
+    paddingLeft: theme.spacing(1),
   },
   profilePreview: {
     marginBottom: theme.spacing(2),
@@ -61,6 +63,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.up("sm")]: {
       flexDirection: "row",
     },
+    paddingBottom: theme.spacing(2),
   },
   authMessage: {
     marginBottom: theme.spacing(3),
@@ -106,6 +109,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   helperText: {
     marginBottom: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
   },
   loadingContainer: {
     marginTop: theme.spacing(2),
@@ -169,6 +173,9 @@ export default function EventRegistrationModal({
     isEnabled("EVENT_REGISTRATION") &&
     isEnabled("REGISTRATION_CUSTOM_FIELDS") &&
     (project.registration_config?.fields?.length ?? 0) > 0;
+  const hasRequiredCustomFields =
+    showCustomFields &&
+    (project.registration_config?.fields?.some((field) => field.is_required) ?? false);
 
   const eventDateText =
     project.start_date && project.end_date
@@ -314,6 +321,12 @@ export default function EventRegistrationModal({
         </Box>
       )}
 
+      {hasRequiredCustomFields && (
+        <Typography variant="caption" color="textSecondary" className={classes.helperText}>
+          {texts.required_fields_participation_notice}
+        </Typography>
+      )}
+
       {errorMessage && (
         <Typography variant="body2" className={classes.errorText}>
           {errorMessage}
@@ -438,7 +451,13 @@ export default function EventRegistrationModal({
   );
 
   return (
-    <GenericDialog open={open} onClose={handleClose} title={texts.register_for_event} maxWidth="sm">
+    <GenericDialog
+      open={open}
+      onClose={handleClose}
+      title={texts.register_for_event}
+      maxWidth="sm"
+      scroll={"paper"}
+    >
       <Box className={classes.modalContent}>
         {(project.name || eventDateText) && (
           <Box className={classes.eventSubheader}>
