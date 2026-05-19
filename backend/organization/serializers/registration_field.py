@@ -240,9 +240,7 @@ def sync_fields(registration_config, fields_data):
                     RegistrationFieldOption.objects.create(field=field, **opt_data)
 
     # Delete fields absent from the submitted array.
-    # Guard: RegistrationFieldAnswer does not exist yet in Phase 4a, so all
-    # deletions are safe. The follow-up registrant task will add answer-based
-    # protection before Phase 4a ships.
+    # RegistrationFieldAnswer rows are removed automatically via DB CASCADE.
     to_delete = [fid for fid in existing if fid not in incoming_ids]
     if to_delete:
         RegistrationField.objects.filter(id__in=to_delete).delete()

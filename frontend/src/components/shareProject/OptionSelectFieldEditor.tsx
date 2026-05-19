@@ -34,9 +34,16 @@ type Props = {
   title: string;
   options: RegistrationFieldOption[];
   onChange: (_update: { title: string; options: RegistrationFieldOption[] }) => void;
+  /** Called instead of immediate deletion when the option has an id (was previously saved). */
+  onRequestDeleteOption?: (_index: number, _option: RegistrationFieldOption) => void;
 };
 
-export default function OptionSelectFieldEditor({ title, options, onChange }: Props) {
+export default function OptionSelectFieldEditor({
+  title,
+  options,
+  onChange,
+  onRequestDeleteOption,
+}: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
@@ -56,6 +63,11 @@ export default function OptionSelectFieldEditor({ title, options, onChange }: Pr
   };
 
   const handleDeleteOption = (index: number) => {
+    const option = options[index];
+    if (option.id != null && onRequestDeleteOption) {
+      onRequestDeleteOption(index, option);
+      return;
+    }
     const updated = options.filter((_, i) => i !== index).map((o, i) => ({ ...o, order: i }));
     onChange({ title, options: updated });
   };

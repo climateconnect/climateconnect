@@ -19,7 +19,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import { RegistrationField } from "../../types";
+import { RegistrationField, RegistrationFieldOption } from "../../types";
 import RegistrationFieldEditor from "./RegistrationFieldEditor";
 
 const MAX_FIELDS = 5;
@@ -51,9 +51,22 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   fields: RegistrationField[];
   onFieldsChange: (_updated: RegistrationField[]) => void;
+  /** Called instead of immediate deletion when the field has an id (was previously saved). */
+  onRequestDeleteField?: (_index: number, _field: RegistrationField) => void;
+  /** Called instead of immediate deletion when a persisted option within a field is deleted. */
+  onRequestDeleteOption?: (
+    _fieldIndex: number,
+    _optionIndex: number,
+    _option: RegistrationFieldOption
+  ) => void;
 };
 
-export default function RegistrationFieldList({ fields, onFieldsChange }: Props) {
+export default function RegistrationFieldList({
+  fields,
+  onFieldsChange,
+  onRequestDeleteField,
+  onRequestDeleteOption,
+}: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
@@ -101,6 +114,11 @@ export default function RegistrationFieldList({ fields, onFieldsChange }: Props)
   };
 
   const handleDeleteField = (index: number) => {
+    const field = fields[index];
+    if (field.id != null && onRequestDeleteField) {
+      onRequestDeleteField(index, field);
+      return;
+    }
     const updated = fields.filter((_, i) => i !== index).map((f, i) => ({ ...f, order: i }));
     onFieldsChange(updated);
   };
@@ -158,6 +176,11 @@ export default function RegistrationFieldList({ fields, onFieldsChange }: Props)
           <RegistrationFieldEditor
             field={field}
             onChange={(updated) => handleFieldChange(index, updated)}
+            onRequestDeleteOption={
+              onRequestDeleteOption
+                ? (optionIndex, option) => onRequestDeleteOption(index, optionIndex, option)
+                : undefined
+            }
           />
           <Divider sx={{ mt: 1.5 }} />
           <Box className={classes.fieldFooter}>
