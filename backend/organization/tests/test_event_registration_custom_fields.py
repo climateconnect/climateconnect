@@ -1284,9 +1284,7 @@ class TestInventoryField(_CustomFieldsBase):
       INV-12 – GET response includes available_amount, max_amount_per_guest on options
     """
 
-    def _create_inventory_field(
-        self, title="Meal tickets", order=0, options=None
-    ):
+    def _create_inventory_field(self, title="Meal tickets", order=0, options=None):
         """Helper: create an inventory RegistrationField on self.er."""
         field = RegistrationField.objects.create(
             registration_config=self.er,
@@ -1497,7 +1495,10 @@ class TestInventoryField(_CustomFieldsBase):
             start_date=timezone.now() + timedelta(days=10),
             end_date=timezone.now() + timedelta(days=60),
         )
-        from organization.models.event_registration import EventRegistrationConfig, RegistrationStatus
+        from organization.models.event_registration import (
+            EventRegistrationConfig,
+            RegistrationStatus,
+        )
 
         draft_er = EventRegistrationConfig.objects.create(
             project=draft_event,
@@ -1544,8 +1545,18 @@ class TestInventoryField(_CustomFieldsBase):
         """INV-7 — PATCH updates inventory settings and syncs options correctly."""
         field = self._create_inventory_field(
             options=[
-                {"title": "Veg", "order": 0, "available_amount": 10, "max_amount_per_guest": 1},
-                {"title": "Standard", "order": 1, "available_amount": 20, "max_amount_per_guest": 2},
+                {
+                    "title": "Veg",
+                    "order": 0,
+                    "available_amount": 10,
+                    "max_amount_per_guest": 1,
+                },
+                {
+                    "title": "Standard",
+                    "order": 1,
+                    "available_amount": 20,
+                    "max_amount_per_guest": 2,
+                },
             ]
         )
         keep_opt = field.options.get(title="Veg")
@@ -1580,7 +1591,9 @@ class TestInventoryField(_CustomFieldsBase):
         self.assertEqual(field.settings["title"], "Updated Meals")
         keep_opt.refresh_from_db()
         self.assertEqual(keep_opt.available_amount, 15)
-        self.assertFalse(RegistrationFieldOption.objects.filter(id=drop_opt.id).exists())
+        self.assertFalse(
+            RegistrationFieldOption.objects.filter(id=drop_opt.id).exists()
+        )
 
     # ── INV-8: Answer-lock on inventory field title ───────────────────────────
 
@@ -1590,7 +1603,12 @@ class TestInventoryField(_CustomFieldsBase):
         field = self._create_inventory_field(
             title="Meals",
             options=[
-                {"title": "Veg", "order": 0, "available_amount": 10, "max_amount_per_guest": 1}
+                {
+                    "title": "Veg",
+                    "order": 0,
+                    "available_amount": 10,
+                    "max_amount_per_guest": 1,
+                }
             ],
         )
         option = field.options.first()
@@ -1630,7 +1648,12 @@ class TestInventoryField(_CustomFieldsBase):
         field = self._create_inventory_field(
             title="Meals",
             options=[
-                {"title": "Veg", "order": 0, "available_amount": 10, "max_amount_per_guest": 1}
+                {
+                    "title": "Veg",
+                    "order": 0,
+                    "available_amount": 10,
+                    "max_amount_per_guest": 1,
+                }
             ],
         )
         option = field.options.first()
@@ -1678,7 +1701,12 @@ class TestInventoryField(_CustomFieldsBase):
         field = self._create_inventory_field(
             title="Meals",
             options=[
-                {"title": "Veg", "order": 0, "available_amount": 10, "max_amount_per_guest": 1}
+                {
+                    "title": "Veg",
+                    "order": 0,
+                    "available_amount": 10,
+                    "max_amount_per_guest": 1,
+                }
             ],
         )
         option = field.options.first()

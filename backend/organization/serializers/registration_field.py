@@ -216,11 +216,7 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
                 title = (attrs.get("settings") or {}).get("title", "")
                 if not title or not title.strip():
                     raise serializers.ValidationError(
-                        {
-                            "settings": {
-                                "title": "Required when publishing an event."
-                            }
-                        }
+                        {"settings": {"title": "Required when publishing an event."}}
                     )
                 options = attrs.get("options")
                 if not options:
