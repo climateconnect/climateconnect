@@ -15,6 +15,34 @@ jest.mock("universal-cookie", () => {
   return jest.fn(() => ({ get: jest.fn(() => "test-token") }));
 });
 
+// Feature toggles — default to all disabled; individual tests opt-in.
+const mockIsEnabled = jest.fn(() => false);
+jest.mock("../featureToggle", () => ({
+  useFeatureToggles: () => ({ isEnabled: mockIsEnabled }),
+}));
+
+// Stub RegistrationFieldList to avoid rendering the full component tree.
+// Exposes a delete-field button per field so modal-level dialog tests work.
+jest.mock("../shareProject/RegistrationFieldList", () => ({
+  __esModule: true,
+  default: ({ fields, onFieldsChange, onRequestDeleteField }: any) => (
+    <div data-testid="registration-field-list">
+      {fields.map((f: any, i: number) => (
+        <button
+          key={f._clientKey ?? f.id ?? i}
+          onClick={() =>
+            f.has_answers && onRequestDeleteField
+              ? onRequestDeleteField(i, f)
+              : onFieldsChange(fields.filter((_: any, j: number) => j !== i))
+          }
+        >
+          delete field {i}
+        </button>
+      ))}
+    </div>
+  ),
+}));
+
 const mockApiRequest = jest.fn();
 jest.mock("../../../public/lib/apiOperations", () => ({
   ...jest.requireActual("../../../public/lib/apiOperations"),
@@ -379,6 +407,118 @@ describe("EditEventRegistrationModal", () => {
       await waitFor(() => {
         expect(screen.getByText(/must be a positive integer/i)).toBeInTheDocument();
       });
+    });
+  });
+
+  // ── Custom fields section ─────────────────────────────────────────────────
+
+  describe("custom fields section", () => {
+    beforeEach(() => {
+      mockIsEnabled.mockImplementation((flag: string) => flag === "REGISTRATION_CUSTOM_FIELDS");
+    });
+
+    it("renders the RegistrationFieldList when the feature toggle is enabled", () => {
+      renderModal({
+        eventRegistration: makeRegistration({ fields: [] }),
+      });
+      expect(screen.getByTestId("registration-field-list")).toBeInTheDocument();
+    });
+
+    it("does not render the RegistrationFieldList when the feature toggle is disabled", () => {
+      mockIsEnabled.mockReturnValue(false);
+      renderModal({ eventRegistration: makeRegistration({ fields: [] }) });
+      expect(screen.queryByTestId("registration-field-list")).not.toBeInTheDocument();
+    });
+
+    it("includes fields in the PATCH payload when the feature toggle is enabled", async () => {
+      const fields = [
+        {
+          id: 1,
+          field_type: "checkbox" as const,
+          order: 0,
+          is_required: false,
+          settings: { description: "<p>OK</p>" },
+          has_answers: false,
+        },
+      ];
+      renderModal({ eventRegistration: makeRegistration({ fields }) });
+      fireEvent.click(screen.getByRole("button", { name: /save/i }));
+      await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
+      const { payload } = mockApiRequest.mock.calls[0][0];
+      expect(payload.fields).toEqual(fields);
+    });
+  });
+
+  // ── Delete field confirmation dialog ──────────────────────────────────────
+
+  describe("delete field confirmation dialog", () => {
+    beforeEach(() => {
+      mockIsEnabled.mockImplementation((flag: string) => flag === "REGISTRATION_CUSTOM_FIELDS");
+    });
+
+    it("opens the confirmation dialog when deleting a field with has_answers=true", () => {
+      const fields = [
+        {
+          id: 1,
+          field_type: "checkbox" as const,
+          order: 0,
+          is_required: false,
+          settings: {},
+          has_answers: true,
+          _clientKey: "k1",
+        },
+      ];
+      renderModal({ eventRegistration: makeRegistration({ fields }) });
+      fireEvent.click(screen.getByRole("button", { name: /delete field 0/i }));
+      expect(screen.getByRole("dialog", { name: /delete field/i })).toBeInTheDocument();
+    });
+
+    it("removes the field from state when the confirmation dialog is confirmed", async () => {
+      const fields = [
+        {
+          id: 1,
+          field_type: "checkbox" as const,
+          order: 0,
+          is_required: false,
+          settings: {},
+          has_answers: true,
+          _clientKey: "k1",
+        },
+      ];
+      renderModal({ eventRegistration: makeRegistration({ fields }) });
+      fireEvent.click(screen.getByRole("button", { name: /delete field 0/i }));
+      fireEvent.click(screen.getByRole("button", { name: /^delete field$/i }));
+      // Wait for the confirmation dialog to close and main dialog to become accessible again
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument()
+      );
+      fireEvent.click(screen.getByRole("button", { name: /save/i }));
+      await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
+      const { payload } = mockApiRequest.mock.calls[0][0];
+      expect(payload.fields).toHaveLength(0);
+    });
+
+    it("keeps the field when the confirmation dialog is cancelled", async () => {
+      const fields = [
+        {
+          id: 1,
+          field_type: "checkbox" as const,
+          order: 0,
+          is_required: false,
+          settings: {},
+          has_answers: true,
+          _clientKey: "k1",
+        },
+      ];
+      renderModal({ eventRegistration: makeRegistration({ fields }) });
+      fireEvent.click(screen.getByRole("button", { name: /delete field 0/i }));
+      fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+      // Wait for the main dialog to be accessible again, confirming the confirmation dialog closed
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: /delete field 0/i })).toBeInTheDocument()
+      );
+      // Field is still present in the list
+      expect(screen.getByTestId("registration-field-list")).toBeInTheDocument();
     });
   });
 });

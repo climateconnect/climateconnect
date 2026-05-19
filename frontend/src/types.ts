@@ -5,6 +5,7 @@ export type RegistrationFieldOption = {
   id?: number | null;
   title: string;
   order: number;
+  has_answers?: boolean;
 };
 
 export type RegistrationField = {
@@ -17,6 +18,7 @@ export type RegistrationField = {
     title?: string;
   };
   options?: RegistrationFieldOption[];
+  has_answers?: boolean;
   /** Client-only stable key for React list rendering before the field is saved. */
   _clientKey?: string;
 };

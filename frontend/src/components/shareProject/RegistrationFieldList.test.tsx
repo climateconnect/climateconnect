@@ -282,4 +282,49 @@ describe("RegistrationFieldList", () => {
       expect(result[0].is_required).toBe(false);
     });
   });
+
+  // ── Answer-lock: delete confirmation ─────────────────────────────────────
+
+  describe("delete confirmation for fields with answers", () => {
+    function renderWithDeleteCallback(fields: RegistrationField[]) {
+      const onFieldsChange = jest.fn();
+      const onRequestDeleteField = jest.fn();
+      render(
+        <ThemeProvider theme={theme}>
+          <UserContext.Provider value={defaultContext as any}>
+            <RegistrationFieldList
+              fields={fields}
+              onFieldsChange={onFieldsChange}
+              onRequestDeleteField={onRequestDeleteField}
+            />
+          </UserContext.Provider>
+        </ThemeProvider>
+      );
+      return { onFieldsChange, onRequestDeleteField };
+    }
+
+    it("calls onRequestDeleteField instead of immediate delete when has_answers is true", () => {
+      const field = makeField({ id: 1, has_answers: true });
+      const { onFieldsChange, onRequestDeleteField } = renderWithDeleteCallback([field]);
+      fireEvent.click(screen.getByRole("button", { name: /delete field/i }));
+      expect(onRequestDeleteField).toHaveBeenCalledWith(0, field);
+      expect(onFieldsChange).not.toHaveBeenCalled();
+    });
+
+    it("deletes immediately (no callback) when has_answers is false even if field has an id", () => {
+      const field = makeField({ id: 1, has_answers: false });
+      const { onFieldsChange, onRequestDeleteField } = renderWithDeleteCallback([field]);
+      fireEvent.click(screen.getByRole("button", { name: /delete field/i }));
+      expect(onRequestDeleteField).not.toHaveBeenCalled();
+      expect(onFieldsChange).toHaveBeenCalledWith([]);
+    });
+
+    it("deletes immediately when has_answers is undefined", () => {
+      const field = makeField({ id: 1 }); // has_answers not set
+      const { onFieldsChange, onRequestDeleteField } = renderWithDeleteCallback([field]);
+      fireEvent.click(screen.getByRole("button", { name: /delete field/i }));
+      expect(onRequestDeleteField).not.toHaveBeenCalled();
+      expect(onFieldsChange).toHaveBeenCalledWith([]);
+    });
+  });
 });

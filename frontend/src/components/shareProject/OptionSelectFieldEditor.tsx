@@ -34,8 +34,10 @@ type Props = {
   title: string;
   options: RegistrationFieldOption[];
   onChange: (_update: { title: string; options: RegistrationFieldOption[] }) => void;
-  /** Called instead of immediate deletion when the option has an id (was previously saved). */
+  /** Called instead of immediate deletion when the option has answers (confirms data loss). */
   onRequestDeleteOption?: (_index: number, _option: RegistrationFieldOption) => void;
+  /** When true, the question title field is read-only (field has registrant answers). */
+  titleDisabled?: boolean;
 };
 
 export default function OptionSelectFieldEditor({
@@ -43,6 +45,7 @@ export default function OptionSelectFieldEditor({
   options,
   onChange,
   onRequestDeleteOption,
+  titleDisabled,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -64,7 +67,7 @@ export default function OptionSelectFieldEditor({
 
   const handleDeleteOption = (index: number) => {
     const option = options[index];
-    if (option.id != null && onRequestDeleteOption) {
+    if (option.has_answers && onRequestDeleteOption) {
       onRequestDeleteOption(index, option);
       return;
     }
@@ -99,6 +102,7 @@ export default function OptionSelectFieldEditor({
         onChange={handleTitleChange}
         variant="outlined"
         size="small"
+        disabled={titleDisabled}
         sx={{ mb: 1.5 }}
       />
       {options.map((option, index) => (
@@ -110,6 +114,7 @@ export default function OptionSelectFieldEditor({
             placeholder={texts.option_placeholder}
             variant="outlined"
             size="small"
+            disabled={option.has_answers === true}
           />
           <Tooltip title={texts.move_field_up}>
             <span>

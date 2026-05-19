@@ -54,9 +54,10 @@ const useStyles = makeStyles((theme) => ({
 type Props = {
   description: string;
   onChange: (_html: string) => void;
+  disabled?: boolean;
 };
 
-export default function CheckboxFieldEditor({ description, onChange }: Props) {
+export default function CheckboxFieldEditor({ description, onChange, disabled }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
@@ -85,6 +86,7 @@ export default function CheckboxFieldEditor({ description, onChange }: Props) {
         immediatelyRender={false}
         extensions={EXTENSIONS}
         content={description || ""}
+        editable={!disabled}
         onCreate={({ editor }) => {
           setCharCount(editor.storage.characterCount.characters());
         }}
@@ -93,14 +95,26 @@ export default function CheckboxFieldEditor({ description, onChange }: Props) {
           onChange(html === "<p></p>" ? "" : html);
           setCharCount(editor.storage.characterCount.characters());
         }}
-        renderControls={() => (
-          <MenuControlsContainer>
-            <MenuButtonBold />
-            <MenuButtonEditLink />
-          </MenuControlsContainer>
-        )}
+        renderControls={
+          disabled
+            ? () => null
+            : () => (
+                <MenuControlsContainer>
+                  <MenuButtonBold />
+                  <MenuButtonEditLink />
+                </MenuControlsContainer>
+              )
+        }
         RichTextFieldProps={{
-          footer: (
+          disabled: disabled,
+          sx: disabled
+            ? {
+                "& .MuiTiptap-RichTextContent-readonly p": {
+                  color: "text.disabled",
+                },
+              }
+            : undefined,
+          footer: disabled ? undefined : (
             <Box className={classes.charCount}>
               <Typography
                 variant="caption"

@@ -115,7 +115,7 @@ export default function RegistrationFieldList({
 
   const handleDeleteField = (index: number) => {
     const field = fields[index];
-    if (field.id != null && onRequestDeleteField) {
+    if (field.has_answers && onRequestDeleteField) {
       onRequestDeleteField(index, field);
       return;
     }

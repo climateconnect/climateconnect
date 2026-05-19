@@ -11,10 +11,12 @@ import {
   DialogTitle,
   Divider,
   FormControlLabel,
+  IconButton,
   Switch,
   TextField,
   Typography,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import makeStyles from "@mui/styles/makeStyles";
 import dayjs, { Dayjs } from "dayjs";
 import Cookies from "universal-cookie";
@@ -30,7 +32,6 @@ import {
 import UserContext from "../context/UserContext";
 import { useFeatureToggles } from "../featureToggle";
 import DatePicker from "../general/DatePicker";
-import GenericDialog from "../dialogs/GenericDialog";
 import RegistrationFieldList from "../shareProject/RegistrationFieldList";
 
 const useStyles = makeStyles((theme) => ({
@@ -46,19 +47,10 @@ const useStyles = makeStyles((theme) => ({
       width: "100%",
     },
   },
-  actionRow: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: theme.spacing(1),
-    marginTop: theme.spacing(3),
-  },
   errorText: {
     color: theme.palette.error.main,
     fontSize: "0.75rem",
     marginTop: theme.spacing(0.5),
-  },
-  generalError: {
-    marginTop: theme.spacing(1),
   },
   statusHint: {
     marginTop: theme.spacing(0.5),
@@ -342,156 +334,170 @@ export default function EditEventRegistrationModal({
 
   return (
     <>
-      <GenericDialog
+      <Dialog
         open={open}
         onClose={onClose}
-        title={texts.edit_registration_settings}
+        scroll="paper"
         maxWidth="sm"
+        fullWidth
+        aria-labelledby="edit-registration-dialog-title"
       >
-        <Box className={classes.fieldsRow}>
-          <Box className={classes.field}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              type="number"
-              label={texts.max_participants}
-              value={maxParticipants}
-              onChange={(e) => setMaxParticipants(e.target.value)}
-              inputProps={{ min: 1 }}
-              error={!!errors.max_participants}
-              helperText={errors.max_participants}
-              required
-              aria-label={texts.max_participants}
-            />
-          </Box>
-          <Box className={classes.field}>
-            <DatePicker
-              label={texts.registration_end_date}
-              enableTime
-              date={registrationEndDate}
-              handleChange={(val: Dayjs) => setRegistrationEndDate(val)}
-              minDate={dayjs()}
-              maxDate={project.end_date ? dayjs(project.end_date) : undefined}
-              error={errors.registration_end_date as any}
-              required
-            />
-          </Box>
+        <DialogTitle
+          id="edit-registration-dialog-title"
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
+          <IconButton aria-label="close" onClick={onClose} size="small" sx={{ color: "grey.500" }}>
+            <CloseIcon />
+          </IconButton>
+          {texts.edit_registration_settings}
+        </DialogTitle>
 
-          {/* Status field */}
-          <Box className={classes.field}>
-            {isStatusEnded ? (
-              // "ended" is system-managed — show read-only chip, no select
-              <Box>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    color: "text.secondary",
-                  }}
-                >
-                  {texts.registration_status}
-                </Typography>
-                <Box sx={{ mt: 0.5 }}>
-                  <Chip
-                    size="small"
-                    label={texts.registration_status_ended}
-                    color="error"
-                    sx={{ fontWeight: 600 }}
-                  />
-                </Box>
-              </Box>
-            ) : (
-              // "open", "closed", or "full" — show a Switch
-              <Box>
-                {isStatusFull && (
-                  // Extra chip to communicate the current effective status
-                  <Box sx={{ mb: 1 }}>
+        <DialogContent dividers>
+          <Box className={classes.fieldsRow}>
+            <Box className={classes.field}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="number"
+                label={texts.max_participants}
+                value={maxParticipants}
+                onChange={(e) => setMaxParticipants(e.target.value)}
+                inputProps={{ min: 1 }}
+                error={!!errors.max_participants}
+                helperText={errors.max_participants}
+                required
+                aria-label={texts.max_participants}
+              />
+            </Box>
+            <Box className={classes.field}>
+              <DatePicker
+                label={texts.registration_end_date}
+                enableTime
+                date={registrationEndDate}
+                handleChange={(val: Dayjs) => setRegistrationEndDate(val)}
+                minDate={dayjs()}
+                maxDate={project.end_date ? dayjs(project.end_date) : undefined}
+                error={errors.registration_end_date as any}
+                required
+              />
+            </Box>
+
+            {/* Status field */}
+            <Box className={classes.field}>
+              {isStatusEnded ? (
+                // "ended" is system-managed — show read-only chip, no select
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      color: "text.secondary",
+                    }}
+                  >
+                    {texts.registration_status}
+                  </Typography>
+                  <Box sx={{ mt: 0.5 }}>
                     <Chip
                       size="small"
-                      label={texts.registration_status_full}
-                      color="warning"
+                      label={texts.registration_status_ended}
+                      color="error"
                       sx={{ fontWeight: 600 }}
                     />
                   </Box>
-                )}
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={selectedStatus === "open"}
-                      onChange={(e) => {
-                        // Capacity guard: block turning ON when full and seats not freed
-                        if (e.target.checked && !canSelectOpen) return;
-                        setSelectedStatus(e.target.checked ? "open" : "closed");
-                      }}
-                      color="primary"
-                      aria-label={texts.registration_status}
-                    />
-                  }
-                  label={
-                    selectedStatus === "open"
-                      ? texts.registration_is_open
-                      : texts.registration_is_closed
-                  }
+                </Box>
+              ) : (
+                // "open", "closed", or "full" — show a Switch
+                <Box>
+                  {isStatusFull && (
+                    // Extra chip to communicate the current effective status
+                    <Box sx={{ mb: 1 }}>
+                      <Chip
+                        size="small"
+                        label={texts.registration_status_full}
+                        color="warning"
+                        sx={{ fontWeight: 600 }}
+                      />
+                    </Box>
+                  )}
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={selectedStatus === "open"}
+                        onChange={(e) => {
+                          // Capacity guard: block turning ON when full and seats not freed
+                          if (e.target.checked && !canSelectOpen) return;
+                          setSelectedStatus(e.target.checked ? "open" : "closed");
+                        }}
+                        color="primary"
+                        aria-label={texts.registration_status}
+                      />
+                    }
+                    label={
+                      selectedStatus === "open"
+                        ? texts.registration_is_open
+                        : texts.registration_is_closed
+                    }
+                  />
+                  {errors.status && (
+                    <Typography className={classes.errorText} role="alert">
+                      {errors.status}
+                    </Typography>
+                  )}
+                  {isStatusFull && !canSelectOpen && (
+                    <Typography className={classes.statusHint} role="note">
+                      {texts.registration_fully_booked_increase_max_participants}
+                    </Typography>
+                  )}
+                </Box>
+              )}
+            </Box>
+          </Box>
+
+          {/* Notify admins toggle */}
+          <Box sx={{ width: "100%", mt: 2 }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={notifyAdmins}
+                  onChange={(e) => setNotifyAdmins(e.target.checked)}
+                  color="primary"
+                  aria-label={texts.notify_admins_on_registration}
                 />
-                {errors.status && (
-                  <Typography className={classes.errorText} role="alert">
-                    {errors.status}
-                  </Typography>
-                )}
-                {isStatusFull && !canSelectOpen && (
-                  <Typography className={classes.statusHint} role="note">
-                    {texts.registration_fully_booked_increase_max_participants}
-                  </Typography>
-                )}
-              </Box>
-            )}
-          </Box>
-        </Box>
-
-        {/* Notify admins toggle */}
-        <Box sx={{ width: "100%", mt: 2 }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={notifyAdmins}
-                onChange={(e) => setNotifyAdmins(e.target.checked)}
-                color="primary"
-                aria-label={texts.notify_admins_on_registration}
-              />
-            }
-            label={texts.notify_admins_on_registration}
-          />
-        </Box>
-
-        {/* Custom fields section (toggle-gated) */}
-        {isCustomFieldsEnabled && (
-          <Box className={classes.customFieldsSection}>
-            <Divider sx={{ mb: 2 }} />
-            <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 600 }}>
-              {texts.registration_custom_fields}
-            </Typography>
-            <RegistrationFieldList
-              fields={fields}
-              onFieldsChange={setFields}
-              onRequestDeleteField={handleRequestDeleteField}
-              onRequestDeleteOption={handleRequestDeleteOption}
+              }
+              label={texts.notify_admins_on_registration}
             />
-            {errors.fields && (
-              <Typography className={classes.customFieldsError} role="alert">
-                {errors.fields}
-              </Typography>
-            )}
           </Box>
-        )}
 
-        {errors.general && (
-          <Typography className={`${classes.errorText} ${classes.generalError}`} role="alert">
-            {errors.general}
-          </Typography>
-        )}
+          {/* Custom fields section (toggle-gated) */}
+          {isCustomFieldsEnabled && (
+            <Box className={classes.customFieldsSection}>
+              <Divider sx={{ mb: 2 }} />
+              <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 600 }}>
+                {texts.registration_custom_fields}
+              </Typography>
+              <RegistrationFieldList
+                fields={fields}
+                onFieldsChange={setFields}
+                onRequestDeleteField={handleRequestDeleteField}
+                onRequestDeleteOption={handleRequestDeleteOption}
+              />
+              {errors.fields && (
+                <Typography className={classes.customFieldsError} role="alert">
+                  {errors.fields}
+                </Typography>
+              )}
+            </Box>
+          )}
 
-        <Box className={classes.actionRow}>
+          {errors.general && (
+            <Typography className={classes.errorText} sx={{ mt: 1 }} role="alert">
+              {errors.general}
+            </Typography>
+          )}
+        </DialogContent>
+
+        <DialogActions>
           <Button variant="outlined" onClick={onClose} disabled={saving} aria-label={texts.cancel}>
             {texts.cancel}
           </Button>
@@ -505,8 +511,8 @@ export default function EditEventRegistrationModal({
           >
             {saving ? texts.save + "…" : texts.save}
           </Button>
-        </Box>
-      </GenericDialog>
+        </DialogActions>
+      </Dialog>
 
       {/* Delete field confirmation dialog */}
       <Dialog

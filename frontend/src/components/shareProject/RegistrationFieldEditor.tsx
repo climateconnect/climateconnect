@@ -11,6 +11,7 @@ type Props = {
 };
 
 export default function RegistrationFieldEditor({ field, onChange, onRequestDeleteOption }: Props) {
+  const answersLocked = !!field.has_answers;
   return (
     <Box>
       {field.field_type === "checkbox" && (
@@ -19,6 +20,7 @@ export default function RegistrationFieldEditor({ field, onChange, onRequestDele
           onChange={(description) =>
             onChange({ ...field, settings: { ...field.settings, description } })
           }
+          disabled={answersLocked}
         />
       )}
       {field.field_type === "option_select" && (
@@ -29,6 +31,7 @@ export default function RegistrationFieldEditor({ field, onChange, onRequestDele
             onChange({ ...field, settings: { ...field.settings, title }, options })
           }
           onRequestDeleteOption={onRequestDeleteOption}
+          titleDisabled={answersLocked}
         />
       )}
     </Box>
