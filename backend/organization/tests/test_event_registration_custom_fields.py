@@ -31,7 +31,9 @@ from climateconnect_api.models import Language, Role
 from location.models import Location
 from organization.models import Project, ProjectMember, ProjectStatus
 from organization.models.event_registration import (
+    EventRegistration,
     EventRegistrationConfig,
+    RegistrationFieldAnswer,
     RegistrationStatus,
 )
 from organization.models.registration_field import (
@@ -730,3 +732,529 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
         self.assertTrue(RegistrationField.objects.filter(id=field.id).exists())
         self.assertEqual(self.er.fields.count(), 1)
+
+
+# ---------------------------------------------------------------------------
+# PATCH — answer-cascade and draft-vs-publish validation
+# ---------------------------------------------------------------------------
+
+
+class TestEditFieldsDeleteWithAnswers(_CustomFieldsBase):
+    """
+    Tests 7 and 7b — deleting a field / option that already has registrant
+    answers must succeed; the DB CASCADE removes dependent answers automatically.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.registrant = User.objects.create_user(
+            username="registrant_cf", password="testpassword"
+        )
+        self.registration = EventRegistration.objects.create(
+            user=self.registrant,
+            registration_config=self.er,
+        )
+
+    def _create_field(
+        self, field_type="checkbox", order=0, settings=None, options=None
+    ):
+        if settings is None:
+            settings = (
+                {"description": "<p>Test</p>"} if field_type == "checkbox" else {}
+            )
+        field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type=field_type,
+            order=order,
+            is_required=False,
+            settings=settings,
+        )
+        if options:
+            for opt in options:
+                RegistrationFieldOption.objects.create(field=field, **opt)
+        return field
+
+    @tag("custom_fields", "registration_config")
+    def test_delete_field_with_answers_cascades_and_returns_200(self):
+        """Test 7 — deleting a field that has registrant answers succeeds; answers cascade-deleted."""
+        field = self._create_field(order=0)
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_boolean=True,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {"fields": []},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertFalse(RegistrationField.objects.filter(id=field.id).exists())
+        self.assertFalse(
+            RegistrationFieldAnswer.objects.filter(
+                registration=self.registration
+            ).exists()
+        )
+
+    @tag("custom_fields", "registration_config")
+    def test_delete_option_with_answers_cascades_and_returns_200(self):
+        """Test 7b — deleting an option that has answers succeeds; answers cascade-deleted."""
+        field = self._create_field(
+            field_type="option_select",
+            order=0,
+            options=[
+                {"title": "Option A", "order": 0},
+                {"title": "Option B", "order": 1},
+            ],
+        )
+        option_a = field.options.get(title="Option A")
+        option_b = field.options.get(title="Option B")
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option_a,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        # Keep the field, keep option_b, drop option_a
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "options": [
+                            {"id": option_b.id, "title": "Option B", "order": 0}
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertFalse(
+            RegistrationFieldOption.objects.filter(id=option_a.id).exists()
+        )
+        self.assertFalse(
+            RegistrationFieldAnswer.objects.filter(
+                registration=self.registration, value_option=option_a
+            ).exists()
+        )
+        self.assertTrue(RegistrationFieldOption.objects.filter(id=option_b.id).exists())
+
+
+class TestEditFieldsDraftVsPublish(_CustomFieldsBase):
+    """
+    Tests 3, 4, 10, 11, 12, 13 for the PATCH path.
+
+    Tests 3 and 10 use the published project from _CustomFieldsBase (is_draft=False).
+    Tests 4 and 11 use a separate draft project created here.
+    Tests 12 and 13 verify server-side sanitization on PATCH.
+    """
+
+    def setUp(self):
+        super().setUp()
+        # Draft project + config for is_draft=True tests
+        self.draft_event = Project.objects.create(
+            name="Draft Custom Fields Event",
+            url_slug="draft-custom-fields-event",
+            is_active=True,
+            is_draft=True,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=10),
+            end_date=timezone.now() + timedelta(days=60),
+        )
+        self.draft_er = EventRegistrationConfig.objects.create(
+            project=self.draft_event,
+            status=RegistrationStatus.OPEN,
+        )
+        ProjectMember.objects.create(
+            user=self.organiser, project=self.draft_event, role=self.admin_role
+        )
+        self.draft_patch_url = reverse(
+            "organization:edit-registration-config",
+            kwargs={"url_slug": self.draft_event.url_slug},
+        )
+
+    # ── Test 3: option_select 0 options on publish → 400 ────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_option_select_no_options_on_publish_rejected_via_patch(self):
+        """Test 3 (PATCH) — option_select with 0 options rejected on published project."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "option_select",
+                        "order": 0,
+                        "settings": {},
+                        "options": [],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── Test 4: option_select 0 options on draft → accepted ─────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_option_select_no_options_on_draft_accepted_via_patch(self):
+        """Test 4 (PATCH) — option_select with 0 options accepted on draft project."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.draft_patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "option_select",
+                        "order": 0,
+                        "settings": {},
+                        "options": [],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+    # ── Test 10: checkbox empty description on publish → 400 ─────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_checkbox_empty_description_on_publish_rejected_via_patch(self):
+        """Test 10 (PATCH) — empty checkbox description rejected on published project."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "settings": {"description": ""},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── Test 11: checkbox empty description on draft → accepted ──────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_checkbox_empty_description_on_draft_accepted_via_patch(self):
+        """Test 11 (PATCH) — empty checkbox description accepted on draft project."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.draft_patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "settings": {"description": ""},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+    # ── Test 12: unknown settings key stripped via PATCH ──────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_checkbox_unknown_settings_key_stripped_via_patch(self):
+        """Test 12 (PATCH) — unknown key in settings is stripped on PATCH."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.draft_patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "settings": {
+                            "description": "<p>Valid</p>",
+                            "rogue": "should-be-stripped",
+                        },
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        field = RegistrationField.objects.get(registration_config=self.draft_er)
+        self.assertNotIn("rogue", field.settings)
+        self.assertIn("description", field.settings)
+
+    # ── Test 13: HTML sanitization via PATCH ─────────────────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_checkbox_xss_stripped_via_patch(self):
+        """Test 13 (PATCH) — disallowed HTML tags stripped on PATCH."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.draft_patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "settings": {
+                            "description": "<p>Safe</p><script>alert(1)</script>"
+                        },
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        field = RegistrationField.objects.get(registration_config=self.draft_er)
+        self.assertNotIn("script", field.settings["description"])
+        self.assertIn("<p>Safe</p>", field.settings["description"])
+
+
+# ---------------------------------------------------------------------------
+# PATCH — has_answers flag and answer-lock validation
+# ---------------------------------------------------------------------------
+
+
+class TestAnswerLock(_CustomFieldsBase):
+    """
+    Tests 14-19 — answer-aware read-only restrictions and has_answers flag.
+
+    When a field or option has existing registrant answers:
+      - GET response includes has_answers=true
+      - Changing immutable text properties (checkbox description, option_select
+        title, option title) is rejected with 400
+      - Non-text changes (is_required, order) are still allowed
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.registrant = User.objects.create_user(
+            username="registrant_lock", password="testpassword"
+        )
+        self.registration = EventRegistration.objects.create(
+            user=self.registrant,
+            registration_config=self.er,
+        )
+
+    def _create_checkbox_field(self, description="<p>Agree</p>", order=0):
+        return RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="checkbox",
+            order=order,
+            is_required=False,
+            settings={"description": description},
+        )
+
+    def _create_option_select_field(self, title="Meal?", order=0, options=None):
+        field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="option_select",
+            order=order,
+            is_required=False,
+            settings={"title": title},
+        )
+        if options:
+            for opt in options:
+                RegistrationFieldOption.objects.create(field=field, **opt)
+        return field
+
+    # ── Test 14: has_answers=true in GET response ────────────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_has_answers_true_in_get_response(self):
+        """Test 14 — has_answers=true on fields/options that have answers."""
+        field = self._create_checkbox_field()
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_boolean=True,
+        )
+
+        option_field = self._create_option_select_field(
+            order=1, options=[{"title": "A", "order": 0}, {"title": "B", "order": 1}]
+        )
+        option_a = option_field.options.get(title="A")
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=option_field,
+            value_option=option_a,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        # GET via PATCH with no fields key — response includes fields
+        response = self.client.patch(self.patch_url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        returned_fields = {f["id"]: f for f in response.data["fields"]}
+
+        # Checkbox field: has_answers=true
+        self.assertTrue(returned_fields[field.id]["has_answers"])
+
+        # option_select field: has_answers=true; option A locked, option B not
+        self.assertTrue(returned_fields[option_field.id]["has_answers"])
+        opt_map = {o["id"]: o for o in returned_fields[option_field.id]["options"]}
+        self.assertTrue(opt_map[option_a.id]["has_answers"])
+        option_b = option_field.options.get(title="B")
+        self.assertFalse(opt_map[option_b.id]["has_answers"])
+
+    # ── Test 15: checkbox description change rejected ────────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_checkbox_description_change_rejected_when_has_answers(self):
+        """Test 15 — changing checkbox description rejected when field has answers."""
+        field = self._create_checkbox_field(description="<p>Original</p>")
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_boolean=True,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "settings": {"description": "<p>Changed</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── Test 16: option_select title change rejected ─────────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_option_select_title_change_rejected_when_has_answers(self):
+        """Test 16 — changing option_select question title rejected when field has answers."""
+        field = self._create_option_select_field(
+            title="Original?", options=[{"title": "Yes", "order": 0}]
+        )
+        option = field.options.first()
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "settings": {"title": "Changed?"},
+                        "options": [{"id": option.id, "title": "Yes", "order": 0}],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── Test 17: answered option title change rejected ───────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_answered_option_title_change_rejected(self):
+        """Test 17 — changing title of a selected option rejected when has answers."""
+        field = self._create_option_select_field(
+            title="Meal?", options=[{"title": "Vegan", "order": 0}]
+        )
+        option = field.options.first()
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "settings": {"title": "Meal?"},
+                        "options": [
+                            {"id": option.id, "title": "Plant-based", "order": 0}
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── Test 18: is_required and order changes allowed with has_answers ───────
+
+    @tag("custom_fields", "registration_config")
+    def test_is_required_and_order_changes_allowed_when_has_answers(self):
+        """Test 18 — is_required and order can change even when field has answers."""
+        field = self._create_checkbox_field(description="<p>Agree</p>")
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_boolean=True,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "is_required": True,
+                        # description unchanged — not sending settings at all
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        field.refresh_from_db()
+        self.assertTrue(field.is_required)
+
+    # ── Test 19: has_answers=false when no answers ───────────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_has_answers_false_when_no_answers(self):
+        """Test 19 — has_answers=false for fields and options without any answers."""
+        field = self._create_option_select_field(options=[{"title": "Yes", "order": 0}])
+        option = field.options.first()
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(self.patch_url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        returned_field = next(f for f in response.data["fields"] if f["id"] == field.id)
+        self.assertFalse(returned_field["has_answers"])
+        opt_data = next(o for o in returned_field["options"] if o["id"] == option.id)
+        self.assertFalse(opt_data["has_answers"])

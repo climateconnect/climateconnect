@@ -757,20 +757,136 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                 raise serializers.ValidationError(
                     {"fields": "Field order values must be unique within the event."}
                 )
-            # Verify that all provided field IDs actually belong to this config.
+            # Verify submitted field IDs belong to this config; also enforce
+            # answer-lock: immutable text properties cannot change once registrants
+            # have submitted answers referencing that field or option.
             submitted_ids = [f["id"] for f in fields_data if f.get("id") is not None]
             if submitted_ids and self.instance:
-                existing_ids = set(
-                    self.instance.fields.filter(id__in=submitted_ids).values_list(
-                        "id", flat=True
-                    )
-                )
-                unknown = set(submitted_ids) - existing_ids
+                existing_fields = {
+                    f.id: f
+                    for f in self.instance.fields.filter(
+                        id__in=submitted_ids
+                    ).prefetch_related("options")
+                }
+                unknown = set(submitted_ids) - set(existing_fields.keys())
                 if unknown:
                     raise serializers.ValidationError(
                         {
                             "fields": f"Field IDs not found on this event: {sorted(unknown)}"
                         }
                     )
+
+                for i, field_data in enumerate(fields_data):
+                    field_id = field_data.get("id")
+                    if field_id is None:
+                        continue
+                    existing_field = existing_fields.get(field_id)
+                    if existing_field is None:
+                        continue
+
+                    has_field_answers = RegistrationFieldAnswer.objects.filter(
+                        field=existing_field
+                    ).exists()
+
+                    if has_field_answers:
+                        field_type = (
+                            field_data.get("field_type") or existing_field.field_type
+                        )
+                        settings = field_data.get("settings")
+
+                        if (
+                            field_type == RegistrationFieldType.CHECKBOX
+                            and settings is not None
+                        ):
+                            submitted_desc = settings.get("description")
+                            stored_desc = (existing_field.settings or {}).get(
+                                "description", ""
+                            )
+                            if (
+                                submitted_desc is not None
+                                and submitted_desc != stored_desc
+                            ):
+                                raise serializers.ValidationError(
+                                    {
+                                        "fields": {
+                                            i: {
+                                                "settings": {
+                                                    "description": (
+                                                        "Cannot change description after "
+                                                        "registrants have answered this field."
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
+
+                        elif (
+                            field_type == RegistrationFieldType.OPTION_SELECT
+                            and settings is not None
+                        ):
+                            submitted_title = settings.get("title")
+                            stored_title = (existing_field.settings or {}).get(
+                                "title", ""
+                            )
+                            if (
+                                submitted_title is not None
+                                and submitted_title != stored_title
+                            ):
+                                raise serializers.ValidationError(
+                                    {
+                                        "fields": {
+                                            i: {
+                                                "settings": {
+                                                    "title": (
+                                                        "Cannot change question title after "
+                                                        "registrants have answered this field."
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
+
+                    # Per-option answer-lock: option title is immutable once any
+                    # registrant has selected that option.
+                    options_data = field_data.get("options")
+                    if options_data is not None:
+                        existing_options = {
+                            o.id: o for o in existing_field.options.all()
+                        }
+                        for j, opt_data in enumerate(options_data):
+                            opt_id = opt_data.get("id")
+                            if opt_id is None:
+                                continue
+                            existing_opt = existing_options.get(opt_id)
+                            if existing_opt is None:
+                                continue
+                            has_opt_answers = RegistrationFieldAnswer.objects.filter(
+                                value_option=existing_opt
+                            ).exists()
+                            if has_opt_answers:
+                                submitted_opt_title = opt_data.get("title")
+                                if (
+                                    submitted_opt_title is not None
+                                    and submitted_opt_title != existing_opt.title
+                                ):
+                                    raise serializers.ValidationError(
+                                        {
+                                            "fields": {
+                                                i: {
+                                                    "options": {
+                                                        j: {
+                                                            "title": (
+                                                                "Cannot change option title "
+                                                                "after registrants have "
+                                                                "selected it."
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    )
 
         return attrs

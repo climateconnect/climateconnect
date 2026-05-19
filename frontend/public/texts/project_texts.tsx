@@ -1370,6 +1370,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Maximum of 5 fields reached",
       de: "Maximal 5 Felder erreicht",
     },
+    confirm_delete_field_title: {
+      en: "Delete field?",
+      de: "Feld löschen?",
+    },
+    confirm_delete_field_body: {
+      en:
+        "This will permanently delete the field and any answers already submitted by registrants. This cannot be undone.",
+      de:
+        "Dieses Feld und alle bereits eingereichten Antworten der Teilnehmenden werden unwiderruflich gelöscht.",
+    },
+    confirm_delete_option_title: {
+      en: "Delete option?",
+      de: "Option löschen?",
+    },
+    confirm_delete_option_body: {
+      en:
+        "This will permanently delete the option and any answers already submitted for it. This cannot be undone.",
+      de:
+        "Diese Option und alle bereits eingereichten Antworten dafür werden unwiderruflich gelöscht.",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",
