@@ -44,6 +44,19 @@ export type RegistrationFieldAnswerValue = {
   valueOption?: number;
 };
 
+/**
+ * One stored custom-field answer as returned by
+ * ``GET /api/projects/{slug}/registrations/`` for the organiser view.
+ *
+ * Field labels and option titles are resolved client-side from
+ * ``EventRegistrationData.fields`` — only IDs are repeated here.
+ */
+export type RegistrationFieldAnswer = {
+  field: number;
+  value_boolean: boolean | null;
+  value_option: number | null;
+};
+
 export type User = {
   id: string;
   first_name?: string;

@@ -22,6 +22,7 @@ import DangerousIcon from "@mui/icons-material/Dangerous";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import {
   DataGrid,
   GridColDef,
@@ -38,11 +39,13 @@ import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 
 import getTexts from "../../../public/texts/texts";
-import { EventRegistrationData, Project } from "../../types";
+import { EventRegistrationData, Project, RegistrationFieldAnswer } from "../../types";
 import UserContext from "../context/UserContext";
+import { useFeatureToggles } from "../featureToggle";
 import CancelGuestRegistrationModal, { RegistrationInfo } from "./CancelGuestRegistrationModal";
 import EditEventRegistrationModal from "./EditEventRegistrationModal";
 import SendEmailToGuestsModal from "./SendEmailToGuestsModal";
+import ViewRegistrationAnswersModal from "./ViewRegistrationAnswersModal";
 
 type EventRegistration = {
   /** Backend PK — used as DataGrid row id and in the DELETE URL. */
@@ -54,6 +57,8 @@ type EventRegistration = {
   registered_at: string;
   /** null = active registration; ISO string = cancelled */
   cancelled_at: string | null;
+  /** Custom-field answers (Phase 4a). Empty array if none. */
+  field_answers: RegistrationFieldAnswer[];
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -206,10 +211,13 @@ export default function ProjectRegistrationsContent({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
+  const { isEnabled } = useFeatureToggles();
+  const isCustomFieldsEnabled = isEnabled("REGISTRATION_CUSTOM_FIELDS");
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [cancelModal, setCancelModal] = useState<RegistrationInfo | null>(null);
+  const [answersModalRow, setAnswersModalRow] = useState<EventRegistration | null>(null);
 
   // State for the per-row three-dot action menu
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
@@ -236,6 +244,8 @@ export default function ProjectRegistrationsContent({
             ...p,
             // Fall back to index if backend id is missing (defensive)
             id: p.id ?? idx,
+            // Tolerate older payloads that don't include answers.
+            field_answers: p.field_answers ?? [],
           })
         );
         setParticipants(rows);
@@ -539,21 +549,40 @@ export default function ProjectRegistrationsContent({
                   {
                     field: "__actions__",
                     headerName: "",
-                    width: 52,
+                    width: 88,
                     sortable: false,
                     filterable: false,
                     disableExport: true,
                     disableColumnMenu: true,
                     renderCell: (params) => {
-                      if (params.row.cancelled_at) return null;
+                      const row = params.row as EventRegistration;
+                      const showViewIcon =
+                        isCustomFieldsEnabled && (row.field_answers?.length ?? 0) > 0;
+                      const showMenu = !row.cancelled_at;
+                      if (!showViewIcon && !showMenu) return null;
                       return (
-                        <IconButton
-                          size="small"
-                          aria-label={texts.cancel_guest_registration as string}
-                          onClick={(e) => handleOpenMenu(e, params.row.id as number)}
-                        >
-                          <MoreVertIcon fontSize="small" />
-                        </IconButton>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          {showViewIcon && (
+                            <Tooltip title={texts.view_registration_answers as string} arrow>
+                              <IconButton
+                                size="small"
+                                aria-label={texts.view_registration_answers as string}
+                                onClick={() => setAnswersModalRow(row)}
+                              >
+                                <VisibilityOutlinedIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          {showMenu && (
+                            <IconButton
+                              size="small"
+                              aria-label={texts.cancel_guest_registration as string}
+                              onClick={(e) => handleOpenMenu(e, row.id)}
+                            >
+                              <MoreVertIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                        </Box>
                       );
                     },
                   },
@@ -656,6 +685,13 @@ export default function ProjectRegistrationsContent({
         registration={cancelModal}
         project={project}
         onCancelled={handleCancelled}
+      />
+
+      <ViewRegistrationAnswersModal
+        open={answersModalRow !== null}
+        onClose={() => setAnswersModalRow(null)}
+        registration={answersModalRow}
+        fields={eventRegistration.fields ?? []}
       />
     </>
   );
