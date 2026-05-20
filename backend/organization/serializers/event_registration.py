@@ -273,6 +273,7 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
     user_last_name = serializers.CharField(source="user.last_name", read_only=True)
     user_url_slug = serializers.SerializerMethodField()
     user_thumbnail_image = serializers.SerializerMethodField()
+    field_answers = serializers.SerializerMethodField()
 
     class Meta:
         model = EventRegistration
@@ -284,6 +285,7 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
             "user_thumbnail_image",
             "registered_at",
             "cancelled_at",
+            "field_answers",
         ]
         read_only_fields = fields
 
@@ -304,6 +306,33 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
             return profile.thumbnail_image.url
         except AttributeError:
             return None
+
+    def get_field_answers(self, obj):
+        """
+        Return registrant answers as a lean array keyed by field ID.
+
+        Field labels and option titles are resolved client-side from
+        ``eventRegistration.fields`` in the project detail response — no
+        redundant labels are repeated here.
+
+        Answers are ordered by ``field.order`` so the frontend can render
+        them in the same sequence as the registration form.
+
+        Requires the caller to ``prefetch_related("field_answers",
+        "field_answers__value_option")`` (and ``field_answers__field`` for
+        the order resolution) to avoid N+1 queries.
+        """
+        answers = list(obj.field_answers.all())
+        # Sort in Python to avoid relying on prefetch queryset ordering.
+        answers.sort(key=lambda a: a.field.order)
+        return [
+            {
+                "field": a.field_id,
+                "value_boolean": a.value_boolean,
+                "value_option": a.value_option_id,
+            }
+            for a in answers
+        ]
 
 
 class RegistrationFieldAnswerInputSerializer(serializers.Serializer):
