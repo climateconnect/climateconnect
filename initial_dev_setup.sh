@@ -54,7 +54,7 @@ else
 fi
 
 pushd backend
-$(pdm venv activate)
+source .venv/bin/activate
 make migrate
 make test-data
 popd
