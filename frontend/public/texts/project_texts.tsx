@@ -1571,8 +1571,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Anmeldung bestätigen",
     },
     confirm_your_registration_for: {
-      en: `Confirm your registration for ${project?.name}`,
-      de: `Bestätige deine Anmeldung für ${project?.name}`,
+      en: `Please fill in the form and confirm your registration for ${project?.name}`,
+      de: `Bitte füllen Sie das Formular aus und bestätigen Sie Ihre Anmeldung für ${project?.name}`,
     },
     to_register_please_login_or_signup: {
       en: "To register for this event, please log in or sign up!",
@@ -1681,6 +1681,11 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     please_select_an_option: {
       en: "Please select an option.",
       de: "Bitte wähle eine Option aus.",
+    },
+    required_fields_participation_notice: {
+      en:
+        "*Required fields - unfortunately, you cannot participate without providing this information",
+      de: "*Pflichtfelder - ohne diese Angaben ist eine Teilnahme leider nicht möglich",
     },
   };
 }

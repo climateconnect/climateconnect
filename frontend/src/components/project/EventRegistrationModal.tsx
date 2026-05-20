@@ -1,8 +1,19 @@
 import React, { useContext, useRef, useState } from "react";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CloseIcon from "@mui/icons-material/Close";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import Cookies from "universal-cookie";
 
@@ -12,7 +23,6 @@ import getTexts from "../../../public/texts/texts";
 import { Project, RegistrationFieldAnswerValue } from "../../types";
 import UserContext from "../context/UserContext";
 import { useFeatureToggles } from "../featureToggle";
-import GenericDialog from "../dialogs/GenericDialog";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import AuthEmailStep from "../auth/AuthEmailStep";
 import AuthPasswordLogin from "../auth/AuthPasswordLogin";
@@ -23,6 +33,23 @@ import RegistrationFieldAnswersForm, {
 } from "./RegistrationFieldAnswersForm";
 
 const useStyles = makeStyles((theme: Theme) => ({
+  dialogTitle: {
+    display: "flex",
+    alignItems: "center",
+  },
+  closeButton: {
+    marginLeft: theme.spacing(-1),
+    marginRight: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+  titleText: {
+    fontSize: 20,
+    color: theme.palette.text.primary,
+  },
+  dialogContent: {
+    padding: theme.spacing(2),
+    paddingTop: 0,
+  },
   modalContent: {
     display: "flex",
     flexDirection: "column",
@@ -61,6 +88,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     [theme.breakpoints.up("sm")]: {
       flexDirection: "row",
     },
+    paddingBottom: theme.spacing(2),
   },
   authMessage: {
     marginBottom: theme.spacing(3),
@@ -106,6 +134,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   helperText: {
     marginBottom: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
   },
   loadingContainer: {
     marginTop: theme.spacing(2),
@@ -169,6 +198,9 @@ export default function EventRegistrationModal({
     isEnabled("EVENT_REGISTRATION") &&
     isEnabled("REGISTRATION_CUSTOM_FIELDS") &&
     (project.registration_config?.fields?.length ?? 0) > 0;
+  const hasRequiredCustomFields =
+    showCustomFields &&
+    (project.registration_config?.fields?.some((field) => field.is_required) ?? false);
 
   const eventDateText =
     project.start_date && project.end_date
@@ -314,24 +346,17 @@ export default function EventRegistrationModal({
         </Box>
       )}
 
+      {hasRequiredCustomFields && (
+        <Typography variant="caption" color="textSecondary" className={classes.helperText}>
+          {texts.required_fields_participation_notice}
+        </Typography>
+      )}
+
       {errorMessage && (
         <Typography variant="body2" className={classes.errorText}>
           {errorMessage}
         </Typography>
       )}
-
-      <Box className={`${classes.actionRow} ${showCustomFields ? classes.stickyActionRow : ""}`}>
-        <Button
-          onClick={handleRegister}
-          variant="contained"
-          color="primary"
-          disabled={loading}
-          fullWidth
-          className={classes.registerButton}
-        >
-          {loading ? <CircularProgress size={24} /> : texts.confirm_registration}
-        </Button>
-      </Box>
     </Box>
   );
 
@@ -409,11 +434,6 @@ export default function EventRegistrationModal({
       <Typography variant="body1" className={classes.confirmationText}>
         {texts.a_confirmation_email_has_been_sent}
       </Typography>
-      <Box className={`${classes.actionRow} ${classes.confirmationActions}`}>
-        <Button onClick={handleClose} variant="contained" color="primary">
-          {texts.close}
-        </Button>
-      </Box>
     </Box>
   );
 
@@ -426,32 +446,75 @@ export default function EventRegistrationModal({
           {errorMessage}
         </Typography>
       )}
-      <Box className={`${classes.actionRow} ${classes.confirmationActions}`}>
-        <Button onClick={handleClose} variant="outlined">
-          {texts.close}
-        </Button>
-        <Button onClick={() => setState("initial")} variant="contained" color="primary">
-          {texts.try_again}
-        </Button>
-      </Box>
     </Box>
   );
 
+  const renderActions = () => {
+    if (state === "success") {
+      return (
+        <Button onClick={handleClose} variant="contained" color="primary">
+          {texts.close}
+        </Button>
+      );
+    }
+    if (state === "error") {
+      return (
+        <>
+          <Button onClick={handleClose} variant="outlined">
+            {texts.close}
+          </Button>
+          <Button onClick={() => setState("initial")} variant="contained" color="primary">
+            {texts.try_again}
+          </Button>
+        </>
+      );
+    }
+    if (user) {
+      return (
+        <Button
+          onClick={handleRegister}
+          variant="contained"
+          color="primary"
+          disabled={loading}
+          fullWidth
+          className={classes.registerButton}
+        >
+          {loading ? <CircularProgress size={24} /> : texts.confirm_registration}
+        </Button>
+      );
+    }
+    // Unauthenticated auth-flow steps have their own submit buttons
+    return null;
+  };
+
+  const actions = renderActions();
+
   return (
-    <GenericDialog open={open} onClose={handleClose} title={texts.register_for_event} maxWidth="sm">
-      <Box className={classes.modalContent}>
-        {(project.name || eventDateText) && (
-          <Box className={classes.eventSubheader}>
-            {project.name && <Typography variant="body2">{project.name}</Typography>}
-            {eventDateText && (
-              <Typography variant="body2" className={classes.eventDateLine}>
-                {eventDateText}
-              </Typography>
-            )}
-          </Box>
-        )}
-        {renderContent()}
-      </Box>
-    </GenericDialog>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth scroll="paper">
+      <DialogTitle className={classes.dialogTitle}>
+        <IconButton aria-label="close" className={classes.closeButton} onClick={handleClose}>
+          <CloseIcon />
+        </IconButton>
+        <Typography className={classes.titleText}>{texts.register_for_event}</Typography>
+      </DialogTitle>
+
+      <DialogContent dividers className={classes.dialogContent}>
+        <Box className={classes.modalContent}>
+          {(project.name || eventDateText) && (
+            <Box className={classes.eventSubheader}>
+              {project.name && <Typography variant="body2">{project.name}</Typography>}
+              {eventDateText && (
+                <Typography variant="body2" className={classes.eventDateLine}>
+                  {eventDateText}
+                </Typography>
+              )}
+            </Box>
+          )}
+          {renderContent()}
+        </Box>
+      </DialogContent>
+
+      {actions && <DialogActions>{actions}</DialogActions>}
+    </Dialog>
   );
 }

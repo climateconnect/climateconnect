@@ -9,30 +9,31 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: theme.spacing(2),
   },
   checkbox: {
-    paddingTop: 0,
+    marginLeft: theme.spacing(-0.15),
+    paddingLeft: 0,
   },
   content: {
     display: "flex",
     alignItems: "flex-start",
-    gap: theme.spacing(1.5),
+    gap: theme.spacing(1),
   },
   textBlock: {
     flex: 1,
     minWidth: 0,
+    paddingTop: theme.spacing(1.125),
   },
   required: {
     color: theme.palette.error.main,
-    marginRight: theme.spacing(0.5),
+    marginLeft: theme.spacing(0.5),
   },
   descriptionHtml: {
-    fontSize: "0.875rem",
-    lineHeight: 1.5,
     color: theme.palette.text.secondary,
     "& a": {
       color: theme.palette.primary.main,
     },
     "& p": {
       margin: 0,
+      display: "inline",
     },
   },
   errorText: {
@@ -61,17 +62,14 @@ export default function RegistrationCheckboxField({ field, value, onChange, erro
           color="primary"
         />
         <Box className={classes.textBlock}>
-          <Typography component="div" className={classes.descriptionHtml}>
-            {field.is_required && (
-              <Typography component="span" className={classes.required} aria-hidden="true">
-                {"* "}
-              </Typography>
-            )}
+          <Typography component="div" variant="body2" className={classes.descriptionHtml}>
             {/* Render sanitized rich-text description stored by the organiser. */}
-            <div
-              dangerouslySetInnerHTML={{ __html: description }}
-              style={{ display: "inline-block" }} // Adjust for checkbox padding
-            />
+            <div dangerouslySetInnerHTML={{ __html: description }} style={{ display: "inline" }} />
+            {field.is_required && (
+              <span className={classes.required} aria-hidden="true">
+                {"*"}
+              </span>
+            )}
           </Typography>
         </Box>
       </Box>
