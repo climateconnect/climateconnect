@@ -1654,6 +1654,34 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Cancelled",
       de: "Storniert",
     },
+    view_registration_answers: {
+      en: "View answers",
+      de: "Antworten anzeigen",
+    },
+    registration_answers_modal_title: {
+      en: "Registration answers from {name}",
+      de: "Anmeldeantworten von {name}",
+    },
+    registration_answers_cancelled_notice: {
+      en: "This registration has been cancelled.",
+      de: "Diese Anmeldung wurde storniert.",
+    },
+    registration_answer_checked: {
+      en: "Checked",
+      de: "Angekreuzt",
+    },
+    registration_answer_unchecked: {
+      en: "Not checked",
+      de: "Nicht angekreuzt",
+    },
+    registration_answer_no_selection: {
+      en: "No selection",
+      de: "Keine Auswahl",
+    },
+    no_registration_answers: {
+      en: "No answers submitted.",
+      de: "Keine Antworten eingereicht.",
+    },
     cancel_registration: {
       en: "Cancel registration",
       de: "Abmelden",

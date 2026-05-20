@@ -289,8 +289,17 @@ class EventRegistrationsView(APIView):
         # Returns all rows so organisers can see the full history including
         # cancellations. ``id`` and ``cancelled_at`` are included in the response
         # so the frontend can target individual rows for admin-cancellation.
+        #
+        # ``prefetch_related`` for ``field_answers`` (and the related field /
+        # option rows) resolves custom-field answer data in a constant number
+        # of queries regardless of how many registrations are returned — no
+        # N+1 even on events with many registrants and 5 custom fields.
         registrations = (
             EventRegistration.objects.select_related("user__user_profile")
+            .prefetch_related(
+                "field_answers__field",
+                "field_answers__value_option",
+            )
             .filter(registration_config=rc)
             .order_by("registered_at")
         )
