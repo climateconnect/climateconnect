@@ -7,6 +7,7 @@ from organization.models.event_registration import EventRegistrationConfig
 class RegistrationFieldType(models.TextChoices):
     CHECKBOX = "checkbox", _("Checkbox")
     OPTION_SELECT = "option_select", _("Option Select")
+    INVENTORY = "inventory", _("Inventory")
 
 
 class RegistrationField(models.Model):
@@ -68,6 +69,8 @@ class RegistrationFieldOption(models.Model):
     )
     title = models.CharField(max_length=200)
     order = models.PositiveIntegerField()
+    available_amount = models.PositiveIntegerField(null=True, blank=True)
+    max_amount_per_guest = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         app_label = "organization"

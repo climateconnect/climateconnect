@@ -1258,3 +1258,550 @@ class TestAnswerLock(_CustomFieldsBase):
         self.assertFalse(returned_field["has_answers"])
         opt_data = next(o for o in returned_field["options"] if o["id"] == option.id)
         self.assertFalse(opt_data["has_answers"])
+
+
+# ---------------------------------------------------------------------------
+# Inventory field type (Phase 4b)
+# ---------------------------------------------------------------------------
+
+
+class TestInventoryField(_CustomFieldsBase):
+    """
+    Tests for the inventory custom field type.
+
+    Spec test cases:
+      INV-1  – Create event with inventory field (POST /api/projects/)
+      INV-2  – Inventory field validation on publish (missing title → 400)
+      INV-3  – Inventory field validation on publish (0 options → 400)
+      INV-4  – Inventory field validation on publish (missing available_amount → 400)
+      INV-5  – Inventory field validation on publish (missing max_amount_per_guest → 400)
+      INV-6  – Inventory field accepted in draft (missing numeric fields OK)
+      INV-7  – Edit inventory field via PATCH
+      INV-8  – Answer-lock on inventory field title
+      INV-9  – Answer-lock on inventory option title
+      INV-10 – available_amount and max_amount_per_guest remain mutable with answers
+      INV-11 – 5-field limit includes inventory
+      INV-12 – GET response includes available_amount, max_amount_per_guest on options
+    """
+
+    def _create_inventory_field(self, title="Meal tickets", order=0, options=None):
+        """Helper: create an inventory RegistrationField on self.er."""
+        field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="inventory",
+            order=order,
+            is_required=False,
+            settings={"title": title, "description": ""},
+        )
+        if options:
+            for opt in options:
+                RegistrationFieldOption.objects.create(field=field, **opt)
+        return field
+
+    # ── INV-1: Create event with inventory field ─────────────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_create_inventory_field_via_patch(self):
+        """INV-1 — PATCH creates inventory field with options persisting capacity values."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "inventory",
+                        "order": 0,
+                        "is_required": True,
+                        "settings": {
+                            "title": "Meal tickets",
+                            "description": "Choose your meal.",
+                        },
+                        "options": [
+                            {
+                                "title": "Vegetarian",
+                                "order": 0,
+                                "available_amount": 50,
+                                "max_amount_per_guest": 2,
+                            },
+                            {
+                                "title": "Standard",
+                                "order": 1,
+                                "available_amount": 100,
+                                "max_amount_per_guest": 3,
+                            },
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        field = RegistrationField.objects.get(
+            registration_config=self.er, field_type="inventory"
+        )
+        self.assertEqual(field.settings["title"], "Meal tickets")
+        self.assertEqual(field.options.count(), 2)
+
+        veg = field.options.get(title="Vegetarian")
+        self.assertEqual(veg.available_amount, 50)
+        self.assertEqual(veg.max_amount_per_guest, 2)
+
+    # ── INV-2: Missing title on publish → 400 ────────────────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_inventory_missing_title_on_publish_rejected(self):
+        """INV-2 — inventory field without title rejected when publishing."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "inventory",
+                        "order": 0,
+                        "settings": {"title": "", "description": ""},
+                        "options": [
+                            {
+                                "title": "Option A",
+                                "order": 0,
+                                "available_amount": 10,
+                                "max_amount_per_guest": 1,
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── INV-3: No options on publish → 400 ───────────────────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_inventory_no_options_on_publish_rejected(self):
+        """INV-3 — inventory field with 0 options rejected when publishing."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "inventory",
+                        "order": 0,
+                        "settings": {"title": "Meals", "description": ""},
+                        "options": [],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── INV-4: Missing available_amount on publish → 400 ─────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_inventory_missing_available_amount_on_publish_rejected(self):
+        """INV-4 — inventory option without available_amount rejected on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "inventory",
+                        "order": 0,
+                        "settings": {"title": "Meals"},
+                        "options": [
+                            {
+                                "title": "Option A",
+                                "order": 0,
+                                "max_amount_per_guest": 2,
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── INV-5: Missing max_amount_per_guest on publish → 400 ─────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_inventory_missing_max_per_guest_on_publish_rejected(self):
+        """INV-5 — inventory option without max_amount_per_guest rejected on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "inventory",
+                        "order": 0,
+                        "settings": {"title": "Meals"},
+                        "options": [
+                            {
+                                "title": "Option A",
+                                "order": 0,
+                                "available_amount": 10,
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── INV-6: Draft mode skips publish validation ────────────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_inventory_accepted_in_draft_without_numeric_fields(self):
+        """INV-6 — inventory field with no options / numeric fields accepted on draft."""
+        # Create a draft project + config for this test.
+        from datetime import timedelta
+
+        from organization.models import ProjectStatus
+
+        project_status, _ = ProjectStatus.objects.update_or_create(
+            id=2,
+            defaults={
+                "name": "active_inv_draft",
+                "name_de_translation": "aktiv",
+                "has_end_date": True,
+                "has_start_date": True,
+            },
+        )
+        from climateconnect_api.models import Language
+        from django.utils import timezone
+
+        lang, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
+        )
+        draft_event = Project.objects.create(
+            name="Draft Inventory Event",
+            url_slug="draft-inventory-event",
+            is_active=True,
+            is_draft=True,
+            status=project_status,
+            language=lang,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=10),
+            end_date=timezone.now() + timedelta(days=60),
+        )
+        from organization.models.event_registration import (
+            EventRegistrationConfig,
+            RegistrationStatus,
+        )
+
+        draft_er = EventRegistrationConfig.objects.create(
+            project=draft_event,
+            status=RegistrationStatus.OPEN,
+        )
+        ProjectMember.objects.create(
+            user=self.organiser, project=draft_event, role=self.admin_role
+        )
+        from django.urls import reverse
+
+        draft_url = reverse(
+            "organization:edit-registration-config",
+            kwargs={"url_slug": draft_event.url_slug},
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            draft_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "inventory",
+                        "order": 0,
+                        "settings": {"title": "", "description": ""},
+                        "options": [],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertEqual(
+            RegistrationField.objects.filter(
+                registration_config=draft_er, field_type="inventory"
+            ).count(),
+            1,
+        )
+
+    # ── INV-7: Edit inventory field via PATCH ─────────────────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_edit_inventory_field_updates_options(self):
+        """INV-7 — PATCH updates inventory settings and syncs options correctly."""
+        field = self._create_inventory_field(
+            options=[
+                {
+                    "title": "Veg",
+                    "order": 0,
+                    "available_amount": 10,
+                    "max_amount_per_guest": 1,
+                },
+                {
+                    "title": "Standard",
+                    "order": 1,
+                    "available_amount": 20,
+                    "max_amount_per_guest": 2,
+                },
+            ]
+        )
+        keep_opt = field.options.get(title="Veg")
+        drop_opt = field.options.get(title="Standard")
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "settings": {"title": "Updated Meals"},
+                        "options": [
+                            {
+                                "id": keep_opt.id,
+                                "title": "Veg",
+                                "order": 0,
+                                "available_amount": 15,
+                                "max_amount_per_guest": 2,
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        field.refresh_from_db()
+        self.assertEqual(field.settings["title"], "Updated Meals")
+        keep_opt.refresh_from_db()
+        self.assertEqual(keep_opt.available_amount, 15)
+        self.assertFalse(
+            RegistrationFieldOption.objects.filter(id=drop_opt.id).exists()
+        )
+
+    # ── INV-8: Answer-lock on inventory field title ───────────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_inventory_title_change_rejected_when_has_answers(self):
+        """INV-8 — changing inventory field title rejected when field has answers."""
+        field = self._create_inventory_field(
+            title="Meals",
+            options=[
+                {
+                    "title": "Veg",
+                    "order": 0,
+                    "available_amount": 10,
+                    "max_amount_per_guest": 1,
+                }
+            ],
+        )
+        option = field.options.first()
+        registrant = User.objects.create_user(
+            username="registrant_inv8", password="testpassword"
+        )
+        registration = EventRegistration.objects.create(
+            user=registrant, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=registration, field=field, value_option=option
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "settings": {"title": "Changed Meals"},
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── INV-9: Answer-lock on inventory option title ──────────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_inventory_option_title_change_rejected_when_has_answers(self):
+        """INV-9 — changing inventory option title rejected when option has answers."""
+        field = self._create_inventory_field(
+            title="Meals",
+            options=[
+                {
+                    "title": "Veg",
+                    "order": 0,
+                    "available_amount": 10,
+                    "max_amount_per_guest": 1,
+                }
+            ],
+        )
+        option = field.options.first()
+        registrant = User.objects.create_user(
+            username="registrant_inv9", password="testpassword"
+        )
+        registration = EventRegistration.objects.create(
+            user=registrant, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=registration, field=field, value_option=option
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "options": [
+                            {
+                                "id": option.id,
+                                "title": "Plant-based",
+                                "order": 0,
+                                "available_amount": 10,
+                                "max_amount_per_guest": 1,
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── INV-10: Capacity values mutable even with answers ─────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_inventory_capacity_values_mutable_when_has_answers(self):
+        """INV-10 — available_amount and max_amount_per_guest can be changed with answers."""
+        field = self._create_inventory_field(
+            title="Meals",
+            options=[
+                {
+                    "title": "Veg",
+                    "order": 0,
+                    "available_amount": 10,
+                    "max_amount_per_guest": 1,
+                }
+            ],
+        )
+        option = field.options.first()
+        registrant = User.objects.create_user(
+            username="registrant_inv10", password="testpassword"
+        )
+        registration = EventRegistration.objects.create(
+            user=registrant, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=registration, field=field, value_option=option
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "options": [
+                            {
+                                "id": option.id,
+                                "title": "Veg",
+                                "order": 0,
+                                "available_amount": 99,
+                                "max_amount_per_guest": 5,
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        option.refresh_from_db()
+        self.assertEqual(option.available_amount, 99)
+        self.assertEqual(option.max_amount_per_guest, 5)
+
+    # ── INV-11: 5-field limit includes inventory ──────────────────────────────
+
+    @tag("custom_fields", "inventory")
+    def test_six_fields_including_inventory_rejected(self):
+        """INV-11 — 6th field (inventory) triggers 400 same as other types."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        fields = [
+            {
+                "field_type": "checkbox",
+                "order": i,
+                "settings": {"description": "<p>x</p>"},
+            }
+            for i in range(5)
+        ] + [
+            {
+                "field_type": "inventory",
+                "order": 5,
+                "settings": {"title": "Extra"},
+                "options": [{"title": "A", "order": 0}],
+            }
+        ]
+        response = self.client.patch(
+            self.patch_url,
+            {"is_draft": True, "fields": fields},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── INV-12: GET response includes capacity fields on options ──────────────
+
+    @tag("custom_fields", "inventory")
+    def test_get_response_includes_capacity_fields(self):
+        """INV-12 — project detail response includes available_amount and max_amount_per_guest."""
+        self._create_inventory_field(
+            title="Meal tickets",
+            options=[
+                {
+                    "title": "Vegetarian",
+                    "order": 0,
+                    "available_amount": 50,
+                    "max_amount_per_guest": 2,
+                }
+            ],
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(self.patch_url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        inv_field = next(
+            f for f in response.data["fields"] if f["field_type"] == "inventory"
+        )
+        self.assertEqual(inv_field["settings"]["title"], "Meal tickets")
+        opt = inv_field["options"][0]
+        self.assertEqual(opt["available_amount"], 50)
+        self.assertEqual(opt["max_amount_per_guest"], 2)

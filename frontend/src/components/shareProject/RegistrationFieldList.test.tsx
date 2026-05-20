@@ -108,6 +108,23 @@ describe("RegistrationFieldList", () => {
     });
   });
 
+  // ── Inventory field rendering ─────────────────────────────────────────────
+
+  describe("inventory field rendering", () => {
+    it("renders the Inventory type label for an inventory field", () => {
+      renderFieldList({
+        fields: [
+          makeField({
+            field_type: "inventory",
+            settings: { title: "", description: "" },
+            options: [],
+          }),
+        ],
+      });
+      expect(screen.getByText(/inventory/i)).toBeInTheDocument();
+    });
+  });
+
   // ── Adding fields via type picker ─────────────────────────────────────────
 
   describe("adding fields", () => {
@@ -116,6 +133,7 @@ describe("RegistrationFieldList", () => {
       fireEvent.click(screen.getByRole("button", { name: /add field/i }));
       expect(screen.getByRole("menuitem", { name: /checkbox/i })).toBeInTheDocument();
       expect(screen.getByRole("menuitem", { name: /single choice/i })).toBeInTheDocument();
+      expect(screen.getByRole("menuitem", { name: /inventory/i })).toBeInTheDocument();
     });
 
     it("calls onFieldsChange with a checkbox field at order 0 when Checkbox is selected", () => {
@@ -144,6 +162,21 @@ describe("RegistrationFieldList", () => {
         field_type: "option_select",
         order: 0,
         is_required: false,
+        options: [],
+      });
+    });
+
+    it("calls onFieldsChange with an inventory field when Inventory is selected", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({ onFieldsChange });
+      fireEvent.click(screen.getByRole("button", { name: /add field/i }));
+      fireEvent.click(screen.getByRole("menuitem", { name: /inventory/i }));
+      const [fields] = onFieldsChange.mock.calls[0];
+      expect(fields[0]).toMatchObject({
+        field_type: "inventory",
+        order: 0,
+        is_required: false,
+        settings: { title: "", description: "" },
         options: [],
       });
     });
