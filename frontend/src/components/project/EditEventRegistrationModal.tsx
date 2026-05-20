@@ -265,7 +265,10 @@ export default function EditEventRegistrationModal({
     payload.notify_admins = notifyAdmins;
 
     if (isCustomFieldsEnabled) {
-      payload.fields = fields;
+      payload.fields = fields.map(({ _clientKey, ...field }) => ({
+        ...field,
+        options: field.options?.filter((opt) => opt.title.trim() !== ""),
+      }));
     }
 
     try {

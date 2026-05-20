@@ -6,11 +6,14 @@ export type RegistrationFieldOption = {
   title: string;
   order: number;
   has_answers?: boolean;
+  available_amount?: number | null;
+  max_amount_per_guest?: number | null;
+  remaining_amount?: number | null;
 };
 
 export type RegistrationField = {
   id?: number | null;
-  field_type: "checkbox" | "option_select";
+  field_type: "checkbox" | "option_select" | "inventory";
   order: number;
   is_required: boolean;
   settings: {

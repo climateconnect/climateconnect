@@ -39,9 +39,24 @@ class OptionSelectSettingsSerializer(serializers.Serializer):
     title = serializers.CharField(required=False, allow_blank=True)
 
 
+class InventorySettingsSerializer(serializers.Serializer):
+    """
+    Settings serializer for inventory fields.
+
+    title is the question label (e.g. "Meal tickets"). Required on publish.
+    description is optional helper text shown below the title.
+    """
+
+    title = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    description = serializers.CharField(
+        max_length=200, required=False, allow_blank=True
+    )
+
+
 FIELD_TYPE_SETTINGS_VALIDATORS = {
     RegistrationFieldType.CHECKBOX: CheckboxSettingsSerializer,
     RegistrationFieldType.OPTION_SELECT: OptionSelectSettingsSerializer,
+    RegistrationFieldType.INVENTORY: InventorySettingsSerializer,
 }
 
 
@@ -64,10 +79,23 @@ class RegistrationFieldOptionSerializer(serializers.ModelSerializer):
 
     id = serializers.IntegerField(required=False, allow_null=True)
     has_answers = serializers.SerializerMethodField()
+    available_amount = serializers.IntegerField(
+        required=False, allow_null=True, min_value=1
+    )
+    max_amount_per_guest = serializers.IntegerField(
+        required=False, allow_null=True, min_value=1
+    )
 
     class Meta:
         model = RegistrationFieldOption
-        fields = ["id", "title", "order", "has_answers"]
+        fields = [
+            "id",
+            "title",
+            "order",
+            "has_answers",
+            "available_amount",
+            "max_amount_per_guest",
+        ]
         extra_kwargs = {
             "title": {"max_length": 200},
             "order": {"min_value": 0},
@@ -184,6 +212,46 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
                             )
                         }
                     )
+            elif field_type == RegistrationFieldType.INVENTORY:
+                title = (attrs.get("settings") or {}).get("title", "")
+                if not title or not title.strip():
+                    raise serializers.ValidationError(
+                        {"settings": {"title": "Required when publishing an event."}}
+                    )
+                options = attrs.get("options")
+                if not options:
+                    raise serializers.ValidationError(
+                        {
+                            "options": (
+                                "At least one option is required when publishing an event."
+                            )
+                        }
+                    )
+                for i, opt in enumerate(options):
+                    if not opt.get("available_amount"):
+                        raise serializers.ValidationError(
+                            {
+                                "options": {
+                                    i: {
+                                        "available_amount": (
+                                            "Required when publishing an event."
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    if not opt.get("max_amount_per_guest"):
+                        raise serializers.ValidationError(
+                            {
+                                "options": {
+                                    i: {
+                                        "max_amount_per_guest": (
+                                            "Required when publishing an event."
+                                        )
+                                    }
+                                }
+                            }
+                        )
 
         return attrs
 
