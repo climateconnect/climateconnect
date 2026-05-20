@@ -1334,6 +1334,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Inventory",
       de: "Inventar",
     },
+    single_option_per_guest_notice: {
+      en: "Guests can only select one option",
+      de: "Gast kann nur eine Option wählen",
+    },
     inventory_available_amount: {
       en: "Available amount",
       de: "Verfügbare Menge",

@@ -341,7 +341,7 @@ export default function EditEventRegistrationModal({
         open={open}
         onClose={onClose}
         scroll="paper"
-        maxWidth="sm"
+        maxWidth="md"
         fullWidth
         aria-labelledby="edit-registration-dialog-title"
       >

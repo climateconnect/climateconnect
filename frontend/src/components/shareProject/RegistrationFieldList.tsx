@@ -16,6 +16,9 @@ import AddIcon from "@mui/icons-material/Add";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import InventoryIcon from "@mui/icons-material/Inventory";
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -136,6 +139,18 @@ export default function RegistrationFieldList({
 
   const isAtMax = fields.length >= MAX_FIELDS;
 
+  const getFieldIcon = (fieldType: string) => {
+    switch (fieldType) {
+      case "checkbox":
+        return <CheckBoxOutlineBlankIcon fontSize="small" />;
+      case "inventory":
+        return <InventoryIcon fontSize="small" />;
+      case "option_select":
+      default:
+        return <RadioButtonUncheckedIcon fontSize="small" />;
+    }
+  };
+
   return (
     <Box>
       {fields.map((field, index) => (
@@ -145,13 +160,16 @@ export default function RegistrationFieldList({
           className={classes.fieldPaper}
         >
           <Box className={classes.fieldHeader}>
-            <Typography variant="subtitle2" color="textSecondary">
-              {field.field_type === "checkbox"
-                ? texts.field_type_checkbox
-                : field.field_type === "inventory"
-                ? texts.field_type_inventory
-                : texts.field_type_option_select}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              {getFieldIcon(field.field_type)}
+              <Typography variant="subtitle2" color="textSecondary">
+                {field.field_type === "checkbox"
+                  ? texts.field_type_checkbox
+                  : field.field_type === "inventory"
+                  ? texts.field_type_inventory
+                  : texts.field_type_option_select}
+              </Typography>
+            </Box>
             <Box className={classes.controlsRow}>
               <Tooltip title={texts.move_field_up}>
                 <span>
@@ -204,15 +222,22 @@ export default function RegistrationFieldList({
               }
               label={texts.registration_field_required}
             />
-            <Tooltip title={texts.delete_field}>
-              <IconButton
-                size="small"
-                onClick={() => handleDeleteField(index)}
-                aria-label={texts.delete_field}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {(field.field_type === "option_select" || field.field_type === "inventory") && (
+                <Typography variant="caption" color="textSecondary">
+                  {texts.single_option_per_guest_notice}
+                </Typography>
+              )}
+              <Tooltip title={texts.delete_field}>
+                <IconButton
+                  size="small"
+                  onClick={() => handleDeleteField(index)}
+                  aria-label={texts.delete_field}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
         </Paper>
       ))}
@@ -228,12 +253,23 @@ export default function RegistrationFieldList({
         {isAtMax ? texts.max_registration_fields_reached : texts.add_registration_field}
       </Button>
       <Menu anchorEl={addMenuAnchor} open={Boolean(addMenuAnchor)} onClose={handleCloseAddMenu}>
-        <MenuItem onClick={() => handleAddField("checkbox")}>{texts.field_type_checkbox}</MenuItem>
+        <MenuItem onClick={() => handleAddField("checkbox")}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {getFieldIcon("checkbox")}
+            {texts.field_type_checkbox}
+          </Box>
+        </MenuItem>
         <MenuItem onClick={() => handleAddField("option_select")}>
-          {texts.field_type_option_select}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {getFieldIcon("option_select")}
+            {texts.field_type_option_select}
+          </Box>
         </MenuItem>
         <MenuItem onClick={() => handleAddField("inventory")}>
-          {texts.field_type_inventory}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {getFieldIcon("inventory")}
+            {texts.field_type_inventory}
+          </Box>
         </MenuItem>
       </Menu>
     </Box>
