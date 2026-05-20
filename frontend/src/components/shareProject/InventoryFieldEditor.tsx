@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Box, Grid, IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   optionRow: {
     display: "flex",
     alignItems: "center",
-    gap: theme.spacing(0.5),
+    gap: theme.spacing(1),
     marginBottom: theme.spacing(0.75),
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
@@ -21,10 +21,22 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   optionTitleInput: {
-    flex: 2,
+    flex: "2 1 0",
+    minWidth: 0,
   },
   capacityInput: {
-    flex: 1,
+    flex: "1 1 0",
+    minWidth: 185,
+  },
+  actionButtons: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(0.25),
+    flexShrink: 0,
+    [theme.breakpoints.down("sm")]: {
+      justifyContent: "flex-end",
+      marginTop: theme.spacing(0.5),
+    },
   },
   addButton: {
     display: "flex",
@@ -34,15 +46,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.main,
     marginTop: theme.spacing(0.5),
     fontSize: "0.875rem",
-  },
-  actionButtons: {
-    display: "flex",
-    alignItems: "center",
-    gap: theme.spacing(0.5),
-    [theme.breakpoints.down("sm")]: {
-      justifyContent: "flex-end",
-      marginTop: theme.spacing(0.5),
-    },
   },
 }));
 
@@ -156,83 +159,70 @@ export default function InventoryFieldEditor({
       />
       {options.map((option, index) => (
         <Box key={option.id ?? `inv_opt_${index}`} className={classes.optionRow}>
-          <Grid container spacing={1} alignItems="center">
-            <Grid item xs={12} sm={6} md={5}>
-              <TextField
-                fullWidth
-                className={classes.optionTitleInput}
-                value={option.title}
-                onChange={(e) => handleOptionChange(index, "title", e.target.value)}
-                placeholder={texts.option_placeholder}
-                variant="outlined"
+          <TextField
+            className={classes.optionTitleInput}
+            value={option.title}
+            onChange={(e) => handleOptionChange(index, "title", e.target.value)}
+            placeholder={texts.option_placeholder}
+            variant="outlined"
+            size="small"
+            disabled={option.has_answers === true}
+          />
+          <TextField
+            className={classes.capacityInput}
+            value={option.available_amount ?? ""}
+            onChange={(e) => handleOptionChange(index, "available_amount", e.target.value)}
+            label={texts.inventory_available_amount}
+            type="number"
+            variant="outlined"
+            size="small"
+            inputProps={{ min: 1 }}
+          />
+          <TextField
+            className={classes.capacityInput}
+            value={option.max_amount_per_guest ?? ""}
+            onChange={(e) => handleOptionChange(index, "max_amount_per_guest", e.target.value)}
+            label={texts.inventory_max_per_guest}
+            type="number"
+            variant="outlined"
+            size="small"
+            inputProps={{ min: 1 }}
+          />
+          <Box className={classes.actionButtons}>
+            <Tooltip title={texts.move_field_up}>
+              <span>
+                <IconButton
+                  size="small"
+                  onClick={() => handleMoveOptionUp(index)}
+                  disabled={index === 0}
+                  aria-label={texts.move_field_up}
+                >
+                  <ArrowUpwardIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title={texts.move_field_down}>
+              <span>
+                <IconButton
+                  size="small"
+                  onClick={() => handleMoveOptionDown(index)}
+                  disabled={index === options.length - 1}
+                  aria-label={texts.move_field_down}
+                >
+                  <ArrowDownwardIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title={texts.delete_option}>
+              <IconButton
                 size="small"
-                disabled={option.has_answers === true}
-              />
-            </Grid>
-            <Grid item xs={6} sm={3} md={3}>
-              <TextField
-                fullWidth
-                className={classes.capacityInput}
-                value={option.available_amount ?? ""}
-                onChange={(e) => handleOptionChange(index, "available_amount", e.target.value)}
-                label={texts.inventory_available_amount}
-                type="number"
-                variant="outlined"
-                size="small"
-                inputProps={{ min: 1 }}
-              />
-            </Grid>
-            <Grid item xs={6} sm={3} md={3}>
-              <TextField
-                fullWidth
-                className={classes.capacityInput}
-                value={option.max_amount_per_guest ?? ""}
-                onChange={(e) => handleOptionChange(index, "max_amount_per_guest", e.target.value)}
-                label={texts.inventory_max_per_guest}
-                type="number"
-                variant="outlined"
-                size="small"
-                inputProps={{ min: 1 }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} md={1}>
-              <Box className={classes.actionButtons}>
-                <Tooltip title={texts.move_field_up}>
-                  <span>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleMoveOptionUp(index)}
-                      disabled={index === 0}
-                      aria-label={texts.move_field_up}
-                    >
-                      <ArrowUpwardIcon fontSize="small" />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                <Tooltip title={texts.move_field_down}>
-                  <span>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleMoveOptionDown(index)}
-                      disabled={index === options.length - 1}
-                      aria-label={texts.move_field_down}
-                    >
-                      <ArrowDownwardIcon fontSize="small" />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                <Tooltip title={texts.delete_option}>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleDeleteOption(index)}
-                    aria-label={texts.delete_option}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Grid>
-          </Grid>
+                onClick={() => handleDeleteOption(index)}
+                aria-label={texts.delete_option}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
       ))}
       <Box className={classes.addButton} onClick={handleAddOption} role="button" tabIndex={0}>
