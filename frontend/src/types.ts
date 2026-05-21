@@ -16,6 +16,7 @@ export type RegistrationField = {
   field_type: "checkbox" | "option_select" | "inventory";
   order: number;
   is_required: boolean;
+  label: string;
   settings: {
     description?: string;
     title?: string;

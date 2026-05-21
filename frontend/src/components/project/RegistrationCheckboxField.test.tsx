@@ -16,6 +16,7 @@ function makeField(overrides: Partial<RegistrationField> = {}): RegistrationFiel
     field_type: "checkbox",
     order: 0,
     is_required: false,
+    label: "Checkbox 1",
     settings: { description: "I agree to the terms" },
     ...overrides,
   };

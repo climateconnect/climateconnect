@@ -13,6 +13,7 @@ function makeField(overrides: Partial<RegistrationField> = {}): RegistrationFiel
     field_type: "option_select",
     order: 0,
     is_required: false,
+    label: "Single choice 1",
     settings: { title: "Choose an option" },
     options: [
       { id: 2, title: "Second", order: 1 },

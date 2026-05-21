@@ -3,7 +3,7 @@
 **Type**: Epic  
 **Status**: IN PROGRESS  
 **Started**: 2026-03-05  
-**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901), [#1995](https://github.com/climateconnect/climateconnect/issues/1995)  
+**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901), [#1995](https://github.com/climateconnect/climateconnect/issues/1995), [#1997](https://github.com/climateconnect/climateconnect/issues/1997)  
 **Owner**: CC
 
 ---
@@ -115,6 +115,14 @@ Organisers can define options with **limited availability** — e.g. workshop sl
 |-------|-------------|------|--------|
 | Organiser creates/edits event with inventory options (capacity per option) | [#1995](https://github.com/climateconnect/climateconnect/issues/1995) | [`20260519_1328_inventory_field_type_event_registration.md`](./20260519_1328_inventory_field_type_event_registration.md) | ⚪ |
 | Member selects inventory options when registering; system enforces per-option capacity | ⚪ | — | ⚪ |
+
+#### Phase 4x — Custom Field Label (cross-cutting)
+
+An organiser-facing label (max 30 chars) for custom registration fields, used in export/print/overview views. A default label is auto-generated (localised field type + sequential number) and the organiser can edit it inline. Applies to all field types.
+
+| Story | GitHub Issue | Spec | Status |
+|-------|-------------|------|--------|
+| Custom field label (default + adjustable) | [#1997](https://github.com/climateconnect/climateconnect/issues/1997) | [`20260521_0923_custom_field_label.md`](./20260521_0923_custom_field_label.md) | ⚪ |
 
 #### Phase 4c+ — Further Field Types (TBD)
 

@@ -50,6 +50,7 @@ function makeField(overrides: Partial<RegistrationField> = {}): RegistrationFiel
     field_type: "checkbox",
     order: 0,
     is_required: false,
+    label: "Checkbox 1",
     settings: { description: "" },
     _clientKey: `test_key_${Math.random()}`,
     ...overrides,
@@ -86,9 +87,9 @@ describe("RegistrationFieldList", () => {
   // ── Spec test case 2: add checkbox field and verify rendered card ──────────
 
   describe("checkbox field rendering", () => {
-    it("renders field type label, description editor, and required toggle for a checkbox field", () => {
+    it("renders field label, description editor, and required toggle for a checkbox field", () => {
       renderFieldList({ fields: [makeField()] });
-      expect(screen.getByText(/checkbox/i)).toBeInTheDocument();
+      expect(screen.getByText("Checkbox 1")).toBeInTheDocument();
       expect(screen.getByTestId("checkbox-description")).toBeInTheDocument();
       expect(screen.getByRole("checkbox", { name: /required/i })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /delete field/i })).toBeInTheDocument();
@@ -98,11 +99,18 @@ describe("RegistrationFieldList", () => {
   // ── Spec test case 3: add option select field and verify rendered card ─────
 
   describe("option select field rendering", () => {
-    it("renders field type label, title input, and add option button for an option_select field", () => {
+    it("renders field label, title input, and add option button for an option_select field", () => {
       renderFieldList({
-        fields: [makeField({ field_type: "option_select", settings: { title: "" }, options: [] })],
+        fields: [
+          makeField({
+            field_type: "option_select",
+            label: "Single choice 1",
+            settings: { title: "" },
+            options: [],
+          }),
+        ],
       });
-      expect(screen.getByText(/single choice/i)).toBeInTheDocument();
+      expect(screen.getByText("Single choice 1")).toBeInTheDocument();
       expect(screen.getByRole("textbox", { name: /title/i })).toBeInTheDocument();
       expect(screen.getByText(/add option/i)).toBeInTheDocument();
     });
@@ -111,17 +119,18 @@ describe("RegistrationFieldList", () => {
   // ── Inventory field rendering ─────────────────────────────────────────────
 
   describe("inventory field rendering", () => {
-    it("renders the Inventory type label for an inventory field", () => {
+    it("renders the field label for an inventory field", () => {
       renderFieldList({
         fields: [
           makeField({
             field_type: "inventory",
+            label: "Inventory 1",
             settings: { title: "", description: "" },
             options: [],
           }),
         ],
       });
-      expect(screen.getByText(/inventory/i)).toBeInTheDocument();
+      expect(screen.getByText("Inventory 1")).toBeInTheDocument();
     });
   });
 
@@ -136,7 +145,7 @@ describe("RegistrationFieldList", () => {
       expect(screen.getByRole("menuitem", { name: /inventory/i })).toBeInTheDocument();
     });
 
-    it("calls onFieldsChange with a checkbox field at order 0 when Checkbox is selected", () => {
+    it("calls onFieldsChange with a checkbox field with default label when Checkbox is selected", () => {
       const onFieldsChange = jest.fn();
       renderFieldList({ onFieldsChange });
       fireEvent.click(screen.getByRole("button", { name: /add field/i }));
@@ -148,6 +157,7 @@ describe("RegistrationFieldList", () => {
         field_type: "checkbox",
         order: 0,
         is_required: false,
+        label: "Checkbox 1",
         settings: { description: "" },
       });
     });
@@ -162,6 +172,7 @@ describe("RegistrationFieldList", () => {
         field_type: "option_select",
         order: 0,
         is_required: false,
+        label: "Single choice 1",
         options: [],
       });
     });
@@ -176,6 +187,7 @@ describe("RegistrationFieldList", () => {
         field_type: "inventory",
         order: 0,
         is_required: false,
+        label: "Inventory 1",
         settings: { title: "", description: "" },
         options: [],
       });
@@ -192,12 +204,195 @@ describe("RegistrationFieldList", () => {
     });
   });
 
+  // ── Default label generation ──────────────────────────────────────────────
+
+  describe("default label generation", () => {
+    it("generates 'Checkbox 1' for the first checkbox field", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({ onFieldsChange });
+      fireEvent.click(screen.getByRole("button", { name: /add field/i }));
+      fireEvent.click(screen.getByRole("menuitem", { name: /checkbox/i }));
+      const [fields] = onFieldsChange.mock.calls[0];
+      expect(fields[0].label).toBe("Checkbox 1");
+    });
+
+    it("generates 'Checkbox 2' when a checkbox already exists", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({
+        fields: [makeField({ field_type: "checkbox", label: "Checkbox 1" })],
+        onFieldsChange,
+      });
+      fireEvent.click(screen.getByRole("button", { name: /add field/i }));
+      fireEvent.click(screen.getByRole("menuitem", { name: /checkbox/i }));
+      const [fields] = onFieldsChange.mock.calls[0];
+      expect(fields[1].label).toBe("Checkbox 2");
+    });
+
+    it("generates per-type labels independently", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({
+        fields: [
+          makeField({ field_type: "checkbox", label: "Checkbox 1", order: 0, _clientKey: "k1" }),
+          makeField({
+            field_type: "checkbox",
+            label: "Checkbox 2",
+            order: 1,
+            _clientKey: "k2",
+          }),
+        ],
+        onFieldsChange,
+      });
+      fireEvent.click(screen.getByRole("button", { name: /add field/i }));
+      fireEvent.click(screen.getByRole("menuitem", { name: /single choice/i }));
+      const [fields] = onFieldsChange.mock.calls[0];
+      expect(fields[2].label).toBe("Single choice 1");
+    });
+
+    it("skips taken default labels and picks the next available number", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({
+        fields: [
+          makeField({ field_type: "checkbox", label: "Checkbox 1", order: 0, _clientKey: "k1" }),
+          makeField({
+            field_type: "checkbox",
+            label: "Checkbox 3",
+            order: 1,
+            _clientKey: "k2",
+          }),
+        ],
+        onFieldsChange,
+      });
+      fireEvent.click(screen.getByRole("button", { name: /add field/i }));
+      fireEvent.click(screen.getByRole("menuitem", { name: /checkbox/i }));
+      const [fields] = onFieldsChange.mock.calls[0];
+      expect(fields[2].label).toBe("Checkbox 2");
+    });
+
+    it("skips manually-set labels that match the default pattern", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({
+        fields: [
+          makeField({ field_type: "checkbox", label: "Checkbox 1", order: 0, _clientKey: "k1" }),
+          makeField({
+            field_type: "checkbox",
+            label: "Checkbox 2",
+            order: 1,
+            _clientKey: "k2",
+          }),
+          makeField({
+            field_type: "checkbox",
+            label: "Checkbox 3",
+            order: 2,
+            _clientKey: "k3",
+          }),
+        ],
+        onFieldsChange,
+      });
+      fireEvent.click(screen.getByRole("button", { name: /add field/i }));
+      fireEvent.click(screen.getByRole("menuitem", { name: /checkbox/i }));
+      const [fields] = onFieldsChange.mock.calls[0];
+      expect(fields[3].label).toBe("Checkbox 4");
+    });
+  });
+
+  // ── Inline label editing ──────────────────────────────────────────────────
+
+  describe("inline label editing", () => {
+    it("replaces type text with the label value in the field header", () => {
+      renderFieldList({ fields: [makeField({ label: "My custom label" })] });
+      expect(screen.getByText("My custom label")).toBeInTheDocument();
+    });
+
+    it("shows a pencil icon next to the label", () => {
+      renderFieldList({ fields: [makeField()] });
+      expect(screen.getByRole("button", { name: /edit label/i })).toBeInTheDocument();
+    });
+
+    it("replaces label with a text input when pencil icon is clicked", () => {
+      renderFieldList({ fields: [makeField({ label: "Checkbox 1" })] });
+      fireEvent.click(screen.getByRole("button", { name: /edit label/i }));
+      const input = screen.getByRole("textbox", { name: /field label/i });
+      expect(input).toBeInTheDocument();
+      expect(input).toHaveValue("Checkbox 1");
+    });
+
+    it("saves the new label on blur", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({ fields: [makeField({ label: "Checkbox 1" })], onFieldsChange });
+      fireEvent.click(screen.getByRole("button", { name: /edit label/i }));
+      const input = screen.getByRole("textbox", { name: /field label/i });
+      fireEvent.change(input, { target: { value: "New label" } });
+      fireEvent.blur(input);
+      expect(onFieldsChange).toHaveBeenCalledTimes(1);
+      const [fields] = onFieldsChange.mock.calls[0];
+      expect(fields[0].label).toBe("New label");
+    });
+
+    it("saves the new label on Enter key", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({ fields: [makeField({ label: "Checkbox 1" })], onFieldsChange });
+      fireEvent.click(screen.getByRole("button", { name: /edit label/i }));
+      const input = screen.getByRole("textbox", { name: /field label/i });
+      fireEvent.change(input, { target: { value: "Enter label" } });
+      fireEvent.keyDown(input, { key: "Enter" });
+      expect(onFieldsChange).toHaveBeenCalledTimes(1);
+      const [fields] = onFieldsChange.mock.calls[0];
+      expect(fields[0].label).toBe("Enter label");
+    });
+
+    it("the TextField has maxLength=30", () => {
+      renderFieldList({ fields: [makeField()] });
+      fireEvent.click(screen.getByRole("button", { name: /edit label/i }));
+      const input = screen.getByRole("textbox", { name: /field label/i });
+      expect(input).toHaveAttribute("maxLength", "30");
+    });
+
+    it("restores the previous label when empty value is saved", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({ fields: [makeField({ label: "Keep me" })], onFieldsChange });
+      fireEvent.click(screen.getByRole("button", { name: /edit label/i }));
+      const input = screen.getByRole("textbox", { name: /field label/i });
+      fireEvent.change(input, { target: { value: "" } });
+      fireEvent.blur(input);
+      expect(onFieldsChange).not.toHaveBeenCalled();
+    });
+
+    it("rejects a duplicate label and shows error", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({
+        fields: [
+          makeField({ label: "Checkbox 1", order: 0, _clientKey: "k1" }),
+          makeField({ label: "Checkbox 2", order: 1, _clientKey: "k2" }),
+        ],
+        onFieldsChange,
+      });
+      const editButtons = screen.getAllByRole("button", { name: /edit label/i });
+      fireEvent.click(editButtons[0]);
+      const input = screen.getByRole("textbox", { name: /field label/i });
+      fireEvent.change(input, { target: { value: "Checkbox 2" } });
+      fireEvent.blur(input);
+      expect(onFieldsChange).not.toHaveBeenCalled();
+      expect(screen.getByText(/label already used/i)).toBeInTheDocument();
+    });
+
+    it("cancels editing on Escape key", () => {
+      const onFieldsChange = jest.fn();
+      renderFieldList({ fields: [makeField({ label: "Original" })], onFieldsChange });
+      fireEvent.click(screen.getByRole("button", { name: /edit label/i }));
+      const input = screen.getByRole("textbox", { name: /field label/i });
+      fireEvent.change(input, { target: { value: "Changed" } });
+      fireEvent.keyDown(input, { key: "Escape" });
+      expect(onFieldsChange).not.toHaveBeenCalled();
+      expect(screen.getByText("Original")).toBeInTheDocument();
+    });
+  });
+
   // ── Spec test case 4: max 5 fields limit ──────────────────────────────────
 
   describe("max fields limit", () => {
     it("disables the Add field button when 5 fields are already present", () => {
       const fields = Array.from({ length: 5 }, (_, i) =>
-        makeField({ order: i, _clientKey: `key_${i}` })
+        makeField({ order: i, label: `Field ${i + 1}`, _clientKey: `key_${i}` })
       );
       renderFieldList({ fields });
       expect(screen.getByRole("button", { name: /add field/i })).toBeDisabled();
@@ -205,7 +400,7 @@ describe("RegistrationFieldList", () => {
 
     it("shows the max-reached message on the button when 5 fields are present", () => {
       const fields = Array.from({ length: 5 }, (_, i) =>
-        makeField({ order: i, _clientKey: `key_${i}` })
+        makeField({ order: i, label: `Field ${i + 1}`, _clientKey: `key_${i}` })
       );
       renderFieldList({ fields });
       expect(screen.getByText(/maximum of 5 fields reached/i)).toBeInTheDocument();
@@ -216,10 +411,11 @@ describe("RegistrationFieldList", () => {
 
   describe("reordering fields", () => {
     const twoFields: RegistrationField[] = [
-      makeField({ field_type: "checkbox", order: 0, _clientKey: "k1" }),
+      makeField({ field_type: "checkbox", order: 0, label: "Checkbox 1", _clientKey: "k1" }),
       makeField({
         field_type: "option_select",
         order: 1,
+        label: "Single choice 1",
         settings: { title: "" },
         options: [],
         _clientKey: "k2",
@@ -273,15 +469,16 @@ describe("RegistrationFieldList", () => {
 
     it("reassigns orders contiguously after deleting the middle field", () => {
       const fields: RegistrationField[] = [
-        makeField({ order: 0, _clientKey: "k1" }),
+        makeField({ order: 0, label: "Checkbox 1", _clientKey: "k1" }),
         makeField({
           field_type: "option_select",
           order: 1,
+          label: "Single choice 1",
           settings: { title: "" },
           options: [],
           _clientKey: "k2",
         }),
-        makeField({ order: 2, _clientKey: "k3" }),
+        makeField({ order: 2, label: "Checkbox 2", _clientKey: "k3" }),
       ];
       const onFieldsChange = jest.fn();
       renderFieldList({ fields, onFieldsChange });

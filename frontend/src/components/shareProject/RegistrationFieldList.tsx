@@ -9,6 +9,7 @@ import {
   MenuItem,
   Paper,
   Switch,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -16,6 +17,7 @@ import AddIcon from "@mui/icons-material/Add";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import InventoryIcon from "@mui/icons-material/Inventory";
@@ -26,6 +28,13 @@ import { RegistrationField, RegistrationFieldOption } from "../../types";
 import RegistrationFieldEditor from "./RegistrationFieldEditor";
 
 const MAX_FIELDS = 5;
+const MAX_LABEL_LENGTH = 30;
+
+const FIELD_TYPE_LABEL_KEYS: Record<string, string> = {
+  checkbox: "field_type_checkbox",
+  option_select: "field_type_option_select",
+  inventory: "field_type_inventory",
+};
 
 const useStyles = makeStyles((theme) => ({
   fieldPaper: {
@@ -64,6 +73,23 @@ type Props = {
   ) => void;
 };
 
+function generateDefaultLabel(
+  fieldType: string,
+  fields: RegistrationField[],
+  texts: Record<string, string>
+): string {
+  const typeKey = FIELD_TYPE_LABEL_KEYS[fieldType] || "field_type_checkbox";
+  const typeName = texts[typeKey] || fieldType;
+  const existingLabels = new Set(fields.map((f) => f.label.toLowerCase()));
+  let n = 1;
+  let label: string;
+  do {
+    label = `${typeName} ${n}`;
+    n++;
+  } while (existingLabels.has(label.toLowerCase()));
+  return label.slice(0, MAX_LABEL_LENGTH);
+}
+
 export default function RegistrationFieldList({
   fields,
   onFieldsChange,
@@ -75,6 +101,9 @@ export default function RegistrationFieldList({
   const texts = getTexts({ page: "project", locale });
 
   const [addMenuAnchor, setAddMenuAnchor] = useState<null | HTMLElement>(null);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [labelError, setLabelError] = useState<string | null>(null);
 
   const handleOpenAddMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAddMenuAnchor(event.currentTarget);
@@ -86,10 +115,12 @@ export default function RegistrationFieldList({
 
   const handleAddField = (fieldType: "checkbox" | "option_select" | "inventory") => {
     const newOrder = fields.length;
+    const label = generateDefaultLabel(fieldType, fields, texts);
     const newField: RegistrationField = {
       field_type: fieldType,
       order: newOrder,
       is_required: false,
+      label,
       settings:
         fieldType === "checkbox"
           ? { description: "" }
@@ -137,6 +168,41 @@ export default function RegistrationFieldList({
     onFieldsChange(updated);
   };
 
+  const handleStartEditLabel = (index: number) => {
+    setEditingIndex(index);
+    setEditValue(fields[index].label);
+    setLabelError(null);
+  };
+
+  const handleSaveLabel = (index: number) => {
+    const trimmed = editValue.trim();
+    if (!trimmed) {
+      setLabelError(null);
+      setEditingIndex(null);
+      return;
+    }
+    const isDuplicate = fields.some(
+      (f, i) => i !== index && f.label.toLowerCase() === trimmed.toLowerCase()
+    );
+    if (isDuplicate) {
+      setLabelError(texts.field_label_duplicate_error);
+      return;
+    }
+    handleFieldChange(index, { ...fields[index], label: trimmed });
+    setEditingIndex(null);
+    setLabelError(null);
+  };
+
+  const handleLabelKeyDown = (e: React.KeyboardEvent, index: number) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSaveLabel(index);
+    } else if (e.key === "Escape") {
+      setEditingIndex(null);
+      setLabelError(null);
+    }
+  };
+
   const isAtMax = fields.length >= MAX_FIELDS;
 
   const getFieldIcon = (fieldType: string) => {
@@ -160,15 +226,45 @@ export default function RegistrationFieldList({
           className={classes.fieldPaper}
         >
           <Box className={classes.fieldHeader}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flex: 1, minWidth: 0 }}>
               {getFieldIcon(field.field_type)}
-              <Typography variant="subtitle2" color="textSecondary">
-                {field.field_type === "checkbox"
-                  ? texts.field_type_checkbox
-                  : field.field_type === "inventory"
-                  ? texts.field_type_inventory
-                  : texts.field_type_option_select}
-              </Typography>
+              {editingIndex === index ? (
+                <TextField
+                  size="small"
+                  value={editValue}
+                  onChange={(e) => {
+                    setEditValue(e.target.value);
+                    if (labelError) setLabelError(null);
+                  }}
+                  onBlur={() => handleSaveLabel(index)}
+                  onKeyDown={(e) => handleLabelKeyDown(e, index)}
+                  inputProps={{
+                    maxLength: MAX_LABEL_LENGTH,
+                    "aria-label": texts.field_label_placeholder,
+                  }}
+                  error={!!labelError}
+                  helperText={labelError}
+                  autoFocus
+                  sx={{ flex: 1 }}
+                />
+              ) : (
+                <>
+                  <Typography variant="subtitle2" color="textSecondary" noWrap>
+                    {field.label}
+                  </Typography>
+                  <Tooltip title={texts.edit_field_label}>
+                    <span>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleStartEditLabel(index)}
+                        aria-label={texts.edit_field_label}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </>
+              )}
             </Box>
             <Box className={classes.controlsRow}>
               <Tooltip title={texts.move_field_up}>

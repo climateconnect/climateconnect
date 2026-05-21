@@ -136,6 +136,7 @@ describe("EventRegistrationSection", () => {
             field_type: "option_select",
             order: 0,
             is_required: false,
+            label: "Single choice 1",
             settings: { title: "Meal preference?" },
             options: [],
             _clientKey: "k1",

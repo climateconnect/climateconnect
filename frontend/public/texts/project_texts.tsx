@@ -1410,6 +1410,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Diese Option und alle bereits eingereichten Antworten dafür werden unwiderruflich gelöscht.",
     },
+    edit_field_label: {
+      en: "Edit label",
+      de: "Bezeichnung bearbeiten",
+    },
+    field_label_placeholder: {
+      en: "Field label",
+      de: "Feldbezeichnung",
+    },
+    field_label_duplicate_error: {
+      en: "Label already used by another field",
+      de: "Bezeichnung wird bereits von einem anderen Feld verwendet",
+    },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
       de: "Dein Projekt wurde als Entwurf gespeichert!",

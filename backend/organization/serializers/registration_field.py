@@ -133,12 +133,16 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
     has_answers (read-only): True if any RegistrationFieldAnswer row references
     this field. The frontend uses this to lock text inputs (checkbox description,
     option select title) that cannot be changed once answers exist.
+
+    label: Required, max 30 characters, unique within the registration config.
+    Used as the organiser-facing field identifier in exports, prints, and overview.
     """
 
     id = serializers.IntegerField(required=False, allow_null=True)
     field_type = serializers.ChoiceField(
         choices=RegistrationFieldType.choices, required=False
     )
+    label = serializers.CharField(max_length=30, required=True, allow_blank=False)
     settings = serializers.JSONField(required=False)
     options = RegistrationFieldOptionSerializer(many=True, required=False)
     has_answers = serializers.SerializerMethodField()
@@ -150,6 +154,7 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
             "field_type",
             "order",
             "is_required",
+            "label",
             "settings",
             "options",
             "has_answers",
@@ -293,6 +298,39 @@ def _sync_options(field, options_data):
         RegistrationFieldOption.objects.filter(id__in=to_delete).delete()
 
 
+def _validate_labels_unique(fields_data, registration_config):
+    """
+    Validate that all labels in fields_data are non-empty, ≤ 30 chars, and unique
+    within the registration config (including existing fields not in the payload).
+    """
+    seen_labels = set()
+    for field_data in fields_data:
+        label = field_data.get("label")
+        if not label or not label.strip():
+            raise serializers.ValidationError({"label": "This field may not be blank."})
+        if len(label) > 30:
+            raise serializers.ValidationError(
+                {"label": "Ensure this field has no more than 30 characters."}
+            )
+        normalized = label.strip().lower()
+        if normalized in seen_labels:
+            raise serializers.ValidationError(
+                {"label": "Label already used by another field."}
+            )
+        seen_labels.add(normalized)
+    existing_labels = set(
+        registration_config.fields.exclude(
+            id__in=[f.get("id") for f in fields_data if f.get("id")]
+        ).values_list("label", flat=True)
+    )
+    for field_data in fields_data:
+        label = field_data.get("label")
+        if label and label.strip().lower() in {existing_label.lower() for existing_label in existing_labels}:
+            raise serializers.ValidationError(
+                {"label": "Label already used by another field."}
+            )
+
+
 @transaction.atomic
 def sync_fields(registration_config, fields_data):
     """
@@ -308,6 +346,8 @@ def sync_fields(registration_config, fields_data):
     """
     existing = {f.id: f for f in registration_config.fields.all()}
     incoming_ids = set()
+
+    _validate_labels_unique(fields_data, registration_config)
 
     for field_data in fields_data:
         # Pop write-only / non-model fields before setting attributes.
@@ -349,6 +389,7 @@ def create_fields(registration_config, fields_data):
     Called from EventRegistrationConfigSerializer.create(). Runs inside the
     caller's atomic context (no new transaction needed).
     """
+    _validate_labels_unique(fields_data, registration_config)
     for field_data in fields_data:
         field_data.pop("id", None)
         options_data = field_data.pop("options", None) or []
