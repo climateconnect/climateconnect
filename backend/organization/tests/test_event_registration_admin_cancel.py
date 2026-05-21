@@ -611,6 +611,7 @@ class TestListEventParticipantsCustomFieldAnswers(APITestCase):
         self.field_checkbox = RegistrationField.objects.create(
             registration_config=self.er,
             field_type="checkbox",
+            label="checkbox 1",
             order=0,
             is_required=False,
             settings={"description": "<p>I agree to the rules.</p>"},
@@ -618,6 +619,7 @@ class TestListEventParticipantsCustomFieldAnswers(APITestCase):
         self.field_option = RegistrationField.objects.create(
             registration_config=self.er,
             field_type="option_select",
+            label="option select 1",
             order=1,
             is_required=False,
             settings={"title": "T-shirt size"},
