@@ -325,7 +325,7 @@ def _validate_labels_unique(fields_data, registration_config):
     )
     for field_data in fields_data:
         label = field_data.get("label")
-        if label and label.strip().lower() in {l.lower() for l in existing_labels}:
+        if label and label.strip().lower() in {existing_label.lower() for existing_label in existing_labels}:
             raise serializers.ValidationError(
                 {"label": "Label already used by another field."}
             )
