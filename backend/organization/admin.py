@@ -307,9 +307,10 @@ class RegistrationFieldOptionInline(admin.TabularInline):
 
 
 class RegistrationFieldAdmin(admin.ModelAdmin):
-    list_display = ("field_type", "order", "is_required", "get_event_name")
+    list_display = ("label", "field_type", "order", "is_required", "get_event_name")
     list_filter = ("field_type", "is_required")
     search_fields = (
+        "label",
         "registration_config__project__name",
         "registration_config__project__url_slug",
     )

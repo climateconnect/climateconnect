@@ -32,6 +32,7 @@ class RegistrationField(models.Model):
     field_type = models.CharField(max_length=50, choices=RegistrationFieldType.choices)
     order = models.PositiveIntegerField()
     is_required = models.BooleanField(default=False)
+    label = models.CharField(max_length=30)
     settings = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -44,12 +45,16 @@ class RegistrationField(models.Model):
                 fields=["registration_config", "order"],
                 name="unique_registrationfield_order_per_config",
                 deferrable=models.Deferrable.DEFERRED,
-            )
+            ),
+            models.UniqueConstraint(
+                fields=["registration_config", "label"],
+                name="unique_registrationfield_label_per_config",
+            ),
         ]
 
     def __str__(self):
         return (
-            f"{self.field_type} field (order={self.order}) "
+            f"{self.label} ({self.field_type}, order={self.order}) "
             f"for config {self.registration_config_id}"
         )
 

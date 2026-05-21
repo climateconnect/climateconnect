@@ -21,6 +21,7 @@ function makeCheckboxField(overrides: Partial<RegistrationField> = {}): Registra
     field_type: "checkbox",
     order: 1,
     is_required: true,
+    label: "Checkbox 1",
     settings: { description: "I accept the rules" },
     ...overrides,
   };
@@ -32,6 +33,7 @@ function makeOptionField(overrides: Partial<RegistrationField> = {}): Registrati
     field_type: "option_select",
     order: 2,
     is_required: true,
+    label: "Single choice 1",
     settings: { title: "T-shirt size" },
     options: [
       { id: 102, title: "M", order: 1 },

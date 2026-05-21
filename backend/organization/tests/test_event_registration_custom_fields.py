@@ -190,12 +190,14 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "field_type": "checkbox",
                         "order": 0,
                         "is_required": True,
+                        "label": "Checkbox 1",
                         "settings": {"description": "<p>I agree to the terms.</p>"},
                     },
                     {
                         "field_type": "option_select",
                         "order": 1,
                         "is_required": False,
+                        "label": "Option Select 1",
                         "settings": {},
                         "options": [
                             {"title": "Vegetarian", "order": 0},
@@ -206,12 +208,14 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "field_type": "checkbox",
                         "order": 2,
                         "is_required": False,
+                        "label": "Checkbox 2",
                         "settings": {"description": "<p>Newsletter opt-in</p>"},
                     },
                     {
                         "field_type": "option_select",
                         "order": 3,
                         "is_required": True,
+                        "label": "Option Select 2",
                         "settings": {},
                         "options": [{"title": "Online", "order": 0}],
                     },
@@ -219,6 +223,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "field_type": "checkbox",
                         "order": 4,
                         "is_required": False,
+                        "label": "Checkbox 3",
                         "settings": {"description": "<p>GDPR consent</p>"},
                     },
                 ],
@@ -251,6 +256,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                 "field_type": "checkbox",
                 "order": i,
                 "is_required": False,
+                "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>Field</p>"},
             }
             for i in range(6)
@@ -282,6 +288,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "field_type": "option_select",
                         "order": 0,
                         "is_required": False,
+                        "label": "Option Select 1",
                         "settings": {},
                         "options": [],
                     }
@@ -308,6 +315,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "field_type": "option_select",
                         "order": 0,
                         "is_required": False,
+                        "label": "Option Select 1",
                         "settings": {},
                         "options": [],
                     }
@@ -339,6 +347,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "field_type": "checkbox",
                         "order": 0,
                         "is_required": False,
+                        "label": "Checkbox 1",
                         "settings": {
                             "description": "<p>Valid</p>",
                             "rogue": "should-be-stripped",
@@ -371,6 +380,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                     {
                         "field_type": "checkbox",
                         "order": 0,
+                        "label": "Checkbox 1",
                         "settings": {
                             "description": "<p>Safe</p><script>alert(1)</script>"
                         },
@@ -402,6 +412,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                     {
                         "field_type": "checkbox",
                         "order": 0,
+                        "label": "Checkbox 1",
                         "settings": {
                             "description": '<p>See <a href="https://example.com">terms</a></p>'
                         },
@@ -434,6 +445,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "field_type": "checkbox",
                         "order": 0,
                         "is_required": True,
+                        "label": "Checkbox 1",
                         "settings": {"description": ""},
                     }
                 ],
@@ -459,6 +471,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "field_type": "checkbox",
                         "order": 0,
                         "is_required": True,
+                        "label": "Checkbox 1",
                         "settings": {"description": ""},
                     }
                 ],
@@ -483,6 +496,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                     {
                         "field_type": "option_select",
                         "order": 0,
+                        "label": "Option Select 1",
                         "settings": {"arbitrary": "value", "another": 123},
                         "options": [{"title": "Option A", "order": 0}],
                     }
@@ -508,9 +522,21 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
     """Tests for syncing custom fields via the registration-config PATCH endpoint."""
 
     def _create_field(
-        self, field_type="checkbox", order=0, settings=None, options=None
+        self, field_type="checkbox", order=0, settings=None, options=None, label=None
     ):
         """Helper: create a RegistrationField directly on self.er."""
+        if label is None:
+            if not hasattr(self, "_label_counter"):
+                self._label_counter = {}
+            type_names = {
+                "checkbox": "Checkbox",
+                "option_select": "Option Select",
+                "inventory": "Inventory",
+            }
+            key = type_names.get(field_type, field_type)
+            count = self._label_counter.get(key, 0) + 1
+            self._label_counter[key] = count
+            label = f"{key} {count}"
         if settings is None:
             settings = (
                 {"description": "<p>Test</p>"} if field_type == "checkbox" else {}
@@ -520,6 +546,7 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
             field_type=field_type,
             order=order,
             is_required=False,
+            label=label,
             settings=settings,
         )
         if options:
@@ -542,8 +569,8 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
             self.patch_url,
             {
                 "fields": [
-                    {"id": field_b.id, "order": 0},
-                    {"id": field_a.id, "order": 1},
+                    {"id": field_b.id, "order": 0, "label": "Option Select 2"},
+                    {"id": field_a.id, "order": 1, "label": "Checkbox 2"},
                 ]
             },
             format="json",
@@ -574,7 +601,7 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
         self.client.login(username="organiser_cf", password="testpassword")
         response = self.client.patch(
             self.patch_url,
-            {"fields": [{"id": field_keep.id, "order": 0}]},
+            {"fields": [{"id": field_keep.id, "order": 0, "label": "Checkbox 2"}]},
             format="json",
         )
 
@@ -631,12 +658,14 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
                     {
                         "id": field_update.id,
                         "order": 0,
+                        "label": "Checkbox 2",
                         "settings": {"description": "<p>Updated</p>"},
                     },
                     # Create new
                     {
                         "field_type": "option_select",
                         "order": 1,
+                        "label": "Option Select 2",
                         "settings": {},
                         "options": [{"title": "New opt", "order": 0}],
                     },
@@ -671,6 +700,7 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
             {
                 "field_type": "checkbox",
                 "order": i,
+                "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>x</p>"},
             }
             for i in range(6)
@@ -691,7 +721,10 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
         self.client.login(username="organiser_cf", password="testpassword")
         response = self.client.patch(
             self.patch_url,
-            {"is_draft": True, "fields": [{"id": 999999, "order": 0}]},
+            {
+                "is_draft": True,
+                "fields": [{"id": 999999, "order": 0, "label": "Checkbox 1"}],
+            },
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -707,8 +740,18 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
             {
                 "is_draft": True,
                 "fields": [
-                    {"field_type": "checkbox", "order": 0, "settings": {}},
-                    {"field_type": "checkbox", "order": 0, "settings": {}},
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "Checkbox 1",
+                        "settings": {},
+                    },
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "Checkbox 2",
+                        "settings": {},
+                    },
                 ],
             },
             format="json",
@@ -756,8 +799,20 @@ class TestEditFieldsDeleteWithAnswers(_CustomFieldsBase):
         )
 
     def _create_field(
-        self, field_type="checkbox", order=0, settings=None, options=None
+        self, field_type="checkbox", order=0, settings=None, options=None, label=None
     ):
+        if label is None:
+            if not hasattr(self, "_label_counter"):
+                self._label_counter = {}
+            type_names = {
+                "checkbox": "Checkbox",
+                "option_select": "Option Select",
+                "inventory": "Inventory",
+            }
+            key = type_names.get(field_type, field_type)
+            count = self._label_counter.get(key, 0) + 1
+            self._label_counter[key] = count
+            label = f"{key} {count}"
         if settings is None:
             settings = (
                 {"description": "<p>Test</p>"} if field_type == "checkbox" else {}
@@ -767,6 +822,7 @@ class TestEditFieldsDeleteWithAnswers(_CustomFieldsBase):
             field_type=field_type,
             order=order,
             is_required=False,
+            label=label,
             settings=settings,
         )
         if options:
@@ -827,6 +883,7 @@ class TestEditFieldsDeleteWithAnswers(_CustomFieldsBase):
                     {
                         "id": field.id,
                         "order": 0,
+                        "label": "Option Select 2",
                         "options": [
                             {"id": option_b.id, "title": "Option B", "order": 0}
                         ],
@@ -896,6 +953,7 @@ class TestEditFieldsDraftVsPublish(_CustomFieldsBase):
                     {
                         "field_type": "option_select",
                         "order": 0,
+                        "label": "Option Select 1",
                         "settings": {},
                         "options": [],
                     }
@@ -918,6 +976,7 @@ class TestEditFieldsDraftVsPublish(_CustomFieldsBase):
                     {
                         "field_type": "option_select",
                         "order": 0,
+                        "label": "Option Select 1",
                         "settings": {},
                         "options": [],
                     }
@@ -940,6 +999,7 @@ class TestEditFieldsDraftVsPublish(_CustomFieldsBase):
                     {
                         "field_type": "checkbox",
                         "order": 0,
+                        "label": "Checkbox 1",
                         "settings": {"description": ""},
                     }
                 ]
@@ -961,6 +1021,7 @@ class TestEditFieldsDraftVsPublish(_CustomFieldsBase):
                     {
                         "field_type": "checkbox",
                         "order": 0,
+                        "label": "Checkbox 1",
                         "settings": {"description": ""},
                     }
                 ]
@@ -982,6 +1043,7 @@ class TestEditFieldsDraftVsPublish(_CustomFieldsBase):
                     {
                         "field_type": "checkbox",
                         "order": 0,
+                        "label": "Checkbox 1",
                         "settings": {
                             "description": "<p>Valid</p>",
                             "rogue": "should-be-stripped",
@@ -1009,6 +1071,7 @@ class TestEditFieldsDraftVsPublish(_CustomFieldsBase):
                     {
                         "field_type": "checkbox",
                         "order": 0,
+                        "label": "Checkbox 1",
                         "settings": {
                             "description": "<p>Safe</p><script>alert(1)</script>"
                         },
@@ -1049,21 +1112,37 @@ class TestAnswerLock(_CustomFieldsBase):
             registration_config=self.er,
         )
 
-    def _create_checkbox_field(self, description="<p>Agree</p>", order=0):
+    def _create_checkbox_field(self, description="<p>Agree</p>", order=0, label=None):
+        if label is None:
+            if not hasattr(self, "_label_counter"):
+                self._label_counter = {}
+            count = self._label_counter.get("Checkbox", 0) + 1
+            self._label_counter["Checkbox"] = count
+            label = f"Checkbox {count}"
         return RegistrationField.objects.create(
             registration_config=self.er,
             field_type="checkbox",
             order=order,
             is_required=False,
+            label=label,
             settings={"description": description},
         )
 
-    def _create_option_select_field(self, title="Meal?", order=0, options=None):
+    def _create_option_select_field(
+        self, title="Meal?", order=0, options=None, label=None
+    ):
+        if label is None:
+            if not hasattr(self, "_label_counter"):
+                self._label_counter = {}
+            count = self._label_counter.get("Option Select", 0) + 1
+            self._label_counter["Option Select"] = count
+            label = f"Option Select {count}"
         field = RegistrationField.objects.create(
             registration_config=self.er,
             field_type="option_select",
             order=order,
             is_required=False,
+            label=label,
             settings={"title": title},
         )
         if options:
@@ -1130,6 +1209,7 @@ class TestAnswerLock(_CustomFieldsBase):
                     {
                         "id": field.id,
                         "order": 0,
+                        "label": "Checkbox 2",
                         "settings": {"description": "<p>Changed</p>"},
                     }
                 ]
@@ -1163,6 +1243,7 @@ class TestAnswerLock(_CustomFieldsBase):
                     {
                         "id": field.id,
                         "order": 0,
+                        "label": "Option Select 2",
                         "settings": {"title": "Changed?"},
                         "options": [{"id": option.id, "title": "Yes", "order": 0}],
                     }
@@ -1197,6 +1278,7 @@ class TestAnswerLock(_CustomFieldsBase):
                     {
                         "id": field.id,
                         "order": 0,
+                        "label": "Option Select 2",
                         "settings": {"title": "Meal?"},
                         "options": [
                             {"id": option.id, "title": "Plant-based", "order": 0}
@@ -1230,6 +1312,7 @@ class TestAnswerLock(_CustomFieldsBase):
                     {
                         "id": field.id,
                         "order": 0,
+                        "label": "Checkbox 2",
                         "is_required": True,
                         # description unchanged — not sending settings at all
                     }
@@ -1284,13 +1367,22 @@ class TestInventoryField(_CustomFieldsBase):
       INV-12 – GET response includes available_amount, max_amount_per_guest on options
     """
 
-    def _create_inventory_field(self, title="Meal tickets", order=0, options=None):
+    def _create_inventory_field(
+        self, title="Meal tickets", order=0, options=None, label=None
+    ):
         """Helper: create an inventory RegistrationField on self.er."""
+        if label is None:
+            if not hasattr(self, "_label_counter"):
+                self._label_counter = {}
+            count = self._label_counter.get("Inventory", 0) + 1
+            self._label_counter["Inventory"] = count
+            label = f"Inventory {count}"
         field = RegistrationField.objects.create(
             registration_config=self.er,
             field_type="inventory",
             order=order,
             is_required=False,
+            label=label,
             settings={"title": title, "description": ""},
         )
         if options:
@@ -1312,6 +1404,7 @@ class TestInventoryField(_CustomFieldsBase):
                         "field_type": "inventory",
                         "order": 0,
                         "is_required": True,
+                        "label": "Inventory 1",
                         "settings": {
                             "title": "Meal tickets",
                             "description": "Choose your meal.",
@@ -1360,6 +1453,7 @@ class TestInventoryField(_CustomFieldsBase):
                     {
                         "field_type": "inventory",
                         "order": 0,
+                        "label": "Inventory 1",
                         "settings": {"title": "", "description": ""},
                         "options": [
                             {
@@ -1390,6 +1484,7 @@ class TestInventoryField(_CustomFieldsBase):
                     {
                         "field_type": "inventory",
                         "order": 0,
+                        "label": "Inventory 1",
                         "settings": {"title": "Meals", "description": ""},
                         "options": [],
                     }
@@ -1413,6 +1508,7 @@ class TestInventoryField(_CustomFieldsBase):
                     {
                         "field_type": "inventory",
                         "order": 0,
+                        "label": "Inventory 1",
                         "settings": {"title": "Meals"},
                         "options": [
                             {
@@ -1442,6 +1538,7 @@ class TestInventoryField(_CustomFieldsBase):
                     {
                         "field_type": "inventory",
                         "order": 0,
+                        "label": "Inventory 1",
                         "settings": {"title": "Meals"},
                         "options": [
                             {
@@ -1522,6 +1619,7 @@ class TestInventoryField(_CustomFieldsBase):
                     {
                         "field_type": "inventory",
                         "order": 0,
+                        "label": "Inventory 1",
                         "settings": {"title": "", "description": ""},
                         "options": [],
                     }
@@ -1570,6 +1668,7 @@ class TestInventoryField(_CustomFieldsBase):
                     {
                         "id": field.id,
                         "order": 0,
+                        "label": "Inventory 2",
                         "settings": {"title": "Updated Meals"},
                         "options": [
                             {
@@ -1630,6 +1729,7 @@ class TestInventoryField(_CustomFieldsBase):
                     {
                         "id": field.id,
                         "order": 0,
+                        "label": "Inventory 2",
                         "settings": {"title": "Changed Meals"},
                     }
                 ]
@@ -1675,6 +1775,7 @@ class TestInventoryField(_CustomFieldsBase):
                     {
                         "id": field.id,
                         "order": 0,
+                        "label": "Inventory 2",
                         "options": [
                             {
                                 "id": option.id,
@@ -1728,6 +1829,7 @@ class TestInventoryField(_CustomFieldsBase):
                     {
                         "id": field.id,
                         "order": 0,
+                        "label": "Inventory 2",
                         "options": [
                             {
                                 "id": option.id,
@@ -1758,6 +1860,7 @@ class TestInventoryField(_CustomFieldsBase):
             {
                 "field_type": "checkbox",
                 "order": i,
+                "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>x</p>"},
             }
             for i in range(5)
@@ -1765,6 +1868,7 @@ class TestInventoryField(_CustomFieldsBase):
             {
                 "field_type": "inventory",
                 "order": 5,
+                "label": "Inventory 1",
                 "settings": {"title": "Extra"},
                 "options": [{"title": "A", "order": 0}],
             }
@@ -1805,3 +1909,450 @@ class TestInventoryField(_CustomFieldsBase):
         opt = inv_field["options"][0]
         self.assertEqual(opt["available_amount"], 50)
         self.assertEqual(opt["max_amount_per_guest"], 2)
+
+
+# ---------------------------------------------------------------------------
+# Label validation tests
+# ---------------------------------------------------------------------------
+
+
+class TestRegistrationFieldLabel(_CustomFieldsBase):
+    """
+    Tests for the registration field label feature.
+
+    Spec test cases:
+      - Create field with label → persists correctly
+      - Create field without label → 400
+      - Empty label rejected → 400
+      - Label max length enforced → 400
+      - Label uniqueness enforced → 400
+      - Label round-trip (GET returns same label)
+      - Edit field label via PATCH
+      - Label mutable with answers (no answer-lock)
+    """
+
+    def setUp(self):
+        super().setUp()
+        Location.objects.get_or_create(
+            city="Test City",
+            country="Testland",
+            defaults={"name": "Test City, Testland", "place_id": 9999},
+        )
+
+    def _create_field(
+        self, field_type="checkbox", order=0, settings=None, options=None, label=None
+    ):
+        if label is None:
+            type_names = {
+                "checkbox": "Checkbox",
+                "option_select": "Option Select",
+                "inventory": "Inventory",
+            }
+            label = f"{type_names.get(field_type, field_type)} {order + 1}"
+        if settings is None:
+            settings = (
+                {"description": "<p>Test</p>"} if field_type == "checkbox" else {}
+            )
+        field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type=field_type,
+            order=order,
+            is_required=False,
+            label=label,
+            settings=settings,
+        )
+        if options:
+            for opt in options:
+                RegistrationFieldOption.objects.create(field=field, **opt)
+        return field
+
+    # ── Create field with label → persists ──────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_create_field_with_label_persists(self):
+        """Field created with a label stores it correctly."""
+        field = self._create_field(label="My Checkbox")
+        field.refresh_from_db()
+        self.assertEqual(field.label, "My Checkbox")
+
+    # ── POST: create field with label ───────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_create_event_with_label_via_post(self):
+        """POST /api/projects/ accepts label in nested field; persists correctly."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        data = {
+            "name": "Label Test Event",
+            "status": self.project_status.id,
+            "short_description": "A short description",
+            "collaborators_welcome": False,
+            "team_members": [],
+            "project_tags": [],
+            "sectors": [],
+            "loc": {
+                "place_id": 9999,
+                "country": "Testland",
+                "city": "Test City",
+                "name": "Test City",
+                "type": "city",
+                "lon": 13.0,
+                "lat": 52.0,
+                "osm_id": "12345",
+            },
+            "image": _make_black_image_b64(),
+            "source_language": self.default_language.language_code,
+            "translations": {},
+            "project_type": {
+                "name": "Event",
+                "original_name": "Event",
+                "help_text": "Your Project will show up in the Event calendar",
+                "icon": "",
+                "type_id": "event",
+            },
+            "hubName": None,
+            "end_date": "2026-08-01T20:00:00Z",
+            "start_date": "2026-07-01T10:00:00Z",
+            "registration_config": {
+                "max_participants": 50,
+                "registration_end_date": "2026-07-31T23:59:00Z",
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "is_required": True,
+                        "label": "Terms consent",
+                        "settings": {"description": "<p>I agree to the terms.</p>"},
+                    },
+                ],
+            },
+        }
+        url = reverse("organization:create-project-api")
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        project = Project.objects.get(url_slug=response.data["url_slug"])
+        er = EventRegistrationConfig.objects.get(project=project)
+        field = RegistrationField.objects.get(registration_config=er)
+        self.assertEqual(field.label, "Terms consent")
+
+    # ── POST: omit label → 400 ─────────────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_create_event_without_label_rejected_via_post(self):
+        """POST /api/projects/ without label returns 400."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        data = {
+            "name": "No Label Event",
+            "status": self.project_status.id,
+            "short_description": "A short description",
+            "collaborators_welcome": False,
+            "team_members": [],
+            "project_tags": [],
+            "sectors": [],
+            "loc": {
+                "place_id": 9999,
+                "country": "Testland",
+                "city": "Test City",
+                "name": "Test City",
+                "type": "city",
+                "lon": 13.0,
+                "lat": 52.0,
+                "osm_id": "12345",
+            },
+            "image": _make_black_image_b64(),
+            "source_language": self.default_language.language_code,
+            "translations": {},
+            "project_type": {
+                "name": "Event",
+                "original_name": "Event",
+                "help_text": "Your Project will show up in the Event calendar",
+                "icon": "",
+                "type_id": "event",
+            },
+            "hubName": None,
+            "end_date": "2026-08-01T20:00:00Z",
+            "start_date": "2026-07-01T10:00:00Z",
+            "registration_config": {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ],
+            },
+        }
+        url = reverse("organization:create-project-api")
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── PATCH: omit label → 400 ────────────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_patch_without_label_rejected(self):
+        """PATCH /registration-config/ without label returns 400."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── Empty label rejected ────────────────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_empty_label_rejected(self):
+        """Sending label: '' returns 400."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "",
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── Blank label rejected ────────────────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_blank_label_rejected(self):
+        """Sending label: '   ' (whitespace only) returns 400."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "   ",
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── Label max length enforced ───────────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_label_max_length_enforced(self):
+        """Sending label > 30 chars returns 400."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "A" * 31,
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── Label exactly 30 chars accepted ─────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_label_exactly_30_chars_accepted(self):
+        """Sending label with exactly 30 chars is accepted."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "A" * 30,
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+    # ── Label uniqueness enforced ───────────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_duplicate_label_rejected(self):
+        """Two fields with the same label in one config returns 400."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "Same label",
+                        "settings": {"description": "<p>A</p>"},
+                    },
+                    {
+                        "field_type": "checkbox",
+                        "order": 1,
+                        "label": "Same label",
+                        "settings": {"description": "<p>B</p>"},
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── Label uniqueness case-insensitive ───────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_duplicate_label_case_insensitive_rejected(self):
+        """Two fields with labels differing only by case return 400."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "My Field",
+                        "settings": {"description": "<p>A</p>"},
+                    },
+                    {
+                        "field_type": "checkbox",
+                        "order": 1,
+                        "label": "my field",
+                        "settings": {"description": "<p>B</p>"},
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── Label unique across existing + new fields ───────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_label_unique_with_existing_fields(self):
+        """New field with label matching an existing field's label returns 400."""
+        self._create_field(label="Existing Label", order=0)
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "Existing Label",
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── Label round-trip ────────────────────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_label_round_trip_in_response(self):
+        """GET response returns the same label that was sent on create."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "checkbox",
+                        "order": 0,
+                        "label": "Consent checkbox",
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertEqual(response.data["fields"][0]["label"], "Consent checkbox")
+
+    # ── Edit field label ────────────────────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_edit_field_label_via_patch(self):
+        """PATCH updates label on an existing field."""
+        field = self._create_field(label="Old Label", order=0)
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "label": "New Label",
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        field.refresh_from_db()
+        self.assertEqual(field.label, "New Label")
+
+    # ── Label mutable with answers ──────────────────────────────────────────
+
+    @tag("custom_fields", "label")
+    def test_label_mutable_when_field_has_answers(self):
+        """Changing label on a field with existing answers succeeds (no answer-lock)."""
+        field = self._create_field(label="Original", order=0)
+        registrant = User.objects.create_user(
+            username="registrant_label", password="testpassword"
+        )
+        registration = EventRegistration.objects.create(
+            user=registrant, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=registration, field=field, value_boolean=True
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "label": "Updated Label",
+                        "is_required": True,
+                        "settings": {"description": "<p>Test</p>"},
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        field.refresh_from_db()
+        self.assertEqual(field.label, "Updated Label")
