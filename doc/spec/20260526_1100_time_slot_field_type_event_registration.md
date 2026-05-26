@@ -1,6 +1,6 @@
 # Time Slot Field Type for Event Registration
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Feature
 **Date and time created**: 2026-05-26 11:00
 **GitHub Issue**: [#2006](https://github.com/climateconnect/climateconnect/issues/2006)

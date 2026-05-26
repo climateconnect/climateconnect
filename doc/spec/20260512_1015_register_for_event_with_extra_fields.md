@@ -1,6 +1,6 @@
 # Member Registers for an Event with Custom Fields (Phase 4a — Registrant)
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Feature
 **Date and time created**: 2026-05-12 10:15
 **GitHub Issue**: [#1960](https://github.com/climateconnect/climateconnect/issues/1960)
