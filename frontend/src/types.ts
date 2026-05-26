@@ -126,6 +126,24 @@ export type Project = {
   registration_fields?: RegistrationField[];
   // Event registration data from the API (detail view)
   registration_config?: EventRegistrationData | null;
+  /** The requesting user's own active registration for this event (detail view only). */
+  my_event_registration?: MyEventRegistration | null;
+};
+
+/**
+ * The requesting user's own event registration as returned by
+ * ``GET /api/projects/{slug}/`` when they have an active registration.
+ * Only present on the detail endpoint; always derived from ``request.user``.
+ */
+export type MyEventRegistration = {
+  id: number;
+  user_first_name: string;
+  user_last_name: string;
+  user_url_slug: string | null;
+  user_thumbnail_image: string | null;
+  registered_at: string;
+  cancelled_at: string | null;
+  field_answers: RegistrationFieldAnswer[];
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";

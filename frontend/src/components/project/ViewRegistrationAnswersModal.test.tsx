@@ -67,11 +67,13 @@ function renderModal({
   onClose = jest.fn(),
   registration = makeRegistration(),
   fields = [] as RegistrationField[],
+  cancelAction,
 }: {
   open?: boolean;
   onClose?: jest.Mock;
   registration?: ViewRegistrationAnswersModalRegistration | null;
   fields?: RegistrationField[];
+  cancelAction?: { onCancelClick: jest.Mock };
 } = {}) {
   return render(
     <ThemeProvider theme={theme}>
@@ -81,6 +83,7 @@ function renderModal({
           onClose={onClose}
           registration={registration}
           fields={fields}
+          cancelAction={cancelAction}
         />
       </UserContext.Provider>
     </ThemeProvider>
@@ -412,6 +415,54 @@ describe("ViewRegistrationAnswersModal", () => {
       expect(dialog).toBeInTheDocument();
       // Inventory title is not rendered by the modal (Phase 4a does not display inventory).
       expect(within(dialog).queryByText("Inventory item")).not.toBeInTheDocument();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // cancelAction prop — guest self-cancel (spec 20260526_1130)
+  // ---------------------------------------------------------------------------
+
+  describe("cancelAction prop", () => {
+    it("does not render a cancel button when cancelAction is omitted (organiser context unchanged)", () => {
+      renderModal({ registration: makeRegistration() });
+      // Only the icon-button close and the footer Close button should be present.
+      const buttons = screen.getAllByRole("button");
+      const cancelBtn = buttons.find((b) => /cancel registration/i.test(b.textContent ?? ""));
+      expect(cancelBtn).toBeUndefined();
+    });
+
+    it("renders a 'Cancel registration' button when cancelAction is provided (guest self-cancel)", () => {
+      renderModal({
+        registration: makeRegistration(),
+        cancelAction: { onCancelClick: jest.fn() },
+      });
+      expect(screen.getByRole("button", { name: /cancel registration/i })).toBeInTheDocument();
+    });
+
+    it("calls onCancelClick when the cancel button is clicked", () => {
+      const onCancelClick = jest.fn();
+      renderModal({
+        registration: makeRegistration(),
+        cancelAction: { onCancelClick },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /cancel registration/i }));
+      expect(onCancelClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("cancel button is distinct from the Close button — Close still calls onClose", () => {
+      const onClose = jest.fn();
+      const onCancelClick = jest.fn();
+      renderModal({
+        onClose,
+        registration: makeRegistration(),
+        cancelAction: { onCancelClick },
+      });
+      // Click the footer Close button (last button).
+      const buttons = screen.getAllByRole("button");
+      const closeBtn = buttons.find((b) => /^close$/i.test(b.textContent ?? ""));
+      fireEvent.click(closeBtn!);
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(onCancelClick).not.toHaveBeenCalled();
     });
   });
 });

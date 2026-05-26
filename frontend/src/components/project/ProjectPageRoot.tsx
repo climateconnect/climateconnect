@@ -29,6 +29,7 @@ import { useFeatureToggles } from "../featureToggle";
 import ProjectRegistrationsContent from "./ProjectRegistrationsContent";
 import EventRegistrationModal from "./EventRegistrationModal";
 import CancelRegistrationModal from "./CancelRegistrationModal";
+import ViewRegistrationAnswersModal from "./ViewRegistrationAnswersModal";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -183,19 +184,21 @@ export default function ProjectPageRoot({
   };
 
   // Cancel registration modal state
+  const [modifyRegistrationModalOpen, setModifyRegistrationModalOpen] = useState(false);
   const [cancelRegistrationModalOpen, setCancelRegistrationModalOpen] = useState(false);
-  const handleCancelClick = () => {
-    setCancelRegistrationModalOpen(true);
+  const openModifyRegistrationModal = () => {
+    setModifyRegistrationModalOpen(true);
   };
-  const handleCancellationSuccess = () => {
+  const handleCancelRegistrationSuccess = () => {
     setIsUserRegistered(false);
+    setModifyRegistrationModalOpen(false);
+    setCancelRegistrationModalOpen(false);
     setCurrentEventRegistration((prev) =>
       prev && prev.available_seats != null
         ? { ...prev, available_seats: prev.available_seats + 1 }
         : prev
     );
   };
-
   // Determine whether to show the Registrations tab:
   // only for event admins when the toggle is on and registration_config exists
   const user_permission =
@@ -585,7 +588,7 @@ export default function ProjectPageRoot({
         isUserRegistered={isUserRegistered}
         hasAttended={hasUserAttended}
         adminCancelled={isAdminCancelled}
-        handleCancelClick={handleCancelClick}
+        onModifyRegistrationClick={openModifyRegistrationModal}
         eventRegistration={currentEventRegistration}
       />
 
@@ -644,7 +647,7 @@ export default function ProjectPageRoot({
           isUserRegistered={isUserRegistered}
           hasAttended={hasUserAttended}
           adminCancelled={isAdminCancelled}
-          handleCancelClick={handleCancelClick}
+          onModifyRegistrationClick={openModifyRegistrationModal}
           eventRegistration={currentEventRegistration}
         />
       </Container>
@@ -775,11 +778,20 @@ export default function ProjectPageRoot({
         />
       )}
       {isEventRegistrationEnabled && project.registration_config && (
+        <ViewRegistrationAnswersModal
+          open={modifyRegistrationModalOpen}
+          onClose={() => setModifyRegistrationModalOpen(false)}
+          registration={project.my_event_registration ?? null}
+          fields={currentEventRegistration?.fields ?? []}
+          cancelAction={{ onCancelClick: () => setCancelRegistrationModalOpen(true) }}
+        />
+      )}
+      {isEventRegistrationEnabled && project.registration_config && (
         <CancelRegistrationModal
           open={cancelRegistrationModalOpen}
           onClose={() => setCancelRegistrationModalOpen(false)}
           project={project}
-          onCancellationSuccess={handleCancellationSuccess}
+          onCancellationSuccess={handleCancelRegistrationSuccess}
         />
       )}
     </div>

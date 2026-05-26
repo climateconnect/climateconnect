@@ -89,6 +89,14 @@ type Props = {
    * titles, descriptions, options and field order for the answers.
    */
   fields: RegistrationField[];
+  /**
+   * When provided, renders a "Cancel registration" button in the modal footer.
+   * Opt-in only — organiser callers omit this prop so they keep today's behaviour
+   * unchanged.
+   */
+  cancelAction?: {
+    onCancelClick: () => void;
+  };
 };
 
 /**
@@ -108,6 +116,7 @@ export default function ViewRegistrationAnswersModal({
   onClose,
   registration,
   fields,
+  cancelAction,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -215,6 +224,11 @@ export default function ViewRegistrationAnswersModal({
         )}
       </DialogContent>
       <DialogActions sx={{ justifyContent: "center" }}>
+        {cancelAction && (
+          <Button onClick={cancelAction.onCancelClick} color="error" variant="outlined">
+            {texts.cancel_registration as string}
+          </Button>
+        )}
         <Button onClick={onClose} color="primary" variant="contained">
           {texts.close as string}
         </Button>

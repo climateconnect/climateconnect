@@ -32,7 +32,7 @@ interface RegistrationActionButtonProps {
   texts: any;
   isUserRegistered?: boolean;
   handleRegisterClick?: () => void;
-  handleCancelClick?: () => void;
+  onModifyRegistrationClick?: () => void;
   className?: string;
   /** Rendered when registrationState is "hidden" (no registration config / feature off). */
   fallback?: React.ReactNode;
@@ -53,7 +53,7 @@ export default function RegistrationActionButton({
   texts,
   isUserRegistered,
   handleRegisterClick,
-  handleCancelClick,
+  onModifyRegistrationClick,
   className,
   fallback = null,
   showSeatsCount = false,
@@ -81,10 +81,10 @@ export default function RegistrationActionButton({
         <Button
           variant="outlined"
           color="secondary"
-          onClick={handleCancelClick}
+          onClick={onModifyRegistrationClick}
           className={className}
         >
-          {texts.cancel_registration}
+          {texts.modify_registration}
         </Button>
       );
     }
