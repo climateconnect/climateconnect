@@ -914,7 +914,7 @@ class TestRegisterForEventWithInventoryAnswers(APITestCase):
             value_option=self.opt_veg,
             value_number=49,
         )
-        other_user = User.objects.create_user(
+        User.objects.create_user(
             username="inv_user2", password="testpassword"
         )
         self.client.login(username="inv_user2", password="testpassword")
@@ -952,7 +952,7 @@ class TestRegisterForEventWithInventoryAnswers(APITestCase):
         reg.cancelled_at = timezone.now()
         reg.cancelled_by = self.user
         reg.save(update_fields=["cancelled_at", "cancelled_by"])
-        other_user = User.objects.create_user(
+        User.objects.create_user(
             username="inv_user3", password="testpassword"
         )
         self.client.login(username="inv_user3", password="testpassword")

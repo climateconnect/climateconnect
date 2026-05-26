@@ -2943,7 +2943,6 @@ class TestTimeSlotField(_CustomFieldsBase):
         )
 
         self.client.login(username="organiser_cf", password="testpassword")
-        from django.utils.dateparse import parse_datetime
 
         response = self.client.patch(
             self.patch_url,
