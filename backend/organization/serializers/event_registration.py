@@ -469,6 +469,35 @@ class EventRegistrationSubmissionSerializer(serializers.Serializer):
                 )
                 continue
 
+            if field.field_type == RegistrationFieldType.TIME_SLOT_SELECT:
+                if value_boolean is not None:
+                    answer_error["value_boolean"] = (
+                        "value_boolean is not allowed for time_slot_select fields."
+                    )
+                if value_option_id is None:
+                    answer_error["value_option"] = (
+                        "value_option is required for time_slot_select fields."
+                    )
+                else:
+                    option = options_by_field_id[field_id].get(value_option_id)
+                    if option is None:
+                        answer_error["value_option"] = (
+                            "Selected option does not belong to this field."
+                        )
+
+                if answer_error:
+                    errors.append(answer_error)
+                    continue
+
+                normalized_answers.append(
+                    {
+                        "field": field,
+                        "value_boolean": None,
+                        "value_option": options_by_field_id[field_id][value_option_id],
+                    }
+                )
+                continue
+
             errors.append({"field": "Unsupported field type."})
 
         # Required fields must be present in the payload.
@@ -904,6 +933,33 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                                     }
                                 )
 
+                        elif (
+                            field_type == RegistrationFieldType.TIME_SLOT_SELECT
+                            and settings is not None
+                        ):
+                            submitted_title = settings.get("title")
+                            stored_title = (existing_field.settings or {}).get(
+                                "title", ""
+                            )
+                            if (
+                                submitted_title is not None
+                                and submitted_title != stored_title
+                            ):
+                                raise serializers.ValidationError(
+                                    {
+                                        "fields": {
+                                            i: {
+                                                "settings": {
+                                                    "title": (
+                                                        "Cannot change question title after "
+                                                        "registrants have answered this field."
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
+
                     # Per-option answer-lock: option title is immutable once any
                     # registrant has selected that option.
                     options_data = field_data.get("options")
@@ -944,5 +1000,51 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                                             }
                                         }
                                     )
+
+                                if field_type == RegistrationFieldType.TIME_SLOT_SELECT:
+                                    submitted_start = opt_data.get("start_time")
+                                    if (
+                                        submitted_start is not None
+                                        and submitted_start != existing_opt.start_time
+                                    ):
+                                        raise serializers.ValidationError(
+                                            {
+                                                "fields": {
+                                                    i: {
+                                                        "options": {
+                                                            j: {
+                                                                "start_time": (
+                                                                    "Cannot change start time "
+                                                                    "after registrants have "
+                                                                    "selected this slot."
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        )
+                                    submitted_end = opt_data.get("end_time")
+                                    if (
+                                        submitted_end is not None
+                                        and submitted_end != existing_opt.end_time
+                                    ):
+                                        raise serializers.ValidationError(
+                                            {
+                                                "fields": {
+                                                    i: {
+                                                        "options": {
+                                                            j: {
+                                                                "end_time": (
+                                                                    "Cannot change end time "
+                                                                    "after registrants have "
+                                                                    "selected this slot."
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        )
 
         return attrs

@@ -55,9 +55,17 @@ type Props = {
   description: string;
   onChange: (_html: string) => void;
   disabled?: boolean;
+  isDraft?: boolean;
+  error?: string;
 };
 
-export default function CheckboxFieldEditor({ description, onChange, disabled }: Props) {
+export default function CheckboxFieldEditor({
+  description,
+  onChange,
+  disabled,
+  isDraft,
+  error,
+}: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
@@ -80,7 +88,13 @@ export default function CheckboxFieldEditor({ description, onChange, disabled }:
     <>
       <Typography variant="body2" color="textSecondary" gutterBottom>
         {texts.registration_field_description}
+        {!isDraft && !disabled && " *"}
       </Typography>
+      {error && (
+        <Typography variant="caption" color="error" display="block" sx={{ mb: 0.5 }}>
+          {error}
+        </Typography>
+      )}
       <RichTextEditor
         ref={rteRef}
         immediatelyRender={false}

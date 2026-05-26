@@ -17,6 +17,7 @@ import { getBackgroundContrastColor } from "../../../public/lib/themeOperations"
 import { useTheme } from "@mui/styles";
 import dayjs from "dayjs";
 import EventRegistrationSection from "./EventRegistrationSection";
+import { validateRegistrationFields } from "../../utils/eventRegistrationHelpers";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -95,6 +96,7 @@ export default function EnterDetails({
     max_participants: "",
     registration_end_date: "",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const classes = useStyles(projectData);
@@ -116,11 +118,11 @@ export default function EnterDetails({
     goToPreviousStep();
   };
 
-  // Validates event registration fields.
+  // Validates event registration settings and custom fields.
   // isDraft=false: required fields must be present and valid.
   // isDraft=true:  only validates fields that have a value (skips required checks).
   // Returns true when valid, false and sets inline errors when invalid.
-  const validateRegistrationFields = (project, isDraft = false): boolean => {
+  const validateRegistrationSettings = (project, isDraft = false): boolean => {
     if (!project.registrationEnabled || project.project_type?.type_id !== "event") {
       return true;
     }
@@ -170,13 +172,23 @@ export default function EnterDetails({
       return false;
     }
 
+    if (!isDraft) {
+      const { errors: fe, hasError } = validateRegistrationFields(
+        project.registration_fields,
+        false,
+        texts.this_field_is_required
+      );
+      setFieldErrors(fe);
+      if (hasError) return false;
+    }
+
     return true;
   };
 
   // Validate registration fields for draft saves:
   // required fields are skipped, but if a value was entered it must be valid.
   const handleSaveAsDraft = (event) => {
-    if (!validateRegistrationFields(projectData, true)) return;
+    if (!validateRegistrationSettings(projectData, true)) return;
     saveAsDraft(event);
   };
 
@@ -231,7 +243,7 @@ export default function EnterDetails({
       return false;
     }
     // Validate event registration settings when enabled
-    if (!validateRegistrationFields(project)) return false;
+    if (!validateRegistrationSettings(project)) return false;
     return true;
   };
 
@@ -332,6 +344,14 @@ export default function EnterDetails({
                   max_participants: errors.max_participants,
                   registration_end_date: errors.registration_end_date,
                 }}
+                fieldErrors={fieldErrors}
+                onClearFieldError={(key: string) =>
+                  setFieldErrors((prev) => {
+                    const next = { ...prev };
+                    delete next[key];
+                    return next;
+                  })
+                }
               />
             </div>
           )}

@@ -9,11 +9,13 @@ export type RegistrationFieldOption = {
   available_amount?: number | null;
   max_amount_per_guest?: number | null;
   remaining_amount?: number | null;
+  start_time?: string | null;
+  end_time?: string | null;
 };
 
 export type RegistrationField = {
   id?: number | null;
-  field_type: "checkbox" | "option_select" | "inventory";
+  field_type: "checkbox" | "option_select" | "inventory" | "time_slot_select";
   order: number;
   is_required: boolean;
   label: string;

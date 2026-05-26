@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.utils import timezone
 from rest_framework import serializers
 
 from climateconnect_api.utility.html import sanitize_html
@@ -53,10 +54,25 @@ class InventorySettingsSerializer(serializers.Serializer):
     )
 
 
+class TimeSlotSettingsSerializer(serializers.Serializer):
+    """
+    Settings serializer for time_slot_select fields.
+
+    title is the question label (e.g. "Pick your preferred time slot").
+    description is optional helper text shown below the title.
+    """
+
+    title = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    description = serializers.CharField(
+        max_length=200, required=False, allow_blank=True
+    )
+
+
 FIELD_TYPE_SETTINGS_VALIDATORS = {
     RegistrationFieldType.CHECKBOX: CheckboxSettingsSerializer,
     RegistrationFieldType.OPTION_SELECT: OptionSelectSettingsSerializer,
     RegistrationFieldType.INVENTORY: InventorySettingsSerializer,
+    RegistrationFieldType.TIME_SLOT_SELECT: TimeSlotSettingsSerializer,
 }
 
 
@@ -75,6 +91,9 @@ class RegistrationFieldOptionSerializer(serializers.ModelSerializer):
 
     has_answers (read-only): True if any RegistrationFieldAnswer row references
     this option as value_option. The frontend uses this to lock the title field.
+
+    remaining_amount (read-only): For time slot options, the number of seats
+    still available (available_amount - booked count), or None for unlimited.
     """
 
     id = serializers.IntegerField(required=False, allow_null=True)
@@ -85,6 +104,9 @@ class RegistrationFieldOptionSerializer(serializers.ModelSerializer):
     max_amount_per_guest = serializers.IntegerField(
         required=False, allow_null=True, min_value=1
     )
+    start_time = serializers.DateTimeField(required=False, allow_null=True)
+    end_time = serializers.DateTimeField(required=False, allow_null=True)
+    remaining_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = RegistrationFieldOption
@@ -95,9 +117,12 @@ class RegistrationFieldOptionSerializer(serializers.ModelSerializer):
             "has_answers",
             "available_amount",
             "max_amount_per_guest",
+            "start_time",
+            "end_time",
+            "remaining_amount",
         ]
         extra_kwargs = {
-            "title": {"max_length": 200},
+            "title": {"max_length": 200, "required": False, "allow_blank": True},
             "order": {"min_value": 0},
         }
 
@@ -105,6 +130,15 @@ class RegistrationFieldOptionSerializer(serializers.ModelSerializer):
         if not obj.pk:
             return False
         return RegistrationFieldAnswer.objects.filter(value_option=obj).exists()
+
+    def get_remaining_amount(self, obj):
+        if obj.available_amount is None:
+            return None
+        booked = RegistrationFieldAnswer.objects.filter(
+            value_option=obj,
+            registration__cancelled_at__isnull=True,
+        ).count()
+        return max(0, obj.available_amount - booked)
 
 
 # ---------------------------------------------------------------------------
@@ -209,6 +243,11 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
                         }
                     )
             elif field_type == RegistrationFieldType.OPTION_SELECT:
+                title = (attrs.get("settings") or {}).get("title", "")
+                if not title or not title.strip():
+                    raise serializers.ValidationError(
+                        {"settings": {"title": "Required when publishing an event."}}
+                    )
                 if not attrs.get("options"):
                     raise serializers.ValidationError(
                         {
@@ -254,6 +293,68 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
                                             "Required when publishing an event."
                                         )
                                     }
+                                }
+                            }
+                        )
+            elif field_type == RegistrationFieldType.TIME_SLOT_SELECT:
+                title = (attrs.get("settings") or {}).get("title", "")
+                if not title or not title.strip():
+                    raise serializers.ValidationError(
+                        {"settings": {"title": "Required when publishing an event."}}
+                    )
+                options = attrs.get("options")
+                if not options:
+                    raise serializers.ValidationError(
+                        {
+                            "options": (
+                                "At least one option is required when publishing an event."
+                            )
+                        }
+                    )
+                now = timezone.now()
+                for i, opt in enumerate(options):
+                    if not opt.get("start_time"):
+                        raise serializers.ValidationError(
+                            {
+                                "options": {
+                                    i: {
+                                        "start_time": (
+                                            "Required when publishing an event."
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    if not opt.get("end_time"):
+                        raise serializers.ValidationError(
+                            {
+                                "options": {
+                                    i: {
+                                        "end_time": (
+                                            "Required when publishing an event."
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    if opt["end_time"] <= opt["start_time"]:
+                        raise serializers.ValidationError(
+                            {
+                                "options": {
+                                    i: {"end_time": ("Must be after start_time.")}
+                                }
+                            }
+                        )
+                    if opt["start_time"] <= now:
+                        raise serializers.ValidationError(
+                            {"options": {i: {"start_time": ("Must be in the future.")}}}
+                        )
+                    avail = opt.get("available_amount")
+                    if avail is not None and avail < 1:
+                        raise serializers.ValidationError(
+                            {
+                                "options": {
+                                    i: {"available_amount": ("Must be at least 1.")}
                                 }
                             }
                         )
@@ -325,7 +426,9 @@ def _validate_labels_unique(fields_data, registration_config):
     )
     for field_data in fields_data:
         label = field_data.get("label")
-        if label and label.strip().lower() in {existing_label.lower() for existing_label in existing_labels}:
+        if label and label.strip().lower() in {
+            existing_label.lower() for existing_label in existing_labels
+        }:
             raise serializers.ValidationError(
                 {"label": "Label already used by another field."}
             )
