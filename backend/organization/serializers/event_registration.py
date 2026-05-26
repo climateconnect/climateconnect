@@ -330,6 +330,7 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
                 "field": a.field_id,
                 "value_boolean": a.value_boolean,
                 "value_option": a.value_option_id,
+                "value_number": a.value_number,
             }
             for a in answers
         ]
@@ -341,6 +342,11 @@ class RegistrationFieldAnswerInputSerializer(serializers.Serializer):
     field = serializers.IntegerField(min_value=1)
     value_boolean = serializers.BooleanField(required=False, allow_null=True)
     value_option = serializers.IntegerField(
+        required=False,
+        allow_null=True,
+        min_value=1,
+    )
+    value_number = serializers.IntegerField(
         required=False,
         allow_null=True,
         min_value=1,
@@ -412,6 +418,7 @@ class EventRegistrationSubmissionSerializer(serializers.Serializer):
 
             value_boolean = item.get("value_boolean", None)
             value_option_id = item.get("value_option", None)
+            value_number = item.get("value_number", None)
 
             if field.field_type == RegistrationFieldType.CHECKBOX:
                 if value_option_id is not None:
@@ -498,6 +505,50 @@ class EventRegistrationSubmissionSerializer(serializers.Serializer):
                 )
                 continue
 
+            if field.field_type == RegistrationFieldType.INVENTORY:
+                if value_boolean is not None:
+                    answer_error["value_boolean"] = (
+                        "value_boolean is not allowed for inventory fields."
+                    )
+                if value_option_id is None:
+                    answer_error["value_option"] = (
+                        "value_option is required for inventory fields."
+                    )
+                else:
+                    option = options_by_field_id[field_id].get(value_option_id)
+                    if option is None:
+                        answer_error["value_option"] = (
+                            "Selected option does not belong to this field."
+                        )
+                if value_number is None:
+                    answer_error["value_number"] = (
+                        "value_number is required for inventory fields."
+                    )
+                elif value_number < 1:
+                    answer_error["value_number"] = "Quantity must be at least 1."
+                else:
+                    option = options_by_field_id.get(field_id, {}).get(value_option_id)
+                    if option is not None and option.max_amount_per_guest is not None:
+                        if value_number > option.max_amount_per_guest:
+                            answer_error["value_number"] = (
+                                f"Quantity cannot exceed {option.max_amount_per_guest} "
+                                f"per guest for this option."
+                            )
+
+                if answer_error:
+                    errors.append(answer_error)
+                    continue
+
+                normalized_answers.append(
+                    {
+                        "field": field,
+                        "value_boolean": None,
+                        "value_option": options_by_field_id[field_id][value_option_id],
+                        "value_number": value_number,
+                    }
+                )
+                continue
+
             errors.append({"field": "Unsupported field type."})
 
         # Required fields must be present in the payload.
@@ -544,13 +595,22 @@ def sync_registration_answers(registration, normalized_answers):
                     field=field,
                     value_boolean=item["value_boolean"],
                     value_option=item["value_option"],
+                    value_number=item.get("value_number"),
                 )
             )
             continue
 
         current.value_boolean = item["value_boolean"]
         current.value_option = item["value_option"]
-        current.save(update_fields=["value_boolean", "value_option", "updated_at"])
+        current.value_number = item.get("value_number")
+        current.save(
+            update_fields=[
+                "value_boolean",
+                "value_option",
+                "value_number",
+                "updated_at",
+            ]
+        )
 
     if create_rows:
         RegistrationFieldAnswer.objects.bulk_create(create_rows)

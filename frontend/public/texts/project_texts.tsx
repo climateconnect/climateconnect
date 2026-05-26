@@ -1750,6 +1750,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Please select an option.",
       de: "Bitte wähle eine Option aus.",
     },
+    please_select_inventory_option: {
+      en: "Please select an option.",
+      de: "Bitte wähle eine Option aus.",
+    },
+    please_enter_quantity: {
+      en: "Please enter a quantity.",
+      de: "Bitte gib eine Menge ein.",
+    },
+    quantity_available: {
+      en: "available",
+      de: "verfügbar",
+    },
+    max_per_guest: {
+      en: "Max per guest",
+      de: "Max. pro Gast",
+    },
+    quantity_exceeds_max: {
+      en: "Quantity cannot exceed the maximum per guest.",
+      de: "Die Menge darf das Maximum pro Gast nicht überschreiten.",
+    },
     required_fields_participation_notice: {
       en:
         "*Required fields - unfortunately, you cannot participate without providing this information",

@@ -2,6 +2,7 @@ import React, { useImperativeHandle, forwardRef, useState } from "react";
 import { Box } from "@mui/material";
 import { RegistrationField, RegistrationFieldAnswerValue } from "../../types";
 import RegistrationCheckboxField from "./RegistrationCheckboxField";
+import RegistrationInventoryField from "./RegistrationInventoryField";
 import RegistrationOptionSelectField from "./RegistrationOptionSelectField";
 
 export type RegistrationFieldAnswersFormHandle = {
@@ -18,14 +19,21 @@ type Props = {
     this_field_is_required: string;
     you_must_check_this_box: string;
     please_select_an_option: string;
+    please_select_inventory_option: string;
+    please_enter_quantity: string;
+    quantity_available: string;
+    max_per_guest: string;
+    quantity_exceeds_max: string;
   };
 };
 
 const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHandle, Props>(
   function RegistrationFieldAnswersForm({ fields, serverErrors = {}, texts }, ref) {
-    // Map of fieldId → answer value
     const [booleanValues, setBooleanValues] = useState<Record<number, boolean>>({});
     const [optionValues, setOptionValues] = useState<Record<number, number>>({});
+    const [inventoryValues, setInventoryValues] = useState<
+      Record<number, { optionId?: number; quantity?: number }>
+    >({});
     const [fieldErrors, setFieldErrors] = useState<Record<number, string>>({});
 
     const sortedFields = [...fields].sort((a, b) => a.order - b.order);
@@ -45,6 +53,27 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
           } else if (field.field_type === "option_select") {
             if (field.is_required && optionValues[id] == null) {
               errors[id] = texts.please_select_an_option;
+            }
+          } else if (field.field_type === "inventory") {
+            const inv = inventoryValues[id];
+            const opt = field.options?.find((o) => o.id === inv?.optionId);
+            const max = opt
+              ? Math.min(opt.max_amount_per_guest ?? Infinity, opt.remaining_amount ?? Infinity)
+              : undefined;
+            if (field.is_required) {
+              if (inv?.optionId == null) {
+                errors[id] = texts.please_select_inventory_option;
+              } else if (inv?.quantity == null || inv.quantity < 1) {
+                errors[id] = texts.please_enter_quantity;
+              } else if (max != null && inv.quantity > max) {
+                errors[id] = texts.quantity_exceeds_max;
+              }
+            } else if (inv?.optionId != null) {
+              if (inv.quantity == null || inv.quantity < 1) {
+                errors[id] = texts.please_enter_quantity;
+              } else if (max != null && inv.quantity > max) {
+                errors[id] = texts.quantity_exceeds_max;
+              }
             }
           }
         }
@@ -66,6 +95,15 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
             if (optionValues[id] != null) {
               answers.push({ fieldId: id, valueOption: optionValues[id] });
             }
+          } else if (field.field_type === "inventory") {
+            const inv = inventoryValues[id];
+            if (inv?.optionId != null && inv?.quantity != null && inv.quantity >= 1) {
+              answers.push({
+                fieldId: id,
+                valueOption: inv.optionId,
+                valueNumber: inv.quantity,
+              });
+            }
           }
         }
         return answers;
@@ -74,7 +112,6 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
 
     const handleBooleanChange = (fieldId: number, checked: boolean) => {
       setBooleanValues((prev) => ({ ...prev, [fieldId]: checked }));
-      // Clear error on change
       if (fieldErrors[fieldId]) {
         setFieldErrors((prev) => {
           const next = { ...prev };
@@ -86,6 +123,34 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
 
     const handleOptionChange = (fieldId: number, optionId: number) => {
       setOptionValues((prev) => ({ ...prev, [fieldId]: optionId }));
+      if (fieldErrors[fieldId]) {
+        setFieldErrors((prev) => {
+          const next = { ...prev };
+          delete next[fieldId];
+          return next;
+        });
+      }
+    };
+
+    const handleInventoryOptionChange = (fieldId: number, optionId: number) => {
+      setInventoryValues((prev) => ({
+        ...prev,
+        [fieldId]: { ...prev[fieldId], optionId, quantity: undefined },
+      }));
+      if (fieldErrors[fieldId]) {
+        setFieldErrors((prev) => {
+          const next = { ...prev };
+          delete next[fieldId];
+          return next;
+        });
+      }
+    };
+
+    const handleInventoryQuantityChange = (fieldId: number, quantity: number | undefined) => {
+      setInventoryValues((prev) => ({
+        ...prev,
+        [fieldId]: { ...prev[fieldId], quantity },
+      }));
       if (fieldErrors[fieldId]) {
         setFieldErrors((prev) => {
           const next = { ...prev };
@@ -122,6 +187,27 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
                 value={optionValues[id]}
                 onChange={(optionId) => handleOptionChange(id, optionId)}
                 error={error}
+              />
+            );
+          }
+
+          if (field.field_type === "inventory") {
+            return (
+              <RegistrationInventoryField
+                key={id}
+                field={field}
+                optionId={inventoryValues[id]?.optionId}
+                quantity={inventoryValues[id]?.quantity}
+                onOptionChange={(optionId) => handleInventoryOptionChange(id, optionId)}
+                onQuantityChange={(quantity) => handleInventoryQuantityChange(id, quantity)}
+                error={error}
+                texts={{
+                  please_select_inventory_option: texts.please_select_inventory_option,
+                  please_enter_quantity: texts.please_enter_quantity,
+                  quantity_available: texts.quantity_available,
+                  max_per_guest: texts.max_per_guest,
+                  quantity_exceeds_max: texts.quantity_exceeds_max,
+                }}
               />
             );
           }

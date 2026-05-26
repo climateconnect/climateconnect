@@ -195,9 +195,7 @@ export default function EventRegistrationModal({
   const [isNewUserOtp, setIsNewUserOtp] = useState(false);
 
   const showCustomFields =
-    isEnabled("EVENT_REGISTRATION") &&
-    isEnabled("REGISTRATION_CUSTOM_FIELDS") &&
-    (project.registration_config?.fields?.length ?? 0) > 0;
+    isEnabled("EVENT_REGISTRATION") && (project.registration_config?.fields?.length ?? 0) > 0;
   const hasRequiredCustomFields =
     showCustomFields &&
     (project.registration_config?.fields?.some((field) => field.is_required) ?? false);
@@ -247,15 +245,26 @@ export default function EventRegistrationModal({
 
     // Build the API payload
     const payload: {
-      answers?: { field: number; value_boolean?: boolean; value_option?: number }[];
+      answers?: {
+        field: number;
+        value_boolean?: boolean;
+        value_option?: number;
+        value_number?: number;
+      }[];
     } = {};
     if (showCustomFields && answers && answers.length > 0) {
       payload.answers = answers.map((a) => {
-        const entry: { field: number; value_boolean?: boolean; value_option?: number } = {
+        const entry: {
+          field: number;
+          value_boolean?: boolean;
+          value_option?: number;
+          value_number?: number;
+        } = {
           field: a.fieldId,
         };
         if (a.valueBoolean !== undefined) entry.value_boolean = a.valueBoolean;
         if (a.valueOption !== undefined) entry.value_option = a.valueOption;
+        if (a.valueNumber !== undefined) entry.value_number = a.valueNumber;
         return entry;
       });
     }
@@ -341,6 +350,11 @@ export default function EventRegistrationModal({
               this_field_is_required: texts.this_field_is_required,
               you_must_check_this_box: texts.you_must_check_this_box,
               please_select_an_option: texts.please_select_an_option,
+              please_select_inventory_option: texts.please_select_inventory_option,
+              please_enter_quantity: texts.please_enter_quantity,
+              quantity_available: texts.quantity_available,
+              max_per_guest: texts.max_per_guest,
+              quantity_exceeds_max: texts.quantity_exceeds_max,
             }}
           />
         </Box>
