@@ -1,6 +1,6 @@
 # Add Inventory Field to Event Registration (Phase 4b — Registrant)
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Feature
 **Date and time created**: 2026-05-26 13:47
 **GitHub Issue**: [#2004](https://github.com/climateconnect/climateconnect/issues/2004)
