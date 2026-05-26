@@ -13,6 +13,13 @@ const texts = {
   this_field_is_required: "This field is required",
   you_must_check_this_box: "You must check this box",
   please_select_an_option: "Please select an option",
+  please_select_inventory_option: "Please select an inventory option",
+  please_enter_quantity: "Please enter a quantity",
+  quantity_available: "available",
+  max_per_guest: "Max per guest",
+  quantity_exceeds_max: "Quantity exceeds max",
+  please_select_time_slot: "Please select a time slot",
+  seats_available: "seats available",
 };
 
 function makeCheckboxField(overrides: Partial<RegistrationField> = {}): RegistrationField {

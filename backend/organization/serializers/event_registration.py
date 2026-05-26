@@ -481,6 +481,10 @@ class EventRegistrationSubmissionSerializer(serializers.Serializer):
                     answer_error["value_boolean"] = (
                         "value_boolean is not allowed for time_slot_select fields."
                     )
+                if value_number is not None:
+                    answer_error["value_number"] = (
+                        "value_number is not allowed for time_slot_select fields."
+                    )
                 if value_option_id is None:
                     answer_error["value_option"] = (
                         "value_option is required for time_slot_select fields."

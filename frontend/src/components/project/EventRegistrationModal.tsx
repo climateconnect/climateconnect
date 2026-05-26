@@ -336,7 +336,9 @@ export default function EventRegistrationModal({
           />
         </Box>
         <Typography variant="body1" className={classes.confirmationMessage}>
-          {texts.confirm_your_registration_for}
+          {showCustomFields
+            ? texts.fill_the_form_and_confirm_your_registration_for
+            : texts.confirm_your_registration_for}
         </Typography>
       </Box>
 
@@ -355,6 +357,8 @@ export default function EventRegistrationModal({
               quantity_available: texts.quantity_available,
               max_per_guest: texts.max_per_guest,
               quantity_exceeds_max: texts.quantity_exceeds_max,
+              please_select_time_slot: texts.please_select_time_slot,
+              seats_available: texts.seats_available,
             }}
           />
         </Box>

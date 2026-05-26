@@ -1611,8 +1611,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Anmeldung bestätigen",
     },
     confirm_your_registration_for: {
+      en: `Please confirm your registration for ${project?.name}`,
+      de: `Bitte bestätige deine Anmeldung für ${project?.name}`,
+    },
+    fill_the_form_and_confirm_your_registration_for: {
       en: `Please fill in the form and confirm your registration for ${project?.name}`,
-      de: `Bitte füllen Sie das Formular aus und bestätigen Sie Ihre Anmeldung für ${project?.name}`,
+      de: `Bitte fülle das Formular aus und bestätige deine Anmeldung für ${project?.name}`,
     },
     to_register_please_login_or_signup: {
       en: "To register for this event, please log in or sign up!",
@@ -1769,6 +1773,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     quantity_exceeds_max: {
       en: "Quantity cannot exceed the maximum per guest.",
       de: "Die Menge darf das Maximum pro Gast nicht überschreiten.",
+    },
+    please_select_time_slot: {
+      en: "Please select a time slot.",
+      de: "Bitte wähle ein Zeitfenster aus.",
+    },
+    time_slot_fully_booked: {
+      en: "This time slot is fully booked.",
+      de: "Dieses Zeitfenster ist vollständig ausgebucht.",
     },
     required_fields_participation_notice: {
       en:

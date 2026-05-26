@@ -311,10 +311,12 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
                     )
                 options = attrs.get("options")
                 if not options:
+                    label = attrs.get("label", "")
                     raise serializers.ValidationError(
                         {
                             "options": (
-                                "At least one option is required when publishing an event."
+                                f"Field '{label}': at least one time slot option "
+                                f"is required when publishing an event."
                             )
                         }
                     )

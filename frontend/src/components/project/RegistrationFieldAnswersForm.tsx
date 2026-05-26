@@ -4,6 +4,7 @@ import { RegistrationField, RegistrationFieldAnswerValue } from "../../types";
 import RegistrationCheckboxField from "./RegistrationCheckboxField";
 import RegistrationInventoryField from "./RegistrationInventoryField";
 import RegistrationOptionSelectField from "./RegistrationOptionSelectField";
+import RegistrationTimeSlotField from "./RegistrationTimeSlotField";
 
 export type RegistrationFieldAnswersFormHandle = {
   /** Validate all fields and return the answers payload if valid, or null if invalid. */
@@ -24,6 +25,8 @@ type Props = {
     quantity_available: string;
     max_per_guest: string;
     quantity_exceeds_max: string;
+    please_select_time_slot: string;
+    seats_available: string;
   };
 };
 
@@ -34,6 +37,7 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
     const [inventoryValues, setInventoryValues] = useState<
       Record<number, { optionId?: number; quantity?: number }>
     >({});
+    const [timeSlotValues, setTimeSlotValues] = useState<Record<number, number>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<number, string>>({});
 
     const sortedFields = [...fields].sort((a, b) => a.order - b.order);
@@ -75,6 +79,10 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
                 errors[id] = texts.quantity_exceeds_max;
               }
             }
+          } else if (field.field_type === "time_slot_select") {
+            if (field.is_required && timeSlotValues[id] == null) {
+              errors[id] = texts.please_select_time_slot;
+            }
           }
         }
 
@@ -103,6 +111,10 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
                 valueOption: inv.optionId,
                 valueNumber: inv.quantity,
               });
+            }
+          } else if (field.field_type === "time_slot_select") {
+            if (timeSlotValues[id] != null) {
+              answers.push({ fieldId: id, valueOption: timeSlotValues[id] });
             }
           }
         }
@@ -160,6 +172,17 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
       }
     };
 
+    const handleTimeSlotChange = (fieldId: number, optionId: number) => {
+      setTimeSlotValues((prev) => ({ ...prev, [fieldId]: optionId }));
+      if (fieldErrors[fieldId]) {
+        setFieldErrors((prev) => {
+          const next = { ...prev };
+          delete next[fieldId];
+          return next;
+        });
+      }
+    };
+
     return (
       <Box>
         {sortedFields.map((field) => {
@@ -207,6 +230,22 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
                   quantity_available: texts.quantity_available,
                   max_per_guest: texts.max_per_guest,
                   quantity_exceeds_max: texts.quantity_exceeds_max,
+                }}
+              />
+            );
+          }
+
+          if (field.field_type === "time_slot_select") {
+            return (
+              <RegistrationTimeSlotField
+                key={id}
+                field={field}
+                optionId={timeSlotValues[id]}
+                onChange={(optionId) => handleTimeSlotChange(id, optionId)}
+                error={error}
+                texts={{
+                  please_select_time_slot: texts.please_select_time_slot,
+                  seats_available: texts.seats_available,
                 }}
               />
             );
