@@ -1350,6 +1350,30 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Description",
       de: "Beschreibung",
     },
+    field_type_time_slot_select: {
+      en: "Time Slot Select",
+      de: "Zeitfenster-Auswahl",
+    },
+    time_slot_title: {
+      en: "Title",
+      de: "Titel",
+    },
+    time_slot_description: {
+      en: "Description",
+      de: "Beschreibung",
+    },
+    time_slot_start_time: {
+      en: "Start time",
+      de: "Startzeit",
+    },
+    time_slot_end_time: {
+      en: "End time",
+      de: "Endzeit",
+    },
+    time_slot_capacity: {
+      en: "Available amount",
+      de: "Verfügbare Menge",
+    },
     registration_field_description: {
       en: "Description",
       de: "Beschreibung",

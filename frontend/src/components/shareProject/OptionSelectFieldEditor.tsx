@@ -38,6 +38,9 @@ type Props = {
   onRequestDeleteOption?: (_index: number, _option: RegistrationFieldOption) => void;
   /** When true, the question title field is read-only (field has registrant answers). */
   titleDisabled?: boolean;
+  isDraft?: boolean;
+  fieldError?: string;
+  onClearFieldError?: (_key: string) => void;
 };
 
 export default function OptionSelectFieldEditor({
@@ -46,6 +49,9 @@ export default function OptionSelectFieldEditor({
   onChange,
   onRequestDeleteOption,
   titleDisabled,
+  isDraft,
+  fieldError,
+  onClearFieldError,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -99,10 +105,16 @@ export default function OptionSelectFieldEditor({
         fullWidth
         label={texts.option_select_title}
         value={title}
-        onChange={handleTitleChange}
+        onChange={(e) => {
+          handleTitleChange(e);
+          onClearFieldError?.("field");
+        }}
         variant="outlined"
         size="small"
         disabled={titleDisabled}
+        required={!isDraft}
+        error={!!fieldError}
+        helperText={fieldError}
         sx={{ mb: 1.5 }}
       />
       {options.map((option, index) => (

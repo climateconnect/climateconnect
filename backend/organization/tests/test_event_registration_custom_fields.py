@@ -58,6 +58,9 @@ class _CustomFieldsBase(APITestCase):
         self.event         — published event project
         self.er            — EventRegistrationConfig for self.event
         self.patch_url     — URL for PATCH /registration-config/
+        self.draft_event   — draft event project (is_draft=True)
+        self.draft_er      — EventRegistrationConfig for draft event
+        self.draft_patch_url — URL for PATCH on draft event
     """
 
     def setUp(self):
@@ -98,12 +101,34 @@ class _CustomFieldsBase(APITestCase):
             registration_end_date=timezone.now() + timedelta(days=30),
             status=RegistrationStatus.OPEN,
         )
+        self.draft_event = Project.objects.create(
+            name="Draft Custom Fields Event",
+            url_slug="draft-custom-fields-event",
+            is_active=True,
+            is_draft=True,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=10),
+            end_date=timezone.now() + timedelta(days=60),
+        )
+        self.draft_er = EventRegistrationConfig.objects.create(
+            project=self.draft_event,
+            status=RegistrationStatus.OPEN,
+        )
         ProjectMember.objects.create(
             user=self.organiser, project=self.event, role=self.admin_role
+        )
+        ProjectMember.objects.create(
+            user=self.organiser, project=self.draft_event, role=self.admin_role
         )
         self.patch_url = reverse(
             "organization:edit-registration-config",
             kwargs={"url_slug": self.event.url_slug},
+        )
+        self.draft_patch_url = reverse(
+            "organization:edit-registration-config",
+            kwargs={"url_slug": self.draft_event.url_slug},
         )
 
 
@@ -198,7 +223,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "order": 1,
                         "is_required": False,
                         "label": "Option Select 1",
-                        "settings": {},
+                        "settings": {"title": "Meal preference"},
                         "options": [
                             {"title": "Vegetarian", "order": 0},
                             {"title": "Vegan", "order": 1},
@@ -216,7 +241,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "order": 3,
                         "is_required": True,
                         "label": "Option Select 2",
-                        "settings": {},
+                        "settings": {"title": "Participation mode"},
                         "options": [{"title": "Online", "order": 0}],
                     },
                     {
@@ -666,7 +691,7 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
                         "field_type": "option_select",
                         "order": 1,
                         "label": "Option Select 2",
-                        "settings": {},
+                        "settings": {"title": "New select"},
                         "options": [{"title": "New opt", "order": 0}],
                     },
                     # field_delete absent → deleted
@@ -916,29 +941,6 @@ class TestEditFieldsDraftVsPublish(_CustomFieldsBase):
 
     def setUp(self):
         super().setUp()
-        # Draft project + config for is_draft=True tests
-        self.draft_event = Project.objects.create(
-            name="Draft Custom Fields Event",
-            url_slug="draft-custom-fields-event",
-            is_active=True,
-            is_draft=True,
-            status=self.project_status,
-            language=self.default_language,
-            project_type="EV",
-            start_date=timezone.now() + timedelta(days=10),
-            end_date=timezone.now() + timedelta(days=60),
-        )
-        self.draft_er = EventRegistrationConfig.objects.create(
-            project=self.draft_event,
-            status=RegistrationStatus.OPEN,
-        )
-        ProjectMember.objects.create(
-            user=self.organiser, project=self.draft_event, role=self.admin_role
-        )
-        self.draft_patch_url = reverse(
-            "organization:edit-registration-config",
-            kwargs={"url_slug": self.draft_event.url_slug},
-        )
 
     # ── Test 3: option_select 0 options on publish → 400 ────────────────────
 
@@ -979,6 +981,52 @@ class TestEditFieldsDraftVsPublish(_CustomFieldsBase):
                         "label": "Option Select 1",
                         "settings": {},
                         "options": [],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+    # ── option_select missing title on publish → 400 ──────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_option_select_missing_title_on_publish_rejected_via_patch(self):
+        """option_select without title rejected on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "option_select",
+                        "order": 0,
+                        "label": "Option Select 1",
+                        "settings": {"title": ""},
+                        "options": [{"title": "A", "order": 0}],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── option_select missing title on draft → accepted ────────────────────
+
+    @tag("custom_fields", "registration_config")
+    def test_option_select_missing_title_on_draft_accepted_via_patch(self):
+        """option_select without title accepted on draft project."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.draft_patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "option_select",
+                        "order": 0,
+                        "label": "Option Select 1",
+                        "settings": {"title": ""},
+                        "options": [{"title": "A", "order": 0}],
                     }
                 ]
             },
@@ -2356,3 +2404,746 @@ class TestRegistrationFieldLabel(_CustomFieldsBase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
         field.refresh_from_db()
         self.assertEqual(field.label, "Updated Label")
+
+
+# ---------------------------------------------------------------------------
+# Time Slot Select field type
+# ---------------------------------------------------------------------------
+
+
+class TestTimeSlotField(_CustomFieldsBase):
+    """
+    Tests for the time_slot_select custom field type.
+
+    Spec test cases:
+      TS-1  – Create event with time slot field (POST /api/projects/)
+      TS-2  – Time slot field validation on publish (missing title → 400)
+      TS-3  – Time slot field validation on publish (0 options → 400)
+      TS-4  – Time slot field validation on publish (missing start_time → 400)
+      TS-5  – Time slot field validation on publish (missing end_time → 400)
+      TS-6  – Time slot field validation on publish (end_time ≤ start_time → 400)
+      TS-7  – Time slot field validation on publish (start_time in past → 400)
+      TS-8  – Time slot field accepted in draft (missing datetime fields OK)
+      TS-9  – Edit time slot field via PATCH
+      TS-10 – Answer-lock on time slot field title
+      TS-11 – Answer-lock on time slot option start_time
+      TS-12 – Answer-lock on time slot option end_time
+      TS-13 – available_amount remains mutable with answers
+      TS-14 – 5-field limit includes time slot
+      TS-15 – GET response includes start_time, end_time, remaining_amount on options
+      TS-16 – Null available_amount accepted (unlimited capacity)
+      TS-17 – available_amount < 1 rejected on publish
+    """
+
+    def _create_time_slot_field(
+        self,
+        title="Pickup slot",
+        order=0,
+        options=None,
+        label=None,
+        description="",
+    ):
+        """Helper: create a time_slot_select RegistrationField on self.er."""
+        if label is None:
+            if not hasattr(self, "_label_counter"):
+                self._label_counter = {}
+            count = self._label_counter.get("Time Slot Select", 0) + 1
+            self._label_counter["Time Slot Select"] = count
+            label = f"Time Slot Select {count}"
+        field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="time_slot_select",
+            order=order,
+            is_required=False,
+            label=label,
+            settings={"title": title, "description": description},
+        )
+        if options:
+            for opt in options:
+                RegistrationFieldOption.objects.create(field=field, **opt)
+        return field
+
+    # ── TS-1: Create time slot field via PATCH ────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_create_time_slot_field_via_patch(self):
+        """TS-1 — PATCH creates time_slot_select field with options persisting datetime values."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "is_required": True,
+                        "label": "Pickup Slot",
+                        "settings": {
+                            "title": "Pick your preferred time slot",
+                            "description": "Choose when to pick up.",
+                        },
+                        "options": [
+                            {
+                                "order": 0,
+                                "start_time": "2026-08-01T10:00:00Z",
+                                "end_time": "2026-08-01T12:00:00Z",
+                                "available_amount": 20,
+                            },
+                            {
+                                "order": 1,
+                                "start_time": "2026-08-01T14:00:00Z",
+                                "end_time": "2026-08-01T16:00:00Z",
+                            },
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        field = RegistrationField.objects.get(
+            registration_config=self.er, field_type="time_slot_select"
+        )
+        self.assertEqual(field.settings["title"], "Pick your preferred time slot")
+        self.assertEqual(field.options.count(), 2)
+        opt0 = field.options.get(order=0)
+        self.assertIsNotNone(opt0.start_time)
+        self.assertIsNotNone(opt0.end_time)
+        self.assertEqual(opt0.available_amount, 20)
+        opt1 = field.options.get(order=1)
+        self.assertIsNone(opt1.available_amount)
+
+    # ── TS-2: Missing title on publish → 400 ─────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_missing_title_on_publish_rejected(self):
+        """TS-2 — time slot field without title rejected when publishing."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "", "description": ""},
+                        "options": [
+                            {
+                                "order": 0,
+                                "start_time": "2026-08-01T10:00:00Z",
+                                "end_time": "2026-08-01T12:00:00Z",
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── TS-3: 0 options on publish → 400 ─────────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_no_options_on_publish_rejected(self):
+        """TS-3 — time slot with 0 options rejected on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── TS-4: Missing start_time → 400 ───────────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_missing_start_time_on_publish_rejected(self):
+        """TS-4 — time slot option without start_time rejected on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [
+                            {
+                                "order": 0,
+                                "end_time": "2026-08-01T12:00:00Z",
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── TS-5: Missing end_time → 400 ─────────────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_missing_end_time_on_publish_rejected(self):
+        """TS-5 — time slot option without end_time rejected on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [
+                            {
+                                "order": 0,
+                                "start_time": "2026-08-01T10:00:00Z",
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── TS-6: end_time ≤ start_time → 400 ────────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_end_time_before_start_time_rejected(self):
+        """TS-6 — end_time before start_time rejected on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [
+                            {
+                                "order": 0,
+                                "start_time": "2026-08-01T14:00:00Z",
+                                "end_time": "2026-08-01T12:00:00Z",
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── TS-7: start_time in past → 400 ───────────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_start_time_in_past_rejected_on_publish(self):
+        """TS-7 — start_time in the past rejected on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [
+                            {
+                                "order": 0,
+                                "start_time": "2020-01-01T10:00:00Z",
+                                "end_time": "2020-01-01T12:00:00Z",
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── TS-8: Draft skips validation ──────────────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_accepted_on_draft_with_missing_fields(self):
+        """TS-8 — time slot with 0 options and missing datetimes accepted in draft mode."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.draft_patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": ""},
+                        "options": [],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+    # ── TS-9: Edit time slot field via PATCH ──────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_edit_time_slot_field_via_patch(self):
+        """TS-9 — PATCH updates time slot settings and options correctly."""
+        field = self._create_time_slot_field(
+            title="Original Title",
+            options=[
+                {
+                    "title": "",
+                    "order": 0,
+                    "start_time": timezone.now() + timedelta(days=10),
+                    "end_time": timezone.now() + timedelta(days=10, hours=2),
+                    "available_amount": 10,
+                }
+            ],
+        )
+        option = field.options.first()
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {
+                            "title": "Updated Title",
+                            "description": "New desc",
+                        },
+                        "options": [
+                            {
+                                "id": option.id,
+                                "title": "",
+                                "order": 0,
+                                "start_time": "2026-08-02T10:00:00Z",
+                                "end_time": "2026-08-02T12:00:00Z",
+                                "available_amount": 25,
+                            },
+                            {
+                                "order": 1,
+                                "start_time": "2026-08-02T14:00:00Z",
+                                "end_time": "2026-08-02T16:00:00Z",
+                            },
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        field.refresh_from_db()
+        self.assertEqual(field.settings["title"], "Updated Title")
+        self.assertEqual(field.options.count(), 2)
+
+    # ── TS-10: Answer-lock on field title ─────────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_title_change_rejected_when_has_answers(self):
+        """TS-10 — changing time slot field title rejected when field has answers."""
+        field = self._create_time_slot_field(title="Original Title")
+        option = field.options.create(
+            title="",
+            order=0,
+            start_time=timezone.now() + timedelta(days=10),
+            end_time=timezone.now() + timedelta(days=10, hours=2),
+        )
+        registrant = User.objects.create_user(
+            username="registrant_ts10", password="testpassword"
+        )
+        registration = EventRegistration.objects.create(
+            user=registrant, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=registration,
+            field=field,
+            value_option=option,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Changed Title"},
+                        "options": [
+                            {
+                                "id": option.id,
+                                "title": "",
+                                "order": 0,
+                                "start_time": "2026-08-01T10:00:00Z",
+                                "end_time": "2026-08-01T12:00:00Z",
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── TS-11: Answer-lock on option start_time ──────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_start_time_change_rejected_when_has_answers(self):
+        """TS-11 — changing start_time on a time slot option with answers is rejected."""
+        field = self._create_time_slot_field(title="Pickup slot")
+        option = field.options.create(
+            title="",
+            order=0,
+            start_time=timezone.now() + timedelta(days=10),
+            end_time=timezone.now() + timedelta(days=10, hours=2),
+        )
+        registrant = User.objects.create_user(
+            username="registrant_ts11", password="testpassword"
+        )
+        registration = EventRegistration.objects.create(
+            user=registrant, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=registration,
+            field=field,
+            value_option=option,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [
+                            {
+                                "id": option.id,
+                                "title": "",
+                                "order": 0,
+                                "start_time": "2026-08-15T10:00:00Z",
+                                "end_time": "2026-08-01T12:00:00Z",
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── TS-12: Answer-lock on option end_time ─────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_end_time_change_rejected_when_has_answers(self):
+        """TS-12 — changing end_time on a time slot option with answers is rejected."""
+        field = self._create_time_slot_field(title="Pickup slot")
+        option = field.options.create(
+            title="",
+            order=0,
+            start_time=timezone.now() + timedelta(days=10),
+            end_time=timezone.now() + timedelta(days=10, hours=2),
+        )
+        registrant = User.objects.create_user(
+            username="registrant_ts12", password="testpassword"
+        )
+        registration = EventRegistration.objects.create(
+            user=registrant, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=registration,
+            field=field,
+            value_option=option,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [
+                            {
+                                "id": option.id,
+                                "title": "",
+                                "order": 0,
+                                "start_time": "2026-08-01T10:00:00Z",
+                                "end_time": "2026-08-01T14:00:00Z",
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── TS-13: available_amount mutable with answers ──────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_available_amount_mutable_with_answers(self):
+        """TS-13 — changing available_amount on a time slot option with answers succeeds."""
+        field = self._create_time_slot_field(title="Pickup slot")
+        option = field.options.create(
+            title="",
+            order=0,
+            start_time=timezone.now() + timedelta(days=10),
+            end_time=timezone.now() + timedelta(days=10, hours=2),
+            available_amount=10,
+        )
+        registrant = User.objects.create_user(
+            username="registrant_ts13", password="testpassword"
+        )
+        registration = EventRegistration.objects.create(
+            user=registrant, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=registration,
+            field=field,
+            value_option=option,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        from django.utils.dateparse import parse_datetime
+
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [
+                            {
+                                "id": option.id,
+                                "title": "",
+                                "order": 0,
+                                "start_time": option.start_time.isoformat().replace(
+                                    "+00:00", "Z"
+                                ),
+                                "end_time": option.end_time.isoformat().replace(
+                                    "+00:00", "Z"
+                                ),
+                                "available_amount": 50,
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        option.refresh_from_db()
+        self.assertEqual(option.available_amount, 50)
+
+    # ── TS-14: 5-field limit includes time slot ───────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_five_field_limit_includes_time_slot(self):
+        """TS-14 — attempting to add a 6th field (including time slot) returns 400."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        fields = [
+            {
+                "field_type": "checkbox",
+                "order": i,
+                "label": f"Checkbox {i + 1}",
+                "settings": {"description": "<p>Test</p>"},
+            }
+            for i in range(5)
+        ]
+        fields.append(
+            {
+                "field_type": "time_slot_select",
+                "order": 5,
+                "label": "Time Slot 1",
+                "settings": {"title": "Pickup slot"},
+                "options": [],
+            }
+        )
+        response = self.client.patch(
+            self.patch_url,
+            {"fields": fields},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("fields", response.data)
+
+    # ── TS-15: GET response shape ─────────────────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_get_response_includes_time_slot_fields(self):
+        """TS-15 — GET response includes start_time, end_time, remaining_amount."""
+        now = timezone.now()
+        field = self._create_time_slot_field(
+            title="Pickup slot",
+            options=[
+                {
+                    "title": "",
+                    "order": 0,
+                    "start_time": now + timedelta(days=10, hours=10),
+                    "end_time": now + timedelta(days=10, hours=12),
+                    "available_amount": 20,
+                },
+                {
+                    "title": "",
+                    "order": 1,
+                    "start_time": now + timedelta(days=10, hours=14),
+                    "end_time": now + timedelta(days=10, hours=16),
+                    "available_amount": None,
+                },
+            ],
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(self.patch_url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        returned_field = next(f for f in response.data["fields"] if f["id"] == field.id)
+        self.assertEqual(returned_field["field_type"], "time_slot_select")
+        self.assertEqual(returned_field["settings"]["title"], "Pickup slot")
+        self.assertEqual(len(returned_field["options"]), 2)
+
+        opt0 = returned_field["options"][0]
+        self.assertIsNotNone(opt0["start_time"])
+        self.assertIsNotNone(opt0["end_time"])
+        self.assertEqual(opt0["available_amount"], 20)
+        self.assertEqual(opt0["remaining_amount"], 20)
+        self.assertEqual(opt0["title"], "")
+
+        opt1 = returned_field["options"][1]
+        self.assertIsNone(opt1["available_amount"])
+        self.assertIsNone(opt1["remaining_amount"])
+
+    # ── TS-16: Null available_amount accepted ─────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_null_available_amount_accepted(self):
+        """TS-16 — time slot option with null available_amount is accepted on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [
+                            {
+                                "order": 0,
+                                "start_time": "2026-08-01T10:00:00Z",
+                                "end_time": "2026-08-01T12:00:00Z",
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+    # ── TS-17: available_amount < 1 rejected ──────────────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_time_slot_available_amount_below_one_rejected(self):
+        """TS-17 — available_amount < 1 rejected on publish."""
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(
+            self.patch_url,
+            {
+                "fields": [
+                    {
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "label": "Time Slot 1",
+                        "settings": {"title": "Pickup slot"},
+                        "options": [
+                            {
+                                "order": 0,
+                                "start_time": "2026-08-01T10:00:00Z",
+                                "end_time": "2026-08-01T12:00:00Z",
+                                "available_amount": 0,
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # ── TS-18: remaining_amount reflects booked count ─────────────────────────
+
+    @tag("custom_fields", "time_slot")
+    def test_remaining_amount_reflects_booked_count(self):
+        """TS-18 — remaining_amount = available_amount - active registrations."""
+        field = self._create_time_slot_field(title="Pickup slot")
+        option = field.options.create(
+            title="",
+            order=0,
+            start_time=timezone.now() + timedelta(days=10),
+            end_time=timezone.now() + timedelta(days=10, hours=2),
+            available_amount=5,
+        )
+        registrant = User.objects.create_user(
+            username="registrant_ts18", password="testpassword"
+        )
+        registration = EventRegistration.objects.create(
+            user=registrant, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=registration,
+            field=field,
+            value_option=option,
+        )
+
+        self.client.login(username="organiser_cf", password="testpassword")
+        response = self.client.patch(self.patch_url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        returned_field = next(f for f in response.data["fields"] if f["id"] == field.id)
+        opt_data = next(o for o in returned_field["options"] if o["id"] == option.id)
+        self.assertEqual(opt_data["remaining_amount"], 4)

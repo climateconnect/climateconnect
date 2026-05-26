@@ -21,6 +21,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -34,6 +35,7 @@ const FIELD_TYPE_LABEL_KEYS: Record<string, string> = {
   checkbox: "field_type_checkbox",
   option_select: "field_type_option_select",
   inventory: "field_type_inventory",
+  time_slot_select: "field_type_time_slot_select",
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -71,6 +73,9 @@ type Props = {
     _optionIndex: number,
     _option: RegistrationFieldOption
   ) => void;
+  isDraft?: boolean;
+  fieldErrors?: Record<string, string>;
+  onClearFieldError?: (_key: string) => void;
 };
 
 function generateDefaultLabel(
@@ -95,6 +100,9 @@ export default function RegistrationFieldList({
   onFieldsChange,
   onRequestDeleteField,
   onRequestDeleteOption,
+  isDraft,
+  fieldErrors,
+  onClearFieldError,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -113,7 +121,9 @@ export default function RegistrationFieldList({
     setAddMenuAnchor(null);
   };
 
-  const handleAddField = (fieldType: "checkbox" | "option_select" | "inventory") => {
+  const handleAddField = (
+    fieldType: "checkbox" | "option_select" | "inventory" | "time_slot_select"
+  ) => {
     const newOrder = fields.length;
     const label = generateDefaultLabel(fieldType, fields, texts);
     const newField: RegistrationField = {
@@ -124,10 +134,15 @@ export default function RegistrationFieldList({
       settings:
         fieldType === "checkbox"
           ? { description: "" }
-          : fieldType === "inventory"
+          : fieldType === "inventory" || fieldType === "time_slot_select"
           ? { title: "", description: "" }
           : { title: "" },
-      options: fieldType === "option_select" || fieldType === "inventory" ? [] : undefined,
+      options:
+        fieldType === "option_select" ||
+        fieldType === "inventory" ||
+        fieldType === "time_slot_select"
+          ? []
+          : undefined,
       _clientKey: `new_${Date.now()}_${Math.random()}`,
     };
     onFieldsChange([...fields, newField]);
@@ -211,6 +226,8 @@ export default function RegistrationFieldList({
         return <CheckBoxOutlineBlankIcon fontSize="small" />;
       case "inventory":
         return <InventoryIcon fontSize="small" />;
+      case "time_slot_select":
+        return <AccessTimeIcon fontSize="small" />;
       case "option_select":
       default:
         return <RadioButtonUncheckedIcon fontSize="small" />;
@@ -302,6 +319,26 @@ export default function RegistrationFieldList({
                 ? (optionIndex, option) => onRequestDeleteOption(index, optionIndex, option)
                 : undefined
             }
+            isDraft={isDraft}
+            fieldError={fieldErrors?.[`field:${index}`]}
+            optionsError={fieldErrors?.[`field:${index}:options`]}
+            optionErrors={
+              fieldErrors
+                ? Object.fromEntries(
+                    Object.entries(fieldErrors).filter(([k]) => k.startsWith(`option:${index}:`))
+                  )
+                : undefined
+            }
+            onClearFieldError={
+              onClearFieldError
+                ? (key: string) => {
+                    const rebased = key
+                      .replace(/^field:\d+/, `field:${index}`)
+                      .replace(/^option:\d+:/, `option:${index}:`);
+                    onClearFieldError(rebased);
+                  }
+                : undefined
+            }
           />
           <Divider sx={{ mt: 1.5 }} />
           <Box className={classes.fieldFooter}>
@@ -319,7 +356,9 @@ export default function RegistrationFieldList({
               label={texts.registration_field_required}
             />
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              {(field.field_type === "option_select" || field.field_type === "inventory") && (
+              {(field.field_type === "option_select" ||
+                field.field_type === "inventory" ||
+                field.field_type === "time_slot_select") && (
                 <Typography variant="caption" color="textSecondary">
                   {texts.single_option_per_guest_notice}
                 </Typography>
@@ -365,6 +404,12 @@ export default function RegistrationFieldList({
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {getFieldIcon("inventory")}
             {texts.field_type_inventory}
+          </Box>
+        </MenuItem>
+        <MenuItem onClick={() => handleAddField("time_slot_select")}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {getFieldIcon("time_slot_select")}
+            {texts.field_type_time_slot_select}
           </Box>
         </MenuItem>
       </Menu>

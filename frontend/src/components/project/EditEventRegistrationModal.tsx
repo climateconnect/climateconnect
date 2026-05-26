@@ -33,6 +33,7 @@ import UserContext from "../context/UserContext";
 import { useFeatureToggles } from "../featureToggle";
 import DatePicker from "../general/DatePicker";
 import RegistrationFieldList from "../shareProject/RegistrationFieldList";
+import { validateRegistrationFields } from "../../utils/eventRegistrationHelpers";
 
 const useStyles = makeStyles((theme) => ({
   fieldsRow: {
@@ -112,6 +113,7 @@ export default function EditEventRegistrationModal({
   const [notifyAdmins, setNotifyAdmins] = useState<boolean>(true);
   const [fields, setFields] = useState<RegistrationField[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
   // Confirmation dialog for deleting a persisted field
@@ -142,6 +144,7 @@ export default function EditEventRegistrationModal({
       setNotifyAdmins(eventRegistration.notify_admins);
       setFields(eventRegistration.fields ?? []);
       setErrors({});
+      setFieldErrors({});
     }
   }, [open, eventRegistration]);
 
@@ -190,6 +193,20 @@ export default function EditEventRegistrationModal({
     }
 
     setErrors(newErrors);
+
+    // Validate custom fields when publishing
+    if (!isDraft && isCustomFieldsEnabled) {
+      const { errors: fe, hasError } = validateRegistrationFields(
+        fields,
+        false,
+        texts.this_field_is_required
+      );
+      setFieldErrors(fe);
+      if (hasError) return false;
+    } else {
+      setFieldErrors({});
+    }
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -484,6 +501,15 @@ export default function EditEventRegistrationModal({
                 onFieldsChange={setFields}
                 onRequestDeleteField={handleRequestDeleteField}
                 onRequestDeleteOption={handleRequestDeleteOption}
+                isDraft={isDraft}
+                fieldErrors={fieldErrors}
+                onClearFieldError={(key) =>
+                  setFieldErrors((prev) => {
+                    const next = { ...prev };
+                    delete next[key];
+                    return next;
+                  })
+                }
               />
               {errors.fields && (
                 <Typography className={classes.customFieldsError} role="alert">

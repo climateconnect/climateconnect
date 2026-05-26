@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from organization.models.event_registration import EventRegistrationConfig
@@ -8,6 +9,7 @@ class RegistrationFieldType(models.TextChoices):
     CHECKBOX = "checkbox", _("Checkbox")
     OPTION_SELECT = "option_select", _("Option Select")
     INVENTORY = "inventory", _("Inventory")
+    TIME_SLOT_SELECT = "time_slot_select", _("Time Slot Select")
 
 
 class RegistrationField(models.Model):
@@ -72,10 +74,12 @@ class RegistrationFieldOption(models.Model):
         on_delete=models.CASCADE,
         related_name="options",
     )
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, default="")
     order = models.PositiveIntegerField()
     available_amount = models.PositiveIntegerField(null=True, blank=True)
     max_amount_per_guest = models.PositiveIntegerField(null=True, blank=True)
+    start_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         app_label = "organization"
@@ -89,4 +93,8 @@ class RegistrationFieldOption(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.title} (order={self.order})"
+        if self.title:
+            return f"{self.title} (order={self.order})"
+        if self.start_time and self.end_time:
+            return f"{self.start_time}–{self.end_time} (order={self.order})"
+        return f"Option (order={self.order})"
