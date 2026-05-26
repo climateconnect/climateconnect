@@ -1,6 +1,6 @@
 # Custom Registration Field Label for Event Registration
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Feature
 **Date and time created**: 2026-05-21 09:23
 **GitHub Issue**: [#1997](https://github.com/climateconnect/climateconnect/issues/1997)

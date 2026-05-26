@@ -1,38 +1,61 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { RegistrationField, RegistrationFieldOption } from "../../types";
 import CheckboxFieldEditor from "./CheckboxFieldEditor";
 import OptionSelectFieldEditor from "./OptionSelectFieldEditor";
 import InventoryFieldEditor from "./InventoryFieldEditor";
+import TimeSlotFieldEditor from "./TimeSlotFieldEditor";
 
 type Props = {
   field: RegistrationField;
   onChange: (_updated: RegistrationField) => void;
   onRequestDeleteOption?: (_index: number, _option: RegistrationFieldOption) => void;
+  isDraft?: boolean;
+  fieldError?: string;
+  optionsError?: string;
+  optionErrors?: Record<string, string>;
+  onClearFieldError?: (_key: string) => void;
 };
 
-export default function RegistrationFieldEditor({ field, onChange, onRequestDeleteOption }: Props) {
+export default function RegistrationFieldEditor({
+  field,
+  onChange,
+  onRequestDeleteOption,
+  isDraft,
+  fieldError,
+  optionsError,
+  optionErrors,
+  onClearFieldError,
+}: Props) {
   const answersLocked = !!field.has_answers;
   return (
     <Box>
       {field.field_type === "checkbox" && (
         <CheckboxFieldEditor
           description={field.settings?.description ?? ""}
-          onChange={(description) =>
-            onChange({ ...field, settings: { ...field.settings, description } })
-          }
+          onChange={(description) => {
+            onChange({ ...field, settings: { ...field.settings, description } });
+            onClearFieldError?.(`field:${field.order}`);
+          }}
           disabled={answersLocked}
+          isDraft={isDraft}
+          error={fieldError}
         />
       )}
       {field.field_type === "option_select" && (
         <OptionSelectFieldEditor
           title={field.settings?.title ?? ""}
           options={field.options ?? []}
-          onChange={({ title, options }) =>
-            onChange({ ...field, settings: { ...field.settings, title }, options })
-          }
+          onChange={({ title, options }) => {
+            onChange({ ...field, settings: { ...field.settings, title }, options });
+            onClearFieldError?.(`field:${field.order}`);
+            onClearFieldError?.(`field:${field.order}:options`);
+          }}
           onRequestDeleteOption={onRequestDeleteOption}
           titleDisabled={answersLocked}
+          isDraft={isDraft}
+          fieldError={fieldError}
+          onClearFieldError={onClearFieldError}
         />
       )}
       {field.field_type === "inventory" && (
@@ -40,16 +63,50 @@ export default function RegistrationFieldEditor({ field, onChange, onRequestDele
           title={field.settings?.title ?? ""}
           description={field.settings?.description ?? ""}
           options={field.options ?? []}
-          onChange={({ title, description, options }) =>
+          onChange={({ title, description, options }) => {
             onChange({
               ...field,
               settings: { ...field.settings, title, description },
               options,
-            })
-          }
+            });
+            onClearFieldError?.(`field:${field.order}`);
+            onClearFieldError?.(`field:${field.order}:options`);
+          }}
           onRequestDeleteOption={onRequestDeleteOption}
           titleDisabled={answersLocked}
+          isDraft={isDraft}
+          fieldError={fieldError}
+          optionErrors={optionErrors}
+          onClearFieldError={onClearFieldError}
+          fieldOrder={field.order}
         />
+      )}
+      {field.field_type === "time_slot_select" && (
+        <TimeSlotFieldEditor
+          title={field.settings?.title ?? ""}
+          description={field.settings?.description ?? ""}
+          options={field.options ?? []}
+          onChange={({ title, description, options }) => {
+            onChange({
+              ...field,
+              settings: { ...field.settings, title, description },
+              options,
+            });
+            onClearFieldError?.(`field:${field.order}`);
+            onClearFieldError?.(`field:${field.order}:options`);
+          }}
+          onRequestDeleteOption={onRequestDeleteOption}
+          titleDisabled={answersLocked}
+          isDraft={isDraft}
+          fieldError={fieldError}
+          onClearFieldError={onClearFieldError}
+          fieldOrder={field.order}
+        />
+      )}
+      {optionsError && (
+        <Typography variant="caption" color="error" display="block" sx={{ mt: 0.5 }}>
+          {optionsError}
+        </Typography>
       )}
     </Box>
   );

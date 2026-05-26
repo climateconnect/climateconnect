@@ -711,3 +711,670 @@ class TestRegisterForEventWithCustomFieldAnswers(APITestCase):
             self.option_vegan.id,
         )
         self.assertEqual(RegistrationFieldAnswer.objects.count(), 2)
+
+
+# ---------------------------------------------------------------------------
+# Inventory field answers on POST /registrations/
+# ---------------------------------------------------------------------------
+
+
+@override_settings(CACHES=_DUMMY_CACHE, CACHE_BACHED_RANK_REQUEST=False)
+class TestRegisterForEventWithInventoryAnswers(APITestCase):
+    def setUp(self):
+        self.ps = _create_project_status()
+        self.lang = _get_language()
+        self.user = User.objects.create_user(
+            username="inv_user", password="testpassword"
+        )
+
+        self.event = _create_event("inv-event", self.ps, self.lang)
+        self.er = _create_open_er(self.event, max_participants=50)
+
+        self.inventory_field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="inventory",
+            label="meals",
+            order=0,
+            is_required=True,
+            settings={"title": "Meal tickets"},
+        )
+        self.opt_veg = RegistrationFieldOption.objects.create(
+            field=self.inventory_field,
+            title="Vegetarian",
+            order=0,
+            available_amount=50,
+            max_amount_per_guest=2,
+        )
+        self.opt_vegan = RegistrationFieldOption.objects.create(
+            field=self.inventory_field,
+            title="Vegan",
+            order=1,
+            available_amount=30,
+            max_amount_per_guest=3,
+        )
+        # An optional checkbox field alongside.
+        self.checkbox_field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="checkbox",
+            label="agree",
+            order=1,
+            is_required=False,
+            settings={"description": "<p>I agree</p>"},
+        )
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_valid_inventory_answer_creates_registration(self, mock_admins, mock_task):
+        self.client.login(username="inv_user", password="testpassword")
+        response = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.inventory_field.id,
+                        "value_option": self.opt_veg.id,
+                        "value_number": 2,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        registration = EventRegistration.objects.get(
+            user=self.user, registration_config=self.er
+        )
+        answer = registration.field_answers.get(field=self.inventory_field)
+        self.assertEqual(answer.value_option_id, self.opt_veg.id)
+        self.assertEqual(answer.value_number, 2)
+        self.assertIsNone(answer.value_boolean)
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_missing_required_inventory_returns_400(self, mock_admins, mock_task):
+        self.client.login(username="inv_user", password="testpassword")
+        response = self.client.post(
+            _register_url("inv-event"),
+            data={"answers": []},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            EventRegistration.objects.filter(
+                user=self.user, registration_config=self.er
+            ).count(),
+            0,
+        )
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_inventory_missing_value_number_returns_400(self, mock_admins, mock_task):
+        self.client.login(username="inv_user", password="testpassword")
+        response = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {"field": self.inventory_field.id, "value_option": self.opt_veg.id},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_inventory_zero_quantity_returns_400(self, mock_admins, mock_task):
+        self.client.login(username="inv_user", password="testpassword")
+        response = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.inventory_field.id,
+                        "value_option": self.opt_veg.id,
+                        "value_number": 0,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_inventory_exceeds_max_per_guest_returns_400(self, mock_admins, mock_task):
+        self.client.login(username="inv_user", password="testpassword")
+        response = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.inventory_field.id,
+                        "value_option": self.opt_veg.id,
+                        "value_number": 5,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_inventory_option_from_different_field_returns_400(
+        self, mock_admins, mock_task
+    ):
+        other_field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="inventory",
+            label="drinks",
+            order=2,
+            is_required=False,
+            settings={"title": "Drinks"},
+        )
+        other_option = RegistrationFieldOption.objects.create(
+            field=other_field,
+            title="Water",
+            order=0,
+            available_amount=10,
+            max_amount_per_guest=1,
+        )
+        self.client.login(username="inv_user", password="testpassword")
+        response = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.inventory_field.id,
+                        "value_option": other_option.id,
+                        "value_number": 1,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_inventory_capacity_exceeded_returns_400_with_field_error(
+        self, mock_admins, mock_task
+    ):
+        RegistrationFieldAnswer.objects.create(
+            registration=EventRegistration.objects.create(
+                user=self.user, registration_config=self.er
+            ),
+            field=self.inventory_field,
+            value_option=self.opt_veg,
+            value_number=49,
+        )
+        User.objects.create_user(username="inv_user2", password="testpassword")
+        self.client.login(username="inv_user2", password="testpassword")
+        response = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.inventory_field.id,
+                        "value_option": self.opt_veg.id,
+                        "value_number": 2,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("field_errors", response.data)
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_remaining_amount_excludes_cancelled_registrations(
+        self, mock_admins, mock_task
+    ):
+        reg = EventRegistration.objects.create(
+            user=self.user, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=reg,
+            field=self.inventory_field,
+            value_option=self.opt_veg,
+            value_number=5,
+        )
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.user
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+        User.objects.create_user(username="inv_user3", password="testpassword")
+        self.client.login(username="inv_user3", password="testpassword")
+        response = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.inventory_field.id,
+                        "value_option": self.opt_veg.id,
+                        "value_number": 2,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+
+    @tag("event_participant", "registration", "inventory")
+    def test_remaining_amount_in_detail_response(self):
+        reg = EventRegistration.objects.create(
+            user=self.user, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=reg,
+            field=self.inventory_field,
+            value_option=self.opt_veg,
+            value_number=2,
+        )
+        response = self.client.get(_detail_url("inv-event"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        fields = response.data["registration_config"]["fields"]
+        inv_field = next(f for f in fields if f["field_type"] == "inventory")
+        veg_opt = next(o for o in inv_field["options"] if o["title"] == "Vegetarian")
+        self.assertEqual(veg_opt["remaining_amount"], 48)
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_inventory_with_checkbox_in_same_payload(self, mock_admins, mock_task):
+        self.client.login(username="inv_user", password="testpassword")
+        response = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.inventory_field.id,
+                        "value_option": self.opt_vegan.id,
+                        "value_number": 1,
+                    },
+                    {"field": self.checkbox_field.id, "value_boolean": True},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        registration = EventRegistration.objects.get(
+            user=self.user, registration_config=self.er
+        )
+        self.assertEqual(registration.field_answers.count(), 2)
+
+    @tag("event_participant", "registration", "inventory")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_inventory_reregistration_syncs_answers(self, mock_admins, mock_task):
+        self.client.login(username="inv_user", password="testpassword")
+        first = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.inventory_field.id,
+                        "value_option": self.opt_veg.id,
+                        "value_number": 2,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(first.status_code, status.HTTP_201_CREATED, first.data)
+
+        registration = EventRegistration.objects.get(
+            user=self.user, registration_config=self.er
+        )
+        registration.cancelled_at = timezone.now()
+        registration.cancelled_by = self.user
+        registration.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        second = self.client.post(
+            _register_url("inv-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.inventory_field.id,
+                        "value_option": self.opt_vegan.id,
+                        "value_number": 1,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(second.status_code, status.HTTP_201_CREATED, second.data)
+
+        registration.refresh_from_db()
+        self.assertIsNone(registration.cancelled_at)
+        answer = registration.field_answers.get(field=self.inventory_field)
+        self.assertEqual(answer.value_option_id, self.opt_vegan.id)
+        self.assertEqual(answer.value_number, 1)
+
+
+# ---------------------------------------------------------------------------
+# Time slot field answers on POST /registrations/
+# ---------------------------------------------------------------------------
+
+
+@override_settings(CACHES=_DUMMY_CACHE, CACHE_BACHED_RANK_REQUEST=False)
+class TestRegisterForEventWithTimeSlotAnswers(APITestCase):
+    def setUp(self):
+        self.ps = _create_project_status()
+        self.lang = _get_language()
+        self.user = User.objects.create_user(
+            username="ts_user", password="testpassword"
+        )
+
+        self.event = _create_event("ts-event", self.ps, self.lang)
+        self.er = _create_open_er(self.event, max_participants=50)
+
+        self.ts_field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="time_slot_select",
+            label="workshop slot",
+            order=0,
+            is_required=True,
+            settings={"title": "Choose a workshop slot"},
+        )
+        self.slot_a = RegistrationFieldOption.objects.create(
+            field=self.ts_field,
+            title="Slot A",
+            order=0,
+            available_amount=2,
+            start_time=timezone.now() + timedelta(days=10, hours=10),
+            end_time=timezone.now() + timedelta(days=10, hours=12),
+        )
+        self.slot_b = RegistrationFieldOption.objects.create(
+            field=self.ts_field,
+            title="Slot B",
+            order=1,
+            available_amount=None,
+            start_time=timezone.now() + timedelta(days=10, hours=14),
+            end_time=timezone.now() + timedelta(days=10, hours=16),
+        )
+        self.checkbox_field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="checkbox",
+            label="agree",
+            order=1,
+            is_required=False,
+            settings={"description": "<p>I agree</p>"},
+        )
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_valid_time_slot_answer_creates_registration(self, mock_admins, mock_task):
+        self.client.login(username="ts_user", password="testpassword")
+        response = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {"field": self.ts_field.id, "value_option": self.slot_a.id},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        registration = EventRegistration.objects.get(
+            user=self.user, registration_config=self.er
+        )
+        answer = registration.field_answers.get(field=self.ts_field)
+        self.assertEqual(answer.value_option_id, self.slot_a.id)
+        self.assertIsNone(answer.value_boolean)
+        self.assertIsNone(answer.value_number)
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_missing_required_time_slot_returns_400(self, mock_admins, mock_task):
+        self.client.login(username="ts_user", password="testpassword")
+        response = self.client.post(
+            _register_url("ts-event"),
+            data={"answers": []},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            EventRegistration.objects.filter(
+                user=self.user, registration_config=self.er
+            ).count(),
+            0,
+        )
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_time_slot_with_value_number_returns_400(self, mock_admins, mock_task):
+        self.client.login(username="ts_user", password="testpassword")
+        response = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.ts_field.id,
+                        "value_option": self.slot_a.id,
+                        "value_number": 1,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_time_slot_with_value_boolean_returns_400(self, mock_admins, mock_task):
+        self.client.login(username="ts_user", password="testpassword")
+        response = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {
+                        "field": self.ts_field.id,
+                        "value_boolean": True,
+                    },
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_time_slot_option_from_different_field_returns_400(
+        self, mock_admins, mock_task
+    ):
+        other_field = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="time_slot_select",
+            label="other ts",
+            order=2,
+            is_required=False,
+            settings={"title": "Other"},
+        )
+        other_option = RegistrationFieldOption.objects.create(
+            field=other_field,
+            title="Other Slot",
+            order=0,
+            start_time=timezone.now() + timedelta(days=11, hours=10),
+            end_time=timezone.now() + timedelta(days=11, hours=12),
+        )
+        self.client.login(username="ts_user", password="testpassword")
+        response = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {"field": self.ts_field.id, "value_option": other_option.id},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_time_slot_capacity_exceeded_returns_400_with_field_error(
+        self, mock_admins, mock_task
+    ):
+        # Fill slot_a to capacity (available_amount=2).
+        for i in range(2):
+            u = User.objects.create_user(
+                username=f"ts_filled_{i}", password="testpassword"
+            )
+            reg = EventRegistration.objects.create(user=u, registration_config=self.er)
+            RegistrationFieldAnswer.objects.create(
+                registration=reg,
+                field=self.ts_field,
+                value_option=self.slot_a,
+            )
+
+        self.client.login(username="ts_user", password="testpassword")
+        response = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {"field": self.ts_field.id, "value_option": self.slot_a.id},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("field_errors", response.data)
+        self.assertIn(str(self.ts_field.id), response.data["field_errors"])
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_remaining_amount_excludes_cancelled_registrations(
+        self, mock_admins, mock_task
+    ):
+        # Register one user in slot_a, then cancel.
+        reg = EventRegistration.objects.create(
+            user=self.user, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=reg,
+            field=self.ts_field,
+            value_option=self.slot_a,
+        )
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.user
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        User.objects.create_user(username="ts_user2", password="testpassword")
+        self.client.login(username="ts_user2", password="testpassword")
+        response = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {"field": self.ts_field.id, "value_option": self.slot_a.id},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+
+    @tag("event_participant", "registration", "time_slot")
+    def test_remaining_amount_in_detail_response(self):
+        reg = EventRegistration.objects.create(
+            user=self.user, registration_config=self.er
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=reg,
+            field=self.ts_field,
+            value_option=self.slot_a,
+        )
+        response = self.client.get(_detail_url("ts-event"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        fields = response.data["registration_config"]["fields"]
+        ts_field = next(f for f in fields if f["field_type"] == "time_slot_select")
+        slot_a = next(o for o in ts_field["options"] if o["title"] == "Slot A")
+        self.assertEqual(slot_a["remaining_amount"], 1)
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_unlimited_capacity_time_slot_succeeds(self, mock_admins, mock_task):
+        self.client.login(username="ts_user", password="testpassword")
+        response = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {"field": self.ts_field.id, "value_option": self.slot_b.id},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_time_slot_with_checkbox_in_same_payload(self, mock_admins, mock_task):
+        self.client.login(username="ts_user", password="testpassword")
+        response = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {"field": self.ts_field.id, "value_option": self.slot_b.id},
+                    {"field": self.checkbox_field.id, "value_boolean": True},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        registration = EventRegistration.objects.get(
+            user=self.user, registration_config=self.er
+        )
+        self.assertEqual(registration.field_answers.count(), 2)
+
+    @tag("event_participant", "registration", "time_slot")
+    @patch(_TASK_PATH)
+    @patch(_NOTIFY_ADMINS_PATH)
+    def test_time_slot_reregistration_syncs_answers(self, mock_admins, mock_task):
+        self.client.login(username="ts_user", password="testpassword")
+        first = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {"field": self.ts_field.id, "value_option": self.slot_a.id},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(first.status_code, status.HTTP_201_CREATED, first.data)
+
+        registration = EventRegistration.objects.get(
+            user=self.user, registration_config=self.er
+        )
+        registration.cancelled_at = timezone.now()
+        registration.cancelled_by = self.user
+        registration.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        second = self.client.post(
+            _register_url("ts-event"),
+            data={
+                "answers": [
+                    {"field": self.ts_field.id, "value_option": self.slot_b.id},
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(second.status_code, status.HTTP_201_CREATED, second.data)
+
+        registration.refresh_from_db()
+        self.assertIsNone(registration.cancelled_at)
+        answer = registration.field_answers.get(field=self.ts_field)
+        self.assertEqual(answer.value_option_id, self.slot_b.id)

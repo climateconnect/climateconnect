@@ -1,6 +1,6 @@
 # Organiser Edits Event Registration Custom Fields (Phase 4a — Edit)
 
-**Status**: IN PROGRESS — SPEC GAP IDENTIFIED (see Log 2026-05-19 #2)
+**Status**: COMPLETED (see Log 2026-05-19 #2)
 **Type**: Feature
 **Date and time created**: 2026-05-12 07:25
 **Date and time updated**: 2026-05-19

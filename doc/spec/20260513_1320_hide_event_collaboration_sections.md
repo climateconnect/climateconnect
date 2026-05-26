@@ -1,6 +1,6 @@
 # Hide Collaboration Sections for Events
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Feature
 **Date and time created**: 2026-05-13 13:20
 **GitHub Issue**: [#1981](https://github.com/climateconnect/climateconnect/issues/1981)

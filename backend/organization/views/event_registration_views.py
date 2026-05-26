@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.db.models import Sum
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +14,12 @@ from organization.models import Project, ProjectMember
 from organization.models.event_registration import (
     EventRegistration,
     EventRegistrationConfig,
+    RegistrationFieldAnswer,
     RegistrationStatus,
+)
+from organization.models.registration_field import (
+    RegistrationFieldType,
+    RegistrationFieldOption,
 )
 from organization.serializers.event_registration import (
     EditEventRegistrationConfigSerializer,
@@ -168,6 +174,70 @@ class EventRegistrationsView(APIView):
         normalized_answers = submission_serializer.validated_data.get(
             "normalized_answers", []
         )
+
+        # ── 6a. Per-option capacity enforcement for inventory & time slot answers ─
+        inventory_answers = [
+            a for a in normalized_answers if a.get("value_number") is not None
+        ]
+        time_slot_answers = [
+            a
+            for a in normalized_answers
+            if a["field"].field_type == RegistrationFieldType.TIME_SLOT_SELECT
+        ]
+        all_option_ids = list(
+            set(
+                [a["value_option"].id for a in inventory_answers]
+                + [a["value_option"].id for a in time_slot_answers]
+            )
+        )
+        if all_option_ids:
+            # Lock option rows ordered by id to prevent deadlocks.
+            locked_options = {
+                o.id: o
+                for o in RegistrationFieldOption.objects.filter(id__in=all_option_ids)
+                .select_for_update()
+                .order_by("id")
+            }
+            field_errors = {}
+
+            # Inventory capacity check (quantity-based).
+            for answer in inventory_answers:
+                option = locked_options[answer["value_option"].id]
+                requested = answer["value_number"]
+                if option.available_amount is not None:
+                    booked = (
+                        RegistrationFieldAnswer.objects.filter(
+                            value_option=option,
+                            registration__cancelled_at__isnull=True,
+                        ).aggregate(booked=Sum("value_number"))["booked"]
+                        or 0
+                    )
+                    if booked + requested > option.available_amount:
+                        remaining = max(0, option.available_amount - booked)
+                        field_errors[str(answer["field"].id)] = (
+                            f"Only {remaining} item{'s' if remaining != 1 else ''} "
+                            f"remaining for the selected option."
+                        )
+
+            # Time slot capacity check (seat-count-based).
+            for answer in time_slot_answers:
+                option = locked_options[answer["value_option"].id]
+                if option.available_amount is not None:
+                    booked = RegistrationFieldAnswer.objects.filter(
+                        value_option=option,
+                        registration__cancelled_at__isnull=True,
+                    ).count()
+                    if booked >= option.available_amount:
+                        field_errors[str(answer["field"].id)] = (
+                            "This time slot is fully booked. "
+                            "Please select a different slot."
+                        )
+
+            if field_errors:
+                return Response(
+                    {"field_errors": field_errors},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         # ── 7. Create or re-activate EventRegistration ───────────────────────
         registration = existing

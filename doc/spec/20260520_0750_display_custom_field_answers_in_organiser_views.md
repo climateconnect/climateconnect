@@ -1,6 +1,6 @@
 # Display Custom Field Answers in Organiser Registration Views (Phase 4a — Organiser Display)
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Feature
 **Date and time created**: 2026-05-20 07:50
 **GitHub Issue**: [#1963](https://github.com/climateconnect/climateconnect/issues/1963)

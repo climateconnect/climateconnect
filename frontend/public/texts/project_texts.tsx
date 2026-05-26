@@ -1350,6 +1350,30 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Description",
       de: "Beschreibung",
     },
+    field_type_time_slot_select: {
+      en: "Time Slot Select",
+      de: "Zeitfenster-Auswahl",
+    },
+    time_slot_title: {
+      en: "Title",
+      de: "Titel",
+    },
+    time_slot_description: {
+      en: "Description",
+      de: "Beschreibung",
+    },
+    time_slot_start_time: {
+      en: "Start time",
+      de: "Startzeit",
+    },
+    time_slot_end_time: {
+      en: "End time",
+      de: "Endzeit",
+    },
+    time_slot_capacity: {
+      en: "Available amount",
+      de: "Verfügbare Menge",
+    },
     registration_field_description: {
       en: "Description",
       de: "Beschreibung",
@@ -1587,8 +1611,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Anmeldung bestätigen",
     },
     confirm_your_registration_for: {
+      en: `Please confirm your registration for ${project?.name}`,
+      de: `Bitte bestätige deine Anmeldung für ${project?.name}`,
+    },
+    fill_the_form_and_confirm_your_registration_for: {
       en: `Please fill in the form and confirm your registration for ${project?.name}`,
-      de: `Bitte füllen Sie das Formular aus und bestätigen Sie Ihre Anmeldung für ${project?.name}`,
+      de: `Bitte fülle das Formular aus und bestätige deine Anmeldung für ${project?.name}`,
     },
     to_register_please_login_or_signup: {
       en: "To register for this event, please log in or sign up!",
@@ -1729,6 +1757,34 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     please_select_an_option: {
       en: "Please select an option.",
       de: "Bitte wähle eine Option aus.",
+    },
+    please_select_inventory_option: {
+      en: "Please select an option.",
+      de: "Bitte wähle eine Option aus.",
+    },
+    please_enter_quantity: {
+      en: "Please enter a quantity.",
+      de: "Bitte gib eine Menge ein.",
+    },
+    quantity_available: {
+      en: "available",
+      de: "verfügbar",
+    },
+    max_per_guest: {
+      en: "Max per guest",
+      de: "Max. pro Gast",
+    },
+    quantity_exceeds_max: {
+      en: "Quantity cannot exceed the maximum per guest.",
+      de: "Die Menge darf das Maximum pro Gast nicht überschreiten.",
+    },
+    please_select_time_slot: {
+      en: "Please select a time slot.",
+      de: "Bitte wähle ein Zeitfenster aus.",
+    },
+    time_slot_fully_booked: {
+      en: "This time slot is fully booked.",
+      de: "Dieses Zeitfenster ist vollständig ausgebucht.",
     },
     required_fields_participation_notice: {
       en:

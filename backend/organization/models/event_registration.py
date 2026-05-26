@@ -243,6 +243,7 @@ class RegistrationFieldAnswer(models.Model):
 
     - checkbox      -> value_boolean
     - option_select -> value_option
+    - inventory     -> value_option + value_number
 
     Both foreign keys use CASCADE so deleting a field/option later removes
     dependent answers automatically.
@@ -266,6 +267,7 @@ class RegistrationFieldAnswer(models.Model):
         on_delete=models.CASCADE,
         related_name="answers",
     )
+    value_number = models.PositiveIntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

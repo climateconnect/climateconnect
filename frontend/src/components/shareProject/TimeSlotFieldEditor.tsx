@@ -5,9 +5,11 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import DeleteIcon from "@mui/icons-material/Delete";
 import makeStyles from "@mui/styles/makeStyles";
+import dayjs from "dayjs";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { RegistrationFieldOption } from "../../types";
+import DatePicker from "../general/DatePicker";
 
 const useStyles = makeStyles((theme) => ({
   optionRow: {
@@ -20,13 +22,13 @@ const useStyles = makeStyles((theme) => ({
       alignItems: "stretch",
     },
   },
-  optionTitleInput: {
-    flex: "2 1 0",
-    minWidth: 0,
+  datetimeInput: {
+    flex: "1 1 0",
+    minWidth: 185,
   },
   capacityInput: {
     flex: "1 1 0",
-    minWidth: 185,
+    minWidth: 120,
   },
   actionButtons: {
     display: "flex",
@@ -62,12 +64,11 @@ type Props = {
   titleDisabled?: boolean;
   isDraft?: boolean;
   fieldError?: string;
-  optionErrors?: Record<string, string>;
   onClearFieldError?: (_key: string) => void;
   fieldOrder?: number;
 };
 
-export default function InventoryFieldEditor({
+export default function TimeSlotFieldEditor({
   title,
   description,
   options,
@@ -76,9 +77,8 @@ export default function InventoryFieldEditor({
   titleDisabled,
   isDraft,
   fieldError,
-  optionErrors,
-  onClearFieldError,
-  fieldOrder,
+  onClearFieldError: _onClearFieldError,
+  fieldOrder: _fieldOrder,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -92,16 +92,23 @@ export default function InventoryFieldEditor({
     onChange({ title, description: e.target.value, options });
   };
 
-  const handleOptionChange = (
+  const handleOptionDateTimeChange = (
     index: number,
-    field: "title" | "available_amount" | "max_amount_per_guest",
-    value: string
+    field: "start_time" | "end_time",
+    value: dayjs.Dayjs | null
   ) => {
     const updated = options.map((o, i) => {
       if (i !== index) return o;
-      if (field === "title") return { ...o, title: value };
+      return { ...o, [field]: value ? value.toISOString() : null };
+    });
+    onChange({ title, description, options: updated });
+  };
+
+  const handleOptionCapacityChange = (index: number, value: string) => {
+    const updated = options.map((o, i) => {
+      if (i !== index) return o;
       const parsed = value === "" ? null : parseInt(value, 10);
-      return { ...o, [field]: isNaN(parsed as number) ? null : parsed };
+      return { ...o, available_amount: isNaN(parsed as number) ? null : parsed };
     });
     onChange({ title, description, options: updated });
   };
@@ -113,7 +120,13 @@ export default function InventoryFieldEditor({
       description,
       options: [
         ...options,
-        { title: "", order: newOrder, available_amount: null, max_amount_per_guest: null },
+        {
+          title: "",
+          order: newOrder,
+          start_time: null,
+          end_time: null,
+          available_amount: null,
+        },
       ],
     });
   };
@@ -150,7 +163,7 @@ export default function InventoryFieldEditor({
     <Box>
       <TextField
         fullWidth
-        label={texts.option_select_title}
+        label={texts.time_slot_title}
         value={title}
         onChange={handleTitleChange}
         variant="outlined"
@@ -163,7 +176,7 @@ export default function InventoryFieldEditor({
       />
       <TextField
         fullWidth
-        label={texts.inventory_description}
+        label={texts.time_slot_description}
         value={description}
         onChange={handleDescriptionChange}
         variant="outlined"
@@ -171,47 +184,35 @@ export default function InventoryFieldEditor({
         sx={{ mb: 1.5 }}
       />
       {options.map((option, index) => (
-        <Box key={option.id ?? `inv_opt_${index}`} className={classes.optionRow}>
-          <TextField
-            className={classes.optionTitleInput}
-            value={option.title}
-            onChange={(e) => handleOptionChange(index, "title", e.target.value)}
-            placeholder={texts.option_placeholder}
-            variant="outlined"
-            size="small"
-            disabled={option.has_answers === true}
+        <Box key={option.id ?? `ts_opt_${index}`} className={classes.optionRow}>
+          <DatePicker
+            label={texts.time_slot_start_time}
+            date={option.start_time ? dayjs(option.start_time) : null}
+            handleChange={(value: dayjs.Dayjs | null) =>
+              handleOptionDateTimeChange(index, "start_time", value)
+            }
+            enableTime
+            className={classes.datetimeInput}
+          />
+          <DatePicker
+            label={texts.time_slot_end_time}
+            date={option.end_time ? dayjs(option.end_time) : null}
+            handleChange={(value: dayjs.Dayjs | null) =>
+              handleOptionDateTimeChange(index, "end_time", value)
+            }
+            enableTime
+            minDate={option.start_time ? dayjs(option.start_time) : undefined}
+            className={classes.datetimeInput}
           />
           <TextField
             className={classes.capacityInput}
             value={option.available_amount ?? ""}
-            onChange={(e) => {
-              handleOptionChange(index, "available_amount", e.target.value);
-              onClearFieldError?.(`option:${fieldOrder}:${index}`);
-            }}
-            label={texts.inventory_available_amount}
+            onChange={(e) => handleOptionCapacityChange(index, e.target.value)}
+            label={texts.time_slot_capacity}
             type="number"
             variant="outlined"
             size="small"
             inputProps={{ min: 1 }}
-            required={!isDraft}
-            error={!!optionErrors?.[`option:${fieldOrder}:${index}`]}
-            helperText={optionErrors?.[`option:${fieldOrder}:${index}`]}
-          />
-          <TextField
-            className={classes.capacityInput}
-            value={option.max_amount_per_guest ?? ""}
-            onChange={(e) => {
-              handleOptionChange(index, "max_amount_per_guest", e.target.value);
-              onClearFieldError?.(`option:${fieldOrder}:${index}:max`);
-            }}
-            label={texts.inventory_max_per_guest}
-            type="number"
-            variant="outlined"
-            size="small"
-            inputProps={{ min: 1 }}
-            required={!isDraft}
-            error={!!optionErrors?.[`option:${fieldOrder}:${index}:max`]}
-            helperText={optionErrors?.[`option:${fieldOrder}:${index}:max`]}
           />
           <Box className={classes.actionButtons}>
             <Tooltip title={texts.move_field_up}>

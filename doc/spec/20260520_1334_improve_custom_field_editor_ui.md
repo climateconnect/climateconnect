@@ -1,6 +1,6 @@
 # Improve Custom Field Editor UI for Event Registration Configuration
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Feature (UI polish)
 **Date and time created**: 2026-05-20 13:34
 **GitHub Issue**: [#1998](https://github.com/climateconnect/climateconnect/issues/1998)
