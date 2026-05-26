@@ -17,7 +17,10 @@ from organization.models.event_registration import (
     RegistrationFieldAnswer,
     RegistrationStatus,
 )
-from organization.models.registration_field import RegistrationFieldOption
+from organization.models.registration_field import (
+    RegistrationFieldType,
+    RegistrationFieldOption,
+)
 from organization.serializers.event_registration import (
     EditEventRegistrationConfigSerializer,
     EventRegistrationSerializer,
@@ -172,20 +175,32 @@ class EventRegistrationsView(APIView):
             "normalized_answers", []
         )
 
-        # ── 6a. Per-option capacity enforcement for inventory answers ───────
+        # ── 6a. Per-option capacity enforcement for inventory & time slot answers ─
         inventory_answers = [
             a for a in normalized_answers if a.get("value_number") is not None
         ]
-        if inventory_answers:
-            option_ids = [a["value_option"].id for a in inventory_answers]
+        time_slot_answers = [
+            a
+            for a in normalized_answers
+            if a["field"].field_type == RegistrationFieldType.TIME_SLOT_SELECT
+        ]
+        all_option_ids = list(
+            set(
+                [a["value_option"].id for a in inventory_answers]
+                + [a["value_option"].id for a in time_slot_answers]
+            )
+        )
+        if all_option_ids:
             # Lock option rows ordered by id to prevent deadlocks.
             locked_options = {
                 o.id: o
-                for o in RegistrationFieldOption.objects.filter(id__in=option_ids)
+                for o in RegistrationFieldOption.objects.filter(id__in=all_option_ids)
                 .select_for_update()
                 .order_by("id")
             }
             field_errors = {}
+
+            # Inventory capacity check (quantity-based).
             for answer in inventory_answers:
                 option = locked_options[answer["value_option"].id]
                 requested = answer["value_number"]
@@ -203,6 +218,21 @@ class EventRegistrationsView(APIView):
                             f"Only {remaining} item{'s' if remaining != 1 else ''} "
                             f"remaining for the selected option."
                         )
+
+            # Time slot capacity check (seat-count-based).
+            for answer in time_slot_answers:
+                option = locked_options[answer["value_option"].id]
+                if option.available_amount is not None:
+                    booked = RegistrationFieldAnswer.objects.filter(
+                        value_option=option,
+                        registration__cancelled_at__isnull=True,
+                    ).count()
+                    if booked >= option.available_amount:
+                        field_errors[str(answer["field"].id)] = (
+                            "This time slot is fully booked. "
+                            "Please select a different slot."
+                        )
+
             if field_errors:
                 return Response(
                     {"field_errors": field_errors},

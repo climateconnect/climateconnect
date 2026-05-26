@@ -284,7 +284,12 @@ export default function EditEventRegistrationModal({
     if (isCustomFieldsEnabled) {
       payload.fields = fields.map(({ _clientKey, ...field }) => ({
         ...field,
-        options: field.options?.filter((opt) => opt.title.trim() !== ""),
+        options: field.options?.filter((opt) => {
+          if (field.field_type === "time_slot_select") {
+            return !!(opt.start_time || opt.end_time);
+          }
+          return opt.title.trim() !== "";
+        }),
       }));
     }
 
