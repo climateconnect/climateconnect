@@ -45,6 +45,7 @@ export type RegistrationFieldAnswerValue = {
   fieldId: number;
   valueBoolean?: boolean;
   valueOption?: number;
+  valueNumber?: number;
 };
 
 /**
@@ -58,6 +59,7 @@ export type RegistrationFieldAnswer = {
   field: number;
   value_boolean: boolean | null;
   value_option: number | null;
+  value_number: number | null;
 };
 
 export type User = {

@@ -1,4 +1,4 @@
-from django.db import transaction
+from django.db import models, transaction
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -134,10 +134,17 @@ class RegistrationFieldOptionSerializer(serializers.ModelSerializer):
     def get_remaining_amount(self, obj):
         if obj.available_amount is None:
             return None
-        booked = RegistrationFieldAnswer.objects.filter(
+        active_answers = RegistrationFieldAnswer.objects.filter(
             value_option=obj,
             registration__cancelled_at__isnull=True,
-        ).count()
+        )
+        if obj.field.field_type == RegistrationFieldType.INVENTORY:
+            booked = (
+                active_answers.aggregate(booked=models.Sum("value_number"))["booked"]
+                or 0
+            )
+        else:
+            booked = active_answers.count()
         return max(0, obj.available_amount - booked)
 
 
