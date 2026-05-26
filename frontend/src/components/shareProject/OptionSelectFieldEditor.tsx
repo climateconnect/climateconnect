@@ -57,7 +57,7 @@ export default function OptionSelectFieldEditor({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     onChange({ title: e.target.value, options });
   };
 
