@@ -65,6 +65,22 @@ custom fields (Phase 4a), this gap will only grow.
 - No regression for events without custom fields: the modal still opens and
   shows the standard registration info plus a Cancel action.
 
+#### Backend data delivery
+
+- The guest's own registration data is delivered by **extending the existing
+  project detail endpoint** `GET /api/projects/{slug}/` with a new read-only
+  `my_event_registration` field on the response, populated only when the
+  requesting user has an active `EventParticipant` for this project.
+- **No new endpoint is introduced** for the guest self-view. Cancellation
+  continues to use the existing `DELETE /api/projects/{slug}/register/`.
+- The new field is returned on **detail only**, never on the list endpoint
+  `GET /api/projects/`.
+- Identity is derived strictly from `request.user`. The field's contents must
+  never be addressable via a path or query parameter naming another user or
+  registration id.
+- The detail response with `my_event_registration` populated must not be
+  cached by any shared cache.
+
 #### No regression for existing modal callers
 
 - Organiser views of the shared modal (from `ProjectRegistrationsContent.tsx`
@@ -88,8 +104,10 @@ custom fields (Phase 4a), this gap will only grow.
 - Editing (changing) the values of custom field responses is **out of scope** —
   the button is named _Modify registration_ but in this iteration the only
   mutation offered is cancellation. (A future iteration may add value editing.)
-- No backend schema changes are expected. This is a presentation + endpoint
-  authorisation story.
+- No backend schema changes are expected. This is a presentation +
+  serializer-extension + endpoint-authorisation story.
+- **No new backend endpoint** is added for guest self-view; the existing
+  project detail endpoint is extended instead.
 - No changes to organiser-side flows other than extracting/sharing the
   existing modal component in a backwards-compatible way.
 
@@ -98,16 +116,31 @@ custom fields (Phase 4a), this gap will only grow.
 > These are suggestions from Taskie, not user-mandated requirements. Promote
 > to core if confirmed with the product owner.
 
-- **Endpoint for guest self-view**: the organiser-side endpoint
-  `GET /api/projects/{slug}/registrations/` returns _all_ guests and is
-  permissioned for organisers/admins only. Consider either (a) a new
-  guest-scoped endpoint such as `GET /api/projects/{slug}/register/` returning
-  the requesting user's own `EventParticipant` record (including custom field
-  responses), or (b) extending an existing member endpoint. The implementing
-  agent should pick the approach that minimises new surface area while
-  keeping authorisation simple. **No IDOR**: the endpoint must derive
-  identity from the auth token, never from a path/query parameter naming
-  another user or registration id.
+- **Endpoint approach — extend project detail**: add a new read-only field
+  (working name `my_event_registration`) on the project detail serializer,
+  sibling to the existing public `event_registration` block. Populated only
+  when `request.user.is_authenticated` AND an `EventParticipant` row exists
+  for `(user, project.event_registration)` with `cancelled_at IS NULL`;
+  otherwise `null`/absent. Contents: the requesting user's standard
+  registration info plus their custom field responses, using the
+  field-type-aware shape defined in
+  [#1880](https://github.com/climateconnect/climateconnect/issues/1880).
+  Rationale: avoids a new endpoint, avoids a second round-trip from the
+  project page, and keeps auth context exactly where it already is.
+- **Privacy / caching**: per-user data on a mostly-public response is a
+  caching footgun. Verify the project detail response is not cached by any
+  shared cache when `my_event_registration` is present (`Cache-Control` /
+  `Vary` headers; Next.js `getServerSideProps` is per-request with the
+  user's cookies so SSR is fine, but check any explicit caching wrappers).
+- **No IDOR**: derive identity strictly from
+  `self.context["request"].user`; never from a path/query parameter.
+- **List endpoint untouched**: do **not** add the field to
+  `GET /api/projects/` — it would force a per-row user-scoped lookup and
+  break list performance.
+- **Query efficiency**: in the detail view, use a filtered
+  `Prefetch("event_registration__participants", queryset=...)` so only the
+  requesting user's participant row (and its custom field responses) is
+  loaded — not every participant.
 - **Don't regress existing call sites of the shared modal**: the modal
   already has organiser callers. Treat the new cancel action as **opt-in
   via props** — for example a new optional prop (`cancelAction?: {...}` or a
@@ -137,13 +170,17 @@ custom fields (Phase 4a), this gap will only grow.
   that future field types (inventory, time slot) will render correctly with
   minimal additional work.
 - **Tests**:
-  - Backend: guest can fetch their own registration including custom field
-    responses; cannot fetch another guest's; 404/403 cleanly when no
-    registration exists.
-  - Frontend: button label switches to _Modify registration_; clicking opens
-    the modal; cancel inside the modal triggers the existing `DELETE /register/`
-    flow; organiser callers of the same modal still render without a Cancel
-    button.
+  - Backend: `GET /api/projects/{slug}/` returns `my_event_registration`
+    populated for an authenticated registered guest (including their custom
+    field responses); returns `null` for an unauthenticated request, for an
+    authenticated non-registered user, and for a cancelled registration; the
+    field is **absent** from `GET /api/projects/` list responses; another
+    user's data is never leaked across requests.
+  - Frontend: button label switches to _Modify registration_ (EN/DE);
+    clicking opens the shared modal; the modal renders the guest's custom
+    field responses; cancel inside the modal triggers the existing
+    `DELETE /api/projects/{slug}/register/` flow; organiser callers of the
+    same modal still render without a Cancel button.
 
 ---
 
@@ -155,14 +192,17 @@ custom fields (Phase 4a), this gap will only grow.
 
 ## Technical solution overview
 
-> To be completed by the implementing agent (frontend-led; small backend
-> additions if a guest-self endpoint is needed).
+> To be completed by the implementing agent (frontend-led; backend changes
+> limited to extending the project detail serializer with
+> `my_event_registration`).
 
 ---
 
 ## Log
 
-- 2026-05-26 — Task created from GitHub issue #2003. Problem statement and AI
-  insights drafted, including no-regression constraint for existing organiser
-  callers of the shared modal. Awaiting user review before handing off to
+- 2026-05-26 — Task created from GitHub issue #2003. Problem statement and
+  AI insights drafted. No-regression constraint added for existing organiser
+  callers of the shared modal. Backend approach pinned: extend the existing
+  project detail endpoint with a `my_event_registration` field rather than
+  introducing a new endpoint. Awaiting user review before handing off to
   Archie for system impact analysis.
