@@ -3,7 +3,7 @@
 **Type**: Epic  
 **Status**: IN PROGRESS  
 **Started**: 2026-03-05  
-**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901), [#1995](https://github.com/climateconnect/climateconnect/issues/1995), [#1997](https://github.com/climateconnect/climateconnect/issues/1997), [#2004](https://github.com/climateconnect/climateconnect/issues/2004), [#2006](https://github.com/climateconnect/climateconnect/issues/2006), [#2007](https://github.com/climateconnect/climateconnect/issues/2007)  
+**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901), [#1962](https://github.com/climateconnect/climateconnect/issues/1962), [#1995](https://github.com/climateconnect/climateconnect/issues/1995), [#1997](https://github.com/climateconnect/climateconnect/issues/1997), [#2004](https://github.com/climateconnect/climateconnect/issues/2004), [#2006](https://github.com/climateconnect/climateconnect/issues/2006), [#2007](https://github.com/climateconnect/climateconnect/issues/2007)  
 **Owner**: CC
 
 ---
@@ -125,13 +125,14 @@ Organisers can define **time slot** options — each with a start time, end time
 | Organiser creates/edits event with time slot field | [#2006](https://github.com/climateconnect/climateconnect/issues/2006) | [`20260526_1100_time_slot_field_type_event_registration.md`](./20260526_1100_time_slot_field_type_event_registration.md) | ⚪ |
 | Member selects time slot when registering; system enforces per-slot capacity | [#2007](https://github.com/climateconnect/climateconnect/issues/2007) | [`20260526_1530_add_time_slot_field_to_event_registration.md`](./20260526_1530_add_time_slot_field_to_event_registration.md) | ⚪ |
 
-#### Phase 4x — Custom Field Label (cross-cutting)
+#### Phase 4x — Custom Field Label & Export (cross-cutting)
 
 An organiser-facing label (max 30 chars) for custom registration fields, used in export/print/overview views. A default label is auto-generated (localised field type + sequential number) and the organiser can edit it inline. Applies to all field types.
 
 | Story | GitHub Issue | Spec | Status |
 |-------|-------------|------|--------|
 | Custom field label (default + adjustable) | [#1997](https://github.com/climateconnect/climateconnect/issues/1997) | [`20260521_0923_custom_field_label.md`](./20260521_0923_custom_field_label.md) | ⚪ |
+| Export event registration results with custom field data | [#1962](https://github.com/climateconnect/climateconnect/issues/1962) | [`20260527_0830_export_event_registration_with_custom_fields.md`](./20260527_0830_export_event_registration_with_custom_fields.md) | ⚪ |
 
 #### Phase 4c+ — Further Field Types (TBD)
 
@@ -329,12 +330,13 @@ Consistent across all tasks: when `is_draft=true`, all required-field validation
 | `pages/projects/[projectId]/register.tsx` | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) |
 | `pages/projects/[projectId]/index.tsx` (event detail) | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
 | `src/components/project/EventRegistrationButton.js` *(or similar)* | [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
-| `src/components/project/ProjectRegistrationsContent.tsx` | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55), [#1872](https://github.com/climateconnect/climateconnect/issues/1872) / [#1871](https://github.com/climateconnect/climateconnect/issues/1871) |
+| `src/components/project/ProjectRegistrationsContent.tsx` | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55), [#1872](https://github.com/climateconnect/climateconnect/issues/1872) / [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1962](https://github.com/climateconnect/climateconnect/issues/1962) |
 | `src/components/project/SendEmailToGuestsModal.tsx` *(new)* | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) |
 | `src/components/project/CancelGuestRegistrationModal.tsx` *(new)* | [#1872](https://github.com/climateconnect/climateconnect/issues/1872) |
-| `public/texts/project_texts.tsx` | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1882](https://github.com/climateconnect/climateconnect/issues/1882), [#2007](https://github.com/climateconnect/climateconnect/issues/2007) |
+| `public/texts/project_texts.tsx` | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1882](https://github.com/climateconnect/climateconnect/issues/1882), [#1962](https://github.com/climateconnect/climateconnect/issues/1962), [#2007](https://github.com/climateconnect/climateconnect/issues/2007) |
 | Profile / dashboard page (registered events grid) | [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850) |
 | `src/components/shareProject/EventRegistrationSection.tsx` | [#1882](https://github.com/climateconnect/climateconnect/issues/1882) |
 | `src/components/project/EditEventRegistrationModal.tsx` | [#1882](https://github.com/climateconnect/climateconnect/issues/1882) |
 | `src/components/project/RegistrationTimeSlotField.tsx` *(new)* | [#2007](https://github.com/climateconnect/climateconnect/issues/2007) |
 | `src/components/project/RegistrationFieldAnswersForm.tsx` | [#2007](https://github.com/climateconnect/climateconnect/issues/2007) |
+| `src/utils/resolveRegistrationFieldAnswer.ts` *(new)* | [#1962](https://github.com/climateconnect/climateconnect/issues/1962) |
