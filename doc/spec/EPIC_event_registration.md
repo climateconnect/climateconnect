@@ -3,7 +3,7 @@
 **Type**: Epic  
 **Status**: IN PROGRESS  
 **Started**: 2026-03-05  
-**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901), [#1962](https://github.com/climateconnect/climateconnect/issues/1962), [#1995](https://github.com/climateconnect/climateconnect/issues/1995), [#1997](https://github.com/climateconnect/climateconnect/issues/1997), [#2004](https://github.com/climateconnect/climateconnect/issues/2004), [#2006](https://github.com/climateconnect/climateconnect/issues/2006), [#2007](https://github.com/climateconnect/climateconnect/issues/2007)  
+**GitHub Issues**: [#1820](https://github.com/climateconnect/climateconnect/issues/1820), [#1845](https://github.com/climateconnect/climateconnect/issues/1845), [#1848](https://github.com/climateconnect/climateconnect/issues/1848), [#1849](https://github.com/climateconnect/climateconnect/issues/1849), [#1850](https://github.com/climateconnect/climateconnect/issues/1850), [#1851](https://github.com/climateconnect/climateconnect/issues/1851), [#1863](https://github.com/climateconnect/climateconnect/issues/1863), [#1866](https://github.com/climateconnect/climateconnect/issues/1866), [#1871](https://github.com/climateconnect/climateconnect/issues/1871), [#1872](https://github.com/climateconnect/climateconnect/issues/1872), [#1880](https://github.com/climateconnect/climateconnect/issues/1880), [#1901](https://github.com/climateconnect/climateconnect/issues/1901), [#1962](https://github.com/climateconnect/climateconnect/issues/1962), [#1995](https://github.com/climateconnect/climateconnect/issues/1995), [#1997](https://github.com/climateconnect/climateconnect/issues/1997), [#2004](https://github.com/climateconnect/climateconnect/issues/2004), [#2006](https://github.com/climateconnect/climateconnect/issues/2006), [#2007](https://github.com/climateconnect/climateconnect/issues/2007), [#2003](https://github.com/climateconnect/climateconnect/issues/2003)  
 **Owner**: CC
 
 ---
@@ -33,41 +33,41 @@ The `EVENT_REGISTRATION` feature toggle was implemented **before any feature wor
 
 Foundational work done before feature development began. No tasks in this epic's spec folder.
 
-| Task | Status |
-|------|--------|
-| Feature toggle infrastructure | ✅ |
-| Remove skills from projects ([#1783](https://github.com/climateconnect/climateconnect/issues/1783)) | ✅ |
-| Other preparatory tasks ([#1842](https://github.com/climateconnect/climateconnect/issues/1842)) | ✅ |
+| Task                                                                                                | Status |
+| --------------------------------------------------------------------------------------------------- | ------ |
+| Feature toggle infrastructure                                                                       | ✅     |
+| Remove skills from projects ([#1783](https://github.com/climateconnect/climateconnect/issues/1783)) | ✅     |
+| Other preparatory tasks ([#1842](https://github.com/climateconnect/climateconnect/issues/1842))     | ✅     |
 
 ### 🎯 Phase 2 — Simple Registration (MVP · current phase)
 
 The complete Phase 2 must be shipped before the toggle is flipped in production. This is the full set of stories agreed for go-live. Stories marked ⚪ do not yet have a spec or implementation issue.
 
-| Story                                                   | GitHub Issue                                                                                                                                  | Spec                                                                         | Status                     |
-|---------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|----------------------------|
-| Organiser creates event with registration               | [#1820](https://github.com/climateconnect/climateconnect/issues/1820)                                                                         |    | ✅ Done                     |
-| Member registers for event                              | [#1845](https://github.com/climateconnect/climateconnect/issues/1845)   [#1885](https://github.com/climateconnect/climateconnect/issues/1885) | [`20260309_0900_...`](./20260309_0900_member_register_for_event.md)          | ⚙️ In proress              |
-| Member sees their registered events                     | [#1849](https://github.com/climateconnect/climateconnect/issues/1849)                                                                         |       | ✅ Done                     |
-| Member cancels a registration                           | [#1850](https://github.com/climateconnect/climateconnect/issues/1850)                                                                         |   | ✅ Done                      |
-| Event organizer can see canceled guests                 | [#1871](https://github.com/climateconnect/climateconnect/issues/1871)                                                                         | delivered by [#1872](./20260407_1000_organizer_cancel_guest_registration.md) | ✅ Done                     |
-| Organiser sees status of registrations (list of guests) | [#1863](https://github.com/climateconnect/climateconnect/issues/1863)                                                                         |  | ✅ Done                     |
-| Organiser exports / prints registered guests            | [#1863](https://github.com/climateconnect/climateconnect/issues/1863)                                                                         |  | ✅ Done |
-| Organiser sends email to all registered guests          | [#1866](https://github.com/climateconnect/climateconnect/issues/1866)   [#1886](https://github.com/climateconnect/climateconnect/issues/1886) |  | ✅ Done |
-| Organiser closes / reopens registration                 | [#1851](https://github.com/climateconnect/climateconnect/issues/1851)                                                                         |  | ✅ Done                     |
-| Organiser cancels an individual guest registration      | [#1872](https://github.com/climateconnect/climateconnect/issues/1872)                                                                         |  | ✅ Done                   |
-| Organiser sets admin notification preference for registrations | [#1882](https://github.com/climateconnect/climateconnect/issues/1882)                                                                         |  | ✅ Done |
-| Admin notification emails on member registration / cancellation | [#1888](https://github.com/climateconnect/climateconnect/issues/1888)                                                                         |  | ✅ Done |
+| Story                                                           | GitHub Issue                                                                                                                                | Spec                                                                         | Status        |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------- |
+| Organiser creates event with registration                       | [#1820](https://github.com/climateconnect/climateconnect/issues/1820)                                                                       |                                                                              | ✅ Done       |
+| Member registers for event                                      | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) [#1885](https://github.com/climateconnect/climateconnect/issues/1885) | [`20260309_0900_...`](./20260309_0900_member_register_for_event.md)          | ⚙️ In proress |
+| Member sees their registered events                             | [#1849](https://github.com/climateconnect/climateconnect/issues/1849)                                                                       |                                                                              | ✅ Done       |
+| Member cancels a registration                                   | [#1850](https://github.com/climateconnect/climateconnect/issues/1850)                                                                       |                                                                              | ✅ Done       |
+| Event organizer can see canceled guests                         | [#1871](https://github.com/climateconnect/climateconnect/issues/1871)                                                                       | delivered by [#1872](./20260407_1000_organizer_cancel_guest_registration.md) | ✅ Done       |
+| Organiser sees status of registrations (list of guests)         | [#1863](https://github.com/climateconnect/climateconnect/issues/1863)                                                                       |                                                                              | ✅ Done       |
+| Organiser exports / prints registered guests                    | [#1863](https://github.com/climateconnect/climateconnect/issues/1863)                                                                       |                                                                              | ✅ Done       |
+| Organiser sends email to all registered guests                  | [#1866](https://github.com/climateconnect/climateconnect/issues/1866) [#1886](https://github.com/climateconnect/climateconnect/issues/1886) |                                                                              | ✅ Done       |
+| Organiser closes / reopens registration                         | [#1851](https://github.com/climateconnect/climateconnect/issues/1851)                                                                       |                                                                              | ✅ Done       |
+| Organiser cancels an individual guest registration              | [#1872](https://github.com/climateconnect/climateconnect/issues/1872)                                                                       |                                                                              | ✅ Done       |
+| Organiser sets admin notification preference for registrations  | [#1882](https://github.com/climateconnect/climateconnect/issues/1882)                                                                       |                                                                              | ✅ Done       |
+| Admin notification emails on member registration / cancellation | [#1888](https://github.com/climateconnect/climateconnect/issues/1888)                                                                       |                                                                              | ✅ Done       |
 
 ### 🎯 Phase 2b — Pre-launch UX Polish (go-live blockers)
 
 Small frontend improvements required before the `EVENT_REGISTRATION` toggle is flipped to production. Tracked in [#1981](https://github.com/climateconnect/climateconnect/issues/1981).
 
-| Story | GitHub Issue | Spec | Status |
-|-------|-------------|------|--------|
-| Auto-set event registration end date on start date change | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1300_auto_set_event_registration_end_date.md`](./20260513_1300_auto_set_event_registration_end_date.md) | ⚪ |
-| Edit project form button reorganization (delete + registration config) | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1310_edit_project_form_button_reorganization.md`](./20260513_1310_edit_project_form_button_reorganization.md) | ⚪ |
-| Hide collaboration sections for events | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1320_hide_event_collaboration_sections.md`](./20260513_1320_hide_event_collaboration_sections.md) | ⚪ |
-| Fix page jump on create project details step | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1330_fix_create_project_details_page_jump.md`](./20260513_1330_fix_create_project_details_page_jump.md) | ⚪ |
+| Story                                                                  | GitHub Issue                                                          | Spec                                                                                                                     | Status |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------ |
+| Auto-set event registration end date on start date change              | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1300_auto_set_event_registration_end_date.md`](./20260513_1300_auto_set_event_registration_end_date.md)       | ⚪     |
+| Edit project form button reorganization (delete + registration config) | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1310_edit_project_form_button_reorganization.md`](./20260513_1310_edit_project_form_button_reorganization.md) | ⚪     |
+| Hide collaboration sections for events                                 | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1320_hide_event_collaboration_sections.md`](./20260513_1320_hide_event_collaboration_sections.md)             | ⚪     |
+| Fix page jump on create project details step                           | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1330_fix_create_project_details_page_jump.md`](./20260513_1330_fix_create_project_details_page_jump.md)       | ⚪     |
 
 ### 🎯 Phase 3 — Guest Registration + UX Polish (go-live blocker)
 
@@ -75,10 +75,10 @@ Small frontend improvements required before the `EVENT_REGISTRATION` toggle is f
 >
 > **Toggle flip**: The `EVENT_REGISTRATION` production toggle is flipped **after** this phase is validated on staging — not after Phase 2.
 
-| Story | GitHub Issue | Status |
-|-------|-------------|--------|
-| Guest user registers for an event and becomes a platform member | — | [`20260430_0936_...`](./20260430_0936_guest_event_registration_auth_integration.md) |
-| Show registration status on project browse and similar projects sidebar | [#1901](https://github.com/climateconnect/climateconnect/issues/1901) | ⚪ |
+| Story                                                                   | GitHub Issue                                                          | Status                                                                              |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Guest user registers for an event and becomes a platform member         | —                                                                     | [`20260430_0936_...`](./20260430_0936_guest_event_registration_auth_integration.md) |
+| Show registration status on project browse and similar projects sidebar | [#1901](https://github.com/climateconnect/climateconnect/issues/1901) | ⚪                                                                                  |
 
 ### 🔧 Phase 4 — Custom Registration Fields (incremental)
 
@@ -90,19 +90,20 @@ Small frontend improvements required before the `EVENT_REGISTRATION` toggle is f
 
 The foundational custom fields story. Organisers can add up to **5 extra fields** — single-select (dropdown) and checkbox (boolean) — to their event's registration form, control field order, and mark fields as required.
 
-| Story | GitHub Issue | Spec | Status |
-|-------|-------------|------|--------|
-| Organiser creates/edits event with custom registration fields (select, checkbox) | [#1880](https://github.com/climateconnect/climateconnect/issues/1880) | [`20260416_1000_event_registration_custom_fields.md`](./20260416_1000_event_registration_custom_fields.md) | ✅ Done |
-| Member registers with custom fields (select, checkbox) | — | — | ⚪ Pending |
+| Story                                                                            | GitHub Issue                                                          | Spec                                                                                                       | Status     |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- |
+| Organiser creates/edits event with custom registration fields (select, checkbox) | [#1880](https://github.com/climateconnect/climateconnect/issues/1880) | [`20260416_1000_event_registration_custom_fields.md`](./20260416_1000_event_registration_custom_fields.md) | ✅ Done    |
+| Member registers with custom fields (select, checkbox)                           | —                                                                     | —                                                                                                          | ⚪ Pending |
 
 **#1880 field specs** (detail to be expanded in tech spec):
 
-| Field type | Registration value | Key settings |
-|------------|-------------------|--------------|
-| Checkbox | Boolean | Description (rich text — bold + links); required flag |
-| Option select (single) | Selected option | Title; 1–N options (each with title + order); required flag |
+| Field type             | Registration value | Key settings                                                |
+| ---------------------- | ------------------ | ----------------------------------------------------------- |
+| Checkbox               | Boolean            | Description (rich text — bold + links); required flag       |
+| Option select (single) | Selected option    | Title; 1–N options (each with title + order); required flag |
 
 **Forward-compatibility constraints from #1880** (must be kept in mind during design, not necessarily implemented now):
+
 - Response storage must accommodate a later **Inventory** field type that persists `(selected option, quantity)` — not just a single value.
 - Schema should not preclude a **Time slot select** field type with per-slot seat limits.
 - Architecture should support future **registration form templates** for reuse across events.
@@ -129,6 +130,21 @@ Organisers can define **time slot** options — each with a start time, end time
 
 An organiser-facing label (max 30 chars) for custom registration fields, used in export/print/overview views. A default label is auto-generated (localised field type + sequential number) and the organiser can edit it inline. Applies to all field types.
 
+| Story                                     | GitHub Issue                                                          | Spec                                                                           | Status |
+| ----------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------ |
+| Custom field label (default + adjustable) | [#1997](https://github.com/climateconnect/climateconnect/issues/1997) | [`20260521_0923_custom_field_label.md`](./20260521_0923_custom_field_label.md) | ⚪     |
+
+#### Phase 4y — Guest registration overview (cross-cutting)
+
+A guest who has registered for an event can open a modal from the project page
+to review the values they submitted (including custom field responses). The
+existing _Cancel registration_ action moves from the project page into this
+modal. The modal component is the same one the organiser uses to view a
+guest's registration.
+
+| Story                                             | GitHub Issue                                                          | Spec                                                                                                   | Status |
+| ------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------ |
+| Guest views and modifies their event registration | [#2003](https://github.com/climateconnect/climateconnect/issues/2003) | [`20260526_1130_guest_view_modify_registration.md`](./20260526_1130_guest_view_modify_registration.md) | ⚪     |
 | Story | GitHub Issue | Spec | Status |
 |-------|-------------|------|--------|
 | Custom field label (default + adjustable) | [#1997](https://github.com/climateconnect/climateconnect/issues/1997) | [`20260521_0923_custom_field_label.md`](./20260521_0923_custom_field_label.md) | ⚪ |
@@ -138,20 +154,21 @@ An organiser-facing label (max 30 chars) for custom registration fields, used in
 
 Additional field types (e.g. free text, number, date) to be defined based on user feedback after Phase 4a ships.
 
-| Story | Status |
-|-------|--------|
-| Further custom field types (scope TBD after Phase 4a user feedback) | ⚪ |
+| Story                                                               | Status |
+| ------------------------------------------------------------------- | ------ |
+| Further custom field types (scope TBD after Phase 4a user feedback) | ⚪     |
 
 ### 🔮 Phase 5 — Templates, Check-in & Nice-to-Haves (future)
 
 | Story                                                             | Status |
-|-------------------------------------------------------------------|--------|
-| Reusable event registration settings (templates)                  | ⚪ |
-| Event organizer can checkin attendants                            | ⚪ |
-| Member receives event reminder notifications                      | ⚪ |
-| Post-event follow ups (survey/feedback,...)                       | ⚪ |
-| Enriched messages to guests (e.g. with html, images, attachments) | ⚪ |
-| iCal support for events                                           | ⚪ |
+| ----------------------------------------------------------------- | ------ |
+| Reusable event registration settings (templates)                  | ⚪     |
+| Event organizer can checkin attendants                            | ⚪     |
+| Member receives event reminder notifications                      | ⚪     |
+| Post-event follow ups (survey/feedback,...)                       | ⚪     |
+| Enriched messages to guests (e.g. with html, images, attachments) | ⚪     |
+| iCal support for events                                           | ⚪     |
+
 ---
 
 ## Shared Architecture
@@ -160,57 +177,60 @@ Additional field types (e.g. free text, number, date) to be defined based on use
 
 Introduced in [#1820](https://github.com/climateconnect/climateconnect/issues/1820). Present throughout the epic.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `project` | OneToOneFK → `Project` | Presence of this record is the sole signal that registration is enabled — no boolean flag on `Project`. |
-| `max_participants` | PositiveInteger, nullable | Required on publish; nullable while draft. Must be > 0. |
-| `registration_end_date` | DateTimeField (TIMESTAMPTZ), nullable | Required on publish; nullable while draft. Must be ≤ `project.end_date`. |
-| `status` | CharField (`open`/`closed`/`full`) | Added in [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (migration `0121`). `open` default. `full` is system-managed only. [#1851](https://github.com/climateconnect/climateconnect/issues/1851) adds `ended` as a Python-side computed value (never stored). |
-| `created_at` | DateTimeField | Auto. |
-| `updated_at` | DateTimeField | Auto. |
+| Field                   | Type                                  | Notes                                                                                                                                                                                                                                                                                |
+| ----------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `project`               | OneToOneFK → `Project`                | Presence of this record is the sole signal that registration is enabled — no boolean flag on `Project`.                                                                                                                                                                              |
+| `max_participants`      | PositiveInteger, nullable             | Required on publish; nullable while draft. Must be > 0.                                                                                                                                                                                                                              |
+| `registration_end_date` | DateTimeField (TIMESTAMPTZ), nullable | Required on publish; nullable while draft. Must be ≤ `project.end_date`.                                                                                                                                                                                                             |
+| `status`                | CharField (`open`/`closed`/`full`)    | Added in [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (migration `0121`). `open` default. `full` is system-managed only. [#1851](https://github.com/climateconnect/climateconnect/issues/1851) adds `ended` as a Python-side computed value (never stored). |
+| `created_at`            | DateTimeField                         | Auto.                                                                                                                                                                                                                                                                                |
+| `updated_at`            | DateTimeField                         | Auto.                                                                                                                                                                                                                                                                                |
 
 **"Is registration open?" check** (O(1), no COUNT query):
+
 ```
 effective_status == "open"
 ```
+
 Where `effective_status` is computed lazily by `EventRegistrationSerializer`:
-- If `stored_status == "open"` AND `registration_end_date <= now()` → return `"ended"` *([#1851](https://github.com/climateconnect/climateconnect/issues/1851))*
+
+- If `stored_status == "open"` AND `registration_end_date <= now()` → return `"ended"` _([#1851](https://github.com/climateconnect/climateconnect/issues/1851))_
 - Otherwise → return `stored_status`
 
-### Entity: `EventParticipant` *([#1845](https://github.com/climateconnect/climateconnect/issues/1845) / [#1850](https://github.com/climateconnect/climateconnect/issues/1850) — implemented)*
+### Entity: `EventParticipant` _([#1845](https://github.com/climateconnect/climateconnect/issues/1845) / [#1850](https://github.com/climateconnect/climateconnect/issues/1850) — implemented)_
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `user` | FK → `User` | `related_name="event_participations"` |
-| `event_registration` | FK → `EventRegistration` | `related_name="participants"` |
-| `registered_at` | DateTimeField | Auto. |
-| `cancelled_at` | DateTimeField, nullable | `NULL` = active registration. Set to `now()` on cancellation ([#1850](https://github.com/climateconnect/climateconnect/issues/1850)). Reset to `NULL` on re-registration. Never deleted — row is kept for historical record. |
-| UNIQUE | `(user, event_registration)` | Prevents duplicate registrations. Re-registration updates the existing row in-place. |
+| Field                | Type                         | Notes                                                                                                                                                                                                                        |
+| -------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `user`               | FK → `User`                  | `related_name="event_participations"`                                                                                                                                                                                        |
+| `event_registration` | FK → `EventRegistration`     | `related_name="participants"`                                                                                                                                                                                                |
+| `registered_at`      | DateTimeField                | Auto.                                                                                                                                                                                                                        |
+| `cancelled_at`       | DateTimeField, nullable      | `NULL` = active registration. Set to `now()` on cancellation ([#1850](https://github.com/climateconnect/climateconnect/issues/1850)). Reset to `NULL` on re-registration. Never deleted — row is kept for historical record. |
+| UNIQUE               | `(user, event_registration)` | Prevents duplicate registrations. Re-registration updates the existing row in-place.                                                                                                                                         |
 
 ### `RegistrationStatus` Enum — Evolution
 
-| Value | Stored in DB | Settable via API | Set by | Since |
-|-------|-------------|-----------------|--------|-------|
-| `open` | ✅ | ✅ (organiser) | Default / organiser reopen | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) |
-| `closed` | ✅ | ✅ (organiser) | Organiser manual close | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (UI in [#1851](https://github.com/climateconnect/climateconnect/issues/1851)) |
-| `full` | ✅ | ❌ (system only) | System, when last seat taken | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (logic in [#1845](https://github.com/climateconnect/climateconnect/issues/1845)) |
-| `ended` | ❌ (never stored) | ❌ | Serializer, lazily computed | [#1851](https://github.com/climateconnect/climateconnect/issues/1851) |
+| Value    | Stored in DB      | Settable via API | Set by                       | Since                                                                                                                                                  |
+| -------- | ----------------- | ---------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `open`   | ✅                | ✅ (organiser)   | Default / organiser reopen   | [#1820](https://github.com/climateconnect/climateconnect/issues/1820)                                                                                  |
+| `closed` | ✅                | ✅ (organiser)   | Organiser manual close       | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (UI in [#1851](https://github.com/climateconnect/climateconnect/issues/1851))    |
+| `full`   | ✅                | ❌ (system only) | System, when last seat taken | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) (logic in [#1845](https://github.com/climateconnect/climateconnect/issues/1845)) |
+| `ended`  | ❌ (never stored) | ❌               | Serializer, lazily computed  | [#1851](https://github.com/climateconnect/climateconnect/issues/1851)                                                                                  |
 
 ### API Endpoints — Full Surface
 
-| Endpoint | Method | Introduced | Notes |
-|----------|--------|-----------|-------|
-| `POST /api/projects/` | POST | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Accepts `event_registration` nested object on create |
-| `GET /api/projects/{slug}/` | GET | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Returns `event_registration` object (including `status`) |
-| `GET /api/projects/` | GET | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Returns `event_registration` per list item |
-| `PATCH /api/projects/{slug}/` | PATCH | [#1820](https://github.com/climateconnect/climateconnect/issues/1820) | Accepts `event_registration` nested object on create only — read-only in update context |
-| `PATCH /api/projects/{slug}/registration/` | PATCH | [#1848](https://github.com/climateconnect/climateconnect/issues/1848) | Dedicated endpoint to update `max_participants`, `registration_end_date`, and `status` (close/reopen — organiser sets `status: "closed"` or `"open"`) |
-| `POST /api/projects/{slug}/register/` | POST | [#1845](https://github.com/climateconnect/climateconnect/issues/1845) | Member registers for an event |
-| `DELETE /api/projects/{slug}/register/` | DELETE | [#1850](https://github.com/climateconnect/climateconnect/issues/1850) | Member cancels registration (soft delete — sets `cancelled_at`) |
-| `GET /api/members/me/registered-events/` | GET | [#1849](https://github.com/climateconnect/climateconnect/issues/1849) | Authenticated member's upcoming registered events |
-| `GET /api/projects/{slug}/registrations/` | GET | [#1863](https://github.com/climateconnect/climateconnect/issues/1863) | Organiser lists registered guests; extended in [#1872](https://github.com/climateconnect/climateconnect/issues/1872) to return all registrations (active + cancelled) with `id` and `cancelled_at` |
-| `POST /api/projects/{slug}/registrations/email/` | POST | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) | Organiser sends email to all registered guests (`is_test=true` sends to self only; always returns `{"sent_count": N}`) |
-| `PATCH /api/projects/{slug}/registrations/{registration_id}/` | PATCH | [#1872](https://github.com/climateconnect/climateconnect/issues/1872) | Organiser/admin cancels a specific guest's registration (soft delete); optional `message` body triggers cancellation email to the guest |
+| Endpoint                                                      | Method | Introduced                                                                        | Notes                                                                                                                                                                                              |
+| ------------------------------------------------------------- | ------ | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/projects/`                                         | POST   | [#1820](https://github.com/climateconnect/climateconnect/issues/1820)             | Accepts `event_registration` nested object on create                                                                                                                                               |
+| `GET /api/projects/{slug}/`                                   | GET    | [#1820](https://github.com/climateconnect/climateconnect/issues/1820)             | Returns `event_registration` object (including `status`)                                                                                                                                           |
+| `GET /api/projects/`                                          | GET    | [#1820](https://github.com/climateconnect/climateconnect/issues/1820)             | Returns `event_registration` per list item                                                                                                                                                         |
+| `PATCH /api/projects/{slug}/`                                 | PATCH  | [#1820](https://github.com/climateconnect/climateconnect/issues/1820)             | Accepts `event_registration` nested object on create only — read-only in update context                                                                                                            |
+| `PATCH /api/projects/{slug}/registration/`                    | PATCH  | [#1848](https://github.com/climateconnect/climateconnect/issues/1848)             | Dedicated endpoint to update `max_participants`, `registration_end_date`, and `status` (close/reopen — organiser sets `status: "closed"` or `"open"`)                                              |
+| `POST /api/projects/{slug}/register/`                         | POST   | [#1845](https://github.com/climateconnect/climateconnect/issues/1845)             | Member registers for an event                                                                                                                                                                      |
+| `DELETE /api/projects/{slug}/register/`                       | DELETE | [#1850](https://github.com/climateconnect/climateconnect/issues/1850)             | Member cancels registration (soft delete — sets `cancelled_at`)                                                                                                                                    |
+| `GET /api/members/me/registered-events/`                      | GET    | [#1849](https://github.com/climateconnect/climateconnect/issues/1849)             | Authenticated member's upcoming registered events                                                                                                                                                  |
+| `GET /api/projects/{slug}/registrations/`                     | GET    | [#1863](https://github.com/climateconnect/climateconnect/issues/1863)             | Organiser lists registered guests; extended in [#1872](https://github.com/climateconnect/climateconnect/issues/1872) to return all registrations (active + cancelled) with `id` and `cancelled_at` |
+| `POST /api/projects/{slug}/registrations/email/`              | POST   | [product-backlog#55](https://github.com/climateconnect/product-backlog/issues/55) | Organiser sends email to all registered guests (`is_test=true` sends to self only; always returns `{"sent_count": N}`)                                                                             |
+| `PATCH /api/projects/{slug}/registrations/{registration_id}/` | PATCH  | [#1872](https://github.com/climateconnect/climateconnect/issues/1872)             | Organiser/admin cancels a specific guest's registration (soft delete); optional `message` body triggers cancellation email to the guest                                                            |
 
 ### `event_registration` API Response Shape
 
@@ -232,13 +252,14 @@ Where `effective_status` is computed lazily by `EventRegistrationSerializer`:
 
 The `EVENT_REGISTRATION` toggle was created **first**, before any feature work, as the cornerstone of this epic's incremental rollout strategy. Record created by migration `feature_toggles/migrations/0002_add_event_registration_toggle.py`.
 
-| Environment | Current State | Notes |
-|-------------|--------------|-------|
-| Development | ✅ Enabled | Always on — full feature visible to developers |
-| Staging | ✅ Enabled | Full feature visible for QA and stakeholder review |
-| Production | ❌ Disabled | Flipped to `True` when Phase 3 (guest registration) is complete and validated on staging |
+| Environment | Current State | Notes                                                                                    |
+| ----------- | ------------- | ---------------------------------------------------------------------------------------- |
+| Development | ✅ Enabled    | Always on — full feature visible to developers                                           |
+| Staging     | ✅ Enabled    | Full feature visible for QA and stakeholder review                                       |
+| Production  | ❌ Disabled   | Flipped to `True` when Phase 3 (guest registration) is complete and validated on staging |
 
 **Rules for every agent working on this epic:**
+
 - All new frontend UI components **must** check `isEnabled("EVENT_REGISTRATION")` before rendering. The check pattern from `ShareProjectRoot.tsx` is the reference: `const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION")`.
 - Backend API changes are **always additive** and do not need to be gated by the toggle — the new fields and endpoints are harmless to existing consumers even when the UI is hidden.
 - Do **not** remove or bypass the toggle check, even if the toggle is enabled in your local environment. The check must stay in place until the team explicitly decides to retire it post-launch.
@@ -246,21 +267,24 @@ The `EVENT_REGISTRATION` toggle was created **first**, before any feature work, 
 **Toggle flip when Phase 3 is complete**: when Phase 2 and Phase 3 (guest registration) are both done and validated on staging, update the `FeatureToggle` record: `production_is_active = True`. This can be done via the Django admin panel or a targeted data migration. Coordinate the backend deployment and frontend deployment so both are live before flipping. [EPIC: Auth Unification](./EPIC_auth_unification.md) (Phase A) must also be deployed and live before the flip.
 
 ### Draft Mode
+
 Consistent across all tasks: when `is_draft=true`, all required-field validation and cross-field constraint validation (e.g. `registration_end_date ≤ project.end_date`, past-date guard) are **skipped**. Full validation is enforced on publish (`is_draft=false`). Established in [#1820](https://github.com/climateconnect/climateconnect/issues/1820).
 
 ### Authentication & Permissions
-| Action | Required Role |
-|--------|--------------|
-| View `event_registration` | None (public) |
-| Create event with registration | Authenticated |
-| Register for event | Authenticated (member) |
-| Cancel own registration | Authenticated (same member who registered) |
-| Edit registration settings | Project organiser or team admin |
-| Close / reopen registration | Project organiser or team admin |
-| Send email to registered guests | Project organiser or team admin |
-| Cancel a guest's registration | Project organiser or team admin |
+
+| Action                          | Required Role                              |
+| ------------------------------- | ------------------------------------------ |
+| View `event_registration`       | None (public)                              |
+| Create event with registration  | Authenticated                              |
+| Register for event              | Authenticated (member)                     |
+| Cancel own registration         | Authenticated (same member who registered) |
+| Edit registration settings      | Project organiser or team admin            |
+| Close / reopen registration     | Project organiser or team admin            |
+| Send email to registered guests | Project organiser or team admin            |
+| Cancel a guest's registration   | Project organiser or team admin            |
 
 ### Post-Auth Redirect ([#1845](https://github.com/climateconnect/climateconnect/issues/1845))
+
 - Sign-in page: `/signin` (not `/login`)
 - Query parameter: `redirect` (not `next`) — confirmed in `pages/signin.tsx` (`params.redirect`)
 - Sign-up page: `/signup` needs `redirect` param support **added as part of [#1845](https://github.com/climateconnect/climateconnect/issues/1845)**
@@ -270,17 +294,17 @@ Consistent across all tasks: when `is_draft=true`, all required-field validation
 
 ## Key Design Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Registration enabled signal | Presence of `EventRegistration` row | No boolean flag on `Project`; row existence is unambiguous |
-| `available_seats` storage | Computed (`max_participants - COUNT(participants)`) | No denormalised counter; avoids update anomalies |
-| `available_seats` in list | Excluded | COUNT per row makes list endpoint unacceptably slow |
-| `full` status | System-managed, never writable | Set atomically in same transaction as last registration; O(1) read avoids COUNT on every request |
-| `ended` status | Lazy computation, never stored | Avoids Celery Beat scheduled job; serializer returns it when `open AND deadline_passed` |
-| `EventParticipant.user` related_name | `event_participations` | Avoids ambiguity with the `EventRegistration` model name |
-| Cancellation strategy | Soft delete (`cancelled_at`) | Preserves historical record for future organiser visibility feature; no data migration needed |
-| Re-registration | `update_or_create`, reset `cancelled_at = NULL` | Unique constraint `(user, event_registration)` stays intact; no duplicate rows |
-| Frontend deep-link | `/projects/{slug}/register` | Consistent with `/projects/{slug}` routing; clean SSR redirect for unauthenticated users |
+| Decision                             | Choice                                              | Rationale                                                                                        |
+| ------------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Registration enabled signal          | Presence of `EventRegistration` row                 | No boolean flag on `Project`; row existence is unambiguous                                       |
+| `available_seats` storage            | Computed (`max_participants - COUNT(participants)`) | No denormalised counter; avoids update anomalies                                                 |
+| `available_seats` in list            | Excluded                                            | COUNT per row makes list endpoint unacceptably slow                                              |
+| `full` status                        | System-managed, never writable                      | Set atomically in same transaction as last registration; O(1) read avoids COUNT on every request |
+| `ended` status                       | Lazy computation, never stored                      | Avoids Celery Beat scheduled job; serializer returns it when `open AND deadline_passed`          |
+| `EventParticipant.user` related_name | `event_participations`                              | Avoids ambiguity with the `EventRegistration` model name                                         |
+| Cancellation strategy                | Soft delete (`cancelled_at`)                        | Preserves historical record for future organiser visibility feature; no data migration needed    |
+| Re-registration                      | `update_or_create`, reset `cancelled_at = NULL`     | Unique constraint `(user, event_registration)` stays intact; no duplicate rows                   |
+| Frontend deep-link                   | `/projects/{slug}/register`                         | Consistent with `/projects/{slug}` routing; clean SSR redirect for unauthenticated users         |
 
 ---
 

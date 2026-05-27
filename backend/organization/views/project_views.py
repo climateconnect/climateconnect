@@ -776,9 +776,29 @@ class ProjectAPIView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
+            prefetches = ["loc__translate_location__language"]
+            if request.user.is_authenticated:
+                # Prefetch only the requesting user's active registration (and its
+                # custom field answers) so get_my_event_registration on the
+                # serializer can use it without an extra DB round-trip.
+                prefetches.append(
+                    Prefetch(
+                        "registration_config__registrations",
+                        queryset=EventRegistration.objects.filter(
+                            user=request.user,
+                            cancelled_at__isnull=True,
+                        )
+                        .select_related("user__user_profile")
+                        .prefetch_related(
+                            "field_answers__field",
+                            "field_answers__value_option",
+                        ),
+                        to_attr="_my_registrations",
+                    )
+                )
             project = (
                 Project.objects.select_related("loc", "registration_config")
-                .prefetch_related("loc__translate_location__language")
+                .prefetch_related(*prefetches)
                 .get(url_slug=str(url_slug))
             )
         except Project.DoesNotExist:

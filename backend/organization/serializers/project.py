@@ -26,8 +26,10 @@ from organization.models.event_registration import EventRegistrationConfig
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
 from organization.models.type import PROJECT_TYPES
+from organization.models.event_registration import EventRegistration
 from organization.serializers.event_registration import (
     EventRegistrationConfigSerializer,
+    EventRegistrationSerializer,
 )
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.sector import (
@@ -87,6 +89,7 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
     registration_config = serializers.SerializerMethodField()
+    my_event_registration = serializers.SerializerMethodField()
 
     # Parent/child relationship fields (detail view)
     parent_project_id = serializers.IntegerField(
@@ -132,6 +135,7 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
             "child_projects_count",
             "is_online",
             "registration_config",
+            "my_event_registration",
             "devlink_component",
         )
 
@@ -225,6 +229,54 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
             ).data
         except EventRegistrationConfig.DoesNotExist:
             return None
+
+    def get_my_event_registration(self, obj):
+        """
+        Return the requesting user's active EventRegistration for this project.
+
+        Populated only on the detail endpoint when the requesting user has an
+        active (non-cancelled) registration.  Returns ``None`` otherwise.
+
+        Identity is derived strictly from ``request.user`` — never from any
+        path or query parameter — to prevent IDOR.
+
+        When the view adds a filtered ``Prefetch`` with ``to_attr='_my_registrations'``
+        on ``registration_config__registrations`` the method uses that cached list;
+        otherwise it falls back to a direct DB query.
+        """
+        request = self.context.get("request")
+        if request is None or not request.user.is_authenticated:
+            return None
+        try:
+            config = obj.registration_config
+        except EventRegistrationConfig.DoesNotExist:
+            return None
+
+        if hasattr(config, "_my_registrations"):
+            registrations = config._my_registrations
+            if not registrations:
+                return None
+            registration = registrations[0]
+        else:
+            # Fallback: direct DB lookup (used when serializer is called outside
+            # the standard detail view, e.g. in tests that bypass the view layer).
+            try:
+                registration = (
+                    EventRegistration.objects.select_related("user__user_profile")
+                    .prefetch_related(
+                        "field_answers__field",
+                        "field_answers__value_option",
+                    )
+                    .get(
+                        registration_config=config,
+                        user=request.user,
+                        cancelled_at__isnull=True,
+                    )
+                )
+            except EventRegistration.DoesNotExist:
+                return None
+
+        return EventRegistrationSerializer(registration, context=self.context).data
 
 
 class EditProjectSerializer(ProjectSerializer):

@@ -728,7 +728,18 @@ export default function ProjectRegistrationsContent({
         open={answersModalRow !== null}
         onClose={() => setAnswersModalRow(null)}
         registration={answersModalRow}
+        title={(texts.registration_answers_modal_title as string).replace(
+          "{name}",
+          answersModalRow
+            ? `${answersModalRow.user_first_name} ${answersModalRow.user_last_name}`.trim()
+            : ""
+        )}
         fields={eventRegistration.fields ?? []}
+        event={{
+          name: project.name,
+          start_date: project.start_date,
+          end_date: project.end_date,
+        }}
       />
     </>
   );

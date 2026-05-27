@@ -67,11 +67,15 @@ function renderModal({
   onClose = jest.fn(),
   registration = makeRegistration(),
   fields = [] as RegistrationField[],
+  cancelAction,
+  title = "Registration answers from Jane Doe",
 }: {
   open?: boolean;
   onClose?: jest.Mock;
   registration?: ViewRegistrationAnswersModalRegistration | null;
   fields?: RegistrationField[];
+  cancelAction?: { onCancelClick: jest.Mock };
+  title?: string;
 } = {}) {
   return render(
     <ThemeProvider theme={theme}>
@@ -80,7 +84,9 @@ function renderModal({
           open={open}
           onClose={onClose}
           registration={registration}
+          title={title}
           fields={fields}
+          cancelAction={cancelAction}
         />
       </UserContext.Provider>
     </ThemeProvider>
@@ -123,6 +129,7 @@ describe("ViewRegistrationAnswersModal", () => {
           user_first_name: "Alice",
           user_last_name: "Schmidt",
         }),
+        title: "Registration answers from Alice Schmidt",
       });
       expect(screen.getByText(/Alice Schmidt/)).toBeInTheDocument();
     });
@@ -149,9 +156,9 @@ describe("ViewRegistrationAnswersModal", () => {
   });
 
   describe("empty / no-answer states", () => {
-    it("shows empty-state message when there are no fields and no answers", () => {
+    it("does not show empty-state message when the event has no custom fields", () => {
       renderModal({ registration: makeRegistration({ field_answers: [] }), fields: [] });
-      expect(screen.getByText(/no answers submitted/i)).toBeInTheDocument();
+      expect(screen.queryByText(/no answers submitted/i)).not.toBeInTheDocument();
     });
 
     it("shows empty-state message when there are fields but no answers", () => {
@@ -206,7 +213,7 @@ describe("ViewRegistrationAnswersModal", () => {
       expect(screen.queryByLabelText(/^Not checked$/i)).not.toBeInTheDocument();
     });
 
-    it("renders the 'unchecked' indicator icon for false answers", () => {
+    it("does not render the checkbox field when the answer is false (user did not check it)", () => {
       const field = makeCheckboxField({ id: 10 });
       const answers: RegistrationFieldAnswer[] = [
         { field: 10, value_boolean: false, value_option: null },
@@ -215,8 +222,9 @@ describe("ViewRegistrationAnswersModal", () => {
         registration: makeRegistration({ field_answers: answers }),
         fields: [field],
       });
-      expect(screen.getByLabelText(/^Not checked$/i)).toBeInTheDocument();
+      expect(screen.queryByText(/I agree to the terms/i)).not.toBeInTheDocument();
       expect(screen.queryByLabelText(/^Checked$/i)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/^Not checked$/i)).not.toBeInTheDocument();
     });
 
     it("renders the checkbox indicator as a non-interactive element (not an input)", () => {
@@ -391,27 +399,154 @@ describe("ViewRegistrationAnswersModal", () => {
     });
   });
 
-  describe("unsupported field types", () => {
-    it("ignores fields with unsupported types (e.g. inventory) without crashing", () => {
+  describe("inventory fields", () => {
+    it("renders the field title and the selected option with quantity", () => {
       const inventory: RegistrationField = {
         id: 30,
         field_type: "inventory",
         order: 0,
         is_required: false,
         label: "Inventory 1",
-        settings: { title: "Inventory item" },
+        settings: { title: "Pick a T-shirt" },
+        options: [
+          { id: 301, title: "Small", order: 0 },
+          { id: 302, title: "Large", order: 1 },
+        ],
       };
       const answers: RegistrationFieldAnswer[] = [
-        { field: 30, value_boolean: null, value_option: null },
+        { field: 30, value_boolean: null, value_option: 302, value_number: 2 },
       ];
       renderModal({
         registration: makeRegistration({ field_answers: answers }),
         fields: [inventory],
       });
       const dialog = screen.getByRole("dialog");
-      expect(dialog).toBeInTheDocument();
-      // Inventory title is not rendered by the modal (Phase 4a does not display inventory).
-      expect(within(dialog).queryByText("Inventory item")).not.toBeInTheDocument();
+      expect(within(dialog).getByText("Pick a T-shirt")).toBeInTheDocument();
+      expect(within(dialog).getByText(/Large\s*\u00d7\s*2/)).toBeInTheDocument();
+    });
+
+    it("falls back to 'No selection' when no option was chosen", () => {
+      const inventory: RegistrationField = {
+        id: 31,
+        field_type: "inventory",
+        order: 0,
+        is_required: false,
+        label: "Inventory 2",
+        settings: { title: "Inventory item" },
+        options: [],
+      };
+      const answers: RegistrationFieldAnswer[] = [
+        { field: 31, value_boolean: null, value_option: null, value_number: null },
+      ];
+      renderModal({
+        registration: makeRegistration({ field_answers: answers }),
+        fields: [inventory],
+      });
+      const dialog = screen.getByRole("dialog");
+      expect(within(dialog).getByText("Inventory item")).toBeInTheDocument();
+      expect(within(dialog).getByText(/no selection/i)).toBeInTheDocument();
+    });
+  });
+
+  describe("time_slot_select fields", () => {
+    it("renders the field title and the formatted time range of the selected slot", () => {
+      const timeSlot: RegistrationField = {
+        id: 40,
+        field_type: "time_slot_select",
+        order: 0,
+        is_required: false,
+        label: "Time slots",
+        settings: { title: "Choose a time slot" },
+        options: [
+          {
+            id: 401,
+            title: "Morning",
+            order: 0,
+            start_time: "2026-07-01T09:00:00Z",
+            end_time: "2026-07-01T11:00:00Z",
+          },
+        ],
+      };
+      const answers: RegistrationFieldAnswer[] = [
+        { field: 40, value_boolean: null, value_option: 401, value_number: null },
+      ];
+      renderModal({
+        registration: makeRegistration({ field_answers: answers }),
+        fields: [timeSlot],
+      });
+      const dialog = screen.getByRole("dialog");
+      expect(within(dialog).getByText("Choose a time slot")).toBeInTheDocument();
+      // Time-range string contains an en-dash between start and end times.
+      expect(within(dialog).getByText(/\u2013/)).toBeInTheDocument();
+    });
+
+    it("falls back to the option title when start/end times are missing", () => {
+      const timeSlot: RegistrationField = {
+        id: 41,
+        field_type: "time_slot_select",
+        order: 0,
+        is_required: false,
+        label: "Time slots",
+        settings: { title: "Choose a time slot" },
+        options: [{ id: 411, title: "Afternoon", order: 0 }],
+      };
+      const answers: RegistrationFieldAnswer[] = [
+        { field: 41, value_boolean: null, value_option: 411, value_number: null },
+      ];
+      renderModal({
+        registration: makeRegistration({ field_answers: answers }),
+        fields: [timeSlot],
+      });
+      const dialog = screen.getByRole("dialog");
+      expect(within(dialog).getByText("Afternoon")).toBeInTheDocument();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // cancelAction prop — guest self-cancel (spec 20260526_1130)
+  // ---------------------------------------------------------------------------
+
+  describe("cancelAction prop", () => {
+    it("does not render a cancel button when cancelAction is omitted (organiser context unchanged)", () => {
+      renderModal({ registration: makeRegistration() });
+      // Only the icon-button close and the footer Close button should be present.
+      const buttons = screen.getAllByRole("button");
+      const cancelBtn = buttons.find((b) => /cancel registration/i.test(b.textContent ?? ""));
+      expect(cancelBtn).toBeUndefined();
+    });
+
+    it("renders a 'Cancel registration' button when cancelAction is provided (guest self-cancel)", () => {
+      renderModal({
+        registration: makeRegistration(),
+        cancelAction: { onCancelClick: jest.fn() },
+      });
+      expect(screen.getByRole("button", { name: /cancel registration/i })).toBeInTheDocument();
+    });
+
+    it("calls onCancelClick when the cancel button is clicked", () => {
+      const onCancelClick = jest.fn();
+      renderModal({
+        registration: makeRegistration(),
+        cancelAction: { onCancelClick },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /cancel registration/i }));
+      expect(onCancelClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("cancel button is distinct from the Close button — Close still calls onClose", () => {
+      const onClose = jest.fn();
+      const onCancelClick = jest.fn();
+      renderModal({
+        onClose,
+        registration: makeRegistration(),
+        cancelAction: { onCancelClick },
+      });
+      // Click the footer Close button (last button).
+      const buttons = screen.getAllByRole("button");
+      const closeBtn = buttons.find((b) => /^close$/i.test(b.textContent ?? ""));
+      fireEvent.click(closeBtn!);
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(onCancelClick).not.toHaveBeenCalled();
     });
   });
 });

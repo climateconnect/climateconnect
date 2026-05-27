@@ -1706,6 +1706,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Registration answers from {name}",
       de: "Anmeldeantworten von {name}",
     },
+    registration_answers_modal_title_self: {
+      en: "Modify your registration",
+      de: "Deine Anmeldung bearbeiten",
+    },
     registration_answers_cancelled_notice: {
       en: "This registration has been cancelled.",
       de: "Diese Anmeldung wurde storniert.",
@@ -1741,6 +1745,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     cancel_registration_error: {
       en: "Failed to cancel registration. Please try again.",
       de: "Stornierung fehlgeschlagen. Bitte versuche es erneut.",
+    },
+    modify_registration: {
+      en: "Modify registration",
+      de: "Anmeldung bearbeiten",
     },
     this_field_is_required: {
       en: "This field is required.",

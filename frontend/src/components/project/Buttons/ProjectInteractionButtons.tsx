@@ -40,7 +40,7 @@ interface ProjectInteractionButtonsProps {
   isUserRegistered?: boolean;
   hasAttended?: boolean;
   adminCancelled?: boolean;
-  handleCancelClick?: () => void;
+  onModifyRegistrationClick?: () => void;
   eventRegistration?: { available_seats: number | null; max_participants: number | null } | null;
 }
 
@@ -97,7 +97,7 @@ export default function ProjectInteractionButtons({
   isUserRegistered,
   hasAttended,
   adminCancelled,
-  handleCancelClick,
+  onModifyRegistrationClick,
   eventRegistration,
 }: ProjectInteractionButtonsProps) {
   const classes = useStyles({
@@ -131,7 +131,7 @@ export default function ProjectInteractionButtons({
               texts={texts}
               isUserRegistered={isUserRegistered}
               handleRegisterClick={handleRegisterClick}
-              handleCancelClick={handleCancelClick}
+              onModifyRegistrationClick={onModifyRegistrationClick}
               className={classes.registerButton}
               showSeatsCount={true}
               eventRegistration={eventRegistration}
