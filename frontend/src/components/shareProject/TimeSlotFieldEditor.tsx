@@ -66,6 +66,8 @@ type Props = {
   fieldError?: string;
   onClearFieldError?: (_key: string) => void;
   fieldOrder?: number;
+  eventStartDate?: string | dayjs.Dayjs | null;
+  eventEndDate?: string | dayjs.Dayjs | null;
 };
 
 export default function TimeSlotFieldEditor({
@@ -79,6 +81,8 @@ export default function TimeSlotFieldEditor({
   fieldError,
   onClearFieldError: _onClearFieldError,
   fieldOrder: _fieldOrder,
+  eventStartDate,
+  eventEndDate,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -192,6 +196,8 @@ export default function TimeSlotFieldEditor({
               handleOptionDateTimeChange(index, "start_time", value)
             }
             enableTime
+            minDate={eventStartDate ? dayjs(eventStartDate) : undefined}
+            maxDate={eventEndDate ? dayjs(eventEndDate) : undefined}
             className={classes.datetimeInput}
           />
           <DatePicker
@@ -201,7 +207,14 @@ export default function TimeSlotFieldEditor({
               handleOptionDateTimeChange(index, "end_time", value)
             }
             enableTime
-            minDate={option.start_time ? dayjs(option.start_time) : undefined}
+            minDate={
+              option.start_time
+                ? dayjs(option.start_time)
+                : eventStartDate
+                ? dayjs(eventStartDate)
+                : undefined
+            }
+            maxDate={eventEndDate ? dayjs(eventEndDate) : undefined}
             className={classes.datetimeInput}
           />
           <TextField

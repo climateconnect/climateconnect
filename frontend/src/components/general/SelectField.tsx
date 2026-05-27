@@ -115,9 +115,9 @@ export default function SelectField({
       size={size}
       color={color}
     >
-      {!controlledValue && (!defaultValue || defaultValue === "") && !multiple && (
-        <option value="" />
-      )}
+      {(!controlledValue || controlledValue.name === "") &&
+        (!defaultValue || defaultValue === "") &&
+        !multiple && <option value="" />}
 
       {options &&
         options.map((value, index) => {

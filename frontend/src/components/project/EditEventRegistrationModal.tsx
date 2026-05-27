@@ -515,6 +515,8 @@ export default function EditEventRegistrationModal({
                     return next;
                   })
                 }
+                eventStartDate={project.start_date}
+                eventEndDate={project.end_date}
               />
               {errors.fields && (
                 <Typography className={classes.customFieldsError} role="alert">

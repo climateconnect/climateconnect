@@ -1611,12 +1611,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Anmeldung bestätigen",
     },
     confirm_your_registration_for: {
-      en: `Please confirm your registration for ${project?.name}`,
-      de: `Bitte bestätige deine Anmeldung für ${project?.name}`,
+      en: `Please confirm your registration for ${project?.name}.`,
+      de: `Bitte bestätige deine Anmeldung für ${project?.name}.`,
     },
     fill_the_form_and_confirm_your_registration_for: {
-      en: `Please fill in the form and confirm your registration for ${project?.name}`,
-      de: `Bitte fülle das Formular aus und bestätige deine Anmeldung für ${project?.name}`,
+      en: `Please fill in the form and confirm your registration for ${project?.name}.`,
+      de: `Bitte fülle das Formular aus und bestätige deine Anmeldung für ${project?.name}.`,
     },
     to_register_please_login_or_signup: {
       en: "To register for this event, please log in or sign up!",

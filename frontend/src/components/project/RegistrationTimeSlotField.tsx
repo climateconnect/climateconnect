@@ -87,7 +87,7 @@ export default function RegistrationTimeSlotField({
 
   return (
     <Box className={classes.root}>
-      <Typography component="div" variant="body2" className={classes.label}>
+      <Typography component="div" variant="body1" className={classes.label}>
         {title}
         {field.is_required && (
           <span className={classes.required} aria-hidden="true">

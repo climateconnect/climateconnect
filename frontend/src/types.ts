@@ -106,8 +106,8 @@ export type Project = {
   name?: string;
   project_parents?: any[];
   project_type: ProjectType | any;
-  start_date?: Date | Dayjs | null;
-  end_date?: Date | Dayjs | null;
+  start_date?: string | Dayjs | null;
+  end_date?: string | Dayjs | null;
   additional_loc_info?: string;
   short_description?: string;
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
