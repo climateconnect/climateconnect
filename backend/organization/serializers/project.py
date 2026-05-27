@@ -132,6 +132,7 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
             "child_projects_count",
             "is_online",
             "registration_config",
+            "devlink_component",
         )
 
     def get_name(self, obj):

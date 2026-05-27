@@ -116,6 +116,7 @@ class ProjectAdmin(admin.ModelAdmin):
                     "project_type",
                     "short_description",
                     "description",
+                    "devlink_component",
                     "image",
                     "thumbnail_image",
                     "website",

@@ -560,6 +560,7 @@ function parseProject(project) {
     parent_project_slug: project.parent_project_slug,
     is_online: project.is_online,
     registration_config: project.registration_config ?? null,
+    devlink_component: project.devlink_component ?? null,
   };
 }
 
