@@ -133,6 +133,8 @@ export default function EventRegistrationSection({
             isDraft={projectData.is_draft}
             fieldErrors={fieldErrors}
             onClearFieldError={onClearFieldError}
+            eventStartDate={projectData.start_date}
+            eventEndDate={projectData.end_date}
           />
         </>
       )}

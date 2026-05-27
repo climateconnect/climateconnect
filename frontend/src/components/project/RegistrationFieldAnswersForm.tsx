@@ -210,6 +210,9 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
                 value={optionValues[id]}
                 onChange={(optionId) => handleOptionChange(id, optionId)}
                 error={error}
+                texts={{
+                  please_select_an_option: texts.please_select_an_option,
+                }}
               />
             );
           }

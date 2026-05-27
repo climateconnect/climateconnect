@@ -5,7 +5,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../themes/theme";
 import RegistrationOptionSelectField from "./RegistrationOptionSelectField";
 import { RegistrationField } from "../../types";
-import UserContext from "../context/UserContext";
 
 function makeField(overrides: Partial<RegistrationField> = {}): RegistrationField {
   return {
@@ -24,6 +23,10 @@ function makeField(overrides: Partial<RegistrationField> = {}): RegistrationFiel
   };
 }
 
+const defaultTexts = {
+  please_select_an_option: "Please select an option.",
+};
+
 function renderField({
   field = makeField(),
   value = undefined,
@@ -36,16 +39,15 @@ function renderField({
   error?: string;
 } = {}) {
   return render(
-    <UserContext.Provider value={{ locale: "en" } as any}>
-      <ThemeProvider theme={theme}>
-        <RegistrationOptionSelectField
-          field={field}
-          value={value}
-          onChange={onChange}
-          error={error}
-        />
-      </ThemeProvider>
-    </UserContext.Provider>
+    <ThemeProvider theme={theme}>
+      <RegistrationOptionSelectField
+        field={field}
+        value={value}
+        onChange={onChange}
+        error={error}
+        texts={defaultTexts}
+      />
+    </ThemeProvider>
   );
 }
 
@@ -60,10 +62,15 @@ describe("RegistrationOptionSelectField", () => {
     expect(screen.getByText(/\*/)).toBeInTheDocument();
   });
 
-  it("sorts options by order before rendering", () => {
+  it("renders a placeholder option and sorts options by order", () => {
     renderField();
     const options = screen.getAllByRole("option");
-    expect(options.map((option) => option.textContent)).toEqual(["First", "Second", "Third"]);
+    expect(options.map((option) => option.textContent)).toEqual([
+      "Please select an option.",
+      "First",
+      "Second",
+      "Third",
+    ]);
   });
 
   it("shows the passed value option as selected", () => {
@@ -75,10 +82,19 @@ describe("RegistrationOptionSelectField", () => {
     const onChange = jest.fn();
     renderField({ onChange });
 
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "Second" } });
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "1" } });
 
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(onChange).toHaveBeenCalledWith(2);
+    expect(onChange).toHaveBeenCalledWith(1);
+  });
+
+  it("does not call onChange when placeholder is selected", () => {
+    const onChange = jest.fn();
+    renderField({ onChange });
+
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "" } });
+
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("renders error message when provided", () => {
@@ -86,8 +102,10 @@ describe("RegistrationOptionSelectField", () => {
     expect(screen.getByText("Please select an option")).toBeInTheDocument();
   });
 
-  it("renders no options when field.options is undefined", () => {
+  it("renders only placeholder option when field.options is undefined", () => {
     renderField({ field: makeField({ options: undefined }) });
-    expect(screen.queryAllByRole("option")).toHaveLength(0);
+    const options = screen.getAllByRole("option");
+    expect(options).toHaveLength(1);
+    expect(options[0]).toHaveTextContent("Please select an option.");
   });
 });

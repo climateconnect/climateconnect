@@ -101,7 +101,9 @@ describe("RegistrationFieldAnswersForm", () => {
 
     expect(result).toBeNull();
     expect(screen.getByText(texts.you_must_check_this_box)).toBeInTheDocument();
-    expect(screen.getByText(texts.please_select_an_option)).toBeInTheDocument();
+    const optionErrorMessages = screen.getAllByText(texts.please_select_an_option);
+    expect(optionErrorMessages.length).toBeGreaterThanOrEqual(2);
+    expect(optionErrorMessages.some((el) => el.tagName === "P")).toBe(true);
   });
 
   it("clears field errors on change and returns answers when valid", () => {
@@ -117,10 +119,12 @@ describe("RegistrationFieldAnswersForm", () => {
     });
 
     fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "M" } });
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "102" } });
 
     expect(screen.queryByText(texts.you_must_check_this_box)).not.toBeInTheDocument();
-    expect(screen.queryByText(texts.please_select_an_option)).not.toBeInTheDocument();
+    const optionErrorMessages = screen.queryAllByText(texts.please_select_an_option);
+    const hasErrorParagraph = optionErrorMessages.some((el) => el.tagName === "P");
+    expect(hasErrorParagraph).toBe(false);
 
     let answers: ReturnType<RegistrationFieldAnswersFormHandle["validate"]> = null;
     act(() => {

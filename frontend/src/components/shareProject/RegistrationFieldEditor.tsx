@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
+import { Dayjs } from "dayjs";
 import { RegistrationField, RegistrationFieldOption } from "../../types";
 import CheckboxFieldEditor from "./CheckboxFieldEditor";
 import OptionSelectFieldEditor from "./OptionSelectFieldEditor";
@@ -15,6 +16,8 @@ type Props = {
   optionsError?: string;
   optionErrors?: Record<string, string>;
   onClearFieldError?: (_key: string) => void;
+  eventStartDate?: string | Dayjs | null;
+  eventEndDate?: string | Dayjs | null;
 };
 
 export default function RegistrationFieldEditor({
@@ -26,6 +29,8 @@ export default function RegistrationFieldEditor({
   optionsError,
   optionErrors,
   onClearFieldError,
+  eventStartDate,
+  eventEndDate,
 }: Props) {
   const answersLocked = !!field.has_answers;
   return (
@@ -101,6 +106,8 @@ export default function RegistrationFieldEditor({
           fieldError={fieldError}
           onClearFieldError={onClearFieldError}
           fieldOrder={field.order}
+          eventStartDate={eventStartDate}
+          eventEndDate={eventEndDate}
         />
       )}
       {optionsError && (
