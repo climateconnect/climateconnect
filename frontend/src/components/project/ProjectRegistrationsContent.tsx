@@ -40,6 +40,7 @@ import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 
 import getTexts from "../../../public/texts/texts";
 import { EventRegistrationData, Project, RegistrationFieldAnswer } from "../../types";
+import { resolveAnswerToStrings } from "../../utils/resolveRegistrationFieldAnswer";
 import UserContext from "../context/UserContext";
 import { useFeatureToggles } from "../featureToggle";
 import CancelGuestRegistrationModal, { RegistrationInfo } from "./CancelGuestRegistrationModal";
@@ -335,6 +336,39 @@ export default function ProjectRegistrationsContent({
   const statusConfig = STATUS_CONFIG[eventRegistration.status];
   const StatusIcon = statusConfig.icon;
 
+  // Custom field export columns — hidden from the grid, included in CSV/print
+  const customFields = isCustomFieldsEnabled
+    ? [...(eventRegistration.fields ?? [])].sort((a, b) => a.order - b.order)
+    : [];
+
+  const customFieldColumns: GridColDef[] = [];
+  const customFieldColumnNames: string[] = [];
+
+  for (const field of customFields) {
+    if (field.id == null) continue;
+
+    // Probe with undefined answer to determine column count (1 for most types, 2 for inventory)
+    const columnSpec = resolveAnswerToStrings(field, undefined, locale);
+    for (let i = 0; i < columnSpec.length; i++) {
+      const colName = `custom_field_${field.id}${columnSpec[i].columnSuffix}`;
+      customFieldColumnNames.push(colName);
+      customFieldColumns.push({
+        field: colName,
+        headerName: `${field.label}${columnSpec[i].columnSuffix}`,
+        width: 0,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        valueGetter: (params) => {
+          const row = params.row as EventRegistration;
+          const answerForField = row.field_answers.find((a) => a.field === field.id);
+          const cols = resolveAnswerToStrings(field, answerForField, locale);
+          return cols[i]?.value ?? "";
+        },
+      });
+    }
+  }
+
   return (
     <>
       {/* Registration settings summary */}
@@ -546,6 +580,7 @@ export default function ProjectRegistrationsContent({
                     valueGetter: (params) =>
                       params.row.cancelled_at ? params.row.cancelled_at.split(".")[0] + "Z" : "",
                   },
+                  ...customFieldColumns,
                   {
                     field: "__actions__",
                     headerName: "",
@@ -593,6 +628,7 @@ export default function ProjectRegistrationsContent({
                   columnVisibilityModel: {
                     registered_at_iso: false,
                     cancelled_at_iso: false,
+                    ...Object.fromEntries(customFieldColumnNames.map((name) => [name, false])),
                   },
                 },
                 sorting: {
@@ -626,8 +662,9 @@ export default function ProjectRegistrationsContent({
                     "registered_at_iso",
                     "cancelled_at",
                     "cancelled_at_iso",
+                    ...customFieldColumnNames,
                   ],
-                  printFields: ["user_first_name", "user_last_name"],
+                  printFields: ["user_first_name", "user_last_name", ...customFieldColumnNames],
                 } as ToolbarProps,
                 footer: {
                   total: participants.length,
