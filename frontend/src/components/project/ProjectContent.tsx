@@ -18,6 +18,7 @@ import MiniProfilePreview from "../profile/MiniProfilePreview";
 import Posts from "./../communication/Posts";
 import UserContext from "../context/UserContext";
 import ProjectContentSideButtons from "./Buttons/ProjectContentSideButtons";
+import { getDevlinkComponent } from "../../utils/getDevlinkComponent";
 
 const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
@@ -301,41 +302,52 @@ export default function ProjectContent({
         </div>
       </div>
       <div className={classes.contentBlock}>
-        <Typography
-          component="h2"
-          variant="h6"
-          color={theme.palette.background.default_contrastText}
-          className={classes.subHeader}
-        >
-          {getProjectDescriptionHeadline()}
-        </Typography>
-        <Typography className={classes.projectDescription} component="div">
-          {project.description ? (
-            showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
-              <MessageContent content={project.description} renderYoutubeVideos={true} />
-            ) : (
-              <MessageContent
-                content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
-                renderYoutubeVideos={true}
-              />
-            )
-          ) : (
-            <Typography variant="body2">{getNoProjectDescriptionText()}</Typography>
-          )}
-        </Typography>
-        {project.description && project.description.length > maxDisplayedDescriptionLength && (
-          <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
-            {showFullDescription ? (
-              <div>
-                <ExpandLessIcon className={classes.icon} /> {texts.show_less}
-              </div>
-            ) : (
-              <div>
-                <ExpandMoreIcon className={classes.icon} /> {texts.show_more}
-              </div>
-            )}
-          </Button>
-        )}
+        {(() => {
+          const DevlinkComponent = getDevlinkComponent(project.devlink_component, locale);
+          if (DevlinkComponent) {
+            return <DevlinkComponent />;
+          }
+          return (
+            <>
+              <Typography
+                component="h2"
+                variant="h6"
+                color={theme.palette.background.default_contrastText}
+                className={classes.subHeader}
+              >
+                {getProjectDescriptionHeadline()}
+              </Typography>
+              <Typography className={classes.projectDescription} component="div">
+                {project.description ? (
+                  showFullDescription ||
+                  project.description.length <= maxDisplayedDescriptionLength ? (
+                    <MessageContent content={project.description} renderYoutubeVideos={true} />
+                  ) : (
+                    <MessageContent
+                      content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
+                      renderYoutubeVideos={true}
+                    />
+                  )
+                ) : (
+                  <Typography variant="body2">{getNoProjectDescriptionText()}</Typography>
+                )}
+              </Typography>
+              {project.description && project.description.length > maxDisplayedDescriptionLength && (
+                <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
+                  {showFullDescription ? (
+                    <div>
+                      <ExpandLessIcon className={classes.icon} /> {texts.show_less}
+                    </div>
+                  ) : (
+                    <div>
+                      <ExpandMoreIcon className={classes.icon} /> {texts.show_more}
+                    </div>
+                  )}
+                </Button>
+              )}
+            </>
+          );
+        })()}
       </div>
       {latestParentComment[0] && (
         <DiscussionPreview
