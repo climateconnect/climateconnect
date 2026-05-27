@@ -13,7 +13,6 @@ import {
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { getDateTime, getDateTimeRange } from "../../../public/lib/dateOperations";
@@ -208,28 +207,18 @@ export default function ViewRegistrationAnswersModal({
             if (!answer) return null;
 
             if (field.field_type === "checkbox") {
-              const checked = answer.value_boolean === true;
+              if (answer.value_boolean !== true) return null;
               const description = field.settings.description ?? "";
-              const stateLabel = checked
-                ? (texts.registration_answer_checked as string)
-                : (texts.registration_answer_unchecked as string);
+              const stateLabel = texts.registration_answer_checked as string;
 
               return (
                 <Box key={field.id} className={classes.fieldBlock}>
                   <Box className={classes.checkboxRow}>
-                    {checked ? (
-                      <CheckBoxIcon
-                        className={classes.checkboxIconChecked}
-                        fontSize="small"
-                        aria-label={stateLabel}
-                      />
-                    ) : (
-                      <CheckBoxOutlineBlankIcon
-                        className={classes.checkboxIconUnchecked}
-                        fontSize="small"
-                        aria-label={stateLabel}
-                      />
-                    )}
+                    <CheckBoxIcon
+                      className={classes.checkboxIconChecked}
+                      fontSize="small"
+                      aria-label={stateLabel}
+                    />
                     <Typography variant="body2" component="div" className={classes.descriptionHtml}>
                       {/* Description was sanitized on organiser write. */}
                       <div dangerouslySetInnerHTML={{ __html: description }} />

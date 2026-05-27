@@ -212,7 +212,7 @@ describe("ViewRegistrationAnswersModal", () => {
       expect(screen.queryByLabelText(/^Not checked$/i)).not.toBeInTheDocument();
     });
 
-    it("renders the 'unchecked' indicator icon for false answers", () => {
+    it("does not render the checkbox field when the answer is false (user did not check it)", () => {
       const field = makeCheckboxField({ id: 10 });
       const answers: RegistrationFieldAnswer[] = [
         { field: 10, value_boolean: false, value_option: null },
@@ -221,8 +221,9 @@ describe("ViewRegistrationAnswersModal", () => {
         registration: makeRegistration({ field_answers: answers }),
         fields: [field],
       });
-      expect(screen.getByLabelText(/^Not checked$/i)).toBeInTheDocument();
+      expect(screen.queryByText(/I agree to the terms/i)).not.toBeInTheDocument();
       expect(screen.queryByLabelText(/^Checked$/i)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/^Not checked$/i)).not.toBeInTheDocument();
     });
 
     it("renders the checkbox indicator as a non-interactive element (not an input)", () => {
