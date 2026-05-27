@@ -197,7 +197,7 @@ export default function ViewRegistrationAnswersModal({
           </Alert>
         )}
 
-        {sortedFields.length === 0 || registration.field_answers.length === 0 ? (
+        {sortedFields.length === 0 ? null : registration.field_answers.length === 0 ? (
           <Typography variant="body2" className={classes.emptyState}>
             {texts.no_registration_answers}
           </Typography>

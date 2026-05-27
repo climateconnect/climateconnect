@@ -155,9 +155,9 @@ describe("ViewRegistrationAnswersModal", () => {
   });
 
   describe("empty / no-answer states", () => {
-    it("shows empty-state message when there are no fields and no answers", () => {
+    it("does not show empty-state message when the event has no custom fields", () => {
       renderModal({ registration: makeRegistration({ field_answers: [] }), fields: [] });
-      expect(screen.getByText(/no answers submitted/i)).toBeInTheDocument();
+      expect(screen.queryByText(/no answers submitted/i)).not.toBeInTheDocument();
     });
 
     it("shows empty-state message when there are fields but no answers", () => {
