@@ -129,6 +129,7 @@ describe("ViewRegistrationAnswersModal", () => {
           user_first_name: "Alice",
           user_last_name: "Schmidt",
         }),
+        title: "Registration answers from Alice Schmidt",
       });
       expect(screen.getByText(/Alice Schmidt/)).toBeInTheDocument();
     });
