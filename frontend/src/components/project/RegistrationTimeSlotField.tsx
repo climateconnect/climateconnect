@@ -3,6 +3,7 @@ import { Box, FormHelperText, TextField, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import { RegistrationField } from "../../types";
+import { formatTimeRange } from "../../utils/resolveRegistrationFieldAnswer";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -28,32 +29,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.error.main,
   },
 }));
-
-function formatTimeRange(startIso: string, endIso: string, locale: string): string {
-  const start = new Date(startIso);
-  const end = new Date(endIso);
-  const dateFmt = new Intl.DateTimeFormat(locale, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-  const timeFmt = new Intl.DateTimeFormat(locale, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-  const sameDay =
-    start.getFullYear() === end.getFullYear() &&
-    start.getMonth() === end.getMonth() &&
-    start.getDate() === end.getDate();
-
-  if (sameDay) {
-    return `${dateFmt.format(start)}, ${timeFmt.format(start)} – ${timeFmt.format(end)}`;
-  }
-  return `${dateFmt.format(start)}, ${timeFmt.format(start)} – ${dateFmt.format(
-    end
-  )}, ${timeFmt.format(end)}`;
-}
 
 type Props = {
   field: RegistrationField;

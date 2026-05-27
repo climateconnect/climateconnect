@@ -18,6 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import getTexts from "../../../public/texts/texts";
 import { RegistrationField, RegistrationFieldAnswer } from "../../types";
+import { findOption, formatTimeRange } from "../../utils/resolveRegistrationFieldAnswer";
 import UserContext from "../context/UserContext";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -84,6 +85,8 @@ type Props = {
   onClose: () => void;
   /** Registration row whose answers should be displayed (null = closed). */
   registration: ViewRegistrationAnswersModalRegistration | null;
+  /** Title shown in the dialog header. Resolved by the caller. */
+  title: string;
   /**
    * Field definitions from ``eventRegistration.fields`` — used to resolve
    * titles, descriptions, options and field order for the answers.
@@ -107,6 +110,10 @@ type Props = {
  *     unchecked icon — not interactive.
  *   - Option-select fields show the field title and the selected option as
  *     plain text.
+ *   - Inventory fields show the field title and the selected option followed
+ *     by the chosen quantity (e.g. "Large × 2").
+ *   - Time-slot-select fields show the field title and the formatted time
+ *     range of the selected slot (falling back to the option title).
  *
  * Field labels and option titles are resolved client-side from the supplied
  * ``fields`` definitions; the API only returns answer IDs.
@@ -115,6 +122,7 @@ export default function ViewRegistrationAnswersModal({
   open,
   onClose,
   registration,
+  title,
   fields,
   cancelAction,
 }: Props) {
@@ -131,9 +139,6 @@ export default function ViewRegistrationAnswersModal({
   for (const answer of registration.field_answers) {
     answersByFieldId.set(answer.field, answer);
   }
-
-  const fullName = `${registration.user_first_name} ${registration.user_last_name}`.trim();
-  const title = (texts.registration_answers_modal_title as string).replace("{name}", fullName);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" scroll="paper">
@@ -201,11 +206,57 @@ export default function ViewRegistrationAnswersModal({
 
             if (field.field_type === "option_select") {
               const fieldTitle = field.settings.title ?? "";
-              const selectedOption = (field.options ?? []).find(
-                (opt) => opt.id != null && opt.id === answer.value_option
-              );
+              const selectedOption = findOption(field.options, answer.value_option);
               const answerText =
                 selectedOption?.title ?? (texts.registration_answer_no_selection as string);
+
+              return (
+                <Box key={field.id} className={classes.fieldBlock}>
+                  <Typography variant="body2" className={classes.optionFieldTitle}>
+                    {fieldTitle}
+                  </Typography>
+                  <Typography variant="body2" className={classes.optionAnswer}>
+                    {answerText}
+                  </Typography>
+                </Box>
+              );
+            }
+
+            if (field.field_type === "inventory") {
+              const fieldTitle = field.settings.title ?? "";
+              const selectedOption = findOption(field.options, answer.value_option);
+              const optionTitle =
+                selectedOption?.title ?? (texts.registration_answer_no_selection as string);
+              const quantity = answer.value_number;
+              const answerText =
+                quantity != null ? `${optionTitle} \u00d7 ${quantity}` : optionTitle;
+
+              return (
+                <Box key={field.id} className={classes.fieldBlock}>
+                  <Typography variant="body2" className={classes.optionFieldTitle}>
+                    {fieldTitle}
+                  </Typography>
+                  <Typography variant="body2" className={classes.optionAnswer}>
+                    {answerText}
+                  </Typography>
+                </Box>
+              );
+            }
+
+            if (field.field_type === "time_slot_select") {
+              const fieldTitle = field.settings.title ?? "";
+              const selectedOption = findOption(field.options, answer.value_option);
+              let answerText: string;
+              if (selectedOption?.start_time && selectedOption?.end_time) {
+                answerText = formatTimeRange(
+                  selectedOption.start_time,
+                  selectedOption.end_time,
+                  locale as string
+                );
+              } else {
+                answerText =
+                  selectedOption?.title ?? (texts.registration_answer_no_selection as string);
+              }
 
               return (
                 <Box key={field.id} className={classes.fieldBlock}>

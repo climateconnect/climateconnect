@@ -782,6 +782,7 @@ export default function ProjectPageRoot({
           open={modifyRegistrationModalOpen}
           onClose={() => setModifyRegistrationModalOpen(false)}
           registration={project.my_event_registration ?? null}
+          title={texts.registration_answers_modal_title_self as string}
           fields={currentEventRegistration?.fields ?? []}
           cancelAction={{ onCancelClick: () => setCancelRegistrationModalOpen(true) }}
         />

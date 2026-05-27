@@ -5,7 +5,7 @@ export type ResolvedColumn = {
   value: string;
 };
 
-function formatTimeRange(startIso: string, endIso: string, locale: string): string {
+export function formatTimeRange(startIso: string, endIso: string, locale: string): string {
   const start = new Date(startIso);
   const end = new Date(endIso);
   const dateFmt = new Intl.DateTimeFormat(locale, {
@@ -31,7 +31,10 @@ function formatTimeRange(startIso: string, endIso: string, locale: string): stri
   )}, ${timeFmt.format(end)}`;
 }
 
-function findOption(options: RegistrationFieldOption[] | undefined, optionId: number | null) {
+export function findOption(
+  options: RegistrationFieldOption[] | undefined,
+  optionId: number | null
+): RegistrationFieldOption | undefined {
   if (optionId == null || !options) return undefined;
   return options.find((opt) => opt.id != null && opt.id === optionId);
 }
