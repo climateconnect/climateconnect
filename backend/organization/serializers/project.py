@@ -136,6 +136,7 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
             "is_online",
             "registration_config",
             "my_event_registration",
+            "devlink_component",
         )
 
     def get_name(self, obj):
