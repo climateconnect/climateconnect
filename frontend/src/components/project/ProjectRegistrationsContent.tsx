@@ -735,6 +735,11 @@ export default function ProjectRegistrationsContent({
             : ""
         )}
         fields={eventRegistration.fields ?? []}
+        event={{
+          name: project.name,
+          start_date: project.start_date,
+          end_date: project.end_date,
+        }}
       />
     </>
   );

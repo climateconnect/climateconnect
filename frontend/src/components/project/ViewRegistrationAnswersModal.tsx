@@ -16,6 +16,7 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CloseIcon from "@mui/icons-material/Close";
 
+import { getDateTime, getDateTimeRange } from "../../../public/lib/dateOperations";
 import getTexts from "../../../public/texts/texts";
 import { RegistrationField, RegistrationFieldAnswer } from "../../types";
 import { findOption, formatTimeRange } from "../../utils/resolveRegistrationFieldAnswer";
@@ -71,6 +72,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   cancelledNotice: {
     marginBottom: theme.spacing(2),
   },
+  eventSubheader: {
+    marginBottom: theme.spacing(2),
+    color: theme.palette.text.secondary,
+  },
+  eventDateLine: {
+    marginTop: theme.spacing(0.5),
+  },
 }));
 
 export type ViewRegistrationAnswersModalRegistration = {
@@ -92,6 +100,15 @@ type Props = {
    * titles, descriptions, options and field order for the answers.
    */
   fields: RegistrationField[];
+  /**
+   * Optional event metadata to display under the dialog title — matches the
+   * subheader shown in the registration modal (event name and date/time range).
+   */
+  event?: {
+    name?: string;
+    start_date?: any;
+    end_date?: any;
+  };
   /**
    * When provided, renders a "Cancel registration" button in the modal footer.
    * Opt-in only — organiser callers omit this prop so they keep today's behaviour
@@ -124,6 +141,7 @@ export default function ViewRegistrationAnswersModal({
   registration,
   title,
   fields,
+  event,
   cancelAction,
 }: Props) {
   const classes = useStyles();
@@ -133,6 +151,13 @@ export default function ViewRegistrationAnswersModal({
   if (!registration) {
     return null;
   }
+
+  const eventDateText =
+    event?.start_date && event?.end_date
+      ? getDateTimeRange(event.start_date, event.end_date, locale)
+      : event?.start_date
+      ? getDateTime(event.start_date)
+      : null;
 
   const sortedFields = [...fields].sort((a, b) => a.order - b.order);
   const answersByFieldId = new Map<number, RegistrationFieldAnswer>();
@@ -156,6 +181,16 @@ export default function ViewRegistrationAnswersModal({
         </Typography>
       </DialogTitle>
       <DialogContent dividers>
+        {(event?.name || eventDateText) && (
+          <Box className={classes.eventSubheader}>
+            {event?.name && <Typography variant="body2">{event.name}</Typography>}
+            {eventDateText && (
+              <Typography variant="body2" className={classes.eventDateLine}>
+                {eventDateText}
+              </Typography>
+            )}
+          </Box>
+        )}
         {registration.cancelled_at && (
           <Alert severity="warning" className={classes.cancelledNotice}>
             {texts.registration_answers_cancelled_notice}

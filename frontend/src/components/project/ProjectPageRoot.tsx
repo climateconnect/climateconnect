@@ -784,6 +784,11 @@ export default function ProjectPageRoot({
           registration={project.my_event_registration ?? null}
           title={texts.registration_answers_modal_title_self as string}
           fields={currentEventRegistration?.fields ?? []}
+          event={{
+            name: project.name,
+            start_date: project.start_date,
+            end_date: project.end_date,
+          }}
           cancelAction={{ onCancelClick: () => setCancelRegistrationModalOpen(true) }}
         />
       )}
