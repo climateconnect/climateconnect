@@ -236,7 +236,7 @@ export default function ViewRegistrationAnswersModal({
 
               return (
                 <Box key={field.id} className={classes.fieldBlock}>
-                  <Typography variant="body2" className={classes.optionFieldTitle}>
+                  <Typography variant="body1" className={classes.optionFieldTitle}>
                     {fieldTitle}
                   </Typography>
                   <Typography variant="body2" className={classes.optionAnswer}>
@@ -257,7 +257,7 @@ export default function ViewRegistrationAnswersModal({
 
               return (
                 <Box key={field.id} className={classes.fieldBlock}>
-                  <Typography variant="body2" className={classes.optionFieldTitle}>
+                  <Typography variant="body1" className={classes.optionFieldTitle}>
                     {fieldTitle}
                   </Typography>
                   <Typography variant="body2" className={classes.optionAnswer}>
@@ -284,7 +284,7 @@ export default function ViewRegistrationAnswersModal({
 
               return (
                 <Box key={field.id} className={classes.fieldBlock}>
-                  <Typography variant="body2" className={classes.optionFieldTitle}>
+                  <Typography variant="body1" className={classes.optionFieldTitle}>
                     {fieldTitle}
                   </Typography>
                   <Typography variant="body2" className={classes.optionAnswer}>
