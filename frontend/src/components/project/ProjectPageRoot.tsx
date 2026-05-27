@@ -165,6 +165,14 @@ export default function ProjectPageRoot({
   const hasUserAttended = hasAttended ?? false;
   const isAdminCancelled = adminCancelled ?? false;
 
+  // Local copy of the user's own registration so the "Modify registration"
+  // modal can render immediately after a successful POST without needing a
+  // page refresh (the SSR `project.my_event_registration` is null at that
+  // point since it was fetched before the user registered).
+  const [myEventRegistration, setMyEventRegistration] = useState(
+    project.my_event_registration ?? null
+  );
+
   useEffect(() => {
     // Clear registration state when auth context switches to logged out.
     if (!user) {
@@ -193,12 +201,48 @@ export default function ProjectPageRoot({
     setIsUserRegistered(false);
     setModifyRegistrationModalOpen(false);
     setCancelRegistrationModalOpen(false);
+    setMyEventRegistration(null);
     setCurrentEventRegistration((prev) =>
       prev && prev.available_seats != null
         ? { ...prev, available_seats: prev.available_seats + 1 }
         : prev
     );
   };
+  const handleRegistrationSuccess = () => {
+    setIsUserRegistered(true);
+    setCurrentEventRegistration((prev) =>
+      prev && prev.available_seats != null
+        ? { ...prev, available_seats: prev.available_seats - 1 }
+        : prev
+    );
+  };
+
+  // After a successful registration, refetch the project detail so we get the
+  // up-to-date `my_event_registration` (which was null in SSR because the user
+  // had not registered yet). This lets the "Modify registration" modal open
+  // immediately without requiring a page refresh.
+  useEffect(() => {
+    if (!isUserRegistered || !token || myEventRegistration) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const resp = await apiRequest({
+          method: "get",
+          url: `/api/projects/${project.url_slug}/`,
+          token: token,
+          locale: locale,
+        });
+        if (!cancelled && resp?.data?.my_event_registration) {
+          setMyEventRegistration(resp.data.my_event_registration);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isUserRegistered, token, project.url_slug, locale, myEventRegistration]);
   // Determine whether to show the Registrations tab:
   // only for event admins when the toggle is on and registration_config exists
   const user_permission =
@@ -767,21 +811,14 @@ export default function ProjectPageRoot({
           open={registrationModalOpen}
           onClose={() => handleRegistrationModalClose()}
           project={project}
-          onRegistrationSuccess={() => {
-            setIsUserRegistered(true);
-            setCurrentEventRegistration((prev) =>
-              prev && prev.available_seats != null
-                ? { ...prev, available_seats: prev.available_seats - 1 }
-                : prev
-            );
-          }}
+          onRegistrationSuccess={handleRegistrationSuccess}
         />
       )}
       {isEventRegistrationEnabled && project.registration_config && (
         <ViewRegistrationAnswersModal
           open={modifyRegistrationModalOpen}
           onClose={() => setModifyRegistrationModalOpen(false)}
-          registration={project.my_event_registration ?? null}
+          registration={myEventRegistration}
           title={texts.registration_answers_modal_title_self as string}
           fields={currentEventRegistration?.fields ?? []}
           event={{
