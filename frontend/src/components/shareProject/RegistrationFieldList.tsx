@@ -23,6 +23,7 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import makeStyles from "@mui/styles/makeStyles";
+import { Dayjs } from "dayjs";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { RegistrationField, RegistrationFieldOption } from "../../types";
@@ -76,6 +77,8 @@ type Props = {
   isDraft?: boolean;
   fieldErrors?: Record<string, string>;
   onClearFieldError?: (_key: string) => void;
+  eventStartDate?: string | Dayjs | null;
+  eventEndDate?: string | Dayjs | null;
 };
 
 function generateDefaultLabel(
@@ -103,6 +106,8 @@ export default function RegistrationFieldList({
   isDraft,
   fieldErrors,
   onClearFieldError,
+  eventStartDate,
+  eventEndDate,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -339,6 +344,8 @@ export default function RegistrationFieldList({
                   }
                 : undefined
             }
+            eventStartDate={eventStartDate}
+            eventEndDate={eventEndDate}
           />
           <Divider sx={{ mt: 1.5 }} />
           <Box className={classes.fieldFooter}>
