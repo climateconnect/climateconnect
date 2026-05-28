@@ -26,6 +26,7 @@ import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
 import { useFeatureToggles } from "../featureToggle";
+import { trackGA4Event } from "../../utils/analytics";
 import ProjectRegistrationsContent from "./ProjectRegistrationsContent";
 import EventRegistrationModal from "./EventRegistrationModal";
 import CancelRegistrationModal from "./CancelRegistrationModal";
@@ -120,7 +121,7 @@ export default function ProjectPageRoot({
   const visibleFooterHeight = VisibleFooterHeight({});
   const tabContentRef = useRef(null);
   const tabContentContainerSpaceToRight = ElementSpaceToRight({ el: tabContentRef.current });
-  const { locale, pathName, user } = useContext(UserContext);
+  const { locale, pathName, user, ReactGA } = useContext(UserContext);
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
     locale: locale,
@@ -188,6 +189,15 @@ export default function ProjectPageRoot({
   // Registration modal state
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const handleRegisterClick = () => {
+    trackGA4Event(
+      "event_registration_modal_opened",
+      {
+        user_type: user ? "authenticated" : "guest",
+        event_slug: project.url_slug,
+        has_available_seats: (currentEventRegistration?.available_seats ?? 0) > 0,
+      },
+      ReactGA
+    );
     setRegistrationModalOpen(true);
   };
 

@@ -1,14 +1,14 @@
 import ReactGA from "react-ga4";
 
 /**
- * Fire a GA4 custom event for auth funnel tracking.
+ * Fire a GA4 custom event.
  * Safely no-ops during SSR or when GA4 is not initialized (no cookie consent / ad blocker).
  *
  * @param eventName - GA4 custom event name (must match allowlist if using backend proxy)
  * @param params - Event parameters (must NOT contain PII such as email or names)
  * @param gaInstance - ReactGA instance from UserContext (may be undefined)
  */
-export const trackAuthEvent = (
+export const trackGA4Event = (
   eventName: string,
   params: Record<string, string | number | boolean | undefined>,
   gaInstance?: typeof ReactGA
@@ -26,3 +26,8 @@ export const trackAuthEvent = (
 
   gaInstance.event(eventName, cleanParams);
 };
+
+/**
+ * @deprecated Use trackGA4Event instead. Kept for backward compatibility with existing auth components.
+ */
+export const trackAuthEvent = trackGA4Event;

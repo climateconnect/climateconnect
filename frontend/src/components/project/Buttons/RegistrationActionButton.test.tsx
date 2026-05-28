@@ -6,6 +6,7 @@ import theme from "../../../themes/theme";
 import RegistrationActionButton from "./RegistrationActionButton";
 import { Project } from "../../../types";
 import { RegistrationUIState } from "../../../utils/eventRegistrationHelpers";
+import UserContext from "../../context/UserContext";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -20,6 +21,15 @@ const TEXTS = {
   booked_out: "Booked Out",
   already_registered: "Registered ✓",
   seats_available: "Seats available",
+};
+
+const MOCK_USER_CONTEXT = {
+  user: null,
+  locale: "en" as const,
+  locales: ["en", "de"] as const,
+  pathName: "/",
+  donationGoals: [],
+  hubUrl: "",
 };
 
 function makeProject(status: string, availableSeats?: number, maxParticipants?: number): Project {
@@ -52,18 +62,20 @@ function renderButton({
   showSeatsCount?: boolean;
 }) {
   return render(
-    <ThemeProvider theme={theme}>
-      <RegistrationActionButton
-        registrationState={registrationState}
-        project={project}
-        texts={TEXTS}
-        isUserRegistered={isUserRegistered}
-        handleRegisterClick={handleRegisterClick}
-        onModifyRegistrationClick={onModifyRegistrationClick}
-        fallback={fallback}
-        showSeatsCount={showSeatsCount}
-      />
-    </ThemeProvider>
+    <UserContext.Provider value={MOCK_USER_CONTEXT}>
+      <ThemeProvider theme={theme}>
+        <RegistrationActionButton
+          registrationState={registrationState}
+          project={project}
+          texts={TEXTS}
+          isUserRegistered={isUserRegistered}
+          handleRegisterClick={handleRegisterClick}
+          onModifyRegistrationClick={onModifyRegistrationClick}
+          fallback={fallback}
+          showSeatsCount={showSeatsCount}
+        />
+      </ThemeProvider>
+    </UserContext.Provider>
   );
 }
 

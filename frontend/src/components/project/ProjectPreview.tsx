@@ -112,6 +112,7 @@ export default function ProjectPreview({
   hubUrl,
   className,
   registeredEventSlugs,
+  analyticsLocation,
 }: any) {
   // DISABLED: Hover expansion effect causes registration button to jump/shift position (Issue #1885)
   // Keeping code in place for potential future re-enablement
@@ -180,11 +181,13 @@ export default function ProjectPreview({
               project={project}
               hovering={hovering}
               registeredEventSlugs={registeredEventSlugs}
+              analyticsLocation={analyticsLocation}
             />
             <CardContentWithoutDescription
               project={project}
               hovering={hovering}
               registeredEventSlugs={registeredEventSlugs}
+              analyticsLocation={analyticsLocation}
             />
           </div>
         </Card>
@@ -193,7 +196,12 @@ export default function ProjectPreview({
   );
 }
 
-const CardContentWithoutDescription = ({ project, hovering, registeredEventSlugs }) => {
+const CardContentWithoutDescription = ({
+  project,
+  hovering,
+  registeredEventSlugs,
+  analyticsLocation,
+}) => {
   const classes = useStyles();
   const isUserRegistered =
     registeredEventSlugs && project.url_slug
@@ -206,12 +214,22 @@ const CardContentWithoutDescription = ({ project, hovering, registeredEventSlugs
           {project.name}
         </Typography>
       </div>
-      <ProjectMetaData project={project} hovering={hovering} isUserRegistered={isUserRegistered} />
+      <ProjectMetaData
+        project={project}
+        hovering={hovering}
+        isUserRegistered={isUserRegistered}
+        analyticsLocation={analyticsLocation}
+      />
     </CardContent>
   );
 };
 
-const CardContentWithDescription = ({ project, hovering, registeredEventSlugs }) => {
+const CardContentWithDescription = ({
+  project,
+  hovering,
+  registeredEventSlugs,
+  analyticsLocation,
+}) => {
   const classes = useStyles({ hovering: hovering });
   const isUserRegistered =
     registeredEventSlugs && project.url_slug
@@ -230,6 +248,7 @@ const CardContentWithDescription = ({ project, hovering, registeredEventSlugs })
         hovering={hovering}
         withDescription
         isUserRegistered={isUserRegistered}
+        analyticsLocation={analyticsLocation}
       />
     </CardContent>
   );

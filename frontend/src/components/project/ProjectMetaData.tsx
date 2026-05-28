@@ -1,7 +1,7 @@
 import { Box, Collapse, Container, Theme, Tooltip, Typography, Button } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import getTexts from "../../../public/texts/texts";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
@@ -20,6 +20,7 @@ import {
   getRegisterButtonText,
   isRegisterButtonDisabled,
 } from "../../utils/eventRegistrationHelpers";
+import { trackGA4Event } from "../../utils/analytics";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
@@ -108,12 +109,14 @@ type Props = {
   hovering: boolean;
   withDescription?: boolean;
   isUserRegistered?: boolean;
+  analyticsLocation?: "browse_card" | "similar_projects_sidebar";
 };
 export default function ProjectMetaData({
   project,
   hovering,
   withDescription,
   isUserRegistered: isUserRegisteredProp,
+  analyticsLocation,
 }: Props) {
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -145,6 +148,7 @@ export default function ProjectMetaData({
         main_project_sector={main_project_sector}
         texts={texts}
         isUserRegistered={isUserRegistered}
+        analyticsLocation={analyticsLocation}
       />
     );
   }
@@ -157,6 +161,7 @@ export default function ProjectMetaData({
       main_project_sector={main_project_sector}
       texts={texts}
       isUserRegistered={isUserRegistered}
+      analyticsLocation={analyticsLocation}
     />
   );
 }
@@ -169,6 +174,7 @@ const WithDescription = ({
   main_project_sector,
   texts,
   isUserRegistered,
+  analyticsLocation,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -197,7 +203,11 @@ const WithDescription = ({
               iconClassName={classes.cardIcon}
             />
           )}
-          <AdditionalPreviewInfo project={project} isUserRegistered={isUserRegistered} />
+          <AdditionalPreviewInfo
+            project={project}
+            isUserRegistered={isUserRegistered}
+            analyticsLocation={analyticsLocation}
+          />
         </Box>
       </Container>
       {hovering && (
@@ -219,6 +229,7 @@ const WithOutDescription = ({
   main_project_sector,
   texts,
   isUserRegistered,
+  analyticsLocation,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -240,7 +251,11 @@ const WithOutDescription = ({
             projectSectorClassName={classes.metadataText}
             iconClassName={classes.cardIcon}
           />
-          <AdditionalPreviewInfo project={project} isUserRegistered={isUserRegistered} />
+          <AdditionalPreviewInfo
+            project={project}
+            isUserRegistered={isUserRegistered}
+            analyticsLocation={analyticsLocation}
+          />
         </Box>
       </Container>
     </Box>
@@ -292,10 +307,10 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
   );
 };
 
-const AdditionalPreviewInfo = ({ project, isUserRegistered }) => {
+const AdditionalPreviewInfo = ({ project, isUserRegistered, analyticsLocation }) => {
   const classes = useStyles({});
   const { projectTypes } = useContext(BrowseContext);
-  const { locale, user } = useContext(UserContext);
+  const { locale, user, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
   const { isEnabled } = useFeatureToggles();
 
@@ -330,6 +345,22 @@ const AdditionalPreviewInfo = ({ project, isUserRegistered }) => {
   };
 
   const buttonConfig = getRegisterButtonConfig();
+
+  // Fire button impression event on mount when register button is visible
+  useEffect(() => {
+    if (analyticsLocation && buttonConfig) {
+      trackGA4Event(
+        "event_registration_button_impression",
+        {
+          location: analyticsLocation,
+          event_slug: project.url_slug,
+          registration_status: project.registration_config?.status ?? "open",
+        },
+        ReactGA
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box className={classes.additionalInfoContainer}>

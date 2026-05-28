@@ -28,17 +28,19 @@ This document catalogs all Google Analytics 4 (GA4) custom events tracked across
 The tracking helper is implemented at [`frontend/src/utils/analytics.ts`](../../frontend/src/utils/analytics.ts).
 
 ```typescript
-import { trackAuthEvent } from "../../utils/analytics";
+import { trackGA4Event } from "../../utils/analytics";
 
 // In component
 const { ReactGA, locale, hubUrl } = useContext(UserContext);
 
-trackAuthEvent("auth_email_entered", {
+trackGA4Event("auth_email_entered", {
   hub_slug: hubUrl,
   locale: locale,
   user_status: userStatus,
 }, ReactGA);
 ```
+
+`trackAuthEvent` is a backward-compatible alias for `trackGA4Event`. Existing auth components continue to use it; new event registration code should use `trackGA4Event`.
 
 **Usage rules:**
 - SSR guard is handled by the helper (`typeof window !== "undefined"` check)
@@ -123,38 +125,44 @@ Events for the combined login/signup flow at `/login`.
 
 ### Category: Event Registration (`event_registration_*`)
 
-Events for the event registration funnel via `EventRegistrationModal`.
+Events for the event registration funnel via `EventRegistrationModal`. All events include `event_slug` for funnel segmentation by event.
 
 #### Entry & Intent
 
-| Event Name | Trigger | Parameters |
-|------------|---------|------------|
-| `event_registration_button_impression` | Registration button renders on event page or card | `location: "event_page" \| "browse_card" \| "similar_projects_sidebar"`, `event_slug: string`, `registration_status: "open" \| "closed" \| "full"` |
-| `event_registration_modal_opened` | User clicks register button, modal opens | `user_type: "authenticated" \| "guest"`, `event_slug: string`, `has_available_seats: boolean` |
+| Event Name | Trigger | Parameters | Implementation Location |
+|------------|---------|------------|------------------------|
+| `event_registration_button_impression` | Registration button renders on event page or card | `location: "event_page" \| "browse_card" \| "similar_projects_sidebar"`, `event_slug: string`, `registration_status: "open" \| "closed" \| "full"` | `RegistrationActionButton.tsx` (useEffect on mount) and `ProjectMetaData.tsx` (useEffect on mount) |
+| `event_registration_modal_opened` | User clicks register button, modal opens | `user_type: "authenticated" \| "guest"`, `event_slug: string`, `has_available_seats: boolean` | `ProjectPageRoot.tsx` — `handleRegisterClick` |
 
 #### Authenticated Flow
 
-| Event Name | Trigger | Parameters |
-|------------|---------|------------|
-| `event_registration_confirm_shown` | Authenticated user sees confirmation step | `event_slug: string` |
-| `event_registration_confirmed` | User clicks "Confirm registration" | `event_slug: string`, `available_seats_at_click: number \| null` |
-| `event_registration_success` | Registration API returns 200/201 | `event_slug: string`, `user_type: "authenticated" \| "guest"` |
-| `event_registration_cancelled` | User clicks cancel/close before confirming | `step: "confirm"`, `user_type: "authenticated" \| "guest"` |
+| Event Name | Trigger | Parameters | Implementation Location |
+|------------|---------|------------|------------------------|
+| `event_registration_confirm_shown` | Authenticated user sees confirmation step (fires once per modal session) | `event_slug: string` | `EventRegistrationModal.tsx` — useEffect (guarded by `confirmShownFiredRef`) |
+| `event_registration_confirmed` | User clicks "Confirm registration" (fires before API call) | `event_slug: string`, `available_seats_at_click: number \| null` | `EventRegistrationModal.tsx` — `handleRegister` |
+| `event_registration_success` | Registration API returns 200/201 | `event_slug: string`, `user_type: "authenticated"` | `EventRegistrationModal.tsx` — `handleRegister` success branch |
+| `event_registration_cancelled` | User clicks cancel/close while on the confirmation step | `step: "confirm"`, `user_type: "authenticated"` | `EventRegistrationModal.tsx` — `handleClose` |
 
 #### Guest Auth Flow (inside modal)
 
-| Event Name | Trigger | Parameters |
-|------------|---------|------------|
-| `event_registration_auth_started` | Guest submits email in modal | `event_slug: string`, `entry_method: "register_button"` |
-| `event_registration_auth_method_selected` | After check-email, path is determined | `auth_path: "password" \| "otp" \| "signup"`, `event_slug: string` |
-| `event_registration_auth_completed` | `signIn()` succeeds inside modal | `auth_path: "password" \| "otp" \| "signup"`, `event_slug: string` |
-| `event_registration_auth_abandoned` | Modal closed during auth flow | `auth_step: "email" \| "password" \| "otp" \| "signup_personal_info" \| "signup_otp"`, `event_slug: string` |
+| Event Name | Trigger | Parameters | Implementation Location |
+|------------|---------|------------|------------------------|
+| `event_registration_auth_started` | Guest submits email in modal (fires on `check-email` success) | `event_slug: string`, `entry_method: "register_button"` | `EventRegistrationModal.tsx` — `handleUserStatusDetermined` |
+| `event_registration_auth_method_selected` | After `check-email` returns, auth path is determined | `auth_path: "password" \| "otp" \| "signup"`, `event_slug: string` | `EventRegistrationModal.tsx` — `handleUserStatusDetermined` |
+| `event_registration_auth_completed` | Auth step succeeds inside modal (password/otp/signup `onSuccess` fires) | `auth_path: "password" \| "otp" \| "signup"`, `event_slug: string` | `EventRegistrationModal.tsx` — `onSuccess` callbacks on `AuthPasswordLogin`, `AuthOtp`, `AuthSignupStep` |
+| `event_registration_auth_abandoned` | Modal closed during auth flow (not on email step) | `auth_step: "password" \| "otp" \| "signup"`, `event_slug: string` | `EventRegistrationModal.tsx` — `handleClose` |
+
+#### Custom Fields (optional step)
+
+| Event Name | Trigger | Parameters | Implementation Location |
+|------------|---------|------------|------------------------|
+| `event_registration_custom_fields_started` | First interaction with any custom registration field (checkbox toggled, option selected, inventory option/quantity changed, time slot selected). Fires once per modal session. | `event_slug: string`, `field_count: number` | `RegistrationFieldAnswersForm.tsx` — `onFirstInteraction` callback via `notifyFirstInteraction()` ref guard; `EventRegistrationModal.tsx` passes the callback |
 
 #### Error States
 
-| Event Name | Trigger | Parameters |
-|------------|---------|------------|
-| `event_registration_error` | Registration API fails after confirmation | `error_type: "network" \| "full" \| "closed" \| "ended" \| "server_error"`, `event_slug: string` |
+| Event Name | Trigger | Parameters | Implementation Location |
+|------------|---------|------------|------------------------|
+| `event_registration_error` | Registration API fails after confirmation | `error_type: "network" \| "full" \| "closed" \| "ended" \| "server_error"`, `event_slug: string` | `EventRegistrationModal.tsx` — `handleRegister` catch branch |
 
 ---
 
@@ -173,7 +181,7 @@ When adding new analytics events, follow this checklist:
 ### Implementation Requirements
 
 - [ ] Tracking call placed at correct trigger point (state transition, user action, API response)
-- [ ] `trackAuthEvent` helper used (or new category-specific helper if needed)
+- [ ] `trackGA4Event` helper used (or `trackAuthEvent` for backward compatibility in existing auth components)
 - [ ] SSR guard in place (`typeof window !== "undefined"`)
 - [ ] GA4 initialization check (`if (!ReactGA) return`)
 - [ ] Comment added in component explaining where/why event fires
@@ -200,9 +208,27 @@ Before creating funnels, register these custom dimensions in GA4:
 
 1. Go to **Configure → Custom definitions → Custom dimensions**
 2. Create the following dimensions with the matching parameter names:
-   - `step` (for `auth_step_viewed` step parameter)
-   - `user_status` (for auth event user status)
-   - `auth_type` (for completion auth type)
+
+**Auth funnel dimensions:**
+
+| Dimension Name | Parameter | Description |
+|----------------|-----------|-------------|
+| `step` | `step` | Auth step identifier (for `auth_step_viewed`) |
+| `user_status` | `user_status` | New vs returning user status |
+| `auth_type` | `auth_type` | Auth method used (OTP, password) |
+
+**Event registration funnel dimensions:**
+
+| Dimension Name | Parameter | Description |
+|----------------|-----------|-------------|
+| `event_slug` | `event_slug` | Event URL slug for segmentation |
+| `location` | `location` | Button impression location (event_page, browse_card, similar_projects_sidebar) |
+| `auth_path` | `auth_path` | Auth path in registration modal (password, otp, signup) |
+| `registration_status` | `registration_status` | Event registration status (open, closed, full) |
+| `error_type` | `error_type` | Error classification for failed registrations |
+
+**Built-in dimensions** (no manual registration required):
+- `user_type` — GA4 built-in dimension, automatically available for breakdowns. Used as `"new" \| "returning"` in auth events and `"authenticated" \| "guest"` in event registration events.
 
 These dimensions are required for funnel step conditions and breakdowns.
 
@@ -210,7 +236,7 @@ These dimensions are required for funnel step conditions and breakdowns.
 
 ### Auth Funnel (3 Separate Funnels)
 
-The auth flow has 3 distinct paths. Create **separate funnel explorations** for each to accurately track drop-offs:
+The auth flow has 3 distinct paths. Create **separate funnel explorations** for each to accurately track drop-offs. **Note:** Because these funnels pre-filter by `user_status` or path, users on the "wrong" path will show as dropped off after Step 1 or 2. This is expected — use [Path Exploration](#alternative-path-exploration-for-auth-flow) (below) to see the full branching picture, and these funnels to measure conversion rates on each known path.
 
 #### Funnel 1: New User Signup
 
@@ -264,7 +290,7 @@ For each step in GA4 Funnel Exploration:
    - **Directly followed by** (default): User must complete this step and then immediately the next step, with no other events in between
    - **Indirectly followed by**: User must complete this step, then at some later point complete the next step (other events may occur in between)
 
-**Recommendation**: For the auth funnel, use **"Directly followed by"** for most steps since the flow is linear with no branching. However, if you observe users appearing to skip steps unexpectedly, switch to **"Indirectly followed by"** to account for any side events firing between steps.
+**Recommendation**: Use **"Indirectly followed by"** for all funnel steps. Since Climate Connect uses a React SPA with modal-based flows (auth, event registration), intermediate events such as `auth_signup_field_focused`, `auth_signup_field_filled`, scroll events, and other GA4 auto-collected events will fire between funnel steps. "Directly followed by" treats any intervening event as a break in the funnel chain, causing steps to appear empty or users to show as dropped off even when they completed the full flow. "Indirectly followed by" correctly counts users who complete both steps in order regardless of what happens in between.
 
 **Note**: Conditions in funnel steps use AND logic — the user must match all conditions for the step.
 
@@ -281,6 +307,39 @@ Instead of 3 separate funnels, you can create **one funnel** with all shared ste
 
 **Limitation**: This works best when paths share most steps. Since the 3 auth flows diverge significantly after Step 2, separate funnels (above) provide cleaner drop-off analysis.
 
+### Alternative: Path Exploration for Auth Flow
+
+Since the auth flow branches into multiple paths (signup, password login, OTP login), a **Path Exploration** in GA4 often provides better insight than funnel explorations. Path Exploration shows the actual sequence of events users take, including branching and backtracking, without requiring you to pre-define the expected path.
+
+#### Setting Up Auth Path Exploration
+
+1. Go to GA4 → **Explore** → **Path exploration**
+2. Set **Starting point**: Event `auth_step_viewed` with condition `step` equals `email_entry`
+3. The exploration will automatically show all events that occur next, branching by frequency
+4. Click any node to expand the next step in that branch
+
+#### Recommended Path Exploration Configuration
+
+| Setting | Value |
+|---------|-------|
+| **Starting point** | `auth_step_viewed` where `step = email_entry` |
+| **Ending point** (optional) | `auth_completed` — to see only successful completions |
+| **Breakdown** | `user_status` — to see how new vs returning users diverge |
+| **Node type** | Event name (default) |
+
+#### What Path Exploration Reveals That Funnels Don't
+
+- **Actual branching**: Shows that after `auth_email_entered`, users split into `auth_step_viewed` (password_login), `auth_step_viewed` (otp_entry), or `auth_step_viewed` (signup_personal_info) — all on one diagram
+- **Backtracking**: Users who go back (e.g., click "Use a code instead" after seeing the password step) are visible as loops
+- **Drop-off context**: You can see exactly which event users last fired before dropping off, without needing separate funnels per path
+- **Side events**: Scroll, click, and other auto-collected events show up, helping identify UI issues
+
+#### Complementary Use
+
+Use Path Exploration and Funnel Explorations together:
+- **Path Exploration** for discovery — understand what paths users actually take
+- **Funnel Explorations** for measurement — track conversion rates on known, well-defined paths
+
 ### Field-Level Drop-off Analysis (Auth)
 
 To analyze drop-off within the personal info step:
@@ -291,15 +350,44 @@ To analyze drop-off within the personal info step:
 
 ### Event Registration Funnel
 
-1. Go to GA4 → **Explore**
-2. Create **Funnel exploration**
-3. Add steps in sequence:
-   - **Step 1**: Event `event_registration_button_impression`
-   - **Step 2**: Event `event_registration_modal_opened`
-   - **Step 3**: Event `event_registration_auth_started` (guests) **OR** `event_registration_confirm_shown` (authenticated)
-   - **Step 4**: Event `event_registration_auth_completed` (guests) **OR** `event_registration_confirmed` (authenticated)
-   - **Final step**: Event `event_registration_success`
-4. Break down by `user_type` to compare guest vs authenticated paths
+Create **two separate funnel explorations** — one for authenticated users, one for guests — since the flows diverge after the modal opens.
+
+#### Funnel A: Authenticated Registration
+
+| Step | Event | Condition |
+|------|-------|-----------|
+| Step 1 | `event_registration_button_impression` | — |
+| Step 2 | `event_registration_modal_opened` | `user_type` equals `authenticated` |
+| Step 3 | `event_registration_confirm_shown` | — |
+| Step 4 | `event_registration_confirmed` | — |
+| Final step | `event_registration_success` | — |
+
+#### Funnel B: Guest Registration (with auth inside modal)
+
+| Step | Event | Condition |
+|------|-------|-----------|
+| Step 1 | `event_registration_button_impression` | — |
+| Step 2 | `event_registration_modal_opened` | `user_type` equals `guest` |
+| Step 3 | `event_registration_auth_started` | — |
+| Step 4 | `event_registration_auth_method_selected` | — |
+| Step 5 | `event_registration_auth_completed` | — |
+| Step 6 | `event_registration_confirmed` | — |
+| Final step | `event_registration_success` | — |
+
+#### Combined Funnel with Breakdown
+
+To create a single funnel with guest vs authenticated breakdown:
+
+1. Go to GA4 → **Explore** → **Funnel exploration**
+2. Add steps:
+   - **Step 1**: `event_registration_button_impression`
+   - **Step 2**: `event_registration_modal_opened`
+   - **Step 3**: `event_registration_auth_started` **OR** `event_registration_confirm_shown` (use "Indirectly followed by")
+   - **Step 4**: `event_registration_auth_completed` **OR** `event_registration_confirmed` (use "Indirectly followed by")
+   - **Final step**: `event_registration_success`
+3. Click **"Break down by"** → `user_type`
+
+**Note**: Since guest and authenticated paths fire different events at Steps 3-4, this combined funnel will show drop-off at the "wrong" path's events. Use the separate funnels above for accurate per-path conversion rates.
 
 ### Event Registration Auth Drop-off Analysis
 
@@ -308,6 +396,14 @@ To analyze where guests abandon the auth flow inside the registration modal:
 2. Use steps: `event_registration_auth_started` → `event_registration_auth_completed` → `event_registration_success`
 3. The drop-off between auth_started and auth_completed shows auth abandonment
 4. Use `auth_step` parameter from `event_registration_auth_abandoned` to identify which step causes most drop-offs
+
+### Custom Fields Drop-off Analysis
+
+To analyze drop-off at the custom fields step:
+1. In GA4 → **Explore** → **Funnel exploration**
+2. Use steps: `event_registration_custom_fields_started` → `event_registration_confirmed` → `event_registration_success`
+3. The drop-off between custom_fields_started and confirmed shows users who started filling custom fields but did not complete registration
+4. Filter by `event_slug` to analyze per-event
 
 ### Button Impression Performance
 
@@ -322,11 +418,12 @@ To analyze registration button performance by location:
 ## Non-Negotiable Constraints
 
 1. **No PII in events** — email addresses, names, or any personally identifiable information must never be sent to GA4
-2. **Respect cookie consent** — events only fire when GA4 is initialized (handled by `trackAuthEvent` helper)
+2. **Respect cookie consent** — events only fire when GA4 is initialized (handled by `trackGA4Event` helper)
 3. **Event name consistency** — use exact event names from this catalog to enable funnel visualization
 4. **No performance impact** — analytics calls must be fire-and-forget, never block UI
 5. **SSR guard** — all tracking calls must check `typeof window !== "undefined"` to prevent server-side errors
 6. **Debounced field events** — field focus/fill events use first-interaction-only tracking per session to avoid flooding GA4
+7. **No regression** — existing `auth_*` events must continue to fire unchanged when auth components are used inside the event registration modal
 
 ---
 

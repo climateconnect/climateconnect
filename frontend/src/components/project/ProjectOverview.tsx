@@ -500,6 +500,7 @@ function LargeScreenOverview({
               className={classes.registerButton}
               showSeatsCount={true}
               eventRegistration={eventRegistration}
+              analyticsLocation="event_page"
               fallback={
                 <FollowButton
                   isLoggedIn={!!user}
