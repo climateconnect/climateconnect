@@ -310,6 +310,36 @@ export default function ProjectRegistrationsContent({
     );
   }
 
+  if (eventRegistration.is_draft) {
+    return (
+      <Box sx={{ mt: 3, textAlign: "center" }}>
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          {texts.registration_setup_incomplete}
+        </Typography>
+        <Typography color="textSecondary" sx={{ mb: 2 }}>
+          {texts.registration_setup_incomplete_description}
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SettingsIcon />}
+          onClick={() => setEditModalOpen(true)}
+        >
+          {texts.complete_registration_setup}
+        </Button>
+        {editModalOpen && (
+          <EditEventRegistrationModal
+            open={editModalOpen}
+            onClose={() => setEditModalOpen(false)}
+            onSaved={onEventRegistrationUpdated}
+            project={project}
+            eventRegistration={eventRegistration}
+          />
+        )}
+      </Box>
+    );
+  }
+
   const STATUS_CONFIG = {
     open: {
       label: texts.registration_status_open,

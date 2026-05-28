@@ -121,6 +121,16 @@ class EventRegistrationConfig(models.Model):
         auto_now=True,
     )
 
+    is_draft = models.BooleanField(
+        default=False,
+        help_text=(
+            "When True, the registration configuration is incomplete and not "
+            "visible to visitors. The organiser can save partial data and publish "
+            "later. May only transition from True to False (one-way)."
+        ),
+        verbose_name="Is Draft",
+    )
+
     notify_admins = models.BooleanField(
         default=True,
         help_text=(

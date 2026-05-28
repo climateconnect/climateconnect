@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Chip,
@@ -163,29 +164,31 @@ export default function EditEventRegistrationModal({
     !isStatusFull ||
     (parseInt(maxParticipants, 10) > participantCount && !isNaN(parseInt(maxParticipants, 10)));
 
-  const isDraft = !!project.is_draft;
+  const isDraft = !!eventRegistration.is_draft;
 
-  const validate = (): boolean => {
+  const validate = (publishing = false): boolean => {
     const newErrors: FormErrors = {};
 
     const parsedMax = parseInt(maxParticipants, 10);
     const hasParticipants = maxParticipants !== "";
 
+    // When publishing (is_draft=false), fields are required. When saving as draft, relaxed.
+    const enforceRequired = publishing || !isDraft;
     if (
-      isDraft
-        ? hasParticipants && (isNaN(parsedMax) || parsedMax < 1)
-        : !hasParticipants || isNaN(parsedMax) || parsedMax < 1
+      enforceRequired
+        ? !hasParticipants || isNaN(parsedMax) || parsedMax < 1
+        : hasParticipants && (isNaN(parsedMax) || parsedMax < 1)
     ) {
       newErrors.max_participants = texts.max_participants_must_be_greater_than_0;
     }
 
     const hasEndDate = registrationEndDate !== null;
 
-    if (isDraft ? hasEndDate && !registrationEndDate!.isValid() : !hasEndDate) {
+    if (enforceRequired ? !hasEndDate : hasEndDate && !registrationEndDate!.isValid()) {
       newErrors.registration_end_date = texts.registration_end_date_required;
     } else if (hasEndDate && registrationEndDate!.isValid()) {
-      // "must be in the future" only enforced for published projects
-      if (!isDraft && registrationEndDate!.isBefore(dayjs())) {
+      // "must be in the future" only enforced for published configs
+      if (enforceRequired && registrationEndDate!.isBefore(dayjs())) {
         newErrors.registration_end_date = texts.registration_end_date_must_be_in_the_future;
       } else if (project.end_date && registrationEndDate!.isAfter(dayjs(project.end_date))) {
         newErrors.registration_end_date = texts.registration_end_date_must_be_before_event_end_date;
@@ -195,7 +198,7 @@ export default function EditEventRegistrationModal({
     setErrors(newErrors);
 
     // Validate custom fields when publishing
-    if (!isDraft && isCustomFieldsEnabled) {
+    if (enforceRequired && isCustomFieldsEnabled) {
       const { errors: fe, hasError } = validateRegistrationFields(
         fields,
         false,
@@ -260,8 +263,8 @@ export default function EditEventRegistrationModal({
 
   // ── Save handler ──────────────────────────────────────────────────────────
 
-  const handleSave = async () => {
-    if (!validate()) return;
+  const handleSave = async (publishing = false) => {
+    if (!validate(publishing)) return;
 
     setSaving(true);
     setErrors({});
@@ -280,6 +283,11 @@ export default function EditEventRegistrationModal({
       payload.status = selectedStatus;
     }
     payload.notify_admins = notifyAdmins;
+
+    // When publishing, set is_draft to false for the draft → published transition.
+    if (publishing) {
+      payload.is_draft = false;
+    }
 
     if (isCustomFieldsEnabled) {
       payload.fields = fields.map(({ _clientKey, ...field }) => ({
@@ -378,6 +386,11 @@ export default function EditEventRegistrationModal({
         </DialogTitle>
 
         <DialogContent dividers>
+          {isDraft && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              {texts.registration_config_draft_indicator}
+            </Alert>
+          )}
           <Box className={classes.fieldsRow}>
             <Box className={classes.field}>
               <TextField
@@ -537,15 +550,31 @@ export default function EditEventRegistrationModal({
           <Button variant="outlined" onClick={onClose} disabled={saving} aria-label={texts.cancel}>
             {texts.cancel}
           </Button>
+          {isDraft && (
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => handleSave(false)}
+              disabled={saving}
+              startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
+              aria-label={texts.save_as_draft}
+            >
+              {saving ? texts.save_as_draft + "…" : texts.save_as_draft}
+            </Button>
+          )}
           <Button
             variant="contained"
             color="primary"
-            onClick={handleSave}
+            onClick={() => handleSave(isDraft)}
             disabled={saving}
             startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
-            aria-label={texts.save}
+            aria-label={isDraft ? texts.publish_registration : texts.save}
           >
-            {saving ? texts.save + "…" : texts.save}
+            {saving
+              ? (isDraft ? texts.publish_registration : texts.save) + "…"
+              : isDraft
+              ? texts.publish_registration
+              : texts.save}
           </Button>
         </DialogActions>
       </Dialog>

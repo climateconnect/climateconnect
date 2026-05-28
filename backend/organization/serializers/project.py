@@ -221,14 +221,32 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
         return 0
 
     def get_registration_config(self, obj):
-        """Return event registration config including available_seats (detail only)."""
+        """Return event registration config including available_seats (detail only).
+
+        Draft configs are only visible to project admins. Non-admin viewers
+        see None — the config is not yet published and should not be exposed.
+        """
         try:
-            return EventRegistrationConfigSerializer(
-                obj.registration_config,
-                context={"include_seat_count": True},
-            ).data
+            rc = obj.registration_config
         except EventRegistrationConfig.DoesNotExist:
             return None
+
+        if rc.is_draft:
+            request = self.context.get("request")
+            if not request or not request.user.is_authenticated:
+                return None
+            is_admin = ProjectMember.objects.filter(
+                project=obj,
+                user=request.user,
+                role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            ).exists()
+            if not is_admin:
+                return None
+
+        return EventRegistrationConfigSerializer(
+            rc,
+            context={"include_seat_count": True},
+        ).data
 
     def get_my_event_registration(self, obj):
         """
@@ -513,11 +531,28 @@ class ProjectStubSerializer(_LocationNameMixin, serializers.ModelSerializer):
         return serializer.data
 
     def get_registration_config(self, obj):
-        """Return event registration config if present, else None."""
+        """Return event registration config if present, else None.
+
+        Draft configs are only visible to project admins.
+        """
         try:
-            return EventRegistrationConfigSerializer(obj.registration_config).data
+            rc = obj.registration_config
         except EventRegistrationConfig.DoesNotExist:
             return None
+
+        if rc.is_draft:
+            request = self.context.get("request")
+            if not request or not request.user.is_authenticated:
+                return None
+            is_admin = ProjectMember.objects.filter(
+                project=obj,
+                user=request.user,
+                role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            ).exists()
+            if not is_admin:
+                return None
+
+        return EventRegistrationConfigSerializer(rc).data
 
 
 class ProjectSuggestionSerializer(ProjectStubSerializer):
