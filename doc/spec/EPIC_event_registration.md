@@ -62,12 +62,12 @@ The complete Phase 2 must be shipped before the toggle is flipped in production.
 
 Small frontend improvements required before the `EVENT_REGISTRATION` toggle is flipped to production. Tracked in [#1981](https://github.com/climateconnect/climateconnect/issues/1981).
 
-| Story                                                                  | GitHub Issue                                                          | Spec                                                                                                                     | Status |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------ |
-| Auto-set event registration end date on start date change              | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1300_auto_set_event_registration_end_date.md`](./20260513_1300_auto_set_event_registration_end_date.md)       | ⚪     |
-| Edit project form button reorganization (delete + registration config) | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1310_edit_project_form_button_reorganization.md`](./20260513_1310_edit_project_form_button_reorganization.md) | ⚪     |
-| Hide collaboration sections for events                                 | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1320_hide_event_collaboration_sections.md`](./20260513_1320_hide_event_collaboration_sections.md)             | ⚪     |
-| Fix page jump on create project details step                           | [#1981](https://github.com/climateconnect/climateconnect/issues/1981) | [`20260513_1330_fix_create_project_details_page_jump.md`](./20260513_1330_fix_create_project_details_page_jump.md)       | ⚪     |
+| Story                                                                  | GitHub Issue                                                 | Spec                                                                                                                     | Status |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | -- |
+| Auto-set event registration end date on start date change              |   | ✅ Done    |
+| Edit project form button reorganization (delete + registration config) | | ✅ Done    |
+| Hide collaboration sections for events                                 |   | ✅ Done    |
+| Fix page jump on create project details step                           |   | ✅ Done    |
 
 ### 🎯 Phase 3 — Guest Registration + UX Polish (go-live blocker)
 
@@ -92,8 +92,8 @@ The foundational custom fields story. Organisers can add up to **5 extra fields*
 
 | Story                                                                            | GitHub Issue                                                          | Spec                                                                                                       | Status     |
 | -------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- |
-| Organiser creates/edits event with custom registration fields (select, checkbox) | [#1880](https://github.com/climateconnect/climateconnect/issues/1880) | [`20260416_1000_event_registration_custom_fields.md`](./20260416_1000_event_registration_custom_fields.md) | ✅ Done    |
-| Member registers with custom fields (select, checkbox)                           | —                                                                     | —                                                                                                          | ⚪ Pending |
+| Organiser creates/edits event with custom registration fields (select, checkbox) |  | ✅ Done    |
+| Member registers with custom fields (select, checkbox)                           | —                                                                     | —                                                                                                          | ✅ Done   |
 
 **#1880 field specs** (detail to be expanded in tech spec):
 
@@ -113,26 +113,26 @@ The foundational custom fields story. Organisers can add up to **5 extra fields*
 Organisers can define options with **limited availability** — e.g. workshop slots, shuttle seats, meal choices. Each option has a capacity (stock limit). The system tracks remaining availability per option and stores per-guest what they booked (option + quantity). This requires capacity tracking at the option level and a per-participant response record. Guests cannot select an option once it is fully booked.
 
 | Story | GitHub Issue | Spec | Status |
-|-------|-------------|------|--------|
-| Organiser creates/edits event with inventory options (capacity per option) | [#1995](https://github.com/climateconnect/climateconnect/issues/1995) | [`20260519_1328_inventory_field_type_event_registration.md`](./20260519_1328_inventory_field_type_event_registration.md) | ⚪ |
-| Member selects inventory options when registering; system enforces per-option capacity | [#2004](https://github.com/climateconnect/climateconnect/issues/2004) | [`20260526_1347_add_inventory_field_to_event_registration.md`](./20260526_1347_add_inventory_field_to_event_registration.md) | ⚪ |
+|-------|-------------|------|------|
+| Organiser creates/edits event with inventory options (capacity per option) | [#1995](https://github.com/climateconnect/climateconnect/issues/1995) | [`20260519_1328_inventory_field_type_event_registration.md`](./20260519_1328_inventory_field_type_event_registration.md) | ✅ Done  |
+| Member selects inventory options when registering; system enforces per-option capacity | [#2004](https://github.com/climateconnect/climateconnect/issues/2004) | [`20260526_1347_add_inventory_field_to_event_registration.md`](./20260526_1347_add_inventory_field_to_event_registration.md) | ✅ Done   |
 
 #### Phase 4c — Time Slot Select
 
 Organisers can define **time slot** options — each with a start time, end time, and optional per-slot capacity. Registrants pick one slot. Use cases: solar module pickup windows, workshop sessions, volunteer shifts, course time slots. Capacity enforcement (preventing over-booking of a full slot) follows the same pattern as inventory.
 
 | Story | GitHub Issue | Spec | Status |
-|-------|-------------|------|--------|
-| Organiser creates/edits event with time slot field | [#2006](https://github.com/climateconnect/climateconnect/issues/2006) | [`20260526_1100_time_slot_field_type_event_registration.md`](./20260526_1100_time_slot_field_type_event_registration.md) | ⚪ |
-| Member selects time slot when registering; system enforces per-slot capacity | [#2007](https://github.com/climateconnect/climateconnect/issues/2007) | [`20260526_1530_add_time_slot_field_to_event_registration.md`](./20260526_1530_add_time_slot_field_to_event_registration.md) | ⚪ |
+|-------|-------------|------|------|
+| Organiser creates/edits event with time slot field | [#2006](https://github.com/climateconnect/climateconnect/issues/2006) | [`20260526_1100_time_slot_field_type_event_registration.md`](./20260526_1100_time_slot_field_type_event_registration.md) | ✅ Done  |
+| Member selects time slot when registering; system enforces per-slot capacity | [#2007](https://github.com/climateconnect/climateconnect/issues/2007) | [`20260526_1530_add_time_slot_field_to_event_registration.md`](./20260526_1530_add_time_slot_field_to_event_registration.md) | ✅ Done   |
 
 #### Phase 4x — Custom Field Label & Export (cross-cutting)
 
 An organiser-facing label (max 30 chars) for custom registration fields, used in export/print/overview views. A default label is auto-generated (localised field type + sequential number) and the organiser can edit it inline. Applies to all field types.
 
 | Story                                     | GitHub Issue                                                          | Spec                                                                           | Status |
-| ----------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------ |
-| Custom field label (default + adjustable) | [#1997](https://github.com/climateconnect/climateconnect/issues/1997) | [`20260521_0923_custom_field_label.md`](./20260521_0923_custom_field_label.md) | ⚪     |
+| ----------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------ | --- |
+| Custom field label (default + adjustable) | [#1997](https://github.com/climateconnect/climateconnect/issues/1997) | [`20260521_0923_custom_field_label.md`](./20260521_0923_custom_field_label.md) | ✅ Done     |
 
 #### Phase 4y — Guest registration overview (cross-cutting)
 
@@ -143,12 +143,11 @@ modal. The modal component is the same one the organiser uses to view a
 guest's registration.
 
 | Story                                             | GitHub Issue                                                          | Spec                                                                                                   | Status |
-| ------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------ |
-| Guest views and modifies their event registration | [#2003](https://github.com/climateconnect/climateconnect/issues/2003) | [`20260526_1130_guest_view_modify_registration.md`](./20260526_1130_guest_view_modify_registration.md) | ⚪     |
+| ------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ----- |
+| Guest views and modifies their event registration | [#2003](https://github.com/climateconnect/climateconnect/issues/2003) | [`20260526_1130_guest_view_modify_registration.md`](./20260526_1130_guest_view_modify_registration.md) | ⚪    |
 | Story | GitHub Issue | Spec | Status |
 |-------|-------------|------|--------|
-| Custom field label (default + adjustable) | [#1997](https://github.com/climateconnect/climateconnect/issues/1997) | [`20260521_0923_custom_field_label.md`](./20260521_0923_custom_field_label.md) | ⚪ |
-| Export event registration results with custom field data | [#1962](https://github.com/climateconnect/climateconnect/issues/1962) | [`20260527_0830_export_event_registration_with_custom_fields.md`](./20260527_0830_export_event_registration_with_custom_fields.md) | ⚪ |
+| Export event registration results with custom field data | [#1962](https://github.com/climateconnect/climateconnect/issues/1962) | [`20260527_0830_export_event_registration_with_custom_fields.md`](./20260527_0830_export_event_registration_with_custom_fields.md) | ✅ Done   |
 
 #### Phase 4c+ — Further Field Types (TBD)
 

@@ -1,7 +1,7 @@
 # Guest views and modifies their event registration
 
 **Type**: Task
-**Status**: DRAFT
+**Status**: COMPLETED
 **Branch**: `guest_view_modify_registration`
 **GitHub Issue**: [#2003](https://github.com/climateconnect/climateconnect/issues/2003)
 **Epic**: [EPIC: Event Registration](./EPIC_event_registration.md) — Phase 4 (guest-side companion to custom fields)

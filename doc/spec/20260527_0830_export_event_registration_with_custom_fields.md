@@ -1,6 +1,6 @@
 # Export Event Registration Results with Custom Field Data
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Feature
 **Date and time created**: 2026-05-27 08:30
 **GitHub Issue**: [#1962](https://github.com/climateconnect/climateconnect/issues/1962)

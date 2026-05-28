@@ -1,6 +1,6 @@
 # Add Time Slot Field to Event Registration (Phase 4c — Registrant)
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Feature
 **Date and time created**: 2026-05-26 15:30
 **GitHub Issue**: [#2007](https://github.com/climateconnect/climateconnect/issues/2007)
