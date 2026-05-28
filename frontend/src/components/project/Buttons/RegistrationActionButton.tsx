@@ -43,7 +43,7 @@ interface RegistrationActionButtonProps {
   /** Current event registration data (for real-time updates) */
   eventRegistration?: { available_seats: number | null; max_participants: number | null } | null;
   /** Where the button is rendered (for analytics impression tracking). */
-  analyticsLocation?: "event_page" | "browse_card" | "similar_projects_sidebar";
+  analyticsSurface?: "event_page" | "browse_card" | "similar_projects_sidebar";
 }
 
 /**
@@ -62,18 +62,18 @@ export default function RegistrationActionButton({
   fallback = null,
   showSeatsCount = false,
   eventRegistration,
-  analyticsLocation,
+  analyticsSurface,
 }: RegistrationActionButtonProps) {
   const classes = useStyles();
   const { ReactGA } = useContext(UserContext);
 
   // Fire button impression event on mount
   useEffect(() => {
-    if (analyticsLocation && registrationState !== "hidden" && registrationState !== "attended") {
+    if (analyticsSurface && registrationState !== "hidden" && registrationState !== "attended") {
       trackGA4Event(
         "event_registration_button_impression",
         {
-          location: analyticsLocation,
+          surface: analyticsSurface,
           event_slug: project.url_slug,
           registration_status: project.registration_config?.status ?? "open",
         },

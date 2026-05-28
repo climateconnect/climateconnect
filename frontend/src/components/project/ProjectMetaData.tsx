@@ -109,14 +109,14 @@ type Props = {
   hovering: boolean;
   withDescription?: boolean;
   isUserRegistered?: boolean;
-  analyticsLocation?: "browse_card" | "similar_projects_sidebar";
+  analyticsSurface?: "browse_card" | "similar_projects_sidebar";
 };
 export default function ProjectMetaData({
   project,
   hovering,
   withDescription,
   isUserRegistered: isUserRegisteredProp,
-  analyticsLocation,
+  analyticsSurface,
 }: Props) {
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
@@ -148,7 +148,7 @@ export default function ProjectMetaData({
         main_project_sector={main_project_sector}
         texts={texts}
         isUserRegistered={isUserRegistered}
-        analyticsLocation={analyticsLocation}
+        analyticsSurface={analyticsSurface}
       />
     );
   }
@@ -161,7 +161,7 @@ export default function ProjectMetaData({
       main_project_sector={main_project_sector}
       texts={texts}
       isUserRegistered={isUserRegistered}
-      analyticsLocation={analyticsLocation}
+      analyticsSurface={analyticsSurface}
     />
   );
 }
@@ -174,7 +174,7 @@ const WithDescription = ({
   main_project_sector,
   texts,
   isUserRegistered,
-  analyticsLocation,
+  analyticsSurface,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -206,7 +206,7 @@ const WithDescription = ({
           <AdditionalPreviewInfo
             project={project}
             isUserRegistered={isUserRegistered}
-            analyticsLocation={analyticsLocation}
+            analyticsSurface={analyticsSurface}
           />
         </Box>
       </Container>
@@ -229,7 +229,7 @@ const WithOutDescription = ({
   main_project_sector,
   texts,
   isUserRegistered,
-  analyticsLocation,
+  analyticsSurface,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -254,7 +254,7 @@ const WithOutDescription = ({
           <AdditionalPreviewInfo
             project={project}
             isUserRegistered={isUserRegistered}
-            analyticsLocation={analyticsLocation}
+            analyticsSurface={analyticsSurface}
           />
         </Box>
       </Container>
@@ -307,7 +307,7 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
   );
 };
 
-const AdditionalPreviewInfo = ({ project, isUserRegistered, analyticsLocation }) => {
+const AdditionalPreviewInfo = ({ project, isUserRegistered, analyticsSurface }) => {
   const classes = useStyles({});
   const { projectTypes } = useContext(BrowseContext);
   const { locale, user, ReactGA } = useContext(UserContext);
@@ -348,11 +348,11 @@ const AdditionalPreviewInfo = ({ project, isUserRegistered, analyticsLocation })
 
   // Fire button impression event on mount when register button is visible
   useEffect(() => {
-    if (analyticsLocation && buttonConfig) {
+    if (analyticsSurface && buttonConfig) {
       trackGA4Event(
         "event_registration_button_impression",
         {
-          location: analyticsLocation,
+          surface: analyticsSurface,
           event_slug: project.url_slug,
           registration_status: project.registration_config?.status ?? "open",
         },

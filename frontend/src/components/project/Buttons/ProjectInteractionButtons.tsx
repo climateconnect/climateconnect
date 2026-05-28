@@ -135,7 +135,7 @@ export default function ProjectInteractionButtons({
               className={classes.registerButton}
               showSeatsCount={true}
               eventRegistration={eventRegistration}
-              analyticsLocation="event_page"
+              analyticsSurface="event_page"
             />
           ) : (
             <FollowButton

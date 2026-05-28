@@ -131,7 +131,7 @@ Events for the event registration funnel via `EventRegistrationModal`. All event
 
 | Event Name | Trigger | Parameters | Implementation Location |
 |------------|---------|------------|------------------------|
-| `event_registration_button_impression` | Registration button renders on event page or card | `location: "event_page" \| "browse_card" \| "similar_projects_sidebar"`, `event_slug: string`, `registration_status: "open" \| "closed" \| "full"` | `RegistrationActionButton.tsx` (useEffect on mount) and `ProjectMetaData.tsx` (useEffect on mount) |
+| `event_registration_button_impression` | Registration button renders on event page or card | `surface: "event_page" \| "browse_card" \| "similar_projects_sidebar"`, `event_slug: string`, `registration_status: "open" \| "closed" \| "full"` | `RegistrationActionButton.tsx` (useEffect on mount) and `ProjectMetaData.tsx` (useEffect on mount) |
 | `event_registration_modal_opened` | User clicks register button, modal opens | `user_type: "authenticated" \| "guest"`, `event_slug: string`, `has_available_seats: boolean` | `ProjectPageRoot.tsx` — `handleRegisterClick` |
 
 #### Authenticated Flow
@@ -222,7 +222,7 @@ Before creating funnels, register these custom dimensions in GA4:
 | Dimension Name | Parameter | Description |
 |----------------|-----------|-------------|
 | `event_slug` | `event_slug` | Event URL slug for segmentation |
-| `location` | `location` | Button impression location (event_page, browse_card, similar_projects_sidebar) |
+| `surface` | `surface` | UI surface where the button rendered (event_page, browse_card, similar_projects_sidebar) |
 | `auth_path` | `auth_path` | Auth path in registration modal (password, otp, signup) |
 | `registration_status` | `registration_status` | Event registration status (open, closed, full) |
 | `error_type` | `error_type` | Error classification for failed registrations |
@@ -407,11 +407,11 @@ To analyze drop-off at the custom fields step:
 
 ### Button Impression Performance
 
-To analyze registration button performance by location:
+To analyze registration button performance by surface:
 1. In GA4 → **Explore** → **Free form**
-2. Dimension: `location`
+2. Dimension: `surface`
 3. Metrics: `event_registration_button_impression`, `event_registration_modal_opened`
-4. Calculate conversion rate: `modal_opened / impression` per location
+4. Calculate conversion rate: `modal_opened / impression` per surface
 
 ---
 
