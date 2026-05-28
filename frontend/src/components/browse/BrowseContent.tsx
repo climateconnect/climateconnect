@@ -572,7 +572,7 @@ export default function BrowseContent({
               projects={state.items.projects}
               hubUrl={hubUrl}
               isLoading={isFetchingMoreData}
-              analyticsLocation="browse_card"
+              analyticsSurface="browse_card"
             />
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>

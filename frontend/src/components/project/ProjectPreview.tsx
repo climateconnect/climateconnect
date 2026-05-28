@@ -112,7 +112,7 @@ export default function ProjectPreview({
   hubUrl,
   className,
   registeredEventSlugs,
-  analyticsLocation,
+  analyticsSurface,
 }: any) {
   // DISABLED: Hover expansion effect causes registration button to jump/shift position (Issue #1885)
   // Keeping code in place for potential future re-enablement
@@ -181,13 +181,13 @@ export default function ProjectPreview({
               project={project}
               hovering={hovering}
               registeredEventSlugs={registeredEventSlugs}
-              analyticsLocation={analyticsLocation}
+              analyticsSurface={analyticsSurface}
             />
             <CardContentWithoutDescription
               project={project}
               hovering={hovering}
               registeredEventSlugs={registeredEventSlugs}
-              analyticsLocation={analyticsLocation}
+              analyticsSurface={analyticsSurface}
             />
           </div>
         </Card>
@@ -200,7 +200,7 @@ const CardContentWithoutDescription = ({
   project,
   hovering,
   registeredEventSlugs,
-  analyticsLocation,
+  analyticsSurface,
 }) => {
   const classes = useStyles();
   const isUserRegistered =
@@ -218,7 +218,7 @@ const CardContentWithoutDescription = ({
         project={project}
         hovering={hovering}
         isUserRegistered={isUserRegistered}
-        analyticsLocation={analyticsLocation}
+        analyticsSurface={analyticsSurface}
       />
     </CardContent>
   );
@@ -228,7 +228,7 @@ const CardContentWithDescription = ({
   project,
   hovering,
   registeredEventSlugs,
-  analyticsLocation,
+  analyticsSurface,
 }) => {
   const classes = useStyles({ hovering: hovering });
   const isUserRegistered =
@@ -248,7 +248,7 @@ const CardContentWithDescription = ({
         hovering={hovering}
         withDescription
         isUserRegistered={isUserRegistered}
-        analyticsLocation={analyticsLocation}
+        analyticsSurface={analyticsSurface}
       />
     </CardContent>
   );
