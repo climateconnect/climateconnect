@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, forwardRef, useState } from "react";
+import React, { useImperativeHandle, forwardRef, useRef, useState } from "react";
 import { Box } from "@mui/material";
 import { RegistrationField, RegistrationFieldAnswerValue } from "../../types";
 import RegistrationCheckboxField from "./RegistrationCheckboxField";
@@ -28,10 +28,15 @@ type Props = {
     please_select_time_slot: string;
     seats_available: string;
   };
+  /** Called once on the first interaction with any custom field (for analytics). */
+  onFirstInteraction?: () => void;
 };
 
 const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHandle, Props>(
-  function RegistrationFieldAnswersForm({ fields, serverErrors = {}, texts }, ref) {
+  function RegistrationFieldAnswersForm(
+    { fields, serverErrors = {}, texts, onFirstInteraction },
+    ref
+  ) {
     const [booleanValues, setBooleanValues] = useState<Record<number, boolean>>({});
     const [optionValues, setOptionValues] = useState<Record<number, number>>({});
     const [inventoryValues, setInventoryValues] = useState<
@@ -39,6 +44,14 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
     >({});
     const [timeSlotValues, setTimeSlotValues] = useState<Record<number, number>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<number, string>>({});
+    const hasInteractedRef = useRef(false);
+
+    const notifyFirstInteraction = () => {
+      if (!hasInteractedRef.current) {
+        hasInteractedRef.current = true;
+        onFirstInteraction?.();
+      }
+    };
 
     const sortedFields = [...fields].sort((a, b) => a.order - b.order);
 
@@ -123,6 +136,7 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
     }));
 
     const handleBooleanChange = (fieldId: number, checked: boolean) => {
+      notifyFirstInteraction();
       setBooleanValues((prev) => ({ ...prev, [fieldId]: checked }));
       if (fieldErrors[fieldId]) {
         setFieldErrors((prev) => {
@@ -134,6 +148,7 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
     };
 
     const handleOptionChange = (fieldId: number, optionId: number) => {
+      notifyFirstInteraction();
       setOptionValues((prev) => ({ ...prev, [fieldId]: optionId }));
       if (fieldErrors[fieldId]) {
         setFieldErrors((prev) => {
@@ -145,6 +160,7 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
     };
 
     const handleInventoryOptionChange = (fieldId: number, optionId: number) => {
+      notifyFirstInteraction();
       setInventoryValues((prev) => ({
         ...prev,
         [fieldId]: { ...prev[fieldId], optionId, quantity: undefined },
@@ -159,6 +175,7 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
     };
 
     const handleInventoryQuantityChange = (fieldId: number, quantity: number | undefined) => {
+      notifyFirstInteraction();
       setInventoryValues((prev) => ({
         ...prev,
         [fieldId]: { ...prev[fieldId], quantity },
@@ -173,6 +190,7 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
     };
 
     const handleTimeSlotChange = (fieldId: number, optionId: number) => {
+      notifyFirstInteraction();
       setTimeSlotValues((prev) => ({ ...prev, [fieldId]: optionId }));
       if (fieldErrors[fieldId]) {
         setFieldErrors((prev) => {

@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -23,6 +23,7 @@ import getTexts from "../../../public/texts/texts";
 import { Project, RegistrationFieldAnswerValue } from "../../types";
 import UserContext from "../context/UserContext";
 import { useFeatureToggles } from "../featureToggle";
+import { trackGA4Event } from "../../utils/analytics";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import AuthEmailStep from "../auth/AuthEmailStep";
 import AuthPasswordLogin from "../auth/AuthPasswordLogin";
@@ -175,7 +176,7 @@ export default function EventRegistrationModal({
   onRegistrationSuccess,
 }: Props) {
   const classes = useStyles();
-  const { locale, user } = useContext(UserContext);
+  const { locale, user, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale, project });
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -195,6 +196,11 @@ export default function EventRegistrationModal({
   const [authStep, setAuthStep] = useState<"email" | "password" | "otp" | "signup">("email");
   const [isNewUserOtp, setIsNewUserOtp] = useState(false);
 
+  // Track whether confirm_shown has already fired for this modal session
+  const confirmShownFiredRef = useRef(false);
+  // Track whether custom fields interaction has fired for this modal session
+  const customFieldsFiredRef = useRef(false);
+
   const showCustomFields =
     isEnabled("EVENT_REGISTRATION") && (project.registration_config?.fields?.length ?? 0) > 0;
   const hasRequiredCustomFields =
@@ -207,6 +213,36 @@ export default function EventRegistrationModal({
       : project.start_date
       ? getDateTime(project.start_date)
       : null;
+
+  // Fire event_registration_confirm_shown when authenticated user sees confirmation step
+  useEffect(() => {
+    if (open && user && state === "initial" && !confirmShownFiredRef.current) {
+      confirmShownFiredRef.current = true;
+      trackGA4Event("event_registration_confirm_shown", { event_slug: project.url_slug }, ReactGA);
+    }
+  }, [open, user, state, project.url_slug, ReactGA]);
+
+  // Reset tracking refs when modal closes
+  useEffect(() => {
+    if (!open) {
+      confirmShownFiredRef.current = false;
+      customFieldsFiredRef.current = false;
+    }
+  }, [open]);
+
+  const handleCustomFieldsFirstInteraction = useCallback(() => {
+    if (!customFieldsFiredRef.current) {
+      customFieldsFiredRef.current = true;
+      trackGA4Event(
+        "event_registration_custom_fields_started",
+        {
+          event_slug: project.url_slug,
+          field_count: project.registration_config?.fields?.length ?? 0,
+        },
+        ReactGA
+      );
+    }
+  }, [project.url_slug, project.registration_config?.fields?.length, ReactGA]);
 
   // Render the appropriate content based on authentication and registration state
   const renderContent = () => {
@@ -229,6 +265,16 @@ export default function EventRegistrationModal({
 
   const handleRegister = async () => {
     if (!user) return;
+
+    // Fire event_registration_confirmed before API call
+    trackGA4Event(
+      "event_registration_confirmed",
+      {
+        event_slug: project.url_slug,
+        available_seats_at_click: project.registration_config?.available_seats ?? null,
+      },
+      ReactGA
+    );
 
     // Validate custom fields if present
     let answers: RegistrationFieldAnswerValue[] | null = [];
@@ -281,6 +327,11 @@ export default function EventRegistrationModal({
 
       if (response.status === 200 || response.status === 201) {
         setState("success");
+        trackGA4Event(
+          "event_registration_success",
+          { event_slug: project.url_slug, user_type: "authenticated" },
+          ReactGA
+        );
         if (onRegistrationSuccess) {
           onRegistrationSuccess();
         }
@@ -297,6 +348,26 @@ export default function EventRegistrationModal({
       }
       setState("error");
       setErrorMessage(responseData?.message || texts.registration_failed_please_try_again);
+
+      // Determine error type for analytics
+      let errorType: "network" | "full" | "closed" | "ended" | "server_error" = "server_error";
+      if (responseData?.error_type === "full" || responseData?.detail?.includes("full")) {
+        errorType = "full";
+      } else if (
+        responseData?.error_type === "closed" ||
+        responseData?.detail?.includes("closed")
+      ) {
+        errorType = "closed";
+      } else if (responseData?.error_type === "ended" || responseData?.detail?.includes("ended")) {
+        errorType = "ended";
+      } else if (!error?.response) {
+        errorType = "network";
+      }
+      trackGA4Event(
+        "event_registration_error",
+        { error_type: errorType, event_slug: project.url_slug },
+        ReactGA
+      );
     } finally {
       setLoading(false);
     }
@@ -307,17 +378,57 @@ export default function EventRegistrationModal({
     determinedEmail: string
   ) => {
     setEmail(determinedEmail);
+
+    // Fire event_registration_auth_started (guest submits email in modal)
+    trackGA4Event(
+      "event_registration_auth_started",
+      { event_slug: project.url_slug, entry_method: "register_button" },
+      ReactGA
+    );
+
     if (status === "new") {
       setAuthStep("signup");
+      trackGA4Event(
+        "event_registration_auth_method_selected",
+        { auth_path: "signup", event_slug: project.url_slug },
+        ReactGA
+      );
     } else if (status === "returning_password") {
       setAuthStep("password");
+      trackGA4Event(
+        "event_registration_auth_method_selected",
+        { auth_path: "password", event_slug: project.url_slug },
+        ReactGA
+      );
     } else if (status === "returning_otp") {
       setIsNewUserOtp(false);
       setAuthStep("otp");
+      trackGA4Event(
+        "event_registration_auth_method_selected",
+        { auth_path: "otp", event_slug: project.url_slug },
+        ReactGA
+      );
     }
   };
 
   const handleClose = () => {
+    // Fire auth_abandoned if modal is closed during auth flow (not on email step)
+    if (user === null && authStep !== "email") {
+      trackGA4Event(
+        "event_registration_auth_abandoned",
+        { auth_step: authStep, event_slug: project.url_slug },
+        ReactGA
+      );
+    }
+    // Fire cancelled if modal is closed during confirm step (authenticated user)
+    if (user && state === "initial") {
+      trackGA4Event(
+        "event_registration_cancelled",
+        { step: "confirm", user_type: "authenticated" },
+        ReactGA
+      );
+    }
+
     setState("initial");
     setErrorMessage("");
     setFieldServerErrors({});
@@ -349,6 +460,7 @@ export default function EventRegistrationModal({
             ref={answersFormRef}
             fields={project.registration_config!.fields!}
             serverErrors={fieldServerErrors}
+            onFirstInteraction={handleCustomFieldsFirstInteraction}
             texts={{
               this_field_is_required: texts.this_field_is_required,
               you_must_check_this_box: texts.you_must_check_this_box,
@@ -395,9 +507,11 @@ export default function EventRegistrationModal({
             email={email}
             onBack={() => setAuthStep("email")}
             onSuccess={() => {
-              // signIn() inside AuthPasswordLogin updates UserContext.
-              // The modal detects user is present and auto-transitions
-              // to the authenticated registration confirmation step.
+              trackGA4Event(
+                "event_registration_auth_completed",
+                { auth_path: "password", event_slug: project.url_slug },
+                ReactGA
+              );
             }}
             onForgotPassword={() => {
               // Return to email entry; forgot-password flow is not supported inside the modal.
@@ -417,9 +531,11 @@ export default function EventRegistrationModal({
             email={email}
             onBack={() => setAuthStep("email")}
             onSuccess={() => {
-              // signIn() inside AuthOtp updates UserContext.
-              // The modal detects user is present and auto-transitions
-              // to the authenticated registration confirmation step.
+              trackGA4Event(
+                "event_registration_auth_completed",
+                { auth_path: "otp", event_slug: project.url_slug },
+                ReactGA
+              );
             }}
             hubUrl={project.hubUrl}
             showHeader={false}
@@ -432,6 +548,11 @@ export default function EventRegistrationModal({
             email={email}
             onBack={() => setAuthStep("email")}
             onSignupComplete={() => {
+              trackGA4Event(
+                "event_registration_auth_completed",
+                { auth_path: "signup", event_slug: project.url_slug },
+                ReactGA
+              );
               setIsNewUserOtp(true);
               setAuthStep("otp");
             }}
