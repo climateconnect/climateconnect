@@ -353,6 +353,9 @@ export default function EditEventRegistrationModal({
             if (firstMsg) apiErrors.fields = firstMsg;
           }
         }
+        if (data.is_draft) {
+          apiErrors.general = Array.isArray(data.is_draft) ? data.is_draft[0] : data.is_draft;
+        }
         if (data.detail || data.non_field_errors) {
           apiErrors.general = data.detail ?? data.non_field_errors?.[0];
         }

@@ -375,7 +375,6 @@ In `ProjectPageRoot.tsx`, when `registration_config.is_draft` is true and the us
 ### Frontend — Registration Button Visibility
 - [ ] Visitors/members do NOT see registration UI when `registration_config.is_draft` is true.
 - [ ] Admins see a setup prompt on the project detail page when config is draft.
-- [ ] Admins see a setup prompt on the registrations tab when config is draft.
 
 ### Frontend — Registration Config Modal
 - [ ] When config is draft, the modal shows a draft indicator and two buttons: "Save as draft" and "Publish registration".
