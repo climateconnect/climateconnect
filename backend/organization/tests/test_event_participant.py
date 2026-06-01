@@ -195,9 +195,11 @@ class TestRegisterForEventHappyPath(APITestCase):
             response = self.client.post(_register_url("open-event"))
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        mock_task.delay.assert_called_once_with(
-            user_id=self.user.id, event_slug="open-event"
-        )
+        mock_task.delay.assert_called_once()
+        _, kwargs = mock_task.delay.call_args
+        self.assertEqual(kwargs["user_id"], self.user.id)
+        self.assertEqual(kwargs["event_slug"], "open-event")
+        self.assertIsInstance(kwargs["registration_id"], int)
 
     @tag("event_participant", "registration")
     def test_confirmation_email_not_sent_on_idempotent_reregistration(self):

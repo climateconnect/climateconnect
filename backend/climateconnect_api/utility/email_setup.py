@@ -156,8 +156,8 @@ def send_email(
                 "Variables": variables,
                 "Subject": subject,
                 "TemplateErrorReporting": {
-                    "Email": "christoph.stoll@climateconnect.earth",
-                    "Name": "Christoph Stoll",
+                    "Email": "harald.walker@climateconnect.earth",
+                    "Name": "Harald Walker",
                 },
             }
         ]

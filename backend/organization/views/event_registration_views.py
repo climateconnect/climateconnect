@@ -278,10 +278,12 @@ class EventRegistrationsView(APIView):
         # transaction commits, at which point DRF may resolve a different user.
         _user_id = request.user.id
         _event_slug = project.url_slug
+        _registration_id = registration.id
         transaction.on_commit(
             lambda: _send_registration_email.delay(
                 user_id=_user_id,
                 event_slug=_event_slug,
+                registration_id=_registration_id,
             )
         )
 
