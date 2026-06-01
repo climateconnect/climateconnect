@@ -154,21 +154,22 @@ The `_build_field_answers_html()` helper:
    The heading text is localised: EN = "Your registration answers", DE = "Deine Anmeldeantworten" (mirrors the frontend modal header pattern from `registration_answers_modal_title` / `registration_answers_modal_title_self`).
 6. If no answers have non-null values, return empty string.
 
-**Plain-text email**: Mailjet auto-generates a plain-text version from the HTML. Table structure will be lost but the text content (field titles, answer values, checkmarks) will appear. The `{{#if}}` conditional also works in text mode. This is acceptable for a first iteration.
+**Plain-text email**: Mailjet auto-generates a plain-text version from the HTML. Table structure will be lost but the text content (field titles, answer values, checkmarks) will appear. The `{% if %}` conditional also works in text mode. This is acceptable for a first iteration.
 
 ### Mailjet Template Update
 
 The Mailjet template needs to include the `FieldAnswersHtml` variable. Instructions:
 
 1. Open the Mailjet template editor for the event registration confirmation template (both EN and DE).
-2. In the email body, after the existing event details section, add a conditional block:
+2. In the email body, after the existing event details section, add an **HTML block** (not a Template Language block). According to the [Mailjet documentation](https://documentation.mailjet.com/hc/en-us/articles/16886347025947-Mailjet-Templating-Language), raw HTML should be placed in an HTML block when combined with template language structures.
+3. Inside the HTML block, add the conditional and variable:
+   ```html
+   {% if var:FieldAnswersHtml != "" %}
+   {{var:FieldAnswersHtml}}
+   {% endif %}
    ```
-   {{#if var:FieldAnswersHtml}}<br/>
-   {{{var:FieldAnswersHtml}}}
-   {{/if}}
-   ```
-3. The triple braces `{{{...}}}` render the HTML unescaped. The `{{#if}}` block ensures the section only appears when answers exist.
-4. Save and test with a registration that has custom field answers.
+4. Mailjet's `{{var:...}}` renders HTML content as-is (no escaping). The `{% if %}` block ensures the section only appears when answers exist (comparing against empty string, consistent with existing template patterns like `LocationName`).
+5. Save and test with a registration that has custom field answers.
 
 ---
 
@@ -243,6 +244,8 @@ No frontend changes required — this is a backend + Mailjet template task.
 
 - 2026-06-01 10:31 — Spec created. Initial draft.
 - 2026-06-01 10:51 — Decisions finalized: checkbox → plain text with ✓ prefix (option B), heading → "Your registration answers" / "Deine Anmeldeantworten", non-checkbox labels → `settings.title`, inline styles (no custom CSS), Mailjet plain-text auto-generation accepted.
+- 2026-06-01 11:38 — Mailjet template syntax corrected: `{% if var:FieldAnswersHtml != "" %}` (not `{{#if}}`), consistent with existing template patterns.
+- 2026-06-01 11:55 — Mailjet template syntax simplified: `{{var:FieldAnswersHtml}}` (double braces, not triple). Use an HTML block in the DnD editor for raw HTML content with template language.
 
 ---
 
@@ -250,7 +253,7 @@ No frontend changes required — this is a backend + Mailjet template task.
 
 1. **HTML stripping for checkbox descriptions**: The checkbox `settings.description` can contain HTML (bold, links). For the email, we strip HTML tags to plain text with a `✓` prefix. This matches the modal's visual pattern (checked icon + description) but in text form. Rich formatting is lost but email rendering is safe.
 
-2. **Mailjet template update**: The spec includes step-by-step instructions for updating the Mailjet template. The key is using `{{{var:FieldAnswersHtml}}}` (triple braces) for unescaped HTML rendering and `{{#if var:FieldAnswersHtml}}` for conditional display. No custom CSS classes are needed — all styling is inline. If the template is not updated, the variable is simply ignored.
+2. **Mailjet template update**: The spec includes step-by-step instructions for updating the Mailjet template. Use an **HTML block** (not a Template Language block) with `{{var:FieldAnswersHtml}}` (double braces) and a `{% if var:FieldAnswersHtml != "" %}` conditional. No custom CSS classes are needed — all styling is inline. If the template is not updated, the variable is simply ignored. See [Mailjet documentation](https://documentation.mailjet.com/hc/en-us/articles/16886347025947-Mailjet-Templating-Language) for details on HTML blocks vs Template Language blocks.
 
 3. **Mailjet plain-text version**: Mailjet auto-generates a plain-text version from the HTML. Table structure will be lost but the text content appears. The `{{#if}}` conditional works in text mode. Acceptable for this iteration.
 

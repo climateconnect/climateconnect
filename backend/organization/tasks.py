@@ -78,13 +78,15 @@ def send_event_registration_confirmation_email(
         return
 
     try:
-        registration = EventRegistration.objects.select_related(
-            "registration_config"
-        ).prefetch_related(
-            "field_answers__field",
-            "field_answers__value_option",
-            "field_answers__field__options",
-        ).get(id=registration_id)
+        registration = (
+            EventRegistration.objects.select_related("registration_config")
+            .prefetch_related(
+                "field_answers__field",
+                "field_answers__value_option",
+                "field_answers__field__options",
+            )
+            .get(id=registration_id)
+        )
     except EventRegistration.DoesNotExist:
         logger.error(
             "[EventRegistration] Cannot send confirmation: Registration %s not found",

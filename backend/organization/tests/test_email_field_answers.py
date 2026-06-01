@@ -49,6 +49,7 @@ class TestBuildFieldAnswersHtml(TestCase):
             },
         )
         from climateconnect_api.models import Language
+
         self.language, _ = Language.objects.get_or_create(
             language_code="en",
             defaults={"name": "English", "native_name": "English"},
@@ -109,7 +110,9 @@ class TestBuildFieldAnswersHtml(TestCase):
     def test_checked_checkbox_included(self):
         """A checked checkbox includes its description (HTML-stripped) with ✓ prefix."""
         field = self._create_field(
-            RegistrationFieldType.CHECKBOX, 0, "Terms",
+            RegistrationFieldType.CHECKBOX,
+            0,
+            "Terms",
             {"description": "<p>I agree to the terms</p>"},
         )
         self._create_answer(field, value_boolean=True)
@@ -125,7 +128,9 @@ class TestBuildFieldAnswersHtml(TestCase):
     def test_unchecked_checkbox_not_included(self):
         """An unchecked checkbox is not included in the email."""
         field = self._create_field(
-            RegistrationFieldType.CHECKBOX, 0, "Terms",
+            RegistrationFieldType.CHECKBOX,
+            0,
+            "Terms",
             {"description": "I agree to the terms"},
         )
         self._create_answer(field, value_boolean=False)
@@ -139,7 +144,9 @@ class TestBuildFieldAnswersHtml(TestCase):
     def test_option_select_included(self):
         """Option select shows field title and selected option title."""
         field = self._create_field(
-            RegistrationFieldType.OPTION_SELECT, 0, "Workshop",
+            RegistrationFieldType.OPTION_SELECT,
+            0,
+            "Workshop",
             {"title": "Preferred workshop"},
         )
         option = self._create_option(field, "Solar panel installation", 0)
@@ -155,7 +162,9 @@ class TestBuildFieldAnswersHtml(TestCase):
     def test_inventory_included(self):
         """Inventory shows field title, option title, and quantity."""
         field = self._create_field(
-            RegistrationFieldType.INVENTORY, 0, "Meals",
+            RegistrationFieldType.INVENTORY,
+            0,
+            "Meals",
             {"title": "Meal preference"},
         )
         option = self._create_option(field, "Vegetarian", 0)
@@ -171,13 +180,19 @@ class TestBuildFieldAnswersHtml(TestCase):
     def test_time_slot_included(self):
         """Time slot shows field title and formatted time range."""
         field = self._create_field(
-            RegistrationFieldType.TIME_SLOT_SELECT, 0, "Pickup",
+            RegistrationFieldType.TIME_SLOT_SELECT,
+            0,
+            "Pickup",
             {"title": "Pickup slot"},
         )
         start = timezone.now() + timedelta(days=10, hours=10)
         end = start + timedelta(hours=2)
         option = self._create_option(
-            field, "", 0, start_time=start, end_time=end,
+            field,
+            "",
+            0,
+            start_time=start,
+            end_time=end,
         )
         self._create_answer(field, value_option=option)
 
@@ -191,11 +206,15 @@ class TestBuildFieldAnswersHtml(TestCase):
     def test_multiple_fields_ordered_by_order(self):
         """Multiple answers are shown in field order."""
         field_b = self._create_field(
-            RegistrationFieldType.OPTION_SELECT, 1, "Second",
+            RegistrationFieldType.OPTION_SELECT,
+            1,
+            "Second",
             {"title": "Second field"},
         )
         field_a = self._create_field(
-            RegistrationFieldType.OPTION_SELECT, 0, "First",
+            RegistrationFieldType.OPTION_SELECT,
+            0,
+            "First",
             {"title": "First field"},
         )
         option_b = self._create_option(field_b, "Option B", 0)
@@ -226,8 +245,11 @@ class TestBuildFieldAnswersHtml(TestCase):
     def test_optional_fields_no_answers_returns_empty(self):
         """Optional fields with no answers provided returns empty string."""
         self._create_field(
-            RegistrationFieldType.OPTION_SELECT, 0, "Optional",
-            {"title": "Optional field"}, is_required=False,
+            RegistrationFieldType.OPTION_SELECT,
+            0,
+            "Optional",
+            {"title": "Optional field"},
+            is_required=False,
         )
         # No answer created
         html = _build_field_answers_html(self.registration, "en")
@@ -239,12 +261,18 @@ class TestBuildFieldAnswersHtml(TestCase):
     def test_mix_answered_unanswered_only_answered_shown(self):
         """Only fields with answers are included; unanswered optional fields are skipped."""
         field_a = self._create_field(
-            RegistrationFieldType.OPTION_SELECT, 0, "Answered",
-            {"title": "Answered field"}, is_required=True,
+            RegistrationFieldType.OPTION_SELECT,
+            0,
+            "Answered",
+            {"title": "Answered field"},
+            is_required=True,
         )
-        field_b = self._create_field(
-            RegistrationFieldType.OPTION_SELECT, 1, "Unanswered",
-            {"title": "Unanswered field"}, is_required=False,
+        self._create_field(
+            RegistrationFieldType.OPTION_SELECT,
+            1,
+            "Unanswered",
+            {"title": "Unanswered field"},
+            is_required=False,
         )
         option_a = self._create_option(field_a, "Selected", 0)
         self._create_answer(field_a, value_option=option_a)
@@ -260,7 +288,9 @@ class TestBuildFieldAnswersHtml(TestCase):
     def test_german_heading(self):
         """German language code produces German heading."""
         field = self._create_field(
-            RegistrationFieldType.OPTION_SELECT, 0, "Workshop",
+            RegistrationFieldType.OPTION_SELECT,
+            0,
+            "Workshop",
             {"title": "Workshop"},
         )
         option = self._create_option(field, "Solar", 0)

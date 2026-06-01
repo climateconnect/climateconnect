@@ -560,6 +560,58 @@ def send_guest_cancellation_notification(user, project, admin_message: str):
     )
 
 
+_DE_DAYS = {
+    "Mon": "Mo",
+    "Tue": "Di",
+    "Wed": "Mi",
+    "Thu": "Do",
+    "Fri": "Fr",
+    "Sat": "Sa",
+    "Sun": "So",
+}
+_DE_MONTHS_SHORT = {
+    1: "Jan",
+    2: "Feb",
+    3: "Mär",
+    4: "Apr",
+    5: "Mai",
+    6: "Jun",
+    7: "Jul",
+    8: "Aug",
+    9: "Sep",
+    10: "Okt",
+    11: "Nov",
+    12: "Dez",
+}
+
+
+def _format_time_range_localized(start, end, lang_code):
+    """
+    Format a start/end datetime pair as a localised time-range string.
+
+    English: "Mon, Jan 1, 10:00 – 12:00"
+    German:  "Mo, 1. Jan, 10:00 – 12:00"
+    """
+    start_day_en = start.strftime("%a")
+    start_month = start.month
+    start_day_num = start.day
+    start_time = start.strftime("%H:%M")
+    end_time = end.strftime("%H:%M")
+
+    if lang_code == "de":
+        day_str = _DE_DAYS.get(start_day_en, start_day_en)
+        month_str = _DE_MONTHS_SHORT.get(start_month, start.strftime("%b"))
+        return f"{day_str}, {start_day_num}. {month_str}, {start_time} – {end_time}"
+
+    month_str = start.strftime("%b")
+    return f"{start_day_en}, {month_str} {start_day_num}, {start_time} – {end_time}"
+
+
+_FIELD_CELL_STYLE = (
+    "padding: 4px 0px 8px; color: #55575d; vertical-align: top; width: 50%"
+)
+
+
 def _build_field_answers_html(registration, lang_code):
     """
     Build an HTML snippet of the guest's registration field answers for the
@@ -600,8 +652,7 @@ def _build_field_answers_html(registration, lang_code):
     sorted_fields = sorted(answers_by_field.keys(), key=lambda f: f.order)
 
     heading = (
-        "Your registration answers" if lang_code == "en"
-        else "Deine Anmeldeantworten"
+        "Your registration answers:" if lang_code == "en" else "Deine Anmeldeantworten:"
     )
 
     rows = []
@@ -614,7 +665,8 @@ def _build_field_answers_html(registration, lang_code):
             # Strip HTML tags for plain text
             plain_desc = re.sub(r"<[^>]+>", "", description).strip()
             rows.append(
-                f'<tr><td colspan="2" style="padding: 4px 8px;">✓ {html_module.escape(plain_desc)}</td></tr>'
+                f'<tr><td style="{_FIELD_CELL_STYLE}">{html_module.escape(plain_desc)}</td>'
+                f'<td style="{_FIELD_CELL_STYLE}">✓</td></tr>'
             )
 
         elif field_type == RegistrationFieldType.OPTION_SELECT:
@@ -622,8 +674,8 @@ def _build_field_answers_html(registration, lang_code):
             option = answer.value_option
             answer_text = option.title if option else ""
             rows.append(
-                f'<tr><td style="padding: 4px 8px; color: #666;">{html_module.escape(field_title)}</td>'
-                f'<td style="padding: 4px 8px;">{html_module.escape(answer_text)}</td></tr>'
+                f'<tr><td style="{_FIELD_CELL_STYLE}">{html_module.escape(field_title)}</td>'
+                f'<td style="{_FIELD_CELL_STYLE}">{html_module.escape(answer_text)}</td></tr>'
             )
 
         elif field_type == RegistrationFieldType.INVENTORY:
@@ -633,36 +685,36 @@ def _build_field_answers_html(registration, lang_code):
             quantity = answer.value_number or 0
             answer_text = f"{option_title} × {quantity}"
             rows.append(
-                f'<tr><td style="padding: 4px 8px; color: #666;">{html_module.escape(field_title)}</td>'
-                f'<td style="padding: 4px 8px;">{html_module.escape(answer_text)}</td></tr>'
+                f'<tr><td style="{_FIELD_CELL_STYLE}">{html_module.escape(field_title)}</td>'
+                f'<td style="{_FIELD_CELL_STYLE}">{html_module.escape(answer_text)}</td></tr>'
             )
 
         elif field_type == RegistrationFieldType.TIME_SLOT_SELECT:
             field_title = (field.settings or {}).get("title", "")
             option = answer.value_option
             if option and option.start_time and option.end_time:
-                start = option.start_time.strftime("%a, %b %d, %H:%M")
-                end = option.end_time.strftime("%H:%M")
-                answer_text = f"{start} – {end}"
+                answer_text = _format_time_range_localized(
+                    option.start_time, option.end_time, lang_code
+                )
             elif option:
                 answer_text = option.title
             else:
                 answer_text = ""
             rows.append(
-                f'<tr><td style="padding: 4px 8px; color: #666;">{html_module.escape(field_title)}</td>'
-                f'<td style="padding: 4px 8px;">{html_module.escape(answer_text)}</td></tr>'
+                f'<tr><td style="{_FIELD_CELL_STYLE}">{html_module.escape(field_title)}</td>'
+                f'<td style="{_FIELD_CELL_STYLE}">{html_module.escape(answer_text)}</td></tr>'
             )
 
     if not rows:
         return ""
 
     return (
-        f'<div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">'
-        f'<p style="font-weight: bold; margin-bottom: 10px;">{heading}</p>'
+        f'<div style="margin-top: 20px; margin-bottom: 20px">'
+        f'<p style="font-weight: bold; margin-bottom: 10px; color: #55575d;">{heading}</p>'
         f'<table style="width: 100%; border-collapse: collapse;">'
         f'{"".join(rows)}'
-        f'</table>'
-        f'</div>'
+        f"</table>"
+        f"</div>"
     )
 
 
