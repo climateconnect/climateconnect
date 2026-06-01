@@ -1,4 +1,4 @@
-import { Button, Switch, TextField, Typography, useMediaQuery, Theme } from "@mui/material";
+import { Box, Button, Switch, TextField, Typography, useMediaQuery, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { RefObject, useContext, useState } from "react";
 import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
@@ -70,9 +70,6 @@ const useStyles = makeStyles<Theme>((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  editRegistrationBtn: {
-    float: "right",
-  },
   warning: {
     color: theme.palette.error.main,
   },
@@ -86,7 +83,6 @@ type Args = {
   errors: any;
   contentRef?: RefObject<any>;
   projectTypeOptions?: any;
-  registrationConfigWarning?: string | null;
 };
 
 export default function EditProjectContent({
@@ -97,7 +93,6 @@ export default function EditProjectContent({
   errors,
   contentRef,
   projectTypeOptions,
-  registrationConfigWarning,
 }: Args) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -174,21 +169,22 @@ export default function EditProjectContent({
           <Typography component="span">{projectTypeTexts.organizations[typeId]}</Typography>
         </div>
         {showEditRegistrationButton && (
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<SettingsIcon />}
-            onClick={() => setEditRegistrationOpen(true)}
-            aria-label={texts.edit_registration_settings}
-            className={classes.editRegistrationBtn}
-          >
-            {texts.edit_registration_settings}
-          </Button>
-        )}
-        {showEditRegistrationButton && registrationConfigWarning && (
-          <Typography variant="body2" color="warning.main" sx={{ mt: 0.5, mb: 1 }}>
-            {registrationConfigWarning}
-          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", mb: 1 }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<SettingsIcon />}
+              onClick={() => setEditRegistrationOpen(true)}
+              aria-label={texts.edit_registration_settings}
+            >
+              {texts.edit_registration_settings}
+            </Button>
+            {project.registration_config?.is_draft && (
+              <Typography variant="body2" color="warning.main" sx={{ mt: 0.5 }}>
+                {texts.registration_config_still_draft_warning}
+              </Typography>
+            )}
+          </Box>
         )}
         <div className={classes.block}>
           {project.is_personal_project ? (

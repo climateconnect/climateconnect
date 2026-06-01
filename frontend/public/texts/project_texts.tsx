@@ -1337,10 +1337,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Anmeldeeinrichtung abschließen",
     },
     registration_config_still_draft_warning: {
-      en:
-        "Registration configuration is not yet complete. You can publish the event now and complete the registration settings later.",
-      de:
-        "Die Anmeldekonfiguration ist noch nicht vollständig. Du kannst das Event jetzt veröffentlichen und die Anmeldeeinstellungen später abschließen.",
+      en: "Registration configuration is not yet complete.",
+      de: "Die Anmeldekonfiguration ist noch nicht vollständig.",
     },
     registration_custom_fields: {
       en: "Additional registration fields",
