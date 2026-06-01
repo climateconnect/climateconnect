@@ -100,6 +100,7 @@ function makeRegistration(overrides: Partial<EventRegistrationData> = {}): Event
     registration_end_date: FUTURE_DATE,
     status: "open",
     notify_admins: true,
+    is_draft: false,
     ...overrides,
   };
 }
@@ -308,9 +309,10 @@ describe("EditEventRegistrationModal", () => {
         eventRegistration: makeRegistration({
           max_participants: null,
           registration_end_date: null,
+          is_draft: true,
         }),
       });
-      fireEvent.click(screen.getByRole("button", { name: /save/i }));
+      fireEvent.click(screen.getByRole("button", { name: /save as draft/i }));
       await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
       // Neither field should appear in the payload
       const { payload } = mockApiRequest.mock.calls[0][0];
@@ -321,10 +323,10 @@ describe("EditEventRegistrationModal", () => {
     it("shows an error for an entered max_participants that is less than 1 (draft)", async () => {
       renderModal({
         project: draftProject,
-        eventRegistration: makeRegistration({ max_participants: null }),
+        eventRegistration: makeRegistration({ max_participants: null, is_draft: true }),
       });
       fireEvent.change(screen.getByRole("spinbutton"), { target: { value: "0" } });
-      fireEvent.click(screen.getByRole("button", { name: /save/i }));
+      fireEvent.click(screen.getByRole("button", { name: /publish registration/i }));
       await waitFor(() => {
         expect(screen.getByText(/must be greater than 0/i)).toBeInTheDocument();
       });
@@ -334,9 +336,9 @@ describe("EditEventRegistrationModal", () => {
     it("does NOT show a 'must be in the future' error for a past date (draft)", async () => {
       renderModal({
         project: draftProject,
-        eventRegistration: makeRegistration({ registration_end_date: PAST_DATE }),
+        eventRegistration: makeRegistration({ registration_end_date: PAST_DATE, is_draft: true }),
       });
-      fireEvent.click(screen.getByRole("button", { name: /save/i }));
+      fireEvent.click(screen.getByRole("button", { name: /save as draft/i }));
       await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
       expect(screen.queryByText(/must be in the future/i)).not.toBeInTheDocument();
     });
@@ -345,9 +347,12 @@ describe("EditEventRegistrationModal", () => {
       const afterEventEnd = "2100-01-01T00:00:00.000Z";
       renderModal({
         project: draftProject,
-        eventRegistration: makeRegistration({ registration_end_date: afterEventEnd }),
+        eventRegistration: makeRegistration({
+          registration_end_date: afterEventEnd,
+          is_draft: true,
+        }),
       });
-      fireEvent.click(screen.getByRole("button", { name: /save/i }));
+      fireEvent.click(screen.getByRole("button", { name: /publish registration/i }));
       await waitFor(() => {
         expect(screen.getByText(/before.*event end/i)).toBeInTheDocument();
       });

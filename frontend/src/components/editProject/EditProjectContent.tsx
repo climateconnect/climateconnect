@@ -86,6 +86,7 @@ type Args = {
   errors: any;
   contentRef?: RefObject<any>;
   projectTypeOptions?: any;
+  registrationConfigWarning?: string | null;
 };
 
 export default function EditProjectContent({
@@ -96,6 +97,7 @@ export default function EditProjectContent({
   errors,
   contentRef,
   projectTypeOptions,
+  registrationConfigWarning,
 }: Args) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -182,6 +184,11 @@ export default function EditProjectContent({
           >
             {texts.edit_registration_settings}
           </Button>
+        )}
+        {showEditRegistrationButton && registrationConfigWarning && (
+          <Typography variant="body2" color="warning.main" sx={{ mt: 0.5, mb: 1 }}>
+            {registrationConfigWarning}
+          </Typography>
         )}
         <div className={classes.block}>
           {project.is_personal_project ? (

@@ -1314,6 +1314,34 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Send a notification to team admins when someone registers or cancels.",
       de: "Sende eine Benachrichtigung an Team-Admins, wenn sich jemand an- oder abmeldet.",
     },
+    registration_config_draft_indicator: {
+      en:
+        "Registration configuration is in draft mode. Complete the setup and publish to make registration visible to visitors.",
+      de:
+        "Die Anmeldekonfiguration ist im Entwurfsmodus. Schließe die Einrichtung ab und veröffentliche sie, um die Anmeldung für Besucher sichtbar zu machen.",
+    },
+    publish_registration: {
+      en: "Publish registration",
+      de: "Anmeldung veröffentlichen",
+    },
+    registration_setup_incomplete: {
+      en: "Registration setup incomplete",
+      de: "Anmeldeeinrichtung unvollständig",
+    },
+    registration_setup_incomplete_description: {
+      en: "Complete the registration configuration to start accepting sign-ups.",
+      de: "Schließe die Anmeldekonfiguration ab, um Anmeldungen zu akzeptieren.",
+    },
+    complete_registration_setup: {
+      en: "Complete registration setup",
+      de: "Anmeldeeinrichtung abschließen",
+    },
+    registration_config_still_draft_warning: {
+      en:
+        "Registration configuration is not yet complete. You can publish the event now and complete the registration settings later.",
+      de:
+        "Die Anmeldekonfiguration ist noch nicht vollständig. Du kannst das Event jetzt veröffentlichen und die Anmeldeeinstellungen später abschließen.",
+    },
     registration_custom_fields: {
       en: "Additional registration fields",
       de: "Zusätzliche Anmeldefelder",

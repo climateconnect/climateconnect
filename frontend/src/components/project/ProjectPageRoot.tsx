@@ -816,37 +816,43 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
-      {isEventRegistrationEnabled && project.registration_config && (
-        <EventRegistrationModal
-          open={registrationModalOpen}
-          onClose={() => handleRegistrationModalClose()}
-          project={project}
-          onRegistrationSuccess={handleRegistrationSuccess}
-        />
-      )}
-      {isEventRegistrationEnabled && project.registration_config && (
-        <ViewRegistrationAnswersModal
-          open={modifyRegistrationModalOpen}
-          onClose={() => setModifyRegistrationModalOpen(false)}
-          registration={myEventRegistration}
-          title={texts.registration_answers_modal_title_self as string}
-          fields={currentEventRegistration?.fields ?? []}
-          event={{
-            name: project.name,
-            start_date: project.start_date,
-            end_date: project.end_date,
-          }}
-          cancelAction={{ onCancelClick: () => setCancelRegistrationModalOpen(true) }}
-        />
-      )}
-      {isEventRegistrationEnabled && project.registration_config && (
-        <CancelRegistrationModal
-          open={cancelRegistrationModalOpen}
-          onClose={() => setCancelRegistrationModalOpen(false)}
-          project={project}
-          onCancellationSuccess={handleCancelRegistrationSuccess}
-        />
-      )}
+      {isEventRegistrationEnabled &&
+        project.registration_config &&
+        !project.registration_config.is_draft && (
+          <EventRegistrationModal
+            open={registrationModalOpen}
+            onClose={() => handleRegistrationModalClose()}
+            project={project}
+            onRegistrationSuccess={handleRegistrationSuccess}
+          />
+        )}
+      {isEventRegistrationEnabled &&
+        project.registration_config &&
+        !project.registration_config.is_draft && (
+          <ViewRegistrationAnswersModal
+            open={modifyRegistrationModalOpen}
+            onClose={() => setModifyRegistrationModalOpen(false)}
+            registration={myEventRegistration}
+            title={texts.registration_answers_modal_title_self as string}
+            fields={currentEventRegistration?.fields ?? []}
+            event={{
+              name: project.name,
+              start_date: project.start_date,
+              end_date: project.end_date,
+            }}
+            cancelAction={{ onCancelClick: () => setCancelRegistrationModalOpen(true) }}
+          />
+        )}
+      {isEventRegistrationEnabled &&
+        project.registration_config &&
+        !project.registration_config.is_draft && (
+          <CancelRegistrationModal
+            open={cancelRegistrationModalOpen}
+            onClose={() => setCancelRegistrationModalOpen(false)}
+            project={project}
+            onCancellationSuccess={handleCancelRegistrationSuccess}
+          />
+        )}
     </div>
   );
 }

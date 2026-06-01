@@ -115,6 +115,7 @@ class _CustomFieldsBase(APITestCase):
         self.draft_er = EventRegistrationConfig.objects.create(
             project=self.draft_event,
             status=RegistrationStatus.OPEN,
+            is_draft=True,
         )
         ProjectMember.objects.create(
             user=self.organiser, project=self.event, role=self.admin_role
@@ -731,8 +732,8 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
             for i in range(6)
         ]
         response = self.client.patch(
-            self.patch_url,
-            {"is_draft": True, "fields": fields},
+            self.draft_patch_url,
+            {"fields": fields},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -745,9 +746,8 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
         """A field ID that doesn't belong to this event returns 400."""
         self.client.login(username="organiser_cf", password="testpassword")
         response = self.client.patch(
-            self.patch_url,
+            self.draft_patch_url,
             {
-                "is_draft": True,
                 "fields": [{"id": 999999, "order": 0, "label": "Checkbox 1"}],
             },
             format="json",
@@ -761,9 +761,8 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
         """Two fields with the same order value return 400."""
         self.client.login(username="organiser_cf", password="testpassword")
         response = self.client.patch(
-            self.patch_url,
+            self.draft_patch_url,
             {
-                "is_draft": True,
                 "fields": [
                     {
                         "field_type": "checkbox",
@@ -1648,6 +1647,7 @@ class TestInventoryField(_CustomFieldsBase):
         draft_er = EventRegistrationConfig.objects.create(
             project=draft_event,
             status=RegistrationStatus.OPEN,
+            is_draft=True,
         )
         ProjectMember.objects.create(
             user=self.organiser, project=draft_event, role=self.admin_role
@@ -1922,8 +1922,8 @@ class TestInventoryField(_CustomFieldsBase):
             }
         ]
         response = self.client.patch(
-            self.patch_url,
-            {"is_draft": True, "fields": fields},
+            self.draft_patch_url,
+            {"fields": fields},
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
