@@ -22,7 +22,6 @@ import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { Project, Role, Sector } from "../../types";
 import UserContext from "../context/UserContext";
-import { useFeatureToggles } from "../featureToggle";
 import NavigationButtons from "../general/NavigationButtons";
 import TranslateTexts from "../general/TranslateTexts";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
@@ -98,9 +97,7 @@ export default function EditProjectRoot({
     start_date: "",
     end_date: "",
   });
-  const [registrationConfigWarning, setRegistrationConfigWarning] = useState<string | null>(null);
   const contentRef = useRef(null);
-  const { isEnabled } = useFeatureToggles();
 
   const sourceLanguage = project.language ? project.language : locale;
   const targetLanguage = locales.find((l) => l !== sourceLanguage);
@@ -159,18 +156,6 @@ export default function EditProjectRoot({
         );
         return false;
       }
-    }
-
-    // Soft warning when publishing with a draft registration config
-    if (
-      !isDraft &&
-      project.project_type?.type_id === "event" &&
-      project.registration_config?.is_draft &&
-      isEnabled("EVENT_REGISTRATION")
-    ) {
-      setRegistrationConfigWarning(texts.registration_config_still_draft_warning);
-    } else {
-      setRegistrationConfigWarning(null);
     }
 
     return true;
@@ -412,7 +397,6 @@ export default function EditProjectRoot({
             errors={errors}
             contentRef={contentRef}
             projectTypeOptions={projectTypeOptions}
-            registrationConfigWarning={registrationConfigWarning}
           />
           <Divider className={classes.divider} />
           <NavigationButtons
