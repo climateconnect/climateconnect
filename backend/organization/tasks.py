@@ -21,7 +21,9 @@ logger = logging.getLogger(__name__)
 
 
 @app.task(bind=True, max_retries=3, default_retry_delay=60)
-def send_event_registration_confirmation_email(self, user_id: int, event_slug: str):
+def send_event_registration_confirmation_email(
+    self, user_id: int, event_slug: str, registration_id: int
+):
     """
     Send a registration confirmation email to a user who just registered for an event.
 
@@ -35,7 +37,9 @@ def send_event_registration_confirmation_email(self, user_id: int, event_slug: s
     Args:
         user_id: Primary key of the registering User.
         event_slug: URL slug of the event Project.
+        registration_id: Primary key of the EventRegistration record.
     """
+    from organization.models.event_registration import EventRegistration
     from organization.models.project import Project
     from organization.utility.email import (
         send_event_registration_confirmation_to_user,
@@ -74,7 +78,24 @@ def send_event_registration_confirmation_email(self, user_id: int, event_slug: s
         return
 
     try:
-        send_event_registration_confirmation_to_user(user=user, project=project)
+        registration = EventRegistration.objects.select_related(
+            "registration_config"
+        ).prefetch_related(
+            "field_answers__field",
+            "field_answers__value_option",
+            "field_answers__field__options",
+        ).get(id=registration_id)
+    except EventRegistration.DoesNotExist:
+        logger.error(
+            "[EventRegistration] Cannot send confirmation: Registration %s not found",
+            registration_id,
+        )
+        return
+
+    try:
+        send_event_registration_confirmation_to_user(
+            user=user, project=project, registration=registration
+        )
     except Exception as exc:
         logger.error(
             "[EventRegistration] Failed to send confirmation email to user %s "

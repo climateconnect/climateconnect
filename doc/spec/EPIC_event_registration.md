@@ -149,6 +149,14 @@ guest's registration.
 |-------|-------------|------|--------|
 | Export event registration results with custom field data | [#1962](https://github.com/climateconnect/climateconnect/issues/1962) | [`20260527_0830_export_event_registration_with_custom_fields.md`](./20260527_0830_export_event_registration_with_custom_fields.md) | ✅ Done   |
 
+#### Phase 4z — Registration Email with Field Answers (cross-cutting)
+
+When a guest registers for an event with custom fields, include the provided answers in the confirmation email. If no custom fields exist or no answers were provided, the email is unchanged.
+
+| Story | GitHub Issue | Spec | Status |
+|-------|-------------|------|--------|
+| Include field answers in registration confirmation email | [#2023](https://github.com/climateconnect/climateconnect/issues/2023) | [`20260601_1031_include_field_answers_in_registration_email.md`](./20260601_1031_include_field_answers_in_registration_email.md) | ⚪ |
+
 #### Phase 4c+ — Further Field Types (TBD)
 
 Additional field types (e.g. free text, number, date) to be defined based on user feedback after Phase 4a ships.

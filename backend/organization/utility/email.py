@@ -1,3 +1,4 @@
+import html as html_module
 import logging
 import re
 from organization.utility.project import get_project_name
@@ -559,7 +560,113 @@ def send_guest_cancellation_notification(user, project, admin_message: str):
     )
 
 
-def send_event_registration_confirmation_to_user(user, project):
+def _build_field_answers_html(registration, lang_code):
+    """
+    Build an HTML snippet of the guest's registration field answers for the
+    confirmation email.
+
+    Returns an HTML string with a styled table of answers, or an empty string
+    if no answers have non-null values.
+
+    Args:
+        registration: EventRegistration instance with prefetched field_answers,
+            field, value_option, and field.options.
+        lang_code: User's language code ("en" or "de").
+
+    Returns:
+        str: HTML snippet or empty string.
+    """
+    from organization.models.registration_field import RegistrationFieldType
+
+    answers_by_field = {}
+    for answer in registration.field_answers.all():
+        # Skip answers with no value
+        if (
+            answer.value_boolean is None
+            and answer.value_option is None
+            and answer.value_number is None
+        ):
+            continue
+        # For checkboxes, only include checked ones
+        if answer.field.field_type == RegistrationFieldType.CHECKBOX:
+            if answer.value_boolean is not True:
+                continue
+        answers_by_field[answer.field] = answer
+
+    if not answers_by_field:
+        return ""
+
+    # Sort by field order
+    sorted_fields = sorted(answers_by_field.keys(), key=lambda f: f.order)
+
+    heading = (
+        "Your registration answers" if lang_code == "en"
+        else "Deine Anmeldeantworten"
+    )
+
+    rows = []
+    for field in sorted_fields:
+        answer = answers_by_field[field]
+        field_type = field.field_type
+
+        if field_type == RegistrationFieldType.CHECKBOX:
+            description = (field.settings or {}).get("description", "")
+            # Strip HTML tags for plain text
+            plain_desc = re.sub(r"<[^>]+>", "", description).strip()
+            rows.append(
+                f'<tr><td colspan="2" style="padding: 4px 8px;">✓ {html_module.escape(plain_desc)}</td></tr>'
+            )
+
+        elif field_type == RegistrationFieldType.OPTION_SELECT:
+            field_title = (field.settings or {}).get("title", "")
+            option = answer.value_option
+            answer_text = option.title if option else ""
+            rows.append(
+                f'<tr><td style="padding: 4px 8px; color: #666;">{html_module.escape(field_title)}</td>'
+                f'<td style="padding: 4px 8px;">{html_module.escape(answer_text)}</td></tr>'
+            )
+
+        elif field_type == RegistrationFieldType.INVENTORY:
+            field_title = (field.settings or {}).get("title", "")
+            option = answer.value_option
+            option_title = option.title if option else ""
+            quantity = answer.value_number or 0
+            answer_text = f"{option_title} × {quantity}"
+            rows.append(
+                f'<tr><td style="padding: 4px 8px; color: #666;">{html_module.escape(field_title)}</td>'
+                f'<td style="padding: 4px 8px;">{html_module.escape(answer_text)}</td></tr>'
+            )
+
+        elif field_type == RegistrationFieldType.TIME_SLOT_SELECT:
+            field_title = (field.settings or {}).get("title", "")
+            option = answer.value_option
+            if option and option.start_time and option.end_time:
+                start = option.start_time.strftime("%a, %b %d, %H:%M")
+                end = option.end_time.strftime("%H:%M")
+                answer_text = f"{start} – {end}"
+            elif option:
+                answer_text = option.title
+            else:
+                answer_text = ""
+            rows.append(
+                f'<tr><td style="padding: 4px 8px; color: #666;">{html_module.escape(field_title)}</td>'
+                f'<td style="padding: 4px 8px;">{html_module.escape(answer_text)}</td></tr>'
+            )
+
+    if not rows:
+        return ""
+
+    return (
+        f'<div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">'
+        f'<p style="font-weight: bold; margin-bottom: 10px;">{heading}</p>'
+        f'<table style="width: 100%; border-collapse: collapse;">'
+        f'{"".join(rows)}'
+        f'</table>'
+        f'</div>'
+    )
+
+
+def send_event_registration_confirmation_to_user(user, project, registration):
     """
     Send a registration confirmation email to a user who just registered for an event.
 
@@ -567,12 +674,14 @@ def send_event_registration_confirmation_to_user(user, project):
     all other transactional emails in this module.
 
     **Mailjet template variables** (define these in both the EN and DE templates):
-        - ``FirstName``     — user's first name (falls back to username if blank)
-        - ``EventTitle``    — display name of the event (localised for the user's language)
-        - ``EventUrl``      — full, language-aware URL to the event page
-        - ``StartDate``     — localised start date with resolved timezone
-        - ``OrganiserName`` — localised organisation name, or user's full name / username
-        - ``LocationName``  — ``"Online"`` / location name / empty string
+        - ``FirstName``         — user's first name (falls back to username if blank)
+        - ``EventTitle``        — display name of the event (localised for the user's language)
+        - ``EventUrl``          — full, language-aware URL to the event page
+        - ``StartDate``         — localised start date with resolved timezone
+        - ``OrganiserName``     — localised organisation name, or user's full name / username
+        - ``LocationName``      — ``"Online"`` / location name / empty string
+        - ``FieldAnswersHtml``  — pre-rendered HTML of the guest's custom field answers
+          (empty string if no custom fields or no answers)
 
     **Required env variables**:
         ``EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID``    — Mailjet template ID (EN)
@@ -590,6 +699,8 @@ def send_event_registration_confirmation_to_user(user, project):
                 "project_parent__parent_organization__translation_org__language",
                 "project_parent__parent_user__user_profile",
             )``.
+        registration: ``EventRegistration`` instance. Must be fetched with
+            ``prefetch_related("field_answers__field", "field_answers__value_option")``.
     """
     lang_code = get_user_lang_code(user)
     display_tz = get_event_display_timezone(user, project)
@@ -601,6 +712,8 @@ def send_event_registration_confirmation_to_user(user, project):
         "en": f"You're registered for {get_project_name(project, 'en')}!",
         "de": f"Du bist für {get_project_name(project, 'de')} angemeldet!",
     }
+
+    field_answers_html = _build_field_answers_html(registration, lang_code)
 
     variables = {
         "FirstName": user.first_name or user.username,
@@ -614,6 +727,7 @@ def send_event_registration_confirmation_to_user(user, project):
         "StartDate": start_date_str,
         "OrganiserName": get_organiser_name(project, lang_code),
         "LocationName": get_location_name(project, lang_code),
+        "FieldAnswersHtml": field_answers_html,
     }
 
     send_email(
