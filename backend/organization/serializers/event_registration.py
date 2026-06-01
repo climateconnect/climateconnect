@@ -109,6 +109,7 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
             "status",
             "available_seats",
             "notify_admins",
+            "is_draft",
         ]
         extra_kwargs = {
             # PositiveIntegerField gives us min_value via the model, but we set
@@ -121,6 +122,7 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
             # Editing after creation is done via PATCH /registration-config/ using
             # EditEventRegistrationConfigSerializer.
             "notify_admins": {"required": False},
+            "is_draft": {"required": False},
         }
 
     def get_available_seats(self, obj):
@@ -696,12 +698,14 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
             "status",
             "available_seats",
             "notify_admins",
+            "is_draft",
         ]
         extra_kwargs = {
             "max_participants": {"required": False, "allow_null": True, "min_value": 1},
             "registration_end_date": {"required": False, "allow_null": True},
             "status": {"required": False},
             "notify_admins": {"required": False},
+            "is_draft": {"required": False},
         }
 
     def validate_status(self, value):
@@ -750,6 +754,11 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
         capacity-driven heuristic.
         """
         fields_data = validated_data.pop("fields", None)
+        new_is_draft = validated_data.pop("is_draft", None)
+
+        # Handle is_draft transition (one-way: True → False only).
+        if new_is_draft is not None and not new_is_draft and instance.is_draft:
+            instance.is_draft = False
 
         explicit_status = validated_data.get("status")
 
@@ -787,6 +796,91 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
         project = self.context.get("project") or (
             self.instance.project if self.instance else None
         )
+
+        # --- is_draft transition validation ---
+        if self.instance and "is_draft" in attrs:
+            new_is_draft = attrs["is_draft"]
+            if new_is_draft and not self.instance.is_draft:
+                # Already published — one-way transition: reject setting is_draft=True
+                raise serializers.ValidationError(
+                    {
+                        "is_draft": "Registration configuration has already been published."
+                    }
+                )
+            if not new_is_draft and self.instance.is_draft:
+                # Transitioning from draft to published — run full validation.
+                # Validate registration_end_date is present and valid.
+                reg_end = attrs.get(
+                    "registration_end_date", self.instance.registration_end_date
+                )
+                if reg_end is None:
+                    raise serializers.ValidationError(
+                        {
+                            "registration_end_date": "Required when publishing registration."
+                        }
+                    )
+                if reg_end <= timezone.now():
+                    raise serializers.ValidationError(
+                        {
+                            "registration_end_date": "Registration end date cannot be in the past."
+                        }
+                    )
+                max_p = attrs.get("max_participants", self.instance.max_participants)
+                if max_p is None:
+                    raise serializers.ValidationError(
+                        {"max_participants": "Required when publishing registration."}
+                    )
+                if project and project.end_date and reg_end > project.end_date:
+                    raise serializers.ValidationError(
+                        {
+                            "registration_end_date": (
+                                "Registration end date must be on or before the event end date."
+                            )
+                        }
+                    )
+                # Validate custom fields when publishing.
+                fields_data = attrs.get("fields")
+                if fields_data is not None and len(fields_data) > 5:
+                    raise serializers.ValidationError(
+                        {"fields": "Maximum 5 custom fields allowed per event."}
+                    )
+
+        # Field count and uniqueness checks — run for both draft and published.
+        if "fields" in attrs:
+            fields_data = attrs["fields"]
+            if len(fields_data) > 5:
+                raise serializers.ValidationError(
+                    {"fields": "Maximum 5 custom fields allowed per event."}
+                )
+            orders = [f.get("order") for f in fields_data if "order" in f]
+            if len(orders) != len(set(orders)):
+                raise serializers.ValidationError(
+                    {"fields": "Field order values must be unique within the event."}
+                )
+            # Verify submitted field IDs belong to this config.
+            submitted_ids = [f["id"] for f in fields_data if f.get("id") is not None]
+            if submitted_ids and self.instance:
+                existing_fields = {
+                    f.id: f
+                    for f in self.instance.fields.filter(
+                        id__in=submitted_ids
+                    ).prefetch_related("options")
+                }
+                unknown = set(submitted_ids) - set(existing_fields.keys())
+                if unknown:
+                    raise serializers.ValidationError(
+                        {
+                            "fields": f"Field IDs not found on this event: {sorted(unknown)}"
+                        }
+                    )
+
+        # --- Draft configs skip publish-time validation below ---
+        effective_is_draft = self.instance.is_draft if self.instance else True
+        if "is_draft" in attrs:
+            effective_is_draft = attrs["is_draft"]
+
+        if effective_is_draft:
+            return attrs
 
         registration_end_date = attrs.get("registration_end_date")
         if registration_end_date is not None:
@@ -867,21 +961,10 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                         }
                     )
 
-        # Field count, uniqueness, and ID existence checks.
+        # Answer-lock checks (published only) — immutable text properties
+        # cannot change once registrants have submitted answers.
         if "fields" in attrs:
             fields_data = attrs["fields"]
-            if len(fields_data) > 5:
-                raise serializers.ValidationError(
-                    {"fields": "Maximum 5 custom fields allowed per event."}
-                )
-            orders = [f.get("order") for f in fields_data if "order" in f]
-            if len(orders) != len(set(orders)):
-                raise serializers.ValidationError(
-                    {"fields": "Field order values must be unique within the event."}
-                )
-            # Verify submitted field IDs belong to this config; also enforce
-            # answer-lock: immutable text properties cannot change once registrants
-            # have submitted answers referencing that field or option.
             submitted_ids = [f["id"] for f in fields_data if f.get("id") is not None]
             if submitted_ids and self.instance:
                 existing_fields = {
@@ -890,13 +973,6 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                         id__in=submitted_ids
                     ).prefetch_related("options")
                 }
-                unknown = set(submitted_ids) - set(existing_fields.keys())
-                if unknown:
-                    raise serializers.ValidationError(
-                        {
-                            "fields": f"Field IDs not found on this event: {sorted(unknown)}"
-                        }
-                    )
 
                 for i, field_data in enumerate(fields_data):
                     field_id = field_data.get("id")

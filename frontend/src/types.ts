@@ -36,6 +36,8 @@ export type EventRegistrationData = {
   status: "open" | "closed" | "full" | "ended";
   /** When true, team admins receive an email on registration/cancellation. */
   notify_admins: boolean;
+  /** When true, the registration configuration is incomplete and not visible to visitors. */
+  is_draft: boolean;
   /** Custom registration fields configured by the organiser (Phase 4a). */
   fields?: RegistrationField[];
 };

@@ -596,9 +596,11 @@ class CreateProjectView(APIView):
         # Create EventRegistrationConfig (and any nested custom fields) atomically.
         # Using serializer.save() so the serializer's create() handles nested fields.
         if er_serializer is not None:
-            er_serializer.save(project=project)
+            er_serializer.save(project=project, is_draft=is_draft)
             logger.info(
-                "EventRegistrationConfig created for project %s", project.url_slug
+                "EventRegistrationConfig created for project %s (is_draft=%s)",
+                project.url_slug,
+                is_draft,
             )
 
         if translations_object and translations and source_language:
@@ -961,6 +963,29 @@ class ProjectAPIView(APIView):
         if "is_draft" in request.data:
             # One way transition: draft → published, never back
             project.is_draft = False
+            # Date collision check: if the project has a published registration
+            # config, validate registration_end_date <= new end_date.
+            if hasattr(project, "registration_config"):
+                rc = project.registration_config
+                if not rc.is_draft and rc.registration_end_date:
+                    effective_end = (
+                        parse(request.data["end_date"])
+                        if "end_date" in request.data
+                        else project.end_date
+                    )
+                    if effective_end and rc.registration_end_date > effective_end:
+                        return Response(
+                            {
+                                "registration_config": {
+                                    "registration_end_date": (
+                                        "Registration end date must be on or before "
+                                        "the event end date. Update the registration "
+                                        "settings before publishing."
+                                    )
+                                }
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
         if "is_personal_project" in request.data:
             if request.data["is_personal_project"] is True:
                 project_parents = ProjectParents.objects.get(project=project)
