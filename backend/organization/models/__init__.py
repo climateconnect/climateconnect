@@ -42,6 +42,7 @@ from organization.models.sector import (
 
 from organization.models.event_registration import (
     EventRegistration,
+    RegistrationFieldAnswer,
     EventRegistrationConfig,
     RegistrationStatus,
 )

@@ -6,6 +6,7 @@ import theme from "../../../themes/theme";
 import RegistrationActionButton from "./RegistrationActionButton";
 import { Project } from "../../../types";
 import { RegistrationUIState } from "../../../utils/eventRegistrationHelpers";
+import UserContext from "../../context/UserContext";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -13,12 +14,22 @@ import { RegistrationUIState } from "../../../utils/eventRegistrationHelpers";
 
 const TEXTS = {
   you_attended_this_event: "You attended this event",
+  modify_registration: "Modify registration",
   cancel_registration: "Cancel registration",
   registration_closed: "Registration closed",
   register_now: "Register now",
   booked_out: "Booked Out",
   already_registered: "Registered ✓",
   seats_available: "Seats available",
+};
+
+const MOCK_USER_CONTEXT = {
+  user: null,
+  locale: "en" as const,
+  locales: ["en", "de"] as const,
+  pathName: "/",
+  donationGoals: [],
+  hubUrl: "",
 };
 
 function makeProject(status: string, availableSeats?: number, maxParticipants?: number): Project {
@@ -38,7 +49,7 @@ function renderButton({
   project = makeProject("open"),
   isUserRegistered = false,
   handleRegisterClick = jest.fn(),
-  handleCancelClick = jest.fn(),
+  onModifyRegistrationClick = jest.fn(),
   fallback = null,
   showSeatsCount = false,
 }: {
@@ -46,23 +57,25 @@ function renderButton({
   project?: Project;
   isUserRegistered?: boolean;
   handleRegisterClick?: jest.Mock;
-  handleCancelClick?: jest.Mock;
+  onModifyRegistrationClick?: jest.Mock;
   fallback?: React.ReactNode;
   showSeatsCount?: boolean;
 }) {
   return render(
-    <ThemeProvider theme={theme}>
-      <RegistrationActionButton
-        registrationState={registrationState}
-        project={project}
-        texts={TEXTS}
-        isUserRegistered={isUserRegistered}
-        handleRegisterClick={handleRegisterClick}
-        handleCancelClick={handleCancelClick}
-        fallback={fallback}
-        showSeatsCount={showSeatsCount}
-      />
-    </ThemeProvider>
+    <UserContext.Provider value={MOCK_USER_CONTEXT}>
+      <ThemeProvider theme={theme}>
+        <RegistrationActionButton
+          registrationState={registrationState}
+          project={project}
+          texts={TEXTS}
+          isUserRegistered={isUserRegistered}
+          handleRegisterClick={handleRegisterClick}
+          onModifyRegistrationClick={onModifyRegistrationClick}
+          fallback={fallback}
+          showSeatsCount={showSeatsCount}
+        />
+      </ThemeProvider>
+    </UserContext.Provider>
   );
 }
 
@@ -88,21 +101,21 @@ describe("RegistrationActionButton", () => {
   // ── cancel ────────────────────────────────────────────────────────────────
 
   describe('state: "cancel"', () => {
-    it('renders the "Cancel registration" button', () => {
+    it('renders the "Modify registration" button', () => {
       renderButton({ registrationState: "cancel" });
-      expect(screen.getByRole("button", { name: /cancel registration/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /modify registration/i })).toBeInTheDocument();
     });
 
-    it("calls handleCancelClick when clicked", () => {
-      const handleCancelClick = jest.fn();
-      renderButton({ registrationState: "cancel", handleCancelClick });
-      fireEvent.click(screen.getByRole("button", { name: /cancel registration/i }));
-      expect(handleCancelClick).toHaveBeenCalledTimes(1);
+    it("calls onModifyRegistrationClick when clicked", () => {
+      const onModifyRegistrationClick = jest.fn();
+      renderButton({ registrationState: "cancel", onModifyRegistrationClick });
+      fireEvent.click(screen.getByRole("button", { name: /modify registration/i }));
+      expect(onModifyRegistrationClick).toHaveBeenCalledTimes(1);
     });
 
     it("button is not disabled", () => {
       renderButton({ registrationState: "cancel" });
-      expect(screen.getByRole("button", { name: /cancel registration/i })).not.toBeDisabled();
+      expect(screen.getByRole("button", { name: /modify registration/i })).not.toBeDisabled();
     });
   });
 
@@ -118,12 +131,16 @@ describe("RegistrationActionButton", () => {
 
     it("does not call any handler when clicked (disabled)", () => {
       const handleRegisterClick = jest.fn();
-      const handleCancelClick = jest.fn();
-      renderButton({ registrationState: "adminClosed", handleRegisterClick, handleCancelClick });
+      const onModifyRegistrationClick = jest.fn();
+      renderButton({
+        registrationState: "adminClosed",
+        handleRegisterClick,
+        onModifyRegistrationClick,
+      });
       const btn = screen.getByRole("button", { name: /booked out/i });
       fireEvent.click(btn);
       expect(handleRegisterClick).not.toHaveBeenCalled();
-      expect(handleCancelClick).not.toHaveBeenCalled();
+      expect(onModifyRegistrationClick).not.toHaveBeenCalled();
     });
   });
 

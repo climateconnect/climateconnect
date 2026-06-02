@@ -513,8 +513,16 @@ const formatProjectForRequest = async (project, translations) => {
             registration_end_date: registration_end_date
               ? dayjs(registration_end_date).toISOString()
               : undefined,
-            // Strip client-only _clientKey before sending to the API
-            fields: registration_fields?.map(({ _clientKey, ...field }) => field),
+            // Strip client-only _clientKey and empty unfilled option rows before sending to the API
+            fields: registration_fields?.map(({ _clientKey, ...field }) => ({
+              ...field,
+              options: field.options?.filter((opt) => {
+                if (field.field_type === "time_slot_select") {
+                  return !!(opt.start_time || opt.end_time);
+                }
+                return opt.title.trim() !== "";
+              }),
+            })),
           }
         : undefined,
   };

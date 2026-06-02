@@ -5,8 +5,6 @@ from organization.models import (
     CommentTranslation,
     EventRegistration,
     EventRegistrationConfig,
-    RegistrationField,
-    RegistrationFieldOption,
     Organization,
     OrganizationFieldTagging,
     OrganizationFollower,
@@ -31,6 +29,9 @@ from organization.models import (
     ProjectTagging,
     ProjectTags,
     ProjectTranslation,
+    RegistrationField,
+    RegistrationFieldAnswer,
+    RegistrationFieldOption,
     Sector,
     UserProfileSectorMapping,
 )
@@ -115,6 +116,7 @@ class ProjectAdmin(admin.ModelAdmin):
                     "project_type",
                     "short_description",
                     "description",
+                    "devlink_component",
                     "image",
                     "thumbnail_image",
                     "website",
@@ -306,9 +308,10 @@ class RegistrationFieldOptionInline(admin.TabularInline):
 
 
 class RegistrationFieldAdmin(admin.ModelAdmin):
-    list_display = ("field_type", "order", "is_required", "get_event_name")
+    list_display = ("label", "field_type", "order", "is_required", "get_event_name")
     list_filter = ("field_type", "is_required")
     search_fields = (
+        "label",
         "registration_config__project__name",
         "registration_config__project__url_slug",
     )
@@ -341,3 +344,43 @@ class RegistrationFieldOptionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(RegistrationFieldOption, RegistrationFieldOptionAdmin)
+
+
+class RegistrationFieldAnswerAdmin(admin.ModelAdmin):
+    list_display = (
+        "registration",
+        "field",
+        "get_field_type",
+        "get_value",
+        "get_event_name",
+    )
+    list_filter = ("field__field_type", "registration__registered_at")
+    search_fields = (
+        "registration__user__username",
+        "registration__user__email",
+        "field__registration_config__project__name",
+    )
+    raw_id_fields = ("registration", "field", "value_option")
+    readonly_fields = ("registration", "field")
+
+    def get_field_type(self, obj):
+        return obj.field.field_type
+
+    get_field_type.short_description = "Field Type"
+
+    def get_value(self, obj):
+        if obj.value_boolean is not None:
+            return obj.value_boolean
+        if obj.value_option:
+            return obj.value_option.title
+        return "-"
+
+    get_value.short_description = "Value"
+
+    def get_event_name(self, obj):
+        return obj.field.registration_config.project.name
+
+    get_event_name.short_description = "Event"
+
+
+admin.site.register(RegistrationFieldAnswer, RegistrationFieldAnswerAdmin)

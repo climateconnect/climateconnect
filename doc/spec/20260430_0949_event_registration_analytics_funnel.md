@@ -1,6 +1,6 @@
 # Event Registration Analytics Funnel Tracking
 
-**Status**: DRAFT
+**Status**: COMPLETED
 **Type**: Frontend — analytics instrumentation
 **Epic**: [EPIC: Event Registration](./EPIC_event_registration.md)
 **Date created**: 2026-04-30
@@ -33,16 +33,18 @@ Event Page View
     │
     ├──▶ Click "Register" button
     │         │
-    │         ├──▶ Authenticated user → Confirm → Success
+    │         ├──▶ Authenticated user → [Custom fields] → Confirm → Success
     │         │
     │         └──▶ Guest user → Auth flow (email → password/OTP/signup)
     │                       │
-    │                       ├──▶ Auth succeeds → Confirm → Success
+    │                       ├──▶ Auth succeeds → [Custom fields] → Confirm → Success
     │                       │
     │                       └──▶ Auth abandoned → Drop-off
     │
     └──▶ No click → Bounce
 ```
+
+The `[Custom fields]` step is optional — only shown when the event has configured custom registration fields. Since each event's form is unique, there is no fixed per-field funnel. Instead, a single `event_registration_custom_fields_started` event fires on the first interaction with any custom field, enabling drop-off analysis between "started filling in details" and "completed registration".
 
 ### Event Definitions
 
@@ -77,6 +79,12 @@ Event Page View
 |------------|---------|------------|
 | `event_registration_error` | Registration API fails after confirmation | `error_type: "network" \| "full" \| "closed" \| "ended" \| "server_error"`, `event_slug: string` |
 
+#### Custom Fields (optional step)
+
+| Event Name | Trigger | Parameters |
+|------------|---------|------------|
+| `event_registration_custom_fields_started` | First interaction with any custom registration field (checkbox toggled, option selected, inventory option/quantity changed, time slot selected) | `event_slug: string`, `field_count: number` |
+
 ---
 
 ## Non-Functional Requirements
@@ -106,6 +114,7 @@ Recommended approach: the modal's `onUserStatusDetermined` callback fires `event
 | `EventRegistrationModal.tsx` — `handleRegisterClick` | `event_registration_modal_opened` |
 | `EventRegistrationModal.tsx` — `handleUserStatusDetermined` (new callback) | `event_registration_auth_started`, `event_registration_auth_method_selected` |
 | `EventRegistrationModal.tsx` — `handleAuthSuccess` (new callback) | `event_registration_auth_completed` |
+| `RegistrationFieldAnswersForm.tsx` — first field interaction | `event_registration_custom_fields_started` (fires once per modal session; guarded by a ref) |
 | `EventRegistrationModal.tsx` — `handleRegister` (authenticated) | `event_registration_confirmed` |
 | `EventRegistrationModal.tsx` — `handleRegister` success branch | `event_registration_success` |
 | `EventRegistrationModal.tsx` — `handleRegister` error branch | `event_registration_error` |
@@ -119,6 +128,19 @@ The registration button appears in multiple places. The `location` parameter mus
 - `"similar_projects_sidebar"` — sidebar on individual event pages
 
 This requires the button rendering code to know its container context. If prop-drilling is undesirable, a simple `data-analytics-location` attribute on the button element can be read by the tracking helper.
+
+### Custom Fields Drop-off Tracking
+
+Custom registration fields are optional — a user can submit the form without filling them in. To detect drop-off caused by the custom fields step, `event_registration_custom_fields_started` fires the **first time** the user interacts with any custom field. This is a once-per-modal-session event.
+
+Implementation approach:
+- `RegistrationFieldAnswersForm` accepts an optional `onFirstInteraction` callback prop.
+- The component maintains a `hasInteracted` ref (initially `false`). On the first call to any change handler (`handleBooleanChange`, `handleOptionChange`, `handleInventoryOptionChange`, `handleInventoryQuantityChange`, `handleTimeSlotChange`), if `hasInteracted` is `false`, set it to `true` and invoke `onFirstInteraction()`.
+- `EventRegistrationModal` passes a callback that fires the GA4 event with `event_slug` and `field_count` (number of configured custom fields).
+- The event fires regardless of which specific field the user interacts with — it signals "user started engaging with the custom fields step", not which field.
+- Using a ref (not state) avoids re-renders. The guard ensures the event fires exactly once per registration attempt, even if the user interacts with multiple fields.
+
+This event, combined with `event_registration_success` and `event_registration_cancelled` / modal-close events, enables a simple drop-off analysis: users who started filling custom fields but did not complete registration.
 
 ---
 
@@ -148,6 +170,7 @@ This requires the button rendering code to know its container context. If prop-d
 - [ ] `event_registration_success` fires when the registration API returns success.
 - [ ] `event_registration_error` fires when the registration API fails, with appropriate `error_type`.
 - [ ] `event_registration_auth_abandoned` fires when the modal is closed during the auth flow.
+- [ ] `event_registration_custom_fields_started` fires once on the first interaction with any custom registration field, with `event_slug` and `field_count`.
 - [ ] All events respect the statistics cookie consent — no tracking if consent is denied.
 - [ ] `event_slug` is included in all event-registration-specific events for funnel segmentation.
 - [ ] Existing auth analytics events (`auth_email_entered`, `auth_otp_verified`, etc.) continue to fire unchanged inside the modal.

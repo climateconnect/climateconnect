@@ -1,4 +1,4 @@
-import { Project } from "../types";
+import { Project, RegistrationField } from "../types";
 
 /**
  * Determines if the event registration button should be displayed
@@ -12,7 +12,9 @@ export const shouldShowRegisterButton = (
 ): boolean => {
   return !!(
     isEventRegistrationEnabled &&
+    !project.is_draft &&
     project.registration_config &&
+    !project.registration_config.is_draft &&
     project.registration_config.status !== "ended"
   );
 };
@@ -85,6 +87,12 @@ export const getRegistrationUIState = (
 ): RegistrationUIState => {
   if (!isEventRegistrationEnabled || !project.registration_config) return "hidden";
 
+  // Draft projects should never show a registration button
+  if (project.is_draft) return "hidden";
+
+  // Draft registration configs are not visible to visitors
+  if (project.registration_config.is_draft) return "hidden";
+
   // Priority 1 — always show attended label, even if status is ended
   if (hasAttended) return "attended";
 
@@ -100,3 +108,65 @@ export const getRegistrationUIState = (
   if (project.registration_config.status === "open") return "register";
   return "closed";
 };
+
+/**
+ * Validates custom registration fields for a published event.
+ *
+ * Returns an object with:
+ * - errors: per-field/option error messages keyed by "field:{i}", "field:{i}:options", "option:{i}:{j}", etc.
+ * - hasError: true if any validation error was found
+ *
+ * Skipped entirely when isDraft is true.
+ */
+export function validateRegistrationFields(
+  fields: RegistrationField[] | undefined,
+  isDraft: boolean,
+  requiredText: string
+): { errors: Record<string, string>; hasError: boolean } {
+  const result: { errors: Record<string, string>; hasError: boolean } = {
+    errors: {},
+    hasError: false,
+  };
+
+  if (isDraft || !fields || fields.length === 0) return result;
+
+  fields.forEach((field, fi) => {
+    const fieldKey = `field:${fi}`;
+    const settings = field.settings || {};
+
+    if (field.field_type === "checkbox") {
+      if (!settings.description || !settings.description.trim()) {
+        result.errors[fieldKey] = requiredText;
+        result.hasError = true;
+      }
+    } else if (
+      field.field_type === "option_select" ||
+      field.field_type === "inventory" ||
+      field.field_type === "time_slot_select"
+    ) {
+      if (!settings.title || !settings.title.trim()) {
+        result.errors[fieldKey] = requiredText;
+        result.hasError = true;
+      }
+      const options = field.options || [];
+      if (options.length === 0) {
+        result.errors[`${fieldKey}:options`] = requiredText;
+        result.hasError = true;
+      }
+      if (field.field_type === "inventory") {
+        options.forEach((opt, oi) => {
+          if (!opt.available_amount) {
+            result.errors[`option:${fi}:${oi}`] = requiredText;
+            result.hasError = true;
+          }
+          if (!opt.max_amount_per_guest) {
+            result.errors[`option:${fi}:${oi}:max`] = requiredText;
+            result.hasError = true;
+          }
+        });
+      }
+    }
+  });
+
+  return result;
+}

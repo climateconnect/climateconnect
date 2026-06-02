@@ -4,6 +4,7 @@ Tests for the admin participant list and admin guest cancellation.
 Contains:
   - TestListEventParticipants
   - TestAdminCancelGuestRegistration
+  - TestListEventParticipantsCustomFieldAnswers
 """
 
 from datetime import timedelta
@@ -21,7 +22,12 @@ from organization.models import Project, ProjectMember, ProjectStatus
 from organization.models.event_registration import (
     EventRegistration,
     EventRegistrationConfig,
+    RegistrationFieldAnswer,
     RegistrationStatus,
+)
+from organization.models.registration_field import (
+    RegistrationField,
+    RegistrationFieldOption,
 )
 
 from ._helpers import _CancellationTestBase
@@ -292,10 +298,12 @@ class TestListEventParticipants(APITestCase):
 
         self.client.login(username="organiser_list_reg", password="testpassword")
 
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(7):
             # Queries: session lookup (1) + auth user lookup (1) + project lookup (1)
             #          + permission check (1) + EventRegistrationConfig lookup (1)
             #          + participants joined with user/profile via select_related (1)
+            #          + field_answers prefetch (1; inner field/option prefetches are
+            #            skipped by Django when the parent set is empty).
             # Total is constant regardless of participant count — no N+1.
             response = self.client.get(self._url())
 
@@ -533,3 +541,298 @@ class TestAdminCancelGuestRegistration(_CancellationTestBase):
             self.assertIn("id", row)
             self.assertIn("cancelled_at", row)
             self.assertIsNotNone(row["id"])
+
+
+# ===========================================================================
+# Custom field answers on GET /projects/{slug}/registrations/  (spec #1963)
+# ===========================================================================
+
+
+class TestListEventParticipantsCustomFieldAnswers(APITestCase):
+    """
+    Tests for the ``field_answers`` field on GET
+    /api/projects/{url_slug}/registrations/.
+
+    Covers spec test cases 1-8 from
+    ``doc/spec/20260520_0750_display_custom_field_answers_in_organiser_views.md``:
+
+    1. Event with custom fields and answers → ``field_answers`` populated.
+    2. Event with no custom fields → ``field_answers`` is ``[]``.
+    3. Registration with no answers → ``field_answers`` is ``[]``.
+    4. Cancelled registrations still include their stored answers.
+    5. No N+1 — query count is constant regardless of registration count.
+    6. Answers ordered by ``field.order``.
+    7. ``option_select`` answer carries ``value_option`` PK.
+    8. ``checkbox`` answer carries ``value_boolean``; ``value_option`` is ``null``.
+    """
+
+    def setUp(self):
+        self.project_status, _ = ProjectStatus.objects.update_or_create(
+            id=2,
+            defaults={
+                "name": "active_answers",
+                "name_de_translation": "aktiv",
+                "has_end_date": True,
+                "has_start_date": True,
+            },
+        )
+        self.default_language, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
+        )
+        self.admin_role = Role.objects.create(
+            name="Admin_answers", role_type=Role.ALL_TYPE
+        )
+        self.organiser = User.objects.create_user(
+            username="organiser_answers", password="testpassword"
+        )
+        self.event = Project.objects.create(
+            name="Answers Event",
+            url_slug="answers-event",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=10),
+            end_date=timezone.now() + timedelta(days=60),
+        )
+        self.er = EventRegistrationConfig.objects.create(
+            project=self.event,
+            max_participants=100,
+            registration_end_date=timezone.now() + timedelta(days=30),
+            status=RegistrationStatus.OPEN,
+        )
+        ProjectMember.objects.create(
+            user=self.organiser, project=self.event, role=self.admin_role
+        )
+        # Two custom fields on the event: a checkbox (order 0) and an
+        # option_select (order 1). The option_select has two options.
+        self.field_checkbox = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="checkbox",
+            label="checkbox 1",
+            order=0,
+            is_required=False,
+            settings={"description": "<p>I agree to the rules.</p>"},
+        )
+        self.field_option = RegistrationField.objects.create(
+            registration_config=self.er,
+            field_type="option_select",
+            label="option select 1",
+            order=1,
+            is_required=False,
+            settings={"title": "T-shirt size"},
+        )
+        self.option_s = RegistrationFieldOption.objects.create(
+            field=self.field_option, title="S", order=0
+        )
+        self.option_m = RegistrationFieldOption.objects.create(
+            field=self.field_option, title="M", order=1
+        )
+
+    def _url(self, slug="answers-event"):
+        return reverse(
+            "organization:event-registrations",
+            kwargs={"url_slug": slug},
+        )
+
+    def _register(self, username):
+        user = User.objects.create_user(username=username, password="x")
+        return EventRegistration.objects.create(user=user, registration_config=self.er)
+
+    # ------------------------------------------------------------------
+    # 1. Event with custom fields and answers
+    # ------------------------------------------------------------------
+
+    @tag("registration_config", "list_participants", "custom_fields")
+    def test_field_answers_populated_for_registrants_with_answers(self):
+        """Registrants with answers → ``field_answers`` contains those answers."""
+        reg = self._register("reg_with_answers")
+        RegistrationFieldAnswer.objects.create(
+            registration=reg, field=self.field_checkbox, value_boolean=True
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=reg,
+            field=self.field_option,
+            value_option=self.option_m,
+        )
+
+        self.client.login(username="organiser_answers", password="testpassword")
+        response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(len(data), 1)
+        answers = data[0]["field_answers"]
+        self.assertEqual(len(answers), 2)
+        # Ordered by field.order: checkbox (0) before option_select (1).
+        self.assertEqual(answers[0]["field"], self.field_checkbox.id)
+        self.assertEqual(answers[0]["value_boolean"], True)
+        self.assertIsNone(answers[0]["value_option"])
+        self.assertEqual(answers[1]["field"], self.field_option.id)
+        self.assertIsNone(answers[1]["value_boolean"])
+        self.assertEqual(answers[1]["value_option"], self.option_m.id)
+
+    # ------------------------------------------------------------------
+    # 2. Event with no custom fields
+    # ------------------------------------------------------------------
+
+    @tag("registration_config", "list_participants", "custom_fields")
+    def test_field_answers_empty_when_event_has_no_custom_fields(self):
+        """Event with no custom fields → ``field_answers`` is ``[]``."""
+        # Create a fresh event with no fields.
+        event2 = Project.objects.create(
+            name="No Fields Event",
+            url_slug="no-fields-event",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=10),
+            end_date=timezone.now() + timedelta(days=60),
+        )
+        er2 = EventRegistrationConfig.objects.create(
+            project=event2,
+            max_participants=100,
+            registration_end_date=timezone.now() + timedelta(days=30),
+            status=RegistrationStatus.OPEN,
+        )
+        ProjectMember.objects.create(
+            user=self.organiser, project=event2, role=self.admin_role
+        )
+        user = User.objects.create_user(username="reg_no_fields", password="x")
+        EventRegistration.objects.create(user=user, registration_config=er2)
+
+        self.client.login(username="organiser_answers", password="testpassword")
+        response = self.client.get(self._url("no-fields-event"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["field_answers"], [])
+
+    # ------------------------------------------------------------------
+    # 3. Registration with no answers (registered before fields existed)
+    # ------------------------------------------------------------------
+
+    @tag("registration_config", "list_participants", "custom_fields")
+    def test_field_answers_empty_for_registration_without_answers(self):
+        """Registration that has no stored answers → ``field_answers`` is ``[]``."""
+        self._register("reg_no_answers")
+
+        self.client.login(username="organiser_answers", password="testpassword")
+        response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["field_answers"], [])
+
+    # ------------------------------------------------------------------
+    # 4. Cancelled registrations still include their stored answers
+    # ------------------------------------------------------------------
+
+    @tag("registration_config", "list_participants", "custom_fields")
+    def test_cancelled_registration_keeps_field_answers(self):
+        """Cancelled registrations preserve their answers in the response."""
+        reg = self._register("reg_cancelled_with_answers")
+        RegistrationFieldAnswer.objects.create(
+            registration=reg, field=self.field_checkbox, value_boolean=False
+        )
+        # Soft-cancel the registration.
+        reg.cancelled_at = timezone.now()
+        reg.cancelled_by = self.organiser
+        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+
+        self.client.login(username="organiser_answers", password="testpassword")
+        response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(len(data), 1)
+        self.assertIsNotNone(data[0]["cancelled_at"])
+        self.assertEqual(len(data[0]["field_answers"]), 1)
+        self.assertEqual(data[0]["field_answers"][0]["value_boolean"], False)
+
+    # ------------------------------------------------------------------
+    # 5. No N+1 — query count constant regardless of registration count
+    # ------------------------------------------------------------------
+
+    @tag("registration_config", "list_participants", "custom_fields")
+    def test_query_count_constant_with_many_registrations_and_answers(self):
+        """
+        Verify ``prefetch_related`` keeps query count constant when many
+        registrations each have multiple custom-field answers.
+        """
+        for i in range(5):
+            r = self._register(f"reg_nplus1_{i}")
+            RegistrationFieldAnswer.objects.create(
+                registration=r, field=self.field_checkbox, value_boolean=True
+            )
+            RegistrationFieldAnswer.objects.create(
+                registration=r,
+                field=self.field_option,
+                value_option=self.option_s,
+            )
+
+        self.client.login(username="organiser_answers", password="testpassword")
+
+        # Queries: session + auth user + project lookup + permission check +
+        # ER config lookup + registrations + field_answers prefetch +
+        # value_option prefetch + field prefetch = 9.
+        with self.assertNumQueries(9):
+            response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 5)
+        # Each row has 2 answers regardless of how many registrants there are.
+        for row in response.json():
+            self.assertEqual(len(row["field_answers"]), 2)
+
+        # Add 5 more registrations, each with the same 2 answers. The query
+        # count must remain identical — confirming no N+1.
+        for i in range(5, 10):
+            r = self._register(f"reg_nplus1_{i}")
+            RegistrationFieldAnswer.objects.create(
+                registration=r, field=self.field_checkbox, value_boolean=False
+            )
+            RegistrationFieldAnswer.objects.create(
+                registration=r,
+                field=self.field_option,
+                value_option=self.option_m,
+            )
+
+        with self.assertNumQueries(9):
+            response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 10)
+
+    # ------------------------------------------------------------------
+    # 6. Answers ordered by field.order
+    # ------------------------------------------------------------------
+
+    @tag("registration_config", "list_participants", "custom_fields")
+    def test_field_answers_ordered_by_field_order(self):
+        """Answers are returned in ``field.order`` ascending sequence."""
+        reg = self._register("reg_ordering")
+        # Insert in reverse to verify the serializer (not insertion order)
+        # controls ordering.
+        RegistrationFieldAnswer.objects.create(
+            registration=reg,
+            field=self.field_option,
+            value_option=self.option_s,
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=reg, field=self.field_checkbox, value_boolean=True
+        )
+
+        self.client.login(username="organiser_answers", password="testpassword")
+        response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        answers = response.json()[0]["field_answers"]
+        self.assertEqual(answers[0]["field"], self.field_checkbox.id)  # order=0
+        self.assertEqual(answers[1]["field"], self.field_option.id)  # order=1

@@ -8,11 +8,13 @@ from location.signals import find_location_translations
 from location.utility import (
     _get_newest_location_by_osm_composite,
     _osm_type_char,
+    format_exact_location_name,
     format_location_name,
     get_global_location,
     get_language_code_from_context,
     get_location,
     get_location_with_range,
+    get_translated_exact_location_name,
     get_translated_location_name,
 )
 
@@ -494,3 +496,166 @@ class TestGetLanguageCodeFromContext(TestCase):
         """Falls back to 'en' when request.LANGUAGE_CODE and context language_code are both absent."""
         ctx = {"request": self._make_request(None)}
         self.assertEqual(get_language_code_from_context(ctx), "en")
+
+
+class TestFormatExactLocationName(TestCase):
+    """Unit tests for format_exact_location_name."""
+
+    def test_place_address_city_country(self):
+        """Full exact location: place + address + city + country."""
+        result = format_exact_location_name(
+            place_name="City Hall",
+            exact_address="Main Street 1",
+            city="Berlin",
+            state="Berlin",
+            country="Germany",
+        )
+        self.assertEqual(result, "City Hall, Main Street 1, Berlin, Germany")
+
+    def test_place_and_city_only(self):
+        """Place name with city and country but no address."""
+        result = format_exact_location_name(
+            place_name="Brandenburger Tor",
+            exact_address="",
+            city="Berlin",
+            state="Berlin",
+            country="Germany",
+        )
+        self.assertEqual(result, "Brandenburger Tor, Berlin, Germany")
+
+    def test_address_and_city_only(self):
+        """Street address with city and country but no named place."""
+        result = format_exact_location_name(
+            place_name="",
+            exact_address="Unter den Linden 77",
+            city="Berlin",
+            state="Berlin",
+            country="Germany",
+        )
+        self.assertEqual(result, "Unter den Linden 77, Berlin, Germany")
+
+    def test_city_omitted_when_equals_place_name(self):
+        """City is omitted from the tail when it matches place_name to avoid duplication."""
+        result = format_exact_location_name(
+            place_name="Berlin",
+            exact_address="",
+            city="Berlin",
+            state="Berlin",
+            country="Germany",
+        )
+        self.assertEqual(result, "Berlin, Germany")
+
+    def test_custom_name_mapping_applied(self):
+        """CUSTOM_NAME_MAPPINGS overrides are applied to the assembled name."""
+        result = format_exact_location_name(
+            place_name="Scotland (state)",
+            exact_address="",
+            city="",
+            state="",
+            country="Scotland",
+        )
+        self.assertEqual(result, "Scotland")
+
+    def test_no_place_or_address_falls_back_to_city_country(self):
+        """With no place_name or exact_address the result is just city, country."""
+        result = format_exact_location_name(
+            place_name="",
+            exact_address="",
+            city="Munich",
+            state="Bavaria",
+            country="Germany",
+        )
+        self.assertEqual(result, "Munich, Germany")
+
+    def test_empty_inputs_return_empty_string(self):
+        """All-empty inputs produce an empty string."""
+        result = format_exact_location_name(
+            place_name="",
+            exact_address="",
+            city="",
+            state="",
+            country="",
+        )
+        self.assertEqual(result, "")
+
+    def test_map_state_as_country_codes_gb(self):
+        """For GB locations the state (e.g. 'Scotland') is shown instead of 'United Kingdom'."""
+        result = format_exact_location_name(
+            place_name="Venue",
+            exact_address="",
+            city="Edinburgh",
+            state="Scotland",
+            country="United Kingdom",
+        )
+        self.assertEqual(result, "Venue, Edinburgh, Scotland")
+
+    def test_map_state_as_country_codes_explicit_country_code(self):
+        """Explicit country_code='gb' also triggers state substitution."""
+        result = format_exact_location_name(
+            place_name="",
+            exact_address="",
+            city="Edinburgh",
+            state="Scotland",
+            country="United Kingdom",
+            country_code="gb",
+        )
+        self.assertEqual(result, "Edinburgh, Scotland")
+
+
+class TestGetTranslatedExactLocationName(TestCase):
+    """Integration tests for get_translated_exact_location_name."""
+
+    def setUp(self):
+        post_save.disconnect(find_location_translations, sender=Location)
+        self.location = Location.objects.create(
+            name="City Hall, Berlin, Germany",
+            place_name="City Hall",
+            exact_address="Rathausstraße 1",
+            city="Berlin",
+            state="Berlin",
+            country="Germany",
+            osm_id=99999,
+            osm_type="N",
+            osm_class="amenity",
+            osm_class_type="city_hall",
+            display_name="City Hall, Rathausstraße 1, Berlin, Germany",
+            is_formatted=True,
+        )
+        self.language_de, _ = Language.objects.get_or_create(
+            language_code="de",
+            defaults={"name": "German"},
+        )
+        LocationTranslation.objects.create(
+            location=self.location,
+            language=self.language_de,
+            name_translation="Rathaus, Rathausstraße 1, Berlin, Deutschland",
+            city_translation="Berlin",
+            country_translation="Deutschland",
+        )
+        self.location = Location.objects.prefetch_related(
+            "translate_location__language"
+        ).get(pk=self.location.pk)
+
+    def tearDown(self):
+        post_save.connect(find_location_translations, sender=Location)
+
+    def test_translated_name_uses_translated_city_and_country(self):
+        """German translation: translated city + country appear in the result."""
+        result = get_translated_exact_location_name(self.location, "de")
+        self.assertEqual(result, "City Hall, Rathausstraße 1, Berlin, Deutschland")
+
+    def test_untranslated_language_falls_back_to_base_fields(self):
+        """Unknown language code falls back to Location.city / Location.country."""
+        result = get_translated_exact_location_name(self.location, "fr")
+        self.assertEqual(result, "City Hall, Rathausstraße 1, Berlin, Germany")
+
+    def test_none_language_falls_back_to_base_fields(self):
+        """None language code uses the base Location fields."""
+        result = get_translated_exact_location_name(self.location, None)
+        self.assertEqual(result, "City Hall, Rathausstraße 1, Berlin, Germany")
+
+    def test_location_without_place_name(self):
+        """Location with only exact_address (no place_name) still works."""
+        self.location.place_name = ""
+        result = get_translated_exact_location_name(self.location, "de")
+        self.assertEqual(result, "Rathausstraße 1, Berlin, Deutschland")

@@ -34,14 +34,30 @@ type Props = {
   title: string;
   options: RegistrationFieldOption[];
   onChange: (_update: { title: string; options: RegistrationFieldOption[] }) => void;
+  /** Called instead of immediate deletion when the option has answers (confirms data loss). */
+  onRequestDeleteOption?: (_index: number, _option: RegistrationFieldOption) => void;
+  /** When true, the question title field is read-only (field has registrant answers). */
+  titleDisabled?: boolean;
+  isDraft?: boolean;
+  fieldError?: string;
+  onClearFieldError?: (_key: string) => void;
 };
 
-export default function OptionSelectFieldEditor({ title, options, onChange }: Props) {
+export default function OptionSelectFieldEditor({
+  title,
+  options,
+  onChange,
+  onRequestDeleteOption,
+  titleDisabled,
+  isDraft,
+  fieldError,
+  onClearFieldError,
+}: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     onChange({ title: e.target.value, options });
   };
 
@@ -56,6 +72,11 @@ export default function OptionSelectFieldEditor({ title, options, onChange }: Pr
   };
 
   const handleDeleteOption = (index: number) => {
+    const option = options[index];
+    if (option.has_answers && onRequestDeleteOption) {
+      onRequestDeleteOption(index, option);
+      return;
+    }
     const updated = options.filter((_, i) => i !== index).map((o, i) => ({ ...o, order: i }));
     onChange({ title, options: updated });
   };
@@ -84,9 +105,16 @@ export default function OptionSelectFieldEditor({ title, options, onChange }: Pr
         fullWidth
         label={texts.option_select_title}
         value={title}
-        onChange={handleTitleChange}
+        onChange={(e) => {
+          handleTitleChange(e);
+          onClearFieldError?.("field");
+        }}
         variant="outlined"
         size="small"
+        disabled={titleDisabled}
+        required={!isDraft}
+        error={!!fieldError}
+        helperText={fieldError}
         sx={{ mb: 1.5 }}
       />
       {options.map((option, index) => (
@@ -98,6 +126,7 @@ export default function OptionSelectFieldEditor({ title, options, onChange }: Pr
             placeholder={texts.option_placeholder}
             variant="outlined"
             size="small"
+            disabled={option.has_answers === true}
           />
           <Tooltip title={texts.move_field_up}>
             <span>

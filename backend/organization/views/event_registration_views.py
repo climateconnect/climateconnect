@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.db.models import Sum
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -13,17 +14,29 @@ from organization.models import Project, ProjectMember
 from organization.models.event_registration import (
     EventRegistration,
     EventRegistrationConfig,
+    RegistrationFieldAnswer,
     RegistrationStatus,
+)
+from organization.models.registration_field import (
+    RegistrationFieldType,
+    RegistrationFieldOption,
 )
 from organization.serializers.event_registration import (
     EditEventRegistrationConfigSerializer,
+    EventRegistrationConfigSerializer,
     EventRegistrationSerializer,
+    EventRegistrationSubmissionSerializer,
     SendOrganizerEmailSerializer,
     _compute_effective_status,
+    sync_registration_answers,
 )
 from organization.tasks import (
     notify_admins_of_registration_change as _notify_admins_task,
+)
+from organization.tasks import (
     send_event_registration_confirmation_email as _send_registration_email,
+)
+from organization.tasks import (
     send_organizer_message_to_guests as _send_organizer_email_task,
 )
 from organization.utility.email import (
@@ -149,19 +162,100 @@ class EventRegistrationsView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        # ── 6. Create or re-activate EventRegistration ───────────────────────
+        # ── 6. Validate custom-field answers payload (if provided) ──────────
+        submission_serializer = EventRegistrationSubmissionSerializer(
+            data=request.data,
+            context={"registration_config": rc},
+        )
+        if not submission_serializer.is_valid():
+            return Response(
+                submission_serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        normalized_answers = submission_serializer.validated_data.get(
+            "normalized_answers", []
+        )
+
+        # ── 6a. Per-option capacity enforcement for inventory & time slot answers ─
+        inventory_answers = [
+            a for a in normalized_answers if a.get("value_number") is not None
+        ]
+        time_slot_answers = [
+            a
+            for a in normalized_answers
+            if a["field"].field_type == RegistrationFieldType.TIME_SLOT_SELECT
+        ]
+        all_option_ids = list(
+            set(
+                [a["value_option"].id for a in inventory_answers]
+                + [a["value_option"].id for a in time_slot_answers]
+            )
+        )
+        if all_option_ids:
+            # Lock option rows ordered by id to prevent deadlocks.
+            locked_options = {
+                o.id: o
+                for o in RegistrationFieldOption.objects.filter(id__in=all_option_ids)
+                .select_for_update()
+                .order_by("id")
+            }
+            field_errors = {}
+
+            # Inventory capacity check (quantity-based).
+            for answer in inventory_answers:
+                option = locked_options[answer["value_option"].id]
+                requested = answer["value_number"]
+                if option.available_amount is not None:
+                    booked = (
+                        RegistrationFieldAnswer.objects.filter(
+                            value_option=option,
+                            registration__cancelled_at__isnull=True,
+                        ).aggregate(booked=Sum("value_number"))["booked"]
+                        or 0
+                    )
+                    if booked + requested > option.available_amount:
+                        remaining = max(0, option.available_amount - booked)
+                        field_errors[str(answer["field"].id)] = (
+                            f"Only {remaining} item{'s' if remaining != 1 else ''} "
+                            f"remaining for the selected option."
+                        )
+
+            # Time slot capacity check (seat-count-based).
+            for answer in time_slot_answers:
+                option = locked_options[answer["value_option"].id]
+                if option.available_amount is not None:
+                    booked = RegistrationFieldAnswer.objects.filter(
+                        value_option=option,
+                        registration__cancelled_at__isnull=True,
+                    ).count()
+                    if booked >= option.available_amount:
+                        field_errors[str(answer["field"].id)] = (
+                            "This time slot is fully booked. "
+                            "Please select a different slot."
+                        )
+
+            if field_errors:
+                return Response(
+                    {"field_errors": field_errors},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        # ── 7. Create or re-activate EventRegistration ───────────────────────
+        registration = existing
         if existing is not None:
             # Re-registration: reset soft-delete fields on the existing row.
             existing.cancelled_at = None
             existing.cancelled_by = None
             existing.save(update_fields=["cancelled_at", "cancelled_by"])
         else:
-            EventRegistration.objects.create(
+            registration = EventRegistration.objects.create(
                 user=request.user,
                 registration_config=rc,
             )
 
-        # ── 7. Update status to FULL if last seat was just taken ─────────────
+        sync_registration_answers(registration, normalized_answers)
+
+        # ── 8. Update status to FULL if last seat was just taken ─────────────
         available_seats = None
         if rc.max_participants is not None:
             new_count = EventRegistration.objects.filter(
@@ -179,20 +273,22 @@ class EventRegistrationsView(APIView):
             project.url_slug,
         )
 
-        # ── 8. Dispatch async confirmation email ──────────────────────────────
+        # ── 9. Dispatch async confirmation email ──────────────────────────────
         # Capture values eagerly — lambda closes over variables by reference, so
         # evaluating request.user.id inside the lambda would run after the
         # transaction commits, at which point DRF may resolve a different user.
         _user_id = request.user.id
         _event_slug = project.url_slug
+        _registration_id = registration.id
         transaction.on_commit(
             lambda: _send_registration_email.delay(
                 user_id=_user_id,
                 event_slug=_event_slug,
+                registration_id=_registration_id,
             )
         )
 
-        # ── 9. Dispatch async admin notification (only when notify_admins=True) ─
+        # ── 10. Dispatch async admin notification (only when notify_admins=True) ─
         # Re-check is done inside the task to handle flag toggling between
         # dispatch and execution.  No extra DB query here when flag is False.
         if rc.notify_admins:
@@ -266,8 +362,17 @@ class EventRegistrationsView(APIView):
         # Returns all rows so organisers can see the full history including
         # cancellations. ``id`` and ``cancelled_at`` are included in the response
         # so the frontend can target individual rows for admin-cancellation.
+        #
+        # ``prefetch_related`` for ``field_answers`` (and the related field /
+        # option rows) resolves custom-field answer data in a constant number
+        # of queries regardless of how many registrations are returned — no
+        # N+1 even on events with many registrants and 5 custom fields.
         registrations = (
             EventRegistration.objects.select_related("user__user_profile")
+            .prefetch_related(
+                "field_answers__field",
+                "field_answers__value_option",
+            )
             .filter(registration_config=rc)
             .order_by("registered_at")
         )
@@ -392,15 +497,20 @@ class EventRegistrationsView(APIView):
 
 class EditRegistrationConfigView(APIView):
     """
+    POST /api/projects/{url_slug}/registration-config/
     PATCH /api/projects/{url_slug}/registration-config/
 
-    Allows an event organiser (or team admin) to update registration settings
-    for an event that already has EventRegistrationConfig enabled.
+    POST: Creates a new draft registration config for an event, or re-enables
+          an existing disabled config. Requires project admin role.
 
-    Editable fields:
+    PATCH: Allows an event organiser (or team admin) to update registration
+           settings for an event that already has EventRegistrationConfig.
+
+    Editable fields (PATCH):
         - max_participants  (positive integer or null for unlimited)
         - registration_end_date  (datetime)
         - status  ("open" or "closed" only — "full" and "ended" are system-managed)
+        - registration_enabled  (boolean — disable/enable registration)
 
     Status change rules:
         - "open" → "closed"   Organiser manually closes registration.
@@ -410,24 +520,87 @@ class EditRegistrationConfigView(APIView):
           returns 400 — extend registration_end_date first, then reopen.
         - "full" and "ended" cannot be set via the API (400 Bad Request).
         - Setting status to its current stored value is idempotent (200 OK).
-
-    Behaviour:
-        - 200 OK          — settings updated; returns updated registration_config.
-        - 400 Bad Request — validation error (past date, invalid status, etc.).
-        - 401 Unauthorized — unauthenticated request.
-        - 403 Forbidden    — authenticated user without edit rights on the project.
-        - 404 Not Found    — project or EventRegistrationConfig does not exist.
-
-    Response body (200 OK):
-        {
-            "max_participants": 80,
-            "registration_end_date": "2026-07-01T18:00:00Z",
-            "status": "open" | "closed" | "full" | "ended",
-            "available_seats": 75
-        }
     """
 
     permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        """Create or re-enable a registration config for an event."""
+
+        # ── 1. Look up project ──────────────────────────────────────────────
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            return Response(
+                {"message": "Project not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 2. Verify event project type ────────────────────────────────────
+        from organization.models.type import ProjectTypesChoices
+
+        if (
+            not project.project_type
+            or project.project_type != ProjectTypesChoices.event
+        ):
+            return Response(
+                {"message": "Registration is only available for event projects."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # ── 3. Check edit rights ────────────────────────────────────────────
+        has_edit_rights = ProjectMember.objects.filter(
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            project=project,
+        ).exists()
+        if not has_edit_rights:
+            return Response(
+                {"message": "You do not have permission to edit this project."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # ── 4. Check for existing config ────────────────────────────────────
+        try:
+            rc = project.registration_config
+            if rc.registration_enabled:
+                return Response(
+                    {"message": "Registration is already enabled for this event."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            # Re-enable existing disabled config
+            rc.registration_enabled = True
+            rc.save(update_fields=["registration_enabled", "updated_at"])
+            serializer = EventRegistrationConfigSerializer(
+                rc, context={"include_seat_count": True}
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except EventRegistrationConfig.DoesNotExist:
+            pass
+
+        # ── 5. Create new draft config ──────────────────────────────────────
+        # Don't allow adding registration to past events.
+        if project.end_date and project.end_date < timezone.now():
+            return Response(
+                {"message": "Cannot add registration to a past event."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        rc = EventRegistrationConfig.objects.create(
+            project=project,
+            is_draft=True,
+            registration_enabled=True,
+            status=RegistrationStatus.OPEN,
+        )
+        serializer = EventRegistrationConfigSerializer(
+            rc, context={"include_seat_count": True}
+        )
+        logger.info(
+            "[EventRegistration] Organiser %s created registration config for '%s'",
+            request.user.id,
+            url_slug,
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def patch(self, request, url_slug):
 
@@ -461,10 +634,26 @@ class EditRegistrationConfigView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # ── 4. Validate and save ─────────────────────────────────────────────
-        # is_draft is read from the request body so the client can save partial
-        # field data without triggering publish-time validation.
-        is_draft = request.data.get("is_draft", False) in (True, "true", "True", "1", 1)
+        # ── 4. Handle registration_enabled toggle ────────────────────────────
+        # When only registration_enabled is in the request body, skip full
+        # validation — it's a simple boolean toggle.
+        if "registration_enabled" in request.data and len(request.data) == 1:
+            rc.registration_enabled = bool(request.data["registration_enabled"])
+            rc.save(update_fields=["registration_enabled", "updated_at"])
+            serializer = EventRegistrationConfigSerializer(
+                rc, context={"include_seat_count": True}
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # ── 5. Validate and save ─────────────────────────────────────────────
+        # Derive is_draft from the config's own state, not the project's.
+        # Draft configs skip publish-time field validation (e.g. empty checkbox
+        # description) without requiring the frontend to pass extra state.
+        # When is_draft is in the request body, the serializer handles the
+        # draft → published transition and runs full validation.
+        is_draft = rc.is_draft
+        if "is_draft" in request.data:
+            is_draft = bool(request.data["is_draft"])
         serializer = EditEventRegistrationConfigSerializer(
             rc,
             data=request.data,

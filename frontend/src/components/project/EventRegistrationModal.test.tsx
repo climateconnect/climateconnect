@@ -5,7 +5,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import EventRegistrationModal from "./EventRegistrationModal";
-import { Project } from "../../types";
+import { Project, RegistrationField } from "../../types";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -19,6 +19,13 @@ const mockApiRequest = jest.fn();
 jest.mock("../../../public/lib/apiOperations", () => ({
   ...jest.requireActual("../../../public/lib/apiOperations"),
   apiRequest: (...args: any[]) => mockApiRequest(...args),
+}));
+
+// Mock useFeatureToggles
+const mockIsEnabled = jest.fn((_feature: string, _fallback?: boolean) => false);
+jest.mock("../featureToggle", () => ({
+  ...jest.requireActual("../featureToggle"),
+  useFeatureToggles: () => ({ isEnabled: mockIsEnabled, isLoading: false }),
 }));
 
 // Mock LocationSearchBar so signup form can be filled without async location fetching
@@ -128,6 +135,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockApiRequest.mockReset();
   mockSessionStorage.clear();
+  mockIsEnabled.mockImplementation((_feature: string, _fallback?: boolean) => false);
   // Suppress console.error during tests to keep output clean
   jest.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -540,5 +548,141 @@ describe("EventRegistrationModal – close behaviour", () => {
 
     expect(screen.getByRole("textbox", { name: /email/i })).toHaveValue("");
     expect(screen.queryByLabelText(/password/i)).not.toBeInTheDocument();
+  });
+});
+
+// ── Custom fields render without REGISTRATION_CUSTOM_FIELDS toggle ─────────
+
+describe("EventRegistrationModal – custom fields toggle", () => {
+  const INVENTORY_FIELD: RegistrationField = {
+    id: 5,
+    field_type: "inventory",
+    order: 0,
+    is_required: true,
+    label: "meals",
+    settings: { title: "Meal tickets" },
+    options: [
+      {
+        id: 20,
+        title: "Vegetarian",
+        order: 0,
+        available_amount: 50,
+        max_amount_per_guest: 2,
+        remaining_amount: 48,
+      },
+    ],
+  };
+
+  const CHECKBOX_FIELD: RegistrationField = {
+    id: 6,
+    field_type: "checkbox",
+    order: 1,
+    is_required: false,
+    label: "agree",
+    settings: { description: "I agree" },
+  };
+
+  it("renders custom fields when EVENT_REGISTRATION is enabled but REGISTRATION_CUSTOM_FIELDS is not", () => {
+    mockIsEnabled.mockImplementation((feature: string) => feature === "EVENT_REGISTRATION");
+
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({
+        registration_config: {
+          max_participants: 50,
+          available_seats: 49,
+          registration_end_date: null,
+          status: "open",
+          notify_admins: true,
+          fields: [CHECKBOX_FIELD],
+        },
+      }),
+    });
+
+    expect(screen.getByText("I agree")).toBeInTheDocument();
+  });
+
+  it("does not render custom fields when EVENT_REGISTRATION is disabled", () => {
+    mockIsEnabled.mockReturnValue(false);
+
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({
+        registration_config: {
+          max_participants: 50,
+          available_seats: 49,
+          registration_end_date: null,
+          status: "open",
+          notify_admins: true,
+          fields: [CHECKBOX_FIELD],
+        },
+      }),
+    });
+
+    expect(screen.queryByText("I agree")).not.toBeInTheDocument();
+  });
+
+  it("renders inventory field when EVENT_REGISTRATION is enabled", () => {
+    mockIsEnabled.mockImplementation((feature: string) => feature === "EVENT_REGISTRATION");
+
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({
+        registration_config: {
+          max_participants: 50,
+          available_seats: 49,
+          registration_end_date: null,
+          status: "open",
+          notify_admins: true,
+          fields: [INVENTORY_FIELD],
+        },
+      }),
+    });
+
+    expect(screen.getByText("Meal tickets")).toBeInTheDocument();
+  });
+
+  it("sends value_number in the API payload for inventory answers", async () => {
+    mockIsEnabled.mockImplementation((feature: string) => feature === "EVENT_REGISTRATION");
+    mockApiRequest.mockResolvedValueOnce({ status: 201 });
+
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({
+        registration_config: {
+          max_participants: 50,
+          available_seats: 49,
+          registration_end_date: null,
+          status: "open",
+          notify_admins: true,
+          fields: [INVENTORY_FIELD],
+        },
+      }),
+    });
+
+    // MUI Dialog renders into a portal, so query the full document
+    const selectEl = document.querySelector("select") as HTMLSelectElement;
+    expect(selectEl).toBeInTheDocument();
+    fireEvent.change(selectEl, { target: { value: "20" } });
+    // Enter quantity
+    fireEvent.change(screen.getByRole("spinbutton"), { target: { value: "2" } });
+    // Submit
+    fireEvent.click(screen.getByRole("button", { name: /confirm registration/i }));
+
+    await waitFor(() => {
+      expect(mockApiRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          payload: expect.objectContaining({
+            answers: expect.arrayContaining([
+              expect.objectContaining({
+                field: 5,
+                value_option: 20,
+                value_number: 2,
+              }),
+            ]),
+          }),
+        })
+      );
+    });
   });
 });

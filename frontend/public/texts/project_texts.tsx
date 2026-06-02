@@ -1253,6 +1253,20 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Edit registration settings",
       de: "Anmeldeeinstellungen bearbeiten",
     },
+    online_registration: {
+      en: "Online registration",
+      de: "Online-Anmeldung",
+    },
+    disable_registration_confirm: {
+      en:
+        "There are already registrations for this event. Disabling registration will hide the registration form from visitors and you won't be able to see the registrations. Alternatively you can also close the registration via the registration settings. Do you want to continue?",
+      de:
+        "Es gibt bereits Anmeldungen für dieses Event. Das Deaktivieren der Anmeldung blendet das Anmeldeformular für Besucher aus und du wirst nicht mehr sehen können, welche Anmeldungen es gibt. Alternativ kannst du auch die Anmeldung via den Anmeldeeinstellungen schließen. Möchtest du fortfahren?",
+    },
+    disable_registration: {
+      en: "Disable registration",
+      de: "Anmeldung deaktivieren",
+    },
     registration_settings_saved: {
       en: "Registration settings saved successfully",
       de: "Anmeldeeinstellungen erfolgreich gespeichert",
@@ -1314,6 +1328,32 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Send a notification to team admins when someone registers or cancels.",
       de: "Sende eine Benachrichtigung an Team-Admins, wenn sich jemand an- oder abmeldet.",
     },
+    registration_config_draft_indicator: {
+      en:
+        "Registration configuration is in draft mode. Complete the setup and publish to make registration visible to visitors.",
+      de:
+        "Die Anmeldekonfiguration ist im Entwurfsmodus. Schließe die Einrichtung ab und veröffentliche sie, um die Anmeldung für Besucher sichtbar zu machen.",
+    },
+    publish_registration: {
+      en: "Publish registration",
+      de: "Anmeldung veröffentlichen",
+    },
+    registration_setup_incomplete: {
+      en: "Registration setup incomplete",
+      de: "Anmeldeeinrichtung unvollständig",
+    },
+    registration_setup_incomplete_description: {
+      en: "Complete the registration configuration to start accepting sign-ups.",
+      de: "Schließe die Anmeldekonfiguration ab, um Anmeldungen zu akzeptieren.",
+    },
+    complete_registration_setup: {
+      en: "Complete registration setup",
+      de: "Anmeldeeinrichtung abschließen",
+    },
+    registration_config_still_draft_warning: {
+      en: "Registration configuration is not yet complete.",
+      de: "Die Anmeldekonfiguration ist noch nicht vollständig.",
+    },
     registration_custom_fields: {
       en: "Additional registration fields",
       de: "Zusätzliche Anmeldefelder",
@@ -1329,6 +1369,50 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     field_type_option_select: {
       en: "Single choice",
       de: "Einfachauswahl",
+    },
+    field_type_inventory: {
+      en: "Inventory",
+      de: "Inventar",
+    },
+    single_option_per_guest_notice: {
+      en: "Guests can only select one option",
+      de: "Gast kann nur eine Option wählen",
+    },
+    inventory_available_amount: {
+      en: "Available amount",
+      de: "Verfügbare Menge",
+    },
+    inventory_max_per_guest: {
+      en: "Max per guest",
+      de: "Max. pro Gast",
+    },
+    inventory_description: {
+      en: "Description",
+      de: "Beschreibung",
+    },
+    field_type_time_slot_select: {
+      en: "Time Slot Select",
+      de: "Zeitfenster-Auswahl",
+    },
+    time_slot_title: {
+      en: "Title",
+      de: "Titel",
+    },
+    time_slot_description: {
+      en: "Description",
+      de: "Beschreibung",
+    },
+    time_slot_start_time: {
+      en: "Start time",
+      de: "Startzeit",
+    },
+    time_slot_end_time: {
+      en: "End time",
+      de: "Endzeit",
+    },
+    time_slot_capacity: {
+      en: "Available amount",
+      de: "Verfügbare Menge",
     },
     registration_field_description: {
       en: "Description",
@@ -1369,6 +1453,38 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     max_registration_fields_reached: {
       en: "Maximum of 5 fields reached",
       de: "Maximal 5 Felder erreicht",
+    },
+    confirm_delete_field_title: {
+      en: "Delete field?",
+      de: "Feld löschen?",
+    },
+    confirm_delete_field_body: {
+      en:
+        "This will permanently delete the field and any answers already submitted by registrants. This cannot be undone.",
+      de:
+        "Dieses Feld und alle bereits eingereichten Antworten der Teilnehmenden werden unwiderruflich gelöscht.",
+    },
+    confirm_delete_option_title: {
+      en: "Delete option?",
+      de: "Option löschen?",
+    },
+    confirm_delete_option_body: {
+      en:
+        "This will permanently delete the option and any answers already submitted for it. This cannot be undone.",
+      de:
+        "Diese Option und alle bereits eingereichten Antworten dafür werden unwiderruflich gelöscht.",
+    },
+    edit_field_label: {
+      en: "Edit label",
+      de: "Bezeichnung bearbeiten",
+    },
+    field_label_placeholder: {
+      en: "Field label",
+      de: "Feldbezeichnung",
+    },
+    field_label_duplicate_error: {
+      en: "Label already used by another field",
+      de: "Bezeichnung wird bereits von einem anderen Feld verwendet",
     },
     your_project_has_been_saved_as_a_draft: {
       en: "Your project has been saved as a draft!",
@@ -1535,8 +1651,12 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Anmeldung bestätigen",
     },
     confirm_your_registration_for: {
-      en: `Confirm your registration for ${project?.name}`,
-      de: `Bestätige deine Anmeldung für ${project?.name}`,
+      en: `Please confirm your registration for ${project?.name}.`,
+      de: `Bitte bestätige deine Anmeldung für ${project?.name}.`,
+    },
+    fill_the_form_and_confirm_your_registration_for: {
+      en: `Please fill in the form and confirm your registration for ${project?.name}.`,
+      de: `Bitte fülle das Formular aus und bestätige deine Anmeldung für ${project?.name}.`,
     },
     to_register_please_login_or_signup: {
       en: "To register for this event, please log in or sign up!",
@@ -1618,6 +1738,38 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Cancelled",
       de: "Storniert",
     },
+    view_registration_answers: {
+      en: "View answers",
+      de: "Antworten anzeigen",
+    },
+    registration_answers_modal_title: {
+      en: "Registration answers from {name}",
+      de: "Anmeldeantworten von {name}",
+    },
+    registration_answers_modal_title_self: {
+      en: "Modify your registration",
+      de: "Deine Anmeldung bearbeiten",
+    },
+    registration_answers_cancelled_notice: {
+      en: "This registration has been cancelled.",
+      de: "Diese Anmeldung wurde storniert.",
+    },
+    registration_answer_checked: {
+      en: "Checked",
+      de: "Angekreuzt",
+    },
+    registration_answer_unchecked: {
+      en: "Not checked",
+      de: "Nicht angekreuzt",
+    },
+    registration_answer_no_selection: {
+      en: "No selection",
+      de: "Keine Auswahl",
+    },
+    no_registration_answers: {
+      en: "No answers submitted.",
+      de: "Keine Antworten eingereicht.",
+    },
     cancel_registration: {
       en: "Cancel registration",
       de: "Abmelden",
@@ -1633,6 +1785,55 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     cancel_registration_error: {
       en: "Failed to cancel registration. Please try again.",
       de: "Stornierung fehlgeschlagen. Bitte versuche es erneut.",
+    },
+    modify_registration: {
+      en: "Modify registration",
+      de: "Anmeldung bearbeiten",
+    },
+    this_field_is_required: {
+      en: "This field is required.",
+      de: "Dieses Feld ist erforderlich.",
+    },
+    you_must_check_this_box: {
+      en: "You must check this box to proceed.",
+      de: "Du musst dieses Kontrollkästchen ankreuzen, um fortzufahren.",
+    },
+    please_select_an_option: {
+      en: "Please select an option.",
+      de: "Bitte wähle eine Option aus.",
+    },
+    please_select_inventory_option: {
+      en: "Please select an option.",
+      de: "Bitte wähle eine Option aus.",
+    },
+    please_enter_quantity: {
+      en: "Please enter a quantity.",
+      de: "Bitte gib eine Menge ein.",
+    },
+    quantity_available: {
+      en: "available",
+      de: "verfügbar",
+    },
+    max_per_guest: {
+      en: "Max per guest",
+      de: "Max. pro Gast",
+    },
+    quantity_exceeds_max: {
+      en: "Quantity cannot exceed the maximum per guest.",
+      de: "Die Menge darf das Maximum pro Gast nicht überschreiten.",
+    },
+    please_select_time_slot: {
+      en: "Please select a time slot.",
+      de: "Bitte wähle ein Zeitfenster aus.",
+    },
+    time_slot_fully_booked: {
+      en: "This time slot is fully booked.",
+      de: "Dieses Zeitfenster ist vollständig ausgebucht.",
+    },
+    required_fields_participation_notice: {
+      en:
+        "*Required fields - unfortunately, you cannot participate without providing this information",
+      de: "*Pflichtfelder - ohne diese Angaben ist eine Teilnahme leider nicht möglich",
     },
   };
 }

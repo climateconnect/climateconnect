@@ -229,6 +229,21 @@ class Project(models.Model):
         default=False,
     )
 
+    devlink_component = models.CharField(
+        help_text=(
+            "Devlink component name from Webflow. Use the full component name "
+            "including the language prefix (e.g. 'EnChErlangenLandingpage'). "
+            "If the component has localized variants, include the En or De prefix "
+            "— the system will swap it automatically based on the user's locale. "
+            "If the component has no language prefix (e.g. 'Wasseraktionswochen'), "
+            "it will be shown as-is for all languages."
+        ),
+        verbose_name="Devlink component name",
+        max_length=128,
+        null=True,
+        blank=True,
+    )
+
     @property
     def cached_ranking(self) -> int:
         """Carful with this property, it might trigger an N+1 query problem"""

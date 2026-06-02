@@ -44,6 +44,19 @@ describe("shouldShowRegisterButton", () => {
 
       expect(result).toBe(false);
     });
+
+    it("should return false when project is a draft", () => {
+      const project = {
+        is_draft: true,
+        registration_config: {
+          status: "open",
+        },
+      } as Project;
+
+      const result = shouldShowRegisterButton(true, project);
+
+      expect(result).toBe(false);
+    });
   });
 
   describe("when registration should be shown", () => {
@@ -262,6 +275,14 @@ describe("getRegistrationUIState", () => {
 
     it('returns hidden when status is "ended" and user is not registered', () => {
       expect(getRegistrationUIState(true, endedProject)).toBe("hidden");
+    });
+
+    it("returns hidden when project is a draft", () => {
+      const draftProject = {
+        is_draft: true,
+        registration_config: { status: "open" },
+      } as Project;
+      expect(getRegistrationUIState(true, draftProject, false, false, false)).toBe("hidden");
     });
   });
 

@@ -29,6 +29,7 @@ export default function ProjectPreviews({
   displayOnePreviewInRow,
   parentHandlesGridItems,
   registeredEventSlugs,
+  analyticsSurface,
 }: any) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -41,6 +42,7 @@ export default function ProjectPreviews({
         project={p}
         hubUrl={hubUrl}
         registeredEventSlugs={registeredEventSlugs}
+        analyticsSurface={analyticsSurface}
       />
     ));
 
@@ -98,6 +100,7 @@ export default function ProjectPreviews({
                   project={project}
                   hubUrl={hubUrl}
                   registeredEventSlugs={registeredEventSlugs}
+                  analyticsSurface={analyticsSurface}
                 />
               )}
             </Grid>
@@ -109,8 +112,13 @@ export default function ProjectPreviews({
   );
 }
 
-function GridItem({ project, hubUrl, registeredEventSlugs }) {
+function GridItem({ project, hubUrl, registeredEventSlugs, analyticsSurface }) {
   return (
-    <ProjectPreview project={project} hubUrl={hubUrl} registeredEventSlugs={registeredEventSlugs} />
+    <ProjectPreview
+      project={project}
+      hubUrl={hubUrl}
+      registeredEventSlugs={registeredEventSlugs}
+      analyticsSurface={analyticsSurface}
+    />
   );
 }

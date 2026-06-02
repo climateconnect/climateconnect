@@ -62,60 +62,71 @@ This document defines the core system entities for Climate Connect, serving as t
   - Requires `Skill` (Matching).
   - Has Many `ProjectMember` (Team).
   - Has Many `Post` (Updates).
-  - Has One `EventRegistration` (Registration configuration, introduced in [#1820](https://github.com/climateconnect/climateconnect/issues/1820)).
+  - Has One `EventRegistrationConfig` (Registration configuration, introduced in [#1820](https://github.com/climateconnect/climateconnect/issues/1820)).
 
-### EventRegistration
+### EventRegistrationConfig
 - **Definition**: Event registration configuration. Presence of this record signals that registration is enabled for an event.
 - **Properties**:
   - `max_participants`: PositiveInteger, nullable
   - `registration_end_date`: DateTimeField, nullable
   - `status`: Enum (`open`, `closed`, `full`)
+  - `notify_admins`: Boolean (default true)
 - **Relationships**:
   - OneToOneFK → `Project`
-  - Has Many `EventParticipant` (Active registrations)
-  - Has Many `RegistrationField` (Custom registration fields, introduced in [#1880](https://github.com/climateconnect/climateconnect/issues/1880))
+  - Has Many `EventRegistration` (User sign-up records)
+  - Has Many `RegistrationField` (Custom registration fields)
 
-### EventParticipant
-- **Definition**: A user's registration record for an event.
+### EventRegistration
+- **Definition**: A user's registration record for an event. One row per user per event.
 - **Properties**:
   - `registered_at`: DateTimeField
   - `cancelled_at`: DateTimeField, nullable (NULL = active registration)
+  - `cancelled_by`: FK → User, nullable (self-cancel vs admin-cancel distinction)
 - **Relationships**:
   - FK → `User`
-  - FK → `EventRegistration`
-  - UNIQUE constraint: `(user, event_registration)`
+  - FK → `EventRegistrationConfig`
+  - Has Many `RegistrationFieldAnswer` (Custom field responses)
+  - UNIQUE constraint: `(user, registration_config)`
 
 ### RegistrationField (introduced in [#1880](https://github.com/climateconnect/climateconnect/issues/1880))
-- **Definition**: A custom field on an event's registration form (e.g., checkbox, option select).
+- **Definition**: A custom field on an event's registration form.
 - **Properties**:
-  - `field_type`: CharField (choices: `checkbox`, `option_select`)
+  - `field_type`: Enum (`checkbox`, `option_select`, `inventory`, `time_slot_select`)
   - `order`: PositiveIntegerField (position in the form)
   - `is_required`: BooleanField
-  - `settings`: JSONField (type-specific settings; checkbox stores HTML description, option select stores optional title)
+  - `label`: CharField, max 30 chars (organiser-facing label for export/display)
+  - `settings`: JSONField (type-specific settings: checkbox stores HTML description, option_select/inventory/time_slot_select store title + description)
 - **Relationships**:
-  - FK → `EventRegistration` (CASCADE delete)
-  - Has Many `RegistrationFieldOption` (for option select fields)
-  - Has Many `RegistrationFieldAnswer` (future — registrant's answers)
+  - FK → `EventRegistrationConfig` (CASCADE delete)
+  - Has Many `RegistrationFieldOption` (for option_select, inventory, time_slot_select fields)
+  - Has Many `RegistrationFieldAnswer` (registrant's answers)
 
 ### RegistrationFieldOption (introduced in [#1880](https://github.com/climateconnect/climateconnect/issues/1880))
-- **Definition**: A selectable option within an option-select `RegistrationField`.
+- **Definition**: A selectable option within option_select, inventory, or time_slot_select `RegistrationField`.
 - **Properties**:
-  - `title`: CharField (display label)
+  - `title`: CharField, max 200 chars (display label; defaults to "")
   - `order`: PositiveIntegerField
+  - `available_amount`: PositiveIntegerField, nullable (capacity limit for inventory fields)
+  - `max_amount_per_guest`: PositiveIntegerField, nullable (max quantity per registrant for inventory fields)
+  - `start_time`: DateTimeField, nullable (for time_slot_select fields)
+  - `end_time`: DateTimeField, nullable (for time_slot_select fields)
 - **Relationships**:
   - FK → `RegistrationField` (CASCADE delete)
   - UNIQUE constraint: `(field, order)`
 
-### RegistrationFieldAnswer (forward-compatible — not yet implemented)
-- **Definition**: A registrant's answer to a custom `RegistrationField`.
+### RegistrationFieldAnswer
+- **Definition**: A registrant's answer to a custom `RegistrationField`. Stored when a user submits their event registration.
 - **Properties**:
   - `value_boolean`: BooleanField, nullable (for checkbox fields)
-  - `value_option`: FK → `RegistrationFieldOption`, nullable (for option select fields)
-  - `value_json`: JSONField, nullable (for future Inventory type: `{option_id, quantity}`)
+  - `value_option`: FK → `RegistrationFieldOption`, nullable (for option_select, inventory, and time_slot_select fields)
+  - `value_number`: PositiveIntegerField, nullable (quantity for inventory fields)
+  - `created_at`: DateTimeField
+  - `updated_at`: DateTimeField
 - **Relationships**:
-  - FK → `EventRegistration`
-  - FK → `RegistrationField`
-  - Future: accommodates Inventory field type with `(option_id, quantity)` shape
+  - FK → `EventRegistration` (CASCADE delete, related_name: `field_answers`)
+  - FK → `RegistrationField` (CASCADE delete, related_name: `answers`)
+  - FK → `RegistrationFieldOption` (CASCADE delete, related_name: `answers`)
+  - UNIQUE constraint: `(registration, field)`
 
 ### MembershipRequest
 - **Definition**: A request from a user to join a Project or Organization.

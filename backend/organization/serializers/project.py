@@ -11,6 +11,7 @@ from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
 from location.utility import (
     get_language_code_from_context,
+    get_translated_exact_location_name,
     get_translated_location_name,
 )
 from organization.models import (
@@ -25,8 +26,10 @@ from organization.models.event_registration import EventRegistrationConfig
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
 from organization.models.type import PROJECT_TYPES
+from organization.models.event_registration import EventRegistration
 from organization.serializers.event_registration import (
     EventRegistrationConfigSerializer,
+    EventRegistrationSerializer,
 )
 from organization.serializers.organization import OrganizationStubSerializer
 from organization.serializers.sector import (
@@ -48,7 +51,27 @@ from organization.utility.sector import (
 )
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class _LocationNameMixin:
+    """Mixin that provides a shared ``_get_location_name`` helper for project serializers.
+
+    Centralises the conditional logic that selects exact-location formatting
+    (when ``loc.place_name`` or ``loc.exact_address`` is set) versus the general
+    translated name, so the logic lives in one place across
+    ProjectSerializer, ProjectMinimalSerializer, and ProjectStubSerializer.
+
+    The provided ``loc`` must have its ``translate_location`` relation pre-fetched
+    via ``prefetch_related("loc__translate_location__language")`` on the queryset
+    to avoid N+1 queries when translation lookups occur.
+    """
+
+    def _get_location_name(self, loc):
+        lang = get_language_code_from_context(self.context)
+        if loc.place_name or loc.exact_address:
+            return get_translated_exact_location_name(loc, lang)
+        return get_translated_location_name(loc, lang)
+
+
+class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
@@ -66,6 +89,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
     registration_config = serializers.SerializerMethodField()
+    my_event_registration = serializers.SerializerMethodField()
 
     # Parent/child relationship fields (detail view)
     parent_project_id = serializers.IntegerField(
@@ -111,6 +135,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "child_projects_count",
             "is_online",
             "registration_config",
+            "my_event_registration",
+            "devlink_component",
         )
 
     def get_name(self, obj):
@@ -156,16 +182,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_loc(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
@@ -199,14 +221,83 @@ class ProjectSerializer(serializers.ModelSerializer):
         return 0
 
     def get_registration_config(self, obj):
-        """Return event registration config including available_seats (detail only)."""
+        """Return event registration config including available_seats (detail only).
+
+        Disabled configs are hidden from everyone. Draft configs are only
+        visible to project admins.
+        """
         try:
-            return EventRegistrationConfigSerializer(
-                obj.registration_config,
-                context={"include_seat_count": True},
-            ).data
+            rc = obj.registration_config
         except EventRegistrationConfig.DoesNotExist:
             return None
+
+        if not rc.registration_enabled:
+            return None
+
+        if rc.is_draft:
+            request = self.context.get("request")
+            if not request or not request.user.is_authenticated:
+                return None
+            is_admin = ProjectMember.objects.filter(
+                project=obj,
+                user=request.user,
+                role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            ).exists()
+            if not is_admin:
+                return None
+
+        return EventRegistrationConfigSerializer(
+            rc,
+            context={"include_seat_count": True},
+        ).data
+
+    def get_my_event_registration(self, obj):
+        """
+        Return the requesting user's active EventRegistration for this project.
+
+        Populated only on the detail endpoint when the requesting user has an
+        active (non-cancelled) registration.  Returns ``None`` otherwise.
+
+        Identity is derived strictly from ``request.user`` — never from any
+        path or query parameter — to prevent IDOR.
+
+        When the view adds a filtered ``Prefetch`` with ``to_attr='_my_registrations'``
+        on ``registration_config__registrations`` the method uses that cached list;
+        otherwise it falls back to a direct DB query.
+        """
+        request = self.context.get("request")
+        if request is None or not request.user.is_authenticated:
+            return None
+        try:
+            config = obj.registration_config
+        except EventRegistrationConfig.DoesNotExist:
+            return None
+
+        if hasattr(config, "_my_registrations"):
+            registrations = config._my_registrations
+            if not registrations:
+                return None
+            registration = registrations[0]
+        else:
+            # Fallback: direct DB lookup (used when serializer is called outside
+            # the standard detail view, e.g. in tests that bypass the view layer).
+            try:
+                registration = (
+                    EventRegistration.objects.select_related("user__user_profile")
+                    .prefetch_related(
+                        "field_answers__field",
+                        "field_answers__value_option",
+                    )
+                    .get(
+                        registration_config=config,
+                        user=request.user,
+                        cancelled_at__isnull=True,
+                    )
+                )
+            except EventRegistration.DoesNotExist:
+                return None
+
+        return EventRegistrationSerializer(registration, context=self.context).data
 
 
 class EditProjectSerializer(ProjectSerializer):
@@ -275,7 +366,7 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
                 print(obj.parent_user)
 
 
-class ProjectMinimalSerializer(serializers.ModelSerializer):
+class ProjectMinimalSerializer(_LocationNameMixin, serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -306,16 +397,14 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
         return serializer.data["name"]
 
 
-class ProjectStubSerializer(serializers.ModelSerializer):
+class ProjectStubSerializer(_LocationNameMixin, serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     # TODO: remove tags
     sectors = serializers.SerializerMethodField()
@@ -418,9 +507,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return get_translated_location_name(
-            obj.loc, get_language_code_from_context(self.context)
-        )
+        return self._get_location_name(obj.loc)
 
     def get_project_type(self, obj):
         possible_project_types = list(PROJECT_TYPES.values())
@@ -447,11 +534,32 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_registration_config(self, obj):
-        """Return event registration config if present, else None."""
+        """Return event registration config if present, else None.
+
+        Disabled configs are hidden from everyone. Draft configs are only
+        visible to project admins.
+        """
         try:
-            return EventRegistrationConfigSerializer(obj.registration_config).data
+            rc = obj.registration_config
         except EventRegistrationConfig.DoesNotExist:
             return None
+
+        if not rc.registration_enabled:
+            return None
+
+        if rc.is_draft:
+            request = self.context.get("request")
+            if not request or not request.user.is_authenticated:
+                return None
+            is_admin = ProjectMember.objects.filter(
+                project=obj,
+                user=request.user,
+                role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            ).exists()
+            if not is_admin:
+                return None
+
+        return EventRegistrationConfigSerializer(rc).data
 
 
 class ProjectSuggestionSerializer(ProjectStubSerializer):

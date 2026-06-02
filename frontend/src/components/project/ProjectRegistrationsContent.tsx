@@ -22,6 +22,7 @@ import DangerousIcon from "@mui/icons-material/Dangerous";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import {
   DataGrid,
   GridColDef,
@@ -38,11 +39,14 @@ import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 
 import getTexts from "../../../public/texts/texts";
-import { EventRegistrationData, Project } from "../../types";
+import { EventRegistrationData, Project, RegistrationFieldAnswer } from "../../types";
+import { resolveAnswerToStrings } from "../../utils/resolveRegistrationFieldAnswer";
 import UserContext from "../context/UserContext";
+import { useFeatureToggles } from "../featureToggle";
 import CancelGuestRegistrationModal, { RegistrationInfo } from "./CancelGuestRegistrationModal";
 import EditEventRegistrationModal from "./EditEventRegistrationModal";
 import SendEmailToGuestsModal from "./SendEmailToGuestsModal";
+import ViewRegistrationAnswersModal from "./ViewRegistrationAnswersModal";
 
 type EventRegistration = {
   /** Backend PK — used as DataGrid row id and in the DELETE URL. */
@@ -54,6 +58,8 @@ type EventRegistration = {
   registered_at: string;
   /** null = active registration; ISO string = cancelled */
   cancelled_at: string | null;
+  /** Custom-field answers (Phase 4a). Empty array if none. */
+  field_answers: RegistrationFieldAnswer[];
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -103,6 +109,7 @@ type ToolbarProps = {
   emailGuestsLabel?: string;
   csvFileName: string;
   csvFields: string[];
+  printFields: string[];
 };
 
 function CustomColumnMenu(props: GridColumnMenuProps) {
@@ -117,6 +124,7 @@ function RegistrationsToolbar({
   emailGuestsLabel,
   csvFileName,
   csvFields,
+  printFields,
 }: ToolbarProps) {
   return (
     <GridToolbarContainer sx={{ display: "flex", alignItems: "center", gap: 1, p: 1 }}>
@@ -145,7 +153,7 @@ function RegistrationsToolbar({
       )}
       <GridToolbarExport
         csvOptions={{ fileName: csvFileName, fields: csvFields }}
-        printOptions={{ hideFooter: true, hideToolbar: true }}
+        printOptions={{ hideFooter: true, hideToolbar: true, fields: printFields }}
       />
     </GridToolbarContainer>
   );
@@ -204,10 +212,13 @@ export default function ProjectRegistrationsContent({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
+  const { isEnabled } = useFeatureToggles();
+  const isCustomFieldsEnabled = isEnabled("REGISTRATION_CUSTOM_FIELDS");
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [cancelModal, setCancelModal] = useState<RegistrationInfo | null>(null);
+  const [answersModalRow, setAnswersModalRow] = useState<EventRegistration | null>(null);
 
   // State for the per-row three-dot action menu
   const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement | null>(null);
@@ -234,6 +245,8 @@ export default function ProjectRegistrationsContent({
             ...p,
             // Fall back to index if backend id is missing (defensive)
             id: p.id ?? idx,
+            // Tolerate older payloads that don't include answers.
+            field_answers: p.field_answers ?? [],
           })
         );
         setParticipants(rows);
@@ -297,6 +310,36 @@ export default function ProjectRegistrationsContent({
     );
   }
 
+  if (eventRegistration.is_draft) {
+    return (
+      <Box sx={{ mt: 3, textAlign: "center" }}>
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          {texts.registration_setup_incomplete}
+        </Typography>
+        <Typography color="textSecondary" sx={{ mb: 2 }}>
+          {texts.registration_setup_incomplete_description}
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SettingsIcon />}
+          onClick={() => setEditModalOpen(true)}
+        >
+          {texts.complete_registration_setup}
+        </Button>
+        {editModalOpen && (
+          <EditEventRegistrationModal
+            open={editModalOpen}
+            onClose={() => setEditModalOpen(false)}
+            onSaved={onEventRegistrationUpdated}
+            project={project}
+            eventRegistration={eventRegistration}
+          />
+        )}
+      </Box>
+    );
+  }
+
   const STATUS_CONFIG = {
     open: {
       label: texts.registration_status_open,
@@ -322,6 +365,39 @@ export default function ProjectRegistrationsContent({
 
   const statusConfig = STATUS_CONFIG[eventRegistration.status];
   const StatusIcon = statusConfig.icon;
+
+  // Custom field export columns — hidden from the grid, included in CSV/print
+  const customFields = isCustomFieldsEnabled
+    ? [...(eventRegistration.fields ?? [])].sort((a, b) => a.order - b.order)
+    : [];
+
+  const customFieldColumns: GridColDef[] = [];
+  const customFieldColumnNames: string[] = [];
+
+  for (const field of customFields) {
+    if (field.id == null) continue;
+
+    // Probe with undefined answer to determine column count (1 for most types, 2 for inventory)
+    const columnSpec = resolveAnswerToStrings(field, undefined, locale);
+    for (let i = 0; i < columnSpec.length; i++) {
+      const colName = `custom_field_${field.id}${columnSpec[i].columnSuffix}`;
+      customFieldColumnNames.push(colName);
+      customFieldColumns.push({
+        field: colName,
+        headerName: `${field.label}${columnSpec[i].columnSuffix}`,
+        width: 0,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        valueGetter: (params) => {
+          const row = params.row as EventRegistration;
+          const answerForField = row.field_answers.find((a) => a.field === field.id);
+          const cols = resolveAnswerToStrings(field, answerForField, locale);
+          return cols[i]?.value ?? "";
+        },
+      });
+    }
+  }
 
   return (
     <>
@@ -534,24 +610,44 @@ export default function ProjectRegistrationsContent({
                     valueGetter: (params) =>
                       params.row.cancelled_at ? params.row.cancelled_at.split(".")[0] + "Z" : "",
                   },
+                  ...customFieldColumns,
                   {
                     field: "__actions__",
                     headerName: "",
-                    width: 52,
+                    width: 88,
                     sortable: false,
                     filterable: false,
                     disableExport: true,
                     disableColumnMenu: true,
                     renderCell: (params) => {
-                      if (params.row.cancelled_at) return null;
+                      const row = params.row as EventRegistration;
+                      const showViewIcon =
+                        isCustomFieldsEnabled && (row.field_answers?.length ?? 0) > 0;
+                      const showMenu = !row.cancelled_at;
+                      if (!showViewIcon && !showMenu) return null;
                       return (
-                        <IconButton
-                          size="small"
-                          aria-label={texts.cancel_guest_registration as string}
-                          onClick={(e) => handleOpenMenu(e, params.row.id as number)}
-                        >
-                          <MoreVertIcon fontSize="small" />
-                        </IconButton>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          {showViewIcon && (
+                            <Tooltip title={texts.view_registration_answers as string} arrow>
+                              <IconButton
+                                size="small"
+                                aria-label={texts.view_registration_answers as string}
+                                onClick={() => setAnswersModalRow(row)}
+                              >
+                                <VisibilityOutlinedIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          {showMenu && (
+                            <IconButton
+                              size="small"
+                              aria-label={texts.cancel_guest_registration as string}
+                              onClick={(e) => handleOpenMenu(e, row.id)}
+                            >
+                              <MoreVertIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                        </Box>
                       );
                     },
                   },
@@ -562,6 +658,7 @@ export default function ProjectRegistrationsContent({
                   columnVisibilityModel: {
                     registered_at_iso: false,
                     cancelled_at_iso: false,
+                    ...Object.fromEntries(customFieldColumnNames.map((name) => [name, false])),
                   },
                 },
                 sorting: {
@@ -595,7 +692,9 @@ export default function ProjectRegistrationsContent({
                     "registered_at_iso",
                     "cancelled_at",
                     "cancelled_at_iso",
+                    ...customFieldColumnNames,
                   ],
+                  printFields: ["user_first_name", "user_last_name", ...customFieldColumnNames],
                 } as ToolbarProps,
                 footer: {
                   total: participants.length,
@@ -653,6 +752,24 @@ export default function ProjectRegistrationsContent({
         registration={cancelModal}
         project={project}
         onCancelled={handleCancelled}
+      />
+
+      <ViewRegistrationAnswersModal
+        open={answersModalRow !== null}
+        onClose={() => setAnswersModalRow(null)}
+        registration={answersModalRow}
+        title={(texts.registration_answers_modal_title as string).replace(
+          "{name}",
+          answersModalRow
+            ? `${answersModalRow.user_first_name} ${answersModalRow.user_last_name}`.trim()
+            : ""
+        )}
+        fields={eventRegistration.fields ?? []}
+        event={{
+          name: project.name,
+          start_date: project.start_date,
+          end_date: project.end_date,
+        }}
       />
     </>
   );

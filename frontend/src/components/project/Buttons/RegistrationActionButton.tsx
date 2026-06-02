@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
@@ -8,6 +8,8 @@ import {
   getRegisterButtonText,
   isRegisterButtonDisabled,
 } from "../../../utils/eventRegistrationHelpers";
+import UserContext from "../../context/UserContext";
+import { trackGA4Event } from "../../../utils/analytics";
 
 const useStyles = makeStyles((theme: Theme) => ({
   registrationButtonContainer: {
@@ -32,7 +34,7 @@ interface RegistrationActionButtonProps {
   texts: any;
   isUserRegistered?: boolean;
   handleRegisterClick?: () => void;
-  handleCancelClick?: () => void;
+  onModifyRegistrationClick?: () => void;
   className?: string;
   /** Rendered when registrationState is "hidden" (no registration config / feature off). */
   fallback?: React.ReactNode;
@@ -40,6 +42,8 @@ interface RegistrationActionButtonProps {
   showSeatsCount?: boolean;
   /** Current event registration data (for real-time updates) */
   eventRegistration?: { available_seats: number | null; max_participants: number | null } | null;
+  /** Where the button is rendered (for analytics impression tracking). */
+  analyticsSurface?: "event_page" | "browse_card" | "similar_projects_sidebar";
 }
 
 /**
@@ -53,13 +57,32 @@ export default function RegistrationActionButton({
   texts,
   isUserRegistered,
   handleRegisterClick,
-  handleCancelClick,
+  onModifyRegistrationClick,
   className,
   fallback = null,
   showSeatsCount = false,
   eventRegistration,
+  analyticsSurface,
 }: RegistrationActionButtonProps) {
   const classes = useStyles();
+  const { ReactGA } = useContext(UserContext);
+
+  // Fire button impression event on mount
+  useEffect(() => {
+    if (analyticsSurface && registrationState !== "hidden" && registrationState !== "attended") {
+      trackGA4Event(
+        "event_registration_button_impression",
+        {
+          surface: analyticsSurface,
+          event_slug: project.url_slug,
+          registration_status: project.registration_config?.status ?? "open",
+        },
+        ReactGA
+      );
+    }
+    // Only fire on mount — intentionally not tracking re-renders
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Use eventRegistration if provided (for real-time updates), otherwise fall back to project.registration_config
   const registrationData = eventRegistration ?? project.registration_config;
@@ -81,10 +104,10 @@ export default function RegistrationActionButton({
         <Button
           variant="outlined"
           color="secondary"
-          onClick={handleCancelClick}
+          onClick={onModifyRegistrationClick}
           className={className}
         >
-          {texts.cancel_registration}
+          {texts.modify_registration}
         </Button>
       );
     }

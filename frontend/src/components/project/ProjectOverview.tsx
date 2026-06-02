@@ -179,7 +179,7 @@ type Props = {
   isUserRegistered?: boolean;
   hasAttended?: boolean;
   adminCancelled?: boolean;
-  handleCancelClick?: () => void;
+  onModifyRegistrationClick?: () => void;
   eventRegistration?: { available_seats: number | null; max_participants: number | null } | null;
 };
 
@@ -213,7 +213,7 @@ export default function ProjectOverview({
   isUserRegistered,
   hasAttended,
   adminCancelled,
-  handleCancelClick,
+  onModifyRegistrationClick,
   eventRegistration,
 }: Props) {
   const classes = useStyles({});
@@ -273,7 +273,7 @@ export default function ProjectOverview({
           hasAttended={hasAttended}
           adminCancelled={adminCancelled}
           registrationState={registrationState}
-          handleCancelClick={handleCancelClick}
+          onModifyRegistrationClick={onModifyRegistrationClick}
           eventRegistration={eventRegistration}
         />
       )}
@@ -446,7 +446,7 @@ function LargeScreenOverview({
   handleRegisterClick,
   isUserRegistered,
   registrationState,
-  handleCancelClick,
+  onModifyRegistrationClick,
   eventRegistration,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
@@ -496,10 +496,11 @@ function LargeScreenOverview({
               texts={texts}
               isUserRegistered={isUserRegistered}
               handleRegisterClick={handleRegisterClick}
-              handleCancelClick={handleCancelClick}
+              onModifyRegistrationClick={onModifyRegistrationClick}
               className={classes.registerButton}
               showSeatsCount={true}
               eventRegistration={eventRegistration}
+              analyticsSurface="event_page"
               fallback={
                 <FollowButton
                   isLoggedIn={!!user}

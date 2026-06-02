@@ -38,12 +38,16 @@ type Props = {
   projectData: Project;
   handleSetProjectData: Function;
   errors: RegistrationErrors;
+  fieldErrors?: Record<string, string>;
+  onClearFieldError?: (_key: string) => void;
 };
 
 export default function EventRegistrationSection({
   projectData,
   handleSetProjectData,
   errors,
+  fieldErrors,
+  onClearFieldError,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -126,6 +130,11 @@ export default function EventRegistrationSection({
           <RegistrationFieldList
             fields={projectData.registration_fields ?? []}
             onFieldsChange={handleFieldsChange}
+            isDraft={projectData.is_draft}
+            fieldErrors={fieldErrors}
+            onClearFieldError={onClearFieldError}
+            eventStartDate={projectData.start_date}
+            eventEndDate={projectData.end_date}
           />
         </>
       )}

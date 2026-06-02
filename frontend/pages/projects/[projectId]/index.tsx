@@ -176,7 +176,6 @@ export default function ProjectPage({
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = useState(true);
   const [projectTypes, setProjectTypes] = useState([]);
-
   // Get registered event slugs from user profile for showing "Registered ✓" status
   const registeredEventSlugs = useMemo(() => {
     return new Set(user?.registered_event_slugs || []);
@@ -186,7 +185,6 @@ export default function ProjectPage({
     const projectTypeOptions = await getProjectTypeOptions(locale);
     setProjectTypes(projectTypeOptions);
   };
-
   useEffect(function () {
     retrieveAndSetProjectTypes();
   }, []);
@@ -561,6 +559,8 @@ function parseProject(project) {
     parent_project_slug: project.parent_project_slug,
     is_online: project.is_online,
     registration_config: project.registration_config ?? null,
+    my_event_registration: project.my_event_registration ?? null,
+    devlink_component: project.devlink_component ?? null,
   };
 }
 

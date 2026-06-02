@@ -5,18 +5,26 @@ export type RegistrationFieldOption = {
   id?: number | null;
   title: string;
   order: number;
+  has_answers?: boolean;
+  available_amount?: number | null;
+  max_amount_per_guest?: number | null;
+  remaining_amount?: number | null;
+  start_time?: string | null;
+  end_time?: string | null;
 };
 
 export type RegistrationField = {
   id?: number | null;
-  field_type: "checkbox" | "option_select";
+  field_type: "checkbox" | "option_select" | "inventory" | "time_slot_select";
   order: number;
   is_required: boolean;
+  label: string;
   settings: {
     description?: string;
     title?: string;
   };
   options?: RegistrationFieldOption[];
+  has_answers?: boolean;
   /** Client-only stable key for React list rendering before the field is saved. */
   _clientKey?: string;
 };
@@ -28,6 +36,34 @@ export type EventRegistrationData = {
   status: "open" | "closed" | "full" | "ended";
   /** When true, team admins receive an email on registration/cancellation. */
   notify_admins: boolean;
+  /** When true, the registration configuration is incomplete and not visible to visitors. */
+  is_draft: boolean;
+  /** When false, registration features are hidden. Config preserved for re-enable. */
+  registration_enabled: boolean;
+  /** Custom registration fields configured by the organiser (Phase 4a). */
+  fields?: RegistrationField[];
+};
+
+/** Local form state for one custom-field answer while the user is filling in the modal. */
+export type RegistrationFieldAnswerValue = {
+  fieldId: number;
+  valueBoolean?: boolean;
+  valueOption?: number;
+  valueNumber?: number;
+};
+
+/**
+ * One stored custom-field answer as returned by
+ * ``GET /api/projects/{slug}/registrations/`` for the organiser view.
+ *
+ * Field labels and option titles are resolved client-side from
+ * ``EventRegistrationData.fields`` — only IDs are repeated here.
+ */
+export type RegistrationFieldAnswer = {
+  field: number;
+  value_boolean: boolean | null;
+  value_option: number | null;
+  value_number: number | null;
 };
 
 export type User = {
@@ -74,8 +110,8 @@ export type Project = {
   name?: string;
   project_parents?: any[];
   project_type: ProjectType | any;
-  start_date?: Date | Dayjs | null;
-  end_date?: Date | Dayjs | null;
+  start_date?: string | Dayjs | null;
+  end_date?: string | Dayjs | null;
   additional_loc_info?: string;
   short_description?: string;
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
@@ -98,6 +134,24 @@ export type Project = {
   registration_fields?: RegistrationField[];
   // Event registration data from the API (detail view)
   registration_config?: EventRegistrationData | null;
+  /** The requesting user's own active registration for this event (detail view only). */
+  my_event_registration?: MyEventRegistration | null;
+};
+
+/**
+ * The requesting user's own event registration as returned by
+ * ``GET /api/projects/{slug}/`` when they have an active registration.
+ * Only present on the detail endpoint; always derived from ``request.user``.
+ */
+export type MyEventRegistration = {
+  id: number;
+  user_first_name: string;
+  user_last_name: string;
+  user_url_slug: string | null;
+  user_thumbnail_image: string | null;
+  registered_at: string;
+  cancelled_at: string | null;
+  field_answers: RegistrationFieldAnswer[];
 };
 
 export type BrowseTab = "projects" | "organizations" | "members" | "events";

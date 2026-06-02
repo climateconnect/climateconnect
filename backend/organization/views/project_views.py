@@ -596,9 +596,13 @@ class CreateProjectView(APIView):
         # Create EventRegistrationConfig (and any nested custom fields) atomically.
         # Using serializer.save() so the serializer's create() handles nested fields.
         if er_serializer is not None:
-            er_serializer.save(project=project)
+            er_serializer.save(
+                project=project, is_draft=is_draft, registration_enabled=True
+            )
             logger.info(
-                "EventRegistrationConfig created for project %s", project.url_slug
+                "EventRegistrationConfig created for project %s (is_draft=%s)",
+                project.url_slug,
+                is_draft,
             )
 
         if translations_object and translations and source_language:
@@ -776,9 +780,29 @@ class ProjectAPIView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
+            prefetches = ["loc__translate_location__language"]
+            if request.user.is_authenticated:
+                # Prefetch only the requesting user's active registration (and its
+                # custom field answers) so get_my_event_registration on the
+                # serializer can use it without an extra DB round-trip.
+                prefetches.append(
+                    Prefetch(
+                        "registration_config__registrations",
+                        queryset=EventRegistration.objects.filter(
+                            user=request.user,
+                            cancelled_at__isnull=True,
+                        )
+                        .select_related("user__user_profile")
+                        .prefetch_related(
+                            "field_answers__field",
+                            "field_answers__value_option",
+                        ),
+                        to_attr="_my_registrations",
+                    )
+                )
             project = (
                 Project.objects.select_related("loc", "registration_config")
-                .prefetch_related("loc__translate_location__language")
+                .prefetch_related(*prefetches)
                 .get(url_slug=str(url_slug))
             )
         except Project.DoesNotExist:
@@ -941,6 +965,29 @@ class ProjectAPIView(APIView):
         if "is_draft" in request.data:
             # One way transition: draft → published, never back
             project.is_draft = False
+            # Date collision check: if the project has a published registration
+            # config, validate registration_end_date <= new end_date.
+            if hasattr(project, "registration_config"):
+                rc = project.registration_config
+                if not rc.is_draft and rc.registration_end_date:
+                    effective_end = (
+                        parse(request.data["end_date"])
+                        if "end_date" in request.data
+                        else project.end_date
+                    )
+                    if effective_end and rc.registration_end_date > effective_end:
+                        return Response(
+                            {
+                                "registration_config": {
+                                    "registration_end_date": (
+                                        "Registration end date must be on or before "
+                                        "the event end date. Update the registration "
+                                        "settings before publishing."
+                                    )
+                                }
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
         if "is_personal_project" in request.data:
             if request.data["is_personal_project"] is True:
                 project_parents = ProjectParents.objects.get(project=project)
@@ -1445,9 +1492,9 @@ class ListFeaturedProjects(ListAPIView):
     serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
-        return Project.objects.filter(rating__lte=99, is_draft=False, is_active=True)[
-            0:4
-        ]
+        return Project.objects.filter(
+            rating__lte=99, is_draft=False, is_active=True
+        ).prefetch_related("loc__translate_location__language")[0:4]
 
 
 class ListProjectsForSitemap(ListAPIView):
@@ -1749,7 +1796,7 @@ class SimilarProjects(ListAPIView):
             is_draft=False,
             rating__gte=49,
             is_active=True,
-        )
+        ).prefetch_related("loc__translate_location__language")
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

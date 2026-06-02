@@ -143,6 +143,7 @@ export default function ProjectSideBar({
               projects={projectsToDisplay}
               hubUrl={hubName}
               registeredEventSlugs={registeredEventSlugs}
+              analyticsSurface="similar_projects_sidebar"
             />
             <Button variant="outlined" className={classes.showAllProjectsButton} href={showAllLink}>
               <SearchIcon />
