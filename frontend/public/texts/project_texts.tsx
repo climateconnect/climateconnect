@@ -1259,9 +1259,9 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     disable_registration_confirm: {
       en:
-        "There are already registrations for this event. Disabling registration will hide the registration form from visitors, but existing registrations will be preserved. Do you want to continue?",
+        "There are already registrations for this event. Disabling registration will hide the registration form from visitors and you won't be able to see the registrations. Alternatively you can also close the registration via the registration settings. Do you want to continue?",
       de:
-        "Es gibt bereits Anmeldungen für dieses Event. Das Deaktivieren der Anmeldung blendet das Anmeldeformular für Besucher aus, aber bestehende Anmeldungen bleiben erhalten. Möchtest du fortfahren?",
+        "Es gibt bereits Anmeldungen für dieses Event. Das Deaktivieren der Anmeldung blendet das Anmeldeformular für Besucher aus und du wirst nicht mehr sehen können, welche Anmeldungen es gibt. Alternativ kannst du auch die Anmeldung via den Anmeldeeinstellungen schließen. Möchtest du fortfahren?",
     },
     disable_registration: {
       en: "Disable registration",

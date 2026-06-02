@@ -96,6 +96,7 @@ type Args = {
   errors: any;
   contentRef?: RefObject<any>;
   projectTypeOptions?: any;
+  savedIsEventType: boolean;
 };
 
 export default function EditProjectContent({
@@ -106,6 +107,7 @@ export default function EditProjectContent({
   errors,
   contentRef,
   projectTypeOptions,
+  savedIsEventType,
 }: Args) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -157,7 +159,6 @@ export default function EditProjectContent({
   const handleRegistrationSaved = (updated) => {
     handleSetProject({ ...project, registration_config: updated });
   };
-
   const isEventType = project.project_type?.type_id === "event";
   const hasRegistrationConfig = !!project.registration_config;
   const registrationEnabled =
@@ -165,6 +166,7 @@ export default function EditProjectContent({
   const isPastEvent = project.end_date ? new Date(project.end_date) < new Date() : false;
   const showEditRegistrationButton =
     user_role.role_type === ROLE_TYPES.all_type && isEventType && registrationEnabled;
+  const canToggleRegistration = isEventType && savedIsEventType;
 
   const [registrationToggleLoading, setRegistrationToggleLoading] = useState(false);
   const [confirmDisableOpen, setConfirmDisableOpen] = useState(false);
@@ -234,42 +236,6 @@ export default function EditProjectContent({
           />
           <Typography component="span">{projectTypeTexts.organizations[typeId]}</Typography>
         </div>
-        {isEventType && user_role.role_type === ROLE_TYPES.all_type && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-            <Switch
-              checked={registrationEnabled}
-              onChange={(e) => handleRegistrationToggle(e.target.checked)}
-              disabled={registrationToggleLoading || (isPastEvent && !hasRegistrationConfig)}
-              inputProps={{ "aria-label": texts.online_registration }}
-            />
-            <Typography component="span">{texts.online_registration}</Typography>
-            {showEditRegistrationButton && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  ml: "auto",
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<SettingsIcon />}
-                  onClick={() => setEditRegistrationOpen(true)}
-                  aria-label={texts.edit_registration_settings}
-                >
-                  {texts.edit_registration_settings}
-                </Button>
-                {project.registration_config?.is_draft && (
-                  <Typography variant="body2" color="warning.main" sx={{ mt: 0.5 }}>
-                    {texts.registration_config_still_draft_warning}
-                  </Typography>
-                )}
-              </Box>
-            )}
-          </Box>
-        )}
         <div className={classes.block}>
           {project.is_personal_project ? (
             <>
@@ -313,6 +279,42 @@ export default function EditProjectContent({
             onChangeProjectType={handleChangeProjectType}
           />
         </div>
+        {canToggleRegistration && user_role.role_type === ROLE_TYPES.all_type && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+            <Switch
+              checked={registrationEnabled}
+              onChange={(e) => handleRegistrationToggle(e.target.checked)}
+              disabled={registrationToggleLoading || (isPastEvent && !hasRegistrationConfig)}
+              inputProps={{ "aria-label": texts.online_registration }}
+            />
+            <Typography component="span">{texts.allow_online_registration}</Typography>
+            {showEditRegistrationButton && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  ml: "auto",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<SettingsIcon />}
+                  onClick={() => setEditRegistrationOpen(true)}
+                  aria-label={texts.edit_registration_settings}
+                >
+                  {texts.edit_registration_settings}
+                </Button>
+                {project.registration_config?.is_draft && (
+                  <Typography variant="body2" color="warning.main" sx={{ mt: 0.5 }}>
+                    {texts.registration_config_still_draft_warning}
+                  </Typography>
+                )}
+              </Box>
+            )}
+          </Box>
+        )}
         <div className={classes.block}>
           <ProjectDateSection
             projectData={project}
