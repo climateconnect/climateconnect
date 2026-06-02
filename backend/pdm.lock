@@ -5,10 +5,10 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:72a30a2c1b2cf0c2b79677b8dae57da70edc271914fe011f3f84e38724cc9c7b"
+content_hash = "sha256:3ec7e0722add712b306983e420412089afdc627e89f263724d758087636b4250"
 
 [[metadata.targets]]
-requires_python = ">=3.11"
+requires_python = ">=3.12"
 
 [[package]]
 name = "aioredis"
