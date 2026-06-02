@@ -56,7 +56,6 @@ export default function EditOrganizationRoot({
   const { locale, locales } = useContext(UserContext);
   const router = useRouter();
   const STEPS = ["edit_organization", "edit_translations"];
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
   const texts = getTexts({
     page: "organization",
@@ -106,7 +105,6 @@ export default function EditOrganizationRoot({
     if (
       editedOrg?.info?.location !== organization?.info?.location &&
       !isLocationValid(editedOrg?.info?.location) &&
-      !legacyModeEnabled &&
       !isTranslationsStep
     )
       indicateWrongLocation(

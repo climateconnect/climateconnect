@@ -66,7 +66,6 @@ class TestEventRegistrationCreate(APITestCase):
 
         self.image = _make_black_image_b64()
 
-        # Legacy location format only requires country (+ optional city)
         self.location_data = {
             "place_id": 9999,
             "country": "Testland",
