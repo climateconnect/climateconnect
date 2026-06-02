@@ -1,7 +1,21 @@
-import { Box, Button, Switch, TextField, Typography, useMediaQuery, Theme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Switch,
+  TextField,
+  Typography,
+  useMediaQuery,
+  Theme,
+} from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { RefObject, useContext, useState } from "react";
 import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
+import { apiRequest } from "../../../public/lib/apiOperations";
+import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../../public/data/role_types";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -12,7 +26,6 @@ import { Project, Role } from "../../types";
 import { EditProjectTypeSelector } from "./EditProjectTypeSelector";
 import ProjectDateSection from "../shareProject/ProjectDateSection";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useFeatureToggles } from "../featureToggle";
 import EditEventRegistrationModal from "../project/EditEventRegistrationModal";
 
 const useStyles = makeStyles<Theme>((theme) => ({
@@ -83,6 +96,7 @@ type Args = {
   errors: any;
   contentRef?: RefObject<any>;
   projectTypeOptions?: any;
+  savedIsEventType: boolean;
 };
 
 export default function EditProjectContent({
@@ -93,6 +107,7 @@ export default function EditProjectContent({
   errors,
   contentRef,
   projectTypeOptions,
+  savedIsEventType,
 }: Args) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -100,7 +115,6 @@ export default function EditProjectContent({
   const projectTypeTexts = getProjectTypeTexts(texts);
   const typeId = project.project_type?.type_id ?? "project";
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const { isEnabled } = useFeatureToggles();
   const [editRegistrationOpen, setEditRegistrationOpen] = useState(false);
 
   const handleChangeProject = (newValue, key) => {
@@ -145,12 +159,66 @@ export default function EditProjectContent({
   const handleRegistrationSaved = (updated) => {
     handleSetProject({ ...project, registration_config: updated });
   };
-
+  const isEventType = project.project_type?.type_id === "event";
+  const hasRegistrationConfig = !!project.registration_config;
+  const registrationEnabled =
+    hasRegistrationConfig && project.registration_config?.registration_enabled !== false;
+  const isPastEvent = project.end_date ? new Date(project.end_date) < new Date() : false;
   const showEditRegistrationButton =
-    user_role.role_type === ROLE_TYPES.all_type &&
-    project.project_type?.type_id === "event" &&
-    isEnabled("EVENT_REGISTRATION") &&
-    !!project.registration_config;
+    user_role.role_type === ROLE_TYPES.all_type && isEventType && registrationEnabled;
+  const canToggleRegistration = isEventType && savedIsEventType;
+
+  const [registrationToggleLoading, setRegistrationToggleLoading] = useState(false);
+  const [confirmDisableOpen, setConfirmDisableOpen] = useState(false);
+  const token = new Cookies().get("auth_token");
+
+  const handleRegistrationToggle = async (checked: boolean) => {
+    if (checked) {
+      setRegistrationToggleLoading(true);
+      try {
+        const resp = await apiRequest({
+          method: "post",
+          url: `/api/projects/${project.url_slug}/registration-config/`,
+          payload: {},
+          token,
+        });
+        handleSetProject({ ...project, registration_config: resp.data });
+      } catch (error) {
+        console.error("Failed to enable registration:", error);
+      } finally {
+        setRegistrationToggleLoading(false);
+      }
+    } else {
+      const rc = project.registration_config;
+      const hasActiveRegistrations =
+        rc?.max_participants != null &&
+        rc?.available_seats != null &&
+        rc.available_seats < rc.max_participants;
+      if (hasActiveRegistrations) {
+        setConfirmDisableOpen(true);
+      } else {
+        await doDisableRegistration();
+      }
+    }
+  };
+
+  const doDisableRegistration = async () => {
+    setConfirmDisableOpen(false);
+    setRegistrationToggleLoading(true);
+    try {
+      await apiRequest({
+        method: "patch",
+        url: `/api/projects/${project.url_slug}/registration-config/`,
+        payload: { registration_enabled: false },
+        token,
+      });
+      handleSetProject({ ...project, registration_config: null });
+    } catch (error) {
+      console.error("Failed to disable registration:", error);
+    } finally {
+      setRegistrationToggleLoading(false);
+    }
+  };
 
   return (
     <div ref={contentRef}>
@@ -168,24 +236,6 @@ export default function EditProjectContent({
           />
           <Typography component="span">{projectTypeTexts.organizations[typeId]}</Typography>
         </div>
-        {showEditRegistrationButton && (
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", mb: 1 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<SettingsIcon />}
-              onClick={() => setEditRegistrationOpen(true)}
-              aria-label={texts.edit_registration_settings}
-            >
-              {texts.edit_registration_settings}
-            </Button>
-            {project.registration_config?.is_draft && (
-              <Typography variant="body2" color="warning.main" sx={{ mt: 0.5 }}>
-                {texts.registration_config_still_draft_warning}
-              </Typography>
-            )}
-          </Box>
-        )}
         <div className={classes.block}>
           {project.is_personal_project ? (
             <>
@@ -229,6 +279,42 @@ export default function EditProjectContent({
             onChangeProjectType={handleChangeProjectType}
           />
         </div>
+        {canToggleRegistration && user_role.role_type === ROLE_TYPES.all_type && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+            <Switch
+              checked={registrationEnabled}
+              onChange={(e) => handleRegistrationToggle(e.target.checked)}
+              disabled={registrationToggleLoading || (isPastEvent && !hasRegistrationConfig)}
+              inputProps={{ "aria-label": texts.online_registration }}
+            />
+            <Typography component="span">{texts.allow_online_registration}</Typography>
+            {showEditRegistrationButton && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  ml: "auto",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<SettingsIcon />}
+                  onClick={() => setEditRegistrationOpen(true)}
+                  aria-label={texts.edit_registration_settings}
+                >
+                  {texts.edit_registration_settings}
+                </Button>
+                {project.registration_config?.is_draft && (
+                  <Typography variant="body2" color="warning.main" sx={{ mt: 0.5 }}>
+                    {texts.registration_config_still_draft_warning}
+                  </Typography>
+                )}
+              </Box>
+            )}
+          </Box>
+        )}
         <div className={classes.block}>
           <ProjectDateSection
             projectData={project}
@@ -263,6 +349,18 @@ export default function EditProjectContent({
           eventRegistration={project.registration_config}
         />
       )}
+      <Dialog open={confirmDisableOpen} onClose={() => setConfirmDisableOpen(false)}>
+        <DialogTitle>{texts.online_registration}</DialogTitle>
+        <DialogContent>
+          <Typography>{texts.disable_registration_confirm}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDisableOpen(false)}>{texts.cancel}</Button>
+          <Button onClick={doDisableRegistration} color="error" variant="contained">
+            {texts.disable_registration}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

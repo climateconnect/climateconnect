@@ -23,6 +23,7 @@ from organization.models.registration_field import (
 )
 from organization.serializers.event_registration import (
     EditEventRegistrationConfigSerializer,
+    EventRegistrationConfigSerializer,
     EventRegistrationSerializer,
     EventRegistrationSubmissionSerializer,
     SendOrganizerEmailSerializer,
@@ -496,15 +497,20 @@ class EventRegistrationsView(APIView):
 
 class EditRegistrationConfigView(APIView):
     """
+    POST /api/projects/{url_slug}/registration-config/
     PATCH /api/projects/{url_slug}/registration-config/
 
-    Allows an event organiser (or team admin) to update registration settings
-    for an event that already has EventRegistrationConfig enabled.
+    POST: Creates a new draft registration config for an event, or re-enables
+          an existing disabled config. Requires project admin role.
 
-    Editable fields:
+    PATCH: Allows an event organiser (or team admin) to update registration
+           settings for an event that already has EventRegistrationConfig.
+
+    Editable fields (PATCH):
         - max_participants  (positive integer or null for unlimited)
         - registration_end_date  (datetime)
         - status  ("open" or "closed" only — "full" and "ended" are system-managed)
+        - registration_enabled  (boolean — disable/enable registration)
 
     Status change rules:
         - "open" → "closed"   Organiser manually closes registration.
@@ -514,24 +520,87 @@ class EditRegistrationConfigView(APIView):
           returns 400 — extend registration_end_date first, then reopen.
         - "full" and "ended" cannot be set via the API (400 Bad Request).
         - Setting status to its current stored value is idempotent (200 OK).
-
-    Behaviour:
-        - 200 OK          — settings updated; returns updated registration_config.
-        - 400 Bad Request — validation error (past date, invalid status, etc.).
-        - 401 Unauthorized — unauthenticated request.
-        - 403 Forbidden    — authenticated user without edit rights on the project.
-        - 404 Not Found    — project or EventRegistrationConfig does not exist.
-
-    Response body (200 OK):
-        {
-            "max_participants": 80,
-            "registration_end_date": "2026-07-01T18:00:00Z",
-            "status": "open" | "closed" | "full" | "ended",
-            "available_seats": 75
-        }
     """
 
     permission_classes = [IsAuthenticated]
+
+    def post(self, request, url_slug):
+        """Create or re-enable a registration config for an event."""
+
+        # ── 1. Look up project ──────────────────────────────────────────────
+        try:
+            project = Project.objects.get(url_slug=url_slug)
+        except Project.DoesNotExist:
+            return Response(
+                {"message": "Project not found: {}".format(url_slug)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # ── 2. Verify event project type ────────────────────────────────────
+        from organization.models.type import ProjectTypesChoices
+
+        if (
+            not project.project_type
+            or project.project_type != ProjectTypesChoices.event
+        ):
+            return Response(
+                {"message": "Registration is only available for event projects."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # ── 3. Check edit rights ────────────────────────────────────────────
+        has_edit_rights = ProjectMember.objects.filter(
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            project=project,
+        ).exists()
+        if not has_edit_rights:
+            return Response(
+                {"message": "You do not have permission to edit this project."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # ── 4. Check for existing config ────────────────────────────────────
+        try:
+            rc = project.registration_config
+            if rc.registration_enabled:
+                return Response(
+                    {"message": "Registration is already enabled for this event."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            # Re-enable existing disabled config
+            rc.registration_enabled = True
+            rc.save(update_fields=["registration_enabled", "updated_at"])
+            serializer = EventRegistrationConfigSerializer(
+                rc, context={"include_seat_count": True}
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except EventRegistrationConfig.DoesNotExist:
+            pass
+
+        # ── 5. Create new draft config ──────────────────────────────────────
+        # Don't allow adding registration to past events.
+        if project.end_date and project.end_date < timezone.now():
+            return Response(
+                {"message": "Cannot add registration to a past event."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        rc = EventRegistrationConfig.objects.create(
+            project=project,
+            is_draft=True,
+            registration_enabled=True,
+            status=RegistrationStatus.OPEN,
+        )
+        serializer = EventRegistrationConfigSerializer(
+            rc, context={"include_seat_count": True}
+        )
+        logger.info(
+            "[EventRegistration] Organiser %s created registration config for '%s'",
+            request.user.id,
+            url_slug,
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def patch(self, request, url_slug):
 
@@ -565,7 +634,18 @@ class EditRegistrationConfigView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # ── 4. Validate and save ─────────────────────────────────────────────
+        # ── 4. Handle registration_enabled toggle ────────────────────────────
+        # When only registration_enabled is in the request body, skip full
+        # validation — it's a simple boolean toggle.
+        if "registration_enabled" in request.data and len(request.data) == 1:
+            rc.registration_enabled = bool(request.data["registration_enabled"])
+            rc.save(update_fields=["registration_enabled", "updated_at"])
+            serializer = EventRegistrationConfigSerializer(
+                rc, context={"include_seat_count": True}
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # ── 5. Validate and save ─────────────────────────────────────────────
         # Derive is_draft from the config's own state, not the project's.
         # Draft configs skip publish-time field validation (e.g. empty checkbox
         # description) without requiring the frontend to pass extra state.

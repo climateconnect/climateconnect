@@ -223,12 +223,15 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
     def get_registration_config(self, obj):
         """Return event registration config including available_seats (detail only).
 
-        Draft configs are only visible to project admins. Non-admin viewers
-        see None — the config is not yet published and should not be exposed.
+        Disabled configs are hidden from everyone. Draft configs are only
+        visible to project admins.
         """
         try:
             rc = obj.registration_config
         except EventRegistrationConfig.DoesNotExist:
+            return None
+
+        if not rc.registration_enabled:
             return None
 
         if rc.is_draft:
@@ -533,11 +536,15 @@ class ProjectStubSerializer(_LocationNameMixin, serializers.ModelSerializer):
     def get_registration_config(self, obj):
         """Return event registration config if present, else None.
 
-        Draft configs are only visible to project admins.
+        Disabled configs are hidden from everyone. Draft configs are only
+        visible to project admins.
         """
         try:
             rc = obj.registration_config
         except EventRegistrationConfig.DoesNotExist:
+            return None
+
+        if not rc.registration_enabled:
             return None
 
         if rc.is_draft:

@@ -158,6 +158,19 @@ export default function EditProjectRoot({
       }
     }
 
+    if (!isDraft && project.project_type?.type_id === "event" && project.registration_config) {
+      const rc = project.registration_config;
+      if (!rc.is_draft && rc.registration_end_date && project.end_date) {
+        if (new Date(rc.registration_end_date) > new Date(project.end_date)) {
+          setErrors({
+            ...errors,
+            end_date: texts.registration_end_date_must_be_before_event_end_date,
+          });
+          return false;
+        }
+      }
+    }
+
     return true;
   };
 
@@ -397,6 +410,7 @@ export default function EditProjectRoot({
             errors={errors}
             contentRef={contentRef}
             projectTypeOptions={projectTypeOptions}
+            savedIsEventType={oldProject?.project_type?.type_id === "event"}
           />
           <Divider className={classes.divider} />
           <NavigationButtons

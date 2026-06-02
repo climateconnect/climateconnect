@@ -157,6 +157,14 @@ When a guest registers for an event with custom fields, include the provided ans
 |-------|-------------|------|--------|
 | Include field answers in registration confirmation email | [#2023](https://github.com/climateconnect/climateconnect/issues/2023) | [`20260601_1031_include_field_answers_in_registration_email.md`](./20260601_1031_include_field_answers_in_registration_email.md) | ⚪ |
 
+#### Phase 4w — Add Registration to Existing Event (cross-cutting)
+
+Organisers can enable or disable online registration for an existing event at any time. When enabled, a draft registration configuration is created that can be published when ready. When disabled, the configuration is preserved but hidden.
+
+| Story | GitHub Issue | Spec | Status |
+|-------|-------------|------|--------|
+| Allow the user to turn event registration on/off when editing an event | [#2001](https://github.com/climateconnect/climateconnect/issues/2001) | [`20260602_0755_add_registration_to_existing_event.md`](./20260602_0755_add_registration_to_existing_event.md) | ⚪ |
+
 #### Phase 4c+ — Further Field Types (TBD)
 
 Additional field types (e.g. free text, number, date) to be defined based on user feedback after Phase 4a ships.

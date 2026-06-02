@@ -596,7 +596,9 @@ class CreateProjectView(APIView):
         # Create EventRegistrationConfig (and any nested custom fields) atomically.
         # Using serializer.save() so the serializer's create() handles nested fields.
         if er_serializer is not None:
-            er_serializer.save(project=project, is_draft=is_draft)
+            er_serializer.save(
+                project=project, is_draft=is_draft, registration_enabled=True
+            )
             logger.info(
                 "EventRegistrationConfig created for project %s (is_draft=%s)",
                 project.url_slug,

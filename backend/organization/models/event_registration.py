@@ -131,6 +131,16 @@ class EventRegistrationConfig(models.Model):
         verbose_name="Is Draft",
     )
 
+    registration_enabled = models.BooleanField(
+        default=True,
+        help_text=(
+            "When False, registration features are hidden for this event. "
+            "The config is preserved and can be re-enabled later. "
+            "Unlike is_draft, this field is reversible."
+        ),
+        verbose_name="Registration Enabled",
+    )
+
     notify_admins = models.BooleanField(
         default=True,
         help_text=(
