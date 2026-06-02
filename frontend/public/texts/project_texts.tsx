@@ -1253,6 +1253,20 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Edit registration settings",
       de: "Anmeldeeinstellungen bearbeiten",
     },
+    online_registration: {
+      en: "Online registration",
+      de: "Online-Anmeldung",
+    },
+    disable_registration_confirm: {
+      en:
+        "There are already registrations for this event. Disabling registration will hide the registration form from visitors, but existing registrations will be preserved. Do you want to continue?",
+      de:
+        "Es gibt bereits Anmeldungen für dieses Event. Das Deaktivieren der Anmeldung blendet das Anmeldeformular für Besucher aus, aber bestehende Anmeldungen bleiben erhalten. Möchtest du fortfahren?",
+    },
+    disable_registration: {
+      en: "Disable registration",
+      de: "Anmeldung deaktivieren",
+    },
     registration_settings_saved: {
       en: "Registration settings saved successfully",
       de: "Anmeldeeinstellungen erfolgreich gespeichert",

@@ -110,6 +110,7 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
             "available_seats",
             "notify_admins",
             "is_draft",
+            "registration_enabled",
         ]
         extra_kwargs = {
             # PositiveIntegerField gives us min_value via the model, but we set
@@ -123,6 +124,7 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
             # EditEventRegistrationConfigSerializer.
             "notify_admins": {"required": False},
             "is_draft": {"required": False},
+            "registration_enabled": {"required": False},
         }
 
     def get_available_seats(self, obj):
@@ -699,6 +701,7 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
             "available_seats",
             "notify_admins",
             "is_draft",
+            "registration_enabled",
         ]
         extra_kwargs = {
             "max_participants": {"required": False, "allow_null": True, "min_value": 1},
@@ -706,6 +709,7 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
             "status": {"required": False},
             "notify_admins": {"required": False},
             "is_draft": {"required": False},
+            "registration_enabled": {"required": False},
         }
 
     def validate_status(self, value):

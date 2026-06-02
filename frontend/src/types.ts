@@ -38,6 +38,8 @@ export type EventRegistrationData = {
   notify_admins: boolean;
   /** When true, the registration configuration is incomplete and not visible to visitors. */
   is_draft: boolean;
+  /** When false, registration features are hidden. Config preserved for re-enable. */
+  registration_enabled: boolean;
   /** Custom registration fields configured by the organiser (Phase 4a). */
   fields?: RegistrationField[];
 };

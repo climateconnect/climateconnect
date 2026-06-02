@@ -14,7 +14,7 @@
 
 Currently, registration configuration can only be added during event creation. If an organiser creates an event without enabling registration, there is **no way to add it later** — the `showEditRegistrationButton` in `EditProjectContent.tsx` requires `!!project.registration_config` to be true, and there is no backend endpoint to create a registration config for an existing project.
 
-Similarly, if an organiser decides to disable registration for an event that already has a config, there is no way to do so without deleting the config entirely (which is not possible through the UI either).
+Similarly, if an organiser decides to disable registration for an event that already has a config, there is no way to do so (event registration can only be closed).
 
 **Core Requirements (from #2001):**
 
@@ -34,7 +34,6 @@ Similarly, if an organiser decides to disable registration for an event that alr
 ### Non-Functional Requirements
 
 - **No breaking changes**: existing API contracts are preserved. New endpoints are additive.
-- **Toggle gate**: all new frontend UI is gated behind `isEnabled("EVENT_REGISTRATION")`.
 - **Preservation**: disabling registration does NOT delete the config or any custom fields. Re-enabling restores the previous state.
 - **One-way draft transition**: the existing `is_draft` one-way transition (draft → published) is preserved. Disabling registration is a separate concept from draft/published state.
 
@@ -54,7 +53,7 @@ Similarly, if an organiser decides to disable registration for an event that alr
 
 - **API approach — POST on the existing endpoint**: Extend `EditRegistrationConfigView` to handle POST (create) in addition to PATCH (update). When POST is called and no config exists, create a draft config with `registration_enabled=True`. When PATCH is called with `registration_enabled=False`, hide the config. This keeps the API surface minimal — one endpoint handles both create and update.
 
-- **Frontend approach — switch in edit form**: Add a `Switch` component in `EditProjectContent.tsx` (similar to the existing status toggle) that controls `registration_enabled`. When toggled ON, POST to create a draft config. When toggled OFF, PATCH to set `registration_enabled=False`. The switch replaces the current `showEditRegistrationButton` condition — the button is shown when the switch is ON.
+- **Frontend approach — switch in edit form**: Add a `Switch` component in `EditProjectContent.tsx` (similar to the existing status toggle) that controls `registration_enabled`. When toggled ON, POST to create a draft config. When toggled OFF, PATCH to set `registration_enabled=False`. The switch replaces the current `showEditRegistrationButton` condition — the button is shown when the switch is ON. No feature toggle check needed — the `EVENT_REGISTRATION` toggle is already active on production.
 
 - **Interaction with existing draft warning**: The existing warning ("Registration configuration is not yet complete") in `EditProjectContent.tsx` is shown when `project.registration_config?.is_draft` is true. This continues to work — when the user toggles ON and creates a draft config, the warning appears automatically.
 
@@ -204,17 +203,20 @@ def get_registration_config(self, obj):
 
 In `EditProjectContent.tsx`, add a registration toggle switch:
 
-1. **Switch component**: A `Switch` with label "Online registration" (similar to the existing create flow `EventRegistrationStep.tsx`).
-2. **Initial state**: `!!project.registration_config && project.registration_config.registration_enabled !== false`.
-3. **Toggle ON**:
+1. **Placement**: In the same row as the "Edit registration settings" button, below the project type toggle. Only visible when `project.project_type?.type_id === "event"`.
+2. **Switch component**: A `Switch` with label "Online registration" (similar to the existing create flow `EventRegistrationStep.tsx`).
+3. **Layout**: Switch and button in a horizontal row — switch on the left, "Edit registration settings" button on the right (when switch is ON).
+4. **Initial state**: `!!project.registration_config && project.registration_config.registration_enabled !== false`.
+5. **Toggle ON**:
    - If `project.registration_config` exists but `registration_enabled === false`, PATCH `{registration_enabled: true}`.
    - If `project.registration_config` does not exist, POST to create a new draft config.
    - On success, update `project.registration_config` in local state.
-4. **Toggle OFF**:
+6. **Toggle OFF**:
+   - If there are active registrations for this event, show a confirmation dialog warning the organiser that registration will be hidden but existing registrations are preserved.
    - PATCH `{registration_enabled: false}`.
    - On success, set `project.registration_config` to `null` in local state (or set `registration_enabled: false`).
-5. **When switch is ON**: Show the "Edit registration settings" button and the draft warning (if applicable).
-6. **When switch is OFF**: Hide the button and warning.
+7. **When switch is ON**: Show the "Edit registration settings" button and the draft warning (if applicable).
+8. **When switch is OFF**: Hide the button and warning.
 
 ### Frontend — Registration Config Modal (no changes)
 
@@ -321,7 +323,7 @@ The `EditEventRegistrationModal` does not need changes. It already handles draft
 
 ## Dependency Notes
 
-- **Depends on**: `is_draft` on `EventRegistrationConfig` (already implemented). `EditEventRegistrationModal` (already built). `EVENT_REGISTRATION` toggle (already exists).
+- **Depends on**: `is_draft` on `EventRegistrationConfig` (already implemented). `EditEventRegistrationModal` (already built).
 - **Enables**: Organisers can add registration to events after creation. This is the natural next step after the `is_draft` feature.
 - **Migration**: minor — one field addition with `default=True`.
 
@@ -331,6 +333,8 @@ The `EditEventRegistrationModal` does not need changes. It already handles draft
 
 - 2026-06-02 07:55 — Spec created. Initial draft.
 - 2026-06-02 08:03 — Added `registration_enabled=True` to create project flow (`CreateProjectView.post()`).
+- 2026-06-02 08:31 — Decisions finalized: switch placement (same row as button, below project type toggle), re-enable preserves config, confirmation dialog on disable with active registrations, REST endpoint (POST+PATCH on same URL).
+- 2026-06-02 08:45 — Removed feature toggle references — `EVENT_REGISTRATION` is already active on production.
 
 ---
 
@@ -354,12 +358,12 @@ The `EditEventRegistrationModal` does not need changes. It already handles draft
 
 ## Notes and Open Questions
 
-1. **Switch vs checkbox**: The create flow uses a `Switch` component for the registration toggle. The edit form should use the same component for consistency.
+1. **Switch placement**: The switch is in the same row as the "Edit registration settings" button, below the project type toggle. Only visible for event project types. This groups the registration controls together.
 
-2. **Switch placement in edit form**: The switch should be placed near the "Edit registration settings" button — either above it (as a group) or in the same section. The button appears only when the switch is ON.
+2. **Re-enable preserves config**: When the user toggles ON and a disabled config exists, the existing config is re-enabled (not replaced). This supports the primary use case: adding registration after event creation, and the corner case of temporarily disabling and re-enabling.
 
-3. **Confirmation dialog on disable**: Should we show a confirmation dialog when the user toggles OFF? The config is preserved, so no data is lost. But the user might not realize that registration will be hidden from visitors. Recommend: no confirmation dialog for this iteration — the switch is easily reversible.
+3. **Confirmation dialog on disable**: Show a confirmation dialog when the user toggles OFF and there are active registrations. The dialog warns that registration will be hidden but existing registrations are preserved. No dialog when there are no registrations.
 
-4. **Impact on active registrations**: If the user disables registration while guests are already registered, the registrations are preserved. The registrations tab will no longer be visible (since the config is filtered out), but the data is still in the database. If the user re-enables registration, the registrations become visible again. This is acceptable behavior.
+4. **Status preserved on disable/re-enable**: When a config is disabled, its `status` (open/closed/full) is preserved. When re-enabled, it returns to its previous status. This is intentional — the organiser might want to re-enable with the same status.
 
-5. **Status preserved on disable/re-enable**: When a config is disabled, its `status` (open/closed/full) is preserved. When re-enabled, it returns to its previous status. This is intentional — the organiser might want to re-enable with the same status.
+5. **REST endpoint**: `POST /api/projects/{slug}/registration-config/` creates, `PATCH /api/projects/{slug}/registration-config/` updates. Same URL, different methods. Standard REST pattern.
