@@ -216,6 +216,7 @@ Before creating funnels, register these custom dimensions in GA4:
 | `step` | `step` | Auth step identifier (for `auth_step_viewed`) |
 | `user_status` | `user_status` | New vs returning user status |
 | `auth_type` | `auth_type` | Auth method used (OTP, password) |
+| `user_type` | `user_type` | User classification: `"new" \| "returning"` in auth events |
 
 **Event registration funnel dimensions:**
 
@@ -226,9 +227,7 @@ Before creating funnels, register these custom dimensions in GA4:
 | `auth_path` | `auth_path` | Auth path in registration modal (password, otp, signup) |
 | `registration_status` | `registration_status` | Event registration status (open, closed, full) |
 | `error_type` | `error_type` | Error classification for failed registrations |
-
-**Built-in dimensions** (no manual registration required):
-- `user_type` — GA4 built-in dimension, automatically available for breakdowns. Used as `"new" \| "returning"` in auth events and `"authenticated" \| "guest"` in event registration events.
+| `user_type` | `user_type` | User classification: `"authenticated" \| "guest"` in event registration events |
 
 These dimensions are required for funnel step conditions and breakdowns.
 
