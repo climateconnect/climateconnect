@@ -77,11 +77,11 @@ def create_roles_test_data():
     # Creating 2 roles here
     print("Creating project roles...")
 
-    if not Role.objects.filter(name="Creator").exists():
-        Role.objects.create(name="Creator", role_type=Role.ALL_TYPE)
-        print("Creator role is successfully created.")
+    if not Role.objects.filter(name="Super-Admin").exists():
+        Role.objects.create(name="Super-Admin", role_type=Role.ALL_TYPE)
+        print("Super-Admin role is successfully created.")
     else:
-        print("Creator role already exists.")
+        print("Super-Admin role already exists.")
 
     if not Role.objects.filter(name="Member").exists():
         Role.objects.create(name="Member", role_type=Role.READ_ONLY_TYPE)

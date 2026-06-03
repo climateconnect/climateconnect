@@ -161,23 +161,23 @@ def add_project_member(project, user, user_role, role_in_project, availability):
 
 def get_project_admin_creators(project, limit_to_admins=False):
     """
-    Returns a given project UserProfiles of Creators or Administrators. if limit_to_admins is set to True, only admins will be returned.
+    Returns a given project UserProfiles of Super-Admins or Administrators. if limit_to_admins is set to True, only admins will be returned.
     :param project: target project
     :type project: Project
     :param limit_to_admins: limit output to admins only
     :type limit_to_admins: bool
     """
     targets_roles = Role.objects.filter(
-        Q(name="Creator") | Q(name="Administrator")
+        Q(name="Super-Admin") | Q(name="Administrator")
     ).all()
     if targets_roles.count() < 1:
         raise Exception(
-            f"Role 'Creator' or role 'Administrator' doesn't exist: {targets_roles}"
+            f"Role 'Super-Admin' or role 'Administrator' doesn't exist: {targets_roles}"
         )
 
     admin_role, creator_role = (
         targets_roles.filter(name="Administrator").first(),
-        targets_roles.filter(name="Creator").first(),
+        targets_roles.filter(name="Super-Admin").first(),
     )
 
     role_sub_query = (
