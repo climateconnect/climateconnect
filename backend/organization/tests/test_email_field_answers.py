@@ -13,7 +13,8 @@ Covers spec test cases:
   9. Register with mix of answered and unanswered optional fields → only answered shown
 """
 
-from datetime import timedelta
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from django.contrib.auth.models import User
 from django.test import TestCase, tag
@@ -32,6 +33,8 @@ from organization.models.registration_field import (
 )
 from organization.models import Project, ProjectStatus
 from organization.utility.email import _build_field_answers_html
+
+_UTC = ZoneInfo("UTC")
 
 
 class TestBuildFieldAnswersHtml(TestCase):
@@ -117,7 +120,7 @@ class TestBuildFieldAnswersHtml(TestCase):
         )
         self._create_answer(field, value_boolean=True)
 
-        html = _build_field_answers_html(self.registration, "en")
+        html = _build_field_answers_html(self.registration, "en", _UTC)
         self.assertIn("✓", html)
         self.assertIn("I agree to the terms", html)
         self.assertNotIn("<p>", html)  # HTML stripped
@@ -135,7 +138,7 @@ class TestBuildFieldAnswersHtml(TestCase):
         )
         self._create_answer(field, value_boolean=False)
 
-        html = _build_field_answers_html(self.registration, "en")
+        html = _build_field_answers_html(self.registration, "en", _UTC)
         self.assertEqual(html, "")
 
     # ── Test 3: Option select → title + option title ─────────────────────────
@@ -152,7 +155,7 @@ class TestBuildFieldAnswersHtml(TestCase):
         option = self._create_option(field, "Solar panel installation", 0)
         self._create_answer(field, value_option=option)
 
-        html = _build_field_answers_html(self.registration, "en")
+        html = _build_field_answers_html(self.registration, "en", _UTC)
         self.assertIn("Preferred workshop", html)
         self.assertIn("Solar panel installation", html)
 
@@ -170,7 +173,7 @@ class TestBuildFieldAnswersHtml(TestCase):
         option = self._create_option(field, "Vegetarian", 0)
         self._create_answer(field, value_option=option, value_number=2)
 
-        html = _build_field_answers_html(self.registration, "en")
+        html = _build_field_answers_html(self.registration, "en", _UTC)
         self.assertIn("Meal preference", html)
         self.assertIn("Vegetarian × 2", html)
 
@@ -178,7 +181,7 @@ class TestBuildFieldAnswersHtml(TestCase):
 
     @tag("field_answers_email")
     def test_time_slot_included(self):
-        """Time slot shows field title and formatted time range."""
+        """Time slot shows field title and formatted time range with timezone."""
         field = self._create_field(
             RegistrationFieldType.TIME_SLOT_SELECT,
             0,
@@ -196,9 +199,64 @@ class TestBuildFieldAnswersHtml(TestCase):
         )
         self._create_answer(field, value_option=option)
 
-        html = _build_field_answers_html(self.registration, "en")
+        html = _build_field_answers_html(self.registration, "en", _UTC)
         self.assertIn("Pickup slot", html)
         self.assertIn("–", html)  # time range separator
+        self.assertIn("(UTC)", html)  # timezone abbreviation present
+
+    @tag("field_answers_email")
+    def test_time_slot_converts_to_resolved_timezone(self):
+        """Time slot times are converted from UTC to the supplied timezone."""
+        berlin_tz = ZoneInfo("Europe/Berlin")
+        field = self._create_field(
+            RegistrationFieldType.TIME_SLOT_SELECT,
+            0,
+            "Pickup",
+            {"title": "Pickup slot"},
+        )
+        # 2024-06-01 12:00 UTC = 14:00 CEST (Berlin summer time)
+        start = datetime(2024, 6, 1, 12, 0, tzinfo=_UTC)
+        end = start + timedelta(hours=2)
+        option = self._create_option(
+            field,
+            "",
+            0,
+            start_time=start,
+            end_time=end,
+        )
+        self._create_answer(field, value_option=option)
+
+        html = _build_field_answers_html(self.registration, "en", berlin_tz)
+        # The back-end should render 14:00–16:00 in CEST, not 12:00–14:00 UTC
+        self.assertIn("14:00", html)
+        self.assertIn("16:00", html)
+        self.assertIn("(CEST)", html)
+
+    @tag("field_answers_email")
+    def test_time_slot_german_locale_uses_de_tz_abbrev(self):
+        """German locale translates CET/CEST abbreviations."""
+        berlin_tz = ZoneInfo("Europe/Berlin")
+        field = self._create_field(
+            RegistrationFieldType.TIME_SLOT_SELECT,
+            0,
+            "Abholung",
+            {"title": "Abholzeit"},
+        )
+        start = datetime(2024, 6, 1, 12, 0, tzinfo=_UTC)
+        end = start + timedelta(hours=2)
+        option = self._create_option(
+            field,
+            "",
+            0,
+            start_time=start,
+            end_time=end,
+        )
+        self._create_answer(field, value_option=option)
+
+        html = _build_field_answers_html(self.registration, "de", berlin_tz)
+        self.assertIn("14:00", html)
+        self.assertIn("16:00", html)
+        self.assertIn("(MESZ)", html)
 
     # ── Test 6: Multiple fields → ordered by field.order ─────────────────────
 
@@ -222,7 +280,7 @@ class TestBuildFieldAnswersHtml(TestCase):
         self._create_answer(field_b, value_option=option_b)
         self._create_answer(field_a, value_option=option_a)
 
-        html = _build_field_answers_html(self.registration, "en")
+        html = _build_field_answers_html(self.registration, "en", _UTC)
         # Both fields present
         self.assertIn("First field", html)
         self.assertIn("Second field", html)
@@ -236,7 +294,7 @@ class TestBuildFieldAnswersHtml(TestCase):
     @tag("field_answers_email")
     def test_no_custom_fields_returns_empty(self):
         """Registration with no custom fields returns empty string."""
-        html = _build_field_answers_html(self.registration, "en")
+        html = _build_field_answers_html(self.registration, "en", _UTC)
         self.assertEqual(html, "")
 
     # ── Test 8: Optional fields, no answers → empty string ───────────────────
@@ -252,7 +310,7 @@ class TestBuildFieldAnswersHtml(TestCase):
             is_required=False,
         )
         # No answer created
-        html = _build_field_answers_html(self.registration, "en")
+        html = _build_field_answers_html(self.registration, "en", _UTC)
         self.assertEqual(html, "")
 
     # ── Test 9: Mix of answered and unanswered → only answered shown ─────────
@@ -278,7 +336,7 @@ class TestBuildFieldAnswersHtml(TestCase):
         self._create_answer(field_a, value_option=option_a)
         # No answer for field_b
 
-        html = _build_field_answers_html(self.registration, "en")
+        html = _build_field_answers_html(self.registration, "en", _UTC)
         self.assertIn("Answered field", html)
         self.assertNotIn("Unanswered field", html)
 
@@ -296,5 +354,5 @@ class TestBuildFieldAnswersHtml(TestCase):
         option = self._create_option(field, "Solar", 0)
         self._create_answer(field, value_option=option)
 
-        html = _build_field_answers_html(self.registration, "de")
+        html = _build_field_answers_html(self.registration, "de", _UTC)
         self.assertIn("Deine Anmeldeantworten", html)

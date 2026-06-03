@@ -585,26 +585,35 @@ _DE_MONTHS_SHORT = {
 }
 
 
-def _format_time_range_localized(start, end, lang_code):
+def _format_time_range_localized(start, end, lang_code, tz):
     """
     Format a start/end datetime pair as a localised time-range string.
 
-    English: "Mon, Jan 1, 10:00 – 12:00"
-    German:  "Mo, 1. Jan, 10:00 – 12:00"
+    Both datetimes are converted to ``tz`` before formatting so that
+    timezone-aware output is produced regardless of the stored timezone.
+
+    English: "Mon, Jan 1, 10:00 – 12:00 (CET)"
+    German:  "Mo, 1. Jan, 10:00 – 12:00 Uhr (MEZ)"
     """
+    from climateconnect_api.utility.timezone_utils import _DE_TZ_ABBREVS
+
+    start = start.astimezone(tz)
+    end = end.astimezone(tz)
     start_day_en = start.strftime("%a")
     start_month = start.month
     start_day_num = start.day
     start_time = start.strftime("%H:%M")
     end_time = end.strftime("%H:%M")
+    tz_abbrev = start.strftime("%Z")
 
     if lang_code == "de":
+        de_abbrev = _DE_TZ_ABBREVS.get(tz_abbrev, tz_abbrev)
         day_str = _DE_DAYS.get(start_day_en, start_day_en)
         month_str = _DE_MONTHS_SHORT.get(start_month, start.strftime("%b"))
-        return f"{day_str}, {start_day_num}. {month_str}, {start_time} – {end_time}"
+        return f"{day_str}, {start_day_num}. {month_str}, {start_time} – {end_time} Uhr ({de_abbrev})"
 
     month_str = start.strftime("%b")
-    return f"{start_day_en}, {month_str} {start_day_num}, {start_time} – {end_time}"
+    return f"{start_day_en}, {month_str} {start_day_num}, {start_time} – {end_time} ({tz_abbrev})"
 
 
 _FIELD_CELL_STYLE = (
@@ -612,7 +621,7 @@ _FIELD_CELL_STYLE = (
 )
 
 
-def _build_field_answers_html(registration, lang_code):
+def _build_field_answers_html(registration, lang_code, tz):
     """
     Build an HTML snippet of the guest's registration field answers for the
     confirmation email.
@@ -624,6 +633,7 @@ def _build_field_answers_html(registration, lang_code):
         registration: EventRegistration instance with prefetched field_answers,
             field, value_option, and field.options.
         lang_code: User's language code ("en" or "de").
+        tz: The :class:`~zoneinfo.ZoneInfo` timezone to display times in.
 
     Returns:
         str: HTML snippet or empty string.
@@ -694,7 +704,7 @@ def _build_field_answers_html(registration, lang_code):
             option = answer.value_option
             if option and option.start_time and option.end_time:
                 answer_text = _format_time_range_localized(
-                    option.start_time, option.end_time, lang_code
+                    option.start_time, option.end_time, lang_code, tz
                 )
             elif option:
                 answer_text = option.title
@@ -765,7 +775,7 @@ def send_event_registration_confirmation_to_user(user, project, registration):
         "de": f"Du bist für {get_project_name(project, 'de')} angemeldet!",
     }
 
-    field_answers_html = _build_field_answers_html(registration, lang_code)
+    field_answers_html = _build_field_answers_html(registration, lang_code, display_tz)
 
     variables = {
         "FirstName": user.first_name or user.username,
