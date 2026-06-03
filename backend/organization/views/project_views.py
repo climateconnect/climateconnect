@@ -1577,7 +1577,7 @@ class LeaveProject(RetrieveUpdateAPIView):
                 project=project, is_active=True
             ).count()
 
-            if project_member_record.role.name == "Creator":
+            if project_member_record.role.name == "Super-Admin":
                 if active_members_in_project > 1:
                     return Response(
                         data={"message": f"A new creator needs to be assigned first"},
