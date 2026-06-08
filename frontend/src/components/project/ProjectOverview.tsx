@@ -174,7 +174,6 @@ type Props = {
   parentProjectName?: string; // Name of the parent project
   parentProjectSlug?: string; // Slug of the parent project
   isWasseraktionswochenEnabled: boolean;
-  isEventRegistrationEnabled: boolean;
   handleRegisterClick: () => void;
   isUserRegistered?: boolean;
   hasAttended?: boolean;
@@ -208,7 +207,6 @@ export default function ProjectOverview({
   toggleShowLikes,
   hubUrl,
   isWasseraktionswochenEnabled,
-  isEventRegistrationEnabled,
   handleRegisterClick,
   isUserRegistered,
   hasAttended,
@@ -221,7 +219,6 @@ export default function ProjectOverview({
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [gotParams, setGotParams] = useState(false);
   const registrationState = getRegistrationUIState(
-    isEventRegistrationEnabled,
     project,
     isUserRegistered,
     hasAttended,

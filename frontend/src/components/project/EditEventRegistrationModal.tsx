@@ -31,7 +31,6 @@ import {
   RegistrationFieldOption,
 } from "../../types";
 import UserContext from "../context/UserContext";
-import { useFeatureToggles } from "../featureToggle";
 import DatePicker from "../general/DatePicker";
 import RegistrationFieldList from "../shareProject/RegistrationFieldList";
 import { validateRegistrationFields } from "../../utils/eventRegistrationHelpers";
@@ -105,8 +104,6 @@ export default function EditEventRegistrationModal({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
   const token = new Cookies().get("auth_token");
-  const { isEnabled } = useFeatureToggles();
-  const isCustomFieldsEnabled = isEnabled("REGISTRATION_CUSTOM_FIELDS");
 
   const [maxParticipants, setMaxParticipants] = useState<string>("");
   const [registrationEndDate, setRegistrationEndDate] = useState<Dayjs | null>(null);
@@ -198,7 +195,7 @@ export default function EditEventRegistrationModal({
     setErrors(newErrors);
 
     // Validate custom fields when publishing
-    if (enforceRequired && isCustomFieldsEnabled) {
+    if (enforceRequired) {
       const { errors: fe, hasError } = validateRegistrationFields(
         fields,
         false,
@@ -289,17 +286,15 @@ export default function EditEventRegistrationModal({
       payload.is_draft = false;
     }
 
-    if (isCustomFieldsEnabled) {
-      payload.fields = fields.map(({ _clientKey, ...field }) => ({
-        ...field,
-        options: field.options?.filter((opt) => {
-          if (field.field_type === "time_slot_select") {
-            return !!(opt.start_time || opt.end_time);
-          }
-          return opt.title.trim() !== "";
-        }),
-      }));
-    }
+    payload.fields = fields.map(({ _clientKey, ...field }) => ({
+      ...field,
+      options: field.options?.filter((opt) => {
+        if (field.field_type === "time_slot_select") {
+          return !!(opt.start_time || opt.end_time);
+        }
+        return opt.title.trim() !== "";
+      }),
+    }));
 
     try {
       const resp = await apiRequest({
@@ -510,37 +505,35 @@ export default function EditEventRegistrationModal({
             />
           </Box>
 
-          {/* Custom fields section (toggle-gated) */}
-          {isCustomFieldsEnabled && (
-            <Box className={classes.customFieldsSection}>
-              <Divider sx={{ mb: 2 }} />
-              <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 600 }}>
-                {texts.registration_custom_fields}
+          {/* Custom fields section */}
+          <Box className={classes.customFieldsSection}>
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 600 }}>
+              {texts.registration_custom_fields}
+            </Typography>
+            <RegistrationFieldList
+              fields={fields}
+              onFieldsChange={setFields}
+              onRequestDeleteField={handleRequestDeleteField}
+              onRequestDeleteOption={handleRequestDeleteOption}
+              isDraft={isDraft}
+              fieldErrors={fieldErrors}
+              onClearFieldError={(key) =>
+                setFieldErrors((prev) => {
+                  const next = { ...prev };
+                  delete next[key];
+                  return next;
+                })
+              }
+              eventStartDate={project.start_date}
+              eventEndDate={project.end_date}
+            />
+            {errors.fields && (
+              <Typography className={classes.customFieldsError} role="alert">
+                {errors.fields}
               </Typography>
-              <RegistrationFieldList
-                fields={fields}
-                onFieldsChange={setFields}
-                onRequestDeleteField={handleRequestDeleteField}
-                onRequestDeleteOption={handleRequestDeleteOption}
-                isDraft={isDraft}
-                fieldErrors={fieldErrors}
-                onClearFieldError={(key) =>
-                  setFieldErrors((prev) => {
-                    const next = { ...prev };
-                    delete next[key];
-                    return next;
-                  })
-                }
-                eventStartDate={project.start_date}
-                eventEndDate={project.end_date}
-              />
-              {errors.fields && (
-                <Typography className={classes.customFieldsError} role="alert">
-                  {errors.fields}
-                </Typography>
-              )}
-            </Box>
-          )}
+            )}
+          </Box>
 
           {errors.general && (
             <Typography className={classes.errorText} sx={{ mt: 1 }} role="alert">

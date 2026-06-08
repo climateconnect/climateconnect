@@ -18,7 +18,6 @@ import { Project, Role, Organization, Sector } from "../../types";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import SelectSectors from "./SelectSectors";
 import EventRegistrationStep from "./EventRegistrationStep";
-import { useFeatureToggles } from "../featureToggle";
 import dayjs from "dayjs";
 
 const useStyles = makeStyles((theme) => {
@@ -115,9 +114,6 @@ export default function ShareProjectRoot({
   const { locale, locales } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
 
-  // Feature toggle for event registration
-  const { isEnabled } = useFeatureToggles();
-  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
   const projectTypeTexts = getProjectTypeTexts(texts);
 
   const [project, setProject] = useState(
@@ -134,9 +130,9 @@ export default function ShareProjectRoot({
     )
   );
 
-  // Dynamic steps: include registration step only for events when feature toggle is on
+  // Dynamic steps: include registration step only for events
   const isEvent = project.project_type?.type_id === "event";
-  const showRegistrationStep = isEvent && isEventRegistrationEnabled;
+  const showRegistrationStep = isEvent;
   const steps = getSteps(texts, project, projectTypeTexts, showRegistrationStep);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingSubmitDraft, setLoadingSubmitDraft] = useState(false);

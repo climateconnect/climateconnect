@@ -11,8 +11,7 @@ type GetLinksOptions = {
 export const getSharedLinks = (
   pathToRedirect: string,
   texts: any,
-  options: GetLinksOptions,
-  isAuthUnificationEnabled?: boolean
+  options: GetLinksOptions
 ): Link[] => [
   {
     href: options.baseUrl,
@@ -34,12 +33,7 @@ export const getSharedLinks = (
     ...COMMON_LINKS.NOTIFICATIONS,
     text: texts.inbox,
   },
-  ...COMMON_LINKS.AUTH_LINKS(
-    pathToRedirect,
-    texts,
-    `hub=${options.hubKey}`,
-    isAuthUnificationEnabled
-  ),
+  ...COMMON_LINKS.AUTH_LINKS(pathToRedirect, texts, `hub=${options.hubKey}`),
 ];
 
 export type StaticLinkConfig = {

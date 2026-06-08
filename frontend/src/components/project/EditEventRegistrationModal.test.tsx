@@ -15,12 +15,6 @@ jest.mock("universal-cookie", () => {
   return jest.fn(() => ({ get: jest.fn(() => "test-token") }));
 });
 
-// Feature toggles — default to all disabled; individual tests opt-in.
-const mockIsEnabled = jest.fn(() => false);
-jest.mock("../featureToggle", () => ({
-  useFeatureToggles: () => ({ isEnabled: mockIsEnabled }),
-}));
-
 // Stub RegistrationFieldList to avoid rendering the full component tree.
 // Exposes a delete-field button per field so modal-level dialog tests work.
 jest.mock("../shareProject/RegistrationFieldList", () => ({
@@ -418,24 +412,14 @@ describe("EditEventRegistrationModal", () => {
   // ── Custom fields section ─────────────────────────────────────────────────
 
   describe("custom fields section", () => {
-    beforeEach(() => {
-      mockIsEnabled.mockImplementation((flag: string) => flag === "REGISTRATION_CUSTOM_FIELDS");
-    });
-
-    it("renders the RegistrationFieldList when the feature toggle is enabled", () => {
+    it("renders the RegistrationFieldList", () => {
       renderModal({
         eventRegistration: makeRegistration({ fields: [] }),
       });
       expect(screen.getByTestId("registration-field-list")).toBeInTheDocument();
     });
 
-    it("does not render the RegistrationFieldList when the feature toggle is disabled", () => {
-      mockIsEnabled.mockReturnValue(false);
-      renderModal({ eventRegistration: makeRegistration({ fields: [] }) });
-      expect(screen.queryByTestId("registration-field-list")).not.toBeInTheDocument();
-    });
-
-    it("includes fields in the PATCH payload when the feature toggle is enabled", async () => {
+    it("includes fields in the PATCH payload", async () => {
       const fields = [
         {
           id: 1,
@@ -457,10 +441,6 @@ describe("EditEventRegistrationModal", () => {
   // ── Delete field confirmation dialog ──────────────────────────────────────
 
   describe("delete field confirmation dialog", () => {
-    beforeEach(() => {
-      mockIsEnabled.mockImplementation((flag: string) => flag === "REGISTRATION_CUSTOM_FIELDS");
-    });
-
     it("opens the confirmation dialog when deleting a field with has_answers=true", () => {
       const fields = [
         {

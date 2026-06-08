@@ -25,7 +25,6 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
-import { useFeatureToggles } from "../featureToggle";
 import { trackGA4Event } from "../../utils/analytics";
 import ProjectRegistrationsContent from "./ProjectRegistrationsContent";
 import EventRegistrationModal from "./EventRegistrationModal";
@@ -152,10 +151,6 @@ export default function ProjectPageRoot({
     like: false,
   });
 
-  // Feature toggle for event registration
-  const { isEnabled } = useFeatureToggles();
-  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
-
   // Lifted state so edits from either the side button or the tab stay in sync
   const [currentEventRegistration, setCurrentEventRegistration] = useState(
     project.registration_config ?? null
@@ -254,7 +249,7 @@ export default function ProjectPageRoot({
     };
   }, [isUserRegistered, token, project.url_slug, locale, myEventRegistration]);
   // Determine whether to show the Registrations tab:
-  // only for event admins when the toggle is on and registration_config exists
+  // only for event admins when registration_config exists
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
@@ -263,7 +258,6 @@ export default function ProjectPageRoot({
     user_permission && [ROLE_TYPES.all_type, ROLE_TYPES.read_write_type].includes(user_permission);
 
   const showRegistrationsTab =
-    isEventRegistrationEnabled &&
     project.project_type?.type_id === "event" &&
     currentEventRegistration != null &&
     hasAdminPermissions;
@@ -308,14 +302,10 @@ export default function ProjectPageRoot({
   // Handle deep-link for event registration
   useEffect(() => {
     const params = getParams(window.location.href);
-    if (
-      params.openRegistration === "true" &&
-      isEventRegistrationEnabled &&
-      project.registration_config
-    ) {
+    if (params.openRegistration === "true" && project.registration_config) {
       setRegistrationModalOpen(true);
     }
-  }, [isEventRegistrationEnabled, project.registration_config]);
+  }, [project.registration_config]);
 
   /**
    * Calls backend, sending a request to join this project based
@@ -637,7 +627,6 @@ export default function ProjectPageRoot({
         toggleShowLikes={toggleShowLikes}
         hubUrl={hubPage}
         isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
-        isEventRegistrationEnabled={isEventRegistrationEnabled}
         handleRegisterClick={handleRegisterClick}
         isUserRegistered={isUserRegistered}
         hasAttended={hasUserAttended}
@@ -696,7 +685,6 @@ export default function ProjectPageRoot({
           bindLike={bindLike}
           bindFollow={bindFollow}
           user={user}
-          isEventRegistrationEnabled={isEventRegistrationEnabled}
           handleRegisterClick={handleRegisterClick}
           isUserRegistered={isUserRegistered}
           hasAttended={hasUserAttended}
@@ -816,43 +804,37 @@ export default function ProjectPageRoot({
         confirmText={texts.yes}
         cancelText={texts.no}
       />
-      {isEventRegistrationEnabled &&
-        project.registration_config &&
-        !project.registration_config.is_draft && (
-          <EventRegistrationModal
-            open={registrationModalOpen}
-            onClose={() => handleRegistrationModalClose()}
-            project={project}
-            onRegistrationSuccess={handleRegistrationSuccess}
-          />
-        )}
-      {isEventRegistrationEnabled &&
-        project.registration_config &&
-        !project.registration_config.is_draft && (
-          <ViewRegistrationAnswersModal
-            open={modifyRegistrationModalOpen}
-            onClose={() => setModifyRegistrationModalOpen(false)}
-            registration={myEventRegistration}
-            title={texts.registration_answers_modal_title_self as string}
-            fields={currentEventRegistration?.fields ?? []}
-            event={{
-              name: project.name,
-              start_date: project.start_date,
-              end_date: project.end_date,
-            }}
-            cancelAction={{ onCancelClick: () => setCancelRegistrationModalOpen(true) }}
-          />
-        )}
-      {isEventRegistrationEnabled &&
-        project.registration_config &&
-        !project.registration_config.is_draft && (
-          <CancelRegistrationModal
-            open={cancelRegistrationModalOpen}
-            onClose={() => setCancelRegistrationModalOpen(false)}
-            project={project}
-            onCancellationSuccess={handleCancelRegistrationSuccess}
-          />
-        )}
+      {project.registration_config && !project.registration_config.is_draft && (
+        <EventRegistrationModal
+          open={registrationModalOpen}
+          onClose={() => handleRegistrationModalClose()}
+          project={project}
+          onRegistrationSuccess={handleRegistrationSuccess}
+        />
+      )}
+      {project.registration_config && !project.registration_config.is_draft && (
+        <ViewRegistrationAnswersModal
+          open={modifyRegistrationModalOpen}
+          onClose={() => setModifyRegistrationModalOpen(false)}
+          registration={myEventRegistration}
+          title={texts.registration_answers_modal_title_self as string}
+          fields={currentEventRegistration?.fields ?? []}
+          event={{
+            name: project.name,
+            start_date: project.start_date,
+            end_date: project.end_date,
+          }}
+          cancelAction={{ onCancelClick: () => setCancelRegistrationModalOpen(true) }}
+        />
+      )}
+      {project.registration_config && !project.registration_config.is_draft && (
+        <CancelRegistrationModal
+          open={cancelRegistrationModalOpen}
+          onClose={() => setCancelRegistrationModalOpen(false)}
+          project={project}
+          onCancellationSuccess={handleCancelRegistrationSuccess}
+        />
+      )}
     </div>
   );
 }

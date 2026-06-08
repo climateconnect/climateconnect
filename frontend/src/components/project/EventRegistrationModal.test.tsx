@@ -21,13 +21,6 @@ jest.mock("../../../public/lib/apiOperations", () => ({
   apiRequest: (...args: any[]) => mockApiRequest(...args),
 }));
 
-// Mock useFeatureToggles
-const mockIsEnabled = jest.fn((_feature: string, _fallback?: boolean) => false);
-jest.mock("../featureToggle", () => ({
-  ...jest.requireActual("../featureToggle"),
-  useFeatureToggles: () => ({ isEnabled: mockIsEnabled, isLoading: false }),
-}));
-
 // Mock LocationSearchBar so signup form can be filled without async location fetching
 jest.mock("../search/LocationSearchBar", () => {
   return function MockLocationSearchBar({ onSelect, label }: any) {
@@ -135,7 +128,6 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockApiRequest.mockReset();
   mockSessionStorage.clear();
-  mockIsEnabled.mockImplementation((_feature: string, _fallback?: boolean) => false);
   // Suppress console.error during tests to keep output clean
   jest.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -551,9 +543,9 @@ describe("EventRegistrationModal – close behaviour", () => {
   });
 });
 
-// ── Custom fields render without REGISTRATION_CUSTOM_FIELDS toggle ─────────
+// ── Custom fields render based on registration_config.fields ────────────────
 
-describe("EventRegistrationModal – custom fields toggle", () => {
+describe("EventRegistrationModal – custom fields", () => {
   const INVENTORY_FIELD: RegistrationField = {
     id: 5,
     field_type: "inventory",
@@ -582,9 +574,7 @@ describe("EventRegistrationModal – custom fields toggle", () => {
     settings: { description: "I agree" },
   };
 
-  it("renders custom fields when EVENT_REGISTRATION is enabled but REGISTRATION_CUSTOM_FIELDS is not", () => {
-    mockIsEnabled.mockImplementation((feature: string) => feature === "EVENT_REGISTRATION");
-
+  it("renders custom fields when registration_config has fields", () => {
     renderModal({
       user: AUTHENTICATED_USER,
       project: makeProject({
@@ -602,9 +592,7 @@ describe("EventRegistrationModal – custom fields toggle", () => {
     expect(screen.getByText("I agree")).toBeInTheDocument();
   });
 
-  it("does not render custom fields when EVENT_REGISTRATION is disabled", () => {
-    mockIsEnabled.mockReturnValue(false);
-
+  it("does not render custom fields when registration_config has no fields", () => {
     renderModal({
       user: AUTHENTICATED_USER,
       project: makeProject({
@@ -614,7 +602,6 @@ describe("EventRegistrationModal – custom fields toggle", () => {
           registration_end_date: null,
           status: "open",
           notify_admins: true,
-          fields: [CHECKBOX_FIELD],
         },
       }),
     });
@@ -622,9 +609,7 @@ describe("EventRegistrationModal – custom fields toggle", () => {
     expect(screen.queryByText("I agree")).not.toBeInTheDocument();
   });
 
-  it("renders inventory field when EVENT_REGISTRATION is enabled", () => {
-    mockIsEnabled.mockImplementation((feature: string) => feature === "EVENT_REGISTRATION");
-
+  it("renders inventory field when registration_config has fields", () => {
     renderModal({
       user: AUTHENTICATED_USER,
       project: makeProject({
@@ -643,7 +628,6 @@ describe("EventRegistrationModal – custom fields toggle", () => {
   });
 
   it("sends value_number in the API payload for inventory answers", async () => {
-    mockIsEnabled.mockImplementation((feature: string) => feature === "EVENT_REGISTRATION");
     mockApiRequest.mockResolvedValueOnce({ status: 201 });
 
     renderModal({
