@@ -5,17 +5,15 @@ import { scottConfig } from "./customHubConfig/scott";
 type CustomHubDataParams = {
   path_to_redirect?: string;
   texts?: Record<string, string>;
-  isAuthUnificationEnabled?: boolean;
 };
 
 export default function customHubData({
   path_to_redirect = "",
   texts = {},
-  isAuthUnificationEnabled,
 }: CustomHubDataParams = {}): CustomHubConfig {
   return {
-    prio1: prio1Config(path_to_redirect, texts, isAuthUnificationEnabled),
-    perth: scottConfig(path_to_redirect, texts, isAuthUnificationEnabled),
+    prio1: prio1Config(path_to_redirect, texts),
+    perth: scottConfig(path_to_redirect, texts),
   };
 }
 
@@ -23,14 +21,8 @@ type GetCustomHubDataParams = {
   hubUrl: keyof CustomHubConfig;
   texts?: Record<string, string>;
   path_to_redirect?: string;
-  isAuthUnificationEnabled?: boolean;
 };
 
-export const getCustomHubData = ({
-  hubUrl,
-  texts,
-  path_to_redirect,
-  isAuthUnificationEnabled,
-}: GetCustomHubDataParams) => {
-  return customHubData({ path_to_redirect, texts, isAuthUnificationEnabled })[hubUrl];
+export const getCustomHubData = ({ hubUrl, texts, path_to_redirect }: GetCustomHubDataParams) => {
+  return customHubData({ path_to_redirect, texts })[hubUrl];
 };

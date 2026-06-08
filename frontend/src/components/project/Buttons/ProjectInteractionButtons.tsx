@@ -35,7 +35,6 @@ interface ProjectInteractionButtonsProps {
   bindLike: any;
   bindFollow: any;
   user: any;
-  isEventRegistrationEnabled: boolean;
   handleRegisterClick: () => void;
   isUserRegistered?: boolean;
   hasAttended?: boolean;
@@ -92,7 +91,6 @@ export default function ProjectInteractionButtons({
   bindLike,
   bindFollow,
   user,
-  isEventRegistrationEnabled,
   handleRegisterClick,
   isUserRegistered,
   hasAttended,
@@ -106,7 +104,6 @@ export default function ProjectInteractionButtons({
   });
 
   const registrationState = getRegistrationUIState(
-    isEventRegistrationEnabled,
     project,
     isUserRegistered,
     hasAttended,

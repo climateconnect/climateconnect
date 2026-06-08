@@ -14,7 +14,6 @@ import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
 import BrowseContext from "../context/BrowseContext";
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
-import { useFeatureToggles } from "../featureToggle";
 import {
   shouldShowRegisterButton,
   getRegisterButtonText,
@@ -312,15 +311,13 @@ const AdditionalPreviewInfo = ({ project, isUserRegistered, analyticsSurface }) 
   const { projectTypes } = useContext(BrowseContext);
   const { locale, user, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
-  const { isEnabled } = useFeatureToggles();
 
   const projectType =
     projectTypes && projectTypes.length > 0
       ? projectTypes.find((t) => t.type_id === project.project_type)
       : { name: project.project_type, type_id: project.project_type };
 
-  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
-  const showRegisterButton = shouldShowRegisterButton(isEventRegistrationEnabled, project);
+  const showRegisterButton = shouldShowRegisterButton(project);
 
   const getRegisterButtonConfig = () => {
     // Don't show button if registration is not enabled for this event

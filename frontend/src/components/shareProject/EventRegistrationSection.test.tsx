@@ -4,7 +4,6 @@ import "@testing-library/jest-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
-import { FeatureToggleProvider } from "../featureToggle";
 import EventRegistrationSection from "./EventRegistrationSection";
 import { Project } from "../../types";
 
@@ -58,25 +57,19 @@ function renderSection({
   project = makeProject(),
   handleSetProjectData = jest.fn(),
   errors = {},
-  customFieldsToggleEnabled = true,
 }: {
   project?: Project;
   handleSetProjectData?: jest.Mock;
   errors?: Record<string, string>;
-  customFieldsToggleEnabled?: boolean;
 } = {}) {
   return render(
     <ThemeProvider theme={theme}>
       <UserContext.Provider value={defaultContext as any}>
-        <FeatureToggleProvider
-          initialToggles={{ REGISTRATION_CUSTOM_FIELDS: customFieldsToggleEnabled }}
-        >
-          <EventRegistrationSection
-            projectData={project}
-            handleSetProjectData={handleSetProjectData}
-            errors={errors}
-          />
-        </FeatureToggleProvider>
+        <EventRegistrationSection
+          projectData={project}
+          handleSetProjectData={handleSetProjectData}
+          errors={errors}
+        />
       </UserContext.Provider>
     </ThemeProvider>
   );
@@ -98,31 +91,25 @@ describe("EventRegistrationSection", () => {
   // ── Core registration fields always visible ───────────────────────────────
 
   describe("core registration settings", () => {
-    it("renders max participants and registration end date inputs regardless of toggle", () => {
-      renderSection({ customFieldsToggleEnabled: false });
+    it("renders max participants and registration end date inputs", () => {
+      renderSection();
       expect(screen.getByRole("spinbutton")).toBeInTheDocument();
       expect(screen.getByRole("textbox", { name: /end of registration/i })).toBeInTheDocument();
     });
 
-    it("renders the notify admins toggle regardless of the custom fields toggle", () => {
-      renderSection({ customFieldsToggleEnabled: false });
+    it("renders the notify admins toggle", () => {
+      renderSection();
       expect(screen.getByRole("checkbox", { name: /send a notification/i })).toBeInTheDocument();
     });
   });
 
-  // ── Spec test case 6: feature toggle gating ───────────────────────────────
+  // ── Spec test case 6: custom fields section ────────────────────────────────
 
-  describe("REGISTRATION_CUSTOM_FIELDS toggle gating", () => {
-    it("renders the custom fields section header and Add field button when the toggle is enabled", () => {
-      renderSection({ customFieldsToggleEnabled: true });
+  describe("custom fields section", () => {
+    it("renders the custom fields section header and Add field button", () => {
+      renderSection();
       expect(screen.getByText(/additional registration fields/i)).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /add field/i })).toBeInTheDocument();
-    });
-
-    it("does not render the custom fields section when the toggle is disabled", () => {
-      renderSection({ customFieldsToggleEnabled: false });
-      expect(screen.queryByText(/additional registration fields/i)).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /add field/i })).not.toBeInTheDocument();
     });
   });
 

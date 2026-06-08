@@ -22,7 +22,6 @@ import { getDateTime, getDateTimeRange } from "../../../public/lib/dateOperation
 import getTexts from "../../../public/texts/texts";
 import { Project, RegistrationFieldAnswerValue } from "../../types";
 import UserContext from "../context/UserContext";
-import { useFeatureToggles } from "../featureToggle";
 import { trackGA4Event } from "../../utils/analytics";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import AuthEmailStep from "../auth/AuthEmailStep";
@@ -180,7 +179,6 @@ export default function EventRegistrationModal({
   const texts = getTexts({ page: "project", locale, project });
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
-  const { isEnabled } = useFeatureToggles();
 
   const [state, setState] = useState<RegistrationState>("initial");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -201,8 +199,7 @@ export default function EventRegistrationModal({
   // Track whether custom fields interaction has fired for this modal session
   const customFieldsFiredRef = useRef(false);
 
-  const showCustomFields =
-    isEnabled("EVENT_REGISTRATION") && (project.registration_config?.fields?.length ?? 0) > 0;
+  const showCustomFields = (project.registration_config?.fields?.length ?? 0) > 0;
   const hasRequiredCustomFields =
     showCustomFields &&
     (project.registration_config?.fields?.some((field) => field.is_required) ?? false);

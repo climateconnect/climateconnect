@@ -16,7 +16,6 @@ import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOp
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
-import { isFeatureEnabled } from "../../hooks/featureToggles";
 import Switcher from "../general/Switcher";
 
 const useStyles = makeStyles((theme) => ({
@@ -63,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SettingsPage({ settings, setSettings, token, setMessage, featureToggles }) {
+export default function SettingsPage({ settings, setSettings, token, setMessage }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
@@ -136,8 +135,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
     emailpreferenceserror: "",
     cookiepreferencesserror: "",
   });
-
-  const isAuthUnificationEnabled = isFeatureEnabled("AUTH_UNIFICATION", featureToggles);
 
   const [passwordInputs, setPasswordInputs] = useState({
     oldpassword: "",
@@ -378,27 +375,23 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
 
   return (
     <>
-      {isAuthUnificationEnabled && (
-        <>
-          <Typography variant="h5" component="h2" className={classes.textColor}>
-            {texts.login_method}
-          </Typography>
-          <Divider />
-          <div className={classes.authMethodToggle}>
-            <Switcher
-              falseLabel={texts.login_method_otp}
-              trueLabel={texts.login_method_password}
-              value={settings.auth_method === "password"}
-              handleChangeValue={handleAuthMethodChange}
-              disabled={!settings.has_password}
-            />
-          </div>
-          {!settings.has_password && (
-            <Typography variant="body2" className={classes.authMethodHint}>
-              {texts.password_option_disabled_hint}
-            </Typography>
-          )}
-        </>
+      <Typography variant="h5" component="h2" className={classes.textColor}>
+        {texts.login_method}
+      </Typography>
+      <Divider />
+      <div className={classes.authMethodToggle}>
+        <Switcher
+          falseLabel={texts.login_method_otp}
+          trueLabel={texts.login_method_password}
+          value={settings.auth_method === "password"}
+          handleChangeValue={handleAuthMethodChange}
+          disabled={!settings.has_password}
+        />
+      </div>
+      {!settings.has_password && (
+        <Typography variant="body2" className={classes.authMethodHint}>
+          {texts.password_option_disabled_hint}
+        </Typography>
       )}
       <Typography variant="h5" component="h2" className={classes.textColor}>
         {texts.password}
@@ -410,7 +403,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
             {errors.passworderror}
           </Typography>
         )}
-        {isAuthUnificationEnabled && !settings.has_password && (
+        {!settings.has_password && (
           <Typography className={classes.blockElement} variant="body2">
             {texts.set_password_description}
           </Typography>
