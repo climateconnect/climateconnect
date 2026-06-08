@@ -787,6 +787,14 @@
     "en": "You do not have permission to do this.",
     "de": "Dir fehlen die Berechtigungen für diese Aktion."
   },
+  "user_request_approved_successfully": {
+    "en": "User request approved successfully.",
+    "de": "Benutzeranfrage erfolgreich genehmigt."
+  },
+  "user_request_rejected_successfully": {
+    "en": "User request rejected successfully.",
+    "de": "Benutzeranfrage erfolgreich abgelehnt."
+  },
   "please_fill_out_this_field": {
     "en": "Please fill out this field",
     "de": "Bitte füll dieses Feld aus"

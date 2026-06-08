@@ -114,31 +114,28 @@ export default function ProjectContentSideButtons({
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
   const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
+  async function refreshRequesters() {
+    // short circuit if the user doesn't have the necessary permissions to see join requests
+    if (!(user_permission && hasAdminPermissions)) {
+      return;
+    }
+    try {
+      const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
+      const userRequests = membershipRequests.map((r) => ({
+        requestId: r.id,
+        user: r.user_profile,
+      }));
+      setRequesters(userRequests);
+      setRequestersRetrieved(true);
+    } catch (e) {
+      console.log(e.response.data);
+    }
+  }
+
   // Fetch and populate requesters on initial load
   useEffect(() => {
     (async () => {
-      //short circuit if the user doesn't have the necessary permissions to see join requests
-      if (!(user_permission && hasAdminPermissions)) {
-        return;
-      }
-      // Returns an array of objects with an ID (request ID) and
-      // associated user profile.
-      try {
-        const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
-        // Now transform to a shape of objects where a specific request ID is
-        // alongside a user profile.
-        const userRequests = membershipRequests.map((r) => {
-          const user = {
-            requestId: r.id,
-            user: r.user_profile,
-          };
-          return user;
-        });
-        setRequesters(userRequests);
-        setRequestersRetrieved(true);
-      } catch (e) {
-        console.log(e.response.data);
-      }
+      await refreshRequesters();
     })();
   }, []);
 
@@ -273,6 +270,8 @@ export default function ProjectContentSideButtons({
         open={showRequesters}
         project={project}
         requesters={requesters}
+        url=""
+        onRequestersUpdated={setRequesters}
         onClose={toggleShowRequests}
         user={user}
         loading={!requestersRetrieved}

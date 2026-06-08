@@ -59,10 +59,11 @@ const useStyles = makeStyles((theme) => ({
 export default function ProjectRequestersDialog({
   loading,
   onClose,
+  onRequestersUpdated = () => {},
   open,
   project,
   requesters,
-  url,
+  url = "",
   user,
   user_permission,
 }) {
@@ -103,7 +104,11 @@ export default function ProjectRequestersDialog({
             </>
           ) : // If there are users requesting to join and we have permission to view them: render them!
           requesters && requesters.length > 0 ? (
-            <ProjectRequesters onClose={onClose} project={project} initialRequesters={requesters} />
+            <ProjectRequesters
+              onRequestersUpdated={onRequestersUpdated}
+              project={project}
+              initialRequesters={requesters}
+            />
           ) : (
             <Typography className={classes.noOpenRequestsText}>
               {texts.no_open_project_join_requests}
@@ -115,7 +120,7 @@ export default function ProjectRequestersDialog({
   );
 }
 
-const ProjectRequesters = ({ initialRequesters, project }) => {
+const ProjectRequesters = ({ initialRequesters, onRequestersUpdated, project }) => {
   const [requesters, setRequesters] = useState(initialRequesters);
   const { locale } = useContext(UserContext);
   const cookies = new Cookies();
@@ -127,8 +132,15 @@ const ProjectRequesters = ({ initialRequesters, project }) => {
    */
   async function handleUpdateRequesters() {
     try {
-      const newRequesters = await getMembershipRequests(project.url_slug, locale, token);
-      setRequesters(newRequesters);
+      const membershipRequests = await getMembershipRequests(project.url_slug, locale, token);
+      const updatedRequesters = membershipRequests.map((r) => ({
+        requestId: r.id,
+        user: r.user_profile,
+      }));
+      setRequesters(updatedRequesters);
+      if (onRequestersUpdated) {
+        onRequestersUpdated(updatedRequesters);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -172,7 +184,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
       approve ? "approve" : "reject"
     }/${requestId}/`;
     try {
-      await apiRequest({
+      const response = await apiRequest({
         method: "post",
         url: url,
         locale: locale,
@@ -181,16 +193,25 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         },
         payload: {},
       });
+      const responseMessage =
+        typeof response.data === "string"
+          ? response.data
+          : response.data?.detail ||
+            response.data?.message ||
+            (approve
+              ? texts.user_request_approved_successfully
+              : texts.user_request_rejected_successfully);
+
       showFeedbackMessage({
-        message: texts.no_permission,
+        message: responseMessage,
         success: true,
       });
       // Now notify parent list to update current list
       // of requesters to immediately
       // show the updated state in the UI.
-      handleUpdateRequesters();
-    } catch (e) {
-      if (e.response.status === 401) {
+      await handleUpdateRequesters();
+    } catch (e: any) {
+      if (e?.response?.status === 401) {
         showFeedbackMessage({
           message: texts.no_permission,
           error: true,
