@@ -4,6 +4,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import axios from "axios";
 import { debounce } from "lodash";
 import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import {
   getDisplayLocationFromLocation,
   getDisplayLocationFromExactLocation,
@@ -125,6 +126,11 @@ export default function LocationSearchBar({
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
+        // Fire-and-forget: count this Nominatim request for rate monitoring.
+        // The call is intentionally not awaited so it never blocks the UX.
+        apiRequest({ method: "post", url: "/api/nominatim_request_count/" }).catch(
+          () => {}
+        );
         const response = await axios.get(url, { headers: getLocaleHeader(locale) });
         const bannedClasses = [
           "tourism",
