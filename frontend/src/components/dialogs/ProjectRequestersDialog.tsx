@@ -193,14 +193,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         },
         payload: {},
       });
-      const responseMessage =
-        typeof response.data === "string"
-          ? response.data
-          : response.data?.detail ||
-            response.data?.message ||
-            (approve
-              ? texts.user_request_approved_successfully
-              : texts.user_request_rejected_successfully);
+      const responseMessage = response.data?.message;
 
       showFeedbackMessage({
         message: responseMessage,
