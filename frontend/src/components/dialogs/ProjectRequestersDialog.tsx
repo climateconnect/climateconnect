@@ -184,7 +184,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
       approve ? "approve" : "reject"
     }/${requestId}/`;
     try {
-      const response = await apiRequest({
+      await apiRequest({
         method: "post",
         url: url,
         locale: locale,
@@ -193,7 +193,9 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         },
         payload: {},
       });
-      const responseMessage = response.data?.message;
+      const responseMessage = approve
+        ? texts.user_request_approved_successfully
+        : texts.user_request_rejected_successfully;
 
       showFeedbackMessage({
         message: responseMessage,
