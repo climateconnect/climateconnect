@@ -1,55 +1,20 @@
-import { Container, Theme, ThemeProvider, useMediaQuery } from "@mui/material";
-import React, { useContext } from "react";
-import getTexts from "../public/texts/texts";
-import UserContext from "../src/components/context/UserContext";
-import { themeSignUp } from "../src/themes/signupTheme";
-import WideLayout from "../src/components/layouts/WideLayout";
-import getHubTheme from "../src/themes/fetchHubTheme";
-import { transformThemeData } from "../src/themes/transformThemeData";
-import AccountCreatedContent from "../src/components/signup/AccountCreatedContent";
-import theme from "../src/themes/theme";
+import { GetServerSideProps } from "next";
+import { getLocalePrefix } from "../public/lib/apiOperations";
 
-export async function getServerSideProps(ctx) {
-  const hubUrl = ctx.query.hub;
-
-  const hubThemeData = await getHubTheme(hubUrl);
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const queryParams = new URLSearchParams();
+  if (ctx.query.hub) queryParams.set("hub", ctx.query.hub as string);
 
   return {
-    props: {
-      hubUrl: hubUrl || null, // undefined is not allowed in JSON, so we use null
-      hubThemeData: hubThemeData || null, // undefined is not allowed in JSON, so we use null
+    redirect: {
+      destination: `${getLocalePrefix(ctx.locale || "en")}/login${
+        queryParams.toString() ? `?${queryParams.toString()}` : ""
+      }`,
+      statusCode: 301,
     },
   };
-}
+};
 
-export default function AccountCreated({ hubUrl, hubThemeData }) {
-  const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));
-  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
-
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "profile", locale: locale, hubName: hubUrl });
-
-  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
-  const customThemeSignUp = hubThemeData
-    ? transformThemeData(hubThemeData, themeSignUp)
-    : themeSignUp;
-
-  return (
-    <WideLayout
-      title={texts.account_created}
-      isHubPage={hubUrl !== ""}
-      customTheme={customTheme}
-      hubUrl={hubUrl}
-      headerBackground={
-        customTheme ? customTheme.palette.header.background : theme.palette.background.default
-      }
-      footerTextColor={hubUrl && "white"}
-    >
-      <Container maxWidth={hugeScreen ? "xl" : "lg"}>
-        <ThemeProvider theme={customThemeSignUp}>
-          <AccountCreatedContent isSmallScreen={isSmallScreen} hubUrl={hubUrl} />
-        </ThemeProvider>
-      </Container>
-    </WideLayout>
-  );
+export default function AccountCreated() {
+  return null;
 }

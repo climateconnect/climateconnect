@@ -267,19 +267,7 @@ Where `effective_status` is computed lazily by `EventRegistrationSerializer`:
 
 The `EVENT_REGISTRATION` toggle was created **first**, before any feature work, as the cornerstone of this epic's incremental rollout strategy. Record created by migration `feature_toggles/migrations/0002_add_event_registration_toggle.py`.
 
-| Environment | Current State | Notes                                                                                    |
-| ----------- | ------------- | ---------------------------------------------------------------------------------------- |
-| Development | ✅ Enabled    | Always on — full feature visible to developers                                           |
-| Staging     | ✅ Enabled    | Full feature visible for QA and stakeholder review                                       |
-| Production  | ❌ Disabled   | Flipped to `True` when Phase 3 (guest registration) is complete and validated on staging |
-
-**Rules for every agent working on this epic:**
-
-- All new frontend UI components **must** check `isEnabled("EVENT_REGISTRATION")` before rendering. The check pattern from `ShareProjectRoot.tsx` is the reference: `const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION")`.
-- Backend API changes are **always additive** and do not need to be gated by the toggle — the new fields and endpoints are harmless to existing consumers even when the UI is hidden.
-- Do **not** remove or bypass the toggle check, even if the toggle is enabled in your local environment. The check must stay in place until the team explicitly decides to retire it post-launch.
-
-**Toggle flip when Phase 3 is complete**: when Phase 2 and Phase 3 (guest registration) are both done and validated on staging, update the `FeatureToggle` record: `production_is_active = True`. This can be done via the Django admin panel or a targeted data migration. Coordinate the backend deployment and frontend deployment so both are live before flipping. [EPIC: Auth Unification](./EPIC_auth_unification.md) (Phase A) must also be deployed and live before the flip.
+> **Frontend toggle cleanup complete.** All `isEnabled("EVENT_REGISTRATION")` checks have been removed from the frontend code. The `FeatureToggle` database record remains and will be deleted manually. See [`20260608_1107_cleanup_feature_toggles.md`](./20260608_1107_cleanup_feature_toggles.md) for details.
 
 ### Draft Mode
 

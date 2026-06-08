@@ -93,7 +93,7 @@ This phase is the prerequisite for Event Registration Phase 3. All stories must 
 
 | # | Story | Notes | Status |
 |---|-------|-------|--------|
-| US-A-cleanup | Remove legacy auth pages and toggle | Delete `/signin` and `/signup` pages, their components, and any code paths that only exist to support the old flow. Remove the `AUTH_UNIFICATION` `FeatureToggle` record and all toggle checks. Remove the now-redundant redirects added in US-1. Delete `POST /login/` if password login has been fully absorbed into the combined flow (confirm first). | ⚪ |
+| US-A-cleanup | Remove legacy auth pages and toggle | Delete `/signin` and `/signup` pages, their components, and any code paths that only exist to support the old flow. Remove the `AUTH_UNIFICATION` `FeatureToggle` record and all toggle checks. Remove the now-redundant redirects added in US-1. Delete `POST /login/` if password login has been fully absorbed into the combined flow (confirm first). | ✅ (frontend) |
 
 ### 🔧 Phase B — Password Management in Settings
 
@@ -219,21 +219,9 @@ The combined page must load hub theme data server-side when `?hub=` is present, 
 
 ### Feature Toggle
 
-Auth Unification **requires** a `FeatureToggle` named `AUTH_UNIFICATION` to enable parallel development and safe incremental rollout.
+Auth Unification **required** a `FeatureToggle` named `AUTH_UNIFICATION` to enable parallel development and safe incremental rollout.
 
-**Rationale**: The new combined flow is entirely new frontend code — new page(s), new components, new API calls. The existing `/signin` and `/signup` pages remain untouched behind the toggle. This means:
-- Development can proceed on the new flow without touching or risking the legacy auth code.
-- The new backend endpoints (`POST /api/auth/request-token`, `POST /api/auth/verify-token`) can be deployed independently — they are additive and do not affect the existing `POST /login/` or `POST /signup/` endpoints.
-- QA and staging validation of the new flow can happen while production still runs the old flow.
-- The toggle can be flipped per-environment: off on production, on on staging, on for internal users first.
-
-**Toggle behaviour**:
-- `AUTH_UNIFICATION = off` (default): `/signin` and `/signup` behave exactly as today. No change.
-- `AUTH_UNIFICATION = on`: `/signin` and `/signup` redirect to the new combined page (e.g. `/login`). The new page and new API endpoints are active.
-
-**Cutover**: once Phase A is validated on staging and production rollout is approved, the toggle is flipped to on globally and the old pages are retired in a follow-up cleanup task. The toggle itself is removed once the old code is deleted.
-
-> The `FeatureToggle` model and `feature_toggles` app already exist in the codebase — use the established pattern.
+> **Frontend toggle cleanup complete.** All `AUTH_UNIFICATION` toggle checks have been removed from the frontend code. `/signin` and `/signup` are now permanent 301 redirects to `/login`. Old signup components (`Login.tsx`, `BasicInfo.tsx`, `AddInfo.tsx`, `AddInterestArea.tsx`, `AccountCreatedContent.tsx`) have been deleted. The `FeatureToggle` database record remains and will be deleted manually. See [`20260608_1107_cleanup_feature_toggles.md`](./20260608_1107_cleanup_feature_toggles.md) for details.
 
 ---
 

@@ -37,37 +37,16 @@ const COMMON_LINKS = {
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
   }),
-  AUTH_LINKS: (path_to_redirect, texts, queryString, isAuthUnificationEnabled) => {
-    if (isAuthUnificationEnabled) {
-      return [
-        {
-          href: `/login?redirect=${encodeURIComponent(path_to_redirect)}${
-            queryString ? `&${queryString}` : ""
-          }`,
-          text: texts.auth_log_in,
-          iconForDrawer: AccountCircleIcon,
-          isOutlinedInHeader: true,
-          onlyShowLoggedOut: true,
-        },
-      ];
-    }
+  AUTH_LINKS: (path_to_redirect, texts, queryString) => {
     return [
       {
-        href: `/signin?redirect=${encodeURIComponent(path_to_redirect)}${
+        href: `/login?redirect=${encodeURIComponent(path_to_redirect)}${
           queryString ? `&${queryString}` : ""
         }`,
-        text: texts.log_in,
+        text: texts.auth_log_in,
         iconForDrawer: AccountCircleIcon,
         isOutlinedInHeader: true,
         onlyShowLoggedOut: true,
-      },
-      {
-        href: `/signup${queryString ? `?${queryString}` : ""}`,
-        text: texts.sign_up,
-        iconForDrawer: AccountCircleIcon,
-        isOutlinedInHeader: true,
-        onlyShowLoggedOut: true,
-        alwaysDisplayDirectly: true,
       },
     ];
   },
@@ -165,13 +144,7 @@ const buildDonateLink = ({ texts, hubUrl }) => ({
   className: "btnColor buttonMarginLeft",
 });
 
-const getWasseraktionswochenLinks = ({
-  path_to_redirect,
-  texts,
-  hubUrl,
-  hasHubLandingPage,
-  isAuthUnificationEnabled,
-}) => {
+const getWasseraktionswochenLinks = ({ path_to_redirect, texts, hubUrl, hasHubLandingPage }) => {
   const queryString = hubUrl ? `hub=${hubUrl}` : "";
   return [
     buildAboutLink({
@@ -195,18 +168,11 @@ const getWasseraktionswochenLinks = ({
       ...COMMON_LINKS.NOTIFICATIONS,
       text: texts.inbox,
     },
-    ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, queryString, isAuthUnificationEnabled),
+    ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, queryString),
   ];
 };
 
-const getDefaultLinks = (
-  path_to_redirect,
-  texts,
-  isLocationHub,
-  hasHubLandingPage,
-  hubUrl,
-  isAuthUnificationEnabled
-) => {
+const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPage, hubUrl) => {
   const isOnLandingPage = isLandingPagePath(path_to_redirect, hubUrl);
   const queryString = isLocationHub && hubUrl ? `hub=${hubUrl}` : "";
   {
@@ -226,7 +192,7 @@ const getDefaultLinks = (
         ...COMMON_LINKS.NOTIFICATIONS,
         text: texts.inbox,
       },
-      ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, queryString, isAuthUnificationEnabled),
+      ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, queryString),
     ];
   }
 };
@@ -237,8 +203,7 @@ const getLinks = (
   isLocationHub: boolean | undefined,
   isCustomHub: boolean | undefined,
   hasHubLandingPage: boolean | undefined,
-  hubUrl?: any,
-  isAuthUnificationEnabled?: boolean
+  hubUrl?: any
 ) => {
   if (isWasseraktionswochenPage(path_to_redirect)) {
     return getWasseraktionswochenLinks({
@@ -246,20 +211,12 @@ const getLinks = (
       texts,
       hubUrl,
       hasHubLandingPage,
-      isAuthUnificationEnabled,
     });
   }
   const effectiveIsLocationHub = isLocationHub || isCustomHub;
   return isCustomHub
-    ? getCustomHubData({ hubUrl, texts, path_to_redirect, isAuthUnificationEnabled })?.headerLinks
-    : getDefaultLinks(
-        path_to_redirect,
-        texts,
-        effectiveIsLocationHub,
-        hasHubLandingPage,
-        hubUrl,
-        isAuthUnificationEnabled
-      );
+    ? getCustomHubData({ hubUrl, texts, path_to_redirect })?.headerLinks
+    : getDefaultLinks(path_to_redirect, texts, effectiveIsLocationHub, hasHubLandingPage, hubUrl);
 };
 
 const getLoggedInLinks = ({ loggedInUser, texts, queryString }) => {

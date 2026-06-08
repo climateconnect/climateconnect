@@ -13,7 +13,6 @@ import ProjectPreviews from "../project/ProjectPreviews";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import IconButton from "@mui/material/IconButton";
 import FeedbackContext from "../context/FeedbackContext";
-import { useFeatureToggles } from "../featureToggle";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_user.jpg";
 
@@ -144,13 +143,9 @@ export default function ProfileRoot({
   }, []);
   const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
-  // Feature toggle for event registration
-  const { isEnabled } = useFeatureToggles();
-  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
-
   // Fetch registered events only for own account on client-side
   useEffect(() => {
-    if (isOwnAccount && isEventRegistrationEnabled && token && !registeredEvents) {
+    if (isOwnAccount && token && !registeredEvents) {
       apiRequest({
         method: "get",
         url: "/api/members/me/registered-events/",
@@ -169,7 +164,7 @@ export default function ProfileRoot({
           }
         });
     }
-  }, [isOwnAccount, isEventRegistrationEnabled, token, locale]);
+  }, [isOwnAccount, token, locale]);
 
   return (
     <AccountPage
@@ -192,7 +187,7 @@ export default function ProfileRoot({
           {texts.send_message}
         </Button>
       )}
-      {isOwnAccount && isEventRegistrationEnabled && (
+      {isOwnAccount && (
         <Container className={classes.container}>
           <div className={classes.sectionHeadlineWithButtonContainer}>
             <h2 className={classes.title}>{texts.your_registered_events}</h2>

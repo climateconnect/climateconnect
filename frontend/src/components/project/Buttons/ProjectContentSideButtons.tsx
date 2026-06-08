@@ -17,7 +17,6 @@ import ProjectRequestersDialog from "../../dialogs/ProjectRequestersDialog";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import JoinButton from "./JoinButton";
 import theme from "../../../themes/theme";
-import { useFeatureToggles } from "../../featureToggle";
 import EditEventRegistrationModal from "../EditEventRegistrationModal";
 
 const useStyles = makeStyles((theme) => ({
@@ -87,10 +86,6 @@ export default function ProjectContentSideButtons({
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const isNarrowScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  // Feature toggle
-  const { isEnabled } = useFeatureToggles();
-  const isEventRegistrationEnabled = isEnabled("EVENT_REGISTRATION");
-
   const user_permission =
     user && project.team && project.team.find((m) => m.id === user.id)
       ? project.team.find((m) => m.id === user.id).permission
@@ -104,7 +99,6 @@ export default function ProjectContentSideButtons({
   const isEventEnded = project.end_date ? dayjs(project.end_date).isBefore(dayjs()) : false;
 
   const showRegistrationButtons =
-    isEventRegistrationEnabled &&
     project.project_type?.type_id === "event" &&
     eventRegistration != null &&
     hasAdminPermissions &&

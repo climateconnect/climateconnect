@@ -13,7 +13,6 @@ import getHubTheme from "../src/themes/fetchHubTheme";
 import { transformThemeData } from "../src/themes/transformThemeData";
 import getTexts from "../public/texts/texts";
 import { getLocalePrefix } from "../public/lib/apiOperations";
-import { getFeatureTogglesFromRequest, isFeatureEnabled } from "../src/hooks/featureToggles";
 import AuthEmailStep from "../src/components/auth/AuthEmailStep";
 import AuthSignupStep from "../src/components/auth/AuthSignupStep";
 import AuthPasswordLogin from "../src/components/auth/AuthPasswordLogin";
@@ -31,68 +30,26 @@ type AuthStep =
 interface LoginProps {
   hubThemeData: any;
   hubSlug: string | null;
-  featureToggles: Record<string, boolean>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  // Check if AUTH_UNIFICATION is enabled and redirect to /signin if not
-  const { featureToggles } = await getFeatureTogglesFromRequest(ctx.req);
-  if (!isFeatureEnabled("AUTH_UNIFICATION", featureToggles)) {
-    const queryParams = new URLSearchParams();
-    if (ctx.query.redirect) queryParams.set("redirect", ctx.query.redirect as string);
-    if (ctx.query.hub) queryParams.set("hub", ctx.query.hub as string);
-
-    const destination = `${getLocalePrefix(ctx.locale || "en")}/signin${
-      queryParams.toString() ? `?${queryParams.toString()}` : ""
-    }`;
-    return {
-      redirect: {
-        destination,
-        statusCode: 307,
-      },
-    };
-  }
-
   const hubSlug = ctx.query.hub as string | undefined;
-
-  // Early return if no hub — avoids fetching /undefined/theme
   if (!hubSlug) {
-    return {
-      props: {
-        hubThemeData: null,
-        hubSlug: null,
-        featureToggles,
-      },
-    };
+    return { props: { hubThemeData: null, hubSlug: null } };
   }
-
   const hubThemeData = await getHubTheme(hubSlug);
-
-  // Early return if hub is not found
   if (!hubThemeData) {
-    return {
-      props: {
-        hubThemeData: null,
-        hubSlug: hubSlug || null,
-        featureToggles,
-      },
-    };
+    return { props: { hubThemeData: null, hubSlug: hubSlug || null } };
   }
-
   return {
     props: {
       hubThemeData: hubThemeData || null,
       hubSlug: hubSlug || null,
-      featureToggles,
     },
   };
 };
 
-export default function Login({
-  hubThemeData,
-  hubSlug,
-  featureToggles: _featureToggles,
-}: LoginProps) {
+export default function Login({ hubThemeData, hubSlug }: LoginProps) {
   const { user, locale, ReactGA } = useContext(UserContext);
   const router = useRouter();
   const hugeScreen = useMediaQuery((theme: Theme) => theme.breakpoints.up("xl"));

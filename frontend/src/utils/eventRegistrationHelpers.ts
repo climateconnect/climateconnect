@@ -2,16 +2,11 @@ import { Project, RegistrationField } from "../types";
 
 /**
  * Determines if the event registration button should be displayed
- * @param isEventRegistrationEnabled - Feature flag for event registration
  * @param project - The project object containing event registration data
  * @returns true if registration button should be shown
  */
-export const shouldShowRegisterButton = (
-  isEventRegistrationEnabled: boolean,
-  project: Project
-): boolean => {
+export const shouldShowRegisterButton = (project: Project): boolean => {
   return !!(
-    isEventRegistrationEnabled &&
     !project.is_draft &&
     project.registration_config &&
     !project.registration_config.is_draft &&
@@ -72,20 +67,18 @@ export type RegistrationUIState =
 /**
  * Returns the registration button area UI state for the event detail page.
  *
- * @param isEventRegistrationEnabled - Feature flag for event registration
  * @param project - The project object containing event registration data
  * @param isUserRegistered - `is_registered` from my_interactions (active, non-cancelled)
  * @param hasAttended - `has_attended` from my_interactions
  * @param adminCancelled - `admin_cancelled` from my_interactions
  */
 export const getRegistrationUIState = (
-  isEventRegistrationEnabled: boolean,
   project: Project,
   isUserRegistered?: boolean,
   hasAttended?: boolean,
   adminCancelled?: boolean
 ): RegistrationUIState => {
-  if (!isEventRegistrationEnabled || !project.registration_config) return "hidden";
+  if (!project.registration_config) return "hidden";
 
   // Draft projects should never show a registration button
   if (project.is_draft) return "hidden";

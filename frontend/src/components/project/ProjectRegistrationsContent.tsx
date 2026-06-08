@@ -42,7 +42,6 @@ import getTexts from "../../../public/texts/texts";
 import { EventRegistrationData, Project, RegistrationFieldAnswer } from "../../types";
 import { resolveAnswerToStrings } from "../../utils/resolveRegistrationFieldAnswer";
 import UserContext from "../context/UserContext";
-import { useFeatureToggles } from "../featureToggle";
 import CancelGuestRegistrationModal, { RegistrationInfo } from "./CancelGuestRegistrationModal";
 import EditEventRegistrationModal from "./EditEventRegistrationModal";
 import SendEmailToGuestsModal from "./SendEmailToGuestsModal";
@@ -212,8 +211,6 @@ export default function ProjectRegistrationsContent({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
-  const { isEnabled } = useFeatureToggles();
-  const isCustomFieldsEnabled = isEnabled("REGISTRATION_CUSTOM_FIELDS");
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -367,9 +364,7 @@ export default function ProjectRegistrationsContent({
   const StatusIcon = statusConfig.icon;
 
   // Custom field export columns — hidden from the grid, included in CSV/print
-  const customFields = isCustomFieldsEnabled
-    ? [...(eventRegistration.fields ?? [])].sort((a, b) => a.order - b.order)
-    : [];
+  const customFields = [...(eventRegistration.fields ?? [])].sort((a, b) => a.order - b.order);
 
   const customFieldColumns: GridColDef[] = [];
   const customFieldColumnNames: string[] = [];
@@ -621,8 +616,7 @@ export default function ProjectRegistrationsContent({
                     disableColumnMenu: true,
                     renderCell: (params) => {
                       const row = params.row as EventRegistration;
-                      const showViewIcon =
-                        isCustomFieldsEnabled && (row.field_answers?.length ?? 0) > 0;
+                      const showViewIcon = (row.field_answers?.length ?? 0) > 0;
                       const showMenu = !row.cancelled_at;
                       if (!showViewIcon && !showMenu) return null;
                       return (
