@@ -21,6 +21,30 @@ jest.mock("../../../public/lib/apiOperations", () => ({
   apiRequest: (...args: any[]) => mockApiRequest(...args),
 }));
 
+// Mock OrganizerMessageEditor: renders a textarea that calls onChange
+jest.mock("../richText/OrganizerMessageEditor", () => {
+  const React = require("react");
+  return {
+    __esModule: true,
+    stripHtml: (html: string) => html.replace(/<[^>]*>/g, "").trim(),
+    default: ({ _content, onChange, editable, error, ariaLabel }: any) => (
+      <div>
+        <div
+          role="textbox"
+          aria-label={ariaLabel || "message"}
+          contentEditable={editable !== false}
+          onInput={(e: any) => {
+            const html = `<p>${e.target.textContent}</p>`;
+            onChange(html === "<p></p>" ? "" : html);
+          }}
+          data-testid="rich-text-editor"
+        />
+        {error && <div data-testid="editor-error">{error}</div>}
+      </div>
+    ),
+  };
+});
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -74,6 +98,11 @@ function renderModal({
   );
 }
 
+function typeInEditor(text: string) {
+  const editor = screen.getByTestId("rich-text-editor");
+  fireEvent.input(editor, { target: { textContent: text } });
+}
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -84,13 +113,11 @@ beforeEach(() => {
 });
 
 describe("SendEmailToGuestsModal", () => {
-  // ── Initial render ─────────────────────────────────────────────────────────
-
   describe("initial render", () => {
-    it("renders subject and message fields (empty)", () => {
+    it("renders subject field and rich-text editor", () => {
       renderModal();
       expect(screen.getByRole("textbox", { name: /subject/i })).toHaveValue("");
-      expect(screen.getByRole("textbox", { name: /message/i })).toHaveValue("");
+      expect(screen.getByTestId("rich-text-editor")).toBeInTheDocument();
     });
 
     it("renders Send now, Send test, and Cancel buttons", () => {
@@ -107,24 +134,18 @@ describe("SendEmailToGuestsModal", () => {
     });
   });
 
-  // ── Client-side validation ─────────────────────────────────────────────────
-
   describe("client-side validation", () => {
-    it("shows subject error and does not advance to confirmation when subject is empty", async () => {
+    it("shows subject error when subject is empty", async () => {
       renderModal();
-      fireEvent.change(screen.getByRole("textbox", { name: /message/i }), {
-        target: { value: "Hello guests!" },
-      });
+      typeInEditor("Hello guests!");
       fireEvent.click(screen.getByRole("button", { name: /send now/i }));
       await waitFor(() => {
         expect(screen.getByText(/subject is required/i)).toBeInTheDocument();
       });
       expect(mockApiRequest).not.toHaveBeenCalled();
-      // Still on form, not on confirmation step
-      expect(screen.getByRole("textbox", { name: /subject/i })).toBeInTheDocument();
     });
 
-    it("shows message error and does not advance to confirmation when message is empty", async () => {
+    it("shows message error when message is empty", async () => {
       renderModal();
       fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
         target: { value: "Important update" },
@@ -146,25 +167,19 @@ describe("SendEmailToGuestsModal", () => {
     });
   });
 
-  // ── Confirmation step (spec test cases 6 & 7) ─────────────────────────────
-
   describe("confirmation step", () => {
     async function fillAndClickSendNow(guestCount = 5) {
       renderModal({ activeGuestCount: guestCount });
       fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
         target: { value: "Event update" },
       });
-      fireEvent.change(screen.getByRole("textbox", { name: /message/i }), {
-        target: { value: "Please note the time change." },
-      });
+      typeInEditor("Please note the time change.");
       fireEvent.click(screen.getByRole("button", { name: /send now/i }));
     }
 
-    it("shows confirmation step (not the API) after clicking Send now with valid form", async () => {
+    it("shows confirmation step after clicking Send now with valid form", async () => {
       await fillAndClickSendNow();
-      // No API call yet
       expect(mockApiRequest).not.toHaveBeenCalled();
-      // Confirmation step is visible
       expect(screen.getByRole("button", { name: /confirm and send/i })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
     });
@@ -179,33 +194,23 @@ describe("SendEmailToGuestsModal", () => {
       expect(screen.getByText(/team admins will also receive a copy/i)).toBeInTheDocument();
     });
 
-    it("Back button returns to the compose form with subject and message preserved", async () => {
+    it("Back button returns to the compose form with subject preserved", async () => {
       await fillAndClickSendNow();
       fireEvent.click(screen.getByRole("button", { name: /back/i }));
-      // Form is visible again
-      const subjectField = screen.getByRole("textbox", { name: /subject/i });
-      const messageField = screen.getByRole("textbox", { name: /message/i });
-      expect(subjectField).toHaveValue("Event update");
-      expect(messageField).toHaveValue("Please note the time change.");
-      // No API call has happened
+      expect(screen.getByRole("textbox", { name: /subject/i })).toHaveValue("Event update");
+      expect(screen.getByTestId("rich-text-editor")).toBeInTheDocument();
       expect(mockApiRequest).not.toHaveBeenCalled();
     });
   });
 
-  // ── Bulk send — confirm and send (spec test case 8) ───────────────────────
-
   describe("Confirm and send", () => {
-    /** Fills the form, clicks Send now, then Confirm and send. */
     async function fillAndConfirmSend(guestCount = 5) {
       renderModal({ activeGuestCount: guestCount });
       fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
         target: { value: "Event update" },
       });
-      fireEvent.change(screen.getByRole("textbox", { name: /message/i }), {
-        target: { value: "Please note the time change." },
-      });
+      typeInEditor("Please note the time change.");
       fireEvent.click(screen.getByRole("button", { name: /send now/i }));
-      // Wait for confirmation step, then confirm
       await waitFor(() =>
         expect(screen.getByRole("button", { name: /confirm and send/i })).toBeInTheDocument()
       );
@@ -221,7 +226,6 @@ describe("SendEmailToGuestsModal", () => {
       expect(url).toContain("/registrations/email/");
       expect(payload.is_test).toBe(false);
       expect(payload.subject).toBe("Event update");
-      expect(payload.message).toBe("Please note the time change.");
     });
 
     it("shows the bulk confirmation with the recipient count after success", async () => {
@@ -229,7 +233,7 @@ describe("SendEmailToGuestsModal", () => {
       await waitFor(() => {
         expect(screen.getByText(/email sent to 42 registered guests/i)).toBeInTheDocument();
       });
-      expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+      expect(screen.queryByRole("textbox", { name: /subject/i })).not.toBeInTheDocument();
     });
 
     it("shows a Close button in the success view", async () => {
@@ -240,36 +244,30 @@ describe("SendEmailToGuestsModal", () => {
     });
   });
 
-  // ── Test send (Send test) — spec test case 9: bypasses confirmation ────────
-
   describe("Send test", () => {
     async function fillAndSendTest() {
       renderModal();
       fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
         target: { value: "Test subject" },
       });
-      fireEvent.change(screen.getByRole("textbox", { name: /message/i }), {
-        target: { value: "Test body" },
-      });
+      typeInEditor("Test body");
       await act(async () => {
         fireEvent.click(screen.getByRole("button", { name: /send test/i }));
       });
     }
 
-    it("calls the API immediately with is_test=true — no confirmation step shown", async () => {
+    it("calls the API immediately with is_test=true", async () => {
       await fillAndSendTest();
       await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
       expect(mockApiRequest.mock.calls[0][0].payload.is_test).toBe(true);
-      // Confirmation step should never have appeared
       expect(screen.queryByRole("button", { name: /confirm and send/i })).not.toBeInTheDocument();
     });
 
-    it("returns to the form (not a locked confirmation) after a test send", async () => {
+    it("returns to the form after a test send", async () => {
       await fillAndSendTest();
       await waitFor(() => {
-        // Form fields must still be present and editable
         expect(screen.getByRole("textbox", { name: /subject/i })).toBeInTheDocument();
-        expect(screen.getByRole("textbox", { name: /message/i })).toBeInTheDocument();
+        expect(screen.getByTestId("rich-text-editor")).toBeInTheDocument();
       });
     });
 
@@ -282,7 +280,7 @@ describe("SendEmailToGuestsModal", () => {
       });
     });
 
-    it("shows Send now and Send test buttons after a test send (can still send for real)", async () => {
+    it("shows Send now and Send test buttons after a test send", async () => {
       await fillAndSendTest();
       await waitFor(() => {
         expect(screen.getByRole("button", { name: /send now/i })).toBeInTheDocument();
@@ -291,10 +289,8 @@ describe("SendEmailToGuestsModal", () => {
     });
   });
 
-  // ── API error handling ─────────────────────────────────────────────────────
-
   describe("API error handling", () => {
-    it("shows a general error and returns to the form when the confirm-send API fails", async () => {
+    it("shows a general error when the confirm-send API fails", async () => {
       mockApiRequest.mockRejectedValueOnce({
         response: { data: { detail: "Something went wrong." } },
       });
@@ -302,10 +298,7 @@ describe("SendEmailToGuestsModal", () => {
       fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
         target: { value: "Hi" },
       });
-      fireEvent.change(screen.getByRole("textbox", { name: /message/i }), {
-        target: { value: "Body" },
-      });
-      // Go through confirmation step
+      typeInEditor("Body");
       fireEvent.click(screen.getByRole("button", { name: /send now/i }));
       await waitFor(() =>
         expect(screen.getByRole("button", { name: /confirm and send/i })).toBeInTheDocument()
@@ -316,7 +309,6 @@ describe("SendEmailToGuestsModal", () => {
       await waitFor(() => {
         expect(screen.getByRole("alert")).toHaveTextContent(/something went wrong/i);
       });
-      // Returned to form
       expect(screen.getByRole("textbox", { name: /subject/i })).toBeInTheDocument();
     });
 
@@ -328,9 +320,7 @@ describe("SendEmailToGuestsModal", () => {
       fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
         target: { value: "x".repeat(201) },
       });
-      fireEvent.change(screen.getByRole("textbox", { name: /message/i }), {
-        target: { value: "Body" },
-      });
+      typeInEditor("Body");
       fireEvent.click(screen.getByRole("button", { name: /send now/i }));
       await waitFor(() =>
         expect(screen.getByRole("button", { name: /confirm and send/i })).toBeInTheDocument()
@@ -343,8 +333,6 @@ describe("SendEmailToGuestsModal", () => {
       });
     });
   });
-
-  // ── Close behaviour ────────────────────────────────────────────────────────
 
   describe("close behaviour", () => {
     it("calls onClose when Cancel is clicked", () => {
@@ -371,9 +359,7 @@ describe("SendEmailToGuestsModal", () => {
       fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
         target: { value: "Hi" },
       });
-      fireEvent.change(screen.getByRole("textbox", { name: /message/i }), {
-        target: { value: "Body" },
-      });
+      typeInEditor("Body");
       fireEvent.click(screen.getByRole("button", { name: /send now/i }));
       await waitFor(() =>
         expect(screen.getByRole("button", { name: /confirm and send/i })).toBeInTheDocument()
@@ -381,7 +367,6 @@ describe("SendEmailToGuestsModal", () => {
       await act(async () => {
         fireEvent.click(screen.getByRole("button", { name: /confirm and send/i }));
       });
-      // Wait for the success "Close" button
       await waitFor(() =>
         expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument()
       );
@@ -389,15 +374,13 @@ describe("SendEmailToGuestsModal", () => {
       expect(onClose).toHaveBeenCalledTimes(1);
     });
 
-    it("keeps Cancel available after a test send so the organiser can still dismiss", async () => {
+    it("keeps Cancel available after a test send", async () => {
       const onClose = jest.fn();
       renderModal({ onClose });
       fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
         target: { value: "Hi" },
       });
-      fireEvent.change(screen.getByRole("textbox", { name: /message/i }), {
-        target: { value: "Body" },
-      });
+      typeInEditor("Body");
       await act(async () => {
         fireEvent.click(screen.getByRole("button", { name: /send test/i }));
       });

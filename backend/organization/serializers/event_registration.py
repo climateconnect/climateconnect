@@ -638,13 +638,13 @@ class SendOrganizerEmailSerializer(serializers.Serializer):
 
     Fields:
         subject  — plain-text subject line (max 200 chars, required).
-        message  — plain-text body (required).
+        message  — HTML body (max 30000 chars, required). Sanitized server-side.
         is_test  — when True, send a single test email to the organiser only;
                    when False (default), bulk-send to all active participants.
     """
 
     subject = serializers.CharField(max_length=200, allow_blank=False)
-    message = serializers.CharField(allow_blank=False)
+    message = serializers.CharField(max_length=30000, allow_blank=False)
     is_test = serializers.BooleanField(default=False)
 
 

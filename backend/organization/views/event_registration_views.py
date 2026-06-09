@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from climateconnect_api.models import Role
+from climateconnect_api.utility.html import sanitize_html
 from organization.models import Project, ProjectMember
 from organization.models.event_registration import (
     EventRegistration,
@@ -708,6 +709,37 @@ class SendOrganizerEmailView(APIView):
         subject = serializer.validated_data["subject"]
         message = serializer.validated_data["message"]
         is_test = serializer.validated_data["is_test"]
+
+        # Sanitize HTML — strip XSS, disallowed tags, and filter styles.
+        ORGANIZER_EMAIL_ALLOWED_TAGS = [
+            "p",
+            "strong",
+            "b",
+            "em",
+            "i",
+            "a",
+            "br",
+            "ul",
+            "ol",
+            "li",
+            "table",
+            "thead",
+            "tbody",
+            "tr",
+            "th",
+            "td",
+        ]
+        ORGANIZER_EMAIL_ALLOWED_ATTRIBUTES = {
+            "a": ["href", "target"],
+            "p": ["style"],
+            "td": ["style", "colspan", "rowspan"],
+            "th": ["style", "colspan", "rowspan"],
+        }
+        message = sanitize_html(
+            message,
+            allowed_tags=ORGANIZER_EMAIL_ALLOWED_TAGS,
+            allowed_attributes=ORGANIZER_EMAIL_ALLOWED_ATTRIBUTES,
+        )
 
         # ── 2. Look up project ──────────────────────────────────────────
         try:
