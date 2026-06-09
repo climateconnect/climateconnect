@@ -22,7 +22,9 @@ mailjet = Client(
 
 
 def linkify_mentions(content):
-    pattern = re.compile(r"(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)")
+    pattern = re.compile(
+        r"(@@@__(?P<url_slug>[^\^]*)\^\^__(?P<display>[^\@]*)@@@\^\^\^)"
+    )
     matches = re.findall(pattern, content)
 
     for m in matches:
