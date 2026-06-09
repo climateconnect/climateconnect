@@ -1,7 +1,3 @@
-# Use the venv Python when available (VIRTUAL_ENV is set by `source activate`),
-# otherwise fall back to the system python3.
-PYTHON := $(if $(VIRTUAL_ENV),$(VIRTUAL_ENV)/bin/python3,python3)
-
 default: all
 
 
@@ -9,7 +5,7 @@ start:
 	$(info )
 	$(info -- Starting server --)
 	$(info )
-	$(PYTHON) manage.py runserver
+	python3 manage.py runserver
 
 celery:
 	$(info )
@@ -24,15 +20,15 @@ celery_beat:
 	celery -A climateconnect_main beat -l INFO
 
 shell:
-	$(PYTHON) manage.py shell
+	python3 manage.py shell
 
 install:
 	pdm install
 
 test:
-	$(PYTHON) manage.py test --keepdb --noinput
+	python3 manage.py test --keepdb --noinput
 test-clean:
-	$(PYTHON) manage.py test --noinput
+	python3 manage.py test --noinput
 
 coverage:
 	$(info )
@@ -70,12 +66,12 @@ format:
 
 # Database migrations and test data creation:
 migrate:
-	$(PYTHON) manage.py migrate
+	python3 manage.py migrate
 
 migrations: migrate
 
 test-data:
-	$(PYTHON) manage.py create_test_data --number_of_rows 4
+	python3 manage.py create_test_data --number_of_rows 4
 
 all: format ruff start
 

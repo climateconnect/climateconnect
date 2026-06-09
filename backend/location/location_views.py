@@ -133,9 +133,12 @@ class GetLocationView(APIView):
 # Nominatim autocomplete request tracking
 # ---------------------------------------------------------------------------
 
-_NOMINATIM_SECOND_TTL = 60 * 60 * 2         # 2 hours to cover the rolling 1-minute window and allow for some clock skew
-_NOMINATIM_MINUTE_TTL = 60 * 60 * 24 * 35   # 35 days to cover the 30-day stats window
-_NOMINATIM_DAY_TTL = 60 * 60 * 24 * 400     # 400 days to cover 13 months of daily buckets
+_NOMINATIM_SECOND_TTL = (
+    60 * 60 * 2
+)  # 2 hours to cover the rolling 1-minute window and allow for some clock skew
+_NOMINATIM_MINUTE_TTL = 60 * 60 * 24 * 35  # 35 days to cover the 30-day stats window
+_NOMINATIM_DAY_TTL = 60 * 60 * 24 * 400  # 400 days to cover 13 months of daily buckets
+
 
 def _increment_nominatim_counters() -> None:
     """
@@ -234,13 +237,15 @@ class NominatimStatsView(APIView):
             current_minute = now // 60
             current_day = now // 86400
 
-            _MINUTES_7D = 7 * 24 * 60    # 10 080
+            _MINUTES_7D = 7 * 24 * 60  # 10 080
             _MINUTES_30D = 30 * 24 * 60  # 43 200
 
             # Build key lists.  We fetch 30 days of minute buckets so we can
             # compute the per-second peak over both 7-day and 30-day windows.
             second_keys = [f"nominatim:s:{current_second - i}" for i in range(60)]
-            minute_keys = [f"nominatim:m:{current_minute - i}" for i in range(_MINUTES_30D)]
+            minute_keys = [
+                f"nominatim:m:{current_minute - i}" for i in range(_MINUTES_30D)
+            ]
             day_keys = [f"nominatim:d:{current_day - i}" for i in range(30)]
 
             # Single MGET round-trip (60 + 43 200 + 30 = 43 290 keys).
@@ -270,8 +275,12 @@ class NominatimStatsView(APIView):
                     "req_last_7_days": req_last_7_days,
                     "req_last_30_days": req_last_30_days,
                     "avg_req_per_second_last_minute": round(req_last_minute / 60, 3),
-                    "avg_req_per_second_last_7_days": round(req_last_7_days / (7 * 86400), 3),
-                    "avg_req_per_second_last_30_days": round(req_last_30_days / (30 * 86400), 3),
+                    "avg_req_per_second_last_7_days": round(
+                        req_last_7_days / (7 * 86400), 3
+                    ),
+                    "avg_req_per_second_last_30_days": round(
+                        req_last_30_days / (30 * 86400), 3
+                    ),
                     "max_req_per_second_last_7_days": round(max_s_7d / 60, 3),
                     "max_req_per_second_last_30_days": round(max_s_30d / 60, 3),
                 }

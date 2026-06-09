@@ -5,7 +5,9 @@ from location import location_views
 app_name = "location"
 urlpatterns = [
     # Location URLs
-    path("get_location/", location_views.GetLocationView.as_view(), name="get-location"),
+    path(
+        "get_location/", location_views.GetLocationView.as_view(), name="get-location"
+    ),
     # Nominatim autocomplete request tracking
     path(
         "nominatim_request_count/",
