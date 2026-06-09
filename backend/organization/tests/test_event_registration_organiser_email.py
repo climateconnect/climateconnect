@@ -3,6 +3,7 @@ Tests for the organiser-to-guest bulk email feature.
 
 Contains:
   - TestSendOrganizerEmail
+  - TestOrganizerEmailHtmlSanitization
 """
 
 from datetime import timedelta
@@ -509,3 +510,261 @@ class TestSendOrganizerEmail(APITestCase):
                 )
 
         self.assertEqual(mock_helper.call_count, 5)
+
+
+class TestOrganizerEmailHtmlSanitization(APITestCase):
+    """
+    Tests for HTML sanitization in the organiser email endpoint.
+
+    Covers AC-9 test cases:
+    1. HTML message accepted — valid HTML passed through sanitization
+    2. XSS stripped — <script> tags removed
+    3. Disallowed tags stripped — <img>, <iframe>, <h1> removed
+    4. Allowed tags preserved — <p>, <strong>, <a>, <ul>, <li>, <table> kept
+    5. Style filtering — text-align preserved, other CSS stripped
+    6. Message max_length — exceeding max returns 400
+    """
+
+    def setUp(self):
+        self.project_status, _ = ProjectStatus.objects.update_or_create(
+            id=2,
+            defaults={
+                "name": "html_sanitize_event",
+                "name_de_translation": "html_sanitize",
+                "has_end_date": True,
+                "has_start_date": True,
+            },
+        )
+        self.default_language, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
+        )
+        self.organiser = User.objects.create_user(
+            username="html_sanitize_organiser",
+            password="testpassword",
+            email="html_sanitize@example.com",
+        )
+        self.admin_role = Role.objects.create(
+            name="Admin_html_sanitize",
+            role_type=Role.ALL_TYPE,
+        )
+        self.event = Project.objects.create(
+            name="HTML Sanitize Event",
+            url_slug="html-sanitize-event",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.default_language,
+            project_type="EV",
+            start_date=timezone.now() + timedelta(days=30),
+            end_date=timezone.now() + timedelta(days=90),
+        )
+        self.er = EventRegistrationConfig.objects.create(
+            project=self.event,
+            max_participants=100,
+            registration_end_date=timezone.now() + timedelta(days=60),
+            status=RegistrationStatus.OPEN,
+        )
+        ProjectMember.objects.create(
+            user=self.organiser,
+            project=self.event,
+            role=self.admin_role,
+        )
+        self.client.login(username="html_sanitize_organiser", password="testpassword")
+
+    def _url(self):
+        return reverse(
+            "organization:send-organizer-email-to-guests",
+            kwargs={"url_slug": "html-sanitize-event"},
+        )
+
+    # ------------------------------------------------------------------
+    # 1. HTML message accepted — valid HTML passed through sanitization
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "html_sanitize")
+    def test_valid_html_message_accepted(self):
+        """POST with valid HTML in message → 200 OK."""
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                {
+                    "subject": "HTML test",
+                    "message": "<p>Hello <strong>guests</strong></p>",
+                    "is_test": False,
+                },
+                format="json",
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        self.assertIn("<p>Hello <strong>guests</strong></p>", kwargs["message"])
+
+    # ------------------------------------------------------------------
+    # 2. XSS stripped — <script> tags removed
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "html_sanitize")
+    def test_xss_script_tags_stripped(self):
+        """POST with <script> in message → 200 OK, <script> tags removed."""
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                {
+                    "subject": "XSS test",
+                    "message": "<p>Hello</p><script>alert(1)</script><p>World</p>",
+                    "is_test": False,
+                },
+                format="json",
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        msg = kwargs["message"]
+        self.assertNotIn("<script>", msg)
+        self.assertNotIn("alert(1)", msg)
+        self.assertIn("<p>Hello</p>", msg)
+        self.assertIn("<p>World</p>", msg)
+
+    # ------------------------------------------------------------------
+    # 3. Disallowed tags stripped — <img>, <iframe>, <h1> removed
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "html_sanitize")
+    def test_disallowed_tags_stripped(self):
+        """POST with <img>, <iframe>, <h1> → tags stripped, text content kept."""
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                {
+                    "subject": "Tag test",
+                    "message": (
+                        "<p>Before</p>"
+                        '<img src="x" alt="pic">'
+                        '<iframe src="evil.com"></iframe>'
+                        "<h1>Heading</h1>"
+                        "<p>After</p>"
+                    ),
+                    "is_test": False,
+                },
+                format="json",
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        msg = kwargs["message"]
+        self.assertNotIn("<img", msg)
+        self.assertNotIn("<iframe", msg)
+        self.assertNotIn("<h1>", msg)
+        self.assertIn("<p>Before</p>", msg)
+        self.assertIn("<p>After</p>", msg)
+
+    # ------------------------------------------------------------------
+    # 4. Allowed tags preserved — <p>, <strong>, <a>, <ul>, <li>, <table>
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "html_sanitize")
+    def test_allowed_tags_preserved(self):
+        """POST with allowed tags → all preserved in sanitised output."""
+        message = (
+            "<p>Text with <strong>bold</strong> and <em>italic</em></p>"
+            "<ul><li>Item 1</li><li>Item 2</li></ul>"
+            "<ol><li>First</li><li>Second</li></ol>"
+            '<p><a href="https://example.com" target="_blank">link</a></p>'
+            "<table><thead><tr><th>Col1</th></tr></thead>"
+            "<tbody><tr><td>Data</td></tr></tbody></table>"
+        )
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                {"subject": "Allowed tags", "message": message, "is_test": False},
+                format="json",
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        msg = kwargs["message"]
+        self.assertIn("<strong>bold</strong>", msg)
+        self.assertIn("<em>italic</em>", msg)
+        self.assertIn("<ul>", msg)
+        self.assertIn("<li>Item 1</li>", msg)
+        self.assertIn("<ol>", msg)
+        self.assertIn('<a href="https://example.com"', msg)
+        self.assertIn('rel="noopener noreferrer"', msg)
+        self.assertIn("<table>", msg)
+        self.assertIn("<th>Col1</th>", msg)
+        self.assertIn("<td>Data</td>", msg)
+
+    # ------------------------------------------------------------------
+    # 5. Style filtering — text-align preserved, other CSS stripped
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "html_sanitize")
+    def test_style_text_align_preserved(self):
+        """POST with style="text-align: center" → preserved."""
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                {
+                    "subject": "Style test",
+                    "message": '<p style="text-align: center">Centered text</p>',
+                    "is_test": False,
+                },
+                format="json",
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        msg = kwargs["message"]
+        self.assertIn("text-align: center", msg)
+
+    @tag("organizer_email", "html_sanitize")
+    def test_style_disallowed_css_stripped(self):
+        """POST with style="display: none" or style="color: red" → style attr stripped."""
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                {
+                    "subject": "Style strip test",
+                    "message": (
+                        '<p style="display: none">Hidden</p>'
+                        '<p style="color: red">Red</p>'
+                        '<table><tr><td style="text-align: right; color: blue">Cell</td></tr></table>'
+                    ),
+                    "is_test": False,
+                },
+                format="json",
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        msg = kwargs["message"]
+        self.assertNotIn("display:", msg)
+        self.assertNotIn("color:", msg)
+        self.assertIn("text-align: right", msg)
+        self.assertNotIn('style=""', msg)
+
+    # ------------------------------------------------------------------
+    # 6. Message max_length — exceeding max returns 400
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "validation")
+    def test_message_exceeding_max_length_returns_400(self):
+        """POST with message exceeding 30000 chars → 400 Bad Request."""
+        response = self.client.post(
+            self._url(),
+            {
+                "subject": "Long message",
+                "message": "x" * 30001,
+                "is_test": False,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("message", response.data)

@@ -19,6 +19,7 @@ import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
 import GenericDialog from "../dialogs/GenericDialog";
+import OrganizerMessageEditor, { stripHtml } from "../richText/OrganizerMessageEditor";
 
 // ---------------------------------------------------------------------------
 // Styles
@@ -65,11 +66,6 @@ const useStyles = makeStyles<Theme>((theme) => ({
 // Types
 // ---------------------------------------------------------------------------
 
-/**
- * "idle"       — compose form, ready for input
- * "confirming" — pre-send confirmation step (no API call yet)
- * "sent_all"   — bulk send completed, success view
- */
 type SendState = "idle" | "confirming" | "sent_all";
 
 type FormErrors = {
@@ -82,8 +78,6 @@ type Props = {
   open: boolean;
   onClose: () => void;
   project: Project;
-  /** Number of currently active (non-cancelled) registered guests. Used in the
-   *  confirmation step to show how many people will receive the email. */
   activeGuestCount: number;
 };
 
@@ -106,13 +100,10 @@ export default function SendEmailToGuestsModal({
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [sendState, setSendState] = useState<SendState>("idle");
-  // True while any async API call is in flight (test send or bulk confirm send).
   const [isSending, setIsSending] = useState(false);
   const [sentCount, setSentCount] = useState(0);
-  // Non-null when a test send has just succeeded; cleared on next send or modal open.
   const [testSentToEmail, setTestSentToEmail] = useState<string | null>(null);
 
-  // Reset form every time the modal is opened.
   useEffect(() => {
     if (open) {
       setSubject("");
@@ -132,7 +123,7 @@ export default function SendEmailToGuestsModal({
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
     if (!subject.trim()) newErrors.subject = texts.email_subject_required;
-    if (!message.trim()) newErrors.message = texts.email_message_required;
+    if (!stripHtml(message)) newErrors.message = texts.email_message_required;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -141,23 +132,19 @@ export default function SendEmailToGuestsModal({
   // Handlers
   // ---------------------------------------------------------------------------
 
-  /** "Send now" — validate and advance to the confirmation step (no API call). */
   const handleSendNowClick = () => {
     if (!validate()) return;
     setTestSentToEmail(null);
     setSendState("confirming");
   };
 
-  /** "Back" from the confirmation step — return to the compose form. */
   const handleBackToForm = () => {
     setSendState("idle");
   };
 
-  /** "Confirm and send" — dispatch the bulk send API call. */
   const handleConfirmSend = async () => {
     setIsSending(true);
     setErrors({});
-
     try {
       const resp = await apiRequest({
         method: "post",
@@ -169,7 +156,6 @@ export default function SendEmailToGuestsModal({
       setSentCount(resp.data.sent_count as number);
       setSendState("sent_all");
     } catch (err: any) {
-      // Return to the compose form so the organiser can fix or retry.
       setSendState("idle");
       const data = err?.response?.data;
       if (data && typeof data === "object") {
@@ -192,14 +178,11 @@ export default function SendEmailToGuestsModal({
     }
   };
 
-  /** "Send test to myself" — bypasses the confirmation step entirely. */
   const handleTestSend = async () => {
     if (!validate()) return;
-
     setIsSending(true);
     setErrors({});
     setTestSentToEmail(null);
-
     try {
       await apiRequest({
         method: "post",
@@ -236,9 +219,8 @@ export default function SendEmailToGuestsModal({
   // ---------------------------------------------------------------------------
 
   return (
-    <GenericDialog open={open} onClose={onClose} title={texts.send_email_to_guests} maxWidth="sm">
+    <GenericDialog open={open} onClose={onClose} title={texts.send_email_to_guests} maxWidth="lg">
       {sendState === "sent_all" ? (
-        // ── Success view ─────────────────────────────────────────────────────
         <>
           <Box className={classes.confirmationBox}>
             <CheckCircleOutlineIcon color="success" aria-hidden="true" />
@@ -246,7 +228,6 @@ export default function SendEmailToGuestsModal({
               {texts.email_sent_to_guests.replace("{count}", String(sentCount))}
             </Typography>
           </Box>
-
           <Box className={classes.actionRow}>
             <Button variant="contained" color="primary" onClick={onClose}>
               {texts.close}
@@ -254,7 +235,6 @@ export default function SendEmailToGuestsModal({
           </Box>
         </>
       ) : sendState === "confirming" ? (
-        // ── Confirmation step ────────────────────────────────────────────────
         <Box className={classes.confirmStepBox} role="region" aria-label={texts.confirm_and_send}>
           <Box className={classes.confirmInfoRow}>
             <InfoOutlinedIcon color="info" fontSize="small" aria-hidden="true" sx={{ mt: 0.25 }} />
@@ -262,16 +242,13 @@ export default function SendEmailToGuestsModal({
               {texts.email_confirmation_recipients.replace("{count}", String(activeGuestCount))}
             </Typography>
           </Box>
-
           <Typography variant="body2" color="text.secondary">
             {texts.email_confirmation_admin_cc}
           </Typography>
-
           <Box className={classes.actionRow}>
             <Button variant="outlined" onClick={handleBackToForm} disabled={isSending}>
               {texts.back}
             </Button>
-
             <Button
               variant="contained"
               color="primary"
@@ -285,9 +262,7 @@ export default function SendEmailToGuestsModal({
           </Box>
         </Box>
       ) : (
-        // ── Compose form ─────────────────────────────────────────────────────
         <>
-          {/* Inline success notice after a test send */}
           <Collapse in={testSentToEmail !== null} unmountOnExit>
             <Alert severity="success" className={classes.testSuccessAlert}>
               {texts.test_email_sent_to.replace("{email}", testSentToEmail ?? "")}
@@ -311,20 +286,12 @@ export default function SendEmailToGuestsModal({
           </Box>
 
           <Box className={classes.field}>
-            <TextField
-              fullWidth
-              multiline
-              rows={5}
-              variant="outlined"
-              label={texts.email_message}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              inputProps={{ maxLength: 5000 }}
-              error={!!errors.message}
-              helperText={errors.message}
-              required
-              disabled={isSending}
-              aria-label={texts.email_message}
+            <OrganizerMessageEditor
+              content=""
+              onChange={setMessage}
+              editable={!isSending}
+              error={errors.message}
+              ariaLabel={texts.email_message}
             />
           </Box>
 
@@ -338,7 +305,6 @@ export default function SendEmailToGuestsModal({
             <Button variant="outlined" onClick={onClose} disabled={isSending}>
               {texts.cancel}
             </Button>
-
             <Button
               variant="outlined"
               color="primary"
@@ -349,7 +315,6 @@ export default function SendEmailToGuestsModal({
             >
               {isSending ? texts.sending : texts.send_test_to_myself}
             </Button>
-
             <Button
               variant="contained"
               color="primary"
