@@ -100,7 +100,7 @@ export default function LocationSearchBar({
         setOptions([]);
       }
     },
-    [value],
+    [value]
   );
   const [loading, setLoading] = useState(false);
   const HUB_COUNTRY_RESTRICTIONS = {
@@ -121,7 +121,7 @@ export default function LocationSearchBar({
           ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           : searchValue;
         let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          searchParam,
+          searchParam
         )}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001`;
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
@@ -288,7 +288,7 @@ export default function LocationSearchBar({
       debounce((value) => {
         setSearchValue(value);
       }, 1000),
-    [],
+    []
   );
 
   const handleChange = (event, value, reason) => {
