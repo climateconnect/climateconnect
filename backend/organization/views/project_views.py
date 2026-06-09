@@ -1493,7 +1493,7 @@ class ListFeaturedProjects(ListAPIView):
 
     def get_queryset(self):
         return Project.objects.filter(
-            rating__lte=99, is_draft=False, is_active=True
+            rating__gte=0, rating__lte=99, is_draft=False, is_active=True
         ).prefetch_related("loc__translate_location__language")[0:4]
 
 
