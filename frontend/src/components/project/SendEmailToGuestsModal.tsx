@@ -5,12 +5,18 @@ import {
   Button,
   CircularProgress,
   Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   TextField,
   Theme,
   Typography,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CloseIcon from "@mui/icons-material/Close";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Cookies from "universal-cookie";
 
@@ -18,7 +24,6 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
-import GenericDialog from "../dialogs/GenericDialog";
 import OrganizerMessageEditor, { stripHtml } from "../richText/OrganizerMessageEditor";
 
 // ---------------------------------------------------------------------------
@@ -26,6 +31,22 @@ import OrganizerMessageEditor, { stripHtml } from "../richText/OrganizerMessageE
 // ---------------------------------------------------------------------------
 
 const useStyles = makeStyles<Theme>((theme) => ({
+  dialogTitle: {
+    display: "flex",
+    alignItems: "center",
+  },
+  closeButton: {
+    marginLeft: theme.spacing(-1),
+    marginRight: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+  titleText: {
+    fontSize: 20,
+    color: theme.palette.text.primary,
+  },
+  dialogContent: {
+    padding: theme.spacing(2),
+  },
   field: {
     marginBottom: theme.spacing(2),
   },
@@ -33,7 +54,6 @@ const useStyles = makeStyles<Theme>((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
     gap: theme.spacing(1),
-    marginTop: theme.spacing(3),
   },
   errorText: {
     color: theme.palette.error.main,
@@ -219,33 +239,105 @@ export default function SendEmailToGuestsModal({
   // ---------------------------------------------------------------------------
 
   return (
-    <GenericDialog open={open} onClose={onClose} title={texts.send_email_to_guests} maxWidth="lg">
-      {sendState === "sent_all" ? (
-        <>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth scroll="paper">
+      <DialogTitle className={classes.dialogTitle}>
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={onClose}
+          size="small"
+        >
+          <CloseIcon />
+        </IconButton>
+        <Typography className={classes.titleText}>{texts.send_email_to_guests}</Typography>
+      </DialogTitle>
+
+      <DialogContent dividers className={classes.dialogContent}>
+        {sendState === "sent_all" ? (
           <Box className={classes.confirmationBox}>
             <CheckCircleOutlineIcon color="success" aria-hidden="true" />
             <Typography color="success.main">
               {texts.email_sent_to_guests.replace("{count}", String(sentCount))}
             </Typography>
           </Box>
-          <Box className={classes.actionRow}>
-            <Button variant="contained" color="primary" onClick={onClose}>
-              {texts.close}
-            </Button>
-          </Box>
-        </>
-      ) : sendState === "confirming" ? (
-        <Box className={classes.confirmStepBox} role="region" aria-label={texts.confirm_and_send}>
-          <Box className={classes.confirmInfoRow}>
-            <InfoOutlinedIcon color="info" fontSize="small" aria-hidden="true" sx={{ mt: 0.25 }} />
-            <Typography>
-              {texts.email_confirmation_recipients.replace("{count}", String(activeGuestCount))}
+        ) : sendState === "confirming" ? (
+          <Box className={classes.confirmStepBox} role="region" aria-label={texts.confirm_and_send}>
+            <Box className={classes.confirmInfoRow}>
+              <InfoOutlinedIcon
+                color="info"
+                fontSize="small"
+                aria-hidden="true"
+                sx={{ mt: 0.25 }}
+              />
+              <Typography>
+                {texts.email_confirmation_recipients.replace("{count}", String(activeGuestCount))}
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary">
+              {texts.email_confirmation_admin_cc}
             </Typography>
           </Box>
-          <Typography variant="body2" color="text.secondary">
-            {texts.email_confirmation_admin_cc}
-          </Typography>
-          <Box className={classes.actionRow}>
+        ) : (
+          <>
+            <Collapse in={testSentToEmail !== null} unmountOnExit>
+              <Alert severity="success" className={classes.testSuccessAlert}>
+                {texts.test_email_sent_to.replace("{email}", testSentToEmail ?? "")}
+              </Alert>
+            </Collapse>
+
+            <Box className={classes.field}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label={texts.email_subject}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                inputProps={{ maxLength: 200 }}
+                error={!!errors.subject}
+                helperText={errors.subject}
+                required
+                disabled={isSending}
+                aria-label={texts.email_subject}
+              />
+            </Box>
+
+            <Box className={classes.field}>
+              <OrganizerMessageEditor
+                content=""
+                onChange={setMessage}
+                editable={!isSending}
+                error={errors.message}
+                ariaLabel={texts.email_message}
+                tooltipLabels={{
+                  bold: texts.editor_bold,
+                  italic: texts.editor_italic,
+                  bulletList: texts.editor_bullet_list,
+                  orderedList: texts.editor_ordered_list,
+                  alignLeft: texts.editor_align_left,
+                  alignCenter: texts.editor_align_center,
+                  alignRight: texts.editor_align_right,
+                  editLink: texts.editor_edit_link,
+                  addTable: texts.editor_add_table,
+                }}
+              />
+            </Box>
+
+            {errors.general && (
+              <Typography className={classes.errorText} role="alert">
+                {errors.general}
+              </Typography>
+            )}
+          </>
+        )}
+      </DialogContent>
+
+      <DialogActions className={classes.actionRow}>
+        {sendState === "sent_all" ? (
+          <Button variant="contained" color="primary" onClick={onClose}>
+            {texts.close}
+          </Button>
+        ) : sendState === "confirming" ? (
+          <>
             <Button variant="outlined" onClick={handleBackToForm} disabled={isSending}>
               {texts.back}
             </Button>
@@ -259,49 +351,9 @@ export default function SendEmailToGuestsModal({
             >
               {isSending ? texts.sending : texts.confirm_and_send}
             </Button>
-          </Box>
-        </Box>
-      ) : (
-        <>
-          <Collapse in={testSentToEmail !== null} unmountOnExit>
-            <Alert severity="success" className={classes.testSuccessAlert}>
-              {texts.test_email_sent_to.replace("{email}", testSentToEmail ?? "")}
-            </Alert>
-          </Collapse>
-
-          <Box className={classes.field}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              label={texts.email_subject}
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              inputProps={{ maxLength: 200 }}
-              error={!!errors.subject}
-              helperText={errors.subject}
-              required
-              disabled={isSending}
-              aria-label={texts.email_subject}
-            />
-          </Box>
-
-          <Box className={classes.field}>
-            <OrganizerMessageEditor
-              content=""
-              onChange={setMessage}
-              editable={!isSending}
-              error={errors.message}
-              ariaLabel={texts.email_message}
-            />
-          </Box>
-
-          {errors.general && (
-            <Typography className={classes.errorText} role="alert">
-              {errors.general}
-            </Typography>
-          )}
-
-          <Box className={classes.actionRow}>
+          </>
+        ) : (
+          <>
             <Button variant="outlined" onClick={onClose} disabled={isSending}>
               {texts.cancel}
             </Button>
@@ -324,9 +376,9 @@ export default function SendEmailToGuestsModal({
             >
               {texts.send_now}
             </Button>
-          </Box>
-        </>
-      )}
-    </GenericDialog>
+          </>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 }

@@ -750,6 +750,90 @@ class TestOrganizerEmailHtmlSanitization(APITestCase):
         self.assertIn("text-align: right", msg)
         self.assertNotIn('style=""', msg)
 
+    @tag("organizer_email", "html_sanitize")
+    def test_table_header_background_preserved(self):
+        """POST with th style="background-color: #f0f0f0" → preserved."""
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                {
+                    "subject": "Table header test",
+                    "message": (
+                        "<table><thead><tr>"
+                        '<th style="background-color: #f0f0f0">Header</th>'
+                        "</tr></thead><tbody><tr>"
+                        "<td>Data</td>"
+                        "</tr></tbody></table>"
+                    ),
+                    "is_test": False,
+                },
+                format="json",
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        msg = kwargs["message"]
+        self.assertIn("background-color: #f0f0f0", msg)
+        self.assertIn("<th", msg)
+        self.assertIn("<td", msg)
+
+    @tag("organizer_email", "html_sanitize")
+    def test_disallowed_background_color_stripped(self):
+        """POST with td style="background-color: red" → stripped (only #f0f0f0 on th allowed)."""
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                {
+                    "subject": "BG color strip test",
+                    "message": '<td style="background-color: red">Cell</td>',
+                    "is_test": False,
+                },
+                format="json",
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        msg = kwargs["message"]
+        self.assertNotIn("background-color", msg)
+
+    @tag("organizer_email", "html_sanitize")
+    def test_bullet_list_with_alignment_preserves_styles_correctly(self):
+        """Styles must stay on the correct elements after bleach processes the HTML.
+
+        Regression test: the old regex-based style re-injection desynchronised
+        when bleach stripped or reordered tags, causing styles to land on wrong
+        elements (e.g. bullet list items getting alignment meant for later
+        paragraphs).
+        """
+        message = (
+            "<p>A bullet list<br></p>"
+            "<ul><li><p>one </p></li><li><p>two </p></li><li><p>three</p></li></ul>"
+            '<p></p><p style="text-align: left;">Align left</p>'
+            '<p></p><p style="text-align: center;">Align center</p>'
+            '<p></p><p style="text-align: right;">Align right</p>'
+        )
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                {"subject": "Alignment test", "message": message, "is_test": False},
+                format="json",
+            )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        msg = kwargs["message"]
+        # Alignment must remain only on the intended paragraphs
+        self.assertIn('<p style="text-align: left;">Align left</p>', msg)
+        self.assertIn('<p style="text-align: center;">Align center</p>', msg)
+        self.assertIn('<p style="text-align: right;">Align right</p>', msg)
+        # Bullet list items must NOT have any style attributes
+        self.assertNotIn("<li><p style=", msg)
+        # The first paragraph before the list must not have alignment
+        self.assertIn("<p>A bullet list<br></p>", msg)
+
     # ------------------------------------------------------------------
     # 6. Message max_length — exceeding max returns 400
     # ------------------------------------------------------------------

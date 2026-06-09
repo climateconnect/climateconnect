@@ -32,7 +32,8 @@ import { emojiItems, emojiRender } from "./emojiSuggestion";
 
 const CHARACTER_LIMIT = 5000;
 
-// Defined outside component to avoid recreating extensions on each render
+const TABLE_HEADER_STYLE = "background-color: #f0f0f0;";
+
 const EXTENSIONS = [
   StarterKit.configure({
     italic: true,
@@ -56,7 +57,11 @@ const EXTENSIONS = [
   Table.configure({ resizable: false }),
   TableRow,
   TableCell,
-  TableHeader,
+  TableHeader.configure({
+    HTMLAttributes: {
+      style: TABLE_HEADER_STYLE,
+    },
+  }),
   Emoji.configure({
     suggestion: {
       items: emojiItems,
@@ -84,19 +89,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type TooltipLabels = {
+  bold: string;
+  italic: string;
+  bulletList: string;
+  orderedList: string;
+  alignLeft: string;
+  alignCenter: string;
+  alignRight: string;
+  editLink: string;
+  addTable: string;
+};
+
 type Props = {
-  /** Current HTML content. */
   content: string;
-  /** Called with the new HTML content when the editor changes. */
   onChange: (_html: string) => void;
-  /** Whether the editor is editable. */
   editable?: boolean;
-  /** Error message to display below the editor. */
   error?: string;
-  /** Character count display. Shown when true (default: true). */
   showCharCount?: boolean;
-  /** Aria label for the editor. */
   ariaLabel?: string;
+  tooltipLabels?: TooltipLabels;
 };
 
 const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "").trim();
@@ -108,10 +120,13 @@ export default function OrganizerMessageEditor({
   error,
   showCharCount = true,
   ariaLabel,
+  tooltipLabels,
 }: Props) {
   const classes = useStyles();
   const rteRef = useRef<RichTextEditorRef>(null);
   const [charCount, setCharCount] = useState(0);
+
+  const t = tooltipLabels;
 
   return (
     <div className={error ? classes.errorBorder : undefined}>
@@ -134,18 +149,18 @@ export default function OrganizerMessageEditor({
         }}
         renderControls={() => (
           <MenuControlsContainer>
-            <MenuButtonBold />
-            <MenuButtonItalic />
+            <MenuButtonBold tooltipLabel={t?.bold ?? "Bold"} />
+            <MenuButtonItalic tooltipLabel={t?.italic ?? "Italic"} />
             <MenuDivider />
-            <MenuButtonBulletedList />
-            <MenuButtonOrderedList />
+            <MenuButtonBulletedList tooltipLabel={t?.bulletList ?? "Bullet list"} />
+            <MenuButtonOrderedList tooltipLabel={t?.orderedList ?? "Ordered list"} />
             <MenuDivider />
-            <MenuButtonAlignLeft />
-            <MenuButtonAlignCenter />
-            <MenuButtonAlignRight />
+            <MenuButtonAlignLeft tooltipLabel={t?.alignLeft ?? "Align left"} />
+            <MenuButtonAlignCenter tooltipLabel={t?.alignCenter ?? "Align center"} />
+            <MenuButtonAlignRight tooltipLabel={t?.alignRight ?? "Align right"} />
             <MenuDivider />
-            <MenuButtonEditLink />
-            <MenuButtonAddTable />
+            <MenuButtonEditLink tooltipLabel={t?.editLink ?? "Edit link"} />
+            <MenuButtonAddTable tooltipLabel={t?.addTable ?? "Add table"} />
             <TableMenuControls />
           </MenuControlsContainer>
         )}

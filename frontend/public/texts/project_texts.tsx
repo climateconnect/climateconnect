@@ -1593,6 +1593,42 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Team admins will also receive a copy.",
       de: "Team-Admins erhalten ebenfalls eine Kopie.",
     },
+    editor_bold: {
+      en: "Bold",
+      de: "Fett",
+    },
+    editor_italic: {
+      en: "Italic",
+      de: "Kursiv",
+    },
+    editor_bullet_list: {
+      en: "Bullet list",
+      de: "Aufzählung",
+    },
+    editor_ordered_list: {
+      en: "Ordered list",
+      de: "Nummerierung",
+    },
+    editor_align_left: {
+      en: "Align left",
+      de: "Linksbündig",
+    },
+    editor_align_center: {
+      en: "Align center",
+      de: "Zentriert",
+    },
+    editor_align_right: {
+      en: "Align right",
+      de: "Rechtsbündig",
+    },
+    editor_edit_link: {
+      en: "Edit link",
+      de: "Link bearbeiten",
+    },
+    editor_add_table: {
+      en: "Add table",
+      de: "Tabelle einfügen",
+    },
     confirm_and_send: {
       en: "Confirm and send",
       de: "Bestätigen und senden",
