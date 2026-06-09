@@ -172,9 +172,9 @@ class Project(models.Model):
         blank=True,
     )
 
-    rating = models.PositiveSmallIntegerField(
-        help_text="The larger the number, the more to the top this project will be displayed",
-        verbose_name="Rating (1-100)",
+    rating = models.SmallIntegerField(
+        help_text="The larger the number, the more to the top this project will be displayed. Negative values downrank the project.",
+        verbose_name="Rating",
         default=100,
     )
 
