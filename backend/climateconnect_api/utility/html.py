@@ -4,21 +4,14 @@ import bleach
 from bleach.css_sanitizer import CSSSanitizer
 
 
-def _strip_script_content(html):
-    """Remove <script> and <iframe> tags AND their content before bleach."""
-    html = re.sub(
-        r"<(script|iframe|object|embed|style)[^>]*>.*?</\1>",
+def _strip_dangerous_tags(html):
+    """Remove tags that can execute code or inject styles, including their content."""
+    return re.sub(
+        r"<(script|iframe|object|embed|style)\b[^>]*>.*?</\1>|<(script|iframe|object|embed|style)\b[^>]*/>",
         "",
         html,
         flags=re.DOTALL | re.IGNORECASE,
     )
-    html = re.sub(
-        r"<(script|iframe|object|embed)[^>]*/>",
-        "",
-        html,
-        flags=re.IGNORECASE,
-    )
-    return html
 
 
 def sanitize_html(html_input, allowed_tags=None, allowed_attributes=None):
@@ -40,7 +33,7 @@ def sanitize_html(html_input, allowed_tags=None, allowed_attributes=None):
         allowed_attributes = {"a": ["href", "target"]}
 
     # Pre-process: remove dangerous tags AND their content before bleach.
-    cleaned = _strip_script_content(html_input)
+    cleaned = _strip_dangerous_tags(html_input)
 
     # Determine whether any caller-provided attribute list includes "style".
     has_style_attrs = any("style" in attrs for attrs in allowed_attributes.values())
