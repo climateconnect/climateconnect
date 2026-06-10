@@ -1,6 +1,7 @@
 import io
 import unittest
 from base64 import b64encode
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
@@ -1738,3 +1739,283 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
         self.assertNotIn("erlangen-inactive-project", project_slugs)
 
         self.assertEqual(len(results), 6)
+
+
+class SimilarProjectsHubFilterTest(APITestCase):
+    """
+    Test case for filtering similar projects by hub context.
+    Verifies that the SimilarProjects endpoint respects the ?hub= query parameter.
+    """
+
+    def setUp(self):
+        self.status = ProjectStatus.objects.create(
+            name="active",
+            name_de_translation="aktiv",
+            has_end_date=False,
+            has_start_date=False,
+        )
+        self.language = Language.objects.get(language_code="en")
+
+        self.sector_a = Sector.objects.create(
+            name="Energy", name_de_translation="Energie", key="energy"
+        )
+        self.sector_b = Sector.objects.create(
+            name="Transport", name_de_translation="Verkehr", key="transport"
+        )
+
+        self.hub_energy = Hub.objects.create(
+            name="Energy Hub",
+            url_slug="energy-hub",
+            hub_type=Hub.SECTOR_HUB_TYPE,
+        )
+        self.hub_energy.sectors.add(self.sector_a)
+
+        self.hub_transport = Hub.objects.create(
+            name="Transport Hub",
+            url_slug="transport-hub",
+            hub_type=Hub.SECTOR_HUB_TYPE,
+        )
+        self.hub_transport.sectors.add(self.sector_b)
+
+        self.hub_custom = Hub.objects.create(
+            name="Custom Hub",
+            url_slug="custom-hub",
+            hub_type=Hub.CUSTOM_HUB_TYPE,
+        )
+
+        self.project_source = Project.objects.create(
+            name="Source Project",
+            description="Source",
+            url_slug="source-project",
+            is_active=True,
+            is_draft=False,
+            status=self.status,
+            language=self.language,
+        )
+
+        self.project_energy = Project.objects.create(
+            name="Energy Project",
+            description="Energy",
+            url_slug="energy-project",
+            is_active=True,
+            is_draft=False,
+            rating=80,
+            status=self.status,
+            language=self.language,
+        )
+        ProjectSectorMapping.objects.create(
+            project=self.project_energy, sector=self.sector_a
+        )
+
+        self.project_transport = Project.objects.create(
+            name="Transport Project",
+            description="Transport",
+            url_slug="transport-project",
+            is_active=True,
+            is_draft=False,
+            rating=80,
+            status=self.status,
+            language=self.language,
+        )
+        ProjectSectorMapping.objects.create(
+            project=self.project_transport, sector=self.sector_b
+        )
+
+        self.project_custom = Project.objects.create(
+            name="Custom Project",
+            description="Custom",
+            url_slug="custom-project",
+            is_active=True,
+            is_draft=False,
+            rating=80,
+            status=self.status,
+            language=self.language,
+        )
+        self.project_custom.related_hubs.add(self.hub_custom)
+
+        self.project_draft = Project.objects.create(
+            name="Draft Project",
+            description="Draft",
+            url_slug="draft-project",
+            is_active=True,
+            is_draft=True,
+            rating=80,
+            status=self.status,
+            language=self.language,
+        )
+        self.project_draft.related_hubs.add(self.hub_custom)
+
+        self.project_inactive = Project.objects.create(
+            name="Inactive Project",
+            description="Inactive",
+            url_slug="inactive-project",
+            is_active=False,
+            is_draft=False,
+            rating=80,
+            status=self.status,
+            language=self.language,
+        )
+        self.project_inactive.related_hubs.add(self.hub_custom)
+
+        self.all_candidate_slugs = [
+            "energy-project",
+            "transport-project",
+            "custom-project",
+        ]
+
+    def _url(self, slug="source-project"):
+        return reverse("organization:similar-projects", kwargs={"url_slug": slug})
+
+    @tag("similar_projects", "projects")
+    @patch("organization.views.project_views.get_similar_projects")
+    def test_no_hub_returns_all_candidates(self, mock_similar):
+        mock_similar.return_value = self.all_candidate_slugs
+        response = self.client.get(self._url())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        result_slugs = [p["url_slug"] for p in results]
+        self.assertEqual(len(results), 3)
+        for slug in self.all_candidate_slugs:
+            self.assertIn(slug, result_slugs)
+
+    @tag("similar_projects", "projects")
+    @patch("organization.views.project_views.get_similar_projects")
+    def test_sector_hub_filters_by_sector(self, mock_similar):
+        mock_similar.return_value = self.all_candidate_slugs
+        response = self.client.get(self._url(), {"hub": "energy-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        result_slugs = [p["url_slug"] for p in results]
+        self.assertEqual(len(results), 1)
+        self.assertIn("energy-project", result_slugs)
+        self.assertNotIn("transport-project", result_slugs)
+        self.assertNotIn("custom-project", result_slugs)
+
+    @tag("similar_projects", "projects")
+    @patch("organization.views.project_views.get_similar_projects")
+    def test_invalid_hub_returns_unfiltered(self, mock_similar):
+        mock_similar.return_value = self.all_candidate_slugs
+        response = self.client.get(self._url(), {"hub": "nonexistent-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        self.assertEqual(len(results), 3)
+
+    @tag("similar_projects", "projects")
+    @patch("organization.views.project_views.get_similar_projects")
+    def test_custom_hub_filters_by_related_hubs(self, mock_similar):
+        mock_similar.return_value = self.all_candidate_slugs
+        response = self.client.get(self._url(), {"hub": "custom-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        result_slugs = [p["url_slug"] for p in results]
+        self.assertEqual(len(results), 1)
+        self.assertIn("custom-project", result_slugs)
+        self.assertNotIn("energy-project", result_slugs)
+        self.assertNotIn("transport-project", result_slugs)
+
+    @tag("similar_projects", "projects")
+    @patch("organization.views.project_views.get_similar_projects")
+    def test_custom_hub_excludes_draft_and_inactive(self, mock_similar):
+        mock_similar.return_value = [
+            "energy-project",
+            "custom-project",
+            "draft-project",
+            "inactive-project",
+        ]
+        response = self.client.get(self._url(), {"hub": "custom-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        result_slugs = [p["url_slug"] for p in results]
+        self.assertNotIn("draft-project", result_slugs)
+        self.assertNotIn("inactive-project", result_slugs)
+
+    @tag("similar_projects", "projects")
+    @patch("organization.views.project_views.get_similar_projects")
+    def test_sector_hub_returns_only_matching_sector_projects(self, mock_similar):
+        mock_similar.return_value = self.all_candidate_slugs
+        response = self.client.get(self._url(), {"hub": "transport-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["url_slug"], "transport-project")
+
+    @tag("similar_projects", "projects")
+    @patch("organization.views.project_views.get_similar_projects")
+    def test_sub_hub_includes_parent_hub_projects(self, mock_similar):
+        parent_hub = Hub.objects.create(
+            name="Parent Hub",
+            url_slug="parent-hub",
+            hub_type=Hub.CUSTOM_HUB_TYPE,
+        )
+        child_hub = Hub.objects.create(
+            name="Child Hub",
+            url_slug="child-hub",
+            hub_type=Hub.CUSTOM_HUB_TYPE,
+            parent_hub=parent_hub,
+        )
+
+        project_both = Project.objects.create(
+            name="Both Hubs Project",
+            description="Both",
+            url_slug="both-hubs-project",
+            is_active=True,
+            is_draft=False,
+            rating=80,
+            status=self.status,
+            language=self.language,
+        )
+        project_both.related_hubs.add(child_hub, parent_hub)
+
+        project_parent_only = Project.objects.create(
+            name="Parent Only Project",
+            description="Parent Only",
+            url_slug="parent-only-project",
+            is_active=True,
+            is_draft=False,
+            rating=80,
+            status=self.status,
+            language=self.language,
+        )
+        project_parent_only.related_hubs.add(parent_hub)
+
+        project_child_only = Project.objects.create(
+            name="Child Only Project",
+            description="Child Only",
+            url_slug="child-only-project",
+            is_active=True,
+            is_draft=False,
+            rating=80,
+            status=self.status,
+            language=self.language,
+        )
+        project_child_only.related_hubs.add(child_hub)
+
+        mock_similar.return_value = [
+            "both-hubs-project",
+            "parent-only-project",
+            "child-only-project",
+        ]
+        response = self.client.get(self._url(), {"hub": "child-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        result_slugs = [p["url_slug"] for p in results]
+        self.assertIn("both-hubs-project", result_slugs)
+        self.assertNotIn("parent-only-project", result_slugs)
+        self.assertNotIn("child-only-project", result_slugs)
+
+    @tag("similar_projects", "projects")
+    @patch("organization.views.project_views.get_similar_projects")
+    def test_empty_candidates_with_hub_returns_empty(self, mock_similar):
+        mock_similar.return_value = []
+        response = self.client.get(self._url(), {"hub": "energy-hub"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        self.assertEqual(len(results), 0)

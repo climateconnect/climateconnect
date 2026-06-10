@@ -3,7 +3,11 @@ from typing import Dict, Union
 
 import pandas as pd
 from django.contrib.auth.models import User
+from django.contrib.gis.db.models import GeometryField
+from django.contrib.gis.db.models import Union as GISUnion
+from django.contrib.gis.db.models.functions import Distance
 from django.db.models import Q
+from django.db.models.functions import Cast
 
 from climateconnect_api.models import Role
 from climateconnect_api.models.language import Language
@@ -17,6 +21,64 @@ from organization.models.tags import ProjectTags
 from organization.models.type import ProjectTypesChoices
 
 logger = logging.getLogger(__name__)
+
+
+def apply_hub_filter(queryset, hub_url_slug: str):
+    hub = Hub.objects.filter(url_slug=hub_url_slug).first()
+    if not hub:
+        return queryset.none()
+
+    hubs = [hub]
+    if hub.parent_hub:
+        hubs.append(hub.parent_hub)
+
+    for current_hub in hubs:
+        if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
+            sectors = current_hub.sectors.all()
+            sector_ids = [x.id for x in sectors]
+
+            queryset = queryset.filter(
+                project_sector_mapping__sector_id__in=sector_ids
+            ).distinct()
+
+        elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+            hub_locations = current_hub.location.all()
+
+            if not hub_locations.exists():
+                return queryset.none()
+            else:
+                hub_location_ids = hub_locations.values_list("id", flat=True)
+
+                aggregated_geometry = hub_locations.annotate(
+                    geom_as_geometry=Cast("multi_polygon", GeometryField())
+                ).aggregate(combined=GISUnion("geom_as_geometry"))["combined"]
+
+                queryset = queryset.filter(
+                    Q(loc__country=hub_locations.first().country)
+                )
+
+                projects_by_location_id = queryset.filter(loc__id__in=hub_location_ids)
+
+                if aggregated_geometry:
+                    projects_by_geometry = queryset.filter(
+                        Q(loc__centre_point__coveredby=(aggregated_geometry))
+                        | Q(loc__multi_polygon__coveredby=(aggregated_geometry))
+                    )
+
+                    queryset = (
+                        (projects_by_location_id | projects_by_geometry)
+                        .annotate(
+                            distance=Distance("loc__centre_point", aggregated_geometry)
+                        )
+                        .distinct()
+                    )
+                else:
+                    queryset = projects_by_location_id.distinct()
+
+        elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
+            queryset = queryset.filter(related_hubs=current_hub)
+
+    return queryset
 
 
 def create_new_project(data: Dict, source_language: Language) -> Project:
