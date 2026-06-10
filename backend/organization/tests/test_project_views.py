@@ -1748,122 +1748,144 @@ class SimilarProjectsHubFilterTest(APITestCase):
     """
 
     def setUp(self):
-        self.status = ProjectStatus.objects.create(
+        self.status, _ = ProjectStatus.objects.get_or_create(
             name="active",
-            name_de_translation="aktiv",
-            has_end_date=False,
-            has_start_date=False,
+            defaults={
+                "name_de_translation": "aktiv",
+                "has_end_date": False,
+                "has_start_date": False,
+            },
         )
         self.language = Language.objects.get(language_code="en")
 
-        self.sector_a = Sector.objects.create(
-            name="Energy", name_de_translation="Energie", key="energy"
+        self.sector_a, _ = Sector.objects.get_or_create(
+            key="test_sim_energy",
+            defaults={"name": "Energy", "name_de_translation": "Energie"},
         )
-        self.sector_b = Sector.objects.create(
-            name="Transport", name_de_translation="Verkehr", key="transport"
+        self.sector_b, _ = Sector.objects.get_or_create(
+            key="test_sim_transport",
+            defaults={"name": "Transport", "name_de_translation": "Verkehr"},
         )
 
-        self.hub_energy = Hub.objects.create(
-            name="Energy Hub",
-            url_slug="energy-hub",
-            hub_type=Hub.SECTOR_HUB_TYPE,
+        self.hub_energy, _ = Hub.objects.get_or_create(
+            url_slug="test-sim-energy-hub",
+            defaults={
+                "name": "Energy Hub",
+                "hub_type": Hub.SECTOR_HUB_TYPE,
+            },
         )
         self.hub_energy.sectors.add(self.sector_a)
 
-        self.hub_transport = Hub.objects.create(
-            name="Transport Hub",
-            url_slug="transport-hub",
-            hub_type=Hub.SECTOR_HUB_TYPE,
+        self.hub_transport, _ = Hub.objects.get_or_create(
+            url_slug="test-sim-transport-hub",
+            defaults={
+                "name": "Transport Hub",
+                "hub_type": Hub.SECTOR_HUB_TYPE,
+            },
         )
         self.hub_transport.sectors.add(self.sector_b)
 
-        self.hub_custom = Hub.objects.create(
-            name="Custom Hub",
-            url_slug="custom-hub",
-            hub_type=Hub.CUSTOM_HUB_TYPE,
+        self.hub_custom, _ = Hub.objects.get_or_create(
+            url_slug="test-sim-custom-hub",
+            defaults={
+                "name": "Custom Hub",
+                "hub_type": Hub.CUSTOM_HUB_TYPE,
+            },
         )
 
-        self.project_source = Project.objects.create(
-            name="Source Project",
-            description="Source",
-            url_slug="source-project",
-            is_active=True,
-            is_draft=False,
-            status=self.status,
-            language=self.language,
+        self.project_source, _ = Project.objects.get_or_create(
+            url_slug="test-sim-source-project",
+            defaults={
+                "name": "Source Project",
+                "description": "Source",
+                "is_active": True,
+                "is_draft": False,
+                "status": self.status,
+                "language": self.language,
+            },
         )
 
-        self.project_energy = Project.objects.create(
-            name="Energy Project",
-            description="Energy",
-            url_slug="energy-project",
-            is_active=True,
-            is_draft=False,
-            rating=80,
-            status=self.status,
-            language=self.language,
+        self.project_energy, _ = Project.objects.get_or_create(
+            url_slug="test-sim-energy-project",
+            defaults={
+                "name": "Energy Project",
+                "description": "Energy",
+                "is_active": True,
+                "is_draft": False,
+                "rating": 80,
+                "status": self.status,
+                "language": self.language,
+            },
         )
-        ProjectSectorMapping.objects.create(
+        ProjectSectorMapping.objects.get_or_create(
             project=self.project_energy, sector=self.sector_a
         )
 
-        self.project_transport = Project.objects.create(
-            name="Transport Project",
-            description="Transport",
-            url_slug="transport-project",
-            is_active=True,
-            is_draft=False,
-            rating=80,
-            status=self.status,
-            language=self.language,
+        self.project_transport, _ = Project.objects.get_or_create(
+            url_slug="test-sim-transport-project",
+            defaults={
+                "name": "Transport Project",
+                "description": "Transport",
+                "is_active": True,
+                "is_draft": False,
+                "rating": 80,
+                "status": self.status,
+                "language": self.language,
+            },
         )
-        ProjectSectorMapping.objects.create(
+        ProjectSectorMapping.objects.get_or_create(
             project=self.project_transport, sector=self.sector_b
         )
 
-        self.project_custom = Project.objects.create(
-            name="Custom Project",
-            description="Custom",
-            url_slug="custom-project",
-            is_active=True,
-            is_draft=False,
-            rating=80,
-            status=self.status,
-            language=self.language,
+        self.project_custom, _ = Project.objects.get_or_create(
+            url_slug="test-sim-custom-project",
+            defaults={
+                "name": "Custom Project",
+                "description": "Custom",
+                "is_active": True,
+                "is_draft": False,
+                "rating": 80,
+                "status": self.status,
+                "language": self.language,
+            },
         )
         self.project_custom.related_hubs.add(self.hub_custom)
 
-        self.project_draft = Project.objects.create(
-            name="Draft Project",
-            description="Draft",
-            url_slug="draft-project",
-            is_active=True,
-            is_draft=True,
-            rating=80,
-            status=self.status,
-            language=self.language,
+        self.project_draft, _ = Project.objects.get_or_create(
+            url_slug="test-sim-draft-project",
+            defaults={
+                "name": "Draft Project",
+                "description": "Draft",
+                "is_active": True,
+                "is_draft": True,
+                "rating": 80,
+                "status": self.status,
+                "language": self.language,
+            },
         )
         self.project_draft.related_hubs.add(self.hub_custom)
 
-        self.project_inactive = Project.objects.create(
-            name="Inactive Project",
-            description="Inactive",
-            url_slug="inactive-project",
-            is_active=False,
-            is_draft=False,
-            rating=80,
-            status=self.status,
-            language=self.language,
+        self.project_inactive, _ = Project.objects.get_or_create(
+            url_slug="test-sim-inactive-project",
+            defaults={
+                "name": "Inactive Project",
+                "description": "Inactive",
+                "is_active": False,
+                "is_draft": False,
+                "rating": 80,
+                "status": self.status,
+                "language": self.language,
+            },
         )
         self.project_inactive.related_hubs.add(self.hub_custom)
 
         self.all_candidate_slugs = [
-            "energy-project",
-            "transport-project",
-            "custom-project",
+            "test-sim-energy-project",
+            "test-sim-transport-project",
+            "test-sim-custom-project",
         ]
 
-    def _url(self, slug="source-project"):
+    def _url(self, slug="test-sim-source-project"):
         return reverse("organization:similar-projects", kwargs={"url_slug": slug})
 
     @tag("similar_projects", "projects")
@@ -1881,17 +1903,24 @@ class SimilarProjectsHubFilterTest(APITestCase):
 
     @tag("similar_projects", "projects")
     @patch("organization.views.project_views.get_similar_projects")
-    def test_sector_hub_filters_by_sector(self, mock_similar):
-        mock_similar.return_value = self.all_candidate_slugs
-        response = self.client.get(self._url(), {"hub": "energy-hub"})
+    def test_sector_hub_restricts_similarity_pool_to_hub(self, mock_similar):
+        mock_similar.return_value = ["test-sim-energy-project"]
+        response = self.client.get(self._url(), {"hub": "test-sim-energy-hub"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json().get("results", [])
         result_slugs = [p["url_slug"] for p in results]
         self.assertEqual(len(results), 1)
-        self.assertIn("energy-project", result_slugs)
-        self.assertNotIn("transport-project", result_slugs)
-        self.assertNotIn("custom-project", result_slugs)
+        self.assertIn("test-sim-energy-project", result_slugs)
+
+        call_kwargs = mock_similar.call_args
+        self.assertIn("target_projects", call_kwargs.kwargs)
+        candidate_ids = list(
+            call_kwargs.kwargs["target_projects"].values_list("url_slug", flat=True)
+        )
+        self.assertIn("test-sim-energy-project", candidate_ids)
+        self.assertIn("test-sim-source-project", candidate_ids)
+        self.assertNotIn("test-sim-transport-project", candidate_ids)
 
     @tag("similar_projects", "projects")
     @patch("organization.views.project_views.get_similar_projects")
@@ -1905,116 +1934,139 @@ class SimilarProjectsHubFilterTest(APITestCase):
 
     @tag("similar_projects", "projects")
     @patch("organization.views.project_views.get_similar_projects")
-    def test_custom_hub_filters_by_related_hubs(self, mock_similar):
-        mock_similar.return_value = self.all_candidate_slugs
-        response = self.client.get(self._url(), {"hub": "custom-hub"})
+    def test_custom_hub_restricts_similarity_pool_to_hub(self, mock_similar):
+        mock_similar.return_value = ["test-sim-custom-project"]
+        response = self.client.get(self._url(), {"hub": "test-sim-custom-hub"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json().get("results", [])
         result_slugs = [p["url_slug"] for p in results]
         self.assertEqual(len(results), 1)
-        self.assertIn("custom-project", result_slugs)
-        self.assertNotIn("energy-project", result_slugs)
-        self.assertNotIn("transport-project", result_slugs)
+        self.assertIn("test-sim-custom-project", result_slugs)
+
+        call_kwargs = mock_similar.call_args
+        candidate_ids = list(
+            call_kwargs.kwargs["target_projects"].values_list("url_slug", flat=True)
+        )
+        self.assertIn("test-sim-custom-project", candidate_ids)
+        self.assertNotIn("test-sim-energy-project", candidate_ids)
+        self.assertNotIn("test-sim-transport-project", candidate_ids)
 
     @tag("similar_projects", "projects")
     @patch("organization.views.project_views.get_similar_projects")
-    def test_custom_hub_excludes_draft_and_inactive(self, mock_similar):
-        mock_similar.return_value = [
-            "energy-project",
-            "custom-project",
-            "draft-project",
-            "inactive-project",
-        ]
-        response = self.client.get(self._url(), {"hub": "custom-hub"})
+    def test_custom_hub_excludes_draft_and_inactive_from_pool(self, mock_similar):
+        mock_similar.return_value = ["test-sim-custom-project"]
+        response = self.client.get(self._url(), {"hub": "test-sim-custom-hub"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json().get("results", [])
         result_slugs = [p["url_slug"] for p in results]
-        self.assertNotIn("draft-project", result_slugs)
-        self.assertNotIn("inactive-project", result_slugs)
+        self.assertNotIn("test-sim-draft-project", result_slugs)
+        self.assertNotIn("test-sim-inactive-project", result_slugs)
+
+        call_kwargs = mock_similar.call_args
+        candidate_ids = list(
+            call_kwargs.kwargs["target_projects"].values_list("url_slug", flat=True)
+        )
+        self.assertNotIn("test-sim-draft-project", candidate_ids)
+        self.assertNotIn("test-sim-inactive-project", candidate_ids)
 
     @tag("similar_projects", "projects")
     @patch("organization.views.project_views.get_similar_projects")
     def test_sector_hub_returns_only_matching_sector_projects(self, mock_similar):
-        mock_similar.return_value = self.all_candidate_slugs
-        response = self.client.get(self._url(), {"hub": "transport-hub"})
+        mock_similar.return_value = ["test-sim-transport-project"]
+        response = self.client.get(self._url(), {"hub": "test-sim-transport-hub"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json().get("results", [])
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0]["url_slug"], "transport-project")
+        self.assertEqual(results[0]["url_slug"], "test-sim-transport-project")
 
     @tag("similar_projects", "projects")
     @patch("organization.views.project_views.get_similar_projects")
     def test_sub_hub_includes_parent_hub_projects(self, mock_similar):
-        parent_hub = Hub.objects.create(
-            name="Parent Hub",
-            url_slug="parent-hub",
-            hub_type=Hub.CUSTOM_HUB_TYPE,
+        parent_hub, _ = Hub.objects.update_or_create(
+            url_slug="test-sim-parent-hub",
+            defaults={
+                "name": "Parent Hub",
+                "hub_type": Hub.CUSTOM_HUB_TYPE,
+            },
         )
-        child_hub = Hub.objects.create(
-            name="Child Hub",
-            url_slug="child-hub",
-            hub_type=Hub.CUSTOM_HUB_TYPE,
-            parent_hub=parent_hub,
+        child_hub, _ = Hub.objects.update_or_create(
+            url_slug="test-sim-child-hub",
+            defaults={
+                "name": "Child Hub",
+                "hub_type": Hub.CUSTOM_HUB_TYPE,
+                "parent_hub": parent_hub,
+            },
         )
 
-        project_both = Project.objects.create(
-            name="Both Hubs Project",
-            description="Both",
-            url_slug="both-hubs-project",
-            is_active=True,
-            is_draft=False,
-            rating=80,
-            status=self.status,
-            language=self.language,
+        project_both, _ = Project.objects.get_or_create(
+            url_slug="test-sim-both-hubs-project",
+            defaults={
+                "name": "Both Hubs Project",
+                "description": "Both",
+                "is_active": True,
+                "is_draft": False,
+                "rating": 80,
+                "status": self.status,
+                "language": self.language,
+            },
         )
         project_both.related_hubs.add(child_hub, parent_hub)
 
-        project_parent_only = Project.objects.create(
-            name="Parent Only Project",
-            description="Parent Only",
-            url_slug="parent-only-project",
-            is_active=True,
-            is_draft=False,
-            rating=80,
-            status=self.status,
-            language=self.language,
+        project_parent_only, _ = Project.objects.get_or_create(
+            url_slug="test-sim-parent-only-project",
+            defaults={
+                "name": "Parent Only Project",
+                "description": "Parent Only",
+                "is_active": True,
+                "is_draft": False,
+                "rating": 80,
+                "status": self.status,
+                "language": self.language,
+            },
         )
         project_parent_only.related_hubs.add(parent_hub)
 
-        project_child_only = Project.objects.create(
-            name="Child Only Project",
-            description="Child Only",
-            url_slug="child-only-project",
-            is_active=True,
-            is_draft=False,
-            rating=80,
-            status=self.status,
-            language=self.language,
+        project_child_only, _ = Project.objects.get_or_create(
+            url_slug="test-sim-child-only-project",
+            defaults={
+                "name": "Child Only Project",
+                "description": "Child Only",
+                "is_active": True,
+                "is_draft": False,
+                "rating": 80,
+                "status": self.status,
+                "language": self.language,
+            },
         )
         project_child_only.related_hubs.add(child_hub)
 
         mock_similar.return_value = [
-            "both-hubs-project",
-            "parent-only-project",
-            "child-only-project",
+            "test-sim-both-hubs-project",
+            "test-sim-parent-only-project",
+            "test-sim-child-only-project",
         ]
-        response = self.client.get(self._url(), {"hub": "child-hub"})
+        response = self.client.get(self._url(), {"hub": "test-sim-child-hub"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json().get("results", [])
-        result_slugs = [p["url_slug"] for p in results]
-        self.assertIn("both-hubs-project", result_slugs)
-        self.assertNotIn("parent-only-project", result_slugs)
-        self.assertNotIn("child-only-project", result_slugs)
+        self.assertTrue(len(results) > 0)
+
+        call_kwargs = mock_similar.call_args
+        candidate_ids = list(
+            call_kwargs.kwargs["target_projects"].values_list("url_slug", flat=True)
+        )
+        self.assertIn("test-sim-both-hubs-project", candidate_ids)
+        self.assertNotIn("test-sim-parent-only-project", candidate_ids)
+        self.assertNotIn("test-sim-child-only-project", candidate_ids)
 
     @tag("similar_projects", "projects")
     @patch("organization.views.project_views.get_similar_projects")
     def test_empty_candidates_with_hub_returns_empty(self, mock_similar):
         mock_similar.return_value = []
-        response = self.client.get(self._url(), {"hub": "energy-hub"})
+        response = self.client.get(self._url(), {"hub": "test-sim-energy-hub"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.json().get("results", [])

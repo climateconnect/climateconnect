@@ -1730,21 +1730,32 @@ class SimilarProjects(ListAPIView):
     serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
-        similar_projects_url_slugs = get_similar_projects(
-            url_slug=self.kwargs["url_slug"]
+        source_slug = self.kwargs["url_slug"]
+
+        candidates = Project.objects.filter(
+            is_draft=False, rating__gte=49, is_active=True
         )
-        projects = Project.objects.filter(
+
+        hub_slug = self.request.query_params.get("hub")
+        if hub_slug and Hub.objects.filter(url_slug=hub_slug).exists():
+            candidates = apply_hub_filter(candidates, hub_slug)
+
+        candidates = (
+            candidates.distinct()
+            | Project.objects.filter(url_slug=source_slug).distinct()
+        )
+
+        similar_projects_url_slugs = get_similar_projects(
+            url_slug=source_slug,
+            target_projects=candidates,
+        )
+
+        return Project.objects.filter(
             url_slug__in=similar_projects_url_slugs,
             is_draft=False,
             rating__gte=49,
             is_active=True,
         ).prefetch_related("loc__translate_location__language")
-
-        hub_slug = self.request.query_params.get("hub")
-        if hub_slug and Hub.objects.filter(url_slug=hub_slug).exists():
-            projects = apply_hub_filter(projects, hub_slug)
-
-        return projects
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

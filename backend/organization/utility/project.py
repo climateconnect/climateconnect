@@ -265,11 +265,16 @@ def is_part_of_project(user, project):
     return ProjectMember.objects.filter(project=project, user=user).count() > 0
 
 
-def get_similar_projects(url_slug: str, return_count=5):
+def get_similar_projects(url_slug: str, return_count=5, target_projects=None):
     """Returns a list of similar projects to the given project input
     Arguments:
     url_slug (str): url_slug of the source project for which similar projects will returned
     return_count (int) : Maximum number of similar projects to return. Defaults to 5
+    target_projects (QuerySet, optional) : Pre-filtered Project queryset to consider
+        for similarity. When None, all active non-draft projects with rating >= 49
+        are used. Pass a hub-filtered queryset to restrict the candidate pool to a
+        specific hub. The queryset should already include the source project so that
+        the similarity comparison can read its sector/parent/language attributes.
 
     Returns:
         List of similar projects url_slug
@@ -292,9 +297,12 @@ def get_similar_projects(url_slug: str, return_count=5):
 
         return matching_elements / source_set_count
 
-    target_projects = Project.objects.filter(
-        is_active=True, is_draft=False, rating__gte=49
-    ).values(
+    if target_projects is None:
+        target_projects = Project.objects.filter(
+            is_active=True, is_draft=False, rating__gte=49
+        )
+
+    target_projects = target_projects.values(
         "url_slug",
         "project_parent__id",
         "project_sector_mapping__sector_id",
