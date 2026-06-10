@@ -394,6 +394,9 @@ const AdditionalPreviewInfo = ({ project, isUserRegistered, analyticsSurface }) 
           color={buttonConfig.color as any}
           size="small"
           disabled={buttonConfig.disabled}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
           href={
             buttonConfig.disabled
               ? undefined
