@@ -20,6 +20,47 @@ import SelectSectors from "./SelectSectors";
 import EventRegistrationStep from "./EventRegistrationStep";
 import dayjs from "dayjs";
 
+/**
+ * Flatten a DRF validation error response into a human-readable string.
+ *
+ * DRF errors can be:
+ *  - {"message": "…"}                        → top-level message
+ *  - {"field_name": ["error 1", "error 2"]}  → per-field errors
+ *  - {"fields": [{"options": ["…"]}]}        → nested list errors
+ *  - Deeply nested dicts / arrays             → recursive extraction
+ */
+function flattenDrfErrors(data: unknown, prefix = ""): string[] {
+  if (!data) return [];
+  if (typeof data === "string") return [prefix ? `${prefix}: ${data}` : data];
+  if (Array.isArray(data)) {
+    return data.flatMap((item) => flattenDrfErrors(item, prefix));
+  }
+  if (typeof data === "object") {
+    return Object.entries(data as Record<string, unknown>).flatMap(([key, value]) => {
+      // Top-level "message" key — use as-is.
+      if (key === "message" && typeof value === "string") return [value];
+      const label = prefix ? `${prefix} → ${key}` : key;
+      return flattenDrfErrors(value, label);
+    });
+  }
+  return [String(data)];
+}
+
+/**
+ * Extract the best error message from an Axios error for display to the user.
+ */
+function extractErrorMessage(error: unknown): string | null {
+  const axiosError = error as {
+    response?: { status?: number; data?: unknown };
+    message?: string;
+  };
+  if (!axiosError.response?.data) return null;
+  const messages = flattenDrfErrors(axiosError.response.data);
+  if (messages.length === 0) return null;
+  const status = axiosError.response.status;
+  return status ? `Error ${status}: ${messages.join("; ")}` : messages.join("; ");
+}
+
 const useStyles = makeStyles((theme) => {
   return {
     stepsTracker: {
@@ -214,6 +255,7 @@ export default function ShareProjectRoot({
   const submitProject = async (event) => {
     event.preventDefault();
     setLoadingSubmit(true);
+    setErrorMessage("");
 
     try {
       const payload = await formatProjectForRequest(project, translations);
@@ -231,9 +273,9 @@ export default function ShareProjectRoot({
       setFinished(true);
     } catch (error: any) {
       console.log(error?.response?.data);
-      if (error?.response?.data?.message) {
-        const errorMessage = error.response.data.message;
-        setErrorMessage(`Error ${error?.response?.status}: ${errorMessage}`);
+      const detailedMessage = extractErrorMessage(error);
+      if (detailedMessage) {
+        setErrorMessage(detailedMessage);
       }
       setErrorDialogOpen(true);
       setProject({ ...project, error: true });
@@ -243,6 +285,7 @@ export default function ShareProjectRoot({
   const saveAsDraft = async (event) => {
     event.preventDefault();
     setLoadingSubmitDraft(true);
+    setErrorMessage("");
 
     try {
       const payload = await formatProjectForRequest({ ...project, is_draft: true }, translations);
@@ -260,10 +303,13 @@ export default function ShareProjectRoot({
       setFinished(true);
     } catch (error: any) {
       console.log(error);
+      const detailedMessage = extractErrorMessage(error);
+      if (detailedMessage) {
+        setErrorMessage(detailedMessage);
+      }
       setErrorDialogOpen(true);
       setProject({ ...project, error: true });
       setLoadingSubmitDraft(false);
-      if (error?.response) console.log(error.response);
     }
   };
 
