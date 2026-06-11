@@ -1,4 +1,4 @@
-import { Project, RegistrationField } from "../types";
+import { Project, RegistrationField, RegistrationFieldOption } from "../types";
 
 /**
  * Determines if the event registration button should be displayed
@@ -142,7 +142,17 @@ export function validateRegistrationFields(
         result.hasError = true;
       }
       const options = field.options || [];
-      if (options.length === 0) {
+      // Count only "complete" options — same criteria as the strip filter in
+      // formatProjectForRequest so that frontend validation matches what the
+      // backend actually receives.
+      const isComplete = (opt: RegistrationFieldOption) => {
+        if (field.field_type === "time_slot_select") {
+          return !!(opt.start_time || opt.end_time);
+        }
+        return !!(opt.title && opt.title.trim() !== "");
+      };
+      const completeCount = options.filter(isComplete).length;
+      if (completeCount === 0) {
         result.errors[`${fieldKey}:options`] = requiredText;
         result.hasError = true;
       }
