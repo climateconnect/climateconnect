@@ -2,7 +2,7 @@ import { useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import parseHtml from "html-react-parser";
 import Head from "next/head";
-import { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import {
   getOrganizationTagsOptions,
@@ -38,6 +38,9 @@ import {
 import { retrieveDescriptionFromWebflow } from "../../utils/webflow";
 import { HubDescription } from "./description/HubDescription";
 import { FabShareButton } from "./FabShareButton";
+import { isWasseraktionswochenEnabled } from "../../../public/data/wasseraktionswochen_config.js";
+import { GetServerSidePropsContext } from "next";
+import { LocaleType } from "../../types";
 
 const useStyles = makeStyles(() => ({
   content: {
@@ -62,16 +65,17 @@ export interface HubBrowsePageProps {
   initialLocationFilter: any;
   filterChoices: any;
   allHubs: any[];
-  hubLocation: any;
   hubData: any;
   hubDescription: any;
   projectTypes: any[];
   hubThemeData: any;
   linkedHubs: any[];
+  showWasseraktionswochen: boolean;
 }
 
-export async function getHubBrowseServerSideProps(ctx) {
-  let hubUrl = ctx.query.hubUrl;
+export async function getHubBrowseServerSideProps(ctx: GetServerSidePropsContext) {
+  const locale = ctx.locale as LocaleType;
+  let hubUrl = Array.isArray(ctx.query.hubUrl) ? ctx.query.hubUrl[0] : ctx.query.hubUrl ?? "";
   const { subHub } = extractHubUrlsFromContext(ctx);
 
   if (subHub) {
@@ -90,16 +94,16 @@ export async function getHubBrowseServerSideProps(ctx) {
     linkedHubs,
     sectorOptions,
   ] = await Promise.all([
-    getHubData(hubUrl, ctx.locale),
-    getOrganizationTagsOptions(ctx.locale),
-    getSkillsOptions(ctx.locale),
-    getLocationFilteredBy(ctx.query),
-    getAllHubs(ctx.locale, false),
-    retrieveDescriptionFromWebflow(ctx.query, ctx.locale),
-    getProjectTypeOptions(ctx.locale),
+    getHubData(hubUrl, locale),
+    getOrganizationTagsOptions(locale),
+    getSkillsOptions(locale),
+    getLocationFilteredBy(ctx.query, locale),
+    getAllHubs(locale, false),
+    retrieveDescriptionFromWebflow(ctx.query, locale),
+    getProjectTypeOptions(locale),
     getHubTheme(hubUrl),
     getLinkedHubsData(hubUrl),
-    getSectorOptions(ctx.locale, hubUrl),
+    getSectorOptions(locale, hubUrl),
   ]);
 
   return {
@@ -118,19 +122,19 @@ export async function getHubBrowseServerSideProps(ctx) {
       stats: hubData?.stats ?? null,
       statBoxTitle: hubData?.stat_box_title ?? null,
       image_attribution: hubData?.image_attribution ?? null,
-      hubLocation: hubData?.location?.length > 0 ? hubData?.location[0] : null,
       filterChoices: {
         sectors: sectorOptions,
         organization_types: organization_types,
         skills: skills,
       },
       initialLocationFilter: location_filtered_by,
-      sectorHubs: allHubs ? allHubs.filter((h) => h?.hub_type === "sector hub") : null,
+      sectorHubs: allHubs ? allHubs.filter((h: any) => h?.hub_type === "sector hub") : null,
       allHubs: allHubs,
       hubDescription: hubDescription,
       projectTypes: projectTypes,
       hubThemeData: hubThemeData,
       linkedHubs: linkedHubs || [],
+      showWasseraktionswochen: isWasseraktionswochenEnabled(),
     },
   };
 }
@@ -152,7 +156,6 @@ export default function HubBrowsePage({
   initialLocationFilter,
   filterChoices,
   allHubs,
-  hubLocation,
   hubData,
   hubDescription,
   projectTypes,
@@ -192,7 +195,7 @@ export default function HubBrowsePage({
   // eslint-disable-next-line no-unused-vars
   const [requestTabNavigation, tabNavigationRequested] = useState("foo");
 
-  const navRequested = (tabKey) => {
+  const navRequested = (tabKey: string) => {
     tabNavigationRequested(tabKey);
   };
 
@@ -213,7 +216,7 @@ export default function HubBrowsePage({
     profiles: texts.search_profiles_in_location,
   };
 
-  const closeHubHeaderImage = (e) => {
+  const closeHubHeaderImage = (e: React.MouseEvent) => {
     e.preventDefault();
     console.log("closing hub header image");
   };
@@ -239,7 +242,6 @@ export default function HubBrowsePage({
         customFooterImage={
           hubData?.custom_footer_image && getImageUrl(hubData?.custom_footer_image)
         }
-        isLocationHub={isLocationHub}
         customTheme={customTheme}
         hasHubLandingPage={hubData?.landing_page_component ? true : false}
       >
@@ -286,7 +288,6 @@ export default function HubBrowsePage({
             welcomeMessageLoggedIn={welcomeMessageLoggedIn}
             welcomeMessageLoggedOut={welcomeMessageLoggedOut}
             isLocationHub={isLocationHub}
-            location={hubLocation}
             hubData={hubData}
             image={getImageUrl(image)}
           />
@@ -313,6 +314,7 @@ export default function HubBrowsePage({
                 hubSupporters={hubSupporters}
                 linkedHubs={linkedHubs}
                 isLocationHub={isLocationHub}
+                fromPage="hub"
               />
             </FilterProvider>
           </BrowseContext.Provider>

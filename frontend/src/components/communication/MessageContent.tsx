@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import PropTypes from "prop-types";
+import { string } from "prop-types";
 import React, { useContext } from "react";
 import Linkify from "react-linkify";
 import YouTube from "react-youtube";
@@ -123,5 +123,5 @@ export default function MessageContent({ content, renderYoutubeVideos = false, r
 }
 
 MessageContent.propTypes = {
-  content: PropTypes.string.isRequired,
+  content: string.isRequired,
 };

@@ -1,19 +1,20 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React, { ReactNode, useContext } from "react";
+import { Theme, useMediaQuery } from "@mui/material";
 import getFilters from "../../../public/data/possibleFilters";
 import UserContext from "../context/UserContext";
 import FilterContent from "../filter/FilterContent";
 import LoadingSpinner from "../general/LoadingSpinner";
 import NoItemsFound from "./NoItemsFound";
-import { Theme, useMediaQuery } from "@mui/material";
-import { LinkedHub } from "../../types";
 import HubLinkButton from "../hub/HubLinkButton";
+import { LinkedHub } from "../../types";
 
-const useStyles = makeStyles((theme) => ({
-  tabContent: {
+const useStyles = makeStyles<Theme, { is600to718breakpoint: any }>((theme) => ({
+  tabContent: (props) => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-  },
+    paddingLeft: props.is600to718breakpoint ? 0 : theme.spacing(1),
+  }),
   linkedHubsContainer: {
     display: "flex",
     flexDirection: "row",
@@ -24,29 +25,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type tabContentWrapperProps = {
+type TabContentWrapperProps = {
+  // Tab and type management
   tabValue: number;
   TYPES_BY_TAB_VALUE: any;
   type: any;
-  filtersExpanded: any;
-  handleApplyNewFilters: any;
-  handleUpdateFilterValues: any;
-  errorMessage: any;
-  isMobileScreen: any;
-  filtersExandedOnMobile: any;
-  handleSetLocationOptionsOpen: any;
-  locationInputRefs: any;
-  locationOptionsOpen: any;
+
+  // Filter state and handlers
+  filtersExpanded: boolean;
+  filtersExandedOnMobile: boolean;
   filterChoices: any;
-  unexpandFiltersOnMobile: any;
-  unexpandFilters: any;
   initialLocationFilter: any;
+  nonFilterParams: any;
+  handleApplyNewFilters: any;
+  handleUpdateFilterValues: (_filters: any) => void;
+  unexpandFilters: () => void;
+  unexpandFiltersOnMobile: () => void;
+
+  // Location handling
+  locationInputRefs: any;
+  locationOptionsOpen: boolean;
+  handleSetLocationOptionsOpen: (_isOpen: boolean) => void;
+
+  // Content state
   isFiltering: boolean;
   state: any;
-  children: ReactNode;
+  errorMessage: string;
+
+  // Display props
+  isMobileScreen: boolean;
   hubName: string;
-  nonFilterParams: any;
   linkedHubs: LinkedHub[];
+  children: ReactNode;
+
+  // Search handler
+  handleSearchSubmit: any;
 };
 
 export default function TabContentWrapper({
@@ -54,57 +67,71 @@ export default function TabContentWrapper({
   TYPES_BY_TAB_VALUE,
   type,
   filtersExpanded,
+  filtersExandedOnMobile,
+  filterChoices,
+  initialLocationFilter,
+  nonFilterParams,
   handleApplyNewFilters,
   handleUpdateFilterValues,
-  errorMessage,
-  isMobileScreen,
-  filtersExandedOnMobile,
-  handleSetLocationOptionsOpen,
+  unexpandFilters,
+  unexpandFiltersOnMobile,
   locationInputRefs,
   locationOptionsOpen,
-  filterChoices,
-  unexpandFiltersOnMobile,
-  unexpandFilters,
-  initialLocationFilter,
+  handleSetLocationOptionsOpen,
   isFiltering,
   state,
-  children,
+  errorMessage,
+  isMobileScreen,
   hubName,
-  nonFilterParams,
   linkedHubs,
-}: tabContentWrapperProps) {
-  const classes = useStyles();
+  children,
+  handleSearchSubmit,
+}: TabContentWrapperProps) {
+  const is600to718breakpoint = useMediaQuery("(min-width:600px) and (max-width:718px)");
+  const classes = useStyles({ is600to718breakpoint: is600to718breakpoint });
   const { locale } = useContext(UserContext);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+
+  // Calculate current tab index
+  const currentTabIndex = TYPES_BY_TAB_VALUE.indexOf(type);
+  const isCurrentTab = tabValue === currentTabIndex;
+
+  // Determine which filter expansion state to use
+  const shouldShowFilters = filtersExpanded && isCurrentTab;
+  const effectiveFiltersExpanded = isMobileScreen ? filtersExandedOnMobile : filtersExpanded;
+  const effectiveUnexpandFilters = isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters;
+
+  // Check if content should be displayed
+  const hasItems = state?.items?.[type]?.length > 0 || type === "ideas";
+  const shouldShowContent = !isFiltering && hasItems;
+  const shouldShowNoItems = !isFiltering && !hasItems;
+  const shouldShowLinkedHubs = !isNarrowScreen && linkedHubs?.length > 0;
+
   return (
-    <TabContent
-      value={tabValue}
-      index={TYPES_BY_TAB_VALUE.indexOf(type)}
-      //TODO(unused) className={classes.tabContent}
-    >
-      {filtersExpanded && tabValue === TYPES_BY_TAB_VALUE.indexOf(type) && (
+    <TabContent value={tabValue} index={currentTabIndex}>
+      {shouldShowFilters && (
         <FilterContent
           className={classes.tabContent}
-          type={TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]}
+          type={type}
           applyFilters={handleApplyNewFilters}
           handleUpdateFilters={handleUpdateFilterValues}
           errorMessage={errorMessage}
-          filtersExpanded={isMobileScreen ? filtersExandedOnMobile : filtersExpanded}
+          filtersExpanded={effectiveFiltersExpanded}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-          locationInputRef={locationInputRefs[TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)]]}
+          locationInputRef={locationInputRefs[type]}
           locationOptionsOpen={locationOptionsOpen}
           possibleFilters={getFilters({
-            key: TYPES_BY_TAB_VALUE[TYPES_BY_TAB_VALUE.indexOf(type)],
+            key: type,
             filterChoices: filterChoices,
             locale: locale,
           })}
-          unexpandFilters={isMobileScreen ? unexpandFiltersOnMobile : unexpandFilters}
+          unexpandFilters={effectiveUnexpandFilters}
           initialLocationFilter={initialLocationFilter}
           nonFilterParams={nonFilterParams}
+          searchSubmit={handleSearchSubmit}
         />
       )}
-      {/* Show the linked hubs only on desktop screens */}
-      {!isNarrowScreen && linkedHubs?.length > 0 && (
+      {shouldShowLinkedHubs && (
         <div className={classes.linkedHubsContainer}>
           {linkedHubs.map((linkedHub) => (
             <HubLinkButton key={linkedHub.hubUrl} hub={linkedHub} />
@@ -112,23 +139,19 @@ export default function TabContentWrapper({
         </div>
       )}
 
-      {/*
-        We have two loading spinner states: filtering, and fetching more data.
-        When filtering, the spinner replaces the Previews components.
-        When fetching more data, the spinner appears under the last row of the Previews components.
-        Render the not found page if the object came back empty.
-      */}
-      {isFiltering ? (
-        <LoadingSpinner />
-      ) : (state?.items && state?.items[type]?.length) || type == "ideas" ? (
-        <>{children}</>
-      ) : (
-        <NoItemsFound type={type} hubName={hubName} />
-      )}
+      {isFiltering && <LoadingSpinner />}
+      {shouldShowContent && children}
+      {shouldShowNoItems && <NoItemsFound type={type} hubName={hubName} />}
     </TabContent>
   );
 }
 
-function TabContent({ value, index, children }) {
+interface TabContentProps {
+  value: number;
+  index: number;
+  children: ReactNode;
+}
+
+function TabContent({ value, index, children }: TabContentProps) {
   return <div hidden={value !== index}>{children}</div>;
 }

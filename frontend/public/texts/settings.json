@@ -131,6 +131,10 @@
     "en": "Cookie settings successfully updated.",
     "de": "Cookie-Einstellungen erfolgreich aktualisiert"
   },
+  "password": {
+    "en": "Password",
+    "de": "Passwort"
+  },
   "change_password": {
     "en": "Change Password",
     "de": "Passwort ändern"
@@ -206,5 +210,25 @@
   "you_can_now_log_in": {
     "en": "You can now log in.",
     "de": "Du kannst dich jetzt einloggen."
+  },
+  "login_method": {
+    "en": "Login method",
+    "de": "Anmeldemethode"
+  },
+  "login_method_otp": {
+    "en": "One-time code (email)",
+    "de": "Einmalcode (E-Mail)"
+  },
+  "login_method_password": {
+    "en": "Password",
+    "de": "Passwort"
+  },
+  "password_option_disabled_hint": {
+    "en": "To use password login, set a password first.",
+    "de": "Um dich mit Passwort anzumelden, lege zuerst ein Passwort fest."
+  },
+  "set_password_description": {
+    "en": "You currently log in with a one-time code sent to your email. Set a password if you'd prefer to log in with a password instead.",
+    "de": "Du meldest dich derzeit mit einem per E-Mail gesendeten Einmalcode an. Lege ein Passwort fest, wenn du dich stattdessen mit einem Passwort anmelden möchtest."
   }
 }

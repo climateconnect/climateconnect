@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 
@@ -46,18 +46,17 @@ export default function EditAccountRoot({
   );
   const [sourceLanguage] = useState(profile.language);
   const [targetLanguage] = useState(locales.find((l) => l !== sourceLanguage)!);
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const [editedProfile, setEditedProfile] = useState({ ...profile });
   const STEPS = ["edit_profile", "edit_translations"];
   const [step, setStep] = useState(STEPS[0]);
   const texts = getTexts({ page: "profile", locale: locale });
-
+  const router = useRouter();
   const handleSetEditedProfile = (newProfileData) => {
     setEditedProfile({ ...editedProfile, ...newProfileData });
   };
 
   const handleCancel = () => {
-    Router.push(`/profiles/${profile.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
+    router.push(`/profiles/${profile.url_slug}${hubUrl ? `?hub=${hubUrl}` : ""}`);
   };
 
   const handleGoToPreviousStep = () => {
@@ -80,7 +79,6 @@ export default function EditAccountRoot({
     if (
       editedAccount?.info?.location === user?.info?.location &&
       !isLocationValid(editedAccount?.info?.location) &&
-      !legacyModeEnabled &&
       !isTranslationsStep
     ) {
       indicateWrongLocation(locationInputRef, handleSetLocationOptionsOpen, setErrorMessage, texts);
@@ -104,7 +102,7 @@ export default function EditAccountRoot({
       locale: locale,
     })
       .then(function (response) {
-        Router.push({
+        router.push({
           pathname: `/profiles/${response.data.url_slug}`,
           query: {
             message: texts.you_have_successfully_updated_your_profile,
@@ -190,7 +188,7 @@ export default function EditAccountRoot({
 }
 
 const parseProfileForRequest = (profile, availabilityOptions, user) => {
-  const availability = availabilityOptions.find((o) => o.key == profile.info.availability);
+  const availability = availabilityOptions?.find((o) => o.key == profile.info.availability);
   const image = profile.image;
   const thumbnail = profile.thumbnail_image;
   const background = profile.background_image;

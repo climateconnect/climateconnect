@@ -127,8 +127,7 @@ export default function LoggedOutLocationHubBox({ headline, isLocationHub, locat
   const texts = getTexts({
     page: "dashboard",
     locale: locale,
-    location: location,
-    hubName: hubUrl,
+    hubName: location,
   });
 
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));

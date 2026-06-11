@@ -1,12 +1,13 @@
 import { getLocationFilterKeys } from "../data/locationFilters";
 import { apiRequest } from "./apiOperations";
+import { CcLocale } from "../../src/types";
 
 const CUSTOM_NAME_MAPPINGS = {
   "Scotland (state), Scotland": "Scotland",
 };
 
 //These countries are wrongly categorized as states in Nominatim. We want to show them as countries as this is more clear
-const MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"];
+const MAP_STATE_AS_COUNTRY_CODES = new Set(["gb"]);
 
 const buildLocationName = (firstPart: string, middlePart: string, lastPart: string): string => {
   const parts: string[] = [];
@@ -52,11 +53,6 @@ export function getDisplayLocationFromLocation(location): DisplayLocation {
       state: location.state,
       country: location.country,
     };
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true")
-    return {
-      ...DEFAULT_DISPLAY_LOCATION,
-      name: location.city + "" + location.country,
-    };
   if (!location.address || !location.address.country)
     return { ...DEFAULT_DISPLAY_LOCATION, name: location.display_name };
   const firstPartOrder = [
@@ -100,9 +96,11 @@ export function getDisplayLocationFromLocation(location): DisplayLocation {
   const middlePartSuffixes = ["town", "city", "county", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
   const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes);
-  const lastPart = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
-    ? location.address.state
-    : location.address.country;
+  const lastPart =
+    MAP_STATE_AS_COUNTRY_CODES.has(location?.address?.country_code?.toLowerCase()) &&
+    location?.address?.state
+      ? location.address.state
+      : location.address.country;
   let name = buildLocationName(firstPart, middlePart, lastPart);
   //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
   if (Object.keys(CUSTOM_NAME_MAPPINGS).includes(name)) {
@@ -162,9 +160,11 @@ export function getDisplayLocationFromExactLocation(location): DisplayLocation {
   const firstPart = isConcretePlace ? getPlaceSpecificName(location) : "";
   const middlePart = isConcretePlace ? buildStreetAddress(location) : "";
   const city = getCityOrCountyName(location.address);
-  const country = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
-    ? location.address.state
-    : location.address.country;
+  const country =
+    MAP_STATE_AS_COUNTRY_CODES.has(location?.address?.country_code?.toLowerCase()) &&
+    location?.address?.state
+      ? location.address.state
+      : location.address.country;
   const cityAndCountry = buildCityAndCountryPart(city, country, firstPart);
 
   let name = buildLocationName(firstPart, middlePart, cityAndCountry);
@@ -219,8 +219,6 @@ const isCountry = (location) => {
 };
 
 export function isLocationValid(location) {
-  //In legacy mode form control handles validation
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") return true;
   if (!location || typeof location == "string") return false;
   else return true;
 }
@@ -265,10 +263,6 @@ export function parseLocation(location, isConcretePlace = false) {
   const displayLocation = isConcretePlace
     ? getDisplayLocationFromExactLocation(location)
     : getDisplayLocationFromLocation(location);
-  //don't return anything if in legacy mode
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return location;
-  }
   //don't do anything if location is already parsed
   if (typeof location === "object" && alreadyParsed(location)) {
     return location;
@@ -364,26 +358,6 @@ export function getLocationFields({
   locationKey,
   texts,
 }) {
-  //in legacy mode, return a city and a country field
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return [
-      {
-        required: true,
-        label: texts.city,
-        type: "text",
-        key: "city",
-        value: values[locationKey].city,
-      },
-      {
-        required: true,
-        label: texts.country,
-        type: "text",
-        key: "country",
-        value: values[locationKey].country,
-      },
-    ];
-  }
-  //normally, just return a location field
   return [
     {
       required: true,
@@ -399,40 +373,44 @@ export function getLocationFields({
 }
 
 export function getLocationValue(values, locationKey) {
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return {
-      country: values.country,
-      city: values.city,
-    };
-  }
   return values[locationKey];
 }
 
 /**
- * When filtering by location, the url only holds the place_id, osm_id and loc_type, but not the name. This is used to retrieve the whole location object
+ * When filtering by location, the URL stores identifiers and not full location data.
+ * We resolve it from the backend using OSM-first lookup and place_id fallback.
+ * Either all three OSM identifiers (osm_id, osm_type, osm_class) OR a place_id must be
+ * present for the filter to be considered active.
  */
-export async function getLocationFilteredBy(query) {
-  const required_params = getLocationFilterKeys(true);
-  //Return no if we didn't filter by any location
-  for (const param of required_params) {
-    if (!Object.keys(query).includes(param)) {
-      console.log(`${param} is missing!`);
-      return null;
-    }
+export async function getLocationFilteredBy(query, locale?: CcLocale) {
+  const osmRequired = getLocationFilterKeys(true);
+  const hasOsmComposite = osmRequired.every((param) => Object.keys(query).includes(param));
+  const hasPlaceId = Object.keys(query).includes("place_id");
+
+  // Return null if neither identifier set is present — not filtering by location.
+  if (!hasOsmComposite && !hasPlaceId) {
+    return null;
   }
   const url = `/api/get_location/`;
   const payload = {
-    place: query.place,
-    osm: query.osm,
-    loc_type: query.loc_type,
+    place_id: query.place_id,
+    osm_id: query.osm_id,
+    osm_type: query.osm_type,
+    osm_class: query.osm_class,
   };
   try {
-    const res = await apiRequest({ method: "post", url: url, payload: payload });
+    const res = await apiRequest({
+      method: "post",
+      url: url,
+      payload: payload,
+      locale: locale,
+    });
     const full_location = {
       ...res.data,
-      place_id: query.place,
-      osm_id: query.osm,
-      osm_type: query.loc_type,
+      place_id: res.data?.place_id || query.place_id,
+      osm_id: res.data?.osm_id || query.osm_id,
+      osm_type: res.data?.osm_type || query.osm_type,
+      osm_class: res.data?.osm_class || query.osm_class,
     };
     return full_location;
   } catch (e) {

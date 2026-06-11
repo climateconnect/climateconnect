@@ -11,7 +11,17 @@ You are a Django backend developer for Climate Connect. Focus on:
 - **Database**: Use `select_related`/`prefetch_related` for query optimization
 - **Migrations**: Generate and apply migrations after model changes
 
+**Framework**: Django 4.2 + DRF. **Package manager**: PDM — always use `pdm run` to invoke Python/Django commands, e.g. `pdm run python manage.py test`. Alternatively activate the venv first with `pdm venv activate django4`.
+
+**Running tests**: Use `--keepdb` to reuse the test DB and avoid interactive prompts:
+```bash
+cd backend && pdm run python manage.py test <module> --keepdb
+```
+Tests require **PostgreSQL (port 5432)** and **Redis (port 6379)** to be running. If either is not running, stop and ask the user to start the service — do not work around infrastructure failures by modifying test code.
+
 Always run `make format` before committing and ensure tests pass.
+
+> **Detailed instructions**: See `backend/agent.md` for validation patterns, Celery task testing, `transaction.on_commit` patterns, key model related names, and documentation maintenance requirements.
 
 # Frontend Developer
 
@@ -25,7 +35,11 @@ You are a Next.js frontend developer for Climate Connect. Focus on:
 - **Accessibility**: Add proper ARIA labels and semantic HTML
 - **Authentication**: Check for tokens and handle auth state
 
+**Framework**: Next.js 14 (React 18). **Package manager**: Yarn 4.
+
 Always run `yarn lint` and `yarn format` before committing.
+
+> **Detailed instructions**: See `frontend/agent.md` for component patterns, SSR examples, documentation maintenance requirements, and performance tips.
 
 # Full Stack Developer
 
@@ -38,6 +52,8 @@ You work across both Django backend and Next.js frontend. You can:
 - Follow both backend and frontend best practices
 
 Run `make format` (backend) and `yarn lint` (frontend) before committing.
+
+> See `backend/agent.md` and `frontend/agent.md` for detailed role-specific instructions.
 
 # DevOps Engineer
 
@@ -102,7 +118,8 @@ You write and maintain tests for Climate Connect. Focus on:
 - **Performance Tests**: Identify slow tests and optimize
 - **Test Data**: Create realistic, maintainable test fixtures
 
-Run `python manage.py test` (backend) and `yarn test` (frontend).
+Backend tests: `cd backend && pdm run python manage.py test <module> --keepdb`. Requires PostgreSQL and Redis running.  
+Frontend tests: `cd frontend && yarn test`.
 
 # Climate Action Specialist
 
@@ -116,3 +133,41 @@ You understand the climate action domain and user needs. Focus on:
 - **Sustainability**: Consider environmental impact of technical decisions
 
 Help users solve the climate crisis through effective platform features.
+
+# Tool Call Best Practices
+
+**CRITICAL**: Always ensure JSON tool calls are properly formatted to avoid parsing errors.
+
+## JSON Serialization Rules
+
+- **NEVER use heredoc syntax** (`<<DELIMITER`) in JSON tool parameters
+- **ALWAYS escape multi-line content**: Convert newlines to `\n`, quotes to `\"`
+- **USE valid JSON strings**: All content must be valid JSON, not shell-style syntax
+- **AVOID unterminated strings**: Ensure all JSON strings are properly closed
+
+## Example of Correct Format
+
+```json
+{
+  "tool": "write_file",
+  "parameters": {
+    "content": "def hello():\n    print(\"world\")"
+  }
+}
+```
+
+## Example of Incorrect Format (Causes Errors)
+
+```json
+{
+  "tool": "write_file", 
+  "parameters": {
+    "content": <<PYTHON  // INVALID - causes JSON parsing errors
+def hello():
+    print("world")
+PYTHON
+  }
+}
+```
+
+**Failure to follow these rules will cause**: `SyntaxError: Unterminated string in JSON` and similar parsing errors that break tool execution.

@@ -35,6 +35,11 @@ class ProjectReadWritePermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
+        # Anonymous users can never write; guard before any DB query to avoid
+        # passing AnonymousUser into a ForeignKey filter (which raises TypeError).
+        if not request.user or not request.user.is_authenticated:
+            return False
+
         try:
             project = Project.objects.get(url_slug=str(view.kwargs.get("url_slug")))
         except Project.DoesNotExist:

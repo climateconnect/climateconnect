@@ -6,7 +6,8 @@ import { Theme } from "@mui/material/styles";
 const useStyles = makeStyles((theme: Theme) => ({
   flexBlock: {
     display: "flex",
-    justifyContent: "space-around",
+    justifyContent: "flex-start",
+    gap: theme.spacing(2),
   },
   switchTextContainer: {
     display: "flex",
@@ -20,6 +21,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: "bold",
     color: theme.palette.background.default_contrastText,
   },
+  disabled: {
+    opacity: 0.5,
+    pointerEvents: "none",
+  },
 }));
 
 export default function Switcher({
@@ -29,6 +34,7 @@ export default function Switcher({
   required,
   handleChangeValue,
   color,
+  disabled,
 }: any) {
   const classes = useStyles({ value: value });
 
@@ -36,7 +42,7 @@ export default function Switcher({
     handleChangeValue(event.target.value);
   };
   return (
-    <div className={classes.flexBlock}>
+    <div className={`${classes.flexBlock} ${disabled ? classes.disabled : ""}`}>
       <span className={classes.switchTextContainer}>
         <Typography className={`${classes.switchText} ${!value && classes.switchedActive}`}>
           {falseLabel}
@@ -49,6 +55,7 @@ export default function Switcher({
         name="checkedA"
         inputProps={{ "aria-label": "secondary checkbox" }}
         onChange={handleValueChange}
+        disabled={disabled}
       />
       <span className={classes.switchTextContainer}>
         <Typography className={`${classes.switchText} ${value && classes.switchedActive}`}>

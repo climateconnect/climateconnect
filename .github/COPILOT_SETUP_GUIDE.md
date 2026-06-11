@@ -22,11 +22,11 @@ GitHub Copilot may support additional configuration files in future versions. Mo
 context:
   - patterns: ["backend/**/*.py"]
     rules:
-      - "Always use Django 3.2 patterns"
+      - "Always use Django 4.2 patterns"
       - "Include proper error handling"
   - patterns: ["frontend/**/*.js", "frontend/**/*.tsx"]
     rules:
-      - "Use React 17 functional components"
+      - "Use React 18 functional components"
       - "Always implement loading states"
 ```
 
@@ -295,8 +295,8 @@ Create `DEPENDENCIES.md`:
 - django-storages - Azure Blob Storage integration
 
 ## Frontend Critical Dependencies
-- next@12.x - React framework
-- react@17.x - UI library
+- next@14.x - React framework
+- react@18.x - UI library
 - @mui/material@5.x - Component library
 - axios - HTTP client
 - @react-google-maps/api - Maps integration

@@ -83,6 +83,7 @@ const isAuthPath = (pathname: string): boolean => {
   return (
     pathname.endsWith("/signup") ||
     pathname.endsWith("/signin") ||
+    pathname.endsWith("/login") ||
     pathname.endsWith("/accountcreated")
   );
 };

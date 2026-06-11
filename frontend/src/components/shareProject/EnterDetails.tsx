@@ -2,7 +2,7 @@ import { Container, IconButton, TextField, Tooltip, Typography, Switch } from "@
 import makeStyles from "@mui/styles/makeStyles";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import getCollaborationTexts from "../../../public/data/collaborationTexts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
@@ -10,12 +10,14 @@ import ProjectTimeAndPlaceSectionAndCustomHub from "./TimeAndPlaceSection";
 import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
-import CollaborateSection from "./CollaborateSection";
 import ProjectNameSection from "./ProjectNameSection";
 import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
 import { useTheme } from "@mui/styles";
+import dayjs from "dayjs";
+import EventRegistrationSection from "./EventRegistrationSection";
+import { validateRegistrationFields } from "../../utils/eventRegistrationHelpers";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -68,13 +70,11 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const getHelpTexts = (texts) => ({
-  addPhoto: texts.add_photo_helptext,
-  short_description: texts.short_description_helptext,
-  description: texts.description_helptext,
-  collaboration: texts.collaboration_helptext,
-  addSkills: texts.add_skills_helptext,
-  addConnections: texts.add_connections_helptext,
+const getHelpTexts = (projectTypeTexts, typeId) => ({
+  addPhoto: projectTypeTexts.addPhoto[typeId],
+  shortDescription: projectTypeTexts.shortDescription[typeId],
+  description: projectTypeTexts.description[typeId],
+  collaboration: projectTypeTexts.collaboration[typeId],
 });
 
 export default function EnterDetails({
@@ -82,37 +82,114 @@ export default function EnterDetails({
   handleSetProjectData,
   goToNextStep,
   goToPreviousStep,
-  skillsOptions,
   setMessage,
+  saveAsDraft,
+  loadingSubmit,
+  loadingSubmitDraft,
 }) {
   const [open, setOpen] = useState({
     avatarDialog: false,
-    skillsDialog: false,
-    connectionsDialog: false,
   });
   const [errors, setErrors] = useState({
     start_date: "",
     end_date: "",
+    max_participants: "",
+    registration_end_date: "",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const classes = useStyles(projectData);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
-  const collaborationTexts = getCollaborationTexts(texts);
-  const helpTexts = getHelpTexts(texts);
+  const projectTypeTexts = getProjectTypeTexts(texts);
+  const helpTexts = getHelpTexts(projectTypeTexts, projectData.project_type.type_id);
   const topRef = useRef<null | HTMLFormElement>(null);
   const theme = useTheme();
 
   //scroll to top if there is an error
   useEffect(() => {
-    if (topRef?.current) {
+    if (topRef?.current && Object.values(errors).some((e) => e)) {
       topRef.current.scrollIntoView();
     }
   }, [errors]);
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
+  };
+
+  // Validates event registration settings and custom fields.
+  // isDraft=false: required fields must be present and valid.
+  // isDraft=true:  only validates fields that have a value (skips required checks).
+  // Returns true when valid, false and sets inline errors when invalid.
+  const validateRegistrationSettings = (project, isDraft = false): boolean => {
+    if (!project.registrationEnabled || project.project_type?.type_id !== "event") {
+      return true;
+    }
+
+    const hasParticipants =
+      project.max_participants !== null &&
+      project.max_participants !== undefined &&
+      project.max_participants !== "";
+
+    if (
+      isDraft
+        ? hasParticipants && Number(project.max_participants) < 1
+        : !project.max_participants || Number(project.max_participants) <= 0
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        max_participants: texts.max_participants_must_be_greater_than_0,
+      }));
+      return false;
+    }
+
+    const hasEndDate = !!project.registration_end_date;
+
+    if (
+      isDraft
+        ? hasEndDate && !dayjs(project.registration_end_date).isValid()
+        : !hasEndDate || !dayjs(project.registration_end_date).isValid()
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        registration_end_date: isDraft
+          ? `${texts.invalid_value}: ${texts.registration_end_date}`
+          : `${texts.please_fill_out_this_field}: ${texts.registration_end_date}`,
+      }));
+      return false;
+    }
+
+    if (
+      project.end_date &&
+      hasEndDate &&
+      dayjs(project.registration_end_date).isAfter(dayjs(project.end_date))
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        registration_end_date: texts.registration_end_date_must_be_before_event_end_date,
+      }));
+      return false;
+    }
+
+    if (!isDraft) {
+      const { errors: fe, hasError } = validateRegistrationFields(
+        project.registration_fields,
+        false,
+        texts.this_field_is_required
+      );
+      setFieldErrors(fe);
+      if (hasError) return false;
+    }
+
+    return true;
+  };
+
+  // Validate registration fields for draft saves:
+  // required fields are skipped, but if a value was entered it must be valid.
+  const handleSaveAsDraft = (event) => {
+    if (!validateRegistrationSettings(projectData, true)) return;
+    saveAsDraft(event);
   };
 
   const onClickNextStep = (event) => {
@@ -137,7 +214,7 @@ export default function EnterDetails({
       maxLength: 4000,
     },
     website: {
-      name: texts.website,
+      name: projectTypeTexts.website[projectData.project_type.type_id],
       maxLength: 256,
     },
   };
@@ -165,6 +242,8 @@ export default function EnterDetails({
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
       return false;
     }
+    // Validate event registration settings when enabled
+    if (!validateRegistrationSettings(project)) return false;
     return true;
   };
 
@@ -226,7 +305,7 @@ export default function EnterDetails({
                 </IconButton>
               </Tooltip>
             </Typography>
-            <ProjectDescriptionHelp />
+            <ProjectDescriptionHelp typeId={projectData.project_type.type_id} />
             <TextField
               variant="outlined"
               color={backgroundContrastColor}
@@ -245,59 +324,69 @@ export default function EnterDetails({
               color="primary"
               className={classes.subHeader}
             >
-              {texts.project_website}
+              {projectTypeTexts.website[projectData.project_type.type_id]}
             </Typography>
             <TextField
               variant="outlined"
               color={backgroundContrastColor}
               onChange={(event) => onTextChange(event, "website")}
-              placeholder={texts.project_website}
+              placeholder={projectTypeTexts.website[projectData.project_type.type_id]}
               value={projectData.website}
-              helperText={texts.if_your_project_has_a_website_you_can_enter_it_here}
+              helperText={projectTypeTexts.website_helper[projectData.project_type.type_id]}
             />
           </div>
-          <div className={classes.block}>
-            <Typography
-              component="h2"
-              variant="subtitle2"
-              color="primary"
-              className={classes.subHeader}
-            >
-              {collaborationTexts.allow[projectData.project_type.type_id]}
-              <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
-                <IconButton size="large">
-                  <HelpOutlineIcon />
-                </IconButton>
-              </Tooltip>
-            </Typography>
-            <Switch
-              checked={projectData.collaborators_welcome}
-              onChange={onAllowCollaboratorsChange}
-              name="checkedA"
-              inputProps={{ "aria-label": "secondary checkbox" }}
-              color={backgroundContrastColor}
-            />
-          </div>
-          {projectData.collaborators_welcome && (
-            <CollaborateSection
-              projectData={projectData}
-              handleSetProjectData={handleSetProjectData}
-              blockClassName={classes.block}
-              subHeaderClassName={classes.subHeader}
-              toolTipClassName={classes.tooltip}
-              helpTexts={helpTexts}
-              ToolTipIcon={HelpOutlineIcon}
-              open={open}
-              handleSetOpen={handleSetOpen}
-              skillsOptions={skillsOptions}
-              collaborationTexts={collaborationTexts}
-            />
+          {projectData.registrationEnabled && projectData.project_type?.type_id === "event" && (
+            <div className={classes.block}>
+              <EventRegistrationSection
+                projectData={projectData}
+                handleSetProjectData={handleSetProjectData}
+                errors={{
+                  max_participants: errors.max_participants,
+                  registration_end_date: errors.registration_end_date,
+                }}
+                fieldErrors={fieldErrors}
+                onClearFieldError={(key: string) =>
+                  setFieldErrors((prev) => {
+                    const next = { ...prev };
+                    delete next[key];
+                    return next;
+                  })
+                }
+              />
+            </div>
           )}
+          {false && (
+            <div className={classes.block}>
+              <Typography
+                component="h2"
+                variant="subtitle2"
+                color="primary"
+                className={classes.subHeader}
+              >
+                {projectTypeTexts.allow[projectData.project_type.type_id]}
+                <Tooltip title={helpTexts.collaboration} className={classes.tooltip}>
+                  <IconButton size="large">
+                    <HelpOutlineIcon />
+                  </IconButton>
+                </Tooltip>
+              </Typography>
+              <Switch
+                checked={projectData.collaborators_welcome}
+                onChange={onAllowCollaboratorsChange}
+                name="checkedA"
+                inputProps={{ "aria-label": "secondary checkbox" }}
+                color={backgroundContrastColor}
+              />
+            </div>
+          )}
+          {/* The Draft button appears after the project name is filled out */}
           <NavigationButtons
-            className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
-            position="bottom"
+            saveAsDraft={projectData.name ? handleSaveAsDraft : undefined}
+            loadingSubmit={loadingSubmit}
+            loadingSubmitDraft={loadingSubmitDraft}
+            sticky
           />
         </form>
       </Container>

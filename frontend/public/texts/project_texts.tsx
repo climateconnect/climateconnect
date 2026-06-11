@@ -3,7 +3,101 @@ import React from "react";
 import { getLocalePrefix } from "../lib/apiOperations";
 
 export default function getProjectTexts({ project, user, url_slug, locale, creator, hubName }) {
+  // Helper function to generate draft text for different project types
+  const getDraftText = (type: "project" | "idea" | "event") => {
+    const typeConfig = {
+      project: {
+        enText: "project drafts",
+        deText: "Projektentwürfe",
+        enSection: "in the my projects section",
+        deSection: "Meine Projekte",
+      },
+      idea: {
+        enText: "idea drafts",
+        deText: "Ideentwürfe",
+        enSection: "in the my ideas section",
+        deSection: "Meine Ideen",
+      },
+      event: {
+        enText: "event drafts",
+        deText: "Veranstaltungentwürfe",
+        enSection: "in the my events section",
+        deSection: "Meine Veranstaltungen",
+      },
+    };
+
+    const config = typeConfig[type];
+    const profileUrl = `${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
+      hubName ? `?hub=${hubName}` : ""
+    }#projects`;
+
+    return {
+      en: (
+        <>
+          You can view, edit and publish your {config.enText}{" "}
+          <Link href={profileUrl}>{config.enSection}</Link> of your profile
+        </>
+      ),
+      de: (
+        <>
+          Du kannst deine {config.deText}{" "}
+          <Link href={profileUrl}>im Bereich {config.deSection}</Link> deines Profils ansehen,
+          bearbeiten und veröffentlichen
+        </>
+      ),
+    };
+  };
+
+  // Helper function to generate "view your X here" text
+  const getViewHereText = (type: "project" | "idea" | "event") => {
+    const typeConfig = {
+      project: {
+        enText: "project",
+        deText: "Projekt",
+      },
+      idea: {
+        enText: "idea",
+        deText: "Idee",
+      },
+      event: {
+        enText: "event",
+        deText: "Veranstaltung",
+      },
+    };
+
+    const config = typeConfig[type];
+    const viewUrl =
+      getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "");
+
+    return {
+      en: (
+        <>
+          You can view your {config.enText} <Link href={viewUrl}>here</Link>
+        </>
+      ),
+      de: (
+        <>
+          Du kannst dein{config.enText === "event" ? "e" : ""} {config.deText}{" "}
+          <Link href={viewUrl}>hier</Link> ansehen
+        </>
+      ),
+    };
+  };
+
   return {
+    // Project type translations (based on type_id)
+    project_type_idea: {
+      en: "Idea",
+      de: "Idee",
+    },
+    project_type_event: {
+      en: "Event",
+      de: "Event",
+    },
+    project_type_project: {
+      en: "Project",
+      de: "Projekt",
+    },
     please_log_in_to_edit_project: {
       en: "Please Log In to Edit a project.",
       de: "Bitte logge dich ein, um ein Projekt zu bearbeiten ",
@@ -260,6 +354,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Total duration",
       de: "Gesamte Laufzeit",
     },
+    this_event_is_part_of: {
+      en: "This event is part of",
+      de: "Dieses Event ist Teil von",
+    },
+    this_idea_is_part_of: {
+      en: "This idea is part of",
+      de: "Diese Idee ist Teil von",
+    },
+    this_project_is_part_of: {
+      en: "This project is part of",
+      de: "Dieses Projekt ist Teil von",
+    },
     project_description: {
       en: `${project?.project_type?.name ? project.project_type.name : "Project"} Description`,
       de: `${project?.project_type?.name ? project.project_type.name : "Projekt"}beschreibung`,
@@ -306,10 +412,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "This project is open to collaborators.",
       de: "Dieses Projekt ist offen für Mitwirkende.",
     },
-    helpful_skills_for_collaborating: {
-      en: "Helpful skills for collaborating",
-      de: "Hilfreiche Fähigkeiten, um mitzuwirken",
-    },
     connections_to_these_organizations_could_help_the_project: {
       en: "Connections to these organisations could help the project",
       de: "Connections zu diesen Organisationen könnten dem Projekt helfen",
@@ -342,14 +444,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Are you looking for people to help organizing the event?",
       de: "Suchst du noch Unterstützer:innen, um das Event zu organisieren?",
     },
-    add_skills_that_would_be_beneficial_for_collaborators_to_have: {
-      en: "Add skills that would be beneficial for collaborators to have",
-      de: "Füge Fähigkeiten hinzu, die Unterstützende möglichst haben sollten",
-    },
-    add_skills_that_would_be_beneficial_for_collaborators_to_have_idea: {
-      en: "Add skills that would be beneficial for collaborators to have",
-      de: "Füge Fähigkeiten hinzu, die Mitstreiter:innen möglichst haben sollten",
-    },
     add_connections_that_would_be_beneficial_for_collaborators_to_have: {
       en: "Connections to which organisations would be helpful for the project?",
       de: "Connections zu welchen Organisationen wären für das Projekt hilfreich?",
@@ -379,6 +473,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         "PRIO1 ist das junge Klima-Netzwerk. erfahre mehr unter prio1-klima.net. Wenn du diese Option auswählst, wird dein Projekt auch im PRIO1 Hub angezeigt.",
       en:
         "PRIO1 is the young climate network. find out more at prio1-klima.net. If you select this option, your project will also be displayed in the PRIO1 Hub.",
+    },
+    my_idea_is_part_of_the_prio1_project: {
+      de: "Meine Idee ist Teil des PRIO1 Hubs",
+      en: "My idea is part of the PRIO1 hub",
+    },
+    tooltip_my_idea_is_part_of_the_prio1_project: {
+      de:
+        "PRIO1 ist das junge Klima-Netzwerk. erfahre mehr unter prio1-klima.net. Wenn du diese Option auswählst, wird deine Idee auch im PRIO1 Hub angezeigt.",
+      en:
+        "PRIO1 is the young climate network. find out more at prio1-klima.net. If you select this option, your idea will also be displayed in the PRIO1 Hub.",
+    },
+    my_event_is_part_of_the_prio1_project: {
+      de: "Meine Veranstaltung ist Teil des PRIO1 Hubs",
+      en: "My event is part of the PRIO1 hub",
+    },
+    tooltip_my_event_is_part_of_the_prio1_project: {
+      de:
+        "PRIO1 ist das junge Klima-Netzwerk. erfahre mehr unter prio1-klima.net. Wenn du diese Option auswählst, wird deine Veranstaltung auch im PRIO1 Hub angezeigt.",
+      en:
+        "PRIO1 is the young climate network. find out more at prio1-klima.net. If you select this option, your event will also be displayed in the PRIO1 Hub.",
     },
 
     // This is for project join requests
@@ -419,6 +533,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Delete Project",
       de: "Projekt löschen",
     },
+    delete_idea: {
+      en: "Delete Idea",
+      de: "Idee löschen",
+    },
+    delete_event: {
+      en: "Delete Event",
+      de: "Event löschen",
+    },
     you_can_not_add_the_same_connection_twice: {
       en: "You can not add the same connection twice.",
       de: "Du kannst die gleiche Connection nicht zweimal hinzufügen.",
@@ -434,6 +556,22 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     organizations_project: {
       en: "Organisation's project",
       de: "Projekt einer Organisation",
+    },
+    personal_idea: {
+      en: "Personal idea",
+      de: "Persönliche Idee",
+    },
+    organizations_idea: {
+      en: "Organisation's idea",
+      de: "Idee einer Organisation",
+    },
+    personal_event: {
+      en: "Personal event",
+      de: "Persönliche Veranstaltung",
+    },
+    organizations_event: {
+      en: "Organisation's event",
+      de: "Veranstaltung einer Organisation",
     },
     created_by: {
       en: "Created by",
@@ -489,6 +627,22 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "If your project has a website, you can enter it here.",
       de: "Falls dein Projekt eine Webseite hat, kannst du sie hier eintragen",
     },
+    idea_website: {
+      en: "Idea website",
+      de: "Webseite der Idee",
+    },
+    if_your_idea_has_a_website_you_can_enter_it_here: {
+      en: "If your idea has a website, you can enter it here.",
+      de: "Falls deine Idee eine Webseite hat, kannst du sie hier eintragen",
+    },
+    event_website: {
+      en: "Event website",
+      de: "Webseite der Veranstaltung",
+    },
+    if_your_event_has_a_website_you_can_enter_it_here: {
+      en: "If your event has a website, you can enter it here.",
+      de: "Falls deine Veranstaltung eine Webseite hat, kannst du sie hier eintragen",
+    },
     edit_sectors: {
       en: "Edit topics",
       de: "Themenfelder bearbeiten",
@@ -500,6 +654,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     project_name: {
       en: "Project name",
       de: "Projekttitel",
+    },
+    idea_name: {
+      en: "Idea name",
+      de: "Ideentitel",
+    },
+    event_name: {
+      en: "Event name",
+      de: "Veranstaltungsname",
     },
     your_project_draft_is_missing_the_following_reqired_property: {
       en: "Your project draft is missing the following reqired property:",
@@ -514,8 +676,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Dein Projekt wurde veröffentlicht. Gute Arbeit!",
     },
     save_changes_as_draft: {
-      en: "Save Changes as draft",
-      de: "Veränderungen als Entwurf speichern",
+      en: "Save draft",
+      de: "Entwurf speichern",
     },
     save_as_draft: {
       en: "Save as draft",
@@ -550,6 +712,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Show all projects",
       de: "Alle Projekte anzeigen",
     },
+    events_in_this_series: {
+      en: "Events in this series",
+      de: "Events in dieser Reihe",
+    },
+    show_all_events: {
+      en: "Show all events",
+      de: "Alle Events anzeigen",
+    },
     please_touch_on_the_following_points_in_your_project_description: {
       en: "Please touch on the following points in your project description",
       de: "Bitte gehe in deiner Projektbeschreibung auf die folgenden Punkte ein",
@@ -560,6 +730,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: `Wenn du ein Video einbinden möchtest: Der erste YouTube-Link wird in ein eingebettetes
       Video auf deiner Projektseite umgewandelt.`,
     },
+    if_you_want_to_include_a_video_in_your_idea_description: {
+      en: `If you want to include a video: the first YouTube link will be converted to an embedded
+      video on your idea page.`,
+      de: `Wenn du ein Video einbinden möchtest: Der erste YouTube-Link wird in ein eingebettetes
+      Video auf deiner Ideenseite umgewandelt.`,
+    },
+    if_you_want_to_include_a_video_in_your_event_description: {
+      en: `If you want to include a video: the first YouTube link will be converted to an embedded
+      video on your event page.`,
+      de: `Wenn du ein Video einbinden möchtest: Der erste YouTube-Link wird in ein eingebettetes
+      Video auf deiner Veranstaltungsseite umgewandelt.`,
+    },
     role_in_project: {
       en: "Role in project",
       de: "Funktion/Aufgabe im Projekt",
@@ -567,6 +749,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     use_the_search_bar_to_add_members_to_your_project: {
       en: "Use the search bar to add members to your project.",
       de: "Benutze die Suchleiste, um Mitglieder zu deinem Projekt hinzuzufügen.",
+    },
+    use_the_search_bar_to_add_members_to_your_idea: {
+      en: "Use the search bar to add members to your idea.",
+      de: "Benutze die Suchleiste, um Mitglieder zu deiner Idee hinzuzufügen.",
+    },
+    use_the_search_bar_to_add_members_to_your_event: {
+      en: "Use the search bar to add supporters to your event.",
+      de: "Benutze die Suchleiste, um Mitglieder zu deinem Event hinzuzufügen.",
     },
     summarize_your_project: {
       en: "Short Summary Of Your Project",
@@ -618,35 +808,76 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Your project is",
       de: "Dein Projekt ist",
     },
-    add_photo_helptext: {
+    add_photo_helptext_project: {
       en:
         "Upload a photo that represents your project. This way other climate protectors can see at a glance what your project is about. It is recommended to use a non-transparent image in 16:9 format.",
       de:
         "Lade ein Foto hoch, das dein Projekt repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deinem Projekt geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
     },
-    short_description_helptext: {
+    add_photo_helptext_idea: {
+      en:
+        "Upload a photo that represents your idea. This way other climate protectors can see at a glance what your idea is about. It is recommended to use a non-transparent image in 16:9 format.",
+      de:
+        "Lade ein Foto hoch, das deine Idee repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deiner Idee geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
+    },
+    add_photo_helptext_event: {
+      en:
+        "Upload a photo that represents your event. This way other climate protectors can see at a glance what your event is about. It is recommended to use a non-transparent image in 16:9 format.",
+      de:
+        "Lade ein Foto hoch, das deine Veranstaltung repräsentiert. So können andere Klimaschützer*innen auf einen Blick sehen, worum es bei deiner Veranstaltung geht. Wir empfehlen, ein nicht-transparentes Bild im Format 16:9 zu verwenden.",
+    },
+    short_description_helptext_project: {
       en:
         "Summarize your project in fewer than 280 characters. Other climate protectors should be able to grasp what your project wants to achieve.",
       de:
         "Fasse dein Projekt in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was dein Projekt erreichen will.",
     },
-    description_helptext: {
+    short_description_helptext_idea: {
+      en:
+        "Summarize your idea in fewer than 280 characters. Other climate protectors should be able to grasp what your idea wants to achieve.",
+      de:
+        "Fasse deine Idee in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, was deine Idee erreichen will.",
+    },
+    short_description_helptext_event: {
+      en:
+        "Summarize your event in fewer than 280 characters. Other climate protectors should be able to grasp what your event is about.",
+      de:
+        "Fasse dein Veranstaltung in weniger als 280 Zeichen zusammen. Andere Klimaschützer*innen sollen verstehen, worum es bei der Veranstaltung geht.",
+    },
+    description_helptext_project: {
       en:
         "Describe your project in more detail. What are you exactly doing? What is the climate impact of your project?",
       de:
         "Beschreibe dein Projekt genauer. Was machst du genau? Was ist die Klimawirkung deines Projekts?",
     },
-    collaboration_helptext: {
+    description_helptext_idea: {
+      en:
+        "Describe your idea in more detail. What do you want to do? What is the climate impact of your idea?",
+      de: "Beschreibe deine Idee genauer. Was hast du vor? Was ist die Klimawirkung deiner Idee?",
+    },
+    description_helptext_event: {
+      en:
+        "Describe your event in more detail. What are you exactly doing and what can guests expect? What is the climate impact of your event?",
+      de:
+        "Beschreibe deine Veranstaltung genauer. Was machst du genau und was können Gäste erwarten? Was ist die Klimawirkung deiner Veranstaltung?",
+    },
+    collaboration_helptext_project: {
       en:
         "Select if you are would be open to accept help and work with other climate protectors on your project.",
       de:
         "Wähle aus, ob du offen bist, Hilfe anzunehmen und mit anderen Klimaschützer*innen an deinem Projekt zu arbeiten.",
     },
-    add_skills_helptext: {
+    collaboration_helptext_idea: {
       en:
-        "If you are looking for someone with specific skills to help you with your project, select these here.",
+        "Select if you are would be open to accept help and work with other climate protectors on your idea.",
       de:
-        "Wenn du jemanden mit bestimmten Fähigkeiten suchst, der*die dich bei deinem Projekt unterstützt, wähle diese hier aus.",
+        "Wähle aus, ob du offen bist, Hilfe anzunehmen und mit anderen Klimaschützer*innen an deiner Idee zu arbeiten.",
+    },
+    collaboration_helptext_event: {
+      en:
+        "Select if you are would be open to accept help and work with other climate protectors on your event.",
+      de:
+        "Wähle aus, ob du offen bist, Hilfe anzunehmen und mit anderen Klimaschützer*innen deine Veranstaltung zu organisieren.",
     },
     add_connections_helptext: {
       en:
@@ -697,73 +928,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Beim Versuch dein Projekt zu veröffentlichen, ist ein Fehler aufgetreten. Prüfen die console für weitere Informationen.",
     },
-    your_project_has_saved_as_a_draft: {
-      en: "Your project has saved as a draft!",
-      de: "Dein Projekt wurde als Entwurf gespeichert!",
-    },
-    you_can_view_edit_and_publish_your_project_drafts_in_the: {
-      en: (
-        <>
-          You can view, edit and publish your project drafts{" "}
-          <Link
-            href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
-              hubName ? `?hub=${hubName}` : ""
-            }#projects`}
-          >
-            in the my projects section
-          </Link>{" "}
-          of your profile
-        </>
-      ),
-      de: (
-        <>
-          Du kannst deine Projektentwürfe{" "}
-          <Link
-            href={`${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
-              hubName ? `?hub=${hubName}` : ""
-            }#projects`}
-          >
-            im Bereich {"Meine Projekte"}
-          </Link>{" "}
-          deines Profils ansehen, bearbeiten und veröffentlichen
-        </>
-      ),
-    },
-    congratulations_your_project_has_been_published: {
-      en: "Congratulations! Your project has been published!",
-      de: "Glückwunsch! Dein Projekt ist veröffentlicht worden!",
-    },
     we_are_really_happy_that_you_inspire_the_global_climate_action_community: {
       en: "We are really happy that you inspire the global climate action community!",
       de: "Wir freuen uns sehr, dass du die globale Klimaschutz-Community inspirierst!",
     },
-    you_can_view_your_project_here: {
-      en: (
-        <>
-          You can view your project{" "}
-          <Link
-            href={
-              getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "")
-            }
-          >
-            here
-          </Link>
-        </>
-      ),
-      de: (
-        <>
-          Du kannst dein Projekt{" "}
-          <Link
-            href={
-              getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "")
-            }
-          >
-            hier
-          </Link>{" "}
-          ansehen
-        </>
-      ),
-    },
+    you_can_view_your_project_here: getViewHereText("project"),
+    you_can_view_your_idea_here: getViewHereText("idea"),
+    you_can_view_your_event_here: getViewHereText("event"),
+
     add_sectors_that_fit: {
       en: "Add topics which fit:",
       de: "Füge Themenfelder hinzu, die passen:",
@@ -771,6 +943,14 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     select_1_to_3_sectors_that_fit_your_project: {
       en: "Select 1-3 topics that fit your project",
       de: "Wähle 1-3 Themenfelder, die zu deinem Projekt passen",
+    },
+    select_1_to_3_sectors_that_fit_your_idea: {
+      en: "Select 1-3 topics that fit your idea",
+      de: "Wähle 1-3 Themenfelder, die zu deiner Idee passen",
+    },
+    select_1_to_3_sectors_that_fit_your_event: {
+      en: "Select 1-3 topics that fit your event",
+      de: "Wähle 1-3 Themenfelder, die zu deiner Veranstaltung passen",
     },
     add_a_sector_where_you_are_active: {
       en: "Add a Topic",
@@ -867,8 +1047,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Übersicht",
     },
     project_category: {
-      en: "Choose category",
-      de: "Kategorie auswählen",
+      en: "Choose topics",
+      de: "Themenfelder auswählen",
     },
     allow_collaboration: {
       en: "Allow collaboration",
@@ -985,9 +1165,37 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Gib die genaue Adresse an, damit Interessierte deine Veranstaltung finden können. Bei Online-Events einfach die Stadt, in der du wohnst.",
     },
+    this_project_takes_place_online: {
+      en: "This project takes place online",
+      de: "Dieses Projekt findet online statt",
+    },
+    this_event_takes_place_online: {
+      en: "This event takes place online",
+      de: "Dieses Event findet online statt",
+    },
+    this_idea_takes_place_online: {
+      en: "This idea takes place online",
+      de: "Diese Idee findet online statt",
+    },
+    online: {
+      en: "Online",
+      de: "Online",
+    },
+    project_location: {
+      en: "Project location",
+      de: "Projektstandort",
+    },
+    event_location_section: {
+      en: "Event location",
+      de: "Veranstaltungsort",
+    },
+    idea_location: {
+      en: "Idea location",
+      de: "Ideenstandort",
+    },
     share_your_climate_project: {
-      en: "Share Your Climate Project",
-      de: "Teile dein Klimaprojekt",
+      en: "What would you like to create?",
+      de: "Was möchtest du erstellen?",
     },
     shared: {
       en: "Shared",
@@ -998,8 +1206,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Veranstaltung organisiert von",
     },
     project_type: {
-      en: "Project Type",
-      de: "Projekttyp",
+      en: "Type",
+      de: "Typ",
     },
     end_date_must_be_after_start_date: {
       en: "End date must be after start date",
@@ -1008,6 +1216,660 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     do_you_want_to_delete_your_project: {
       en: "Do you want to delete this project?",
       de: "Möchtest Du dieses Projekt löschen?",
+    },
+    registration: {
+      en: "Registration",
+      de: "Anmeldung",
+    },
+    registration_settings: {
+      en: "Registration settings",
+      de: "Eventanmeldung einrichten",
+    },
+    allow_online_registration: {
+      en: "Allow members to register online for the event",
+      de: "Mitgliedern erlauben, sich online für das Event anzumelden",
+    },
+    registration_enabled_help_text: {
+      en: "In the next step you can configure the event registration.",
+      de: "Im nächsten Schritt kannst du die Eventanmeldung konfigurieren.",
+    },
+    max_participants: {
+      en: "Max. number of guests",
+      de: "Max. Anzahl Teilnehmende",
+    },
+    max_participants_must_be_greater_than_0: {
+      en: "Maximum number of guests must be greater than 0",
+      de: "Die maximale Anzahl an Teilnehmenden muss größer als 0 sein",
+    },
+    registration_end_date: {
+      en: "End of registration",
+      de: "Ende der Anmeldung",
+    },
+    registration_end_date_must_be_before_event_end_date: {
+      en: "Registration end date must be before or equal to the event end date",
+      de: "Das Anmeldeende muss vor oder gleich dem Ende des Events liegen",
+    },
+    edit_registration_settings: {
+      en: "Edit registration settings",
+      de: "Anmeldeeinstellungen bearbeiten",
+    },
+    online_registration: {
+      en: "Online registration",
+      de: "Online-Anmeldung",
+    },
+    disable_registration_confirm: {
+      en:
+        "There are already registrations for this event. Disabling registration will hide the registration form from visitors and you won't be able to see the registrations. Alternatively you can also close the registration via the registration settings. Do you want to continue?",
+      de:
+        "Es gibt bereits Anmeldungen für dieses Event. Das Deaktivieren der Anmeldung blendet das Anmeldeformular für Besucher aus und du wirst nicht mehr sehen können, welche Anmeldungen es gibt. Alternativ kannst du auch die Anmeldung via den Anmeldeeinstellungen schließen. Möchtest du fortfahren?",
+    },
+    disable_registration: {
+      en: "Disable registration",
+      de: "Anmeldung deaktivieren",
+    },
+    registration_settings_saved: {
+      en: "Registration settings saved successfully",
+      de: "Anmeldeeinstellungen erfolgreich gespeichert",
+    },
+    registration_end_date_must_be_in_the_future: {
+      en: "Registration end date must be in the future",
+      de: "Das Anmeldeende muss in der Zukunft liegen",
+    },
+    registration_status: {
+      en: "Status",
+      de: "Status",
+    },
+    registration_status_open: {
+      en: "Registration open",
+      de: "Anmeldung offen",
+    },
+    registration_status_closed: {
+      en: "Registration closed",
+      de: "Anmeldung geschlossen",
+    },
+    registration_status_full: {
+      en: "Event full",
+      de: "Veranstaltung ausgebucht",
+    },
+    registration_status_ended: {
+      en: "Registration ended",
+      de: "Anmeldung abgelaufen",
+    },
+    registration_end_date_required: {
+      en: "Registration end date is required",
+      de: "Ein Anmeldedatum ist erforderlich",
+    },
+    view_registrations: {
+      en: "View registrations",
+      de: "Anmeldungen anzeigen",
+    },
+    registrations: {
+      en: "Registrations",
+      de: "Anmeldungen",
+    },
+    no_registration_settings_found: {
+      en: "No registration settings found for this event.",
+      de: "Keine Anmeldeeinstellungen für dieses Event gefunden.",
+    },
+    registration_is_open: {
+      en: "Registration is open",
+      de: "Anmeldung ist offen",
+    },
+    registration_is_closed: {
+      en: "Registration is closed",
+      de: "Anmeldung ist geschlossen",
+    },
+    registration_fully_booked_increase_max_participants: {
+      en: "Registration is fully booked. Increase the maximum participants to reopen.",
+      de:
+        "Die Anmeldung ist ausgebucht. Erhöhe die maximale Teilnehmerzahl, um sie wieder zu öffnen.",
+    },
+    notify_admins_on_registration: {
+      en: "Send a notification to team admins when someone registers or cancels.",
+      de: "Sende eine Benachrichtigung an Team-Admins, wenn sich jemand an- oder abmeldet.",
+    },
+    registration_config_draft_indicator: {
+      en:
+        "Registration configuration is in draft mode. Complete the setup and publish to make registration visible to visitors.",
+      de:
+        "Die Anmeldekonfiguration ist im Entwurfsmodus. Schließe die Einrichtung ab und veröffentliche sie, um die Anmeldung für Besucher sichtbar zu machen.",
+    },
+    publish_registration: {
+      en: "Publish registration",
+      de: "Anmeldung veröffentlichen",
+    },
+    registration_setup_incomplete: {
+      en: "Registration setup incomplete",
+      de: "Anmeldeeinrichtung unvollständig",
+    },
+    registration_setup_incomplete_description: {
+      en: "Complete the registration configuration to start accepting sign-ups.",
+      de: "Schließe die Anmeldekonfiguration ab, um Anmeldungen zu akzeptieren.",
+    },
+    complete_registration_setup: {
+      en: "Complete registration setup",
+      de: "Anmeldeeinrichtung abschließen",
+    },
+    registration_config_still_draft_warning: {
+      en: "Registration configuration is not yet complete.",
+      de: "Die Anmeldekonfiguration ist noch nicht vollständig.",
+    },
+    registration_custom_fields: {
+      en: "Additional registration fields",
+      de: "Zusätzliche Anmeldefelder",
+    },
+    add_registration_field: {
+      en: "Add field",
+      de: "Feld hinzufügen",
+    },
+    field_type_checkbox: {
+      en: "Checkbox",
+      de: "Checkbox",
+    },
+    field_type_option_select: {
+      en: "Single choice",
+      de: "Einfachauswahl",
+    },
+    field_type_inventory: {
+      en: "Inventory",
+      de: "Inventar",
+    },
+    single_option_per_guest_notice: {
+      en: "Guests can only select one option",
+      de: "Gast kann nur eine Option wählen",
+    },
+    inventory_available_amount: {
+      en: "Available amount",
+      de: "Verfügbare Menge",
+    },
+    inventory_max_per_guest: {
+      en: "Max per guest",
+      de: "Max. pro Gast",
+    },
+    inventory_description: {
+      en: "Description",
+      de: "Beschreibung",
+    },
+    field_type_time_slot_select: {
+      en: "Time Slot Select",
+      de: "Zeitfenster-Auswahl",
+    },
+    time_slot_title: {
+      en: "Title",
+      de: "Titel",
+    },
+    time_slot_description: {
+      en: "Description",
+      de: "Beschreibung",
+    },
+    time_slot_start_time: {
+      en: "Start time",
+      de: "Startzeit",
+    },
+    time_slot_end_time: {
+      en: "End time",
+      de: "Endzeit",
+    },
+    time_slot_capacity: {
+      en: "Available amount",
+      de: "Verfügbare Menge",
+    },
+    registration_field_description: {
+      en: "Description",
+      de: "Beschreibung",
+    },
+    registration_field_required: {
+      en: "Required",
+      de: "Pflichtfeld",
+    },
+    option_select_title: {
+      en: "Title",
+      de: "Titel",
+    },
+    add_option: {
+      en: "Add option",
+      de: "Option hinzufügen",
+    },
+    option_placeholder: {
+      en: "Option label",
+      de: "Optionsbezeichnung",
+    },
+    delete_field: {
+      en: "Delete field",
+      de: "Feld löschen",
+    },
+    move_field_up: {
+      en: "Move up",
+      de: "Nach oben",
+    },
+    move_field_down: {
+      en: "Move down",
+      de: "Nach unten",
+    },
+    delete_option: {
+      en: "Delete option",
+      de: "Option löschen",
+    },
+    max_registration_fields_reached: {
+      en: "Maximum of 5 fields reached",
+      de: "Maximal 5 Felder erreicht",
+    },
+    confirm_delete_field_title: {
+      en: "Delete field?",
+      de: "Feld löschen?",
+    },
+    confirm_delete_field_body: {
+      en:
+        "This will permanently delete the field and any answers already submitted by registrants. This cannot be undone.",
+      de:
+        "Dieses Feld und alle bereits eingereichten Antworten der Teilnehmenden werden unwiderruflich gelöscht.",
+    },
+    confirm_delete_option_title: {
+      en: "Delete option?",
+      de: "Option löschen?",
+    },
+    confirm_delete_option_body: {
+      en:
+        "This will permanently delete the option and any answers already submitted for it. This cannot be undone.",
+      de:
+        "Diese Option und alle bereits eingereichten Antworten dafür werden unwiderruflich gelöscht.",
+    },
+    edit_field_label: {
+      en: "Edit label",
+      de: "Bezeichnung bearbeiten",
+    },
+    field_label_placeholder: {
+      en: "Field label",
+      de: "Feldbezeichnung",
+    },
+    field_label_duplicate_error: {
+      en: "Label already used by another field",
+      de: "Bezeichnung wird bereits von einem anderen Feld verwendet",
+    },
+    your_project_has_been_saved_as_a_draft: {
+      en: "Your project has been saved as a draft!",
+      de: "Dein Projekt wurde als Entwurf gespeichert!",
+    },
+    your_idea_has_been_saved_as_a_draft: {
+      en: "Your idea has been saved as a draft!",
+      de: "Deine Idee wurde als Entwurf gespeichert!",
+    },
+    your_event_has_been_saved_as_a_draft: {
+      en: "Your event has been saved as a draft!",
+      de: "Deine Veranstaltung wurde als Entwurf gespeichert!",
+    },
+    you_can_view_edit_and_publish_your_project_drafts_in_the: getDraftText("project"),
+    you_can_view_edit_and_publish_your_idea_drafts_in_the: getDraftText("idea"),
+    you_can_view_edit_and_publish_your_event_drafts_in_the: getDraftText("event"),
+    congratulations_your_project_has_been_published: {
+      en: "Congratulations! Your project has been published!",
+      de: "Glückwunsch! Dein Projekt ist veröffentlicht worden!",
+    },
+    congratulations_your_idea_has_been_published: {
+      en: "Congratulations! Your idea has been published!",
+      de: "Glückwunsch! Deine Idee ist veröffentlicht worden!",
+    },
+    congratulations_your_event_has_been_published: {
+      en: "Congratulations! Your event has been published!",
+      de: "Glückwunsch! Deine Veranstaltung ist veröffentlicht worden!",
+    },
+    registered_guests: {
+      en: "Registered guests",
+      de: "Angemeldete Gäste",
+    },
+    search_guests: {
+      en: "Search by name…",
+      de: "Nach Name suchen…",
+    },
+    first_name: {
+      en: "First name",
+      de: "Vorname",
+    },
+    last_name: {
+      en: "Last name",
+      de: "Nachname",
+    },
+    registration_date: {
+      en: "Registration date",
+      de: "Anmeldedatum",
+    },
+    no_registrations_yet: {
+      en: "No registrations yet.",
+      de: "Noch keine Anmeldungen.",
+    },
+    loading_registrations: {
+      en: "Loading registrations…",
+      de: "Anmeldungen werden geladen…",
+    },
+    error_loading_registrations: {
+      en: "Failed to load registrations. Please try again.",
+      de: "Anmeldungen konnten nicht geladen werden. Bitte erneut versuchen.",
+    },
+    send_email_to_guests: {
+      en: "Email guests",
+      de: "Gäste per E-Mail benachrichtigen",
+    },
+    email_subject: {
+      en: "Subject",
+      de: "Betreff",
+    },
+    email_message: {
+      en: "Message",
+      de: "Nachricht",
+    },
+    send_now: {
+      en: "Send now",
+      de: "Jetzt senden",
+    },
+    send_test_to_myself: {
+      en: "Send test to myself",
+      de: "Testmail an mich senden",
+    },
+    sending: {
+      en: "Sending…",
+      de: "Wird gesendet…",
+    },
+    email_sent_to_guests: {
+      en: "Email sent to {count} registered guests.",
+      de: "E-Mail an {count} registrierte Gäste gesendet.",
+    },
+    test_email_sent_to: {
+      en: "Test email sent to {email}.",
+      de: "Test-E-Mail an {email} gesendet.",
+    },
+    email_subject_required: {
+      en: "Subject is required.",
+      de: "Betreff ist erforderlich.",
+    },
+    email_message_required: {
+      en: "Message is required.",
+      de: "Nachricht ist erforderlich.",
+    },
+    email_confirmation_recipients: {
+      en: "This email will be sent to {count} registered guests.",
+      de: "Diese E-Mail wird an {count} registrierte Gäste gesendet.",
+    },
+    email_confirmation_admin_cc: {
+      en: "Team admins will also receive a copy.",
+      de: "Team-Admins erhalten ebenfalls eine Kopie.",
+    },
+    editor_bold: {
+      en: "Bold",
+      de: "Fett",
+    },
+    editor_italic: {
+      en: "Italic",
+      de: "Kursiv",
+    },
+    editor_bullet_list: {
+      en: "Bullet list",
+      de: "Aufzählung",
+    },
+    editor_ordered_list: {
+      en: "Ordered list",
+      de: "Nummerierung",
+    },
+    editor_align_left: {
+      en: "Align left",
+      de: "Linksbündig",
+    },
+    editor_align_center: {
+      en: "Align center",
+      de: "Zentriert",
+    },
+    editor_align_right: {
+      en: "Align right",
+      de: "Rechtsbündig",
+    },
+    editor_edit_link: {
+      en: "Edit link",
+      de: "Link bearbeiten",
+    },
+    editor_add_table: {
+      en: "Add table",
+      de: "Tabelle einfügen",
+    },
+    confirm_and_send: {
+      en: "Confirm and send",
+      de: "Bestätigen und senden",
+    },
+    back: {
+      en: "Back",
+      de: "Zurück",
+    },
+    close: {
+      en: "Close",
+      de: "Schließen",
+    },
+    // Event registration translations
+    register_for_event: {
+      en: "Register for Event",
+      de: "Für Veranstaltung anmelden",
+    },
+    register_now: {
+      en: "Register now",
+      de: "Jetzt anmelden",
+    },
+    booked_out: {
+      en: "Booked Out",
+      de: "Ausgebucht",
+    },
+    authentication: {
+      en: "Authentication",
+      de: "Authentifizierung",
+    },
+    event_registration: {
+      en: "Registration",
+      de: "Anmeldung",
+    },
+    confirmation: {
+      en: "Confirmation",
+      de: "Bestätigung",
+    },
+    name: {
+      en: "Name",
+      de: "Name",
+    },
+    email: {
+      en: "Email",
+      de: "E-Mail",
+    },
+    password: {
+      en: "Password",
+      de: "Passwort",
+    },
+    cancel: {
+      en: "Cancel",
+      de: "Abbrechen",
+    },
+    confirm_registration: {
+      en: "Confirm Registration",
+      de: "Anmeldung bestätigen",
+    },
+    confirm_your_registration_for: {
+      en: `Please confirm your registration for ${project?.name}.`,
+      de: `Bitte bestätige deine Anmeldung für ${project?.name}.`,
+    },
+    fill_the_form_and_confirm_your_registration_for: {
+      en: `Please fill in the form and confirm your registration for ${project?.name}.`,
+      de: `Bitte fülle das Formular aus und bestätige deine Anmeldung für ${project?.name}.`,
+    },
+    to_register_please_login_or_signup: {
+      en: "To register for this event, please log in or sign up!",
+      de: "Um dich für diese Veranstaltung anzumelden, melde dich bitte an oder registriere dich!",
+    },
+    auth_log_in: {
+      en: "Log In",
+      de: "Anmelden",
+    },
+    sign_up: {
+      en: "Sign Up",
+      de: "Registrieren",
+    },
+    continue: {
+      en: "Continue",
+      de: "Weiter",
+    },
+    signup_flow_coming_soon: {
+      en: "Sign-up flow coming soon",
+      de: "Registrierungsablauf kommt bald",
+    },
+    youre_registered: {
+      en: "You're registered!",
+      de: "Du bist angemeldet!",
+    },
+    a_confirmation_email_has_been_sent: {
+      en: "A confirmation email has been sent to you.",
+      de: "Eine Bestätigungs-E-Mail wurde an dich gesendet.",
+    },
+    registration_failed: {
+      en: "Registration failed",
+      de: "Anmeldung fehlgeschlagen",
+    },
+    registration_failed_please_try_again: {
+      en: "Registration failed. Please try again.",
+      de: "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+    },
+    try_again: {
+      en: "Try Again",
+      de: "Erneut versuchen",
+    },
+    seats_available: {
+      en: "Seats available",
+      de: "Verfügbare Plätze",
+    },
+    already_registered: {
+      en: "Registered ✓",
+      de: "Angemeldet ✓",
+    },
+    keep_registration: {
+      en: "Keep registration",
+      de: "Anmeldung behalten",
+    },
+    cancel_guest_registration: {
+      en: "Cancel registration",
+      de: "Abmelden",
+    },
+    cancel_guest_registration_confirm: {
+      en: "Are you sure you want to cancel {name}'s registration for {event}?",
+      de: "Bist du sicher, dass du die Anmeldung von {name} für {event} stornieren möchtest?",
+    },
+    message_to_guest_optional: {
+      en: "Message to guest (optional)",
+      de: "Nachricht an den Gast (optional)",
+    },
+    cancellation_message_placeholder: {
+      en: "Reason for cancellation or instructions for the guest…",
+      de: "Grund für die Stornierung oder Hinweise an den Gast…",
+    },
+    yes_cancel_registration: {
+      en: "Yes, cancel registration",
+      de: "Ja, abmelden",
+    },
+    registration_status_active: {
+      en: "Active",
+      de: "Aktiv",
+    },
+    registration_status_cancelled: {
+      en: "Cancelled",
+      de: "Storniert",
+    },
+    view_registration_answers: {
+      en: "View answers",
+      de: "Antworten anzeigen",
+    },
+    registration_answers_modal_title: {
+      en: "Registration answers from {name}",
+      de: "Anmeldeantworten von {name}",
+    },
+    registration_answers_modal_title_self: {
+      en: "Modify your registration",
+      de: "Deine Anmeldung bearbeiten",
+    },
+    registration_answers_cancelled_notice: {
+      en: "This registration has been cancelled.",
+      de: "Diese Anmeldung wurde storniert.",
+    },
+    registration_answer_checked: {
+      en: "Checked",
+      de: "Angekreuzt",
+    },
+    registration_answer_unchecked: {
+      en: "Not checked",
+      de: "Nicht angekreuzt",
+    },
+    registration_answer_no_selection: {
+      en: "No selection",
+      de: "Keine Auswahl",
+    },
+    no_registration_answers: {
+      en: "No answers submitted.",
+      de: "Keine Antworten eingereicht.",
+    },
+    cancel_registration: {
+      en: "Cancel registration",
+      de: "Abmelden",
+    },
+    cancel_registration_confirm: {
+      en: "Are you sure you want to cancel your registration for {event}?",
+      de: "Bist du sicher, dass du deine Anmeldung für {event} stornieren möchtest?",
+    },
+    you_attended_this_event: {
+      en: "You attended this event",
+      de: "Du hast an dieser Veranstaltung teilgenommen",
+    },
+    cancel_registration_error: {
+      en: "Failed to cancel registration. Please try again.",
+      de: "Stornierung fehlgeschlagen. Bitte versuche es erneut.",
+    },
+    modify_registration: {
+      en: "Modify registration",
+      de: "Anmeldung bearbeiten",
+    },
+    this_field_is_required: {
+      en: "This field is required.",
+      de: "Dieses Feld ist erforderlich.",
+    },
+    you_must_check_this_box: {
+      en: "You must check this box to proceed.",
+      de: "Du musst dieses Kontrollkästchen ankreuzen, um fortzufahren.",
+    },
+    please_select_an_option: {
+      en: "Please select an option.",
+      de: "Bitte wähle eine Option aus.",
+    },
+    please_select_inventory_option: {
+      en: "Please select an option.",
+      de: "Bitte wähle eine Option aus.",
+    },
+    please_enter_quantity: {
+      en: "Please enter a quantity.",
+      de: "Bitte gib eine Menge ein.",
+    },
+    quantity_available: {
+      en: "available",
+      de: "verfügbar",
+    },
+    max_per_guest: {
+      en: "Max per guest",
+      de: "Max. pro Gast",
+    },
+    quantity_exceeds_max: {
+      en: "Quantity cannot exceed the maximum per guest.",
+      de: "Die Menge darf das Maximum pro Gast nicht überschreiten.",
+    },
+    please_select_time_slot: {
+      en: "Please select a time slot.",
+      de: "Bitte wähle ein Zeitfenster aus.",
+    },
+    time_slot_fully_booked: {
+      en: "This time slot is fully booked.",
+      de: "Dieses Zeitfenster ist vollständig ausgebucht.",
+    },
+    required_fields_participation_notice: {
+      en:
+        "*Required fields - unfortunately, you cannot participate without providing this information",
+      de: "*Pflichtfelder - ohne diese Angaben ist eine Teilnahme leider nicht möglich",
     },
   };
 }

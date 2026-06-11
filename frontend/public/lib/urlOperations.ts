@@ -120,7 +120,12 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
 
       if (type === "location") {
         if (typeof filters[filterKey] === "object") {
-          const encodedFragment = `place=${filters[filterKey].place_id}&osm=${filters[filterKey].osm_id}&loc_type=${filters[filterKey].osm_type}&`;
+          const locationFilter = filters[filterKey];
+          const placeValue = locationFilter.place_id ?? "";
+          const osmValue = locationFilter.osm_id ?? "";
+          const osmTypeValue = locationFilter.osm_type ?? "";
+          const osmClassValue = locationFilter.osm_class ?? "";
+          const encodedFragment = `place_id=${placeValue}&osm_id=${osmValue}&osm_type=${osmTypeValue}&osm_class=${osmClassValue}&`;
           queryParamFragment += encodedFragment;
         }
       } else if (

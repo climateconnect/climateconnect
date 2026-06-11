@@ -1,23 +1,19 @@
-from organization.utility.sector import (
-    get_sectors_based_on_hub,
-)
-from organization.serializers.sector import (
-    ProjectSectorMappingSerializer,
-)
-from organization.models.members import MembershipRequests
-from climateconnect_api.models import UserProfile
-from climateconnect_api.models.role import Role
-from climateconnect_api.serializers.common import (
-    AvailabilitySerializer,
-    SkillSerializer,
-)
-from climateconnect_api.serializers.role import RoleSerializer
-from climateconnect_api.serializers.user import UserProfileStubSerializer
-from django.conf import settings
 from django.utils.translation import get_language
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
+from climateconnect_api.models import UserProfile
+from climateconnect_api.models.role import Role
+from climateconnect_api.serializers.common import (
+    AvailabilitySerializer,
+)
+from climateconnect_api.serializers.role import RoleSerializer
+from climateconnect_api.serializers.user import UserProfileStubSerializer
+from location.utility import (
+    get_language_code_from_context,
+    get_translated_exact_location_name,
+    get_translated_location_name,
+)
 from organization.models import (
     Project,
     ProjectCollaborators,
@@ -26,28 +22,59 @@ from organization.models import (
     ProjectMember,
     ProjectParents,
 )
+from organization.models.event_registration import EventRegistrationConfig
+from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
+from organization.models.type import PROJECT_TYPES
+from organization.models.event_registration import EventRegistration
+from organization.serializers.event_registration import (
+    EventRegistrationConfigSerializer,
+    EventRegistrationSerializer,
+)
 from organization.serializers.organization import OrganizationStubSerializer
+from organization.serializers.sector import (
+    ProjectSectorMappingSerializer,
+)
 from organization.serializers.status import (
-    ProjectTypesSerializer,
     ProjectStatusSerializer,
+    ProjectTypesSerializer,
 )
 from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
 from organization.utility.project import (
     get_project_description,
-    get_project_helpful_connections,
     get_project_name,
     get_project_short_description,
 )
-from organization.models.type import PROJECT_TYPES
+from organization.utility.sector import (
+    get_sectors_based_on_hub,
+)
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class _LocationNameMixin:
+    """Mixin that provides a shared ``_get_location_name`` helper for project serializers.
+
+    Centralises the conditional logic that selects exact-location formatting
+    (when ``loc.place_name`` or ``loc.exact_address`` is set) versus the general
+    translated name, so the logic lives in one place across
+    ProjectSerializer, ProjectMinimalSerializer, and ProjectStubSerializer.
+
+    The provided ``loc`` must have its ``translate_location`` relation pre-fetched
+    via ``prefetch_related("loc__translate_location__language")`` on the queryset
+    to avoid N+1 queries when translation lookups occur.
+    """
+
+    def _get_location_name(self, loc):
+        lang = get_language_code_from_context(self.context)
+        if loc.place_name or loc.exact_address:
+            return get_translated_exact_location_name(loc, lang)
+        return get_translated_location_name(loc, lang)
+
+
+class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    skills = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     sectors = serializers.SerializerMethodField()
 
@@ -59,9 +86,20 @@ class ProjectSerializer(serializers.ModelSerializer):
     number_of_likes = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     loc = serializers.SerializerMethodField()
-    helpful_connections = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     project_type = serializers.SerializerMethodField()
+    registration_config = serializers.SerializerMethodField()
+    my_event_registration = serializers.SerializerMethodField()
+
+    # Parent/child relationship fields (detail view)
+    parent_project_id = serializers.IntegerField(
+        source="parent_project.id", read_only=True, allow_null=True
+    )
+    parent_project_name = serializers.SerializerMethodField()
+    parent_project_slug = serializers.CharField(
+        source="parent_project.url_slug", read_only=True, allow_null=True
+    )
+    child_projects_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -78,8 +116,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "loc",
             "location",
             "collaborators_welcome",
-            "skills",
-            "helpful_connections",
             "project_parents",
             "sectors",
             "tags",  # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
@@ -92,8 +128,16 @@ class ProjectSerializer(serializers.ModelSerializer):
             "language",
             "project_type",
             "additional_loc_info",
+            "parent_project_id",
+            "parent_project_name",
+            "parent_project_slug",
+            "has_children",
+            "child_projects_count",
+            "is_online",
+            "registration_config",
+            "my_event_registration",
+            "devlink_component",
         )
-        read_only_fields = ["url_slug"]
 
     def get_name(self, obj):
         return get_project_name(obj, get_language())
@@ -105,11 +149,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         return get_project_description(obj, get_language())
 
     def get_collaborating_organizations(self, obj):
-        serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
-        return serializer.data
-
-    def get_skills(self, obj):
-        serializer = SkillSerializer(obj.skills, many=True)
+        serializer = ProjectCollaboratorsSerializer(
+            obj.project_collaborator, many=True, context=self.context
+        )
         return serializer.data
 
     def get_project_parents(self, obj):
@@ -140,15 +182,12 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_loc(self, obj):
         if obj.loc is None:
             return None
-        return obj.loc.name
+        return self._get_location_name(obj.loc)
 
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return obj.loc.name
-
-    def get_helpful_connections(self, obj):
-        return get_project_helpful_connections(obj, get_language())
+        return self._get_location_name(obj.loc)
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
@@ -169,23 +208,110 @@ class ProjectSerializer(serializers.ModelSerializer):
         serializer = ProjectTypesSerializer(project_type, many=False)
         return serializer.data
 
+    def get_parent_project_name(self, obj):
+        """Get parent project name with translation support."""
+        if obj.parent_project:
+            return get_project_name(obj.parent_project, get_language())
+        return None
+
+    def get_child_projects_count(self, obj):
+        """Get count of child projects (only in detail view)."""
+        if hasattr(obj, "child_projects"):
+            return obj.child_projects.count()
+        return 0
+
+    def get_registration_config(self, obj):
+        """Return event registration config including available_seats (detail only).
+
+        Disabled configs are hidden from everyone. Draft configs are only
+        visible to project admins.
+        """
+        try:
+            rc = obj.registration_config
+        except EventRegistrationConfig.DoesNotExist:
+            return None
+
+        if not rc.registration_enabled:
+            return None
+
+        if rc.is_draft:
+            request = self.context.get("request")
+            if not request or not request.user.is_authenticated:
+                return None
+            is_admin = ProjectMember.objects.filter(
+                project=obj,
+                user=request.user,
+                role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            ).exists()
+            if not is_admin:
+                return None
+
+        return EventRegistrationConfigSerializer(
+            rc,
+            context={"include_seat_count": True},
+        ).data
+
+    def get_my_event_registration(self, obj):
+        """
+        Return the requesting user's active EventRegistration for this project.
+
+        Populated only on the detail endpoint when the requesting user has an
+        active (non-cancelled) registration.  Returns ``None`` otherwise.
+
+        Identity is derived strictly from ``request.user`` — never from any
+        path or query parameter — to prevent IDOR.
+
+        When the view adds a filtered ``Prefetch`` with ``to_attr='_my_registrations'``
+        on ``registration_config__registrations`` the method uses that cached list;
+        otherwise it falls back to a direct DB query.
+        """
+        request = self.context.get("request")
+        if request is None or not request.user.is_authenticated:
+            return None
+        try:
+            config = obj.registration_config
+        except EventRegistrationConfig.DoesNotExist:
+            return None
+
+        if hasattr(config, "_my_registrations"):
+            registrations = config._my_registrations
+            if not registrations:
+                return None
+            registration = registrations[0]
+        else:
+            # Fallback: direct DB lookup (used when serializer is called outside
+            # the standard detail view, e.g. in tests that bypass the view layer).
+            try:
+                registration = (
+                    EventRegistration.objects.select_related("user__user_profile")
+                    .prefetch_related(
+                        "field_answers__field",
+                        "field_answers__value_option",
+                    )
+                    .get(
+                        registration_config=config,
+                        user=request.user,
+                        cancelled_at__isnull=True,
+                    )
+                )
+            except EventRegistration.DoesNotExist:
+                return None
+
+        return EventRegistrationSerializer(registration, context=self.context).data
+
 
 class EditProjectSerializer(ProjectSerializer):
     loc = serializers.SerializerMethodField()
     translations = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
-    helpful_connections = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     related_hubs = serializers.SerializerMethodField()
 
     def get_loc(self, obj):
-        if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
-            return {"city": obj.loc.city, "country": obj.loc.country}
-        else:
-            if obj.loc is None:
-                return None
-            return obj.loc.name
+        if obj.loc is None:
+            return None
+        return obj.loc.name
 
     def get_translations(self, obj):
         translations = ProjectTranslation.objects.filter(project=obj)
@@ -203,9 +329,6 @@ class EditProjectSerializer(ProjectSerializer):
 
     def get_description(self, obj):
         return obj.description
-
-    def get_helpful_connections(self, obj):
-        return obj.helpful_connections
 
     def get_related_hubs(self, obj):
         return [hub.url_slug for hub in obj.related_hubs.all()]
@@ -231,7 +354,9 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 
     def get_parent_organization(self, obj):
         if obj.parent_organization:
-            return OrganizationStubSerializer(obj.parent_organization).data
+            return OrganizationStubSerializer(
+                obj.parent_organization, context=self.context
+            ).data
 
     def get_parent_user(self, obj):
         if obj.parent_user:
@@ -241,8 +366,7 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
                 print(obj.parent_user)
 
 
-class ProjectMinimalSerializer(serializers.ModelSerializer):
-    skills = SkillSerializer(many=True)
+class ProjectMinimalSerializer(_LocationNameMixin, serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -253,7 +377,6 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "url_slug",
-            "skills",
             "image",
             "status",
             "location",
@@ -266,20 +389,22 @@ class ProjectMinimalSerializer(serializers.ModelSerializer):
         return get_project_name(obj, get_language())
 
     def get_project_parents(self, obj):
-        serializer = ProjectParentsSerializer(obj.project_parent, many=True)
+        serializer = ProjectParentsSerializer(
+            obj.project_parent, many=True, context=self.context
+        )
         return serializer.data
 
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return obj.loc.name
+        return self._get_location_name(obj.loc)
 
     def get_status(self, obj):
         serializer = ProjectStatusSerializer(obj.status, many=False)
         return serializer.data["name"]
 
 
-class ProjectStubSerializer(serializers.ModelSerializer):
+class ProjectStubSerializer(_LocationNameMixin, serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
     # TODO: remove tags
     sectors = serializers.SerializerMethodField()
@@ -292,6 +417,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     number_of_comments = serializers.SerializerMethodField()
     number_of_likes = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
+    registration_config = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -312,6 +438,9 @@ class ProjectStubSerializer(serializers.ModelSerializer):
             "collaborating_organizations",
             "start_date",
             "end_date",
+            "has_children",
+            "is_online",
+            "registration_config",
         )
 
     def get_name(self, obj):
@@ -335,7 +464,9 @@ class ProjectStubSerializer(serializers.ModelSerializer):
                 {
                     "parent_user": None,
                     "parent_organization": (
-                        OrganizationStubSerializer(parent.parent_organization)
+                        OrganizationStubSerializer(
+                            parent.parent_organization, context=self.context
+                        )
                     ).data,
                 }
             ]
@@ -376,7 +507,7 @@ class ProjectStubSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.loc is None:
             return None
-        return obj.loc.name
+        return self._get_location_name(obj.loc)
 
     def get_project_type(self, obj):
         possible_project_types = list(PROJECT_TYPES.values())
@@ -397,8 +528,38 @@ class ProjectStubSerializer(serializers.ModelSerializer):
         return obj.project_liked.count()
 
     def get_collaborating_organizations(self, obj):
-        serializer = ProjectCollaboratorsSerializer(obj.project_collaborator, many=True)
+        serializer = ProjectCollaboratorsSerializer(
+            obj.project_collaborator, many=True, context=self.context
+        )
         return serializer.data
+
+    def get_registration_config(self, obj):
+        """Return event registration config if present, else None.
+
+        Disabled configs are hidden from everyone. Draft configs are only
+        visible to project admins.
+        """
+        try:
+            rc = obj.registration_config
+        except EventRegistrationConfig.DoesNotExist:
+            return None
+
+        if not rc.registration_enabled:
+            return None
+
+        if rc.is_draft:
+            request = self.context.get("request")
+            if not request or not request.user.is_authenticated:
+                return None
+            is_admin = ProjectMember.objects.filter(
+                project=obj,
+                user=request.user,
+                role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            ).exists()
+            if not is_admin:
+                return None
+
+        return EventRegistrationConfigSerializer(rc).data
 
 
 class ProjectSuggestionSerializer(ProjectStubSerializer):
@@ -443,7 +604,9 @@ class ProjectCollaboratorsSerializer(serializers.ModelSerializer):
         fields = ["collaborating_organization"]
 
     def get_collaborating_organization(self, obj):
-        serializer = OrganizationStubSerializer(obj.collaborating_organization)
+        serializer = OrganizationStubSerializer(
+            obj.collaborating_organization, context=self.context
+        )
         return serializer.data
 
 
@@ -455,7 +618,7 @@ class ProjectFromProjectParentsSerializer(serializers.ModelSerializer):
         fields = ("project",)
 
     def get_project(self, obj):
-        serializer = ProjectStubSerializer(obj.project)
+        serializer = ProjectStubSerializer(obj.project, context=self.context)
         return serializer.data
 
 
@@ -467,7 +630,7 @@ class ProjectFromProjectMemberSerializer(serializers.ModelSerializer):
         fields = ("project",)
 
     def get_project(self, obj):
-        serializer = ProjectStubSerializer(obj.project)
+        serializer = ProjectStubSerializer(obj.project, context=self.context)
         return serializer.data
 
 

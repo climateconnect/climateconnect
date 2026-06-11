@@ -1,6 +1,7 @@
 import { Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import PropTypes from "prop-types";
+import { func, bool, object, string, oneOfType } from "prop-types";
+
 import React from "react";
 
 import GenericDialog from "./GenericDialog";
@@ -59,11 +60,11 @@ export default function ConfirmDialog({
 }
 
 ConfirmDialog.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  cancelText: PropTypes.string.isRequired,
-  confirmText: PropTypes.string.isRequired,
-  text: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
-  title: PropTypes.string.isRequired,
-  className: PropTypes.string,
+  onClose: func.isRequired,
+  open: bool.isRequired,
+  cancelText: string.isRequired,
+  confirmText: string.isRequired,
+  text: oneOfType([string, object]).isRequired,
+  title: string.isRequired,
+  className: string,
 };

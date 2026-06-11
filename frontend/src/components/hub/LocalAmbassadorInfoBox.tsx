@@ -7,7 +7,7 @@ import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Cookies from "universal-cookie";
-import Router from "next/router";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,6 +60,7 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
     hubAmbassador: hubAmbassador,
     hubName: hubData.name,
   });
+  const router = useRouter();
   const handleClickContact = async (e) => {
     e.preventDefault();
 
@@ -70,7 +71,7 @@ export default function LocalAmbassadorInfoBox({ hubAmbassador, hubData, hubSupp
     }
 
     const chat = await startPrivateChat(hubAmbassador?.user, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    router.push("/chat/" + chat.chat_uuid + "/");
   };
 
   const parseTextWithCustomVariables = (m) => {

@@ -302,6 +302,76 @@ In Swagger UI, endpoints with a 🔒 lock icon require authentication.
 
 ## Common Endpoints
 
+### Auth
+
+| Endpoint | Method | Auth Required | Description |
+|----------|--------|---------------|-------------|
+| `/api/auth/check-email` | POST | No | Check whether an email is new or returning (US-2b) |
+| `/api/auth/request-token` | POST | No | Request a 6-digit OTP login code by email (US-3) |
+| `/api/auth/verify-token` | POST | No | Verify the OTP code and receive a Knox auth token (US-4) |
+
+#### POST `/api/auth/verify-token` — Verify OTP code and issue Knox token
+
+Validates the 6-digit code the user received by email and, on success, issues an authenticated Knox token. This is the final step of the OTP login flow. Also serves the new-user account verification use case: when a new user completes signup and verifies their inbox via OTP, `is_profile_verified` is set to `True` atomically with the Knox token issuance.
+
+**Authentication**: Not required (`AllowAny`).
+
+**Request body**:
+```json
+{
+  "session_key": "a3f8...64-char hex string",
+  "code": "123456"
+}
+```
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `session_key` | string | Yes | The `session_key` returned by `POST /api/auth/request-token` |
+| `code` | string | Yes | The 6-digit code from the email |
+
+**Success response** (200 OK):
+```json
+{
+  "token": "<knox raw token>",
+  "expiry": "2026-08-19T09:00:00Z",
+  "user": { ... }
+}
+```
+The `user` object uses the same `PersonalProfileSerializer` shape as `POST /login/`. The Knox `token` is a long alphanumeric string; `expiry` is an ISO 8601 datetime.
+
+**Validation order**: checks are enforced sequentially — expired → already used → attempt limit → code hash. The first failing check returns immediately.
+
+**Error responses**:
+| Status | `detail` | Condition |
+|--------|----------|-----------|
+| 400 Bad Request | Field error | `session_key` or `code` missing or blank |
+| 401 Unauthorized | `"Invalid or expired session."` | `session_key` not found |
+| 401 Unauthorized | `"This code has expired. Please request a new one."` | Token `expires_at` is in the past |
+| 401 Unauthorized | `"Invalid or expired session."` | Token already used (`used_at` is set) |
+| 401 Unauthorized | `"Too many failed attempts. Please request a new code."` | `attempt_count ≥ 5` before submission |
+| 401 Unauthorized | `"Invalid code. N attempt(s) remaining."` | Wrong code; N attempts left |
+| 401 Unauthorized | `"Too many failed attempts. Please request a new code."` | Wrong code pushed `attempt_count` to 5 |
+| 401 Unauthorized | `"Invalid or expired session."` | Race condition: concurrent request consumed the same token first |
+
+**Security notes**:
+- Code comparison uses `hmac.compare_digest` (constant-time) to prevent timing attacks.
+- Failed attempts are incremented with a DB-level `F("attempt_count") + 1` expression to avoid read-modify-write races.
+- The single-use guard uses `UPDATE … WHERE used_at IS NULL` and checks affected rows — if two concurrent requests both pass the checks, only the first one gets a Knox token; the second receives 401.
+- IP address is anonymised (last octet zeroed for IPv4) before being stored in `LoginAuditLog`.
+
+**Audit logging**: `LoginAuditLog` is written on every call regardless of outcome (`verified`, `failed`, `expired`, `exhausted`).
+
+**New-user verification**: if `UserProfile.is_profile_verified` is `False` at success time, it is set to `True` before the Knox token is created. No separate email-link verification step is needed.
+
+**curl example**:
+```bash
+curl -X POST http://localhost:8000/api/auth/verify-token \
+  -H "Content-Type: application/json" \
+  -d '{"session_key": "a3f8...", "code": "123456"}'
+```
+
+---
+
 ### Projects
 
 | Endpoint | Method | Auth Required | Description |
@@ -309,8 +379,467 @@ In Swagger UI, endpoints with a 🔒 lock icon require authentication.
 | `/api/projects/` | GET | No | List all projects |
 | `/api/projects/` | POST | Yes | Create a new project |
 | `/api/projects/{slug}/` | GET | No | Get project details |
-| `/api/projects/{slug}/` | PUT | Yes | Update a project |
+| `/api/projects/{slug}/` | PATCH | Yes | Update a project |
 | `/api/projects/{slug}/members/` | GET | No | List project members |
+| `/api/projects/{slug}/registrations/` | POST | Yes | Register authenticated user for event |
+| `/api/projects/{slug}/registration-config/` | PATCH | Yes | Update event registration settings (organiser only) |
+| `/api/projects/{slug}/registrations/` | GET | Yes | List all registrations for an event (organiser/admin only) |
+| `/api/projects/{slug}/registrations/` | DELETE | Yes | Cancel own registration (member self-cancellation) |
+| `/api/projects/{slug}/registrations/{id}/` | PATCH | Yes | Cancel a specific guest's registration (organiser/admin only) |
+| `/api/projects/{slug}/registrations/email/` | POST | Yes | Send email to all active guests (organiser/admin only) |
+
+#### Event Registration (`registration_config`)
+
+Event-type projects expose an optional nested `registration_config` object on all project endpoints. For non-event projects the field is always `null`.
+
+**Response shape — detail** (`GET /api/projects/{slug}/`):
+```json
+{
+  "registration_config": {
+    "max_participants": 100,
+    "registration_end_date": "2026-06-01T23:59:00Z",
+    "status": "open",
+    "available_seats": 42,
+    "notify_admins": true,
+    "fields": [
+      {
+        "id": 1,
+        "field_type": "checkbox",
+        "order": 0,
+        "is_required": true,
+        "label": "Waiver",
+        "settings": { "description": "<p>I agree to the <b>terms</b></p>" },
+        "options": [],
+        "has_answers": false
+      },
+      {
+        "id": 2,
+        "field_type": "option_select",
+        "order": 1,
+        "is_required": false,
+        "label": "T-shirt",
+        "settings": { "title": "Select your size" },
+        "options": [
+          { "id": 10, "title": "S", "order": 0, "has_answers": false },
+          { "id": 11, "title": "M", "order": 1, "has_answers": false },
+          { "id": 12, "title": "L", "order": 2, "has_answers": false }
+        ],
+        "has_answers": false
+      },
+      {
+        "id": 3,
+        "field_type": "inventory",
+        "order": 2,
+        "is_required": false,
+        "label": "Workshop",
+        "settings": { "title": "Choose a workshop", "description": "Select workshop and quantity" },
+        "options": [
+          {
+            "id": 20, "title": "Solar Panel Assembly", "order": 0,
+            "available_amount": 10, "max_amount_per_guest": 2, "remaining_amount": 8,
+            "has_answers": false
+          }
+        ],
+        "has_answers": false
+      },
+      {
+        "id": 4,
+        "field_type": "time_slot_select",
+        "order": 3,
+        "is_required": false,
+        "label": "Pickup time",
+        "settings": { "title": "Select a pickup window" },
+        "options": [
+          {
+            "id": 30, "title": "10:00–12:00", "order": 0,
+            "start_time": "2026-06-01T10:00:00Z", "end_time": "2026-06-01T12:00:00Z",
+            "has_answers": false
+          }
+        ],
+        "has_answers": false
+      }
+    ]
+  }
+}
+```
+`available_seats` is `null` when `max_participants` is `null` (unlimited capacity). `fields` is only present in the detail response (not in list responses). `remaining_amount` is computed as `available_amount - booked_count` and only present for inventory options.
+
+**Response shape — list** (`GET /api/projects/`):
+```json
+{
+  "registration_config": {
+    "max_participants": 100,
+    "registration_end_date": "2026-06-01T23:59:00Z",
+    "status": "open",
+    "available_seats": null,
+    "notify_admins": true
+  }
+}
+```
+`available_seats` is always `null` in list responses to avoid a `COUNT(*)` query per row. `fields` is omitted from list responses.
+
+Returns `null` when registration is not enabled.
+
+**Request body** (`POST /api/projects/` and `PATCH /api/projects/{slug}/`):
+```json
+{
+  "registration_config": {
+    "max_participants": 100,
+    "registration_end_date": "2026-06-01T23:59:00Z",
+    "status": "closed"
+  }
+}
+```
+Omitting the `registration_config` key entirely on `PATCH` leaves existing settings untouched.
+
+**Validation rules**:
+| Rule | Enforced when |
+|---|---|
+| Only allowed for `project_type = event` | Always |
+| `max_participants` must be > 0 | Always (when value is provided) |
+| `registration_end_date` must be ≤ event `end_date` | Always (when both are present) |
+| Both fields are required | On publish (`is_draft=false`) only |
+| Both fields are optional / nullable | When saving as draft (`is_draft=true`) |
+| `status` must be `open` or `closed` (not `full`) | Always on write |
+
+**Registration status** (`status` field):
+| Value | Who sets it | Meaning |
+|---|---|---|
+| `open` | Default / organiser | Accepting sign-ups (subject to `registration_end_date` and `max_participants`) |
+| `closed` | Organiser via `PATCH` | Manually closed before the end date; can be re-opened with `"status": "open"` |
+| `full` | System only | Capacity reached — cannot be set via the API directly |
+| `ended` | Computed (read-only) | `registration_end_date` has passed while the stored status was `open` — returned by the API but never stored in the DB |
+
+Effective "accepting signups?" check: `status == "open" AND now() < registration_end_date`
+
+> **Note**: `ended` is a computed value derived from the stored `open` status and a past `registration_end_date`. It is never written to the database — the underlying stored status remains `open`. Clients should treat `ended`, `closed`, and `full` equally as "not accepting sign-ups".
+
+**Timezone**: `registration_end_date` follows the same convention as `Project.start_date` / `end_date`. Send ISO 8601 strings with an explicit offset or `Z` suffix (e.g. `"2026-06-01T23:59:00Z"`); the backend stores and compares in UTC.
+
+**Feature toggle**: The registration UI is gated behind the `EVENT_REGISTRATION` feature toggle. The API fields are always present (additive, no breaking changes).
+
+#### POST `/api/projects/{slug}/registrations/` — Register for an event
+
+Registers the authenticated user as a participant for an event that has `EventRegistrationConfig` enabled. Optionally includes answers to custom registration fields.
+
+**Authentication**: Required (401 if unauthenticated)
+
+**Re-registration**: if the user previously cancelled their own registration (`cancelled_by == user`), `POST` resets `cancelled_at` and `cancelled_by` to `null` on the existing row and re-activates the registration (201 Created). If the registration was cancelled by an admin (`cancelled_by != user`), re-registration is blocked (403 Forbidden).
+
+**Request body** (all fields optional):
+```json
+{
+  "answers": [
+    { "field": 1, "value_boolean": true },
+    { "field": 2, "value_option": 11 },
+    { "field": 3, "value_option": 20, "value_number": 2 },
+    { "field": 4, "value_option": 30 }
+  ]
+}
+```
+
+| Answer field | Type | Used by field_type | Notes |
+|---|---|---|---|
+| `field` | integer | all | The `id` of the `RegistrationField` |
+| `value_boolean` | boolean | `checkbox` | Required for checkbox fields |
+| `value_option` | integer | `option_select`, `inventory`, `time_slot_select` | The `id` of the selected `RegistrationFieldOption` |
+| `value_number` | integer | `inventory` | Quantity; must be ≥ 1 and ≤ `max_amount_per_guest` for the selected option |
+
+**Validation**: per-field type validation (checkbox requires `value_boolean`, option_select/time_slot_select require `value_option`, inventory requires `value_option` + `value_number`). Required fields are enforced. Inventory quantity must not exceed `max_amount_per_guest` or `remaining_amount`. Previous answers are replaced atomically on re-registration.
+
+**Success responses**:
+| Status | Condition |
+|---|---|
+| 201 Created | First-time registration or re-registration after self-cancellation |
+| 200 OK | Idempotent — user already has an active registration; no duplicate created |
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 400 Bad Request | Registration is `closed` or `full` |
+| 400 Bad Request | `registration_end_date` has passed |
+| 400 Bad Request | Project has no `EventRegistrationConfig` record |
+| 400 Bad Request | Custom field validation failed (missing required field, invalid option, quantity exceeded) |
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | Registration was cancelled by an admin — member may not self-re-register |
+| 404 Not Found | `{slug}` does not match any project |
+
+**Response body** (both 200 and 201):
+```json
+{
+  "registered": true,
+  "available_seats": 41
+}
+```
+`available_seats` is `null` for unlimited-capacity events (`max_participants = null`). Only active (non-cancelled) registrations count against capacity.
+
+**Race-condition safety**: The `EventRegistrationConfig` row is locked with `SELECT FOR UPDATE` inside `@transaction.atomic`. Concurrent last-seat registrations are serialised — at most `max_participants` `EventRegistration` rows are ever active at the same time.
+
+**FULL promotion**: When a registration fills the last seat, `EventRegistrationConfig.status` is atomically updated to `"full"` in the same transaction, so subsequent registrations are rejected immediately (no extra COUNT query needed on the hot path).
+
+**Confirmation email**: A Celery task (`send_event_registration_confirmation_email`) is dispatched via `transaction.on_commit` after the commit succeeds. It sends an email via Mailjet using the `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` template (EN) or `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE` template (DE), selected based on the user's language preference. **Both templates must be created in the Mailjet dashboard before emails will be sent** — see `doc/environment-variables.md` for required template variables. Not dispatched on idempotent re-registrations (200 OK).
+
+#### DELETE `/api/projects/{slug}/registrations/` — Cancel own registration (issue #1850)
+
+Allows the authenticated member to cancel their own registration for an upcoming event. This is a **soft delete** — the `EventRegistration` row is kept and `cancelled_at` / `cancelled_by` are set. The member may re-register later (unless an admin cancels their re-registration).
+
+**Authentication**: Required (401 if unauthenticated).
+
+**Success response**: 204 No Content (no body).
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 400 Bad Request | Event `start_date` has already passed |
+| 401 Unauthorized | Request is not authenticated |
+| 404 Not Found | `{slug}` does not match any project |
+| 404 Not Found | Project has no `EventRegistrationConfig` record |
+| 404 Not Found | User has no active registration for this event |
+
+**OPEN recovery**: if the event was at full capacity (`status = "full"`) and this cancellation frees a seat, `EventRegistrationConfig.status` is atomically reverted to `"open"`.
+
+**Seat count**: all places that compute `available_seats` filter by `cancelled_at IS NULL` so cancelled registrations never hold capacity.
+
+#### PATCH `/api/projects/{slug}/registration-config/` — Edit registration settings (issue #1851)
+
+Allows an event organiser (or team admin) to update `max_participants`, `registration_end_date`, and/or `status` on an event that already has `EventRegistrationConfig` enabled.
+
+**Authentication**: Required (401 if unauthenticated). Requires edit rights on the project (organiser or team admin role) — 403 if unauthorised.
+
+**Editable fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `max_participants` | Positive integer or `null` | Must be ≥ 1 and ≥ current participant count; `null` = unlimited |
+| `registration_end_date` | ISO 8601 datetime | Must be > `now()` and ≤ event `end_date` |
+| `status` | `"open"` or `"closed"` | Organiser may manually open or close registration; `"full"` and `"ended"` are system-managed and are rejected with 400 |
+| `notify_admins` | boolean | Whether team admins receive notification emails on registration changes |
+| `fields` | array | Full replacement of custom registration fields (see below) |
+
+**Status change rules**:
+| Transition | Allowed | Notes |
+|---|---|---|
+| `open` → `closed` | ✅ | Organiser manually closes registration |
+| `closed` → `open` | ✅ | Organiser reopens — only if capacity is still available (see below) |
+| `full` → `open` | ✅ | Only if current participant count < effective `max_participants` after this PATCH |
+| `open/closed` → `full` | ❌ | System-managed only |
+| `open/closed` → `ended` | ❌ | Computed read-only value — rejected with 400 |
+| `open` when `effective_status == "ended"` | ❌ | Deadline has passed — extend `registration_end_date` first |
+| `closed/full` → `open` when event is at capacity | ❌ | Event is fully booked — increase `max_participants` first (or include a higher value in the same request) |
+
+**Idempotency**: setting `status` to its current stored value returns `200 OK` without any DB change.
+
+**Automatic status adjustment** (triggered only when `max_participants` is in the request body AND `status` is NOT explicitly provided):
+| Condition | Result |
+|---|---|
+| Stored status is `full` and new `max_participants` > current registrations | Auto-set to `open` (capacity raised above filled seats) |
+| Stored status is `full` and `max_participants` set to `null` (unlimited) | Auto-set to `open` (unlimited capacity) |
+| Stored status is `open` and new `max_participants` == current registrations | Auto-set to `full` (capacity lowered to exactly match filled seats) |
+
+> **Priority**: if `status` is explicitly provided, it takes precedence over auto-adjustment logic. For example, `{"status": "open", "max_participants": 10}` with 10 current registrations results in `open`, not `full`.
+
+**Request body** (all fields optional — PATCH semantics):
+```json
+{
+  "max_participants": 80,
+  "registration_end_date": "2026-07-01T18:00:00Z",
+  "status": "closed"
+}
+```
+
+**Success response** (200 OK):
+```json
+{
+  "max_participants": 80,
+  "registration_end_date": "2026-07-01T18:00:00Z",
+  "status": "closed",
+  "available_seats": 75
+}
+```
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 400 Bad Request | `registration_end_date` is in the past |
+| 400 Bad Request | `registration_end_date` is after the event's `end_date` |
+| 400 Bad Request | `max_participants` is 0 or negative |
+| 400 Bad Request | `max_participants` is below the current participant count |
+| 400 Bad Request | `status` is `"full"` or `"ended"` (system-managed) |
+| 400 Bad Request | `status = "open"` when `effective_status == "ended"` (deadline has passed — extend `registration_end_date` first) |
+| 400 Bad Request | `status = "open"` when participant count ≥ effective `max_participants` (event is fully booked — increase `max_participants` first, or include a higher value in the same request) |
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | Authenticated user without edit rights on the project |
+| 404 Not Found | `{slug}` does not match any project |
+| 404 Not Found | Project exists but has no `EventRegistrationConfig` record |
+
+**Validation note**: guards are only applied to fields explicitly included in the request body. A PATCH that sends only `max_participants` does not re-validate the stored `registration_end_date`, and vice versa.
+
+**Existing endpoint unchanged**: `PATCH /api/projects/{slug}/` is not affected.
+
+**Custom registration fields** (`fields` array):
+
+The `fields` key accepts a full replacement of the custom field set. Each entry in the array is an object with:
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `id` | integer | No (omit for new fields) | Existing field ID; omit to create a new field |
+| `field_type` | string | Yes | `"checkbox"`, `"option_select"`, `"inventory"`, or `"time_slot_select"` |
+| `order` | integer | Yes | Position in the form (0-indexed) |
+| `is_required` | boolean | No | Default `false` |
+| `label` | string | Yes | Max 30 chars; unique per event; organiser-facing label for export |
+| `settings` | object | Yes | Type-specific (see below) |
+| `options` | array | Conditional | Required for `option_select`, `inventory`, `time_slot_select` |
+
+**Settings by field type**:
+| field_type | settings shape |
+|---|---|
+| `checkbox` | `{ "description": "<p>HTML description</p>" }` |
+| `option_select` | `{ "title": "Select an option" }` |
+| `inventory` | `{ "title": "Choose an option", "description": "Optional description" }` |
+| `time_slot_select` | `{ "title": "Select a time slot", "description": "Optional description" }` |
+
+**Options** (for `option_select`, `inventory`, `time_slot_select`):
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `id` | integer | No (omit for new options) | Existing option ID |
+| `title` | string | Yes | Display label |
+| `order` | integer | Yes | Position (0-indexed) |
+| `available_amount` | integer | inventory only | Total capacity for this option |
+| `max_amount_per_guest` | integer | inventory only | Max quantity per registrant |
+| `start_time` | ISO 8601 datetime | time_slot only | Slot start |
+| `end_time` | ISO 8601 datetime | time_slot only | Slot end; must be after `start_time` |
+
+**Answer-lock**: once any registrant has submitted answers to a field, its text properties (`settings.description`, `settings.title`, option `title`, `start_time`, `end_time`) become immutable — attempts to change them return 400. The field can still be reordered, have its `is_required` toggled, or have new options added (for inventory/time_slot).
+
+**Max 5 fields** per event. Fields omitted from the array are deleted (CASCADE removes associated options and answers). Fields included with an `id` are updated. Fields without an `id` are created.
+
+#### GET `/api/projects/{slug}/registrations/` — List event registrations (organiser view)
+
+Returns **all** `EventRegistration` rows (active and cancelled) for an event that has `EventRegistrationConfig` enabled.
+Intended for organisers / team admins to review their guest list and manage cancellations.
+
+**Authentication**: Required (401 if unauthenticated). Requires organiser or team admin role (`role_type` in `["all", "read write"]`) — 403 if unauthorised.
+
+**No pagination**: all rows are returned in a single response. Client-side paging is provided by the MUI DataGrid in the frontend.
+
+**Default ordering**: `registered_at` ascending (chronological).
+
+**Success response** (200 OK):
+```json
+[
+  {
+    "id": 42,
+    "user_first_name": "Alice",
+    "user_last_name": "Smith",
+    "user_url_slug": "alice-smith",
+    "user_thumbnail_image": "https://.../thumb_alice.jpg",
+    "registered_at": "2026-05-10T14:23:00Z",
+    "cancelled_at": null,
+    "field_answers": [
+      { "field": 1, "value_boolean": true, "value_option": null, "value_number": null },
+      { "field": 2, "value_boolean": null, "value_option": 11, "value_number": null },
+      { "field": 3, "value_boolean": null, "value_option": 20, "value_number": 2 },
+      { "field": 4, "value_boolean": null, "value_option": 30, "value_number": null }
+    ]
+  },
+  {
+    "id": 43,
+    "user_first_name": "Bob",
+    "user_last_name": "Jones",
+    "user_url_slug": "bob-jones",
+    "user_thumbnail_image": null,
+    "registered_at": "2026-05-11T09:00:00Z",
+    "cancelled_at": "2026-05-15T10:30:00Z",
+    "field_answers": []
+  }
+]
+```
+- `id` — the `EventRegistration` primary key, used for admin-cancellation (`PATCH /registrations/{id}/`).
+- `cancelled_at` — `null` for active registrations; ISO 8601 timestamp for cancelled ones.
+- `user_thumbnail_image` is `null` when the participant has no profile image.
+- `field_answers` — array of custom field responses, sorted by field order. Each entry contains `field` (field ID), `value_boolean`, `value_option` (option ID), and `value_number`. Only the value relevant to the field type is non-null.
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | Authenticated user without edit rights on the project |
+| 404 Not Found | `{slug}` does not match any project |
+| 404 Not Found | Project exists but has no `EventRegistrationConfig` record |
+
+**Query optimisation**: the queryset uses `select_related("user__user_profile")` — all participant data is fetched in a single SQL JOIN, regardless of participant count.
+
+#### PATCH `/api/projects/{slug}/registrations/{id}/` — Admin cancel guest registration (issue #1872)
+
+Allows an event organiser or team admin to cancel a specific guest's registration. This is a **soft delete** — `cancelled_at` and `cancelled_by` are set on the row. The guest cannot self-re-register after an admin cancellation.
+
+**Authentication**: Required (401 if unauthenticated). Requires organiser or team admin role — 403 if unauthorised.
+
+**Request body** (optional):
+```json
+{ "message": "Unfortunately, your registration has been cancelled due to capacity changes." }
+```
+When `message` is provided (non-empty), a cancellation notification email is sent to the guest via `send_guest_cancellation_notification`. If absent or blank, no email is sent. The cancellation is committed regardless of email delivery — an email failure is logged but does not roll back the cancellation.
+
+**Success response**: 204 No Content (no body).
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 400 Bad Request | Registration `{id}` is already cancelled |
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | Authenticated user without edit rights on the project |
+| 404 Not Found | `{slug}` does not match any project |
+| 404 Not Found | Project has no `EventRegistrationConfig` record |
+| 404 Not Found | `{id}` does not exist or does not belong to this project |
+
+**OPEN recovery**: if the event was at full capacity (`status = "full"`) and this cancellation frees a seat, `EventRegistrationConfig.status` is atomically reverted to `"open"`.
+
+**Notification email**: uses Mailjet templates `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` (EN) / `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE` (DE). No email is sent if these are not configured — see `doc/environment-variables.md`.
+
+#### POST `/api/projects/{slug}/registrations/email/` — Send organiser email to guests
+
+Sends a plain-text email authored by the organiser to all active registered guests
+(`is_test=false`) or a single test copy to the authenticated organiser (`is_test=true`).
+
+**Authentication**: Required (401 if unauthenticated). Requires organiser or team admin role — 403 if unauthorised.
+
+**Request body**:
+```json
+{
+  "subject": "Important update about the event",
+  "message": "Hi everyone, we have an important update…",
+  "is_test": false
+}
+```
+
+| Field | Type | Required | Constraints |
+|-------|------|----------|-------------|
+| `subject` | string | Yes | max 200 chars, non-blank |
+| `message` | string | Yes | non-blank |
+| `is_test` | boolean | No | defaults to `false` |
+
+**Success response** (200 OK):
+```json
+{ "sent_count": 42 }
+```
+`sent_count` is the number of active participants at request time. For `is_test=true` it is always `1`. Bulk delivery is asynchronous (Celery task); the HTTP response returns immediately.
+
+When `is_test=true`, the subject is prefixed with `[TEST] ` so the organiser can identify the test email in their inbox.
+
+**Error responses**:
+| Status | Condition |
+|--------|-----------|
+| 400 Bad Request | `subject` or `message` is blank or missing |
+| 400 Bad Request | `subject` exceeds 200 characters |
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | Authenticated user without edit rights on the project |
+| 404 Not Found | `{slug}` does not match any project |
+| 404 Not Found | Project exists but has no `EventRegistrationConfig` record |
+
+**Implementation notes**:
+- Bulk send dispatches `send_organizer_message_to_guests` Celery task with a pre-computed snapshot of `user_id` values for **active (non-cancelled)** registrations only, isolating it from concurrent registration changes.
+- Test send is synchronous — one email, inline in the HTTP request.
+- Uses Mailjet templates `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` (EN) and `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE` (DE). No emails are sent until these are configured — see `doc/environment-variables.md`.
 
 ### Organizations
 
@@ -416,5 +945,5 @@ If you encounter issues or have questions about the API:
 
 ---
 
-**Last Updated**: January 14, 2026
+**Last Updated**: May 28, 2026 — Added custom registration fields documentation. `registration_config` detail response now includes `fields` array (RegistrationFieldSerializer with options, remaining_amount, has_answers). `POST /registrations/` accepts optional `answers` array for custom field responses (checkbox: value_boolean, option_select/time_slot_select: value_option, inventory: value_option + value_number). `GET /registrations/` response includes `field_answers` per registration. `PATCH /registration-config/` accepts `fields` array for full field set replacement (max 5 fields, answer-lock on text properties once answers exist) and `notify_admins` boolean. Fixed admin cancel endpoint method from DELETE to PATCH in endpoint table. Previous: April 21, 2026 — Added `POST /api/auth/verify-token` endpoint (US-4). Accepts `{ session_key, code }`. On success returns `{ token, expiry, user }` (Knox token + `PersonalProfileSerializer` user shape). Validates in order: expiry → single-use → attempt limit → constant-time hash comparison. Failed attempts incremented atomically via `F()` expression; response includes remaining attempts or locked message. Race condition guard via `UPDATE … WHERE used_at IS NULL` affected-rows check. New users (`is_profile_verified=False`) are marked verified atomically with Knox token issuance. `LoginAuditLog` written on every outcome (`verified`, `failed`, `expired`, `exhausted`). Added Auth section to Common Endpoints listing all three OTP-flow endpoints. Previous: April 21, 2026 — Added `POST /api/auth/request-token` endpoint (US-3). Accepts `{ email }`, always returns HTTP 200 with `{ session_key }` (enumeration-safe). Generates a cryptographically secure 6-digit OTP (SHA-256 hash stored only), ties it to a browser tab via a 64-char hex `session_key`, and enqueues `send_login_code_email` Celery task. Invalidates any previous active `LoginToken` for the same email before creating the new one. Resend cooldown: 429 with `Retry-After` if a token was created in the last 60 s. Rate limits: 3 req/10 min per email (`Retry-After: 600`), 30 req/h per IP (`Retry-After: 3600`). Writes a `LoginAuditLog` entry (outcome `requested` or `resent`) on every call, including when email is not found. Requires no authentication (`AllowAny`). New settings: `LOGIN_CODE_EMAIL_TEMPLATE_ID`, `LOGIN_CODE_EMAIL_TEMPLATE_ID_DE` (default blank; dev fallback logs OTP to console). Previous: April 20, 2026 — Added `POST /api/auth/check-email` endpoint (US-2b). Returns `{ user_status: "new" | "returning_password" | "returning_otp" }` based on whether the email exists and which `auth_method` the `UserProfile` has. Always HTTP 200. Rate-limited to 20 requests/hour/IP (HTTP 429 + `Retry-After: 3600` on breach). Requires no authentication (`AllowAny`). Backend lookup is case-sensitive; frontend must lowercase before calling. Previous: April 9, 2026 — Added member self-cancellation (`DELETE /api/projects/{slug}/registrations/`, issue #1850) and admin cancel guest (`DELETE /api/projects/{slug}/registrations/{id}/`, issue #1872). `EventRegistrationSerializer` now includes `id` and `cancelled_at`. `GET /registrations/` returns all rows (active + cancelled). `POST /registrations/` supports re-registration after self-cancellation (201) and blocks re-registration after admin-cancellation (403). All seat-count queries filter `cancelled_at IS NULL`. `GET /projects/{slug}/my_interactions/` now returns `has_attended` and `admin_cancelled` booleans; `is_registered` filtered by `cancelled_at IS NULL`. Bulk email endpoint now excludes cancelled registrations. New Mailjet templates: `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` (EN/DE). Previous: April 2, 2026 — Renamed API surface: `POST /api/projects/{slug}/register/` → `POST /api/projects/{slug}/registrations/`; `PATCH /api/projects/{slug}/registration/` → `PATCH /api/projects/{slug}/registration-config/`; JSON key `event_registration` → `registration_config` on all project endpoints. Previous: March 31, 2026 — Added fully-booked reopen guard to `PATCH /api/projects/{slug}/registration-config/`: `status = "open"` is now rejected with `400 Bad Request` when participant count ≥ effective `max_participants` after this PATCH (applies to both `closed → open` and `full → open` transitions when the event is actually at capacity). An organiser can reopen a booked-out event by including a higher `max_participants` in the same request. Three new tests added. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration-config/` updated (issue #1851): `status` is now writable (`"open"` / `"closed"`); `"full"` and `"ended"` are rejected with 400 (system-managed); reopen guard returns 400 when `effective_status == "ended"` (extend deadline first); auto-adjustment skipped when `status` is explicit. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration-config/` now returns `available_seats` in the response body (always computed). Previous: March 31, 2026 — Added status auto-adjustment to `PATCH /api/projects/{slug}/registration-config/`. Previous: March 31, 2026 — Added computed `"ended"` status to `registration_config.status`. Previous: March 30, 2026 — Added `PATCH /api/projects/{slug}/registration-config/` endpoint (issue #1848). Previous: March 30, 2026 — Added `POST /api/projects/{slug}/registrations/` endpoint (issue #1845). Previous: March 19, 2026 — Added `status` field to `registration_config`. Previous: Added `registration_config` nested object to project endpoints (issue #43)
 

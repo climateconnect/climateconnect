@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   prio1_imageContainer: {
-    height: "6rem",
+    height: "8rem",
     display: "flex",
     flexDirection: "row",
     gap: "1rem",
@@ -35,10 +35,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: "center",
     marginTop: theme.spacing(6),
     [theme.breakpoints.down("xl")]: {
-      height: "5rem",
+      height: "6rem",
     },
     [theme.breakpoints.down("lg")]: {
-      height: "4rem",
+      height: "5rem",
     },
   },
   prio1_image: {

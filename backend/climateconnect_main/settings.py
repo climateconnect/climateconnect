@@ -12,17 +12,17 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import ssl
+import sys
 from datetime import timedelta
 
-from dotenv import find_dotenv, load_dotenv
-
-from climateconnect_main.utility.general import get_allowed_hosts
+import django.conf
 import sentry_sdk
+from dotenv import find_dotenv, load_dotenv
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
-import django.conf
 
+from climateconnect_main.utility.general import get_allowed_hosts
 
 load_dotenv(find_dotenv(".backend_env"))
 
@@ -63,6 +63,8 @@ CUSTOM_APPS = [
     "location",
     "ideas",
     "climate_match",
+    "feature_toggles",
+    "auth_app",
 ]
 
 LIBRARY_APPS = [
@@ -90,6 +92,7 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 SECURITY_MIDDLEWARE = [
+    "climateconnect_main.middleware.AzureHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
 ]
 
@@ -126,7 +129,28 @@ CORS_ORIGIN_WHITELIST = [
     "https://test-climateconnect-frontend.azurewebsites.net",
     "https://climateconnect-frontend-slot2.azurewebsites.net",
     "https://climateconnect-frontend-slot2-b4ege4evbjeeabeb.germanywestcentral-01.azurewebsites.net",
+    "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
 ]
+
+# Django 4.x requires CSRF_TRUSTED_ORIGINS for cross-origin POST requests.
+# Must include scheme (https://) - this was not required in Django 3.x.
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
+    "https://alpha.climateconnect.earth",
+    "https://climateconnect.earth",
+    "https://test3425.climateconnect.earth",
+    "https://www.climateconnect.earth",
+    "https://api.climateconnect.earth",
+    "https://www.cc-test-domain.com",
+    "https://cc-test-domain.com",
+    "http://cc-test-domain.com",
+    "https://test-climateconnect-frontend.azurewebsites.net",
+    "https://climateconnect-frontend-slot2.azurewebsites.net",
+    "https://climateconnect-frontend-slot2-b4ege4evbjeeabeb.germanywestcentral-01.azurewebsites.net",
+    "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
+]
+
 APPEND_SLASH = False
 
 ROOT_URLCONF = "climateconnect_main.urls"
@@ -213,7 +237,7 @@ STATIC_URL = (
 STATIC_ROOT = (
     env("STATIC_ROOT") if env("ENVIRONMENT") in ("development", "test") else "static/"
 )
-MEDIA_ROOT = env("MEDIA_ROOT")
+MEDIA_ROOT = env("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
@@ -248,6 +272,8 @@ NEW_EMAIL_VERIFICATION_TEMPLATE_ID_DE = env("NEW_EMAIL_VERIFICATION_TEMPLATE_ID_
 EMAIL_VERIFICATION_TEMPLATE_ID_DE = env("EMAIL_VERIFICATION_TEMPLATE_ID_DE")
 RESET_PASSWORD_TEMPLATE_ID = env("RESET_PASSWORD_TEMPLATE_ID", "")
 RESET_PASSWORD_TEMPLATE_ID_DE = env("RESET_PASSWORD_TEMPLATE_ID_DE")
+LOGIN_CODE_EMAIL_TEMPLATE_ID = env("LOGIN_CODE_EMAIL_TEMPLATE_ID", default="")
+LOGIN_CODE_EMAIL_TEMPLATE_ID_DE = env("LOGIN_CODE_EMAIL_TEMPLATE_ID_DE", default="")
 FEEDBACK_TEMPLATE_ID = env("FEEDBACK_TEMPLATE_ID")
 PRIVATE_MESSAGE_TEMPLATE_ID = env("PRIVATE_MESSAGE_TEMPLATE_ID")
 PRIVATE_MESSAGE_TEMPLATE_ID_DE = env("PRIVATE_MESSAGE_TEMPLATE_ID_DE")
@@ -279,10 +305,29 @@ ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID = env("ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_
 ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID_DE = env(
     "ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID_DE"
 )
+EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID = env(
+    "EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID", ""
+)
+EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE = env(
+    "EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE", ""
+)
+EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID = env("EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID", "")
+EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE = env(
+    "EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE", ""
+)
+ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID = env("ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID", "")
+ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE = env(
+    "ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE", ""
+)
+ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID = env(
+    "ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID", ""
+)
+ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID_DE = env(
+    "ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID_DE", ""
+)
 
 FRONTEND_URL = env("FRONTEND_URL", "")
 LOCATION_SERVICE_BASE_URL = env("LOCATION_SERVICE_BASE_URL")
-ENABLE_LEGACY_LOCATION_FORMAT = env("ENABLE_LEGACY_LOCATION_FORMAT")
 DEEPL_API_KEY = env("DEEPL_API_KEY")
 
 ASGI_APPLICATION = "climateconnect_main.routing.application"
@@ -307,7 +352,12 @@ CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 if env("ENVIRONMENT") == "production":
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
 CELERY_TIMEZONE = "UTC"
-LOCALES = ["en", "de"]
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+NOMINATIM_LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
+CUSTOM_USER_AGENT = "ClimateConnect/1.0 (contact@climateconnect.earth)"
 
 LOCALE_PATHS = [
     BASE_DIR + "/translations",
@@ -321,6 +371,9 @@ LOGGING = {
     "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
     "loggers": {"django": {"handlers": ["console"], "level": "INFO"}},
 }
+
+# Custom test runner to set up global test data
+TEST_RUNNER = "climateconnect_main.test_runner.ClimateConnectTestRunner"
 
 # Setting up cache
 CACHES = {
@@ -364,3 +417,22 @@ sentry_sdk.init(
 CLIMATE_CONNECT_CONTACT_EMAIL = env(
     "CLIMATE_CONNECT_CONTACT_EMAIL", "contact@climateconnect.earth"
 )
+# --- GLOBAL TEST SETTINGS ---
+# This ensures that tests don't require a running Redis/RabbitMQ broker
+if "test" in sys.argv or env("ENVIRONMENT") == "test":
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
+    # Never call the real Nominatim API from tests.
+    NOMINATIM_LOOKUP_URL = "http://testserver/nominatim/lookup"
+
+# --- END GLOBAL TEST SETTINGS ---

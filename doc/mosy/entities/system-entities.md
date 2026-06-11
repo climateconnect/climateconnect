@@ -62,6 +62,71 @@ This document defines the core system entities for Climate Connect, serving as t
   - Requires `Skill` (Matching).
   - Has Many `ProjectMember` (Team).
   - Has Many `Post` (Updates).
+  - Has One `EventRegistrationConfig` (Registration configuration, introduced in [#1820](https://github.com/climateconnect/climateconnect/issues/1820)).
+
+### EventRegistrationConfig
+- **Definition**: Event registration configuration. Presence of this record signals that registration is enabled for an event.
+- **Properties**:
+  - `max_participants`: PositiveInteger, nullable
+  - `registration_end_date`: DateTimeField, nullable
+  - `status`: Enum (`open`, `closed`, `full`)
+  - `notify_admins`: Boolean (default true)
+- **Relationships**:
+  - OneToOneFK → `Project`
+  - Has Many `EventRegistration` (User sign-up records)
+  - Has Many `RegistrationField` (Custom registration fields)
+
+### EventRegistration
+- **Definition**: A user's registration record for an event. One row per user per event.
+- **Properties**:
+  - `registered_at`: DateTimeField
+  - `cancelled_at`: DateTimeField, nullable (NULL = active registration)
+  - `cancelled_by`: FK → User, nullable (self-cancel vs admin-cancel distinction)
+- **Relationships**:
+  - FK → `User`
+  - FK → `EventRegistrationConfig`
+  - Has Many `RegistrationFieldAnswer` (Custom field responses)
+  - UNIQUE constraint: `(user, registration_config)`
+
+### RegistrationField (introduced in [#1880](https://github.com/climateconnect/climateconnect/issues/1880))
+- **Definition**: A custom field on an event's registration form.
+- **Properties**:
+  - `field_type`: Enum (`checkbox`, `option_select`, `inventory`, `time_slot_select`)
+  - `order`: PositiveIntegerField (position in the form)
+  - `is_required`: BooleanField
+  - `label`: CharField, max 30 chars (organiser-facing label for export/display)
+  - `settings`: JSONField (type-specific settings: checkbox stores HTML description, option_select/inventory/time_slot_select store title + description)
+- **Relationships**:
+  - FK → `EventRegistrationConfig` (CASCADE delete)
+  - Has Many `RegistrationFieldOption` (for option_select, inventory, time_slot_select fields)
+  - Has Many `RegistrationFieldAnswer` (registrant's answers)
+
+### RegistrationFieldOption (introduced in [#1880](https://github.com/climateconnect/climateconnect/issues/1880))
+- **Definition**: A selectable option within option_select, inventory, or time_slot_select `RegistrationField`.
+- **Properties**:
+  - `title`: CharField, max 200 chars (display label; defaults to "")
+  - `order`: PositiveIntegerField
+  - `available_amount`: PositiveIntegerField, nullable (capacity limit for inventory fields)
+  - `max_amount_per_guest`: PositiveIntegerField, nullable (max quantity per registrant for inventory fields)
+  - `start_time`: DateTimeField, nullable (for time_slot_select fields)
+  - `end_time`: DateTimeField, nullable (for time_slot_select fields)
+- **Relationships**:
+  - FK → `RegistrationField` (CASCADE delete)
+  - UNIQUE constraint: `(field, order)`
+
+### RegistrationFieldAnswer
+- **Definition**: A registrant's answer to a custom `RegistrationField`. Stored when a user submits their event registration.
+- **Properties**:
+  - `value_boolean`: BooleanField, nullable (for checkbox fields)
+  - `value_option`: FK → `RegistrationFieldOption`, nullable (for option_select, inventory, and time_slot_select fields)
+  - `value_number`: PositiveIntegerField, nullable (quantity for inventory fields)
+  - `created_at`: DateTimeField
+  - `updated_at`: DateTimeField
+- **Relationships**:
+  - FK → `EventRegistration` (CASCADE delete, related_name: `field_answers`)
+  - FK → `RegistrationField` (CASCADE delete, related_name: `answers`)
+  - FK → `RegistrationFieldOption` (CASCADE delete, related_name: `answers`)
+  - UNIQUE constraint: `(registration, field)`
 
 ### MembershipRequest
 - **Definition**: A request from a user to join a Project or Organization.
@@ -156,3 +221,18 @@ This document defines the core system entities for Climate Connect, serving as t
   - `osm_id`: String (OpenStreetMap reference)
   - `city`, `country`: String
 - **Relationships**: Referenced by almost all core entities (`Project`, `User`, `Hub`).
+
+## 8. Platform Configuration
+
+### FeatureToggle
+- **Definition**: A feature flag system for enabling/disabling features across environments.
+- **Properties**:
+  - `name`: String (Unique, uppercase with underscores, e.g., "NEW_DASHBOARD")
+  - `description`: Text (Description of what this feature controls)
+  - `production_is_active`: Boolean
+  - `staging_is_active`: Boolean
+  - `development_is_active`: Boolean
+  - `created_at`: DateTime
+  - `updated_at`: DateTime
+- **Relationships**: None (standalone configuration entity)
+- **Usage**: Used to control feature availability without deployment. Supports environment-specific toggling (production, staging, development).

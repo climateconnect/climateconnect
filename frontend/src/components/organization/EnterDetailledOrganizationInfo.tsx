@@ -1,6 +1,6 @@
 import makeStyles from "@mui/styles/makeStyles";
 import Alert from "@mui/material/Alert";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
@@ -54,8 +54,9 @@ export default function EnterDetailledOrganizationInfo({
     },
   };
   const classes = useStyles();
+  const router = useRouter();
   const handleCancel = () => {
-    Router.push("/browse");
+    router.push("/browse");
   };
   return (
     <div>

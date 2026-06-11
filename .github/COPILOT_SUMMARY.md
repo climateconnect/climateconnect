@@ -10,7 +10,7 @@
 
 Comprehensive instructions covering:
 - Project overview and mission
-- Complete tech stack (Django 3.2, Next.js 12, MUI v5, etc.)
+- Complete tech stack (Django 4.2, Next.js 14, MUI v5, etc.)
 - Architecture patterns and folder structure
 - Code style guidelines for backend and frontend
 - Development workflow and common commands

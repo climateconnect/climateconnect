@@ -1,6 +1,7 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect, useState } from "react";
-import { CcLandingpage, EnLandingpageClimateConnect } from "../devlink";
+import { CcLandingpage } from "../devlink/CcLandingpage";
+import { EnLandingpageClimateConnect } from "../devlink/EnLandingpageClimateConnect";
 import UserContext from "../src/components/context/UserContext";
 import WideLayout from "../src/components/layouts/WideLayout";
 

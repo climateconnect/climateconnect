@@ -1,6 +1,11 @@
 from django.urls import path
 
-from organization.views import organization_views, project_views, sector_views
+from organization.views import (
+    organization_views,
+    project_views,
+    sector_views,
+    event_registration_views,
+)
 
 app_name = "organization"
 urlpatterns = [
@@ -229,5 +234,25 @@ urlpatterns = [
         "projects/<str:url_slug>/similar/",
         project_views.SimilarProjects.as_view(),
         name="similar-projects",
+    ),
+    path(
+        "projects/<str:url_slug>/registrations/",
+        event_registration_views.EventRegistrationsView.as_view(),
+        name="event-registrations",
+    ),
+    path(
+        "projects/<str:url_slug>/registration-config/",
+        event_registration_views.EditRegistrationConfigView.as_view(),
+        name="edit-registration-config",
+    ),
+    path(
+        "projects/<str:url_slug>/registrations/email/",
+        event_registration_views.SendOrganizerEmailView.as_view(),
+        name="send-organizer-email-to-guests",
+    ),
+    path(
+        "projects/<str:url_slug>/registrations/<int:registration_id>/",
+        event_registration_views.AdminCancelRegistrationView.as_view(),
+        name="admin-cancel-guest-registration",
     ),
 ]

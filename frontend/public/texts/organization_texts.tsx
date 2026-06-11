@@ -217,9 +217,9 @@ export default function getOrganizationTexts({ organization, locale }) {
       de: "Gib den Namen der übergeordneten Organisation an",
     },
     i_verify_that_i_am_an_authorized_representative_of_this_organization: {
-      en: `I verify that I am an authorized representative of this organisation 
+      en: `I verify that I am an authorized representative of this organisation
       and have the right to act on its behalf in the creation and management of this page.`,
-      de: `Ich bestätige, dass ich ein(e) autorisierte*r Vertreter*in dieser Organisation 
+      de: `Ich bestätige, dass ich ein(e) autorisierte*r Vertreter*in dieser Organisation
       bin und das Recht habe, in deren Namen bei der Erstellung und Verwaltung dieser Seite zu handeln.`,
     },
     almost_done_here_you_can_customize_your_organization_page_and_add_details: {
@@ -277,10 +277,10 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     share_organization_email_body: {
       en: `Hey,
-      I found this awesome climate protection organisation: "${organization?.name}". 
+      I found this awesome climate protection organisation: "${organization?.name}".
       You should check it out here: `,
       de: `Hey,
-      Ich habe gerade diese spannende Klimaschutzorganisation gefunden: "${organization?.name}". 
+      Ich habe gerade diese spannende Klimaschutzorganisation gefunden: "${organization?.name}".
       Schau sie dir doch mal an: `,
     },
     skip_for_now: {
@@ -394,7 +394,7 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     editing_org_in_wrong_language: {
       en: `Because you shared your organisation in ${org_lang_name}, you can only edit the text in ${org_lang_name} here. If you want to change the text in other languages click on "Check Translations" below.`,
-      de: `Weil Du Deine Organisation auf ${org_lang_name} geteilt hast, kannst du hier den Text nur auf ${org_lang_name} bearbeiten. Wenn Du die anderen Sprachen bearbeiten möchtest, klicke auf "Übersetzungen überprüfen" weiter unten.`,
+      de: `Weil du deine Organisation auf ${org_lang_name} geteilt hast, kannst du hier den Text nur auf ${org_lang_name} bearbeiten. Wenn Du die anderen Sprachen bearbeiten möchtest, klicke auf "Übersetzungen überprüfen" weiter unten.`,
     },
   };
 }

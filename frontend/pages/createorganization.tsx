@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import NextCookies from "next-cookies";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../public/data/role_types";
@@ -71,12 +71,11 @@ export default function CreateOrganization({
 }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
+  const router = useRouter();
   const [errorMessages, setErrorMessages] = useState({
     basicOrganizationInfo: "",
     detailledOrganizationInfo: "",
   });
-
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
 
   const handleSetErrorMessages = (newErrorMessages) => {
     setErrorMessages(newErrorMessages);
@@ -164,8 +163,8 @@ export default function CreateOrganization({
         return;
       }
 
-      //short circuit if the location is invalid and we're not in legacy mode
-      if (!legacyModeEnabled && !isLocationValid(values.location)) {
+      //short circuit if the location is invalid
+      if (!isLocationValid(values.location)) {
         indicateWrongLocation(
           locationInputRef,
           setLocationOptionsOpen,
@@ -254,7 +253,7 @@ export default function CreateOrganization({
       hubUrl
     );
 
-    if (!legacyModeEnabled && !isLocationValid(organizationToSubmit.location)) {
+    if (!isLocationValid(organizationToSubmit.location)) {
       indicateWrongLocation(
         locationInputRef,
         setLocationOptionsOpen,
@@ -316,7 +315,7 @@ export default function CreateOrganization({
     })
       .then(function (response) {
         setLoadingSubmit(false);
-        Router.push({
+        router.push({
           pathname: `/manageOrganizationMembers/${response.data.url_slug}`,
           query: {
             message: texts.you_have_successfully_created_an_organization_you_can_add_members,

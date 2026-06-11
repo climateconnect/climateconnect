@@ -4,6 +4,7 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoadingContainer from "../general/LoadingContainer";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,7 +17,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectSubmittedPage({ user, isDraft, url_slug, hasError, hubName }) {
+export default function ProjectSubmittedPage({
+  user,
+  isDraft,
+  url_slug,
+  hasError,
+  hubName,
+  projectTypeId,
+}) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({
@@ -26,6 +34,9 @@ export default function ProjectSubmittedPage({ user, isDraft, url_slug, hasError
     url_slug: url_slug,
     hubName: hubName,
   });
+  const projectTypeTexts = getProjectTypeTexts(texts);
+  const typeId = projectTypeId ?? "project";
+
   return (
     <div className={classes.root}>
       {hasError ? (
@@ -37,21 +48,21 @@ export default function ProjectSubmittedPage({ user, isDraft, url_slug, hasError
       ) : isDraft ? (
         <>
           <Typography variant="h5" className={classes.headline}>
-            {texts.your_project_has_saved_as_a_draft}
+            {projectTypeTexts.draftProject[typeId]}
           </Typography>
           <Typography variant="h5" className={classes.headline}>
-            {texts.you_can_view_edit_and_publish_your_project_drafts_in_the}
+            {projectTypeTexts.editAndPublishDraftProject[typeId]}
           </Typography>
         </>
       ) : (
         <>
           <Typography variant="h5" className={classes.headline}>
-            {texts.congratulations_your_project_has_been_published}
+            {projectTypeTexts.publishProject[typeId]}
           </Typography>
           <Typography variant="h5" className={classes.headline}>
             {texts.we_are_really_happy_that_you_inspire_the_global_climate_action_community}
           </Typography>
-          <Typography variant="h5">{texts.you_can_view_your_project_here}</Typography>
+          <Typography variant="h5">{projectTypeTexts.viewProject[typeId]}</Typography>
         </>
       )}
     </div>

@@ -1,6 +1,6 @@
 import { Button, Container, TextField, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getProjectTexts from "../../../public/texts/project_texts";
 import getTexts from "../../../public/texts/texts";
@@ -62,22 +62,6 @@ export default function TranslateProject({
 
   if (translations[targetLanguage]) console.log(translations[targetLanguage]);
 
-  useEffect(() => {
-    initializeTranslationsObject();
-  }, []);
-
-  const arrayTranslations = ["helpful_connections"];
-
-  const initializeTranslationsObject = () => {
-    if (!translations[targetLanguage]) {
-      const initializedObject = {};
-      for (const key of arrayTranslations) {
-        initializedObject[key] = [];
-      }
-      handleChangeTranslationContent(targetLanguage, { ...initializedObject }, false);
-    }
-  };
-
   const onClickPreviousStep = () => {
     goToPreviousStep();
   };
@@ -112,7 +96,6 @@ export default function TranslateProject({
             name: projectData.name,
             short_description: projectData.short_description,
             description: projectData.description,
-            helpful_connections: projectData.helpful_connections,
           },
           target_language: "en",
         },
@@ -134,8 +117,6 @@ export default function TranslateProject({
       setWaitingForTranslation(false);
     }
   };
-
-  console.log(projectData?.helpful_connections?.length > 0);
 
   return (
     <Container className={classes.root}>
@@ -190,23 +171,6 @@ export default function TranslateProject({
             translations={translations}
             targetLanguage={targetLanguage}
           />
-          {projectData?.helpful_connections?.length > 0 &&
-            projectData.helpful_connections.map((connection, index) => (
-              <TranslationBlock
-                key={index}
-                projectData={projectData}
-                projectDataKey="helpful_connections"
-                headlineTextKey="helpful_connections"
-                rows={1}
-                indexInArray={index}
-                isInArray
-                handleOriginalTextChange={handleOriginalTextChange}
-                handleTranslationChange={handleTranslationChange}
-                translations={translations}
-                targetLanguage={targetLanguage}
-                noHeadline={index > 0}
-              />
-            ))}
         </div>
         <NavigationButtons
           className={classes.block}

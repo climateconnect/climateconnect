@@ -1,7 +1,6 @@
 from location.models import Location
 from django.db import models
 
-
 #
 from climateconnect_api.models.language import Language
 

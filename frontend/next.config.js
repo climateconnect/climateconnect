@@ -6,6 +6,12 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 require("dotenv").config();
 
+const {
+  isWasseraktionswochenEnabled,
+  WASSERAKTIONSWOCHEN_PATH,
+  WASSERAKTIONSWOCHEN_PARENT_SLUG,
+} = require("./public/data/wasseraktionswochen_config");
+
 module.exports = withBundleAnalyzer({
   // Disable ESLint during build - it's already run separately in CI
   eslint: {
@@ -20,13 +26,13 @@ module.exports = withBundleAnalyzer({
     "BASE_URL_HOST",
     "CUSTOM_HUB_URLS",
     "DONATION_CAMPAIGN_RUNNING",
-    "ENABLE_LEGACY_LOCATION_FORMAT",
     "ENVIRONMENT",
     "GOOGLE_ANALYTICS_CODE",
     "LATEST_NEWSLETTER_LINK",
     "LOCATION_HUBS",
     "LETS_ENCRYPT_FILE_CONTENT",
     "SOCKET_URL",
+    "WASSERAKTIONSWOCHEN_FEATURE",
     "WEBFLOW_API_TOKEN",
     "WEBFLOW_SITE_ID",
     "FRONTEND_SENTRY_DSN",
@@ -40,7 +46,7 @@ module.exports = withBundleAnalyzer({
     return defaultPathMap;
   },
   async redirects() {
-    return [
+    const redirects = [
       {
         source: "/",
         destination: "/browse",
@@ -86,12 +92,30 @@ module.exports = withBundleAnalyzer({
         permanent: false,
       },
     ];
+
+    // Conditionally add Wasseraktionswochen redirect
+    if (isWasseraktionswochenEnabled()) {
+      redirects.push({
+        source: `/projects/${WASSERAKTIONSWOCHEN_PARENT_SLUG}`,
+        destination: WASSERAKTIONSWOCHEN_PATH,
+        permanent: false,
+      });
+    }
+
+    return redirects;
   },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
+    // Suppress conflicting star export warnings from Webflow DevLink's auto-generated barrel
+    // (devlink/index.js re-exports Boolean and Number value modules that share the same export names).
+    // This is a known issue in the Webflow DevLink code generator and cannot be fixed on our side.
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      { message: /conflicting star exports/ },
+    ];
     return config;
   },
 });

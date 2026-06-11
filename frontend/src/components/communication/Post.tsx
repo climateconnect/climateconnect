@@ -112,12 +112,34 @@ export default function Post({
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (type !== "preview" && contentRef.current) {
-      const element = contentRef.current;
-      const isTruncated = element.scrollHeight > element.clientHeight;
-      setIsTextTruncated(isTruncated);
-    }
-  }, [post.content, type]);
+    // Don't measure in preview mode or when the user has already expanded the text.
+    // When expanded there is no clamp, so scrollHeight === clientHeight and the
+    // measurement would incorrectly clear the truncated flag.
+    if (type === "preview" || isTextExpanded || !contentRef.current) return;
+
+    const element = contentRef.current;
+
+    const checkTruncation = () => {
+      // clientHeight is 0 when the element is inside a hidden tab panel –
+      // skip the measurement and wait for the ResizeObserver to fire once
+      // the panel becomes visible.
+      if (element.clientHeight > 0) {
+        setIsTextTruncated(element.scrollHeight > element.clientHeight);
+      }
+    };
+
+    // Check immediately for the case where the element is already visible.
+    checkTruncation();
+
+    // Re-check whenever the element's size changes:
+    //   • the tab panel transitions from hidden → visible (clientHeight: 0 → N)
+    //   • web fonts finish loading and reflow the text
+    //   • the viewport is resized
+    const observer = new ResizeObserver(checkTruncation);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [post.content, type, isTextExpanded]);
 
   const handleExpandText = () => {
     setIsTextExpanded(!isTextExpanded);

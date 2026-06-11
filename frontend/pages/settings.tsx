@@ -31,6 +31,8 @@ export default function Settings({ settings, hubThemeData, hubUrl }) {
   const token = new Cookies().get("auth_token");
   const { user } = useContext(UserContext);
   const [message, setMessage] = useState("");
+  // log settings
+  console.log(settings);
   const [currentSettings, setCurrentSettings] = useState(settings);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });

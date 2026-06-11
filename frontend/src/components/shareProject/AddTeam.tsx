@@ -155,20 +155,21 @@ export default function AddTeam({
         />
         {isLastStep ? (
           <NavigationButtons
-            className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="publish"
             saveAsDraft={saveAsDraft}
             loadingSubmit={loadingSubmit}
             loadingSubmitDraft={loadingSubmitDraft}
-            position="bottom"
+            sticky
           />
         ) : (
           <NavigationButtons
-            className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
-            position="bottom"
+            saveAsDraft={projectData.name ? saveAsDraft : undefined}
+            loadingSubmit={loadingSubmit}
+            loadingSubmitDraft={loadingSubmitDraft}
+            sticky
           />
         )}
       </form>

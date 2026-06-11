@@ -112,9 +112,7 @@
   },
 
   // ESLint Configuration
-  "eslint.workingDirectories": [
-    "./frontend"
-  ],
+  "eslint.workingDirectories": ["./frontend"],
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -139,6 +137,6 @@
     "github.copilot-chat",
     "editorconfig.editorconfig",
     "ms-azuretools.vscode-docker"
-  ]
+  ],
+  "remote.autoForwardPortsFallback": 0
 }
-

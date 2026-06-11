@@ -23,24 +23,6 @@ export async function getSkillsOptions(locale, parentSkillsOnly?: boolean) {
   }
 }
 
-export async function getProjectTagsOptions(hub, locale) {
-  const url = hub ? `/api/projecttags/?hub=${hub}` : `/api/projecttags/`;
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: url,
-      locale: locale,
-    });
-    if (resp.data.results.length === 0) return null;
-    else {
-      return parseOptions(resp.data.results, "parent_tag");
-    }
-  } catch (err: any) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
 export async function getSectorOptions(locale, hubUrl?: string) {
   const query = hubUrl ? `?hub=${hubUrl}` : "";
   try {

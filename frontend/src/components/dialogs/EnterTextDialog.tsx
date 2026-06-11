@@ -1,6 +1,6 @@
 import { TextField } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import PropTypes from "prop-types";
+import { func, string, bool, number } from "prop-types";
 import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -88,11 +88,11 @@ export default function EnterTextDialog({
 }
 
 EnterTextDialog.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  title: PropTypes.string.isRequired,
-  inputLabel: PropTypes.string.isRequired,
-  applyText: PropTypes.string.isRequired,
-  maxLength: PropTypes.number,
-  className: PropTypes.string,
+  onClose: func.isRequired,
+  open: bool.isRequired,
+  title: string.isRequired,
+  inputLabel: string.isRequired,
+  applyText: string.isRequired,
+  maxLength: number,
+  className: string,
 };

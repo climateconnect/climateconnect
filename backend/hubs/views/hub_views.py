@@ -108,7 +108,7 @@ class ListHubsView(ListAPIView):
     def get_queryset(self):
         return Hub.objects.filter(
             Q(parent_hub__isnull=True) & Q(importance__gte=1)
-        ).prefetch_related("language")
+        ).prefetch_related("language", "translate_hub__language")
 
 
 class ListSectorHubsView(ListAPIView):
@@ -116,8 +116,10 @@ class ListSectorHubsView(ListAPIView):
     serializer_class = HubStubSerializer
 
     def get_queryset(self):
-        return Hub.objects.filter(hub_type=Hub.SECTOR_HUB_TYPE).filter(
-            importance__gte=1
+        return (
+            Hub.objects.filter(hub_type=Hub.SECTOR_HUB_TYPE)
+            .filter(importance__gte=1)
+            .prefetch_related("language", "translate_hub__language")
         )
 
 

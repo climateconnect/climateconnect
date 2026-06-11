@@ -71,6 +71,10 @@
     "en": "Go back",
     "de": "Zurück"
   },
+  "back_to_parent": {
+    "en": "Back to {parent_name}",
+    "de": "Zurück zu {parent_name}"
+  },
   "default_description": {
     "en": "Free and non-profit climate action platform. Share, find and work on impactful, innovative and inspiring solutions to reduce and stop global warming. Join #teamclimate now!",
     "de": "Kostenlose und gemeinnützige Klimaschutzplattform. Teile, finde und arbeite an wirkungsvollen, innovativen und inspirierenden Lösungen, um die globale Erwärmung zu reduzieren und zu stoppen. Komm ins #teamclimate!"
@@ -133,7 +137,7 @@
   },
   "please_choose_one_of_the_location_options": {
     "en": "Please choose one of the location options. Choose the city you are in if the location is online.",
-    "de": "Bitte wähle eine der Optionen für den Ort. Wähle Deinen Standort, wenn der Ort \"Online\" ist."
+    "de": "Bitte wähle eine der Optionen für den Ort. Wähle deinen Standort, wenn der Ort \"Online\" ist."
   },
   "organization_type": {
     "en": "Organisation type",
@@ -164,8 +168,8 @@
     "de": "Teilen"
   },
   "share_a_project": {
-    "en": "Share",
-    "de": "Teilen"
+    "en": "Create",
+    "de": "Erstellen"
   },
   "inbox": {
     "en": "Inbox",
@@ -174,6 +178,10 @@
   "log_in": {
     "en": "Log in",
     "de": "Einloggen"
+  },
+  "auth_log_in": {
+    "en": "Log in",
+    "de": "Anmelden"
   },
   "log_out": {
     "en": "Log out",
@@ -357,7 +365,7 @@
   },
   "something_went_wrong": {
     "en": "Something went wrong. Please contact our support at contact@climateconnect.earth.",
-    "de": "Etwas ist schiefgelaufen. Bitte wende Dich an unseren Support unter contact@climateconnect.earth."
+    "de": "Etwas ist schiefgelaufen. Bitte wende dich an unseren Support unter contact@climateconnect.earth."
   },
   "get_inspired": {
     "en": "Get inspired",
@@ -616,8 +624,8 @@
     "de": "Wähle 1-3 Themenfelder, die zu deinem Projekt passen"
   },
   "project_details": {
-    "en": "Project Details",
-    "de": "Projektdetails"
+    "en": "Details",
+    "de": "Details"
   },
   "add_your_team": {
     "en": "Add your team",
@@ -779,6 +787,14 @@
     "en": "You do not have permission to do this.",
     "de": "Dir fehlen die Berechtigungen für diese Aktion."
   },
+  "user_request_approved_successfully": {
+    "en": "User request approved successfully.",
+    "de": "Anfrage erfolgreich angenommen."
+  },
+  "user_request_rejected_successfully": {
+    "en": "User request rejected successfully.",
+    "de": "Anfrage erfolgreich abgelehnt."
+  },
   "please_fill_out_this_field": {
     "en": "Please fill out this field",
     "de": "Bitte füll dieses Feld aus"
@@ -806,5 +822,9 @@
   "sectors": {
     "en": "Topics",
     "de": "Themenfelder"
+  },
+  "search": {
+    "en": "Search",
+    "de": "Suche"
   }
 }

@@ -11,14 +11,12 @@ import {
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { getLocaleHeader } from "../../utils/locationUtils";
 
 const useStyles = makeStyles((theme) => ({
-  additionalInfos: (props: any) => ({
+  additionalInfos: {
     width: "100%",
-    marginTop: props.hideHelperText ? 0 : theme.spacing(2),
-  }),
-  formHelperText: {
-    marginTop: theme.spacing(-2),
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -118,19 +116,16 @@ export default function LocationSearchBar({
 
     (async () => {
       if (searchValue) {
-        const config = {
-          method: "GET",
-          mode: "no-cors",
-          referrerPolicy: "origin",
-        };
         const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           : searchValue;
-        let url = `https://nominatim.openstreetmap.org/search?q=${searchParam}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`;
+        let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          searchParam
+        )}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001`;
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
-        const response = await axios(url, config as any);
+        const response = await axios.get(url, { headers: getLocaleHeader(locale) });
         const bannedClasses = [
           "tourism",
           "railway",
@@ -154,6 +149,10 @@ export default function LocationSearchBar({
             state: "",
             place_id: 1,
             osm_id: -1,
+            osm_type: "relation",
+            class: "global",
+            osm_class: "global",
+            osm_class_type: "global",
             lon: -1,
             lat: -1,
           },
@@ -205,8 +204,14 @@ export default function LocationSearchBar({
 
           const options = data.map((option) => ({
             ...option,
+            // Nominatim returns "class" but our app uses "osm_class" consistently.
+            // Same with "type" and "osm_class_type".
+            osm_class: option.osm_class ?? option.class,
+            osm_class_type: option.osm_class_type ?? option.type,
             simple_name: getSimpleName(option, enableExactLocation),
-            key: option.place_id,
+            key: `${option.osm_id || "na"}-${option.osm_type}-${
+              option.osm_class ?? option.class ?? "na"
+            }`,
           }));
           setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);
@@ -219,7 +224,7 @@ export default function LocationSearchBar({
     return () => {
       active = false;
     };
-  }, [searchValue]);
+  }, [searchValue, locale, hubUrl]);
 
   const getOptionsWithoutRedundancies = (options) => {
     //For the classes_without_hierarchy we simply return the first element if there is a redundancy
@@ -339,11 +344,6 @@ export default function LocationSearchBar({
               ...params.InputProps,
               endAdornment: <Fragment>{params.InputProps.endAdornment}</Fragment>,
               className: `${textFieldClassName}`,
-            }}
-            FormHelperTextProps={{
-              classes: {
-                root: classes.formHelperText,
-              },
             }}
           />
         )}

@@ -2,6 +2,29 @@ import logging
 import uuid
 from datetime import datetime, timedelta
 
+from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models import GeometryField, Union
+from django.contrib.gis.db.models.functions import Distance
+from django.db.models import Count, Q
+from django.db.models.functions import Cast
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
+from django.views.decorators.cache import cache_page
+from django_filters.rest_framework import DjangoFilterBackend
+from knox.views import LoginView as KnoxLoginView
+from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from auth_app.models import LoginAuditLog
+from auth_app.utility.ip import anonymise_ip
 from climateconnect_api.models import Availability, Skill, UserProfile
 from climateconnect_api.models.language import Language
 from climateconnect_api.pagination import MembersPagination, MembersSitemapPagination
@@ -14,44 +37,27 @@ from climateconnect_api.serializers.user import (
     UserProfileSitemapEntrySerializer,
     UserProfileStubSerializer,
 )
+from climateconnect_api.utility.common import create_unique_slug
 from climateconnect_api.utility.email_setup import (
     send_password_link,
     send_user_verification_email,
 )
 from climateconnect_api.utility.translation import edit_translations
-from climateconnect_main.utility.general import get_image_from_data_url
 from climateconnect_api.utility.user import get_user_profile_hub_slug
-from django.conf import settings
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from django.contrib.gis.db.models.functions import Distance
-from django.db.models import Count, Q
-from django.utils import timezone
-from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
-from climateconnect_api.utility.common import create_unique_slug
-
-from django.views.decorators.cache import cache_page
-from django_filters.rest_framework import DjangoFilterBackend
+from climateconnect_main.utility.general import get_image_from_data_url
 from hubs.models.hub import Hub
 from ideas.models.support import IdeaSupporter
 from ideas.serializers.idea import IdeaFromIdeaSupporterSerializer
-from knox.views import LoginView as KnoxLoginView
 from location.models import Location
 from location.utility import get_location, get_location_with_range
+from organization.models import Project, Sector, UserProfileSectorMapping
 from organization.models.members import OrganizationMember, ProjectMember
 from organization.serializers.organization import OrganizationsFromOrganizationMember
-from organization.serializers.project import ProjectFromProjectMemberSerializer
-from rest_framework import status
-from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from organization.models import Sector
+from organization.serializers.project import (
+    ProjectFromProjectMemberSerializer,
+    ProjectStubSerializer,
+)
 from organization.utility.sector import sanitize_sector_inputs
-from organization.models import UserProfileSectorMapping
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +72,8 @@ class LoginView(KnoxLoginView):
             message = "Must include 'username' and 'password'"
             return Response({"message": message}, status=status.HTTP_400_BAD_REQUEST)
 
+        username = request.data.get("username", "")
+
         # First, authenticate the user
         user = authenticate(
             username=request.data["username"], password=request.data["password"]
@@ -74,6 +82,13 @@ class LoginView(KnoxLoginView):
         if user:
             user_profile = UserProfile.objects.filter(user=user)[0]
             if not user_profile.is_profile_verified:
+                LoginAuditLog.objects.create(
+                    email=username,
+                    user=user,
+                    outcome=LoginAuditLog.Outcome.FAILED,
+                    ip_address=anonymise_ip(request.META.get("REMOTE_ADDR")),
+                    user_agent=request.META.get("HTTP_USER_AGENT", "")[:512],
+                )
                 message = "You first have to activate your account by clicking the link we sent to your E-Mail."
                 return Response(
                     {"message": message, "type": "not_verified"},
@@ -92,8 +107,24 @@ class LoginView(KnoxLoginView):
                 user_profile.has_logged_in = user_profile.has_logged_in + 1
                 user_profile.save()
 
+            LoginAuditLog.objects.create(
+                email=username,
+                user=user,
+                outcome=LoginAuditLog.Outcome.VERIFIED,
+                ip_address=anonymise_ip(request.META.get("REMOTE_ADDR")),
+                user_agent=request.META.get("HTTP_USER_AGENT", "")[:512],
+            )
+
             return super(LoginView, self).post(request, format=None)
         else:
+            looked_up_user = User.objects.filter(username=username).first()
+            LoginAuditLog.objects.create(
+                email=username,
+                user=looked_up_user,
+                outcome=LoginAuditLog.Outcome.FAILED,
+                ip_address=anonymise_ip(request.META.get("REMOTE_ADDR")),
+                user_agent=request.META.get("HTTP_USER_AGENT", "")[:512],
+            )
             return Response(
                 {"message": _("Invalid email or password")},
                 status=status.HTTP_401_UNAUTHORIZED,
@@ -110,7 +141,6 @@ class SignUpView(APIView):
     def post(self, request):
         required_params = [
             "email",
-            "password",
             "first_name",
             "last_name",
             "location",
@@ -134,7 +164,14 @@ class SignUpView(APIView):
             is_active=True,
         )
 
-        user.set_password(request.data["password"])
+        # Handle password-based vs passwordless signup
+        password = request.data.get("password")
+        if password:
+            user.set_password(password)
+            auth_method = UserProfile.AuthMethod.PASSWORD
+        else:
+            user.set_unusable_password()
+            auth_method = UserProfile.AuthMethod.OTP
         user.save()
 
         full_name = user.first_name + "-" + user.last_name
@@ -151,6 +188,7 @@ class SignUpView(APIView):
             verification_key=uuid.uuid4(),
             send_newsletter=request.data["send_newsletter"],
             language=source_language,
+            auth_method=auth_method,
         )
         if "is_activist" in request.data:
             user_profile.is_activist = request.data["is_activist"]
@@ -168,10 +206,19 @@ class SignUpView(APIView):
             user_profile.is_profile_verified = True
             message = "Congratulations! Your account has been created"
         else:
-            send_user_verification_email(user, user_profile.verification_key, hub_url)
-            message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
-                user.email
-            )  # NOQA
+            # Only send verification email for password-based signups
+            # OTP-based signups use the OTP code entry as verification
+            if auth_method == UserProfile.AuthMethod.PASSWORD:
+                send_user_verification_email(
+                    user, user_profile.verification_key, hub_url
+                )
+                message = "You're almost done! We have sent an email with a confirmation link to {}. Finish creating your account by clicking the link.".format(
+                    user.email
+                )  # NOQA
+            else:
+                # For OTP signups, account is created unverified
+                # It will be verified when they complete the OTP flow
+                message = "Account created successfully"
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
@@ -245,7 +292,9 @@ class ListMemberProfilesView(ListAPIView):
     def get_queryset(self):
         user_profiles = (
             UserProfile.objects.filter(is_profile_verified=True)
-            .prefetch_related("user", "location")
+            .prefetch_related(
+                "user", "location", "location__translate_location__language"
+            )
             .annotate(is_image_null=Count("image", filter=Q(image="")))
             .order_by("is_image_null", "-id")
         )
@@ -263,26 +312,39 @@ class ListMemberProfilesView(ListAPIView):
             for current_hub in hubs:
                 user_filter |= Q(related_hubs=current_hub)
 
-                if current_hub.location.exists():
-                    location = current_hub.location.first()
-                    location_multipolygon = location.multi_polygon
+                if current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
+                    hub_locations = current_hub.location.all()
 
-                    if location_multipolygon:
-                        location_filter = Q(location__country=location.country) & (
-                            Q(location__multi_polygon__coveredby=location_multipolygon)
-                            | Q(location__centre_point__coveredby=location_multipolygon)
+                    if hub_locations.exists():
+                        hub_location_ids = hub_locations.values_list("id", flat=True)
+
+                        aggregated_geometry = hub_locations.annotate(
+                            geom_as_geometry=Cast("multi_polygon", GeometryField())
+                        ).aggregate(combined=Union("geom_as_geometry"))["combined"]
+
+                        country_filter = Q(
+                            location__country=hub_locations.first().country
                         )
-                        user_filter |= (
-                            location_filter  # Combine with related_hubs filter
+                        by_location_id = country_filter & Q(
+                            location__id__in=hub_location_ids
                         )
 
-                # Optionally annotate distance
-                if current_hub.location.exists() and location_multipolygon:
-                    user_profiles = user_profiles.annotate(
-                        distance=Distance(
-                            "location__centre_point", location_multipolygon
-                        )
-                    )
+                        if aggregated_geometry:
+                            by_geometry = country_filter & (
+                                Q(location__centre_point__coveredby=aggregated_geometry)
+                                | Q(
+                                    location__multi_polygon__coveredby=aggregated_geometry
+                                )
+                            )
+                            user_filter |= by_location_id | by_geometry
+
+                            user_profiles = user_profiles.annotate(
+                                distance=Distance(
+                                    "location__centre_point", aggregated_geometry
+                                )
+                            )
+                        else:
+                            user_filter |= by_location_id
             # apply combined filters of all hubs
             user_profiles = user_profiles.filter(user_filter).distinct()
 
@@ -292,7 +354,10 @@ class ListMemberProfilesView(ListAPIView):
             user_profiles = user_profiles.filter(skills__in=skills).distinct()
             # user_profiles = user_profiles.filter(id__in=user_profiles.filter(skills__in=skills).values('id'))
 
-        if "place" in self.request.query_params and "osm" in self.request.query_params:
+        if (
+            "osm_id" in self.request.query_params
+            and "osm_type" in self.request.query_params
+        ) or "place_id" in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
             user_profiles = (
                 user_profiles.filter(
@@ -356,17 +421,23 @@ class MemberProfileView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
-            profile = UserProfile.objects.get(url_slug=str(url_slug))
+            profile = (
+                UserProfile.objects.select_related("location")
+                .prefetch_related("location__translate_location__language")
+                .get(url_slug=str(url_slug))
+            )
         except UserProfile.DoesNotExist:
             return Response(
                 {"message": "Profile not found."}, status=status.HTTP_404_NOT_FOUND
             )
 
         if self.request.user.is_authenticated:
-            serializer = UserProfileSerializer(profile)
+            serializer = UserProfileSerializer(profile, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            serializer = UserProfileMinimalSerializer(profile)
+            serializer = UserProfileMinimalSerializer(
+                profile, context={"request": request}
+            )
             return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -408,10 +479,53 @@ class ListMemberOrganizationsView(ListAPIView):
     pagination_class = MembersPagination
     serializer_class = OrganizationsFromOrganizationMember
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["language_code"] = self.request.LANGUAGE_CODE
+        return context
+
     def get_queryset(self):
         return OrganizationMember.objects.filter(
             user=UserProfile.objects.get(url_slug=self.kwargs["url_slug"]).user,
         ).order_by("id")
+
+
+class ListMemberRegisteredEventsView(ListAPIView):
+    """
+    GET /api/members/me/registered-events/
+
+    Returns upcoming events (start_date >= today) that the authenticated user
+    has an active registration for, ordered by start_date ascending.
+    Auth required (401 if unauthenticated). Page size: 12 (MembersPagination).
+    Only returns events for the currently authenticated user.
+    """
+
+    permission_classes = [IsAuthenticated]
+    pagination_class = MembersPagination
+    serializer_class = ProjectStubSerializer
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        return (
+            Project.objects.filter(
+                registration_config__registrations__user=self.request.user,
+                registration_config__registrations__cancelled_at__isnull=True,
+                start_date__isnull=False,
+                start_date__date__gte=today,
+            )
+            .select_related("loc", "language", "status", "registration_config")
+            .prefetch_related(
+                "loc__translate_location__language",
+                "tag_project",
+                "project_liked",
+                "project_comment",
+                "project_collaborator",
+                "project_parent",
+                "project_sector_mapping",
+            )
+            .order_by("start_date")
+            .distinct()
+        )
 
 
 class EditUserProfile(APIView):
@@ -419,11 +533,17 @@ class EditUserProfile(APIView):
 
     def get(self, request):
         try:
-            user_profile = UserProfile.objects.get(user=self.request.user)
+            user_profile = (
+                UserProfile.objects.select_related("location")
+                .prefetch_related("location__translate_location__language")
+                .get(user=self.request.user)
+            )
         except UserProfile.DoesNotExist:
             raise NotFound("User not found.")
 
-        serializer = EditUserProfileSerializer(user_profile)
+        serializer = EditUserProfileSerializer(
+            user_profile, context={"request": request}
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -557,8 +677,6 @@ class EditUserProfile(APIView):
                                     sector_key
                                 )
                             )
-
-                pass
 
         user_profile.save()
 

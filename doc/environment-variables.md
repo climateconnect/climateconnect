@@ -253,6 +253,7 @@ All email template variables follow the pattern: `{TEMPLATE_NAME}_TEMPLATE_ID[_D
 - `EMAIL_VERIFICATION_TEMPLATE_ID` - Email verification on signup
 - `NEW_EMAIL_VERIFICATION_TEMPLATE_ID` - Email change verification
 - `RESET_PASSWORD_TEMPLATE_ID` - Password reset
+- `LOGIN_CODE_EMAIL_TEMPLATE_ID` - OTP login code (passwordless flow). **Default: blank.** When blank, no email is sent and the raw 6-digit code is logged to the Celery worker console at `WARNING` level (`[LOGIN CODE] No Mailjet template configured. OTP for <email>: <code>`). This is intentional for local development — no Mailjet account needed. Set this to a real template ID in staging/production.
 - `FEEDBACK_TEMPLATE_ID` - User feedback submission
 - `PRIVATE_MESSAGE_TEMPLATE_ID` - Private chat message notification
 - `GROUP_MESSAGE_TEMPLATE_ID` - Group chat message notification
@@ -268,10 +269,44 @@ All email template variables follow the pattern: `{TEMPLATE_NAME}_TEMPLATE_ID[_D
 - `IDEA_COMMENT_REPLY_TEMPLATE_ID` - Reply to idea comment
 - `IDEA_MENTION_TEMPLATE_ID` - Mention in idea
 - `JOINED_IDEA_TEMPLATE` - User joined idea discussion
+- `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` - Event registration confirmation (issue #1845)
+- `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` - Organiser-to-guests email (issue #1866)
+- `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` - Admin cancellation notification to guest (issue #1872)
 
 **German Templates** (append `_DE` to template name):
 - All above templates have German variants with `_DE` suffix
 - Example: `PROJECT_COMMENT_TEMPLATE_ID_DE`
+
+**Event registration confirmation template variables** (define in both EN and DE Mailjet templates):
+| Variable | Content |
+|---|---|
+| `FirstName` | User's first name (falls back to username) |
+| `EventTitle` | Display name of the event |
+| `EventUrl` | Full, language-aware URL to the event page (e.g. `/projects/slug` EN, `/de/projects/slug` DE) |
+| `StartDate` | Localised start date — timezone resolved from user location → project location → UTC; EN British format `"30 March 2026 at 14:00 (CET)"`, DE format `"30. März 2026 um 14:00 Uhr (MEZ)"`, or `"TBD"` |
+| `OrganiserName` | Organisation name, or user's full name / username; empty string if no owner |
+| `LocationName` | `"Online"` for online events, location name for in-person events, or empty string |
+
+**Organiser-to-guests email template variables** (define in both EN and DE Mailjet templates, `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID`):
+| Variable | Content |
+|---|---|
+| `FirstName` | Recipient's first name (falls back to username) |
+| `EventTitle` | Display name of the event (localised for the recipient) |
+| `EventUrl` | Language-aware link to the event page |
+| `OrganiserName` | Organisation name, or organiser's full name / username |
+| `OrganizerSubject` | The subject entered by the organiser |
+| `OrganizerMessage` | HTML body entered by the organiser (sanitised; rendered with triple-brace in Mailjet template) |
+
+**Admin cancellation notification template variables** (define in both EN and DE Mailjet templates, `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID`):
+| Variable | Content |
+|---|---|
+| `FirstName` | Guest's first name (falls back to username) |
+| `EventTitle` | Display name of the event (localised for the guest) |
+| `EventUrl` | Language-aware link to the event page |
+| `OrganiserName` | Organisation name, or organiser's full name / username |
+| `OrganizerMessage` | The plain-text cancellation message provided by the admin |
+
+The email envelope `Subject` header is set directly to the organiser-provided subject (no wrapping platform prefix). These templates must be created in Mailjet and their IDs configured before any organiser emails will be delivered.
 
 **Template Configuration**:
 - **Required**: ⚠️ Conditional (per template type used)
@@ -320,14 +355,6 @@ Azure Blob Storage is used in production for media file storage.
 - **Description**: Base URL for geocoding API (OpenStreetMap Nominatim)
 - **Example**: `"https://..."`
 - **Usage**: Geocoding addresses to coordinates, location search
-
-#### ENABLE_LEGACY_LOCATION_FORMAT
-- **Required**: ❌ No
-- **Type**: Boolean (string)
-- **Description**: Disable geocoding API and use legacy location format
-- **Values**: `"True"` (disable API) | `"False"` (use API)
-- **Default**: `"False"`
-- **Usage**: Set to `"True"` to bypass external geocoding service
 
 #### DEEPL_API_KEY
 - **Required**: ⚠️ Conditional (if using translation features)
@@ -439,14 +466,6 @@ Frontend environment variables are stored in `.env` file in the `frontend/` dire
 ---
 
 ### Feature Configuration
-
-#### ENABLE_LEGACY_LOCATION_FORMAT
-- **Required**: ❌ No
-- **Type**: Boolean (string)
-- **Description**: Use legacy location format instead of geocoding API
-- **Values**: `"True"` | `"False"`
-- **Default**: `"False"`
-- **Usage**: Must match backend setting for consistency
 
 #### ENABLE_DEVLINK
 - **Required**: ❌ No
@@ -568,7 +587,6 @@ Frontend environment variables are stored in `.env` file in the `frontend/` dire
    CELERY_BROKER_URL="redis://localhost"
 
    LOCATION_SERVICE_BASE_URL="https://..."
-   ENABLE_LEGACY_LOCATION_FORMAT="False"
 
    CACHE_BACHED_RANK_REQUEST="true"
    ```
@@ -703,3 +721,6 @@ Frontend environment variables are stored in `.env` file in the `frontend/` dire
 ## Version History
 
 - **2025-11-27**: Initial documentation
+- **2026-03-30**: Added `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID` and `EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE` for event registration confirmation emails (issue #1845). `StartDate` template variable is now timezone- and language-localised (user location → project location → UTC; `timezonefinder` dependency added via PDM).
+- **2026-04-01**: Added `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID` and `EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE` for organiser-to-guests emails (issue #1866, spec `20260401_1100_organizer_send_email_to_guests.md`). Both templates default to `""` (empty string) — no emails will be delivered until configured in Mailjet and set in the environment.
+- **2026-04-09**: Added `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` and `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE` for admin-cancellation notification emails sent to guests (issue #1872, spec `20260407_1000_organizer_cancel_guest_registration.md`). Both templates default to `""` (empty string) — no emails will be delivered until configured in Mailjet and set in the environment.

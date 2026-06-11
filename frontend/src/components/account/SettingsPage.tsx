@@ -16,6 +16,7 @@ import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOp
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
+import Switcher from "../general/Switcher";
 
 const useStyles = makeStyles((theme) => ({
   blockElement: {
@@ -38,6 +39,13 @@ const useStyles = makeStyles((theme) => ({
   editProfilePageButton: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
+  },
+  authMethodToggle: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1),
+  },
+  authMethodHint: {
+    marginTop: theme.spacing(1),
   },
   deleteMessage: {
     display: "flex",
@@ -159,6 +167,32 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
     setPasswordInputs({ ...passwordInputs, [key]: event.target.value });
   };
 
+  const handleAuthMethodChange = async () => {
+    // The Switcher component passes event.target.value which is always "on" for a Switch.
+    // We toggle based on the current auth_method instead.
+    const newAuthMethod = settings.auth_method === "password" ? "otp" : "password";
+    if (newAuthMethod === "password" && !settings.has_password) return;
+    try {
+      const response = await apiRequest({
+        method: "post",
+        url: "/api/account_settings/",
+        payload: { auth_method: newAuthMethod },
+        token: token,
+        locale: locale,
+      });
+      setMessage(response.data.message);
+      setSettings({ ...settings, auth_method: newAuthMethod });
+      window.scrollTo(0, 0);
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        setMessage(error.response.data.message || texts.error + "!");
+      } else {
+        setMessage(texts.error + "!");
+      }
+      console.log(error);
+    }
+  };
+
   const handlePreferenceChange = (event, key) => {
     setEmailPreferences({
       ...emailPreferences,
@@ -184,14 +218,17 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
       setPasswordInputs({ ...passwordInputs, newpassword: "", confirmnewpassword: "" });
     } else {
       setErrors({ ...errors, passworderror: "" });
+      const payload: any = {
+        password: passwordInputs.newpassword,
+        confirm_password: passwordInputs.confirmnewpassword,
+      };
+      if (settings.has_password) {
+        payload.old_password = passwordInputs.oldpassword;
+      }
       apiRequest({
         method: "post",
         url: "/api/account_settings/",
-        payload: {
-          password: passwordInputs.newpassword,
-          confirm_password: passwordInputs.confirmnewpassword,
-          old_password: passwordInputs.oldpassword,
-        },
+        payload: payload,
         token: token,
         locale: locale,
       })
@@ -205,8 +242,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             oldpassword: "",
             newpassword: "",
             confirmnewpassword: "",
-            /* profileurlerror: "", */
           });
+          if (!settings.has_password) {
+            setSettings({ ...settings, has_password: true });
+          }
           window.scrollTo(0, 0);
         })
         .catch(function (error) {
@@ -337,7 +376,25 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
   return (
     <>
       <Typography variant="h5" component="h2" className={classes.textColor}>
-        {texts.change_password}
+        {texts.login_method}
+      </Typography>
+      <Divider />
+      <div className={classes.authMethodToggle}>
+        <Switcher
+          falseLabel={texts.login_method_otp}
+          trueLabel={texts.login_method_password}
+          value={settings.auth_method === "password"}
+          handleChangeValue={handleAuthMethodChange}
+          disabled={!settings.has_password}
+        />
+      </div>
+      {!settings.has_password && (
+        <Typography variant="body2" className={classes.authMethodHint}>
+          {texts.password_option_disabled_hint}
+        </Typography>
+      )}
+      <Typography variant="h5" component="h2" className={classes.textColor}>
+        {texts.password}
       </Typography>
       <Divider />
       <form onSubmit={changePassword}>
@@ -346,46 +403,61 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
             {errors.passworderror}
           </Typography>
         )}
-        <TextField
-          variant="outlined"
-          className={classes.blockElement}
-          type="password"
-          label={texts.old_password}
-          value={passwordInputs.oldpassword}
-          onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
-          required
-        />
-        <TextField
-          variant="outlined"
-          className={classes.blockElement}
-          type="password"
-          label={texts.new_password}
-          value={passwordInputs.newpassword}
-          onChange={(event) => handlePasswordInputsChange(event, "newpassword")}
-          required
-        />
-        <TextField
-          variant="outlined"
-          className={classes.blockElement}
-          type="password"
-          label={texts.confirm_new_password}
-          value={passwordInputs.confirmnewpassword}
-          onChange={(event) => handlePasswordInputsChange(event, "confirmnewpassword")}
-          required
-        />
+        {!settings.has_password && (
+          <Typography className={classes.blockElement} variant="body2">
+            {texts.set_password_description}
+          </Typography>
+        )}
+        {settings.has_password && (
+          <div className={classes.blockElement}>
+            <TextField
+              variant="outlined"
+              style={{ minWidth: 360 }}
+              type="password"
+              label={texts.old_password}
+              value={passwordInputs.oldpassword}
+              onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
+              required
+            />
+          </div>
+        )}
+        <div className={classes.blockElement}>
+          <TextField
+            variant="outlined"
+            style={{ minWidth: 360 }}
+            type="password"
+            label={texts.new_password}
+            value={passwordInputs.newpassword}
+            onChange={(event) => handlePasswordInputsChange(event, "newpassword")}
+            required
+          />
+        </div>
+        <div className={classes.blockElement}>
+          <TextField
+            variant="outlined"
+            style={{ minWidth: 360 }}
+            type="password"
+            label={texts.confirm_new_password}
+            value={passwordInputs.confirmnewpassword}
+            onChange={(event) => handlePasswordInputsChange(event, "confirmnewpassword")}
+            required
+          />
+        </div>
         <div className={classes.blockElement}>
           <Typography variant="body2" className={classes.marginBottom}>
             {texts.make_sure_it_is_at_least_8_characters_including_a_number_and_an_uppercase_letter}
           </Typography>
           <Button variant="contained" color="primary" type="submit">
-            {texts.change_password}
+            {settings.has_password ? texts.change_password : texts.set_new_password}
           </Button>
-          <Link
-            href={getLocalePrefix(locale) + "/resetpassword"}
-            className={`${classes.forgotPasswordLink} ${classes.textColor}`}
-          >
-            {texts.i_forgot_my_password}
-          </Link>
+          {settings.has_password && (
+            <Link
+              href={getLocalePrefix(locale) + "/resetpassword"}
+              className={`${classes.forgotPasswordLink} ${classes.textColor}`}
+            >
+              {texts.i_forgot_my_password}
+            </Link>
+          )}
         </div>
       </form>
       <Typography

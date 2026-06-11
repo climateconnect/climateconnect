@@ -14,6 +14,7 @@ const UserContext = createContext<{
   chatSocket?: any;
   signIn?: any;
   refreshNotifications?: any;
+  refreshUser?: () => Promise<void>;
   API_URL?: any;
   ENVIRONMENT?: any;
   SOCKET_URL?: any;

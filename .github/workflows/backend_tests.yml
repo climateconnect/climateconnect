@@ -54,8 +54,8 @@
        - name: Set up Python
          uses: actions/setup-python@v6
          with:
-           python-version: "3.11"
-           cache: 'pip'
+          python-version: "3.12"
+          cache: 'pip'
 
        - name: Install PDM
          run: |
@@ -65,8 +65,12 @@
        - name: Install dependencies and create venv
          working-directory: backend
          run: |
-           pdm install --prod
+           pdm install --dev
            $(pdm venv activate)
+
+       - name: Run deptry (check for undeclared imports)
+         working-directory: backend
+         run: pdm run deptry .
 
        - name: Wait for PostgreSQL
          run: |
@@ -94,6 +98,7 @@
            SECRET_KEY: "test-secret-key-for-ci"
            DEBUG: "true"
            ALLOWED_HOSTS: "localhost,127.0.0.1"
+           MEDIA_ROOT: "${{ github.workspace }}/backend/media"
          run: |
            pdm run python manage.py migrate --noinput
 
@@ -110,6 +115,7 @@
            SECRET_KEY: "test-secret-key-for-ci"
            DEBUG: "true"
            ALLOWED_HOSTS: "localhost,127.0.0.1"
+           MEDIA_ROOT: "${{ github.workspace }}/backend/media"
          run: |
            pdm run python manage.py test --keepdb
 

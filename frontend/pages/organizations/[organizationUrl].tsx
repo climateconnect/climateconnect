@@ -4,7 +4,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import NextCookies from "next-cookies";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
@@ -209,6 +209,7 @@ function OrganizationLayout({
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
+  const router = useRouter();
 
   const getRoleName = (permission) => {
     const permission_to_show = permission === "all" ? "read write" : permission;
@@ -245,7 +246,7 @@ function OrganizationLayout({
     const token = cookies.get("auth_token");
     const creator = members.filter((m) => m.isCreator === true)[0];
     const chat = await startPrivateChat(creator, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    router.push("/chat/" + chat.chat_uuid + "/");
   };
   const canEdit =
     user &&

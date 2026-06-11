@@ -51,7 +51,13 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub, hubSlug }: any) {
+export default function HubsSubHeader({
+  hubs,
+  onlyShowDropDown,
+  isCustomHub,
+  hubSlug,
+  project,
+}: any) {
   const classes = useStyles({ hubSlug: hubSlug });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
@@ -67,6 +73,7 @@ export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub, hub
               locale={locale}
               tinyScreen={isNarrowScreen}
               hubSlug={hubSlug}
+              project={project}
             />
           )}
         </div>

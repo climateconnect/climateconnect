@@ -98,6 +98,7 @@ export default function FilterContent({
   initialLocationFilter,
   handleUpdateFilters,
   nonFilterParams,
+  searchSubmit,
 }) {
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
@@ -253,7 +254,6 @@ export default function FilterContent({
       });
     }
   };
-
   return (
     <div className={className}>
       {isSmallScreen ? (
@@ -285,13 +285,17 @@ export default function FilterContent({
           handleClickDialogOpen={handleClickDialogOpen}
           handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
           handleValueChange={handleValueChange}
-          justifyContent={"center"}
+          justifyContent={"flex-start"}
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           open={open}
           possibleFilters={possibleFilters}
           selectedItems={selectedItems}
           setSelectedItems={setSelectedItems}
+          //moved Search Filter inside Filters component for desktop
+          //Search Filter props
+          searchType={type}
+          searchSubmit={searchSubmit}
         />
       )}
       {/* We pass currentFilters like this because if location is not an array, 

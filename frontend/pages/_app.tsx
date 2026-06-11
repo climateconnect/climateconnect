@@ -10,9 +10,12 @@ import { apiRequest } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
+import { FeatureToggleProvider } from "../src/components/featureToggle";
+import { FeatureToggles } from "../src/hooks/types/featureToggle";
+import type { CcEnvironment } from "../public/lib/environmentOperations";
 import theme from "../src/themes/theme";
 import { CcLocale, DonationGoal } from "../src/types";
-import "../devlink/global.css";
+import "../devlink/css/global.css";
 import { getHubslugFromUrl } from "../public/lib/hubOperations";
 
 declare module "@mui/styles/defaultTheme" {
@@ -22,7 +25,17 @@ declare module "@mui/styles/defaultTheme" {
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default function MyApp({ Component, pageProps = {} }) {
+export default function MyApp({
+  Component,
+  pageProps = {},
+}: {
+  Component: any;
+  pageProps: {
+    featureToggles?: FeatureToggles;
+    environment?: CcEnvironment;
+    [key: string]: any;
+  };
+}) {
   const router = useRouter();
   // Cookies
   const cookies = new Cookies();
@@ -118,6 +131,17 @@ export default function MyApp({ Component, pageProps = {} }) {
       ...state,
       notifications: notifications,
     });
+  };
+
+  const refreshUser = async () => {
+    const token = cookies.get("auth_token");
+    if (token) {
+      const user = await getLoggedInUser(token);
+      setState((prevState) => ({
+        ...prevState,
+        user: user,
+      }));
+    }
   };
 
   const signIn = async (token, expiry) => {
@@ -249,6 +273,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     chatSocket: webSocketClient,
     notifications: state.notifications,
     refreshNotifications: refreshNotifications,
+    refreshUser: refreshUser,
     API_URL: API_URL,
     ENVIRONMENT: ENVIRONMENT,
     SOCKET_URL: SOCKET_URL,
@@ -277,9 +302,22 @@ export default function MyApp({ Component, pageProps = {} }) {
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
-          <UserContext.Provider value={contextValues}>
-            <Component {...pageProps} />
-          </UserContext.Provider>
+          {/*
+           * Feature toggles are opt-in per page via getServerSideProps.
+           * Pages that need SSR feature toggles should call getFeatureTogglesFromRequest
+           * from src/hooks/featureToggles.ts and return { featureToggles, environment }
+           * as props. FeatureToggleProvider picks them up here via pageProps.
+           * Pages without getServerSideProps will still work but toggles resolve
+           * client-side only (isEnabled returns the fallback value on first render).
+           */}
+          <FeatureToggleProvider
+            initialToggles={pageProps.featureToggles}
+            environment={pageProps.environment}
+          >
+            <UserContext.Provider value={contextValues}>
+              <Component {...pageProps} />
+            </UserContext.Provider>
+          </FeatureToggleProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </>

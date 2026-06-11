@@ -15,9 +15,10 @@ This document provides comprehensive documentation of the main domain entities i
 5. [Idea Entities](#5-idea-entities-ideas)
 6. [Location Entities](#6-location-entities-location)
 7. [Climate Match Entities](#7-climate-match-entities-climate_match)
-8. [Cross-Cutting Patterns](#8-cross-cutting-patterns)
-9. [Entity Relationship Summary](#9-entity-relationship-summary)
-10. [Key Design Principles](#10-key-design-principles)
+8. [Auth Entities](#8-auth-entities-auth_app)
+9. [Cross-Cutting Patterns](#9-cross-cutting-patterns)
+10. [Entity Relationship Summary](#10-entity-relationship-summary)
+11. [Key Design Principles](#11-key-design-principles)
 
 ---
 
@@ -34,6 +35,9 @@ This document provides comprehensive documentation of the main domain entities i
 - **ForeignKey**: `Location` (geographic location), `Availability` (time commitment), `Language` (preferred language)
 - **ManyToMany**: `Skill` (user skills), `Hub` (related_hubs - hubs user follows)
 - **Referenced by**: `UserProfileTranslation`, `UserProfileSectorMapping`, `ProjectMember`, `OrganizationMember`, `Donation`, `Notification`, `UserBadge`
+
+**Auth fields (added US-2)**:
+- `auth_method` — `password` (default) or `otp`. Determines which login flow the user is routed to. Exposed via API in Phase B US-9.
 
 ---
 
@@ -166,19 +170,18 @@ This document provides comprehensive documentation of the main domain entities i
 
 **Summary**: Climate action projects, events, and initiatives.
 
-**Description**: Core entity representing climate projects with three types: project (ongoing work), event (time-bound activities), and idea (proposals). Projects have lifecycle status (idea, in-progress, finished, cancelled, recurring), location, required skills, hub affiliations, and ranking for discovery. Can have parent organization or user, collaborating organizations, members, followers, and tagged categorization.
+**Description**: Core entity representing climate projects with three types: project (ongoing work), event (time-bound activities), and idea (proposals). Projects have lifecycle status (idea, in-progress, finished, cancelled, recurring), location, hub affiliations, and ranking for discovery. Can have parent organization or user, collaborating organizations, members, followers, and tagged categorization.
 
 **Key features**:
 - Ranking algorithm for visibility
-- Skill requirements for matching
 - Geographic and hub-based discovery
 - Collaborative memberships with roles
 - Engagement tracking (followers, likes)
 
 **Relationships**:
 - **ForeignKey**: `ProjectStatus`, `Location`, `Language`
-- **ManyToMany**: `Skill` (required skills), `Hub` (related_hubs)
-- **Referenced by**: `ProjectTranslation`, `ProjectParents`, `ProjectMember`, `ProjectCollaborators`, `ProjectTagging`, `ProjectSectorMapping`, `ProjectComment`, `Post`, `ProjectFollower`, `ProjectLike`, `OrgProjectPublished`, `ContentShares`
+- **ManyToMany**: `Hub` (related_hubs)
+- **Referenced by**: `ProjectTranslation`, `ProjectParents`, `ProjectMember`, `ProjectCollaborators`, `ProjectTagging`, `ProjectSectorMapping`, `ProjectComment`, `Post`, `ProjectFollower`, `ProjectLike`, `OrgProjectPublished`, `ContentShares`, `EventRegistrationConfig`
 
 ---
 
@@ -316,6 +319,211 @@ This document provides comprehensive documentation of the main domain entities i
   - **ForeignKey**: `Project`, `Organization` (nullable), `User` (nullable)
 - **ProjectCollaborators**:
   - **ForeignKey**: `Project`, `Organization`
+
+---
+
+### EventRegistrationConfig
+
+**Summary**: Online registration settings for event-type projects.
+
+**Description**: Stores registration configuration for a `Project` of type `event`. The presence of an `EventRegistrationConfig` row is the sole source of truth for whether online registration is enabled — no separate boolean flag on `Project` is needed. Both `max_participants` and `registration_end_date` are nullable to support draft events where settings have not yet been finalised; all constraints are enforced on publish (`is_draft=false`). `EventRegistrationConfig` records only exist on published events — published events cannot revert to draft, so draft-mode guards are not applied on the edit endpoint.
+
+**Key rules**:
+- Only valid for projects of type `event`; rejected with 400 for other project types
+- `registration_end_date` must be ≤ the event's `end_date`
+- `max_participants` must be > 0
+- Required fields (`max_participants`, `registration_end_date`) are enforced on publish; skipped when saving as draft
+- `status` controls the explicit registration lifecycle (see table below); organiser may set `open` or `closed`; `full` is reserved for the system when capacity is reached
+- `"ended"` is a **computed read-only value** returned by the API (never stored in DB) — see status table below
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `project` | OneToOneField | FK → `Project`, CASCADE delete |
+| `max_participants` | PositiveIntegerField | Nullable (draft allowed); must be > 0 |
+| `registration_end_date` | DateTimeField (TIMESTAMPTZ) | Nullable (draft allowed); must be ≤ event `end_date`; stored in UTC |
+| `status` | CharField (enum) | `open` (default) / `closed` / `full` — see status table below |
+| `notify_admins` | BooleanField | Default `True`; organiser toggle for admin notification emails on registration changes |
+| `created_at` | DateTimeField | Auto-set on creation |
+| `updated_at` | DateTimeField | Auto-updated on save |
+
+**Registration status values** (`RegistrationStatus`):
+| Value | Stored in DB | Set by | Meaning |
+|---|---|---|---|
+| `open` | ✅ | Default / organiser | Accepting sign-ups (subject to `registration_end_date` and `max_participants`) |
+| `closed` | ✅ | Organiser (via API) | Manually closed before the end date; organiser can re-open |
+| `full` | ✅ | System (on last accepted signup, same transaction) | Capacity reached; blocked until a cancellation drops count below `max_participants` |
+| `ended` | ❌ (computed) | API serializer | Returned when stored status is `open` but `registration_end_date` has passed — never written to DB; underlying stored value remains `open` |
+
+**Effective "accepting signups?" check**: `status == open AND now() < registration_end_date`
+
+> **Note**: clients should treat `ended`, `closed`, and `full` equally as "not accepting sign-ups".
+
+**Relationships**:
+- **OneToOne**: `Project` (related_name: `registration_config`, CASCADE delete)
+- **Referenced by**: `EventRegistration` (related_name: `registrations`)
+
+**Model location**: `organization/models/event_registration.py`
+
+**Serializer location**: `organization/serializers/event_registration.py`
+
+**Serializers**:
+| Serializer | Purpose |
+|---|---|
+| `EventRegistrationConfigSerializer` | Read (project detail/list) and write (create via `POST /api/projects/`). Returns computed `"ended"` status via `to_representation`. On detail responses, includes nested `fields` (RegistrationFieldSerializer with options). |
+| `EditEventRegistrationConfigSerializer` | Write only — `PATCH /api/projects/{slug}/registration-config/`. Allows organiser to update `max_participants`, `registration_end_date`, **and `status`** (`"open"` or `"closed"` only). `"full"` and `"ended"` are rejected on write. `status = "open"` is additionally blocked when the event is at or over capacity (see below). Enforces answer-lock: text properties (description, title, option title, start_time, end_time) are immutable once registrants have submitted answers. |
+| `EventRegistrationSerializer` | Read — `GET /api/projects/{slug}/registrations/`. Returns all registrations (active + cancelled) with `field_answers` (nested array of `[field, value_boolean, value_option, value_number]` sorted by field order). |
+| `EventRegistrationSubmissionSerializer` | Write — validates `POST /api/projects/{slug}/registrations/` payload including custom field answers. Per-field type validation (checkbox → value_boolean, option_select/time_slot_select → value_option, inventory → value_option + value_number with quantity checks). |
+| `RegistrationFieldSerializer` | Nested read/write for custom fields. Type-specific settings validation. Publish-time validation (non-empty description for checkbox, required title + at least one option for option_select/inventory/time_slot_select, time slot start/end in future with end > start, inventory available_amount + max_amount_per_guest required). |
+
+**Edit endpoint**: `PATCH /api/projects/{slug}/registration-config/` — dedicated endpoint for organiser/admin to update registration settings on an existing `EventRegistrationConfig`. Requires edit rights (organiser or team admin). Returns `404` if no `EventRegistrationConfig` exists. `status` is writable (`"open"` or `"closed"`); `"full"` and `"ended"` return 400. Two reopen guards apply when `status = "open"` is requested:
+
+1. **Deadline guard** — returns 400 when `effective_status == "ended"` (deadline has passed); organiser must extend `registration_end_date` first.
+2. **Fully-booked guard** — returns 400 when participant count ≥ effective `max_participants` (considering the new value if `max_participants` is also being changed in the same request); organiser must increase `max_participants` first (or include a higher value in the same PATCH).
+
+Auto-adjustment of `status` from `max_participants` changes is skipped when `status` is explicitly provided — the organiser's intent takes priority.
+
+---
+
+### EventRegistration
+
+**Summary**: Records a user's registration for an event, with soft-delete lifecycle.
+
+**Description**: Join table between `User` and `EventRegistrationConfig`. One row per registered user per event. The `unique_together` constraint on `(user, registration_config)` enforces at both the application layer and DB level that the same user cannot have more than one row per event. Rows are **never deleted** — instead they are soft-deleted by setting `cancelled_at` and `cancelled_by`.
+
+Available seat count is computed on-the-fly from the **active** registrations (`cancelled_at IS NULL`) rather than maintained as a denormalised counter, to avoid update-anomaly races. The count is only queried on the project **detail** endpoint (guarded by the `include_seat_count` serializer context flag) — not on the list endpoint — to prevent N+1 queries.
+
+**Registration lifecycle**:
+```
+Active       — cancelled_at IS NULL, cancelled_by IS NULL
+Cancelled    — cancelled_at IS NOT NULL, cancelled_by = user who cancelled
+Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row reused)
+```
+
+**Key rules**:
+- A user can register for the same event only once per row (idempotent endpoint returns 200 on re-registration if already active; returns 201 and resets the row if previously self-cancelled)
+- Registrations are only accepted when `effective_status == "open"` (i.e. stored `status == "open"` **and** `registration_end_date` has not yet passed). The guard in `EventRegistrationsView` uses `_compute_effective_status()` — a single function that covers `closed`, `full`, and `ended` states with contextual error messages per state.
+- When the last available seat is taken, `EventRegistrationConfig.status` is atomically promoted to `"full"` in the same transaction
+- Seat locking uses `SELECT FOR UPDATE` on `EventRegistrationConfig` to prevent race conditions at capacity
+- **Only active registrations count against capacity** — all `available_seats` computations filter by `cancelled_at IS NULL`
+- Member cancellation (`DELETE /api/projects/{slug}/registrations/`) is blocked once the event has started (`start_date ≤ now()`)
+- After a member cancellation that frees a seat, `EventRegistrationConfig.status` reverts from `"full"` to `"open"` atomically
+- `cancelled_by` distinguishes self-cancellation (member may re-register) from admin-cancellation (member blocked from re-registering until an admin explicitly reinstates them)
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `user` | ForeignKey | FK → `User`, CASCADE delete, related_name: `event_registrations` |
+| `registration_config` | ForeignKey | FK → `EventRegistrationConfig`, CASCADE delete, related_name: `registrations` |
+| `registered_at` | DateTimeField | Auto-set on creation; read-only |
+| `cancelled_at` | DateTimeField | `NULL` = active; non-null = soft-deleted. Reset to `NULL` on re-registration |
+| `cancelled_by` | ForeignKey (nullable) | FK → `User`, SET_NULL, related_name: `cancelled_registrations`. `NULL` when active. Set to the cancelling user (member or admin) on cancellation. Reset to `NULL` on re-registration |
+
+**Constraints & indexes**:
+| Type | Fields | Name |
+|---|---|---|
+| `unique_together` | `(user, registration_config)` | Prevents duplicate rows (one row per user per event) |
+| Index | `registration_config` | `idx_ep_event_registration` — fast participant count / lookup by event |
+| Index | `user` | `idx_ep_user` — fast lookup of all events a user registered for |
+
+**Relationships**:
+- **ForeignKey**: `User` (related_name: `event_registrations`, CASCADE delete)
+- **ForeignKey**: `EventRegistrationConfig` (related_name: `registrations`, CASCADE delete)
+- **ForeignKey (nullable)**: `User` (cancelled_by, related_name: `cancelled_registrations`, SET_NULL)
+- **Referenced by**: `RegistrationFieldAnswer` (related_name: `field_answers`)
+
+**Model location**: `organization/models/event_registration.py`
+
+**Migration**: `organization/migrations/0124_add_cancelled_fields_to_eventregistration.py` — adds `cancelled_at` and `cancelled_by` columns (nullable, no backfill required)
+
+---
+
+### RegistrationField
+
+**Summary**: Custom fields organisers can add to their event registration form.
+
+**Description**: Defines a custom field on an event's registration form. Up to 5 fields per event. Each field has a type, order, required flag, organiser-facing label (max 30 chars), and type-specific settings stored as JSON. The `label` is auto-generated on creation (localised field type + sequential number) and can be edited by the organiser. Field types: `checkbox` (boolean), `option_select` (single-select dropdown), `inventory` (option + quantity with capacity limits), `time_slot_select` (time slot with optional per-slot capacity).
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `registration_config` | ForeignKey | FK → `EventRegistrationConfig`, CASCADE delete, related_name: `fields` |
+| `field_type` | CharField (enum) | `checkbox` / `option_select` / `inventory` / `time_slot_select` |
+| `order` | PositiveIntegerField | Position in the form; unique per config |
+| `is_required` | BooleanField | Default `False` |
+| `label` | CharField, max 30 | Organiser-facing label for export/display; unique per config |
+| `settings` | JSONField | Type-specific: checkbox stores `description` (sanitised HTML); option_select/inventory/time_slot_select store `title` and optionally `description` |
+| `created_at` | DateTimeField | Auto-set on creation |
+| `updated_at` | DateTimeField | Auto-updated on save |
+
+**Constraints**:
+- `UniqueConstraint(fields=["registration_config", "order"])` — one field per position
+- `UniqueConstraint(fields=["registration_config", "label"])` — unique labels within an event
+
+**Relationships**:
+- **ForeignKey**: `EventRegistrationConfig` (related_name: `fields`, CASCADE delete)
+- **Referenced by**: `RegistrationFieldOption` (related_name: `options`), `RegistrationFieldAnswer` (related_name: `answers`)
+
+**Model location**: `organization/models/registration_field.py`
+
+---
+
+### RegistrationFieldOption
+
+**Summary**: Selectable options within option_select, inventory, and time_slot_select registration fields.
+
+**Description**: Defines a single option for multi-choice registration fields. For `option_select` fields, it's a simple selectable label. For `inventory` fields, it has capacity limits (`available_amount` stock, `max_amount_per_guest` limit). For `time_slot_select` fields, it has `start_time` and `end_time`. The `remaining_amount` is computed on-the-fly as `available_amount - booked_count`.
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `field` | ForeignKey | FK → `RegistrationField`, CASCADE delete, related_name: `options` |
+| `title` | CharField, max 200 | Display label; defaults to `""` |
+| `order` | PositiveIntegerField | Position; unique per field |
+| `available_amount` | PositiveIntegerField | Nullable; capacity limit for inventory fields |
+| `max_amount_per_guest` | PositiveIntegerField | Nullable; max quantity per registrant for inventory fields |
+| `start_time` | DateTimeField | Nullable; slot start for time_slot_select fields |
+| `end_time` | DateTimeField | Nullable; slot end for time_slot_select fields |
+
+**Constraints**:
+- `UniqueConstraint(fields=["field", "order"])` — one option per position per field
+
+**Relationships**:
+- **ForeignKey**: `RegistrationField` (related_name: `options`, CASCADE delete)
+- **Referenced by**: `RegistrationFieldAnswer` (related_name: `answers`)
+
+**Model location**: `organization/models/registration_field.py`
+
+---
+
+### RegistrationFieldAnswer
+
+**Summary**: A registrant's response to a custom registration field.
+
+**Description**: Stores the value a user submitted for a custom registration field when they register for an event. Created/updated/deleted atomically via `sync_registration_answers()` when the registration endpoint is called. One answer per field per registration (enforced by `unique_together`). The value columns are polymorphic: `value_boolean` for checkbox, `value_option` FK for option_select/inventory/time_slot_select, and `value_number` for inventory quantity.
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `registration` | ForeignKey | FK → `EventRegistration`, CASCADE delete, related_name: `field_answers` |
+| `field` | ForeignKey | FK → `RegistrationField`, CASCADE delete, related_name: `answers` |
+| `value_boolean` | BooleanField | Nullable; stores checkbox answers |
+| `value_option` | ForeignKey (nullable) | FK → `RegistrationFieldOption`, CASCADE delete, related_name: `answers`; stores option_select, inventory option, and time_slot_select answers |
+| `value_number` | PositiveIntegerField | Nullable; stores inventory quantity |
+| `created_at` | DateTimeField | Auto-set on creation |
+| `updated_at` | DateTimeField | Auto-updated on save |
+
+**Constraints**:
+- `unique_together = [("registration", "field")]` — one answer per field per registration
+
+**Relationships**:
+- **ForeignKey**: `EventRegistration` (related_name: `field_answers`, CASCADE delete)
+- **ForeignKey**: `RegistrationField` (related_name: `answers`, CASCADE delete)
+- **ForeignKey**: `RegistrationFieldOption` (related_name: `answers`, CASCADE delete)
+
+**Model location**: `organization/models/event_registration.py`
+
+**Migration**: `organization/migrations/0127_add_registrationfieldanswer.py` (initial), `0134_registrationfieldanswer_value_number.py` (added `value_number`)
 
 ---
 
@@ -540,7 +748,68 @@ This document provides comprehensive documentation of the main domain entities i
 
 ---
 
-## 8. Cross-Cutting Patterns
+## 8. Auth Entities (auth_app)
+
+> Added in US-2 (Auth Unification epic). Pure data layer — no API endpoints yet.
+
+### LoginToken
+
+**Summary**: Short-lived operational token used in the OTP (passwordless) login flow.
+
+**App**: `auth_app`  
+**Table**: `auth_app_logintoken`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | UUID PK | Prevents ID enumeration |
+| `user` | FK → `auth.User`, nullable | Set after lookup; null for unrecognised emails (enumeration prevention) |
+| `email` | EmailField, indexed | Address the code was sent to |
+| `token_hash` | CharField(64) | SHA-256 hash of the raw 6-digit code — raw code never stored |
+| `session_key` | CharField(64), unique | 32-byte hex random value; ties the token to the browser tab |
+| `expires_at` | DateTimeField, indexed | `now + 15 minutes` |
+| `used_at` | DateTimeField, nullable | Set on first successful use; null = not yet used |
+| `attempt_count` | PositiveSmallIntegerField | Default 0; token locked at 5 failed attempts |
+| `created_at` | DateTimeField, auto | Creation timestamp |
+
+**Key rules**:
+- One active token per email at a time (enforced in service/view layer).
+- Raw code never persisted — only its hash.
+- `session_key` is the security anchor, stored in browser `sessionStorage`.
+
+**Retention** (via `cleanup_login_tokens` Celery task, every 30 min):
+- Used tokens deleted 24 h after `used_at`.
+- Unused expired tokens deleted 1 h after `expires_at`.
+
+---
+
+### LoginAuditLog
+
+**Summary**: Append-only audit table for security monitoring of OTP login events.
+
+**App**: `auth_app`  
+**Table**: `auth_app_loginauditlog`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | UUID PK | |
+| `user` | FK → `auth.User`, nullable | Null if email not found |
+| `email` | EmailField, indexed | Email used in the attempt |
+| `outcome` | CharField(choices) | `requested` / `verified` / `failed` / `expired` / `exhausted` / `resent` |
+| `ip_address` | GenericIPAddressField, nullable | Anonymised (last octet zeroed for IPv4, GDPR) |
+| `user_agent` | TextField, nullable | Optional user-agent string |
+| `created_at` | DateTimeField, auto, indexed | Event timestamp |
+
+**Key rules**:
+- Append-only — rows must never be mutated after writing.
+- IP anonymisation applied in the view/service layer before saving.
+- Django Admin is read-only; no add/change/delete permissions.
+
+**Retention** (via `cleanup_login_audit_logs` Celery task, daily at 03:00 UTC):
+- Entries purged after 90 days.
+
+---
+
+## 9. Cross-Cutting Patterns
 
 ### Translation Support
 
@@ -638,7 +907,20 @@ Project
 ├── Posts (updates)
 ├── Comments (ProjectComment)
 ├── Followers (ProjectFollower)
-└── Likes (ProjectLike)
+├── Likes (ProjectLike)
+└── EventRegistrationConfig (OneToOne - event type only, nullable)
+    ├── Fields: max_participants, registration_end_date, status, notify_admins
+    ├── RegistrationField (ForeignKey - custom form fields)
+    │   ├── Fields: field_type, order, is_required, label, settings
+    │   └── RegistrationFieldOption (ForeignKey - selectable options)
+    │       ├── Fields: title, order, available_amount, max_amount_per_guest, start_time, end_time
+    │       └── Referenced by RegistrationFieldAnswer.value_option
+    └── EventRegistration (ForeignKey - registered users)
+        ├── Fields: user, registered_at, cancelled_at, cancelled_by
+        └── RegistrationFieldAnswer (ForeignKey - custom field responses)
+            ├── Fields: field, value_boolean, value_option, value_number
+            ├── FK → RegistrationField
+            └── FK → RegistrationFieldOption
 
 Hub
 ├── Parent Hub (ForeignKey Self)
@@ -711,3 +993,15 @@ This architecture supports a comprehensive climate action platform with social n
 ## Version History
 
 - **2025-11-27**: Initial documentation
+- **2026-03-19**: Added `EventRegistrationConfig` entity (GitHub issue #43). New 1-to-1 relationship on `Project` (event type only) for online registration settings (`max_participants`, `registration_end_date`). Updated `Project` relationships and Entity Relationship Summary tree.
+- **2026-03-19**: Added `status` field to `EventRegistrationConfig` (`RegistrationStatus` enum: `open`/`closed`/`full`). Prepares for use cases: organiser manually closing registration and system auto-closing when capacity is reached.
+- **2026-03-30**: Added `EventRegistration` entity (GitHub issue #1845). Join table recording which users have registered for an event. Includes `select_for_update` seat-locking, `unique_together` constraint, and two DB indexes. `EventRegistrationConfig.status` is atomically promoted to `"full"` when the last seat is taken. Updated `EventRegistrationConfig` relationships section and ER tree.
+- **2026-03-31**: Added computed `"ended"` status to `EventRegistrationConfig` API responses (issue #1848). Returned by `EventRegistrationConfigSerializer.to_representation` via `_compute_effective_status` when stored status is `open` but `registration_end_date` has passed — never written to DB. Updated `RegistrationStatus` table to include `ended`. Removed draft-mode guard from `EditEventRegistrationConfigSerializer` (published events cannot revert to draft; guard was dead code). Updated `EventRegistrationConfigSerializer` description — write path is create-only (`POST /api/projects/`); `registration_config` handling removed from `PATCH /api/projects/{slug}/`.
+- **2026-03-31**: `status` is now organiser-writable via `PATCH /api/projects/{slug}/registration-config/` (issue #1851). `EditEventRegistrationConfigSerializer` accepts `"open"` and `"closed"`; `"full"` and `"ended"` are rejected with 400 (system-managed). Reopen guard in `validate()` returns 400 when `effective_status == "ended"` — organiser must extend `registration_end_date` first. `full` → `open` organiser override is permitted. When `status` is explicitly included in the PATCH body, auto-adjustment from `max_participants` changes is skipped (organiser intent takes priority). `EventRegistrationsView` guard consolidated to a single `_compute_effective_status()` check with contextual error messages per status value. `RegistrationStatus.ENDED` added as a Python-side-only enum constant (never stored in DB).
+- **2026-03-31**: Added fully-booked reopen guard to `EditEventRegistrationConfigSerializer.validate()`. `status = "open"` is now rejected with 400 when participant count ≥ effective `max_participants` (uses the new `max_participants` value if it is being changed in the same PATCH). This prevents an organiser from reopening a `closed` or `full` registration when the event has no available seats — they must increase capacity first. An organiser can still reopen a booked-out event by including a higher `max_participants` value in the same request. Shared `participant_count` sentinel prevents double-querying when both fields are present in a single PATCH.
+- **2026-04-02**: Renamed models for clarity: `EventRegistration` (config) → `EventRegistrationConfig`; `EventParticipant` (sign-up record) → `EventRegistration`. Updated related_names (`event_registration` → `registration_config`, `participants` → `registrations`, `event_participations` → `event_registrations`). API JSON key renamed `event_registration` → `registration_config`. Endpoints renamed: `POST /register/` → `POST /registrations/`, `PATCH /registration/` → `PATCH /registration-config/`. Views renamed: `RegisterForEventView` + `ListEventRegistrationsView` → combined `EventRegistrationsView`; `EditEventRegistrationSettingsView` → `EditRegistrationConfigView`.
+- **2026-04-09**: Added soft-delete to `EventRegistration` (issues #1850, #1872). Two new nullable columns: `cancelled_at` (DateTimeField) and `cancelled_by` (ForeignKey → User, SET_NULL). All seat-count queries now filter `cancelled_at IS NULL`. Lifecycle: Active (both NULL) → Cancelled (both set) → Re-registered (both reset to NULL). `cancelled_by == user` means self-cancellation (re-registration allowed); `cancelled_by != user` means admin-cancellation (re-registration blocked). New endpoints: `DELETE /api/projects/{slug}/registrations/` (member self-cancel, issue #1850) and `DELETE /api/projects/{slug}/registrations/{id}/` (admin cancel guest, issue #1872). `EventRegistrationSerializer` now includes `id` and `cancelled_at`; `GET /registrations/` returns all rows (active + cancelled). `GET /projects/{slug}/my_interactions/` extended with `has_attended` (bool) and `admin_cancelled` (bool); `is_registered` now filtered by `cancelled_at IS NULL`. New email helper `send_guest_cancellation_notification` uses Mailjet templates `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` / `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE`.
+- **2026-05-20**: Added `RegistrationField` and `RegistrationFieldOption` entities (issue #1880). Custom registration fields let organisers add checkbox and option-select questions to their event registration form. `RegistrationField` has `field_type` (checkbox, option_select), `order`, `is_required`, `settings` (JSON). Up to 5 fields per event. `RegistrationFieldOption` stores selectable options with `title` and `order`. Both have unique constraints and CASCADE deletes. Added to `EventRegistrationConfig` relationships. Updated ER tree.
+- **2026-05-24**: Added `RegistrationFieldAnswer` entity (issue #2004). Stores registrant responses to custom fields. Polymorphic value columns: `value_boolean` (checkbox), `value_option` FK (option_select/inventory/time_slot_select), `value_number` (inventory quantity). Synced atomically via `sync_registration_answers()` on registration POST. `unique_together = [("registration", "field")]`. Updated ER tree. `EventRegistration` now has `field_answers` reverse relationship.
+- **2026-05-25**: Added `inventory` and `time_slot_select` field types to `RegistrationField.field_type` choices (issues #1995, #2006). `RegistrationFieldOption` extended with `available_amount`, `max_amount_per_guest` (inventory capacity) and `start_time`, `end_time` (time slot bounds). `RegistrationFieldAnswer` extended with `value_number` for inventory quantity. Updated `RegistrationField` description to document all four field types.
+- **2026-05-26**: Added `label` field to `RegistrationField` (max 30 chars, unique per config) and `notify_admins` field to `EventRegistrationConfig` (default `True`). Labels are auto-generated on creation and organiser-editable for export display. `notify_admins` controls whether team admins receive notification emails on registration changes.

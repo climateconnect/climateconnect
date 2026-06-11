@@ -1,6 +1,7 @@
 import React, { ChangeEvent, ElementType, useContext } from "react";
 import { Checkbox, IconButton, Tooltip, Typography } from "@mui/material";
 import getTexts from "../../../public/texts/texts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { makeStyles, useTheme } from "@mui/styles";
@@ -17,12 +18,14 @@ type Props = {
   // eslint-disable-next-line no-unused-vars
   handleUpdateSelectedHub: (hubName: string) => void;
   ToolTipIcon?: ElementType;
+  typeId?: string;
 };
 
 export default function CustomHubSelection({
   currentHubName,
   handleUpdateSelectedHub,
   ToolTipIcon,
+  typeId,
 }: Props) {
   if (!ToolTipIcon) {
     ToolTipIcon = HelpOutlineIcon;
@@ -31,6 +34,8 @@ export default function CustomHubSelection({
   const theme = useTheme();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ locale: locale, page: "project" });
+  const projectTypeTexts = getProjectTypeTexts(texts);
+  const type = typeId || "project";
 
   const label = { inputProps: { "aria-label": "PRIO1 project checkbox" } };
   const prio1Project = currentHubName == "prio1";
@@ -53,8 +58,8 @@ export default function CustomHubSelection({
         checked={prio1Project}
         onChange={handlePrio1ProjectCheckbox}
       />
-      {texts.my_project_is_part_of_the_prio1_project}
-      <Tooltip title={texts.tooltip_my_project_is_part_of_the_prio1_project}>
+      {projectTypeTexts.projectIsPartOfPrio1[type]}
+      <Tooltip title={projectTypeTexts.tooltipProjectIsPartOfPrio1[type]}>
         <IconButton size="large">
           <ToolTipIcon />
         </IconButton>

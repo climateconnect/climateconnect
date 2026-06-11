@@ -3,7 +3,11 @@ import makeStyles from "@mui/styles/makeStyles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  WASSERAKTIONSWOCHEN_PATH,
+  getWasseraktionswochenUrl,
+} from "../../../../public/data/wasseraktionswochen_config.js";
 
 type StyleProps = {
   hubSlug?: string;
@@ -37,20 +41,52 @@ export default function GoBackFromProjectPageButton({
   locale,
   containerClassName,
   hubSlug,
+  project,
 }: any) {
   const classes = useStyles({ hubSlug: hubSlug });
-
   const router = useRouter();
+
+  const [backButtonText, setBackButtonText] = useState(texts.go_back);
+  const [specialEventPagePath, setSpecialEventPagePath] = useState<string | null>(null);
+
+  // Check if user came from a special event page and set button text accordingly
+  useEffect(() => {
+    if (typeof document === "undefined" || !project?.parent_project_slug) {
+      return;
+    }
+
+    const referrer = document.referrer;
+
+    // Check if user came from a special event page
+    if (referrer.includes(WASSERAKTIONSWOCHEN_PATH)) {
+      const backText =
+        texts.back_to_parent?.replace("{parent_name}", project.parent_project_name || "") ||
+        texts.go_back;
+      setBackButtonText(backText);
+      setSpecialEventPagePath(getWasseraktionswochenUrl(locale));
+    }
+  }, [project?.parent_project_slug, project?.parent_project_name, texts, locale]);
+
   const goBack = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const hubPage = urlParams.get("hub");
-    const hubsLink = "/" + locale + "/hubs/" + hubPage + "/browse";
-    const browseLink = "/" + locale + "/browse";
-    if (hubPage) {
-      router.push(hubsLink);
-    } else {
-      router.push(browseLink);
+
+    let backUrl;
+
+    // Priority 1: If user came from special event page, go back there
+    if (specialEventPagePath) {
+      backUrl = specialEventPagePath;
     }
+    // Priority 2: If hub parameter exists, go to hub browse page
+    else if (hubPage) {
+      backUrl = "/" + locale + "/hubs/" + hubPage + "/browse";
+    }
+    // Priority 3: Default to general browse page
+    else {
+      backUrl = "/" + locale + "/browse";
+    }
+
+    router.push(backUrl);
   };
 
   if (tinyScreen)
@@ -66,7 +102,7 @@ export default function GoBackFromProjectPageButton({
     return (
       <div className={containerClassName}>
         <Button onClick={goBack} className={classes.button} startIcon={<ArrowBackIcon />}>
-          {texts.go_back}
+          {backButtonText}
         </Button>
       </div>
     );

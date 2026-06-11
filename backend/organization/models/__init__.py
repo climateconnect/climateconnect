@@ -39,3 +39,16 @@ from organization.models.sector import (
     OrganizationSectorMapping,
     UserProfileSectorMapping,
 )
+
+from organization.models.event_registration import (
+    EventRegistration,
+    RegistrationFieldAnswer,
+    EventRegistrationConfig,
+    RegistrationStatus,
+)
+
+from organization.models.registration_field import (
+    RegistrationField,
+    RegistrationFieldOption,
+    RegistrationFieldType,
+)

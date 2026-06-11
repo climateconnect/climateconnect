@@ -22,7 +22,6 @@ CACHE_BACHED_RANK_REQUEST=true
 
 # Url of location geocoding API
 LOCATION_SERVICE_BASE_URL=""
-ENABLE_LEGACY_LOCATION_FORMAT="Set to True to disable usage of geocoding API"
 
 CELERY_BROKER_URL="redis://127.0.0.1"
 ```
