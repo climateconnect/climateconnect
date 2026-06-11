@@ -266,7 +266,12 @@ export default function LocationSearchBar({
   };
 
   const renderSearchOption = (props, option) => {
-    return <li {...props}>{option}</li>;
+    const { key, ...optionProps } = props;
+    return (
+      <li key={key} {...optionProps}>
+        {option}
+      </li>
+    );
   };
 
   const handleInputChange = (event) => {

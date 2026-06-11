@@ -23,7 +23,7 @@ import { getHubslugFromUrl } from "../public/lib/hubOperations";
 
 Sentry.init({
   dsn: process.env.FRONTEND_SENTRY_DSN,
-  integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
+  integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
   // Performance Monitoring
   tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
   // Session Replay
