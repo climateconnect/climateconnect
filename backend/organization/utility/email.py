@@ -893,6 +893,84 @@ def generate_event_ics_attachment(project, lang_code, registration=None, tz=None
     }
 
 
+def generate_timeslot_ics_attachments(project, lang_code, registration):
+    """
+    Generate a separate .ics attachment for each timeslot field answer.
+
+    Each timeslot the guest selected during registration becomes its own
+    calendar entry so that guests can add individual sessions to their
+    calendar independently of the overall event.
+
+    Returns a list of Mailjet attachment dicts (may be empty if the
+    registration has no timeslot answers).
+
+    Args:
+        project: ``Project`` instance.
+        lang_code: User's language code ("en" or "de").
+        registration: ``EventRegistration`` instance with prefetched
+            ``field_answers__field``, ``field_answers__value_option``.
+    """
+    from organization.models.registration_field import RegistrationFieldType
+
+    event_url = (
+        settings.FRONTEND_URL
+        + get_user_lang_url(lang_code)
+        + "/projects/"
+        + project.url_slug
+    )
+    ical_url = project.website if (project.is_online and project.website) else event_url
+
+    url_cta = (
+        "Visit the following link to see event details or change your registration:"
+        if lang_code == "en"
+        else "Besuche folgenden Link, um die Details der Veranstaltung zu sehen"
+        " oder deine Anmeldung zu ändern:"
+    )
+    description = f"{url_cta}\n{event_url}"
+
+    summary_prefix = "My timeslot at" if lang_code == "en" else "Mein Zeitfester bei"
+    event_name = get_project_name(project, lang_code)
+
+    attachments = []
+    for answer in registration.field_answers.all():
+        if answer.field.field_type != RegistrationFieldType.TIME_SLOT_SELECT:
+            continue
+        option = answer.value_option
+        if not option or not option.start_time or not option.end_time:
+            continue
+
+        cal = Calendar()
+        cal.add("prodid", "-//Climate Connect//EN")
+        cal.add("version", "2.0")
+        cal.add("method", "PUBLISH")
+
+        ical_event = IcalEvent()
+        ical_event.add(
+            "uid", f"{registration.id}_{answer.field.id}@climateconnect.earth"
+        )
+        ical_event.add("summary", f"{summary_prefix} {event_name}")
+        ical_event.add("dtstart", option.start_time)
+        ical_event.add("dtend", option.end_time)
+        ical_event.add("description", description)
+        ical_event.add("url", ical_url)
+
+        cal.add_component(ical_event)
+
+        ics_bytes = cal.to_ical()
+        ics_base64 = base64.b64encode(ics_bytes).decode("ascii")
+
+        slug = re.sub(r"[^a-z0-9]+", "-", option.title.lower()).strip("-")
+        attachments.append(
+            {
+                "ContentType": "text/calendar; method=PUBLISH; charset=utf-8",
+                "Filename": f"{project.url_slug}_{slug}.ics",
+                "Base64Content": ics_base64,
+            }
+        )
+
+    return attachments
+
+
 def send_event_registration_confirmation_to_user(user, project, registration):
     """
     Send a registration confirmation email to a user who just registered for an event.
@@ -963,6 +1041,9 @@ def send_event_registration_confirmation_to_user(user, project, registration):
     )
     if ics_attachment:
         attachments.append(ics_attachment)
+    attachments.extend(
+        generate_timeslot_ics_attachments(project, lang_code, registration)
+    )
 
     send_email(
         user=user,

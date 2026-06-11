@@ -252,3 +252,8 @@ ics_base64 = base64.b64encode(ics_bytes).decode("ascii")
 ### Why not generate .ics via the Next.js endpoint?
 
 The Celery task could theoretically call the Next.js `.ical` endpoint to get the .ics content. But this adds an HTTP roundtrip, a dependency on the frontend being available, and complexity for error handling. Generating the .ics directly in Python is simpler, faster, and more reliable. The event data is already available in the task.
+
+### TODO
+- Name attachment for timeslot .ical attachement differently. Maybe event-slug + "_timeslot_" + sequence number + ".ics"
+- Add the additional information field of the event project if set to the description of the even .ical file as it is intended to provide more information
+
