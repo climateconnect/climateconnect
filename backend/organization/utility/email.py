@@ -1,6 +1,11 @@
+import base64
 import html as html_module
 import logging
 import re
+
+import bleach
+from icalendar import Calendar, Event as IcalEvent
+
 from organization.utility.project import get_project_name
 from organization.utility.organization import get_organization_name
 from location.utility import get_translated_location_name
@@ -730,6 +735,164 @@ def _build_field_answers_html(registration, lang_code, tz):
     )
 
 
+def _build_field_answers_text(registration, lang_code, tz):
+    """
+    Build a plain-text snippet of the guest's registration field answers.
+
+    Returns a string with bullet-point lines, or an empty string if no answers
+    have non-null values.  Uses the same answer-reading logic as
+    ``_build_field_answers_html`` but outputs plain text suitable for the
+    iCalendar DESCRIPTION field.
+
+    Args:
+        registration: EventRegistration instance with prefetched field_answers,
+            field, value_option, and field.options.
+        lang_code: User's language code ("en" or "de").
+        tz: The :class:`~zoneinfo.ZoneInfo` timezone to display times in.
+
+    Returns:
+        str: Plain-text bullet-point lines or empty string.
+    """
+    from organization.models.registration_field import RegistrationFieldType
+
+    answers_by_field = {}
+    for answer in registration.field_answers.all():
+        if (
+            answer.value_boolean is None
+            and answer.value_option is None
+            and answer.value_number is None
+        ):
+            continue
+        if answer.field.field_type == RegistrationFieldType.CHECKBOX:
+            if answer.value_boolean is not True:
+                continue
+        answers_by_field[answer.field] = answer
+
+    if not answers_by_field:
+        return ""
+
+    sorted_fields = sorted(answers_by_field.keys(), key=lambda f: f.order)
+
+    heading = (
+        "Your registration answers:" if lang_code == "en" else "Deine Anmeldeantworten:"
+    )
+
+    lines = [heading]
+    for field in sorted_fields:
+        answer = answers_by_field[field]
+        field_type = field.field_type
+
+        if field_type == RegistrationFieldType.CHECKBOX:
+            description = (field.settings or {}).get("description", "")
+            plain_desc = re.sub(r"<[^>]+>", "", description).strip()
+            lines.append(f"\u2022 {plain_desc}: \u2713")
+
+        elif field_type == RegistrationFieldType.OPTION_SELECT:
+            field_title = (field.settings or {}).get("title", "")
+            option = answer.value_option
+            answer_text = option.title if option else ""
+            lines.append(f"\u2022 {field_title}: {answer_text}")
+
+        elif field_type == RegistrationFieldType.INVENTORY:
+            field_title = (field.settings or {}).get("title", "")
+            option = answer.value_option
+            option_title = option.title if option else ""
+            quantity = answer.value_number or 0
+            lines.append(f"\u2022 {field_title}: {option_title} \u00d7 {quantity}")
+
+        elif field_type == RegistrationFieldType.TIME_SLOT_SELECT:
+            field_title = (field.settings or {}).get("title", "")
+            option = answer.value_option
+            if option and option.start_time and option.end_time:
+                answer_text = _format_time_range_localized(
+                    option.start_time, option.end_time, lang_code, tz
+                )
+            elif option:
+                answer_text = option.title
+            else:
+                answer_text = ""
+            lines.append(f"\u2022 {field_title}: {answer_text}")
+
+    if len(lines) == 1:
+        return ""
+
+    return "\n".join(lines)
+
+
+def generate_event_ics_attachment(project, lang_code, registration=None, tz=None):
+    """
+    Generate a Mailjet-compatible .ics attachment dict for an event.
+
+    Returns a dict ready to be included in the Mailjet ``Attachments`` list,
+    or ``None`` if the event has no ``start_date`` or ``end_date``.
+
+    Args:
+        project: ``Project`` instance.
+        lang_code: User's language code ("en" or "de").
+        registration: Optional ``EventRegistration`` instance.  When provided,
+            the guest's registration field answers (especially timeslots) are
+            appended to the iCalendar DESCRIPTION so they appear in the
+            calendar entry.
+        tz: Timezone for localised time formatting in field answers.
+    """
+    if not project.start_date or not project.end_date:
+        return None
+
+    cal = Calendar()
+    cal.add("prodid", "-//Climate Connect//EN")
+    cal.add("version", "2.0")
+    cal.add("method", "PUBLISH")
+
+    event = IcalEvent()
+    event.add("uid", f"{project.id}@climateconnect.earth")
+    event.add("summary", get_project_name(project, lang_code))
+    event.add("dtstart", project.start_date)
+    event.add("dtend", project.end_date)
+
+    location = get_location_name(project, lang_code)
+    if location:
+        event.add("location", location)
+
+    event_url = (
+        settings.FRONTEND_URL
+        + get_user_lang_url(lang_code)
+        + "/projects/"
+        + project.url_slug
+    )
+
+    description_parts = []
+    if project.description:
+        description_parts.append(
+            bleach.clean(project.description, tags=[], strip=True).strip()
+        )
+    if registration and tz:
+        field_answers_text = _build_field_answers_text(registration, lang_code, tz)
+        if field_answers_text:
+            description_parts.append(field_answers_text)
+    url_cta = (
+        "Visit the following link to see event details or change your registration:"
+        if lang_code == "en"
+        else "Besuche folgenden Link, um die Details der Veranstaltung zu sehen"
+        " oder deine Anmeldung zu ändern:"
+    )
+    description_parts.append(f"{url_cta}\n{event_url}")
+    event.add("description", "\n\n".join(description_parts))
+
+    ical_url = project.website if (project.is_online and project.website) else event_url
+    event.add("url", ical_url)
+
+    cal.add_component(event)
+
+    ics_bytes = cal.to_ical()
+    ics_base64 = base64.b64encode(ics_bytes).decode("ascii")
+
+    return {
+        "ContentType": "text/calendar; method=PUBLISH; charset=utf-8",
+        "Filename": f"{project.url_slug}.ics",
+        "Base64Content": ics_base64,
+    }
+
+
 def send_event_registration_confirmation_to_user(user, project, registration):
     """
     Send a registration confirmation email to a user who just registered for an event.
@@ -794,6 +957,13 @@ def send_event_registration_confirmation_to_user(user, project, registration):
         "FieldAnswersHtml": field_answers_html,
     }
 
+    attachments = []
+    ics_attachment = generate_event_ics_attachment(
+        project, lang_code, registration=registration, tz=display_tz
+    )
+    if ics_attachment:
+        attachments.append(ics_attachment)
+
     send_email(
         user=user,
         variables=variables,
@@ -801,6 +971,7 @@ def send_event_registration_confirmation_to_user(user, project, registration):
         subjects_by_language=subjects_by_language,
         should_send_email_setting="",
         notification=None,
+        attachments=attachments if attachments else None,
     )
 
 

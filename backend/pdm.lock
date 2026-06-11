@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:30877b1a467aaf958d09615b34febf222ed790fb1e3ab63acc9a3a01bf505b26"
+content_hash = "sha256:c52675893c38828905ad0d8c81725149089c68aace856fd93deb7d3794e4cd67"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -1476,6 +1476,22 @@ dependencies = [
 files = [
     {file = "hyperlink-21.0.0-py2.py3-none-any.whl", hash = "sha256:e6b14c37ecb73e89c77d78cdb4c2cc8f3fb59a885c5b3f819ff4ed80f25af1b4"},
     {file = "hyperlink-21.0.0.tar.gz", hash = "sha256:427af957daa58bc909471c6c40f74c5450fa123dd093fc53efd2e91d2705a56b"},
+]
+
+[[package]]
+name = "icalendar"
+version = "7.1.2"
+requires_python = ">=3.10"
+summary = "RFC 5545 compatible parser and generator of iCalendar files"
+groups = ["default"]
+dependencies = [
+    "python-dateutil",
+    "typing-extensions~=4.10; python_version < \"3.13\"",
+    "tzdata>=2025.3",
+]
+files = [
+    {file = "icalendar-7.1.2-py3-none-any.whl", hash = "sha256:01c76243c76c549f58bb51510a8f0a4edb7c539726adda1356dfd0dc04fb7a53"},
+    {file = "icalendar-7.1.2.tar.gz", hash = "sha256:ebc43ebeb357be98984b573d975118008dee3410d8df28b054ef2943cf3e367e"},
 ]
 
 [[package]]

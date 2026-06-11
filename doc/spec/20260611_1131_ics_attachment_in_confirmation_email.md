@@ -1,7 +1,7 @@
 # .ics Attachment in Registration Confirmation Email
 
 **Date**: 2026-06-11  
-**Status**: DRAFT  
+**Status**: IMPLEMENTED  
 **Type**: Backend — new feature  
 **GitHub Issue**: —  
 
@@ -22,7 +22,7 @@ When a guest registers for an event, the confirmation email contains no calendar
 - The registration confirmation email (`send_event_registration_confirmation_to_user` in `organization/utility/email.py`) sends template variables (FirstName, EventTitle, EventUrl, StartDate, etc.) to a Mailjet template.
 - The email currently contains no calendar-related content — no links, no attachments.
 - The Mailjet Send API v3.1 (already in use via `mailjet_rest.Client(version="v3.1")`) supports file attachments via the `Attachments` field.
-- The Python `icalendar` library will need to be added as a project dependency.
+- The Python `icalendar` library has been added as a project dependency.
 - All event data needed for .ics generation is already fetched in the Celery task.
 
 ---
@@ -34,11 +34,12 @@ When a guest registers for an event, the confirmation email contains no calendar
 1. Generate an .ics file for the event in the confirmation email Celery task.
 2. Attach the .ics file to the confirmation email via the Mailjet `Attachments` API.
 3. Extend the `send_email()` helper to support optional attachments (backwards-compatible).
+4. Include the guest's registration field answers (especially timeslots) as plain text in the iCalendar DESCRIPTION.
+5. Use the event's `website` URL as the iCal `URL` property for online events.
 
 ### Out of scope (for now)
 
 - **Calendar links in the email body** (Google Calendar, Outlook, Apple Calendar URLs). These depend on frontend endpoints covered by a separate task (`20260611_1131_calendar_links_on_event_page.md`). Can be added as a future enhancement once those endpoints exist.
-- Personalised .ics with timeslot data (requires per-user auth or signed token URLs).
 - .ics attachments in other email types (organiser notifications, admin alerts, etc.).
 
 ---
@@ -56,30 +57,32 @@ When a guest registers for an event, the confirmation email includes an .ics fil
   - `SUMMARY` — event name, localised for the user's language
   - `DTSTART` / `DTEND` — event's overall `start_date` / `end_date` in UTC
   - `LOCATION` — reuses the `LocationName` value already computed for the email template (see "Location formatting" in Domain Context).
-  - `DESCRIPTION` — event description + link back to the event page
-  - `URL` — link to the event page
+  - `DESCRIPTION` — event description (HTML stripped) + plain-text field answers + localised CTA text + link to the event page (see "DESCRIPTION structure" below).
+  - `URL` — for online events with a `website` set: the event website URL (e.g. Zoom link). For all other events: the Climate Connect event page URL.
 - `METHOD:PUBLISH` — one-way event publication (no RSVP expected; the guest already registered)
 
 **Attachment metadata:**
 - Filename: `{event_slug}.ics`
-- Content-Type: `text/calendar; method=PUBLISH; charset=utf-8`
-- Content: Base64-encoded .ics content
+- `ContentType`: `text/calendar; method=PUBLISH; charset=utf-8`
+- `Base64Content`: Base64-encoded .ics content
 
 ### AC-2: Edge cases
 
 - Online events (`is_online=True`): `LOCATION` is "Online". (Online events do have an associated physical location for hub purposes, but the calendar entry should reflect that the event itself is online.)
-- Event with `is_online=True` and a `website` URL: the event URL is included in `DESCRIPTION`.
+- Online event with `is_online=True` and a `website` URL: the iCal `URL` property uses the `website` value (typically a Zoom/meeting link). The DESCRIPTION CTA always links back to the Climate Connect event page.
 - Event name or location contains special characters (commas, semicolons, backslashes): properly escaped per RFC 5545. The `icalendar` library handles this automatically.
 - Event with no location: `LOCATION` is omitted from the .ics. (The `get_location_name()` function returns an empty string in this case.)
+- Event with no `start_date` or `end_date`: no .ics attachment is generated (function returns `None`).
+- Project description contains HTML: stripped via `bleach.clean(tags=[], strip=True)` before inclusion in DESCRIPTION.
 
 ---
 
 ## Constraints
 
-- **.ics generation in Python** — uses the `icalendar` library (PyPI). Generates the .ics content in the Celery task, using event data already fetched for the email template variables. No additional database queries.
-- **Mailjet attachment format** — the `Attachments` field on the message object accepts `[{"Content-type": "...", "Filename": "...", "Content": "<base64>"}]`. Content must be Base64-encoded.
+- **.ics generation in Python** — uses the `icalendar` library (PyPI, `>=5.0.0`). Generates the .ics content in `generate_event_ics_attachment()` in `organization/utility/email.py`, using event data already fetched for the email template variables. No additional database queries.
+- **Mailjet attachment format** — the `Attachments` field on the message object accepts `[{"ContentType": "...", "Filename": "...", "Base64Content": "<base64>"}]`. Content must be Base64-encoded. Note: Mailjet v3.1 uses `ContentType` and `Base64Content` (not `Content-type` and `Content`).
 - **No multiple calendar formats** — `.ics` (iCalendar / RFC 5545) is the only format. Universally supported by all major calendar apps.
-- **i18n** — `SUMMARY` and `DESCRIPTION` use the user's language (via `get_user_lang_code`). `LOCATION` reuses the already-translated `LocationName` template variable. Consistent with existing email localisation.
+- **i18n** — `SUMMARY`, `DESCRIPTION` field answers heading, and CTA text use the user's language (via `get_user_lang_code`). `LOCATION` reuses the already-translated `LocationName` template variable. Consistent with existing email localisation.
 - **Performance** — .ics generation uses data already fetched for the email template. No additional database queries. The `icalendar` library is lightweight.
 
 ---
@@ -96,11 +99,45 @@ The `LOCATION` field in the .ics reuses the same `LocationName` value that is al
 
 This is already fetched and computed in the Celery task for the `LocationName` email template variable. The .ics generation reuses the same value — no additional queries or formatting logic needed.
 
+### DESCRIPTION structure
+
+The iCalendar `DESCRIPTION` field is composed of up to four sections, separated by `\n\n`:
+
+1. **Event description** — the project's `description` field, with HTML stripped via `bleach.clean(tags=[], strip=True)`. Omitted if the project has no description.
+2. **Registration field answers** — plain-text bullet-point lines (e.g. `• Workshop: Mon, Jun 20, 10:00 – 12:00 (UTC)`) generated by `_build_field_answers_text()`. Only included when a `registration` object is passed to `generate_event_ics_attachment()`. Omitted if the guest has no field answers.
+3. **Localised CTA text** — "Visit the following link to see event details or change your registration:" (EN) or "Besuche folgenden Link, um die Details der Veranstaltung zu sehen oder deine Anmeldung zu ändern:" (DE).
+4. **Event page URL** — always the Climate Connect event page URL (`{FRONTEND_URL}/projects/{url_slug}`).
+
+Example DESCRIPTION:
+
+```
+Join us for a great event!
+
+Your registration answers:
+• Workshop: Mon, Jun 20, 10:00 – 12:00 (UTC)
+• T-shirt size: Medium
+
+Besuche folgenden Link, um die Details der Veranstaltung zu sehen oder deine Anmeldung zu ändern:
+https://climateconnect.earth/projects/event-slug
+```
+
+### Registration field answers in .ics
+
+The `_build_field_answers_text()` function produces a plain-text version of the guest's registration field answers for inclusion in the iCalendar DESCRIPTION. It mirrors the logic of `_build_field_answers_html()` (used in the email body) but outputs bullet-point lines instead of HTML table rows.
+
+Supported field types:
+- **Checkbox** — shown as `• {description}: ✓` (only checked checkboxes)
+- **Option select** — shown as `• {field title}: {option title}`
+- **Inventory** — shown as `• {field title}: {option title} × {quantity}`
+- **Time slot select** — shown as `• {field title}: {formatted time range}` (localised via `_format_time_range_localized()`)
+
+The heading is localised: "Your registration answers:" (EN) / "Deine Anmeldeantworten:" (DE).
+
 ### How emails are sent
 
-Emails are sent from Django via Mailjet transactional templates. The existing `send_email()` helper in `climateconnect_api/utility/email.py` builds a message dict with template variables and calls `mailjet_send_api.send.create(data=data)`.
+Emails are sent from Django via Mailjet transactional templates. The existing `send_email()` helper in `climateconnect_api/utility/email_setup.py` builds a message dict with template variables and calls `mailjet_send_api.send.create(data=data)`.
 
-The `send_email()` function does not currently support attachments. The approach is to add an optional `attachments` parameter:
+The `send_email()` function now supports optional attachments via the `attachments` parameter:
 
 ```python
 def send_email(
@@ -111,27 +148,27 @@ def send_email(
     should_send_email_setting,
     notification,
     hub_url=None,
-    attachments=None,  # NEW: optional list of attachment dicts
+    attachments=None,  # optional list of attachment dicts
 ):
 ```
 
 When `attachments` is provided, it's included in the message dict as `"Attachments": attachments`. Existing callers pass no attachments — fully backwards-compatible.
-
-Alternative: build the Mailjet API call directly in the confirmation email function (like `send_feedback_email` does). But extending `send_email()` is preferred for consistency.
 
 ### Mailjet attachment format
 
 ```python
 "Attachments": [
     {
-        "Content-type": "text/calendar; method=PUBLISH; charset=utf-8",
+        "ContentType": "text/calendar; method=PUBLISH; charset=utf-8",
         "Filename": "event-slug.ics",
-        "Content": "<base64-encoded .ics content>"
+        "Base64Content": "<base64-encoded .ics content>"
     }
 ]
 ```
 
-The `Content` field is a Base64-encoded string. Generated with `base64.b64encode(ics_bytes).decode("ascii")`.
+The `Base64Content` field is a Base64-encoded string. Generated with `base64.b64encode(ics_bytes).decode("ascii")`.
+
+Note: Mailjet v3.1 uses `ContentType` and `Base64Content` as the field names (not `Content-type` and `Content` as some documentation suggests).
 
 ### .ics content structure
 
@@ -148,8 +185,8 @@ SUMMARY:{event name}
 DTSTART:20260620T090000Z
 DTEND:20260620T170000Z
 LOCATION:{formatted location string or "Online"}
-DESCRIPTION:{event description}\n\n{event URL}
-URL:{event URL}
+DESCRIPTION:{event description}\n\n{field answers}\n\n{CTA text}\n{event page URL}
+URL:{event website URL for online events, or event page URL}
 END:VEVENT
 END:VCALENDAR
 ```
@@ -157,7 +194,8 @@ END:VCALENDAR
 - `UID` uses the event's database ID + domain for global uniqueness.
 - `DTSTART`/`DTEND` are in UTC (ISO 8601 format). Events always have `start_date` and `end_date` — the fields are nullable in the Django model but validation ensures they are set.
 - `LOCATION` reuses the `LocationName` template variable (see "Location formatting" above).
-- `DESCRIPTION` includes the event description text and a link back to the event page, separated by `\n\n`.
+- `DESCRIPTION` includes the event description text (HTML stripped), plain-text field answers, a localised CTA, and a link back to the event page, separated by `\n\n`.
+- `URL` uses the event's `website` field for online events (`is_online=True` and `website` is set). For all other events, it uses the Climate Connect event page URL.
 
 ### Confirmation email Celery task
 
