@@ -7267,7 +7267,6 @@ __metadata:
     react-minimal-pie-chart: "npm:^8.1.0"
     react-multi-carousel: "npm:^2.5.5"
     react-share: "npm:^4.4.0"
-    react-text-loop: "npm:^2.3.0"
     react-timeago: "npm:^8.3.0"
     react-youtube: "npm:^7.13.0"
     ts-node: "npm:^10.9.2"
@@ -7792,13 +7791,6 @@ __metadata:
   version: 3.2.3
   resolution: "csstype@npm:3.2.3"
   checksum: 10c0/cd29c51e70fa822f1cecd8641a1445bed7063697469d35633b516e60fe8c1bde04b08f6c5b6022136bb669b64c63d4173af54864510fbb4ee23281801841a3ce
-  languageName: node
-  linkType: hard
-
-"cxs@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "cxs@npm:6.2.0"
-  checksum: 10c0/7eccdb602d1932b07d3c8eceb4adae0931ecccb00b4ed7dfb46129252fdebff4c2f8723509ca0c0b619f3c3a73bc343c224497d15e63a86c335557d49075d045
   languageName: node
   linkType: hard
 
@@ -13579,20 +13571,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"performance-now@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "performance-now@npm:0.2.0"
-  checksum: 10c0/d7f3824e443491208f7124b45d3280dbff889f8f048c3aee507109c24644d51a226eb07fd7ac51dd0eef144639590c57410c2d167bd4fdf0c5caa0101a449c3d
-  languageName: node
-  linkType: hard
-
-"performance-now@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "performance-now@npm:2.1.0"
-  checksum: 10c0/22c54de06f269e29f640e0e075207af57de5052a3d15e360c09b9a8663f393f6f45902006c1e71aa8a5a1cdfb1a47fe268826f8496d6425c362f00f5bc3e85d9
-  languageName: node
-  linkType: hard
-
 "picocolors@npm:1.1.1, picocolors@npm:^1.0.0, picocolors@npm:^1.1.1":
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
@@ -14087,15 +14065,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"raf@npm:^3.1.0":
-  version: 3.4.1
-  resolution: "raf@npm:3.4.1"
-  dependencies:
-    performance-now: "npm:^2.1.0"
-  checksum: 10c0/337f0853c9e6a77647b0f499beedafea5d6facfb9f2d488a624f88b03df2be72b8a0e7f9118a3ff811377d534912039a3311815700d2b6d2313f82f736f9eb6e
-  languageName: node
-  linkType: hard
-
 "rambda@npm:^9.1.0":
   version: 9.4.2
   resolution: "rambda@npm:9.4.2"
@@ -14157,13 +14126,6 @@ __metadata:
   peerDependencies:
     react: ^19.2.7
   checksum: 10c0/970ff600f6e80d47d39e2f226f12f226173b3cba3382efc97c5f0cd663de9af38c7a4c11c213fb936094faeac83060d660247accaa96b752180d5b951b9cfecb
-  languageName: node
-  linkType: hard
-
-"react-fast-compare@npm:2.0.4":
-  version: 2.0.4
-  resolution: "react-fast-compare@npm:2.0.4"
-  checksum: 10c0/f0300c677e95198b5f993cbb8a983dab09586157dc678f9e2b5b29ff941b6677a8776fbbdc425ce102fad86937e36bb45cfcfd797f006270b97ccf287ebfb885
   languageName: node
   linkType: hard
 
@@ -14260,19 +14222,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-motion@npm:^0.5.2":
-  version: 0.5.2
-  resolution: "react-motion@npm:0.5.2"
-  dependencies:
-    performance-now: "npm:^0.2.0"
-    prop-types: "npm:^15.5.8"
-    raf: "npm:^3.1.0"
-  peerDependencies:
-    react: ^0.14.9 || ^15.3.0 || ^16.0.0
-  checksum: 10c0/4ea6f1cc7079f0161fd786cc755133a822d87d9c0510369b8fb348d9ad602111efa2e3496dbcc390c967229e39e3eb5f6dd5dd6d3d124289443de31d6035a6c8
-  languageName: node
-  linkType: hard
-
 "react-multi-carousel@npm:^2.5.5":
   version: 2.8.6
   resolution: "react-multi-carousel@npm:2.8.6"
@@ -14300,20 +14249,6 @@ __metadata:
   peerDependencies:
     react: ^16.3.0 || ^17 || ^18
   checksum: 10c0/9670ab18c1b7711a3501c6c8fdf62c596d6ac23137760b5792ef85ce35b6c51f478ab515f148ba47f7a2583ee570fafb317848d4ffe3f9d23b4e02d308079deb
-  languageName: node
-  linkType: hard
-
-"react-text-loop@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "react-text-loop@npm:2.3.0"
-  dependencies:
-    cxs: "npm:^6.2.0"
-    react-fast-compare: "npm:2.0.4"
-    react-motion: "npm:^0.5.2"
-  peerDependencies:
-    react: ^15.0.1 || ^16.0.1
-    react-dom: ^15.0.1 || ^16.0.1
-  checksum: 10c0/2d87f469d93f48df0624d85fc256e654dcc61f1239501c98d401760821ea5ad6a26e8755e5dfe9b43d8b7a79ed2574fcb110c59d7ce12a065ce48ea421cfcbe0
   languageName: node
   linkType: hard
 
