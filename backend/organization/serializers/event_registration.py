@@ -14,6 +14,7 @@ from organization.serializers.registration_field import (
     create_fields,
     sync_fields,
 )
+from organization.utility.event_registration import evaluate_registration_status
 
 
 def _compute_effective_status(obj: EventRegistrationConfig) -> str:
@@ -751,11 +752,16 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
     def update(self, instance, validated_data):
         """
         Save updated config fields, sync custom registration fields, and
-        auto-adjust status when max_participants changes.
+        auto-adjust status when capacity conditions change.
 
-        Auto-adjustment is skipped when ``status`` is explicitly present in the
-        request body — the organiser's explicit intent takes priority over the
-        capacity-driven heuristic.
+        The organiser may explicitly set status to "open" or "closed".
+        After applying the organiser's intent, the capacity check always
+        runs on the *resulting* status — if the resulting status is
+        auto-managed (OPEN or FULL), the check may override it.  Only
+        CLOSED (an organiser-set terminal state) is never overridden.
+
+        The status evaluation MUST run after ``sync_fields`` so that field
+        option capacity changes (e.g. ``available_amount``) are visible.
         """
         fields_data = validated_data.pop("fields", None)
         new_is_draft = validated_data.pop("is_draft", None)
@@ -764,35 +770,22 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
         if new_is_draft is not None and not new_is_draft and instance.is_draft:
             instance.is_draft = False
 
-        explicit_status = validated_data.get("status")
-
-        if "max_participants" in validated_data and explicit_status is None:
-            new_max = validated_data["max_participants"]
-            if new_max is None:
-                # Switching to unlimited capacity — always re-opens a full event.
-                if instance.status == RegistrationStatus.FULL:
-                    instance.status = RegistrationStatus.OPEN
-            else:
-                current_count = EventRegistration.objects.filter(
-                    registration_config=instance,
-                    cancelled_at__isnull=True,
-                ).count()
-                if (
-                    instance.status == RegistrationStatus.FULL
-                    and new_max > current_count
-                ):
-                    # Capacity raised above filled seats → re-open.
-                    instance.status = RegistrationStatus.OPEN
-                elif (
-                    instance.status == RegistrationStatus.OPEN
-                    and new_max <= current_count
-                ):
-                    # Capacity set to match filled seats (< is blocked by validate) → close.
-                    instance.status = RegistrationStatus.FULL
         result = super().update(instance, validated_data)
 
         if fields_data is not None:
             sync_fields(instance, fields_data)
+
+        # Auto-adjust status AFTER all other changes are persisted so that
+        # max_participants AND field option capacity (available_amount) are
+        # both visible to the evaluation.
+        # Only CLOSED is exempt — it is an organiser-set terminal state.
+        # Both OPEN and FULL are auto-managed and subject to the capacity
+        # check regardless of whether status was in the PATCH payload.
+        if instance.status in (RegistrationStatus.OPEN, RegistrationStatus.FULL):
+            suggested = evaluate_registration_status(instance)
+            if suggested != instance.status:
+                instance.status = suggested
+                instance.save(update_fields=["status", "updated_at"])
 
         return result
 
