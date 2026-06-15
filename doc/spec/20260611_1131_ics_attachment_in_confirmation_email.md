@@ -36,6 +36,7 @@ When a guest registers for an event, the confirmation email contains no calendar
 3. Extend the `send_email()` helper to support optional attachments (backwards-compatible).
 4. Include the guest's registration field answers (especially timeslots) as plain text in the iCalendar DESCRIPTION.
 5. Use the event's `website` URL as the iCal `URL` property for online events.
+6. Generate separate per-timeslot .ics attachments so guests can add individual sessions to their calendar independently.
 
 ### Out of scope (for now)
 
@@ -66,7 +67,30 @@ When a guest registers for an event, the confirmation email includes an .ics fil
 - `ContentType`: `text/calendar; method=PUBLISH; charset=utf-8`
 - `Base64Content`: Base64-encoded .ics content
 
-### AC-2: Edge cases
+### AC-2: Per-timeslot .ics attachments
+
+When a guest has selected timeslot field answers during registration, a separate .ics file is generated for each timeslot. This allows guests to add individual sessions to their calendar independently of the overall event.
+
+**iCal content (per timeslot):**
+- `VCALENDAR` with `PRODID`, `VERSION`, and `METHOD:PUBLISH`
+- `VEVENT` with:
+  - `UID` — `{registration_id}_{field_id}@climateconnect.earth` (unique per timeslot answer)
+  - `SUMMARY` — localised: "My timeslot at {event name}" (EN) / "Mein Zeitfester bei {event name}" (DE)
+  - `DTSTART` / `DTEND` — the timeslot option's `start_time` / `end_time`
+  - `DESCRIPTION` — localised CTA text + event page URL (no field answers repeated)
+  - `URL` — same logic as the main event .ics (online website or event page)
+
+**Attachment metadata:**
+- Filename: `{event_slug}_{option-title-slug}.ics` (e.g. `workshop-day_morning-session.ics`)
+- `ContentType`: `text/calendar; method=PUBLISH; charset=utf-8`
+- `Base64Content`: Base64-encoded .ics content
+
+**Behaviour:**
+- Multiple timeslot fields each produce their own .ics files (e.g. "Day 1" and "Day 2" → two files).
+- Timeslot options without `start_time` / `end_time` are skipped.
+- Non-timeslot field types (checkbox, option select, inventory) are ignored.
+
+### AC-3: Edge cases
 
 - Online events (`is_online=True`): `LOCATION` is "Online". (Online events do have an associated physical location for hub purposes, but the calendar entry should reflect that the event itself is online.)
 - Online event with `is_online=True` and a `website` URL: the iCal `URL` property uses the `website` value (typically a Zoom/meeting link). The DESCRIPTION CTA always links back to the Climate Connect event page.
@@ -74,16 +98,18 @@ When a guest registers for an event, the confirmation email includes an .ics fil
 - Event with no location: `LOCATION` is omitted from the .ics. (The `get_location_name()` function returns an empty string in this case.)
 - Event with no `start_date` or `end_date`: no .ics attachment is generated (function returns `None`).
 - Project description contains HTML: stripped via `bleach.clean(tags=[], strip=True)` before inclusion in DESCRIPTION.
+- Per-timeslot .ics files: each timeslot option becomes its own calendar entry with a unique UID and filename.
 
 ---
 
 ## Constraints
 
-- **.ics generation in Python** — uses the `icalendar` library (PyPI, `>=5.0.0`). Generates the .ics content in `generate_event_ics_attachment()` in `organization/utility/email.py`, using event data already fetched for the email template variables. No additional database queries.
+- **.ics generation in Python** — uses the `icalendar` library (PyPI, `>=5.0.0`). Generates the .ics content in `generate_event_ics_attachment()` and `generate_timeslot_ics_attachments()` in `organization/utility/email.py`, using event data already fetched for the email template variables. No additional database queries.
 - **Mailjet attachment format** — the `Attachments` field on the message object accepts `[{"ContentType": "...", "Filename": "...", "Base64Content": "<base64>"}]`. Content must be Base64-encoded. Note: Mailjet v3.1 uses `ContentType` and `Base64Content` (not `Content-type` and `Content`).
 - **No multiple calendar formats** — `.ics` (iCalendar / RFC 5545) is the only format. Universally supported by all major calendar apps.
 - **i18n** — `SUMMARY`, `DESCRIPTION` field answers heading, and CTA text use the user's language (via `get_user_lang_code`). `LOCATION` reuses the already-translated `LocationName` template variable. Consistent with existing email localisation.
 - **Performance** — .ics generation uses data already fetched for the email template. No additional database queries. The `icalendar` library is lightweight.
+- **Attachment count** — a registration with N timeslot fields produces 1 (main event) + N (timeslot) attachments. Mailjet supports up to 15 MB total per message; text .ics files are negligible in size.
 
 ---
 
@@ -99,7 +125,7 @@ The `LOCATION` field in the .ics reuses the same `LocationName` value that is al
 
 This is already fetched and computed in the Celery task for the `LocationName` email template variable. The .ics generation reuses the same value — no additional queries or formatting logic needed.
 
-### DESCRIPTION structure
+### DESCRIPTION structure (main event .ics)
 
 The iCalendar `DESCRIPTION` field is composed of up to four sections, separated by `\n\n`:
 
@@ -121,7 +147,38 @@ Besuche folgenden Link, um die Details der Veranstaltung zu sehen oder deine Anm
 https://climateconnect.earth/projects/event-slug
 ```
 
-### Registration field answers in .ics
+### DESCRIPTION structure (per-timeslot .ics)
+
+Per-timeslot .ics files have a simpler DESCRIPTION with only two sections:
+
+1. **Localised CTA text** — same as the main event .ics.
+2. **Event page URL** — always the Climate Connect event page URL.
+
+Field answers are not repeated in the per-timeslot DESCRIPTION since the timeslot itself is the subject of the calendar entry.
+
+### Per-timeslot .ics generation
+
+The `generate_timeslot_ics_attachments()` function produces a separate .ics attachment for each timeslot field answer in the guest's registration. This allows guests to add individual sessions to their calendar independently.
+
+**How it works:**
+1. Iterates through `registration.field_answers.all()`.
+2. Filters to `TIME_SLOT_SELECT` fields only.
+3. Skips answers where the option has no `start_time` or `end_time`.
+4. For each valid timeslot, generates a complete iCalendar file with:
+   - `SUMMARY`: localised "My timeslot at {event name}" / "Mein Zeitfester bei {event name}"
+   - `DTSTART`/`DTEND`: from the option's times
+   - `DESCRIPTION`: CTA + event page URL only
+   - `URL`: online website if applicable, otherwise event page
+   - `UID`: `{registration_id}_{field_id}@climateconnect.earth`
+   - `Filename`: `{event_slug}_{option-title-slug}.ics`
+
+**Example:** A guest registers for "Workshop Day" and selects "Morning Session" (10:00–12:00) from the timeslot field. The email includes:
+- `workshop-day.ics` — the overall event (9:00–17:00)
+- `workshop-day_morning-session.ics` — the individual timeslot (10:00–12:00)
+
+If the event has two timeslot fields (e.g. "Day 1" and "Day 2"), each produces its own .ics file, resulting in 3 attachments total.
+
+### Registration field answers in .ics (main event)
 
 The `_build_field_answers_text()` function produces a plain-text version of the guest's registration field answers for inclusion in the iCalendar DESCRIPTION. It mirrors the logic of `_build_field_answers_html()` (used in the email body) but outputs bullet-point lines instead of HTML table rows.
 
@@ -170,7 +227,7 @@ The `Base64Content` field is a Base64-encoded string. Generated with `base64.b64
 
 Note: Mailjet v3.1 uses `ContentType` and `Base64Content` as the field names (not `Content-type` and `Content` as some documentation suggests).
 
-### .ics content structure
+### .ics content structure (main event)
 
 The .ics file follows RFC 5545:
 
@@ -196,6 +253,30 @@ END:VCALENDAR
 - `LOCATION` reuses the `LocationName` template variable (see "Location formatting" above).
 - `DESCRIPTION` includes the event description text (HTML stripped), plain-text field answers, a localised CTA, and a link back to the event page, separated by `\n\n`.
 - `URL` uses the event's `website` field for online events (`is_online=True` and `website` is set). For all other events, it uses the Climate Connect event page URL.
+
+### .ics content structure (per-timeslot)
+
+```
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Climate Connect//EN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:{registration_id}_{field_id}@climateconnect.earth
+SUMMARY:My timeslot at {event name}
+DTSTART:20260620T100000Z
+DTEND:20260620T120000Z
+DESCRIPTION:{CTA text}\n{event page URL}
+URL:{event website URL for online events, or event page URL}
+END:VEVENT
+END:VCALENDAR
+```
+
+- `UID` uses the registration ID + field ID for global uniqueness per timeslot answer.
+- `SUMMARY` is localised: "My timeslot at {event name}" (EN) / "Mein Zeitfester bei {event name}" (DE).
+- `DTSTART`/`DTEND` come from the timeslot option's `start_time`/`end_time`.
+- `DESCRIPTION` contains only the CTA text and event page URL (field answers are not repeated).
+- `URL` follows the same logic as the main event .ics.
 
 ### Confirmation email Celery task
 
@@ -252,3 +333,11 @@ ics_base64 = base64.b64encode(ics_bytes).decode("ascii")
 ### Why not generate .ics via the Next.js endpoint?
 
 The Celery task could theoretically call the Next.js `.ical` endpoint to get the .ics content. But this adds an HTTP roundtrip, a dependency on the frontend being available, and complexity for error handling. Generating the .ics directly in Python is simpler, faster, and more reliable. The event data is already available in the task.
+
+### Google Calendar compatibility
+
+The per-timeslot .ics feature was designed with Google Calendar in mind. Google Calendar handles multiple .ics attachments in a single email by surfacing each as a separate "Add to Calendar" action, allowing the guest to selectively add the overall event and/or individual timeslots. Each .ics file has a unique UID so calendar apps treat them as distinct events even if imported together.
+
+### TODO
+- Name attachment for timeslot .ical attachement differently. Maybe event-slug + "_timeslot_" + sequence number + ".ics"
+- Add the additional information field of the event project if set to the description of the even .ical file as it is intended to provide more information
