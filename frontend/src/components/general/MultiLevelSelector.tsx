@@ -2,7 +2,7 @@ import {
   Container,
   Divider,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Theme,
@@ -346,7 +346,7 @@ function SelectedList({
           Array.isArray(selected) &&
           selected?.map((item, index) => (
             // Only show the item if it's valid
-            <ListItem
+            <ListItemButton
               key={index}
               button
               className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
@@ -360,7 +360,7 @@ function SelectedList({
               <ListItemIcon className={classes.selectedItemIcon}>
                 <CloseIcon />
               </ListItemIcon>
-            </ListItem>
+            </ListItemButton>
           ))}
       </List>
     </div>
@@ -438,8 +438,7 @@ function ListToChooseFrom({
 
           return (
             <Fragment key={item.key}>
-              <ListItem
-                button
+              <ListItemButton
                 disabled={isDisabled}
                 classes={{
                   root: `${classes.listItem}
@@ -503,7 +502,7 @@ function ListToChooseFrom({
                 ) : (
                   ""
                 )}
-              </ListItem>
+              </ListItemButton>
               {/* Render the inner list items, if an outer list item has subcategories associated */}
               {(isNarrowScreen || isInPopup) && item.subcategories && item.subcategories.length ? (
                 <ListToChooseFrom
