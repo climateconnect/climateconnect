@@ -12,9 +12,29 @@ Sentry.init({
   enableLogs: false,
   enabled: process.env.NODE_ENV === "production",
 
-  // Enable sending user PII (Personally Identifiable Information)
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
-  sendDefaultPii: true,
+  // GDPR data minimisation — disable all automatic data collection.
+  // sendDefaultPii is deprecated (removed in v11), use dataCollection instead.
+  dataCollection: {
+    userInfo: false,
+    cookies: false,
+    httpHeaders: false,
+    httpBodies: [], // Prevents capturing outgoing request bodies
+    queryParams: true, // Keep query params — useful for debugging (hub slugs, page numbers)
+  },
+
+  // GDPR data minimisation — defense in depth.
+  // Strip request bodies and headers that may contain PII before the
+  // event leaves the browser. This catches data that dataCollection
+  // might miss through custom error contexts or breadcrumbs.
+  beforeSend(event) {
+    if (event.request) {
+      delete event.request.data;
+      delete event.request.headers;
+      delete event.request.cookies;
+    }
+    delete event.user;
+    return event;
+  },
 });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

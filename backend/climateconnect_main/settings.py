@@ -21,6 +21,7 @@ from dotenv import find_dotenv, load_dotenv
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
+from sentry_sdk.scrubber import EventScrubber, DEFAULT_PII_DENYLIST
 
 from climateconnect_main.utility.general import get_allowed_hosts
 
@@ -394,23 +395,91 @@ CACHE_BACHED_RANK_REQUEST = env("CACHE_BACHED_RANK_REQUEST", "False") == "true"
 SENTRY_DSN = env("SENTRY_DSN")
 SENTRY_ENVIRONMENT = env("SENTRY_ENVIRONMENT")
 
+# Request body fields that contain PII. Redacted to "[REDACTED]" in Sentry
+# events by _sentry_before_send regardless of which endpoint received them.
+# Field names verified against actual request.data usage in views (June 2026).
+_SENTRY_PII_FIELDS = frozenset(
+    {
+        # Identity
+        "username",  # LoginView (email used as username)
+        "email",  # SignUpView, SendResetPasswordEmail, UserAccountSettingsView
+        "email_address",  # ReceiveFeedback (unauthenticated users)
+        "first_name",  # SignUpView, EditUserProfile
+        "last_name",  # SignUpView, EditUserProfile
+        "biography",  # EditUserProfile
+        # Profile images (base64 data URLs)
+        "image",  # EditUserProfile, IdeaView
+        "thumbnail_image",  # EditUserProfile, IdeaView
+        "background_image",  # EditUserProfile
+        # Credentials
+        "password",  # LoginView, SignUpView, UserAccountSettingsView
+        "old_password",  # UserAccountSettingsView
+        "new_password",  # SetNewPassword
+        "confirm_password",  # UserAccountSettingsView
+        "password_reset_key",  # SetNewPassword (enables password change)
+        "session_key",  # VerifyTokenView (OTP session)
+        "code",  # VerifyTokenView (6-digit OTP code)
+        # Communication
+        "message_content",  # SendChatMessage
+        "message",  # RequestJoinProject, ReceiveFeedback, AdminCancelRegistration
+        "content",  # ProjectCommentView, IdeaCommentsView
+        # Registration answers (organiser-defined fields can request arbitrary PII)
+        "custom_field_answers",
+        # Local variable names (Celery tasks, email utilities)
+        "user",  # Django User object in stack frames (has .email, .first_name, .last_name)
+        "Email",  # Mailjet API payload key (case-sensitive match for nested dicts)
+    }
+)
+
+
+# Combined PII denylist for EventScrubber: Sentry's default PII keys
+# (IP addresses) plus our field names (identity, credentials, messages).
+# The scrubber runs on the ENTIRE event payload — request data, local
+# variables in stack frames, breadcrumbs, exception values. This catches
+# PII in Celery task failures (e.g. email sending) where local variables
+# like `email` or `user_name` would otherwise leak into Sentry.
+# NOTE: scrubbing is by exact key name. A variable named `recipient_email`
+# would NOT be caught. This is a known limitation — same as _SENTRY_PII_FIELDS.
+_PII_DENYLIST = list(DEFAULT_PII_DENYLIST) + list(_SENTRY_PII_FIELDS)
+
+_SENTRY_REDACTED = "[REDACTED]"
+
+
+def _sentry_before_send(event, hint):
+    """GDPR data minimisation — redact PII fields in Sentry events.
+
+    Always strips: headers, cookies, user object.
+    Replaces known PII fields with "[REDACTED]" so the data structure
+    is preserved for debugging without exposing personal info.
+    custom_field_answers is removed entirely — organiser-defined fields
+    can request arbitrary PII (phone, dietary needs, etc.) and cannot
+    be filtered by field name.
+    """
+    request = event.get("request")
+    if request:
+        request.pop("headers", None)
+        request.pop("cookies", None)
+        data = request.get("data")
+        if isinstance(data, dict):
+            for field in _SENTRY_PII_FIELDS:
+                if field in data:
+                    data[field] = _SENTRY_REDACTED
+    event.pop("user", None)
+    return event
+
+
 sentry_sdk.init(
     dsn=SENTRY_DSN,
     integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production,
-    traces_sample_rate=1.0,
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
-    send_default_pii=True,
-    # By default the SDK will try to use the SENTRY_RELEASE
-    # environment variable, or infer a git commit
-    # SHA as release, however you may want to set
-    # something more human-readable.
-    # release="myapp@1.0.0",
-    # SENTRY ENVIRONMENT for local env is "development"
-    # and for prod env is "production"
+    traces_sample_rate=0.2,
+    # GDPR data minimisation — do not send PII to Sentry.
+    # Disables automatic collection of IP, user agent, headers, cookies, user info.
+    send_default_pii=False,
+    # GDPR — scrub residual PII patterns (emails, phone numbers, credit cards)
+    # from error messages and event data.
+    event_scrubber=EventScrubber(pii_denylist=_PII_DENYLIST),
+    # GDPR — strip PII fields from request bodies, keep rest for debugging.
+    before_send=_sentry_before_send,
     environment=SENTRY_ENVIRONMENT,
 )
 

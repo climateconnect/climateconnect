@@ -35,7 +35,6 @@
     "@next/bundle-analyzer": "^14.2.35",
     "@react-google-maps/api": "^1.13.0",
     "@sentry/nextjs": "^10",
-    "@sentry/react": "^7.46.0",
     "@svgr/webpack": "^8.1.0",
     "@tiptap/core": "3.26.0",
     "@tiptap/extension-character-count": "3.26.0",

@@ -13,8 +13,18 @@ Sentry.init({
   // Enable logs to be sent to Sentry
   enableLogs: false,
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
-  // Enable sending user PII (Personally Identifiable Information)
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
-  sendDefaultPii: true,
+  tracesSampleRate: 0.2,
+
+  // GDPR data minimisation — disable identity/cookie collection.
+  // sendDefaultPii is deprecated (removed in v11), use dataCollection instead.
+  //
+  // httpBodies are KEPT: the Next.js server only handles SSR data fetching
+  // from the Django API (public page data) and does not receive direct
+  // user form submissions — those go browser → Django API directly.
+  dataCollection: {
+    userInfo: false,
+    cookies: false,
+    httpHeaders: false,
+    queryParams: false,
+  },
 });

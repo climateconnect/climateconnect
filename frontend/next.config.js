@@ -36,7 +36,6 @@ module.exports = withBundleAnalyzer({
     "WEBFLOW_API_TOKEN",
     "WEBFLOW_SITE_ID",
     "FRONTEND_SENTRY_DSN",
-    "SENTRY_AUTH_TOKEN",
   ]),
   i18n: {
     locales: ["en", "de"],
