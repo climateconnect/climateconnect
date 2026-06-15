@@ -203,8 +203,8 @@ class NominatimRequestLog(models.Model):
     """
     Stores per-minute request counts for Nominatim autocomplete requests.
 
-    One row per calendar minute. Kept for 35 days to serve as the raw
-    data source for NominatimStats aggregation.
+    One row per calendar minute. Only the current day's buckets are retained;
+    older buckets are deleted inline on each incoming request.
     """
 
     bucket_key = models.BigIntegerField(
@@ -222,9 +222,6 @@ class NominatimRequestLog(models.Model):
         app_label = "location"
         verbose_name = "nominatim request log"
         verbose_name_plural = "nominatim request logs"
-        indexes = [
-            models.Index(fields=["bucket_key"]),
-        ]
 
     def __str__(self):
         return f"minute:{self.bucket_key} = {self.count}"
@@ -239,18 +236,14 @@ class NominatimPeriodStats(models.Model):
     on every tracked request — no Celery, no Redis.
     """
 
-    PERIOD_DAY = "day"
-    PERIOD_WEEK = "week"
-    PERIOD_MONTH = "month"
-    PERIOD_CHOICES = [
-        (PERIOD_DAY, "Day"),
-        (PERIOD_WEEK, "ISO Week"),
-        (PERIOD_MONTH, "Calendar Month"),
-    ]
+    class PeriodType(models.TextChoices):
+        DAY = "day", "Day"
+        WEEK = "week", "ISO Week"
+        MONTH = "month", "Calendar Month"
 
     period_type = models.CharField(
         max_length=5,
-        choices=PERIOD_CHOICES,
+        choices=PeriodType.choices,
     )
     period_key = models.CharField(
         max_length=10,

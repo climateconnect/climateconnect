@@ -267,6 +267,20 @@ class TestNominatimStatsView(APITestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_invalid_period_type_returns_400(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(self.url, {"period_type": "year"})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Invalid period_type", response.data["detail"])
+
+    def test_invalid_limit_returns_400(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(self.url, {"period_type": "day", "limit": "abc"})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Invalid", response.data["detail"])
+
 
 class TestTrackNominatimRequestView(APITestCase):
     """Tests for POST /api/nominatim_request_count/."""

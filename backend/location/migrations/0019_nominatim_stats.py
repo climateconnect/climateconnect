@@ -42,13 +42,6 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "nominatim request logs",
             },
         ),
-        migrations.AddIndex(
-            model_name="nominatimrequestlog",
-            index=models.Index(
-                fields=["bucket_key"],
-                name="location_no_bucket__d6c2e2_idx",
-            ),
-        ),
         migrations.CreateModel(
             name="NominatimPeriodStats",
             fields=[

@@ -1,7 +1,7 @@
 import json
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 from django.conf import settings
@@ -214,7 +214,7 @@ def _get_current_period_keys(now_epoch: int):
     Return [(period_type, period_key, start_epoch), ...] for the given
     epoch timestamp — one entry each for day, ISO week, and calendar month.
     """
-    dt = datetime.utcfromtimestamp(now_epoch)
+    dt = datetime.fromtimestamp(now_epoch, tz=timezone.utc)
 
     # day
     day_key = dt.strftime("%Y-%m-%d")
@@ -268,16 +268,33 @@ class NominatimStatsView(APIView):
 
     permission_classes = [IsAdminUser]
 
+    VALID_PERIOD_TYPES = {"day", "week", "month"}
+
     def get(self, request):
         try:
             period_type = request.query_params.get("period_type")
-            limit = min(
-                int(request.query_params.get("limit", 1)),
-                365,
-            )
+
+            raw_limit = request.query_params.get("limit", "1")
+            try:
+                limit = min(int(raw_limit), 365)
+            except (ValueError, TypeError):
+                return Response(
+                    {"detail": "Invalid 'limit' parameter — must be an integer."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             if period_type:
-                # Return the last N rows for the requested period type.
+                if period_type not in self.VALID_PERIOD_TYPES:
+                    return Response(
+                        {
+                            "detail": (
+                                f"Invalid period_type '{period_type}'. "
+                                f"Must be one of: {', '.join(sorted(self.VALID_PERIOD_TYPES))}"
+                            )
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
                 rows = NominatimPeriodStats.objects.filter(
                     period_type=period_type
                 ).order_by("-period_key")[:limit]
