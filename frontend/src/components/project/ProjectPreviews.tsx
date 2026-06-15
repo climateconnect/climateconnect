@@ -83,7 +83,6 @@ export default function ProjectPreviews({
           const isLastElement = index === displayedProjects.length - 1;
           return (
             <Grid
-              item
               size={{
                 xs: columnValuesFromBreakpoint.xsValue,
                 sm: columnValuesFromBreakpoint.smValue,

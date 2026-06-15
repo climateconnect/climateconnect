@@ -95,7 +95,7 @@ export default function ProjectTypeSelector({ className, value, types, onChange,
       <RadioGroup>
         <Grid container component="ul" spacing={2} className={classes.reset}>
           {types.map((type) => (
-            <Grid item size={{ xs: 12, sm: 6, md: 6, lg: 6 }} component="li" key={type.type_id}>
+            <Grid size={{ xs: 12, sm: 6, md: 6, lg: 6 }} component="li" key={type.type_id}>
               <ProjectTypeBox type={type} value={value} onChange={onChange} color={color} />
             </Grid>
           ))}

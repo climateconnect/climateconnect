@@ -56,7 +56,6 @@ const ContentImageSplitView: FC<ContentImageSplitViewProps> = ({
     >
       {/* content pane */}
       <Grid
-        item
         size={{ xs: 12, md: 7 }}
         {...leftGridSizes}
         className={`${classes.centerItems} ${!rightPaneHidden && classes.rightPadding}`}
@@ -66,7 +65,7 @@ const ContentImageSplitView: FC<ContentImageSplitViewProps> = ({
 
       {/* image pane */}
       {!rightPaneHidden && (
-        <Grid item size={{ md: 5 }} {...rightGridSizes} style={{ display: "flex" }}>
+        <Grid size={{ md: 5 }} {...rightGridSizes} style={{ display: "flex" }}>
           {image}
         </Grid>
       )}

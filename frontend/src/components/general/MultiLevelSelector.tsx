@@ -348,7 +348,6 @@ function SelectedList({
             // Only show the item if it's valid
             <ListItemButton
               key={index}
-              button
               className={`${classes.listItem} ${index == 0 && classes.firstItem} ${
                 classes.selectedItem
               }`}
