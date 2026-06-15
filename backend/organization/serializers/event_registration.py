@@ -14,6 +14,7 @@ from organization.serializers.registration_field import (
     create_fields,
     sync_fields,
 )
+from organization.utility.event_registration import evaluate_registration_status
 
 
 def _compute_effective_status(obj: EventRegistrationConfig) -> str:
@@ -766,29 +767,16 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
 
         explicit_status = validated_data.get("status")
 
-        if "max_participants" in validated_data and explicit_status is None:
-            new_max = validated_data["max_participants"]
-            if new_max is None:
-                # Switching to unlimited capacity — always re-opens a full event.
-                if instance.status == RegistrationStatus.FULL:
-                    instance.status = RegistrationStatus.OPEN
-            else:
-                current_count = EventRegistration.objects.filter(
-                    registration_config=instance,
-                    cancelled_at__isnull=True,
-                ).count()
-                if (
-                    instance.status == RegistrationStatus.FULL
-                    and new_max > current_count
-                ):
-                    # Capacity raised above filled seats → re-open.
-                    instance.status = RegistrationStatus.OPEN
-                elif (
-                    instance.status == RegistrationStatus.OPEN
-                    and new_max <= current_count
-                ):
-                    # Capacity set to match filled seats (< is blocked by validate) → close.
-                    instance.status = RegistrationStatus.FULL
+        if explicit_status is None and instance.status in (
+            RegistrationStatus.OPEN,
+            RegistrationStatus.FULL,
+        ):
+            # Auto-adjust: temporarily apply new max_participants so the
+            # utility evaluates with the proposed value.
+            if "max_participants" in validated_data:
+                instance.max_participants = validated_data["max_participants"]
+            suggested = evaluate_registration_status(instance)
+            instance.status = suggested
         result = super().update(instance, validated_data)
 
         if fields_data is not None:
