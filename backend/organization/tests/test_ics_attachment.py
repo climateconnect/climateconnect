@@ -11,6 +11,7 @@ import base64
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase, tag
 from django.utils import timezone as django_timezone
@@ -129,7 +130,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         attachment = generate_event_ics_attachment(self.project, "en")
         cal = self._parse_ics(attachment)
         event = cal.walk("VEVENT")[0]
-        expected_url = f"http://localhost:3000/projects/{self.project.url_slug}"
+        expected_url = f"{settings.FRONTEND_URL}/projects/{self.project.url_slug}"
         self.assertEqual(str(event.get("url")), expected_url)
 
     @tag("ics_attachment")
@@ -140,7 +141,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         event = cal.walk("VEVENT")[0]
         description = str(event.get("description"))
         self.assertIn(
-            f"http://localhost:3000/projects/{self.project.url_slug}",
+            f"{settings.FRONTEND_URL}/projects/{self.project.url_slug}",
             description,
         )
 
@@ -198,7 +199,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         event = cal.walk("VEVENT")[0]
         self.assertEqual(
             str(event.get("url")),
-            f"http://localhost:3000/projects/{self.project.url_slug}",
+            f"{settings.FRONTEND_URL}/projects/{self.project.url_slug}",
         )
 
     @tag("ics_attachment")
@@ -211,7 +212,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         event = cal.walk("VEVENT")[0]
         self.assertEqual(
             str(event.get("url")),
-            f"http://localhost:3000/projects/{self.project.url_slug}",
+            f"{settings.FRONTEND_URL}/projects/{self.project.url_slug}",
         )
 
     @tag("ics_attachment")
@@ -225,7 +226,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         event = cal.walk("VEVENT")[0]
         description = str(event.get("description"))
         self.assertIn(
-            "http://localhost:3000/projects/climate-action-summit", description
+            f"{settings.FRONTEND_URL}/projects/climate-action-summit", description
         )
         self.assertNotIn("zoom.us", description)
 
@@ -616,7 +617,7 @@ class TestIcsDescriptionWithFieldAnswers(TestCase):
         self.assertIn("10:00", description)
         self.assertIn("12:00", description)
         self.assertIn(
-            "http://localhost:3000/projects/answers-test-event",
+            f"{settings.FRONTEND_URL}/projects/answers-test-event",
             description,
         )
 
@@ -673,7 +674,7 @@ class TestIcsDescriptionWithFieldAnswers(TestCase):
         cal = self._parse_ics(attachment)
         event = cal.walk("VEVENT")[0]
         description = str(event.get("description"))
-        event_url = "http://localhost:3000/projects/answers-test-event"
+        event_url = f"{settings.FRONTEND_URL}/projects/answers-test-event"
         event_desc_pos = description.find("An exciting climate event.")
         answers_pos = description.find("Your registration answers:")
         url_pos = description.find(event_url)
@@ -954,7 +955,7 @@ class TestTimeslotIcsAttachments(TestCase):
         cal = self._parse_ics(attachments[0])
         event = cal.walk("VEVENT")[0]
         description = str(event.get("description"))
-        self.assertIn("http://localhost:3000/projects/workshop-day", description)
+        self.assertIn(f"{settings.FRONTEND_URL}/projects/workshop-day", description)
         self.assertNotIn("registration answers", description.lower())
 
     @tag("ics_attachment")
