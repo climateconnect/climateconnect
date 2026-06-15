@@ -178,9 +178,10 @@ class TestEvaluateRegistrationStatusUnit(_EventRegistrationUnitBase):
         )
         self.assertEqual(evaluate_registration_status(self.rc), RegistrationStatus.FULL)
 
-    # ── 6: Two required inventory fields, one sold out, one with stock → OPEN
+    # ── 6: Two required inventory fields, one sold out → FULL (per-field OR)
 
-    def test_two_required_fields_one_with_stock_returns_open(self):
+    def test_two_required_fields_one_sold_out_returns_full(self):
+        """Any single required field being sold out blocks registration."""
         field_a = self._create_inventory_field(order=0, label="Inv A")
         opt_a = self._create_option(field_a, available_amount=1, order=0, title="A1")
         reg = self._register()
@@ -189,7 +190,7 @@ class TestEvaluateRegistrationStatusUnit(_EventRegistrationUnitBase):
         )
         field_b = self._create_inventory_field(order=1, label="Inv B")
         self._create_option(field_b, available_amount=5, order=0, title="B1")
-        self.assertEqual(evaluate_registration_status(self.rc), RegistrationStatus.OPEN)
+        self.assertEqual(evaluate_registration_status(self.rc), RegistrationStatus.FULL)
 
     # ── 7: Required inventory field with null option → OPEN (unlimited) ────
 
@@ -762,13 +763,13 @@ class TestConfigPatchRespectsCapacitySoldOut(_IntegrationBase):
         self.rc.refresh_from_db()
         self.assertEqual(self.rc.status, RegistrationStatus.OPEN)
 
-    # ── Explicit status="open" in PATCH body skips auto-adjustment ─────────
+    # ── Organiser overrides FULL→OPEN with raised capacity → reopens ──────
 
-    def test_explicit_status_in_patch_skips_auto_adjust(self):
-        """When the organiser explicitly sends status, auto-adjust is skipped."""
+    def test_override_full_to_open_with_raised_capacity_reopens(self):
+        """Organiser reopens a full event and raises max_participants —
+        capacity check confirms OPEN."""
         self.rc.max_participants = 1
         self.rc.save(update_fields=["max_participants"])
-        self._register_user(self._make_user())
         self._register_user(self._make_user())
 
         self.client.login(username="organiser_integ", password="testpassword")
@@ -780,6 +781,118 @@ class TestConfigPatchRespectsCapacitySoldOut(_IntegrationBase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
         self.rc.refresh_from_db()
         self.assertEqual(self.rc.status, RegistrationStatus.OPEN)
+
+    # ── Organiser reopens closed event but fields sold out → stays FULL ───
+
+    def test_reopen_closed_event_with_sold_out_fields_stays_full(self):
+        """When the organiser reopens a closed event whose required fields
+        are sold out, the capacity check snaps status to FULL."""
+        field = self._create_timeslot_field()
+        start = timezone.now() + timedelta(days=31)
+        end = timezone.now() + timedelta(days=31, hours=1)
+        opt = RegistrationFieldOption.objects.create(
+            field=field,
+            title="S1",
+            order=0,
+            available_amount=1,
+            start_time=start,
+            end_time=end,
+        )
+        user1 = self._make_user()
+        reg1 = self._register_user(user1)
+        RegistrationFieldAnswer.objects.create(
+            registration=reg1, field=field, value_option=opt
+        )
+        self.rc.status = RegistrationStatus.CLOSED
+        self.rc.save(update_fields=["status"])
+
+        self.client.login(username="organiser_integ", password="testpassword")
+        response = self.client.patch(
+            self.config_patch_url,
+            {
+                "status": "open",
+                "fields": [
+                    {
+                        "id": field.id,
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "is_required": True,
+                        "label": "TS",
+                        "settings": {"title": "Slot"},
+                        "options": [
+                            {
+                                "id": opt.id,
+                                "title": "S1",
+                                "order": 0,
+                                "available_amount": 1,
+                                "start_time": start.isoformat(),
+                                "end_time": end.isoformat(),
+                            }
+                        ],
+                    }
+                ],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.rc.refresh_from_db()
+        self.assertEqual(self.rc.status, RegistrationStatus.FULL)
+
+    # ── Frontend echoes current status (OPEN→OPEN) → auto-adjust still runs ─
+
+    def test_unchanged_status_echo_does_not_skip_auto_adjust(self):
+        """When the frontend echoes back the current status (e.g. sends
+        "status":"open" while stored status is already open), auto-adjustment
+        must still run — the organiser didn't intend to override status."""
+        field = self._create_timeslot_field()
+        start = timezone.now() + timedelta(days=31)
+        end = timezone.now() + timedelta(days=31, hours=1)
+        opt = RegistrationFieldOption.objects.create(
+            field=field,
+            title="S1",
+            order=0,
+            available_amount=2,
+            start_time=start,
+            end_time=end,
+        )
+        user1 = self._make_user()
+        reg1 = self._register_user(user1)
+        RegistrationFieldAnswer.objects.create(
+            registration=reg1, field=field, value_option=opt
+        )
+        # 1 booked out of 2 — still open
+
+        self.client.login(username="organiser_integ", password="testpassword")
+        response = self.client.patch(
+            self.config_patch_url,
+            {
+                "status": "open",
+                "fields": [
+                    {
+                        "id": field.id,
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "is_required": True,
+                        "label": "TS",
+                        "settings": {"title": "Slot"},
+                        "options": [
+                            {
+                                "id": opt.id,
+                                "title": "S1",
+                                "order": 0,
+                                "available_amount": 1,
+                                "start_time": start.isoformat(),
+                                "end_time": end.isoformat(),
+                            }
+                        ],
+                    }
+                ],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.rc.refresh_from_db()
+        self.assertEqual(self.rc.status, RegistrationStatus.FULL)
 
     # ── CLOSED status is not overwritten by auto-adjust ────────────────────
 
@@ -796,3 +909,60 @@ class TestConfigPatchRespectsCapacitySoldOut(_IntegrationBase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
         self.rc.refresh_from_db()
         self.assertEqual(self.rc.status, RegistrationStatus.CLOSED)
+
+    # ── PATCH reduces option available_amount → triggers sold-out ──────────
+
+    def test_patch_reducing_option_amount_triggers_sold_out(self):
+        """Reducing available_amount on a time slot option via PATCH should
+        trigger the sold-out check and set status to FULL if all slots are
+        now booked."""
+        field = self._create_timeslot_field()
+        start = timezone.now() + timedelta(days=31)
+        end = timezone.now() + timedelta(days=31, hours=1)
+        opt = RegistrationFieldOption.objects.create(
+            field=field,
+            title="S1",
+            order=0,
+            available_amount=10,
+            start_time=start,
+            end_time=end,
+        )
+        user1 = self._make_user()
+        reg1 = self._register_user(user1)
+        RegistrationFieldAnswer.objects.create(
+            registration=reg1, field=field, value_option=opt
+        )
+        # 1 booked out of 10 — still open
+
+        self.client.login(username="organiser_integ", password="testpassword")
+        response = self.client.patch(
+            self.config_patch_url,
+            {
+                "fields": [
+                    {
+                        "id": field.id,
+                        "field_type": "time_slot_select",
+                        "order": 0,
+                        "is_required": True,
+                        "label": "TS",
+                        "settings": {"title": "Slot"},
+                        "options": [
+                            {
+                                "id": opt.id,
+                                "title": "S1",
+                                "order": 0,
+                                "available_amount": 1,
+                                "start_time": start.isoformat(),
+                                "end_time": end.isoformat(),
+                            }
+                        ],
+                    }
+                ]
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        opt.refresh_from_db()
+        self.assertEqual(opt.available_amount, 1)
+        self.rc.refresh_from_db()
+        self.assertEqual(self.rc.status, RegistrationStatus.FULL)

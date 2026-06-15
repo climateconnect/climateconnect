@@ -29,20 +29,15 @@ def _is_option_sold_out(field, option):
 
 
 def _are_required_fields_sold_out(rc: EventRegistrationConfig) -> bool:
-    """True if ALL required fields in at least one capacity-limited type group
-    (inventory OR time slot) are fully sold out.
+    """True if any required capacity-limited field is fully sold out.
 
     A required field is sold out when every one of its options has zero
     remaining capacity.  Fields with no options or with unlimited options
     (available_amount=None) are never sold out.
 
-    The check is an OR across field-type groups: if every required inventory
-    field is sold out, the event is sold out regardless of time-slot
-    availability, and vice-versa.  This is because a guest must fill in every
-    required field — if any single required field has no available options,
-    registration is impossible.
-
-    Short-circuits: returns True as soon as one entire type group is sold out.
+    A guest must fill in every required field — if even one required field
+    has no available options, registration is impossible.  So this is a
+    per-field OR: returns True as soon as ANY required field is sold out.
     """
     required_fields = rc.fields.filter(
         field_type__in=[
@@ -55,27 +50,18 @@ def _are_required_fields_sold_out(rc: EventRegistrationConfig) -> bool:
     if not required_fields.exists():
         return False
 
-    fields_by_type: dict[str, list] = {}
     for field in required_fields:
-        fields_by_type.setdefault(field.field_type, []).append(field)
+        options = field.options.all()
+        if not options.exists():
+            continue
 
-    for _field_type, fields in fields_by_type.items():
-        group_sold_out = True
-        for field in fields:
-            options = field.options.all()
-            if not options.exists():
-                group_sold_out = False
+        field_sold_out = True
+        for option in options:
+            if not _is_option_sold_out(field, option):
+                field_sold_out = False
                 break
 
-            for option in options:
-                if not _is_option_sold_out(field, option):
-                    group_sold_out = False
-                    break
-
-            if not group_sold_out:
-                break
-
-        if group_sold_out:
+        if field_sold_out:
             return True
 
     return False
