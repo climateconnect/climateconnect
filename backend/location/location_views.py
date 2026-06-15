@@ -1,17 +1,23 @@
 import json
 import logging
 import time
+from datetime import datetime
 
 import requests
 from django.conf import settings
-from django_redis import get_redis_connection
+from django.db.models import F
+from django.db.models.functions import Greatest
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from location.serializers import LocationStubSerializer
-from location.models import Location as LocationModel
+from location.models import (
+    Location as LocationModel,
+    NominatimPeriodStats,
+    NominatimRequestLog,
+)
 from location.utility import (
     _get_newest_location_by_osm_composite,
     _get_newest_location_by_osm_id_and_type,
@@ -130,49 +136,105 @@ class GetLocationView(APIView):
 
 
 # ---------------------------------------------------------------------------
-# Nominatim autocomplete request tracking
+# Nominatim autocomplete request tracking (database-based)
 # ---------------------------------------------------------------------------
-
-_NOMINATIM_SECOND_TTL = (
-    60 * 60 * 2
-)  # 2 hours to cover the rolling 1-minute window and allow for some clock skew
-_NOMINATIM_MINUTE_TTL = 60 * 60 * 24 * 35  # 35 days to cover the 30-day stats window
-_NOMINATIM_DAY_TTL = 60 * 60 * 24 * 400  # 400 days to cover 13 months of daily buckets
 
 
 def _increment_nominatim_counters() -> None:
     """
-    Atomically increment all three time-bucket counters in Redis for a
-    single Nominatim autocomplete request fired from the frontend.
+    Atomically track a single Nominatim autocomplete request.
 
-    Key schema
-    ----------
-    ``nominatim:s:{epoch_seconds}``   – one bucket per calendar second
-    ``nominatim:m:{epoch_minutes}``   – one bucket per calendar minute
-    ``nominatim:d:{epoch_days}``      – one bucket per UTC day
+    1. Atomically increment per-minute bucket (for peak-rate detection).
+    2. Atomically upsert current day/week/month in NominatimPeriodStats.
+    3. Delete per-minute buckets older than the current UTC day.
+
+    All field updates use F() expressions and PostgreSQL GREATEST() — no
+    read-then-write patterns, no lost increments under concurrent access.
     """
     try:
-        redis = get_redis_connection("default")
         now = int(time.time())
+        minute_key = now // 60
 
-        second_key = f"nominatim:s:{now}"
-        minute_key = f"nominatim:m:{now // 60}"
-        day_key = f"nominatim:d:{now // 86400}"
+        # --- 1. atomic per-minute bucket increment ---
+        NominatimRequestLog.objects.get_or_create(
+            bucket_key=minute_key,
+            defaults={"count": 0},
+        )
+        NominatimRequestLog.objects.filter(
+            bucket_key=minute_key,
+        ).update(count=F("count") + 1)
 
-        # Use a pipeline so all six commands are sent in one round-trip.
-        # INCR creates the key with value 1 if it does not exist yet;
-        # EXPIRE refreshes (or sets) the TTL on every call – acceptable
-        # since each bucket only receives writes during its own time window.
-        pipe = redis.pipeline(transaction=False)
-        pipe.incr(second_key)
-        pipe.expire(second_key, _NOMINATIM_SECOND_TTL)
-        pipe.incr(minute_key)
-        pipe.expire(minute_key, _NOMINATIM_MINUTE_TTL)
-        pipe.incr(day_key)
-        pipe.expire(day_key, _NOMINATIM_DAY_TTL)
-        pipe.execute()
+        # Re-read the atomically-incremented count.
+        current_minute_count = (
+            NominatimRequestLog.objects.filter(bucket_key=minute_key)
+            .values_list("count", flat=True)
+            .first()
+        ) or 1
+        current_rate = current_minute_count / 60.0
+
+        # --- 2. atomic period stats upsert ---
+        periods = _get_current_period_keys(now)
+
+        for period_type, period_key, period_start in periods:
+            elapsed = max(float(now - period_start), 1.0)
+
+            NominatimPeriodStats.objects.get_or_create(
+                period_type=period_type,
+                period_key=period_key,
+                defaults={
+                    "total_requests": 0,
+                    "avg_req_per_second": 0.0,
+                    "peak_req_per_second": 0.0,
+                },
+            )
+
+            # Single atomic UPDATE — all three fields computed in PostgreSQL.
+            NominatimPeriodStats.objects.filter(
+                period_type=period_type,
+                period_key=period_key,
+            ).update(
+                total_requests=F("total_requests") + 1,
+                peak_req_per_second=Greatest(F("peak_req_per_second"), current_rate),
+                avg_req_per_second=(F("total_requests") + 1) / elapsed,
+            )
+
+        # --- 3. cleanup old minute buckets (keep current day only) ---
+        today_start = (now // 86400) * 86400
+        today_start_minute = today_start // 60
+        NominatimRequestLog.objects.filter(
+            bucket_key__lt=today_start_minute,
+        ).delete()
+
     except Exception as exc:
-        logger.warning("Failed to track Nominatim request in Redis: %s", exc)
+        logger.warning("Failed to track Nominatim request in database: %s", exc)
+
+
+def _get_current_period_keys(now_epoch: int):
+    """
+    Return [(period_type, period_key, start_epoch), ...] for the given
+    epoch timestamp — one entry each for day, ISO week, and calendar month.
+    """
+    dt = datetime.utcfromtimestamp(now_epoch)
+
+    # day
+    day_key = dt.strftime("%Y-%m-%d")
+    day_start = int(datetime(dt.year, dt.month, dt.day).timestamp())
+
+    # iso week
+    iso_year, iso_week, _ = dt.isocalendar()
+    week_key = f"{iso_year}-W{iso_week:02d}"
+    week_start_dt = datetime.strptime(f"{iso_year}-W{iso_week:02d}-1", "%G-W%V-%u")
+    week_start = int(week_start_dt.timestamp())
+
+    # month
+    month_key = dt.strftime("%Y-%m")
+    month_start = int(datetime(dt.year, dt.month, 1).timestamp())
+
+    return [
+        ("day", day_key, day_start),
+        ("week", week_key, week_start),
+        ("month", month_key, month_start),
+    ]
 
 
 class TrackNominatimRequestView(APIView):
@@ -180,8 +242,7 @@ class TrackNominatimRequestView(APIView):
     POST /api/nominatim_request_count/
 
     Called fire-and-forget by the frontend every time it fires a Nominatim
-    autocomplete request.  No authentication required – we want to count
-    anonymous searches too.
+    autocomplete request.  No authentication required.
     """
 
     permission_classes = [AllowAny]
@@ -195,99 +256,71 @@ class NominatimStatsView(APIView):
     """
     GET /api/nominatim_stats/
 
-    Returns aggregated Nominatim autocomplete request statistics read from
-    Redis.  Requires Django staff / admin access.
+    Returns persistent day/week/month Nominatim request stats.
 
-    Response shape::
+    Without query params: returns the current day, week, and month stats.
 
-        {
-          "req_current_second":              <int>,   # requests in the current second bucket
-          "req_last_minute":                 <int>,   # requests in the last 60 s (rolling)
-          "req_last_hour":                   <int>,   # requests in the last 60 min (rolling)
-          "req_today":                       <int>,   # requests since start of UTC day
-          "req_last_7_days":                 <int>,   # requests over the last 7 day buckets
-          "req_last_30_days":                <int>,   # requests over the last 30 day buckets
-          "avg_req_per_second_last_minute":  <float>, # = req_last_minute / 60
-          "avg_req_per_second_last_7_days":  <float>, # = req_last_7_days / (7 x 86400)
-          "avg_req_per_second_last_30_days": <float>, # = req_last_30_days / (30 x 86400)
-          "max_req_per_second_last_7_days":  <float>, # peak avg rate in any 1 min – last 7 d
-          "max_req_per_second_last_30_days": <float>, # peak avg rate in any 1 min – last 30 d
-        }
+    With ``?period_type=<type>&limit=<N>``: returns up to N rows for the
+    given period type, ordered by period_key descending (most recent first).
 
-    Rolling windows vs. calendar windows
-    -------------------------------------
-    Second/minute-level stats use *rolling* windows so numbers are always
-    current.  Daily stats use UTC day buckets so "today" resets at midnight.
-
-    Max req/s approximation
-    -----------------------
-    ``max_req_per_second_last_*`` is computed as ``max(minute_bucket_count) / 60``
-    over the relevant time window.  This is the highest *average* rate observed
-    within any single minute – not a true per-second peak, but a memory-efficient
-    proxy that avoids storing ~2.6 M second-level keys for a 30-day window.
+    Requires Django staff / admin access.
     """
 
     permission_classes = [IsAdminUser]
 
     def get(self, request):
         try:
-            redis = get_redis_connection("default")
-            now = int(time.time())
-            current_second = now
-            current_minute = now // 60
-            current_day = now // 86400
-
-            _MINUTES_7D = 7 * 24 * 60  # 10 080
-            _MINUTES_30D = 30 * 24 * 60  # 43 200
-
-            # Build key lists.  We fetch 30 days of minute buckets so we can
-            # compute the per-second peak over both 7-day and 30-day windows.
-            second_keys = [f"nominatim:s:{current_second - i}" for i in range(60)]
-            minute_keys = [
-                f"nominatim:m:{current_minute - i}" for i in range(_MINUTES_30D)
-            ]
-            day_keys = [f"nominatim:d:{current_day - i}" for i in range(30)]
-
-            # Single MGET round-trip (60 + 43 200 + 30 = 43 290 keys).
-            raw = redis.mget(second_keys + minute_keys + day_keys)
-
-            def _to_int(v) -> int:
-                return int(v) if v is not None else 0
-
-            second_vals = [_to_int(v) for v in raw[:60]]
-            minute_vals = [_to_int(v) for v in raw[60 : 60 + _MINUTES_30D]]
-            day_vals = [_to_int(v) for v in raw[60 + _MINUTES_30D :]]
-
-            req_last_minute = sum(second_vals)
-            req_last_7_days = sum(day_vals[:7])
-            req_last_30_days = sum(day_vals)
-
-            # max req/s: peak of (minute_bucket / 60) – see class docstring.
-            max_s_7d = max(minute_vals[:_MINUTES_7D], default=0)
-            max_s_30d = max(minute_vals, default=0)
-
-            return Response(
-                {
-                    "req_current_second": second_vals[0],
-                    "req_last_minute": req_last_minute,
-                    "req_last_hour": sum(minute_vals[:60]),
-                    "req_today": day_vals[0],
-                    "req_last_7_days": req_last_7_days,
-                    "req_last_30_days": req_last_30_days,
-                    "avg_req_per_second_last_minute": round(req_last_minute / 60, 3),
-                    "avg_req_per_second_last_7_days": round(
-                        req_last_7_days / (7 * 86400), 3
-                    ),
-                    "avg_req_per_second_last_30_days": round(
-                        req_last_30_days / (30 * 86400), 3
-                    ),
-                    "max_req_per_second_last_7_days": round(max_s_7d / 60, 3),
-                    "max_req_per_second_last_30_days": round(max_s_30d / 60, 3),
-                }
+            period_type = request.query_params.get("period_type")
+            limit = min(
+                int(request.query_params.get("limit", 1)),
+                365,
             )
+
+            if period_type:
+                # Return the last N rows for the requested period type.
+                rows = NominatimPeriodStats.objects.filter(
+                    period_type=period_type
+                ).order_by("-period_key")[:limit]
+                return Response(
+                    {
+                        "period_type": period_type,
+                        "periods": [
+                            {
+                                "period_key": r.period_key,
+                                "total_requests": r.total_requests,
+                                "avg_req_per_second": round(r.avg_req_per_second, 5),
+                                "peak_req_per_second": round(r.peak_req_per_second, 3),
+                            }
+                            for r in rows
+                        ],
+                    }
+                )
+
+            # Default: return the latest day, week, and month.
+            result = {}
+            for pt in ("day", "week", "month"):
+                row = (
+                    NominatimPeriodStats.objects.filter(period_type=pt)
+                    .order_by("-period_key")
+                    .first()
+                )
+                if row:
+                    result[pt] = {
+                        "period_key": row.period_key,
+                        "total_requests": row.total_requests,
+                        "avg_req_per_second": round(row.avg_req_per_second, 5),
+                        "peak_req_per_second": round(row.peak_req_per_second, 3),
+                    }
+                else:
+                    result[pt] = None
+
+            return Response(result)
+
         except Exception as exc:
             logger.error(
-                "Failed to retrieve Nominatim stats from Redis: %s", exc, exc_info=True
+                "Failed to retrieve Nominatim stats from database: %s",
+                exc,
+                exc_info=True,
             )
             return Response(
                 {"detail": "Stats temporarily unavailable."},

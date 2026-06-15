@@ -1,7 +1,12 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from location.models import Location, LocationTranslation
+from location.models import (
+    Location,
+    LocationTranslation,
+    NominatimRequestLog,
+    NominatimPeriodStats,
+)
 
 # IMPORTANT: Coordinate Storage Format
 # =====================================
@@ -157,3 +162,74 @@ class LocationTranslationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(LocationTranslation, LocationTranslationAdmin)
+
+
+class NominatimRequestLogAdmin(admin.ModelAdmin):
+    list_display = (
+        "time_minute",
+        "count",
+        "bar",
+    )
+    list_filter = ("bucket_key",)
+    ordering = ("-bucket_key",)
+    search_fields = ("bucket_key",)
+    readonly_fields = ("bucket_key", "count", "created_at", "updated_at")
+
+    def time_minute(self, obj):
+        """Convert epoch minute bucket_key to human-readable datetime."""
+        from datetime import datetime, timezone
+
+        dt = datetime.fromtimestamp(obj.bucket_key * 60, tz=timezone.utc)
+        return dt.strftime("%Y-%m-%d %H:%M UTC")
+
+    time_minute.short_description = "Time (minute)"
+    time_minute.admin_order_field = "bucket_key"
+
+    def bar(self, obj):
+        """Simple ASCII bar chart of request count."""
+        if obj.count == 0:
+            return "—"
+        width = min(obj.count, 50)
+        return f'{"█" * width} {obj.count}'
+
+    bar.short_description = "Requests"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+admin.site.register(NominatimRequestLog, NominatimRequestLogAdmin)
+
+
+class NominatimPeriodStatsAdmin(admin.ModelAdmin):
+    list_display = (
+        "period_type",
+        "period_key",
+        "total_requests",
+        "avg_req_per_second",
+        "peak_req_per_second",
+    )
+    list_filter = ("period_type",)
+    search_fields = ("period_key",)
+    readonly_fields = (
+        "period_type",
+        "period_key",
+        "total_requests",
+        "avg_req_per_second",
+        "peak_req_per_second",
+        "created_at",
+        "updated_at",
+    )
+    ordering = ("period_type", "-period_key")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+admin.site.register(NominatimPeriodStats, NominatimPeriodStatsAdmin)
