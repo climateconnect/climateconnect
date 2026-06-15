@@ -11,6 +11,7 @@ import base64
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase, tag
 from django.utils import timezone as django_timezone
@@ -32,6 +33,7 @@ from organization.models.registration_field import (
 from organization.utility.email import (
     _build_field_answers_text,
     generate_event_ics_attachment,
+    generate_timeslot_ics_attachments,
 )
 
 _UTC = ZoneInfo("UTC")
@@ -128,7 +130,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         attachment = generate_event_ics_attachment(self.project, "en")
         cal = self._parse_ics(attachment)
         event = cal.walk("VEVENT")[0]
-        expected_url = f"http://localhost:3000/projects/{self.project.url_slug}"
+        expected_url = f"{settings.FRONTEND_URL}/projects/{self.project.url_slug}"
         self.assertEqual(str(event.get("url")), expected_url)
 
     @tag("ics_attachment")
@@ -139,7 +141,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         event = cal.walk("VEVENT")[0]
         description = str(event.get("description"))
         self.assertIn(
-            f"http://localhost:3000/projects/{self.project.url_slug}",
+            f"{settings.FRONTEND_URL}/projects/{self.project.url_slug}",
             description,
         )
 
@@ -197,7 +199,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         event = cal.walk("VEVENT")[0]
         self.assertEqual(
             str(event.get("url")),
-            f"http://localhost:3000/projects/{self.project.url_slug}",
+            f"{settings.FRONTEND_URL}/projects/{self.project.url_slug}",
         )
 
     @tag("ics_attachment")
@@ -210,7 +212,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         event = cal.walk("VEVENT")[0]
         self.assertEqual(
             str(event.get("url")),
-            f"http://localhost:3000/projects/{self.project.url_slug}",
+            f"{settings.FRONTEND_URL}/projects/{self.project.url_slug}",
         )
 
     @tag("ics_attachment")
@@ -224,7 +226,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         event = cal.walk("VEVENT")[0]
         description = str(event.get("description"))
         self.assertIn(
-            "http://localhost:3000/projects/climate-action-summit", description
+            f"{settings.FRONTEND_URL}/projects/climate-action-summit", description
         )
         self.assertNotIn("zoom.us", description)
 
@@ -615,7 +617,7 @@ class TestIcsDescriptionWithFieldAnswers(TestCase):
         self.assertIn("10:00", description)
         self.assertIn("12:00", description)
         self.assertIn(
-            "http://localhost:3000/projects/answers-test-event",
+            f"{settings.FRONTEND_URL}/projects/answers-test-event",
             description,
         )
 
@@ -672,10 +674,440 @@ class TestIcsDescriptionWithFieldAnswers(TestCase):
         cal = self._parse_ics(attachment)
         event = cal.walk("VEVENT")[0]
         description = str(event.get("description"))
-        event_url = "http://localhost:3000/projects/answers-test-event"
+        event_url = f"{settings.FRONTEND_URL}/projects/answers-test-event"
         event_desc_pos = description.find("An exciting climate event.")
         answers_pos = description.find("Your registration answers:")
         url_pos = description.find(event_url)
         self.assertGreater(event_desc_pos, -1)
         self.assertGreater(answers_pos, event_desc_pos)
         self.assertGreater(url_pos, answers_pos)
+
+
+class TestTimeslotIcsAttachments(TestCase):
+    """Tests for per-timeslot .ics attachments."""
+
+    def setUp(self):
+        self.project_status, _ = ProjectStatus.objects.update_or_create(
+            id=2,
+            defaults={
+                "name": "active_timeslot_ics",
+                "has_end_date": True,
+                "has_start_date": True,
+            },
+        )
+        self.language, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
+        )
+        self.project = Project.objects.create(
+            name="Workshop Day",
+            url_slug="workshop-day",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            project_type="EV",
+            start_date=datetime(2026, 10, 1, 9, 0, tzinfo=_UTC),
+            end_date=datetime(2026, 10, 1, 17, 0, tzinfo=_UTC),
+        )
+        self.config = EventRegistrationConfig.objects.create(
+            project=self.project,
+            max_participants=100,
+            registration_end_date=django_timezone.now() + timedelta(days=30),
+            status=RegistrationStatus.OPEN,
+        )
+        self.user = User.objects.create_user(
+            username="timeslot_user", password="testpassword"
+        )
+        self.registration = EventRegistration.objects.create(
+            user=self.user,
+            registration_config=self.config,
+        )
+
+    def _parse_ics(self, attachment):
+        ics_bytes = base64.b64decode(attachment["Base64Content"])
+        return Calendar.from_ical(ics_bytes)
+
+    @tag("ics_attachment")
+    def test_no_timeslots_returns_empty(self):
+        """No timeslot answers returns an empty list."""
+        result = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        self.assertEqual(result, [])
+
+    @tag("ics_attachment")
+    def test_single_timeslot_generates_one_ics(self):
+        """A single timeslot answer generates one .ics attachment."""
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Workshop",
+            settings={"title": "Workshop"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field,
+            title="Morning",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        self.assertEqual(len(attachments), 1)
+
+    @tag("ics_attachment")
+    def test_multiple_timeslots_generates_multiple_ics(self):
+        """Multiple timeslot fields each generate a separate .ics file."""
+        field1 = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Morning",
+            settings={"title": "Morning"},
+        )
+        field2 = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=1,
+            label="Afternoon",
+            settings={"title": "Afternoon"},
+        )
+        option1 = RegistrationFieldOption.objects.create(
+            field=field1,
+            title="Morning",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        option2 = RegistrationFieldOption.objects.create(
+            field=field2,
+            title="Afternoon",
+            order=0,
+            start_time=datetime(2026, 10, 1, 14, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 16, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field1,
+            value_option=option1,
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field2,
+            value_option=option2,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        self.assertEqual(len(attachments), 2)
+
+    @tag("ics_attachment")
+    def test_timeslot_summary_format(self):
+        """Timeslot SUMMARY uses 'My timeslot at {event name}'."""
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Session",
+            settings={"title": "Session"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field,
+            title="Morning",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        cal = self._parse_ics(attachments[0])
+        event = cal.walk("VEVENT")[0]
+        self.assertEqual(str(event.get("summary")), "My timeslot at Workshop Day")
+
+    @tag("ics_attachment")
+    def test_timeslot_summary_german(self):
+        """German timeslot SUMMARY uses 'Mein Zeitfester bei {event name}'."""
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Session",
+            settings={"title": "Session"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field,
+            title="Morning",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "de", self.registration
+        )
+        cal = self._parse_ics(attachments[0])
+        event = cal.walk("VEVENT")[0]
+        self.assertEqual(str(event.get("summary")), "Mein Zeitfester bei Workshop Day")
+
+    @tag("ics_attachment")
+    def test_timeslot_dtstart_dtend(self):
+        """Timeslot DTSTART/DTEND match the option's start_time/end_time."""
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Session",
+            settings={"title": "Session"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field,
+            title="Morning",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        cal = self._parse_ics(attachments[0])
+        event = cal.walk("VEVENT")[0]
+        self.assertEqual(event.get("dtstart").dt.hour, 10)
+        self.assertEqual(event.get("dtend").dt.hour, 12)
+
+    @tag("ics_attachment")
+    def test_timeslot_uid(self):
+        """Timeslot UID uses registration_id and field_id."""
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Session",
+            settings={"title": "Session"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field,
+            title="Morning",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        cal = self._parse_ics(attachments[0])
+        event = cal.walk("VEVENT")[0]
+        expected_uid = f"{self.registration.id}_{field.id}@climateconnect.earth"
+        self.assertEqual(str(event.get("uid")), expected_uid)
+
+    @tag("ics_attachment")
+    def test_timeslot_description_only_has_cta(self):
+        """Timeslot DESCRIPTION contains only CTA + event URL (no field answers)."""
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Session",
+            settings={"title": "Session"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field,
+            title="Morning",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        cal = self._parse_ics(attachments[0])
+        event = cal.walk("VEVENT")[0]
+        description = str(event.get("description"))
+        self.assertIn(f"{settings.FRONTEND_URL}/projects/workshop-day", description)
+        self.assertNotIn("registration answers", description.lower())
+
+    @tag("ics_attachment")
+    def test_timeslot_filename(self):
+        """Timeslot filename uses event slug and sequence number."""
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Session",
+            settings={"title": "Session"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field,
+            title="Morning Session",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        self.assertEqual(attachments[0]["Filename"], "workshop-day_timeslot_1.ics")
+
+    @tag("ics_attachment")
+    def test_online_event_timeslot_uses_website_url(self):
+        """Online event timeslot .ics uses website URL."""
+        self.project.is_online = True
+        self.project.website = "https://zoom.us/j/999"
+        self.project.save()
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Session",
+            settings={"title": "Session"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field,
+            title="Morning",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        cal = self._parse_ics(attachments[0])
+        event = cal.walk("VEVENT")[0]
+        self.assertEqual(str(event.get("url")), "https://zoom.us/j/999")
+
+    @tag("ics_attachment")
+    def test_non_timeslot_fields_ignored(self):
+        """Non-timeslot fields are not included in timeslot attachments."""
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.OPTION_SELECT,
+            order=0,
+            label="T-shirt",
+            settings={"title": "T-shirt size"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field, title="Medium", order=0
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        self.assertEqual(attachments, [])
+
+    @tag("ics_attachment")
+    def test_timeslot_without_times_skipped(self):
+        """Timeslot option without start_time/end_time is skipped."""
+        field = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Session",
+            settings={"title": "Session"},
+        )
+        option = RegistrationFieldOption.objects.create(
+            field=field, title="TBD", order=0
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field,
+            value_option=option,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        self.assertEqual(attachments, [])
+
+    @tag("ics_attachment")
+    def test_two_timeslot_fields_each_generate_ics(self):
+        """Two separate timeslot fields each produce their own .ics files."""
+        field1 = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=0,
+            label="Day 1",
+            settings={"title": "Day 1"},
+        )
+        field2 = RegistrationField.objects.create(
+            registration_config=self.config,
+            field_type=RegistrationFieldType.TIME_SLOT_SELECT,
+            order=1,
+            label="Day 2",
+            settings={"title": "Day 2"},
+        )
+        opt1 = RegistrationFieldOption.objects.create(
+            field=field1,
+            title="Morning Day 1",
+            order=0,
+            start_time=datetime(2026, 10, 1, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 1, 12, 0, tzinfo=_UTC),
+        )
+        opt2 = RegistrationFieldOption.objects.create(
+            field=field2,
+            title="Morning Day 2",
+            order=0,
+            start_time=datetime(2026, 10, 2, 10, 0, tzinfo=_UTC),
+            end_time=datetime(2026, 10, 2, 12, 0, tzinfo=_UTC),
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field1,
+            value_option=opt1,
+        )
+        RegistrationFieldAnswer.objects.create(
+            registration=self.registration,
+            field=field2,
+            value_option=opt2,
+        )
+        attachments = generate_timeslot_ics_attachments(
+            self.project, "en", self.registration
+        )
+        self.assertEqual(len(attachments), 2)
+        filenames = {a["Filename"] for a in attachments}
+        self.assertIn("workshop-day_timeslot_1.ics", filenames)
+        self.assertIn("workshop-day_timeslot_2.ics", filenames)
