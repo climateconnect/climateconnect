@@ -81,7 +81,7 @@ When a guest has selected timeslot field answers during registration, a separate
   - `URL` — same logic as the main event .ics (online website or event page)
 
 **Attachment metadata:**
-- Filename: `{event_slug}_{option-title-slug}.ics` (e.g. `workshop-day_morning-session.ics`)
+- Filename: `{event_slug}_timeslot_{sequence_number}.ics` (e.g. `workshop-day_timeslot_1.ics`)
 - `ContentType`: `text/calendar; method=PUBLISH; charset=utf-8`
 - `Base64Content`: Base64-encoded .ics content
 
@@ -170,11 +170,11 @@ The `generate_timeslot_ics_attachments()` function produces a separate .ics atta
    - `DESCRIPTION`: CTA + event page URL only
    - `URL`: online website if applicable, otherwise event page
    - `UID`: `{registration_id}_{field_id}@climateconnect.earth`
-   - `Filename`: `{event_slug}_{option-title-slug}.ics`
+   - `Filename`: `{event_slug}_timeslot_{sequence_number}.ics`
 
 **Example:** A guest registers for "Workshop Day" and selects "Morning Session" (10:00–12:00) from the timeslot field. The email includes:
 - `workshop-day.ics` — the overall event (9:00–17:00)
-- `workshop-day_morning-session.ics` — the individual timeslot (10:00–12:00)
+- `workshop-day_timeslot_1.ics` — the individual timeslot (10:00–12:00)
 
 If the event has two timeslot fields (e.g. "Day 1" and "Day 2"), each produces its own .ics file, resulting in 3 attachments total.
 
@@ -339,5 +339,5 @@ The Celery task could theoretically call the Next.js `.ical` endpoint to get the
 The per-timeslot .ics feature was designed with Google Calendar in mind. Google Calendar handles multiple .ics attachments in a single email by surfacing each as a separate "Add to Calendar" action, allowing the guest to selectively add the overall event and/or individual timeslots. Each .ics file has a unique UID so calendar apps treat them as distinct events even if imported together.
 
 ### TODO
-- Name attachment for timeslot .ical attachement differently. Maybe event-slug + "_timeslot_" + sequence number + ".ics"
+- ~~Name attachment for timeslot .ical attachement differently.~~ DONE — uses `{event_slug}_timeslot_{sequence_number}.ics`
 - Add the additional information field of the event project if set to the description of the even .ical file as it is intended to provide more information

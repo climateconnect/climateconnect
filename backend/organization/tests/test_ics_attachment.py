@@ -959,7 +959,7 @@ class TestTimeslotIcsAttachments(TestCase):
 
     @tag("ics_attachment")
     def test_timeslot_filename(self):
-        """Timeslot filename uses event slug and option title."""
+        """Timeslot filename uses event slug and sequence number."""
         field = RegistrationField.objects.create(
             registration_config=self.config,
             field_type=RegistrationFieldType.TIME_SLOT_SELECT,
@@ -982,7 +982,7 @@ class TestTimeslotIcsAttachments(TestCase):
         attachments = generate_timeslot_ics_attachments(
             self.project, "en", self.registration
         )
-        self.assertEqual(attachments[0]["Filename"], "workshop-day_morning-session.ics")
+        self.assertEqual(attachments[0]["Filename"], "workshop-day_timeslot_1.ics")
 
     @tag("ics_attachment")
     def test_online_event_timeslot_uses_website_url(self):
@@ -1108,5 +1108,5 @@ class TestTimeslotIcsAttachments(TestCase):
         )
         self.assertEqual(len(attachments), 2)
         filenames = {a["Filename"] for a in attachments}
-        self.assertIn("workshop-day_morning-day-1.ics", filenames)
-        self.assertIn("workshop-day_morning-day-2.ics", filenames)
+        self.assertIn("workshop-day_timeslot_1.ics", filenames)
+        self.assertIn("workshop-day_timeslot_2.ics", filenames)

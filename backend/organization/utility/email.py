@@ -932,12 +932,15 @@ def generate_timeslot_ics_attachments(project, lang_code, registration):
     event_name = get_project_name(project, lang_code)
 
     attachments = []
+    timeslot_seq = 0
     for answer in registration.field_answers.all():
         if answer.field.field_type != RegistrationFieldType.TIME_SLOT_SELECT:
             continue
         option = answer.value_option
         if not option or not option.start_time or not option.end_time:
             continue
+
+        timeslot_seq += 1
 
         cal = Calendar()
         cal.add("prodid", "-//Climate Connect//EN")
@@ -959,11 +962,10 @@ def generate_timeslot_ics_attachments(project, lang_code, registration):
         ics_bytes = cal.to_ical()
         ics_base64 = base64.b64encode(ics_bytes).decode("ascii")
 
-        slug = re.sub(r"[^a-z0-9]+", "-", option.title.lower()).strip("-")
         attachments.append(
             {
                 "ContentType": "text/calendar; method=PUBLISH; charset=utf-8",
-                "Filename": f"{project.url_slug}_{slug}.ics",
+                "Filename": f"{project.url_slug}_timeslot_{timeslot_seq}.ics",
                 "Base64Content": ics_base64,
             }
         )
