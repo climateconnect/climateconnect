@@ -2,7 +2,7 @@ import {
   Badge,
   Divider,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Theme,
   Typography,
@@ -145,9 +145,8 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, forwardedRef }
     return (
       <Fragment>
         {isFirstChat && <Divider component="li" />}
-        <ListItem
+        <ListItemButton
           ref={forwardedRef}
-          button
           component="a"
           href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid}
           alignItems="center"
@@ -195,7 +194,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, forwardedRef }
               </>
             }
           />
-        </ListItem>
+        </ListItemButton>
         <Divider component="li" />
       </Fragment>
     );

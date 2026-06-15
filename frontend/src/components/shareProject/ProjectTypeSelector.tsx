@@ -1,4 +1,5 @@
-import { Card, Grid, Radio, RadioGroup, Typography } from "@mui/material";
+import { Card, Radio, RadioGroup, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 
@@ -94,7 +95,7 @@ export default function ProjectTypeSelector({ className, value, types, onChange,
       <RadioGroup>
         <Grid container component="ul" spacing={2} className={classes.reset}>
           {types.map((type) => (
-            <Grid item xs={12} sm={6} md={6} lg={6} component="li" key={type.type_id}>
+            <Grid item size={{ xs: 12, sm: 6, md: 6, lg: 6 }} component="li" key={type.type_id}>
               <ProjectTypeBox type={type} value={value} onChange={onChange} color={color} />
             </Grid>
           ))}

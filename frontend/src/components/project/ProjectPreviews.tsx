@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -84,10 +84,12 @@ export default function ProjectPreviews({
           return (
             <Grid
               item
-              xs={columnValuesFromBreakpoint.xsValue}
-              sm={columnValuesFromBreakpoint.smValue}
-              md={columnValuesFromBreakpoint.mdValue}
-              lg={columnValuesFromBreakpoint.lgValue}
+              size={{
+                xs: columnValuesFromBreakpoint.xsValue,
+                sm: columnValuesFromBreakpoint.smValue,
+                md: columnValuesFromBreakpoint.mdValue,
+                lg: columnValuesFromBreakpoint.lgValue,
+              }}
               key={project.props?.project?.url_slug || project.url_slug}
               component="li"
               ref={isLastElement ? lastElementRef : null}
