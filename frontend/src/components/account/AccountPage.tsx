@@ -389,12 +389,12 @@ export default function AccountPage({
 
         if (infoElement.linkify && value) {
           return (
-            <>
+            <Fragment key={index}>
               <div className={classes.subtitle}>{infoElement.name}:</div>
-              <Linkify componentDecorator={componentDecorator} key={index}>
+              <Linkify componentDecorator={componentDecorator}>
                 <div className={classes.content}>{value}</div>
               </Linkify>
-            </>
+            </Fragment>
           );
         }
 
@@ -410,13 +410,13 @@ export default function AccountPage({
 
         if (infoElement.type === "sectors") {
           return (
-            <>
+            <Fragment key={index}>
               {infoElement.value.length > 0 && (
                 <div className={classes.subtitle}>{infoElement.name}:</div>
               )}
 
               <SectorsPreview sectors={infoElement.value} />
-            </>
+            </Fragment>
           );
         }
 
