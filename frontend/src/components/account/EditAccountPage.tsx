@@ -528,9 +528,9 @@ export default function EditAccountPage({
               editedAccount.types.length === 0
             : false;
         return (
-          <>
+          <Fragment key={key}>
             {!hideGetInvolvedField && (
-              <div key={key} className={classes.infoElement}>
+              <div className={classes.infoElement}>
                 <TextField
                   required={i.required}
                   label={i.name}
@@ -538,7 +538,7 @@ export default function EditAccountPage({
                   color="contrast"
                   fullWidth
                   inputProps={{ maxLength: i.maxLength }}
-                  value={i.value}
+                  value={i.value ?? ""}
                   multiline
                   rows={i.rows}
                   onChange={handleChange}
@@ -557,7 +557,7 @@ export default function EditAccountPage({
                 />
               </div>
             )}
-          </>
+          </Fragment>
         );
       }
     });
