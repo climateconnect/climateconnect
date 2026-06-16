@@ -197,3 +197,72 @@ class LocationTranslation(models.Model):
         return "{}: {} of location {}".format(
             self.id, self.language.name, self.location.name
         )
+
+
+class NominatimRequestLog(models.Model):
+    """
+    Stores per-minute request counts for Nominatim autocomplete requests.
+
+    One row per calendar minute. Only the current day's buckets are retained;
+    older buckets are deleted inline on each incoming request.
+    """
+
+    bucket_key = models.BigIntegerField(
+        help_text="Epoch minutes (epoch_seconds // 60)",
+        unique=True,
+    )
+    count = models.PositiveIntegerField(
+        default=0,
+        help_text="Number of Nominatim requests in this minute",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "location"
+        verbose_name = "nominatim request log"
+        verbose_name_plural = "nominatim request logs"
+
+    def __str__(self):
+        return f"minute:{self.bucket_key} = {self.count}"
+
+
+class NominatimPeriodStats(models.Model):
+    """
+    Persistent per-period (day / ISO-week / calendar-month) aggregation of
+    Nominatim autocomplete request metrics.
+
+    One row per (period_type, period_key) combination.  Updated atomically
+    on every tracked request — no Celery, no Redis.
+    """
+
+    class PeriodType(models.TextChoices):
+        DAY = "day", "Day"
+        WEEK = "week", "ISO Week"
+        MONTH = "month", "Calendar Month"
+
+    period_type = models.CharField(
+        max_length=5,
+        choices=PeriodType.choices,
+    )
+    period_key = models.CharField(
+        max_length=10,
+        help_text="YYYY-MM-DD, YYYY-Www, or YYYY-MM",
+    )
+    total_requests = models.PositiveIntegerField(default=0)
+    avg_req_per_second = models.FloatField(default=0)
+    peak_req_per_second = models.FloatField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "location"
+        verbose_name = "nominatim period stats"
+        verbose_name_plural = "nominatim period stats"
+        unique_together = [("period_type", "period_key")]
+        indexes = [
+            models.Index(fields=["period_type", "period_key"]),
+        ]
+
+    def __str__(self):
+        return f"{self.period_type}:{self.period_key} reqs={self.total_requests}"
