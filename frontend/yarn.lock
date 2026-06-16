@@ -3770,12 +3770,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/bundle-analyzer@npm:^14.2.35":
-  version: 14.2.35
-  resolution: "@next/bundle-analyzer@npm:14.2.35"
+"@next/bundle-analyzer@npm:^15.5.19":
+  version: 15.5.19
+  resolution: "@next/bundle-analyzer@npm:15.5.19"
   dependencies:
     webpack-bundle-analyzer: "npm:4.10.1"
-  checksum: 10c0/cef97a8df6ee5df261a3db9388993550f90f474aa7cad24acb63cdbe3cabd094fe1dc84d516cd36b978aebd4060e33d6bcedd4614ca2d78a58ac55d096c162ae
+  checksum: 10c0/577487fcfb8e018ea017e3c7dc5bb2d60a3dd2c376510d9941140ca7dee8823fa1d29ed91fbee8821286643fc188be20eb2f6a536268c144ade66171e729333b
   languageName: node
   linkType: hard
 
@@ -7199,7 +7199,7 @@ __metadata:
     "@mui/styles": "npm:^5.11.13"
     "@mui/x-data-grid": "npm:6"
     "@mui/x-date-pickers": "npm:^6.0.3"
-    "@next/bundle-analyzer": "npm:^14.2.35"
+    "@next/bundle-analyzer": "npm:^15.5.19"
     "@sentry/react": "npm:^10.57.0"
     "@svgr/webpack": "npm:^8.1.0"
     "@testing-library/dom": "npm:^10.4.1"
