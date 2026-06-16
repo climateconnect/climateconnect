@@ -78,12 +78,12 @@ export default function LocationSearchBar({
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
       if (enableExactLocation) {
-        return getDisplayLocationFromExactLocation(newValue).name;
+        return getDisplayLocationFromExactLocation(newValue).name ?? "";
       } else {
-        return newValue.simple_name ? newValue.simple_name : newValue.name;
+        return newValue.simple_name ?? newValue.name ?? "";
       }
     } else {
-      return newValue;
+      return newValue ?? "";
     }
   };
 
@@ -363,7 +363,7 @@ export default function LocationSearchBar({
           // @ts-ignore - contrast is a custom color defined in theme
           color={color || "contrast"}
           className={classes.additionalInfos}
-          value={additionalInfoText}
+          value={additionalInfoText ?? ""}
           onChange={handleChangeAdditionalInfoText}
         />
       )}
