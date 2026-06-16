@@ -114,6 +114,7 @@ export type Project = {
   end_date?: string | Dayjs | null;
   additional_loc_info?: string;
   short_description?: string;
+  description?: string;
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
   hubName?: string;

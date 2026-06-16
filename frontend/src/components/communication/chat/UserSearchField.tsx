@@ -53,9 +53,9 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
   };
   const getUsersToFilterOut = () => [user, ...newChatMembers];
 
-  const renderSearchOption = (props, option) => {
+  const renderSearchOption = ({ key, ...props }, option) => {
     return (
-      <li {...props}>
+      <li key={key} {...props}>
         <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
@@ -143,9 +143,9 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
           />
         )}
         <div /*TODO(undefined) className={classes.newChatParticipantsContainer} */>
-          {newChatMembers.map((m, index) => (
+          {newChatMembers.map((m) => (
             <MiniProfilePreview
-              key={index}
+              key={m.url_slug}
               profile={m}
               className={classes.miniProfilePreview}
               onDelete={handleRemoveMember}

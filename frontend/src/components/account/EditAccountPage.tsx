@@ -428,7 +428,11 @@ export default function EditAccountPage({
         i.key === "parent_organization" &&
         (!i.show_if_ticked || editedAccount.info[i.show_if_ticked] === true)
       ) {
-        const renderSearchOption = (props, option) => <li {...props}>{option.name}</li>;
+        const renderSearchOption = ({ key, ...props }, option) => (
+          <li key={key} {...props}>
+            {option.name}
+          </li>
+        );
         return (
           <div className={classes.infoElement} key={i.key}>
             {i.value && (
@@ -528,9 +532,9 @@ export default function EditAccountPage({
               editedAccount.types.length === 0
             : false;
         return (
-          <>
+          <Fragment key={key}>
             {!hideGetInvolvedField && (
-              <div key={key} className={classes.infoElement}>
+              <div className={classes.infoElement}>
                 <TextField
                   required={i.required}
                   label={i.name}
@@ -538,7 +542,7 @@ export default function EditAccountPage({
                   color="contrast"
                   fullWidth
                   inputProps={{ maxLength: i.maxLength }}
-                  value={i.value}
+                  value={i.value ?? ""}
                   multiline
                   rows={i.rows}
                   onChange={handleChange}
@@ -557,7 +561,7 @@ export default function EditAccountPage({
                 />
               </div>
             )}
-          </>
+          </Fragment>
         );
       }
     });

@@ -68,3 +68,6 @@ ConfirmDialog.propTypes = {
   title: string.isRequired,
   className: string,
 };
+ConfirmDialog.defaultProps = {
+  className: "",
+};

@@ -3,7 +3,7 @@ import { useTheme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { func, bool, object, string, number, oneOfType } from "prop-types";
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 //Package AvatarEditor returns an object {default: defaultFunction} instead of a function which triggers a warning. This is why we use <AvatarEditor.default> in the exported function.
 import AvatarEditor from "react-avatar-editor";
 import getTexts from "../../../public/texts/texts";
@@ -72,7 +72,7 @@ export default function UploadImageDialog({
   const smallScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
 
   const [scale, setScale] = useState(1);
-  const [editor, setEditor] = useState<any>(null);
+  const editorRef = useRef<any>(null);
 
   const handleClose = () => {
     setScale(1);
@@ -86,11 +86,15 @@ export default function UploadImageDialog({
   };
 
   const applyImage = () => {
-    onClose(editor.getImage());
+    if (editorRef.current) {
+      onClose(editorRef.current.getImage());
+    }
     setScale(1);
   };
 
-  const setEditorRef = (editor) => setEditor(editor);
+  const setEditorRef = (editor) => {
+    editorRef.current = editor;
+  };
 
   const widthToUse =
     mobileHeight && smallScreen
