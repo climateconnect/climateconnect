@@ -117,6 +117,7 @@ def send_email(
     should_send_email_setting,
     notification,
     hub_url=None,
+    attachments=None,
 ):
     # if not check_send_email_notification(user):
     #    return
@@ -162,6 +163,9 @@ def send_email(
             }
         ]
     }
+
+    if attachments:
+        data["Messages"][0]["Attachments"] = attachments
 
     try:
         mail = mailjet_send_api.send.create(data=data)

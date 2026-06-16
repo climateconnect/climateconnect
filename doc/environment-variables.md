@@ -295,7 +295,7 @@ All email template variables follow the pattern: `{TEMPLATE_NAME}_TEMPLATE_ID[_D
 | `EventUrl` | Language-aware link to the event page |
 | `OrganiserName` | Organisation name, or organiser's full name / username |
 | `OrganizerSubject` | The subject entered by the organiser |
-| `OrganizerMessage` | The plain-text body entered by the organiser |
+| `OrganizerMessage` | HTML body entered by the organiser (sanitised; rendered with triple-brace in Mailjet template) |
 
 **Admin cancellation notification template variables** (define in both EN and DE Mailjet templates, `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID`):
 | Variable | Content |

@@ -4,12 +4,10 @@ import traceback
 from dateutil.parser import parse
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.gis.db.models import GeometryField, Union
 from django.contrib.gis.db.models.functions import Distance
 from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Case, Prefetch, Q, When
-from django.db.models.functions import Cast
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
@@ -118,6 +116,7 @@ from organization.utility.notification import (
 )
 from organization.utility.organization import check_organization
 from organization.utility.project import (
+    apply_hub_filter,
     create_new_project,
     get_project_admin_creators,
     get_project_translations,
@@ -250,64 +249,7 @@ class ListProjectsView(ListAPIView):
                 )
 
         if "hub" in self.request.query_params:
-            # retrieve hub and its parents
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"]).first()
-            if not hub:
-                return projects.none()
-
-            hubs = [hub]
-            if hub.parent_hub:
-                hubs.append(hub.parent_hub)
-
-            for current_hub in hubs:
-                if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    sectors = current_hub.sectors.all()
-                    sector_ids = [x.id for x in sectors]
-
-                    projects = projects.filter(
-                        project_sector_mapping__sector_id__in=sector_ids
-                    ).distinct()
-
-                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    hub_locations = current_hub.location.all()
-
-                    if not hub_locations.exists():
-                        projects = projects.none()
-                    else:
-                        hub_location_ids = hub_locations.values_list("id", flat=True)
-
-                        aggregated_geometry = hub_locations.annotate(
-                            geom_as_geometry=Cast("multi_polygon", GeometryField())
-                        ).aggregate(combined=Union("geom_as_geometry"))["combined"]
-
-                        projects = projects.filter(
-                            Q(loc__country=hub_locations.first().country)
-                        )
-
-                        projects_by_location_id = projects.filter(
-                            loc__id__in=hub_location_ids
-                        )
-
-                        if aggregated_geometry:
-                            projects_by_geometry = projects.filter(
-                                Q(loc__centre_point__coveredby=(aggregated_geometry))
-                                | Q(loc__multi_polygon__coveredby=(aggregated_geometry))
-                            )
-
-                            projects = (
-                                (projects_by_location_id | projects_by_geometry)
-                                .annotate(
-                                    distance=Distance(
-                                        "loc__centre_point", aggregated_geometry
-                                    )
-                                )
-                                .distinct()
-                            )
-                        else:
-                            projects = projects_by_location_id.distinct()
-
-                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    projects = projects.filter(related_hubs=current_hub)
+            projects = apply_hub_filter(projects, self.request.query_params["hub"])
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
@@ -1493,7 +1435,7 @@ class ListFeaturedProjects(ListAPIView):
 
     def get_queryset(self):
         return Project.objects.filter(
-            rating__lte=99, is_draft=False, is_active=True
+            rating__gte=0, rating__lte=99, is_draft=False, is_active=True
         ).prefetch_related("loc__translate_location__language")[0:4]
 
 
@@ -1788,9 +1730,26 @@ class SimilarProjects(ListAPIView):
     serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
-        similar_projects_url_slugs = get_similar_projects(
-            url_slug=self.kwargs["url_slug"]
+        source_slug = self.kwargs["url_slug"]
+
+        candidates = Project.objects.filter(
+            is_draft=False, rating__gte=49, is_active=True
         )
+
+        hub_slug = self.request.query_params.get("hub")
+        if hub_slug and Hub.objects.filter(url_slug=hub_slug).exists():
+            candidates = apply_hub_filter(candidates, hub_slug)
+
+        candidates = (
+            candidates.distinct()
+            | Project.objects.filter(url_slug=source_slug).distinct()
+        )
+
+        similar_projects_url_slugs = get_similar_projects(
+            url_slug=source_slug,
+            target_projects=candidates,
+        )
+
         return Project.objects.filter(
             url_slug__in=similar_projects_url_slugs,
             is_draft=False,

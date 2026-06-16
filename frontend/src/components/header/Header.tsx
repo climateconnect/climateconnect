@@ -39,7 +39,6 @@ import LanguageSelect from "./LanguageSelect";
 import StaticPageLinks from "./StaticPageLinks";
 import { HeaderProps } from "./types";
 import { getLinks, getLoggedInLinks, getStaticLinkFromItem } from "../../../public/lib/headerLinks";
-import { useFeatureToggles } from "../featureToggle";
 
 type StyleProps = {
   transparentHeader?: boolean;
@@ -296,8 +295,6 @@ export default function Header({
     CUSTOM_HUB_URLS,
     LOCATION_HUBS,
   } = useContext(UserContext);
-  const { isEnabled } = useFeatureToggles();
-  const isAuthUnificationEnabled = isEnabled("AUTH_UNIFICATION");
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -306,15 +303,7 @@ export default function Header({
   const isCustomHub = customHubUrls.includes(hubUrl);
   const isLocationHub = LOCATION_HUBS.includes(hubUrl);
 
-  const LINKS = getLinks(
-    pathName,
-    texts,
-    isLocationHub,
-    isCustomHub,
-    hasHubLandingPage,
-    hubUrl,
-    isAuthUnificationEnabled
-  );
+  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl);
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,

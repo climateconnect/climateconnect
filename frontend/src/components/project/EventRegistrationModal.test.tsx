@@ -21,13 +21,6 @@ jest.mock("../../../public/lib/apiOperations", () => ({
   apiRequest: (...args: any[]) => mockApiRequest(...args),
 }));
 
-// Mock useFeatureToggles
-const mockIsEnabled = jest.fn((_feature: string, _fallback?: boolean) => false);
-jest.mock("../featureToggle", () => ({
-  ...jest.requireActual("../featureToggle"),
-  useFeatureToggles: () => ({ isEnabled: mockIsEnabled, isLoading: false }),
-}));
-
 // Mock LocationSearchBar so signup form can be filled without async location fetching
 jest.mock("../search/LocationSearchBar", () => {
   return function MockLocationSearchBar({ onSelect, label }: any) {
@@ -135,7 +128,6 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockApiRequest.mockReset();
   mockSessionStorage.clear();
-  mockIsEnabled.mockImplementation((_feature: string, _fallback?: boolean) => false);
   // Suppress console.error during tests to keep output clean
   jest.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -551,9 +543,153 @@ describe("EventRegistrationModal – close behaviour", () => {
   });
 });
 
-// ── Custom fields render without REGISTRATION_CUSTOM_FIELDS toggle ─────────
+// ── Custom fields render based on registration_config.fields ────────────────
 
-describe("EventRegistrationModal – custom fields toggle", () => {
+describe("EventRegistrationModal – registration closed states", () => {
+  const CLOSED_REGISTRATION_CONFIG = {
+    max_participants: 50,
+    available_seats: 0,
+    registration_end_date: null,
+    status: "closed" as const,
+    notify_admins: true,
+  };
+
+  const FULL_REGISTRATION_CONFIG = {
+    max_participants: 50,
+    available_seats: 0,
+    registration_end_date: null,
+    status: "full" as const,
+    notify_admins: true,
+  };
+
+  const ENDED_REGISTRATION_CONFIG = {
+    max_participants: 50,
+    available_seats: 0,
+    registration_end_date: null,
+    status: "ended" as const,
+    notify_admins: true,
+  };
+
+  it("shows 'Event is fully booked' message for closed status (authenticated)", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({ registration_config: CLOSED_REGISTRATION_CONFIG }),
+    });
+
+    expect(screen.getByText(/event is fully booked/i)).toBeInTheDocument();
+    expect(screen.getByText(/maximum number of participants/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /confirm registration/i })).not.toBeInTheDocument();
+  });
+
+  it("shows 'Event is fully booked' message for full status (authenticated)", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({ registration_config: FULL_REGISTRATION_CONFIG }),
+    });
+
+    expect(screen.getByText(/event is fully booked/i)).toBeInTheDocument();
+    expect(screen.getByText(/maximum number of participants/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /confirm registration/i })).not.toBeInTheDocument();
+  });
+
+  it("shows 'Registration has ended' message for ended status (authenticated)", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({ registration_config: ENDED_REGISTRATION_CONFIG }),
+    });
+
+    expect(screen.getByText(/registration has ended/i)).toBeInTheDocument();
+    expect(screen.getByText(/registration period.*has ended/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /confirm registration/i })).not.toBeInTheDocument();
+  });
+
+  it("shows closed message for unauthenticated user (skips auth flow)", () => {
+    renderModal({
+      user: null,
+      project: makeProject({ registration_config: FULL_REGISTRATION_CONFIG }),
+    });
+
+    expect(screen.getByText(/event is fully booked/i)).toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: /email/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^next$/i })).not.toBeInTheDocument();
+  });
+
+  it("shows Close button for closed registration states", () => {
+    const onClose = jest.fn();
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({ registration_config: FULL_REGISTRATION_CONFIG }),
+      onClose,
+    });
+
+    const buttons = screen.getAllByRole("button");
+    const closeButton = buttons.find((btn) => btn.textContent?.trim() === "Close");
+    expect(closeButton).toBeDefined();
+    fireEvent.click(closeButton!);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows 'already registered' message when user has active registration (deeplink)", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({
+        registration_config: {
+          max_participants: 50,
+          available_seats: 30,
+          registration_end_date: null,
+          status: "open",
+          notify_admins: true,
+        },
+        my_event_registration: {
+          id: 1,
+          user_first_name: "Jane",
+          user_last_name: "Doe",
+          user_url_slug: "jane-doe",
+          user_thumbnail_image: null,
+          registered_at: "2026-06-01T10:00:00Z",
+          cancelled_at: null,
+          field_answers: [],
+        },
+      }),
+    });
+
+    expect(screen.getByText(/you're already registered/i)).toBeInTheDocument();
+    expect(screen.getByText(/do not need to register again/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /confirm registration/i })).not.toBeInTheDocument();
+  });
+
+  it("does not show 'already registered' when registration was cancelled", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({
+        registration_config: {
+          max_participants: 50,
+          available_seats: 30,
+          registration_end_date: null,
+          status: "open",
+          notify_admins: true,
+        },
+        my_event_registration: {
+          id: 1,
+          user_first_name: "Jane",
+          user_last_name: "Doe",
+          user_url_slug: "jane-doe",
+          user_thumbnail_image: null,
+          registered_at: "2026-06-01T10:00:00Z",
+          cancelled_at: "2026-06-05T10:00:00Z",
+          field_answers: [],
+        },
+      }),
+    });
+
+    expect(screen.queryByText(/you're already registered/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirm registration/i })).toBeInTheDocument();
+  });
+});
+
+// ── Custom fields render based on registration_config.fields ────────────────
+
+describe("EventRegistrationModal – custom fields", () => {
   const INVENTORY_FIELD: RegistrationField = {
     id: 5,
     field_type: "inventory",
@@ -582,9 +718,7 @@ describe("EventRegistrationModal – custom fields toggle", () => {
     settings: { description: "I agree" },
   };
 
-  it("renders custom fields when EVENT_REGISTRATION is enabled but REGISTRATION_CUSTOM_FIELDS is not", () => {
-    mockIsEnabled.mockImplementation((feature: string) => feature === "EVENT_REGISTRATION");
-
+  it("renders custom fields when registration_config has fields", () => {
     renderModal({
       user: AUTHENTICATED_USER,
       project: makeProject({
@@ -602,9 +736,7 @@ describe("EventRegistrationModal – custom fields toggle", () => {
     expect(screen.getByText("I agree")).toBeInTheDocument();
   });
 
-  it("does not render custom fields when EVENT_REGISTRATION is disabled", () => {
-    mockIsEnabled.mockReturnValue(false);
-
+  it("does not render custom fields when registration_config has no fields", () => {
     renderModal({
       user: AUTHENTICATED_USER,
       project: makeProject({
@@ -614,7 +746,6 @@ describe("EventRegistrationModal – custom fields toggle", () => {
           registration_end_date: null,
           status: "open",
           notify_admins: true,
-          fields: [CHECKBOX_FIELD],
         },
       }),
     });
@@ -622,9 +753,7 @@ describe("EventRegistrationModal – custom fields toggle", () => {
     expect(screen.queryByText("I agree")).not.toBeInTheDocument();
   });
 
-  it("renders inventory field when EVENT_REGISTRATION is enabled", () => {
-    mockIsEnabled.mockImplementation((feature: string) => feature === "EVENT_REGISTRATION");
-
+  it("renders inventory field when registration_config has fields", () => {
     renderModal({
       user: AUTHENTICATED_USER,
       project: makeProject({
@@ -643,7 +772,6 @@ describe("EventRegistrationModal – custom fields toggle", () => {
   });
 
   it("sends value_number in the API payload for inventory answers", async () => {
-    mockIsEnabled.mockImplementation((feature: string) => feature === "EVENT_REGISTRATION");
     mockApiRequest.mockResolvedValueOnce({ status: 201 });
 
     renderModal({

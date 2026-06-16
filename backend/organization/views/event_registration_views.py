@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from climateconnect_api.models import Role
+from climateconnect_api.utility.html import sanitize_html
 from organization.models import Project, ProjectMember
 from organization.models.event_registration import (
     EventRegistration,
@@ -43,6 +44,7 @@ from organization.utility.email import (
     send_guest_cancellation_notification,
     send_organizer_message_to_guest,
 )
+from organization.utility.event_registration import evaluate_registration_status
 
 logger = logging.getLogger(__name__)
 
@@ -148,19 +150,20 @@ class EventRegistrationsView(APIView):
             )
 
         # ── 5. Capacity check (inside the lock; active registrations only) ───
-        if rc.max_participants is not None:
-            current_count = EventRegistration.objects.filter(
-                registration_config=rc,
-                cancelled_at__isnull=True,
-            ).count()
-            if current_count >= rc.max_participants:
-                # Ensure status reflects reality even if it was missed earlier.
+        # Use the consolidated utility which checks max_participants AND
+        # required capacity-limited fields (inventory, time slots).
+        suggested_status = evaluate_registration_status(rc)
+        if suggested_status == RegistrationStatus.FULL:
+            if rc.status in (
+                RegistrationStatus.OPEN,
+                RegistrationStatus.FULL,
+            ):
                 rc.status = RegistrationStatus.FULL
                 rc.save(update_fields=["status", "updated_at"])
-                return Response(
-                    {"message": "Sorry, the event is now fully booked."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            return Response(
+                {"message": "Sorry, the event is now fully booked."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # ── 6. Validate custom-field answers payload (if provided) ──────────
         submission_serializer = EventRegistrationSubmissionSerializer(
@@ -263,9 +266,12 @@ class EventRegistrationsView(APIView):
                 cancelled_at__isnull=True,
             ).count()
             available_seats = max(0, rc.max_participants - new_count)
-            if available_seats == 0:
-                rc.status = RegistrationStatus.FULL
-                rc.save(update_fields=["status", "updated_at"])
+
+        # Check all capacity conditions (max_participants + required fields).
+        suggested_status = evaluate_registration_status(rc)
+        if suggested_status == RegistrationStatus.FULL:
+            rc.status = RegistrationStatus.FULL
+            rc.save(update_fields=["status", "updated_at"])
 
         logger.info(
             "[EventRegistration] User %s registered for project '%s'",
@@ -462,13 +468,10 @@ class EventRegistrationsView(APIView):
         reg.cancelled_by = request.user
         reg.save(update_fields=["cancelled_at", "cancelled_by"])
 
-        # ── 8. Revert FULL → OPEN if cancellation freed a seat ──────────────
-        if rc.status == RegistrationStatus.FULL and rc.max_participants is not None:
-            active_count = EventRegistration.objects.filter(
-                registration_config=rc,
-                cancelled_at__isnull=True,
-            ).count()
-            if active_count < rc.max_participants:
+        # ── 8. Revert FULL → OPEN if cancellation freed capacity ────────────
+        if rc.status == RegistrationStatus.FULL:
+            suggested_status = evaluate_registration_status(rc)
+            if suggested_status == RegistrationStatus.OPEN:
                 rc.status = RegistrationStatus.OPEN
                 rc.save(update_fields=["status", "updated_at"])
 
@@ -709,6 +712,37 @@ class SendOrganizerEmailView(APIView):
         message = serializer.validated_data["message"]
         is_test = serializer.validated_data["is_test"]
 
+        # Sanitize HTML — strip XSS, disallowed tags, and filter styles.
+        ORGANIZER_EMAIL_ALLOWED_TAGS = [
+            "p",
+            "strong",
+            "b",
+            "em",
+            "i",
+            "a",
+            "br",
+            "ul",
+            "ol",
+            "li",
+            "table",
+            "thead",
+            "tbody",
+            "tr",
+            "th",
+            "td",
+        ]
+        ORGANIZER_EMAIL_ALLOWED_ATTRIBUTES = {
+            "a": ["href", "target"],
+            "p": ["style"],
+            "td": ["style", "colspan", "rowspan"],
+            "th": ["style", "colspan", "rowspan"],
+        }
+        message = sanitize_html(
+            message,
+            allowed_tags=ORGANIZER_EMAIL_ALLOWED_TAGS,
+            allowed_attributes=ORGANIZER_EMAIL_ALLOWED_ATTRIBUTES,
+        )
+
         # ── 2. Look up project ──────────────────────────────────────────
         try:
             project = (
@@ -912,13 +946,10 @@ class AdminCancelRegistrationView(APIView):
         reg.cancelled_by = request.user
         reg.save(update_fields=["cancelled_at", "cancelled_by"])
 
-        # ── 7. Revert FULL → OPEN if cancellation freed a seat ──────────────
-        if rc.status == RegistrationStatus.FULL and rc.max_participants is not None:
-            active_count = EventRegistration.objects.filter(
-                registration_config=rc,
-                cancelled_at__isnull=True,
-            ).count()
-            if active_count < rc.max_participants:
+        # ── 7. Revert FULL → OPEN if cancellation freed capacity ────────────
+        if rc.status == RegistrationStatus.FULL:
+            suggested_status = evaluate_registration_status(rc)
+            if suggested_status == RegistrationStatus.OPEN:
                 rc.status = RegistrationStatus.OPEN
                 rc.save(update_fields=["status", "updated_at"])
 

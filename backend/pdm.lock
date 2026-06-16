@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:3ec7e0722add712b306983e420412089afdc627e89f263724d758087636b4250"
+content_hash = "sha256:c52675893c38828905ad0d8c81725149089c68aace856fd93deb7d3794e4cd67"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -1479,6 +1479,22 @@ files = [
 ]
 
 [[package]]
+name = "icalendar"
+version = "7.1.2"
+requires_python = ">=3.10"
+summary = "RFC 5545 compatible parser and generator of iCalendar files"
+groups = ["default"]
+dependencies = [
+    "python-dateutil",
+    "typing-extensions~=4.10; python_version < \"3.13\"",
+    "tzdata>=2025.3",
+]
+files = [
+    {file = "icalendar-7.1.2-py3-none-any.whl", hash = "sha256:01c76243c76c549f58bb51510a8f0a4edb7c539726adda1356dfd0dc04fb7a53"},
+    {file = "icalendar-7.1.2.tar.gz", hash = "sha256:ebc43ebeb357be98984b573d975118008dee3410d8df28b054ef2943cf3e367e"},
+]
+
+[[package]]
 name = "idna"
 version = "3.14"
 requires_python = ">=3.8"
@@ -2602,6 +2618,20 @@ files = [
     {file = "timezonefinder-8.2.4-cp311-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl", hash = "sha256:97e9336391be6e10ca85f2ccdd36491c2aa2611e5265561de0f2e3b1652c2a68"},
     {file = "timezonefinder-8.2.4-cp311-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:54f3a8cae6715bf2f6a4c1a31189dc709d2fbabc5671147d5cb461455d6c6f39"},
     {file = "timezonefinder-8.2.4.tar.gz", hash = "sha256:d80fae37adf1497729cc3e69826c22f3b2fec16db07932bf389b6ae545400b42"},
+]
+
+[[package]]
+name = "tinycss2"
+version = "1.5.1"
+requires_python = ">=3.10"
+summary = "A tiny CSS parser"
+groups = ["default"]
+dependencies = [
+    "webencodings>=0.4",
+]
+files = [
+    {file = "tinycss2-1.5.1-py3-none-any.whl", hash = "sha256:3415ba0f5839c062696996998176c4a3751d18b7edaaeeb658c9ce21ec150661"},
+    {file = "tinycss2-1.5.1.tar.gz", hash = "sha256:d339d2b616ba90ccce58da8495a78f46e55d4d25f9fd71dfd526f07e7d53f957"},
 ]
 
 [[package]]

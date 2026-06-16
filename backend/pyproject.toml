@@ -115,6 +115,8 @@ dependencies = [
     "timezonefinder>=8.2.2",
     "django-ratelimit>=4.1.0",
     "tqdm>=4.67.3",
+    "tinycss2>=1.5.1",
+    "icalendar>=7.1.2",
 ]
 requires-python = ">=3.12"
 license = { text = "AGPL" }
@@ -142,6 +144,7 @@ ignore = [
 "**/__init__.py" = ["F401"]
 
 [tool.black]
+target-version = ['py312']
 include = '\.pyi?$'
 extend-exclude = '''
 # A regex preceded with ^/ will apply only to files and directories
