@@ -83,7 +83,7 @@ export default function LocationSearchBar({
         return newValue.simple_name ?? newValue.name ?? "";
       }
     } else {
-      return newValue ?? "";
+      return newValue;
     }
   };
 
