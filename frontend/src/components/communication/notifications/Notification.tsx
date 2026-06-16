@@ -220,9 +220,7 @@ const PlaceholderNotification = () => {
         <ListItemText className={classes.listItemText} disableTypography>
           {texts.placeholderNotification}
           <div>
-            <Link className={classes.goToInboxText} underline="hover">
-              {texts.go_to_inbox}
-            </Link>
+            <span className={classes.goToInboxText}>{texts.go_to_inbox}</span>
           </div>
         </ListItemText>
       </StyledMenuItem>

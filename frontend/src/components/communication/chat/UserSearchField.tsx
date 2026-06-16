@@ -143,9 +143,9 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
           />
         )}
         <div /*TODO(undefined) className={classes.newChatParticipantsContainer} */>
-          {newChatMembers.map((m, index) => (
+          {newChatMembers.map((m) => (
             <MiniProfilePreview
-              key={index}
+              key={m.url_slug}
               profile={m}
               className={classes.miniProfilePreview}
               onDelete={handleRemoveMember}
