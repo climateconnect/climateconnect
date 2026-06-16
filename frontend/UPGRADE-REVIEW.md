@@ -8,19 +8,20 @@ compatibility issues (nested `<a>` tags, React 19 API changes).
 
 ## Dependency Changes Summary
 
-| Package                   | Before   | After    | Risk                             |
-| ------------------------- | -------- | -------- | -------------------------------- |
-| `next`                    | ^14.2.35 | 15.5.19  | **HIGH** — Major breaking change |
-| `react` / `react-dom`     | ^18.2.0  | 19.2.7   | **HIGH** — Major breaking change |
-| `@sentry/react`           | ^7.46.0  | ^10.57.0 | **MEDIUM** — API changes         |
-| `react-avatar-editor`     | 11.0.7   | 15.0.0   | **MEDIUM** — Major version jump  |
-| `react-share`             | ^4.4.0   | 5.3.0    | **MEDIUM** — Major version bump  |
-| `html-react-parser`       | ^4.0.0   | ^6.1.2   | **MEDIUM** — Major version jump  |
-| `react-minimal-pie-chart` | ^8.1.0   | ^9.1.1   | **LOW**                          |
-| `@emotion/react`          | ^11.10.6 | ^11.14.0 | **LOW**                          |
-| `@emotion/styled`         | ^11.10.6 | ^11.14.1 | **LOW**                          |
-| `eslint-config-next`      | ^14.2.35 | 15.5.19  | **LOW**                          |
-| `@types/react`            | ^18.0.25 | ^19.0.0  | **LOW**                          |
+| Package                   | Before   | After    | Risk                                           |
+| ------------------------- | -------- | -------- | ---------------------------------------------- |
+| `next`                    | ^14.2.35 | 15.5.19  | **HIGH** — Major breaking change               |
+| `react` / `react-dom`     | ^18.2.0  | 19.2.7   | **HIGH** — Major breaking change               |
+| `@sentry/react`           | ^7.46.0  | ^10.57.0 | **MEDIUM** — API changes                       |
+| `react-avatar-editor`     | 11.0.7   | 15.0.0   | **MEDIUM** — Major version jump                |
+| `react-share`             | ^4.4.0   | 5.3.0    | **MEDIUM** — Major version bump                |
+| `html-react-parser`       | ^4.0.0   | ^6.1.2   | **MEDIUM** — Major version jump                |
+| `react-minimal-pie-chart` | ^8.1.0   | ^9.1.1   | **LOW**                                        |
+| `@emotion/react`          | ^11.10.6 | ^11.14.0 | **LOW**                                        |
+| `@emotion/styled`         | ^11.10.6 | ^11.14.1 | **LOW**                                        |
+| `eslint-config-next`      | ^14.2.35 | 15.5.19  | **LOW**                                        |
+| `@types/react`            | ^18.0.25 | ^19.0.0  | **LOW**                                        |
+| `typescript`              | ^4.9.5   | ^5.5.4   | **LOW** — compile-time only, no runtime impact |
 
 ### Removed Packages
 
