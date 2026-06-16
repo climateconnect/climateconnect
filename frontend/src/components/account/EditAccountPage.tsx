@@ -428,7 +428,11 @@ export default function EditAccountPage({
         i.key === "parent_organization" &&
         (!i.show_if_ticked || editedAccount.info[i.show_if_ticked] === true)
       ) {
-        const renderSearchOption = (props, option) => <li {...props}>{option.name}</li>;
+        const renderSearchOption = ({ key, ...props }, option) => (
+          <li key={key} {...props}>
+            {option.name}
+          </li>
+        );
         return (
           <div className={classes.infoElement} key={i.key}>
             {i.value && (
