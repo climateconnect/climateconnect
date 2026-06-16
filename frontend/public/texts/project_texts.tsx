@@ -1730,6 +1730,25 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Registration failed. Please try again.",
       de: "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
     },
+    event_is_fully_booked: {
+      en: "Event is fully booked",
+      de: "Die Veranstaltung ist ausgebucht",
+    },
+    event_is_fully_booked_message: {
+      en:
+        "This event has reached its maximum number of participants. Registration is no longer available.",
+      de:
+        "Diese Veranstaltung hat die maximale Teilnehmerzahl erreicht. Eine Anmeldung ist nicht mehr möglich.",
+    },
+    registration_period_has_ended: {
+      en: "Registration has ended",
+      de: "Die Anmeldefrist ist abgelaufen",
+    },
+    registration_period_has_ended_message: {
+      en: "The registration period for this event has ended. Registration is no longer possible.",
+      de:
+        "Die Anmeldefrist für diese Veranstaltung ist abgelaufen. Eine Anmeldung ist nicht mehr möglich.",
+    },
     try_again: {
       en: "Try Again",
       de: "Erneut versuchen",
@@ -1741,6 +1760,15 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     already_registered: {
       en: "Registered ✓",
       de: "Angemeldet ✓",
+    },
+    already_registered_for_event: {
+      en: "You're already registered",
+      de: "Du bist bereits angemeldet",
+    },
+    already_registered_for_event_message: {
+      en: "You have an active registration for this event. You do not need to register again.",
+      de:
+        "Du hast eine aktive Anmeldung für diese Veranstaltung. Du brauchst dich nicht erneut anzumelden.",
     },
     keep_registration: {
       en: "Keep registration",

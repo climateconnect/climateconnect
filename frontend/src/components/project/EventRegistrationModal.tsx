@@ -15,6 +15,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CloseIcon from "@mui/icons-material/Close";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 import Cookies from "universal-cookie";
 
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -31,6 +32,30 @@ import AuthSignupStep from "../auth/AuthSignupStep";
 import RegistrationFieldAnswersForm, {
   RegistrationFieldAnswersFormHandle,
 } from "./RegistrationFieldAnswersForm";
+
+type RegistrationClosedState = {
+  title: string;
+  message: string;
+} | null;
+
+function getRegistrationClosedState(
+  status: string | undefined,
+  texts: any
+): RegistrationClosedState {
+  if (status === "full" || status === "closed") {
+    return {
+      title: texts.event_is_fully_booked,
+      message: texts.event_is_fully_booked_message,
+    };
+  }
+  if (status === "ended") {
+    return {
+      title: texts.registration_period_has_ended,
+      message: texts.registration_period_has_ended_message,
+    };
+  }
+  return null;
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   dialogTitle: {
@@ -126,6 +151,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   confirmationActions: {
     justifyContent: "center",
     marginTop: theme.spacing(4),
+  },
+  closedIcon: {
+    fontSize: 64,
+    color: theme.palette.warning.main,
+    marginBottom: theme.spacing(2),
+  },
+  closedTitle: {
+    marginBottom: theme.spacing(1),
+    textAlign: "center",
+  },
+  closedMessage: {
+    textAlign: "center",
+    color: theme.palette.text.secondary,
   },
   authFieldsContainer: {
     gap: theme.spacing(2),
@@ -249,6 +287,20 @@ export default function EventRegistrationModal({
     }
     if (state === "error") {
       return renderErrorContent();
+    }
+
+    // Show informational message when user is already registered
+    if (user && project.my_event_registration && !project.my_event_registration.cancelled_at) {
+      return renderRegistrationClosedContent({
+        title: texts.already_registered_for_event,
+        message: texts.already_registered_for_event_message,
+      });
+    }
+
+    // Show informational message when registration is not open
+    const closedState = getRegistrationClosedState(project.registration_config?.status, texts);
+    if (closedState) {
+      return renderRegistrationClosedContent(closedState);
     }
 
     // Show registration form for authenticated users
@@ -586,6 +638,24 @@ export default function EventRegistrationModal({
     </Box>
   );
 
+  const renderRegistrationClosedContent = ({
+    title,
+    message,
+  }: {
+    title: string;
+    message: string;
+  }) => (
+    <Box className={classes.confirmationContainer}>
+      <EventBusyIcon className={classes.closedIcon} />
+      <Typography variant="h6" className={classes.closedTitle}>
+        {title}
+      </Typography>
+      <Typography variant="body1" className={classes.closedMessage}>
+        {message}
+      </Typography>
+    </Box>
+  );
+
   const renderActions = () => {
     if (state === "success") {
       return (
@@ -606,6 +676,19 @@ export default function EventRegistrationModal({
         </>
       );
     }
+
+    const closedState = getRegistrationClosedState(project.registration_config?.status, texts);
+    if (
+      closedState ||
+      (user && project.my_event_registration && !project.my_event_registration.cancelled_at)
+    ) {
+      return (
+        <Button onClick={handleClose} variant="contained" color="primary">
+          {texts.close}
+        </Button>
+      );
+    }
+
     if (user) {
       return (
         <Button
