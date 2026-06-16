@@ -68,13 +68,6 @@ export default function AddPhotoSection({
   const inputFileRef = useRef(null as HTMLInputElement | null);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
-  const blurActiveElement = () => {
-    const activeElement = document.activeElement;
-    if (activeElement instanceof HTMLElement) {
-      activeElement.blur();
-    }
-  };
-
   const handleDialogClickOpen = (dialogName) => {
     handleSetOpen({ [dialogName]: true });
   };
@@ -87,7 +80,6 @@ export default function AddPhotoSection({
     }
     try {
       setIsLoading(true);
-      blurActiveElement();
       handleDialogClickOpen("avatarDialog");
       const image = await convertToJPGWithAspectRatio(file);
       setTempImage(image);
@@ -100,7 +92,6 @@ export default function AddPhotoSection({
 
   const onUploadImageClick = (event) => {
     event.preventDefault();
-    blurActiveElement();
     inputFileRef.current!.click();
   };
 
