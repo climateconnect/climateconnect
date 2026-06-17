@@ -62,7 +62,7 @@ export default function SelectField({
   // based on a persisted query param URL, then
   // we update the value and values here...
   const [value, setValue] = useState<{ name: string; key?: string }>({
-    name: defaultValue.name,
+    name: defaultValue.name ?? "",
     key: defaultValue.key,
   });
 
@@ -90,7 +90,6 @@ export default function SelectField({
     }
   };
 
-  //TODO: possibly address warnings, that are produced by this component
   return (
     <TextField
       className={className}
@@ -101,9 +100,7 @@ export default function SelectField({
       onChange={handleChange}
       required={required}
       select
-      // Handle values differently depending on if this is being used
-      // within a Multiselect or controlled context
-      value={multiple ? values : controlled ? controlledValue && controlledValue.name : value.name}
+      value={multiple ? values : controlled ? controlledValue?.name ?? "" : value.name}
       variant="outlined"
       SelectProps={{
         native: !multiple,

@@ -138,6 +138,7 @@ export default function GenericDialog({
         paper: paperClassName,
       }}
       PaperProps={PaperProps}
+      closeAfterTransition={false}
     >
       <DialogTitle className={classes.dialogTitle}>
         {onClose && !closeButtonRightSide && (

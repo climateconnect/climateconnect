@@ -7,9 +7,9 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import Form from "./../general/Form";
 
-const renderSearchOption = (props, option) => {
+const renderSearchOption = ({ key, ...props }, option) => {
   return (
-    <li {...props}>
+    <li key={key} {...props}>
       <IconButton size="large">
         <AddCircleOutlineIcon />
       </IconButton>

@@ -710,7 +710,14 @@ export default function EventRegistrationModal({
   const actions = renderActions();
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth scroll="paper">
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      scroll="paper"
+      closeAfterTransition={false}
+    >
       <DialogTitle className={classes.dialogTitle}>
         <IconButton aria-label="close" className={classes.closeButton} onClick={handleClose}>
           <CloseIcon />

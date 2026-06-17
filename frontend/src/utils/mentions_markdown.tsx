@@ -1,5 +1,5 @@
 import { Link } from "@mui/material";
-import React, { JSXElementConstructor, ReactElement, ReactFragment, ReactPortal } from "react";
+import React, { JSXElementConstructor, ReactElement, ReactNode, ReactPortal } from "react";
 import { getLocalePrefix } from "../../public/lib/apiOperations";
 
 const displayedMention = (
@@ -10,7 +10,7 @@ const displayedMention = (
     | number
     | boolean
     | ReactElement<any, string | JSXElementConstructor<any>>
-    | ReactFragment
+    | ReactNode
     | ReactPortal
     | null
     | undefined

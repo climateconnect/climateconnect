@@ -106,9 +106,9 @@ export default function AddTeam({
     });
   };
 
-  const renderSearchOption = (props, option) => {
+  const renderSearchOption = ({ key, ...props }, option) => {
     return (
-      <li {...props}>
+      <li key={key} {...props}>
         <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
