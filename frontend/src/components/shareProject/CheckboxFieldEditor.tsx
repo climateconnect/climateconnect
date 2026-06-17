@@ -41,7 +41,7 @@ const EXTENSIONS = [
   }),
   LinkBubbleMenuHandler,
   CharacterCount.configure({ limit: CHARACTER_LIMIT }),
-];
+] as any;
 
 const useStyles = makeStyles((theme) => ({
   charCount: {
