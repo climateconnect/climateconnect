@@ -25,6 +25,7 @@ import ProjectOverview from "./ProjectOverview";
 import ProjectSideBar from "./ProjectSideBar";
 import ProjectTeamContent from "./ProjectTeamContent";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import ProjectAddToCalendarButton from "../calendar/ProjectAddToCalendarButton";
 import { trackGA4Event } from "../../utils/analytics";
 import ProjectRegistrationsContent from "./ProjectRegistrationsContent";
 import EventRegistrationModal from "./EventRegistrationModal";
@@ -79,6 +80,9 @@ const useStyles = makeStyles((theme) => {
     },
     shareButtonContainer: {
       paddingRight: theme.spacing(4),
+    },
+    calendarButtonContainer: {
+      paddingRight: theme.spacing(2),
     },
 
     showAllProjectsButton: {
@@ -653,12 +657,19 @@ export default function ProjectPageRoot({
         </div>
 
         {!screenSize.belowSmall && (
-          <ProjectSocialMediaShareButton
-            className={classes.shareButtonContainer}
-            project={project}
-            projectAdmin={projectAdmin}
-            hubUrl={hubPage}
-          />
+          <>
+            <ProjectAddToCalendarButton
+              className={classes.calendarButtonContainer}
+              project={project}
+              isUserRegistered={isUserRegistered}
+            />
+            <ProjectSocialMediaShareButton
+              className={classes.shareButtonContainer}
+              project={project}
+              projectAdmin={projectAdmin}
+              hubUrl={hubPage}
+            />
+          </>
         )}
       </Container>
       <Container className={classes.projectInteractionButtonContainer}>

@@ -1899,5 +1899,29 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         "*Required fields - unfortunately, you cannot participate without providing this information",
       de: "*Pflichtfelder - ohne diese Angaben ist eine Teilnahme leider nicht möglich",
     },
+    add_to_calendar: {
+      en: "Add to Calendar",
+      de: "Zum Kalender hinzufügen",
+    },
+    add_to_google_calendar: {
+      en: "Google Calendar",
+      de: "Google Kalender",
+    },
+    add_to_apple_calendar: {
+      en: "Apple Calendar",
+      de: "Apple Kalender",
+    },
+    add_to_outlook: {
+      en: "Outlook",
+      de: "Outlook",
+    },
+    you_are_registered_for_this_event: {
+      en: "You're registered for this event.",
+      de: "Du bist für diese Veranstaltung angemeldet.",
+    },
+    not_registered_yet_reminder: {
+      en: "Not registered yet \u2014 don't forget to sign up!",
+      de: "Noch nicht angemeldet \u2014 Vergiss nicht, dich anzumelden!",
+    },
   };
 }
