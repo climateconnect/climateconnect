@@ -1,6 +1,5 @@
 import { Button, Checkbox, TextField, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { func, bool, string, number } from "prop-types";
 import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -22,7 +21,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLength, className }) {
+export default function FeedbackDialog({
+  onClose,
+  open,
+  title,
+  inputLabel,
+  maxLength,
+  className,
+}: FeedbackDialogProps) {
   const classes = useStyles();
   const [element, setElement] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
@@ -106,11 +112,11 @@ export default function FeedbackDialog({ onClose, open, title, inputLabel, maxLe
   );
 }
 
-FeedbackDialog.propTypes = {
-  onClose: func.isRequired,
-  open: bool.isRequired,
-  title: string.isRequired,
-  inputLabel: string.isRequired,
-  maxLength: number,
-  className: string,
-};
+interface FeedbackDialogProps {
+  open: boolean;
+  onClose: (_text?: any) => void;
+  title: string;
+  inputLabel: string;
+  maxLength?: number;
+  className?: string;
+}

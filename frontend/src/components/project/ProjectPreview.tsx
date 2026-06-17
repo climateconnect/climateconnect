@@ -1,6 +1,7 @@
-import { Card, CardContent, CardMedia, Link, Typography } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
+import { useRouter } from "next/router";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -119,6 +120,7 @@ export default function ProjectPreview({
   // const [hovering, setHovering] = useState(false);
   const hovering = false; // Hover effect disabled
   const { locale } = useContext(UserContext);
+  const router = useRouter();
   const { projectTypes } = useContext(BrowseContext);
   const projectType =
     projectTypes && projectTypes.length > 0
@@ -136,63 +138,75 @@ export default function ProjectPreview({
   // };
 
   const queryString = hubUrl ? "?hub=" + hubUrl : "";
+  const projectUrl = project.is_draft
+    ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}`
+    : `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`;
+
+  const handleCardClick = () => {
+    router.push(projectUrl);
+  };
+
+  const handleCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      router.push(projectUrl);
+    }
+  };
 
   return (
-    <Link
-      href={
-        project.is_draft
-          ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}`
-          : `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`
-      }
-      className={classes.noUnderline}
-      underline="hover"
+    <div
+      className={`${classes.wrapper} ${classes.noUnderline}`}
+      role="link"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      aria-label={project.name}
     >
-      <div className={classes.wrapper}>
-        {projectType.type_id === "event" && project.start_date && project.end_date && (
-          <EventDateIndicator project={project} hubUrl={hubUrl} />
-        )}
-        <Card
-          className={`${classes.root} ${className}`}
-          variant="outlined"
-          // DISABLED: Hover handlers (kept for potential future re-enablement)
-          // onMouseEnter={handleMouseEnter}
-          // onMouseLeave={handleMouseLeave}
-          ref={projectRef}
+      {projectType.type_id === "event" && project.start_date && project.end_date && (
+        <EventDateIndicator project={project} hubUrl={hubUrl} />
+      )}
+      <Card
+        className={`${classes.root} ${className}`}
+        variant="outlined"
+        // DISABLED: Hover handlers (kept for potential future re-enablement)
+        // onMouseEnter={handleMouseEnter}
+        // onMouseLeave={handleMouseLeave}
+        ref={projectRef}
+      >
+        <CardMedia
+          /*TODO(undefined) className={classes.media} */
+          title={project.name}
+          image={getImageUrl(project.image)}
         >
-          <CardMedia
-            /*TODO(undefined) className={classes.media} */
-            title={project.name}
-            image={getImageUrl(project.image)}
-          >
-            {project.is_draft ? (
-              <div className={classes.draftTriangle}>
-                <div className={classes.draftText}>Draft</div>
-              </div>
-            ) : (
-              <img
-                src={getImageUrl(project.image)}
-                className={classes.placeholderImg}
-                alt={texts.project_image_of_project + " " + project.name}
-              />
-            )}
-          </CardMedia>
-          <div className={classes.cardContentWrapper}>
-            <CardContentWithDescription
-              project={project}
-              hovering={hovering}
-              registeredEventSlugs={registeredEventSlugs}
-              analyticsSurface={analyticsSurface}
+          {project.is_draft ? (
+            <div className={classes.draftTriangle}>
+              <div className={classes.draftText}>Draft</div>
+            </div>
+          ) : (
+            <img
+              src={getImageUrl(project.image)}
+              className={classes.placeholderImg}
+              alt={texts.project_image_of_project + " " + project.name}
             />
-            <CardContentWithoutDescription
-              project={project}
-              hovering={hovering}
-              registeredEventSlugs={registeredEventSlugs}
-              analyticsSurface={analyticsSurface}
-            />
-          </div>
-        </Card>
-      </div>
-    </Link>
+          )}
+        </CardMedia>
+        <div className={classes.cardContentWrapper}>
+          <CardContentWithDescription
+            project={project}
+            hovering={hovering}
+            registeredEventSlugs={registeredEventSlugs}
+            analyticsSurface={analyticsSurface}
+          />
+          <CardContentWithoutDescription
+            project={project}
+            hovering={hovering}
+            registeredEventSlugs={registeredEventSlugs}
+            analyticsSurface={analyticsSurface}
+          />
+        </div>
+      </Card>
+    </div>
   );
 }
 

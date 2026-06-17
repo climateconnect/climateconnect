@@ -46,3 +46,7 @@ DateDisplay.propTypes = {
   date: instanceOf(Date).isRequired,
   className: string,
 };
+DateDisplay.defaultProps = {
+  className: "",
+  short: false,
+};
