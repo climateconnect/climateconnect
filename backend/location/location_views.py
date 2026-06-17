@@ -1,15 +1,23 @@
 import json
 import logging
+import time
+from datetime import datetime, timezone
 
 import requests
 from django.conf import settings
+from django.db.models import F
+from django.db.models.functions import Greatest
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from location.serializers import LocationStubSerializer
-from location.models import Location as LocationModel
+from location.models import (
+    Location as LocationModel,
+    NominatimPeriodStats,
+    NominatimRequestLog,
+)
 from location.utility import (
     _get_newest_location_by_osm_composite,
     _get_newest_location_by_osm_id_and_type,
@@ -125,3 +133,213 @@ class GetLocationView(APIView):
         ).get(pk=location.pk)
         serializer = LocationStubSerializer(location, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# ---------------------------------------------------------------------------
+# Nominatim autocomplete request tracking (database-based)
+# ---------------------------------------------------------------------------
+
+
+def _increment_nominatim_counters() -> None:
+    """
+    Atomically track a single Nominatim autocomplete request.
+
+    1. Atomically increment per-minute bucket (for peak-rate detection).
+    2. Atomically upsert current day/week/month in NominatimPeriodStats.
+    3. Delete per-minute buckets older than the current UTC day.
+
+    All field updates use F() expressions and PostgreSQL GREATEST() — no
+    read-then-write patterns, no lost increments under concurrent access.
+    """
+    try:
+        now = int(time.time())
+        minute_key = now // 60
+
+        # --- 1. atomic per-minute bucket increment ---
+        NominatimRequestLog.objects.get_or_create(
+            bucket_key=minute_key,
+            defaults={"count": 0},
+        )
+        NominatimRequestLog.objects.filter(
+            bucket_key=minute_key,
+        ).update(count=F("count") + 1)
+
+        # Re-read the atomically-incremented count.
+        current_minute_count = (
+            NominatimRequestLog.objects.filter(bucket_key=minute_key)
+            .values_list("count", flat=True)
+            .first()
+        ) or 1
+        current_rate = current_minute_count / 60.0
+
+        # --- 2. atomic period stats upsert ---
+        periods = _get_current_period_keys(now)
+
+        for period_type, period_key, period_start in periods:
+            elapsed = max(float(now - period_start), 1.0)
+
+            NominatimPeriodStats.objects.get_or_create(
+                period_type=period_type,
+                period_key=period_key,
+                defaults={
+                    "total_requests": 0,
+                    "avg_req_per_second": 0.0,
+                    "peak_req_per_second": 0.0,
+                },
+            )
+
+            # Single atomic UPDATE — all three fields computed in PostgreSQL.
+            NominatimPeriodStats.objects.filter(
+                period_type=period_type,
+                period_key=period_key,
+            ).update(
+                total_requests=F("total_requests") + 1,
+                peak_req_per_second=Greatest(F("peak_req_per_second"), current_rate),
+                avg_req_per_second=(F("total_requests") + 1) / elapsed,
+            )
+
+        # --- 3. cleanup old minute buckets (keep current day only) ---
+        today_start = (now // 86400) * 86400
+        today_start_minute = today_start // 60
+        NominatimRequestLog.objects.filter(
+            bucket_key__lt=today_start_minute,
+        ).delete()
+
+    except Exception as exc:
+        logger.warning("Failed to track Nominatim request in database: %s", exc)
+
+
+def _get_current_period_keys(now_epoch: int):
+    """
+    Return [(period_type, period_key, start_epoch), ...] for the given
+    epoch timestamp — one entry each for day, ISO week, and calendar month.
+    """
+    dt = datetime.fromtimestamp(now_epoch, tz=timezone.utc)
+
+    # day
+    day_key = dt.strftime("%Y-%m-%d")
+    day_start = int(datetime(dt.year, dt.month, dt.day).timestamp())
+
+    # iso week
+    iso_year, iso_week, _ = dt.isocalendar()
+    week_key = f"{iso_year}-W{iso_week:02d}"
+    week_start_dt = datetime.strptime(f"{iso_year}-W{iso_week:02d}-1", "%G-W%V-%u")
+    week_start = int(week_start_dt.timestamp())
+
+    # month
+    month_key = dt.strftime("%Y-%m")
+    month_start = int(datetime(dt.year, dt.month, 1).timestamp())
+
+    return [
+        ("day", day_key, day_start),
+        ("week", week_key, week_start),
+        ("month", month_key, month_start),
+    ]
+
+
+class TrackNominatimRequestView(APIView):
+    """
+    POST /api/nominatim_request_count/
+
+    Called fire-and-forget by the frontend every time it fires a Nominatim
+    autocomplete request.  No authentication required.
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        _increment_nominatim_counters()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class NominatimStatsView(APIView):
+    """
+    GET /api/nominatim_stats/
+
+    Returns persistent day/week/month Nominatim request stats.
+
+    Without query params: returns the current day, week, and month stats.
+
+    With ``?period_type=<type>&limit=<N>``: returns up to N rows for the
+    given period type, ordered by period_key descending (most recent first).
+
+    Requires Django staff / admin access.
+    """
+
+    permission_classes = [IsAdminUser]
+
+    VALID_PERIOD_TYPES = {"day", "week", "month"}
+
+    def get(self, request):
+        try:
+            period_type = request.query_params.get("period_type")
+
+            raw_limit = request.query_params.get("limit", "1")
+            try:
+                limit = min(int(raw_limit), 365)
+            except (ValueError, TypeError):
+                return Response(
+                    {"detail": "Invalid 'limit' parameter — must be an integer."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            if period_type:
+                if period_type not in self.VALID_PERIOD_TYPES:
+                    return Response(
+                        {
+                            "detail": (
+                                f"Invalid period_type '{period_type}'. "
+                                f"Must be one of: {', '.join(sorted(self.VALID_PERIOD_TYPES))}"
+                            )
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                rows = NominatimPeriodStats.objects.filter(
+                    period_type=period_type
+                ).order_by("-period_key")[:limit]
+                return Response(
+                    {
+                        "period_type": period_type,
+                        "periods": [
+                            {
+                                "period_key": r.period_key,
+                                "total_requests": r.total_requests,
+                                "avg_req_per_second": round(r.avg_req_per_second, 5),
+                                "peak_req_per_second": round(r.peak_req_per_second, 3),
+                            }
+                            for r in rows
+                        ],
+                    }
+                )
+
+            # Default: return the latest day, week, and month.
+            result = {}
+            for pt in ("day", "week", "month"):
+                row = (
+                    NominatimPeriodStats.objects.filter(period_type=pt)
+                    .order_by("-period_key")
+                    .first()
+                )
+                if row:
+                    result[pt] = {
+                        "period_key": row.period_key,
+                        "total_requests": row.total_requests,
+                        "avg_req_per_second": round(row.avg_req_per_second, 5),
+                        "peak_req_per_second": round(row.peak_req_per_second, 3),
+                    }
+                else:
+                    result[pt] = None
+
+            return Response(result)
+
+        except Exception as exc:
+            logger.error(
+                "Failed to retrieve Nominatim stats from database: %s",
+                exc,
+                exc_info=True,
+            )
+            return Response(
+                {"detail": "Stats temporarily unavailable."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )

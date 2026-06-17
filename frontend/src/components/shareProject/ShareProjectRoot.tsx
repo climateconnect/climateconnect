@@ -497,6 +497,9 @@ const getDefaultProjectValues = (
   hubName
 ): Project => {
   return {
+    name: "",
+    short_description: "",
+    description: "",
     collaborators_welcome: true,
     collaborating_organizations: [],
     loc: {},

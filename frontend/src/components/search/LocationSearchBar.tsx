@@ -4,6 +4,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import axios from "axios";
 import { debounce } from "lodash";
 import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import {
   getDisplayLocationFromLocation,
   getDisplayLocationFromExactLocation,
@@ -77,9 +78,9 @@ export default function LocationSearchBar({
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
       if (enableExactLocation) {
-        return getDisplayLocationFromExactLocation(newValue).name;
+        return getDisplayLocationFromExactLocation(newValue).name ?? "";
       } else {
-        return newValue.simple_name ? newValue.simple_name : newValue.name;
+        return newValue.simple_name ?? newValue.name ?? "";
       }
     } else {
       return newValue;
@@ -125,6 +126,9 @@ export default function LocationSearchBar({
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
+        // Fire-and-forget: count this Nominatim request for rate monitoring.
+        // The call is intentionally not awaited so it never blocks the UX.
+        apiRequest({ method: "post", url: "/api/nominatim_request_count/" }).catch(() => {});
         const response = await axios.get(url, { headers: getLocaleHeader(locale) });
         const bannedClasses = [
           "tourism",
@@ -266,7 +270,12 @@ export default function LocationSearchBar({
   };
 
   const renderSearchOption = (props, option) => {
-    return <li {...props}>{option}</li>;
+    const { key, ...optionProps } = props;
+    return (
+      <li key={key} {...optionProps}>
+        {option}
+      </li>
+    );
   };
 
   const handleInputChange = (event) => {
@@ -354,7 +363,7 @@ export default function LocationSearchBar({
           // @ts-ignore - contrast is a custom color defined in theme
           color={color || "contrast"}
           className={classes.additionalInfos}
-          value={additionalInfoText}
+          value={additionalInfoText ?? ""}
           onChange={handleChangeAdditionalInfoText}
         />
       )}

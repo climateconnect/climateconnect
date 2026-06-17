@@ -545,6 +545,150 @@ describe("EventRegistrationModal – close behaviour", () => {
 
 // ── Custom fields render based on registration_config.fields ────────────────
 
+describe("EventRegistrationModal – registration closed states", () => {
+  const CLOSED_REGISTRATION_CONFIG = {
+    max_participants: 50,
+    available_seats: 0,
+    registration_end_date: null,
+    status: "closed" as const,
+    notify_admins: true,
+  };
+
+  const FULL_REGISTRATION_CONFIG = {
+    max_participants: 50,
+    available_seats: 0,
+    registration_end_date: null,
+    status: "full" as const,
+    notify_admins: true,
+  };
+
+  const ENDED_REGISTRATION_CONFIG = {
+    max_participants: 50,
+    available_seats: 0,
+    registration_end_date: null,
+    status: "ended" as const,
+    notify_admins: true,
+  };
+
+  it("shows 'Event is fully booked' message for closed status (authenticated)", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({ registration_config: CLOSED_REGISTRATION_CONFIG }),
+    });
+
+    expect(screen.getByText(/event is fully booked/i)).toBeInTheDocument();
+    expect(screen.getByText(/maximum number of participants/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /confirm registration/i })).not.toBeInTheDocument();
+  });
+
+  it("shows 'Event is fully booked' message for full status (authenticated)", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({ registration_config: FULL_REGISTRATION_CONFIG }),
+    });
+
+    expect(screen.getByText(/event is fully booked/i)).toBeInTheDocument();
+    expect(screen.getByText(/maximum number of participants/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /confirm registration/i })).not.toBeInTheDocument();
+  });
+
+  it("shows 'Registration has ended' message for ended status (authenticated)", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({ registration_config: ENDED_REGISTRATION_CONFIG }),
+    });
+
+    expect(screen.getByText(/registration has ended/i)).toBeInTheDocument();
+    expect(screen.getByText(/registration period.*has ended/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /confirm registration/i })).not.toBeInTheDocument();
+  });
+
+  it("shows closed message for unauthenticated user (skips auth flow)", () => {
+    renderModal({
+      user: null,
+      project: makeProject({ registration_config: FULL_REGISTRATION_CONFIG }),
+    });
+
+    expect(screen.getByText(/event is fully booked/i)).toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: /email/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^next$/i })).not.toBeInTheDocument();
+  });
+
+  it("shows Close button for closed registration states", () => {
+    const onClose = jest.fn();
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({ registration_config: FULL_REGISTRATION_CONFIG }),
+      onClose,
+    });
+
+    const buttons = screen.getAllByRole("button");
+    const closeButton = buttons.find((btn) => btn.textContent?.trim() === "Close");
+    expect(closeButton).toBeDefined();
+    fireEvent.click(closeButton!);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows 'already registered' message when user has active registration (deeplink)", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({
+        registration_config: {
+          max_participants: 50,
+          available_seats: 30,
+          registration_end_date: null,
+          status: "open",
+          notify_admins: true,
+        },
+        my_event_registration: {
+          id: 1,
+          user_first_name: "Jane",
+          user_last_name: "Doe",
+          user_url_slug: "jane-doe",
+          user_thumbnail_image: null,
+          registered_at: "2026-06-01T10:00:00Z",
+          cancelled_at: null,
+          field_answers: [],
+        },
+      }),
+    });
+
+    expect(screen.getByText(/you're already registered/i)).toBeInTheDocument();
+    expect(screen.getByText(/do not need to register again/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /confirm registration/i })).not.toBeInTheDocument();
+  });
+
+  it("does not show 'already registered' when registration was cancelled", () => {
+    renderModal({
+      user: AUTHENTICATED_USER,
+      project: makeProject({
+        registration_config: {
+          max_participants: 50,
+          available_seats: 30,
+          registration_end_date: null,
+          status: "open",
+          notify_admins: true,
+        },
+        my_event_registration: {
+          id: 1,
+          user_first_name: "Jane",
+          user_last_name: "Doe",
+          user_url_slug: "jane-doe",
+          user_thumbnail_image: null,
+          registered_at: "2026-06-01T10:00:00Z",
+          cancelled_at: "2026-06-05T10:00:00Z",
+          field_answers: [],
+        },
+      }),
+    });
+
+    expect(screen.queryByText(/you're already registered/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirm registration/i })).toBeInTheDocument();
+  });
+});
+
+// ── Custom fields render based on registration_config.fields ────────────────
+
 describe("EventRegistrationModal – custom fields", () => {
   const INVENTORY_FIELD: RegistrationField = {
     id: 5,

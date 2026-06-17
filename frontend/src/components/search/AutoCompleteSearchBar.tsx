@@ -122,6 +122,7 @@ export default function AutoCompleteSearchBar({
       onClose={handleClose}
       onChange={handleChange}
       getOptionLabel={getOptionLabel}
+      getOptionKey={(option) => (option as any).url_slug ?? (option as any).key}
       options={options}
       freeSolo={freeSolo}
       inputValue={inputValue}

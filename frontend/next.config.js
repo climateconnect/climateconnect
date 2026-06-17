@@ -13,6 +13,9 @@ const {
 } = require("./public/data/wasseraktionswochen_config");
 
 module.exports = withBundleAnalyzer({
+  // Workaround for Next 15 pages-router dev HMR crash when receiving malformed
+  // `isrManifest` payloads (data can be `{}` before router is ready).
+  devIndicators: false,
   // Disable ESLint during build - it's already run separately in CI
   eslint: {
     ignoreDuringBuilds: true,
