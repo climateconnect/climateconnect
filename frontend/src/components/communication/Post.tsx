@@ -218,7 +218,6 @@ export default function Post({
             </div>
             {type === "preview" ? (
               <Typography
-                component="div"
                 className={classes.truncatedContent}
                 style={{ WebkitLineClamp: truncate }}
               >
@@ -227,7 +226,6 @@ export default function Post({
             ) : (
               <div>
                 <Typography
-                  component="div"
                   ref={contentRef}
                   className={!isTextExpanded ? classes.truncatedContent : undefined}
                   style={!isTextExpanded ? { WebkitLineClamp: 3 } : undefined}
