@@ -73,7 +73,7 @@ export default function AddToCalendarDialog({
     onClose(false);
   };
 
-  const icalUrl = `${localePrefix}/projects/${slug}.ical`;
+  const icalUrl = `${localePrefix}/calendar/${slug}.ical`;
   const googleCalUrl = `${localePrefix}/projects/${slug}/add-to-google-calendar`;
   const outlookUrl = `${localePrefix}/projects/${slug}/add-to-outlook`;
 

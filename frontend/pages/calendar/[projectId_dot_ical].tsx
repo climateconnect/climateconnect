@@ -18,15 +18,17 @@ async function fetchEvent(slug, locale) {
       url: "/api/projects/" + encodeURIComponent(slug) + "/",
       locale: locale,
     });
+    console.log("Fetched event data for iCal export:", resp.data);
     return resp.data;
   } catch (err) {
+    console.log("Error fetching event data for iCal export:", err);
     return null;
   }
 }
 
 export async function getServerSideProps(ctx) {
   const res = ctx.res;
-  const slugParam = ctx.query.projectId;
+  const slugParam = ctx.query.projectId_dot_ical;
   const slug = slugParam.replace(/\.ical$/, "");
 
   const event = await fetchEvent(slug, ctx.locale);
@@ -34,6 +36,7 @@ export async function getServerSideProps(ctx) {
   if (!event || !event.project_type || event.project_type.type_id !== "event" || event.is_draft) {
     res.statusCode = 404;
     res.end("Not Found");
+    console.log("Event not found or not an event or is draft");
     return { props: {} };
   }
 
