@@ -102,12 +102,12 @@ export default function CheckboxFieldEditor({
         content={description || ""}
         editable={!disabled}
         onCreate={({ editor }) => {
-          setCharCount(editor.storage.characterCount.characters());
+          setCharCount((editor.storage as Record<string, any>).characterCount.characters());
         }}
         onUpdate={({ editor }) => {
           const html = editor.getHTML();
           onChange(html === "<p></p>" ? "" : html);
-          setCharCount(editor.storage.characterCount.characters());
+          setCharCount((editor.storage as Record<string, any>).characterCount.characters());
         }}
         renderControls={
           disabled
