@@ -30,7 +30,7 @@
     "@mui/x-data-grid": "6",
     "@mui/x-date-pickers": "^6.0.3",
     "@next/bundle-analyzer": "^15.5.19",
-    "@sentry/react": "^10.57.0",
+    "@sentry/nextjs": "^10.57.0",
     "@svgr/webpack": "^8.1.0",
     "@tiptap/core": "3.26.0",
     "@tiptap/extension-character-count": "3.26.0",
