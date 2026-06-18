@@ -51,10 +51,12 @@ Climate Connect serves three location hubs (Erlangen, Marburg, Potsdam) on their
 
 Given a visitor navigates to `{hubSlug}.climateconnect.earth` (where `hubSlug` is one of the slugs in `LOCATION_HUBS`):
 
-- If their `Accept-Language` header starts with `de`, they are redirected (302) to `https://climateconnect.earth/de/hubs/{hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign={hubSlug}`.
-- Otherwise, they are redirected (302) to `https://climateconnect.earth/en/hubs/{hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign={hubSlug}`.
-- Any path on the subdomain (e.g. `erlangen.climateconnect.earth/some/path`) redirects to the hub root page (the path is not preserved).
+- If their `Accept-Language` header starts with `de`, they are redirected (301) to `https://climateconnect.earth/de/hubs/{hubSlug}/{path}?utm_source=subdomain&utm_medium=redirect&utm_campaign={hubSlug}`.
+- Otherwise, they are redirected (301) to `https://climateconnect.earth/en/hubs/{hubSlug}/{path}?utm_source=subdomain&utm_medium=redirect&utm_campaign={hubSlug}`.
+- The path on the subdomain is preserved and appended after `/hubs/{hubSlug}` (e.g. `erlangen.climateconnect.earth/projects/my-project` → `climateconnect.earth/de/hubs/erlangen/projects/my-project`).
 - UTM parameters are appended to all subdomain redirect destinations for traffic attribution in Google Analytics.
+
+> **Correction (2026-06-18)**: The original AC stated the path is not preserved. The intended behavior and the implementation in `next.config.js` should preserve paths. The `/:path*` captured in the `source` must be included in the `destination` as `/hubs/{slug}/:path*`. See spec #2065 (AC-5) for the path-preservation fix.
 
 ### AC-2: Redirects are dynamic based on LOCATION_HUBS
 
