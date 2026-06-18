@@ -12,6 +12,52 @@ const {
   WASSERAKTIONSWOCHEN_PARENT_SLUG,
 } = require("./public/data/wasseraktionswochen_config");
 
+const BASE_URL = process.env.BASE_URL || "https://climateconnect.earth";
+const LOCATION_HUBS = (process.env.LOCATION_HUBS || "").split(",").filter(Boolean);
+const CLIMATEORG_ACTIVE = process.env.CLIMATEORG_ACTIVE === "true";
+
+function buildSubdomainRedirects() {
+  const potsdamProjectRedirects = [
+    {
+      source: "/balkonsolar",
+      has: [{ type: "host", value: "potsdam.climateconnect.earth" }],
+      destination: `${BASE_URL}/de/projects/potsdam-balkon-solar?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=balkonsolar`,
+      permanent: true,
+    },
+    {
+      source: "/stadtacker",
+      has: [{ type: "host", value: "potsdam.climateconnect.earth" }],
+      destination: `${BASE_URL}/de/projects/stadtacker-eine-bildungsgartnerei-der-zukunft-fur-potsdam?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=stadtacker`,
+      permanent: true,
+    },
+    {
+      source: "/fassadenbegrünung",
+      has: [{ type: "host", value: "potsdam.climateconnect.earth" }],
+      destination: `${BASE_URL}/de/projects/stadtgrun-fassadenbegrunung?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=fassadenbegruenung`,
+      permanent: true,
+    },
+  ];
+
+  const subdomainRedirectsDe = LOCATION_HUBS.map((hubSlug) => ({
+    source: "/:path*",
+    has: [
+      { type: "host", value: `${hubSlug}.climateconnect.earth` },
+      { type: "header", key: "Accept-Language", value: "^de" },
+    ],
+    destination: `${BASE_URL}/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+    permanent: true,
+  }));
+
+  const subdomainRedirectsEn = LOCATION_HUBS.map((hubSlug) => ({
+    source: "/:path*",
+    has: [{ type: "host", value: `${hubSlug}.climateconnect.earth` }],
+    destination: `${BASE_URL}/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+    permanent: true,
+  }));
+
+  return [...potsdamProjectRedirects, ...subdomainRedirectsDe, ...subdomainRedirectsEn];
+}
+
 module.exports = withBundleAnalyzer({
   // Workaround for Next 15 pages-router dev HMR crash when receiving malformed
   // `isrManifest` payloads (data can be `{}` before router is ready).
@@ -36,6 +82,7 @@ module.exports = withBundleAnalyzer({
     "LETS_ENCRYPT_FILE_CONTENT",
     "SOCKET_URL",
     "WASSERAKTIONSWOCHEN_FEATURE",
+    "CLIMATEORG_ACTIVE",
     "WEBFLOW_API_TOKEN",
     "WEBFLOW_SITE_ID",
     "FRONTEND_SENTRY_DSN",
@@ -48,7 +95,7 @@ module.exports = withBundleAnalyzer({
     return defaultPathMap;
   },
   async redirects() {
-    const redirects = [
+    const existingRedirects = [
       {
         source: "/",
         destination: "/browse",
@@ -89,6 +136,11 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       {
+        source: "/balkonien-em",
+        destination: "/de/projects/balkonien-26-in-kenzingen?hub=em",
+        permanent: true,
+      },
+      {
         source: "/hubs/prio1",
         destination: "/hubs/prio1/browse",
         permanent: false,
@@ -97,14 +149,110 @@ module.exports = withBundleAnalyzer({
 
     // Conditionally add Wasseraktionswochen redirect
     if (isWasseraktionswochenEnabled()) {
-      redirects.push({
+      existingRedirects.push({
         source: `/projects/${WASSERAKTIONSWOCHEN_PARENT_SLUG}`,
         destination: WASSERAKTIONSWOCHEN_PATH,
         permanent: false,
       });
     }
 
-    return redirects;
+    let domainRedirects = [];
+
+    if (CLIMATEORG_ACTIVE) {
+      // Post-switch: climateconnect.earth → climatehub.org (permanent 301)
+      domainRedirects = [
+        // 1. Potsdam project shortcuts on potsdam.climateconnect.earth
+        {
+          source: "/balkonsolar",
+          has: [{ type: "host", value: "potsdam.climateconnect.earth" }],
+          destination: `https://climatehub.org/de/projects/potsdam-balkon-solar?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=balkonsolar`,
+          permanent: true,
+        },
+        {
+          source: "/stadtacker",
+          has: [{ type: "host", value: "potsdam.climateconnect.earth" }],
+          destination: `https://climatehub.org/de/projects/stadtacker-eine-bildungsgartnerei-der-zukunft-fur-potsdam?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=stadtacker`,
+          permanent: true,
+        },
+        {
+          source: "/fassadenbegrünung",
+          has: [{ type: "host", value: "potsdam.climateconnect.earth" }],
+          destination: `https://climatehub.org/de/projects/stadtgrun-fassadenbegrunung?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=fassadenbegruenung`,
+          permanent: true,
+        },
+        // 2. Cross-domain subdomain redirects (German first, then English fallback)
+        ...LOCATION_HUBS.map((hubSlug) => ({
+          source: "/:path*",
+          has: [
+            { type: "host", value: `${hubSlug}.climateconnect.earth` },
+            { type: "header", key: "Accept-Language", value: "^de" },
+          ],
+          destination: `https://climatehub.org/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          permanent: true,
+        })),
+        ...LOCATION_HUBS.map((hubSlug) => ({
+          source: "/:path*",
+          has: [{ type: "host", value: `${hubSlug}.climateconnect.earth` }],
+          destination: `https://climatehub.org/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          permanent: true,
+        })),
+        // 3. Main domain catch-all
+        {
+          source: "/:path*",
+          has: [{ type: "host", value: "climateconnect.earth" }],
+          destination: `https://climatehub.org/:path*`,
+          permanent: true,
+        },
+      ];
+    } else {
+      // Pre-switch: climatehub.org → climateconnect.earth (temporary 302)
+      domainRedirects = [
+        // 1. Potsdam project shortcuts on potsdam.climatehub.org
+        {
+          source: "/balkonsolar",
+          has: [{ type: "host", value: "potsdam.climatehub.org" }],
+          destination: `${BASE_URL}/de/projects/potsdam-balkon-solar?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=balkonsolar`,
+          permanent: false,
+        },
+        {
+          source: "/stadtacker",
+          has: [{ type: "host", value: "potsdam.climatehub.org" }],
+          destination: `${BASE_URL}/de/projects/stadtacker-eine-bildungsgartnerei-der-zukunft-fur-potsdam?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=stadtacker`,
+          permanent: false,
+        },
+        {
+          source: "/fassadenbegrünung",
+          has: [{ type: "host", value: "potsdam.climatehub.org" }],
+          destination: `${BASE_URL}/de/projects/stadtgrun-fassadenbegrunung?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=fassadenbegruenung`,
+          permanent: false,
+        },
+        // 2. Cross-domain subdomain redirects (German first, then English fallback)
+        ...LOCATION_HUBS.map((hubSlug) => ({
+          source: "/:path*",
+          has: [
+            { type: "host", value: `${hubSlug}.climatehub.org` },
+            { type: "header", key: "Accept-Language", value: "^de" },
+          ],
+          destination: `${BASE_URL}/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          permanent: false,
+        })),
+        ...LOCATION_HUBS.map((hubSlug) => ({
+          source: "/:path*",
+          has: [{ type: "host", value: `${hubSlug}.climatehub.org` }],
+          destination: `${BASE_URL}/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          permanent: false,
+        })),
+        // 3. Main domain catch-all
+        {
+          source: "/:path*",
+          has: [{ type: "host", value: "climatehub.org" }],
+          destination: `${BASE_URL}/:path*`,
+          permanent: false,
+        },
+      ];
+    }
+
+    return [...domainRedirects, ...buildSubdomainRedirects(), ...existingRedirects];
   },
   webpack(config) {
     config.module.rules.push({
@@ -130,8 +278,8 @@ module.exports = withSentryConfig(module.exports, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-  org: "climate-connect-gug-haftungsbe",
-  project: "climate-connect-frontend",
+  org: "climate-connect-ggmbh",
+  project: "climatehub-frontend",
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
