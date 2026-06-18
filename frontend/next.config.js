@@ -44,14 +44,14 @@ function buildSubdomainRedirects() {
       { type: "header", key: "Accept-Language", value: "^de" },
     ],
     destination: `${BASE_URL}/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
-    permanent: false,
+    permanent: true,
   }));
 
   const subdomainRedirectsEn = LOCATION_HUBS.map((hubSlug) => ({
     source: "/:path*",
     has: [{ type: "host", value: `${hubSlug}.climateconnect.earth` }],
     destination: `${BASE_URL}/en/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
-    permanent: false,
+    permanent: true,
   }));
 
   return [...potsdamProjectRedirects, ...subdomainRedirectsDe, ...subdomainRedirectsEn];
