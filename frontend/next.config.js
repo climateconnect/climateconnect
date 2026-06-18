@@ -175,8 +175,8 @@ module.exports = withSentryConfig(module.exports, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-  org: "climate-connect-gug-haftungsbe",
-  project: "climate-connect-frontend",
+  org: "climate-connect-ggmbh",
+  project: "climatehub-frontend",
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
