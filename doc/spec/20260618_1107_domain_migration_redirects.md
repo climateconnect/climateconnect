@@ -75,37 +75,39 @@ climateconnect.earth/some/path → 301 → climatehub.org/some/path
 - 302 (temporary) pre-switch: the redirect direction will change, so browsers must not cache.
 - 301 (permanent) post-switch: the migration is final.
 
-### AC-3: Cross-domain subdomain redirects for location hubs (path-preserving, language-aware)
+### AC-3: Cross-domain subdomain redirects for location hubs (language-aware)
+
+Hub pages have no sub-paths for projects (projects use their own URL with `?hub=` param), so incoming paths are dropped and visitors are always sent to the hub landing page.
 
 **When toggle is `"false"`:**
 
 German visitors (`Accept-Language` starts with `de`):
 ```
-erlangen.climatehub.org/projects/my-project
-  → 302 → climateconnect.earth/de/hubs/erlangen/projects/my-project?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
+erlangen.climatehub.org/*
+  → 302 → climateconnect.earth/de/hubs/erlangen?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
 ```
 
-English fallback:
+English fallback (no locale prefix — English is the default locale):
 ```
-erlangen.climatehub.org/projects/my-project
-  → 302 → climateconnect.earth/en/hubs/erlangen/projects/my-project?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
+erlangen.climatehub.org/*
+  → 302 → climateconnect.earth/hubs/erlangen?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
 ```
 
 **When toggle is `"true"`:**
 
 German visitors:
 ```
-erlangen.climateconnect.earth/projects/my-project
-  → 301 → climatehub.org/de/hubs/erlangen/projects/my-project?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
+erlangen.climateconnect.earth/*
+  → 301 → climatehub.org/de/hubs/erlangen?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
 ```
 
-English fallback:
+English fallback (no locale prefix — English is the default locale):
 ```
-erlangen.climateconnect.earth/projects/my-project
-  → 301 → climatehub.org/en/hubs/erlangen/projects/my-project?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
+erlangen.climateconnect.earth/*
+  → 301 → climatehub.org/hubs/erlangen?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
 ```
 
-- Path after the subdomain is preserved and appended after `/hubs/{slug}`.
+- Incoming path is not appended to the destination (hub pages have no sub-paths).
 - UTM parameters are appended for traffic attribution.
 - German entries are defined before English entries so German-speaking visitors get the German locale.
 - Applies to all slugs in `LOCATION_HUBS`.
@@ -126,21 +128,9 @@ All are 302 (temporary) pre-switch.
 
 Same Potsdam project shortcuts but redirecting from `potsdam.climateconnect.earth` to `climatehub.org` equivalents. All are 301 (permanent).
 
-### AC-5: Existing subdomain redirects preserve paths (bug fix)
+### AC-5: Existing subdomain redirects unchanged
 
-The existing `*.climateconnect.earth` subdomain redirects in `buildSubdomainRedirects()` (spec #2066) are updated to preserve paths.
-
-**Before (current, path is dropped):**
-```
-erlangen.climateconnect.earth/some/path → climateconnect.earth/de/hubs/erlangen?utm_source=...
-```
-
-**After (fixed, path preserved):**
-```
-erlangen.climateconnect.earth/some/path → climateconnect.earth/de/hubs/erlangen/some/path?utm_source=...
-```
-
-This applies to all LOCATION_HUBS subdomain redirects. The Potsdam project shortcuts are path-specific and already work correctly.
+The existing `*.climateconnect.earth` subdomain redirects in `buildSubdomainRedirects()` (spec #2066) drop the incoming path, sending visitors to the hub landing page. This is intentional — hub pages have no sub-paths. No change is needed.
 
 ### AC-6: Existing redirects are not broken
 
@@ -182,9 +172,8 @@ The app restarts with the new env var, `redirects()` generates the post-switch r
 
 ### Path preservation in Next.js redirects
 
-To preserve paths, the `source` captures the path with `/:path*` and the `destination` includes `:path*`:
+The main domain catch-all preserves paths using `/:path*` in both source and destination:
 
-**Main domain:**
 ```js
 {
   source: "/:path*",
@@ -194,20 +183,7 @@ To preserve paths, the `source` captures the path with `/:path*` and the `destin
 }
 ```
 
-**Subdomain with locale prefix:**
-```js
-{
-  source: "/:path*",
-  has: [
-    { type: "host", value: `${hubSlug}.climatehub.org` },
-    { type: "header", key: "Accept-Language", value: "^de" },
-  ],
-  destination: `${BASE_URL}/de/hubs/${hubSlug}/:path*`,
-  permanent: false,
-}
-```
-
-Next.js `/:path*` captures the path without a leading slash. The destination `/hubs/{slug}/:path*` produces the correct result: `/hubs/{slug}/some/path` (no double slash).
+Hub subdomain redirects use `/:path*` in the source to catch any incoming URL, but do **not** append the path in the destination — visitors are always sent to the hub landing page regardless of what path they arrived on.
 
 ### Redirect ordering
 
@@ -249,10 +225,6 @@ The two toggle states have different `permanent` values (302 vs 301), different 
 
 If `LOCATION_HUBS` is not set, `split(",").filter(Boolean)` produces `[]`. No subdomain redirects are generated. Only the main domain redirect applies, which is correct.
 
-### Edge case: locale prefix in preserved path
-
-When paths are preserved, locale prefixes could cause double locale segments (e.g. `erlangen.climatehub.org/de/page` → `climateconnect.earth/de/hubs/erlangen/de/page`). In practice this is unlikely because hub subdomains are accessed without locale prefixes — Next.js i18n handles locale routing at the application level. If it becomes an issue, the source pattern can exclude locale prefixes using a negative lookahead.
-
 ### DNS prerequisite
 
 DNS must be configured for `climatehub.org` and `*.climatehub.org` (wildcard subdomain) to point to the Next.js application. For the pre-switch phase, DNS for the new domain should already be live so that the redirects work. This is an infrastructure concern outside this spec.
@@ -270,7 +242,7 @@ The existing #2066 subdomain redirects include UTM parameters. The new cross-dom
 | File | Change |
 |---|---|
 | `frontend/.env` | Add `CLIMATEORG_ACTIVE="false"` |
-| `frontend/next.config.js` | Add `CLIMATEORG_ACTIVE` to env pick list, add domain redirect logic in `redirects()`, fix path preservation in existing subdomain redirects |
+| `frontend/next.config.js` | Add `CLIMATEORG_ACTIVE` to env pick list, add domain redirect logic in `redirects()` |
 
 ### Structure of changes in next.config.js
 
@@ -280,9 +252,8 @@ The existing #2066 subdomain redirects include UTM parameters. The new cross-dom
    a. Build `domainRedirects` array based on toggle state:
       - If `"true"`: `climateconnect.earth` → `climatehub.org` redirects (301, permanent)
       - If not `"true"` (default): `climatehub.org` → `climateconnect.earth` redirects (302, temporary)
-   b. Each block contains: Potsdam project shortcuts, language-aware subdomain redirects for all LOCATION_HUBS, main domain catch-all redirect.
-   c. Fix `buildSubdomainRedirects()` to include `/:path*` in destination.
-   d. Return: `[...domainRedirects, ...buildSubdomainRedirects(), ...existingRedirects]`.
+   b. Each block contains: Potsdam project shortcuts, language-aware subdomain redirects for all LOCATION_HUBS (destination is the hub landing page, path dropped), main domain catch-all redirect (path preserved).
+   c. Return: `[...domainRedirects, ...buildSubdomainRedirects(), ...existingRedirects]`.
 
 ### Example code structure
 
@@ -310,13 +281,13 @@ if (CLIMATEORG_ACTIVE) {
         { type: "host", value: `${hubSlug}.climateconnect.earth` },
         { type: "header", key: "Accept-Language", value: "^de" },
       ],
-      destination: `https://climatehub.org/de/hubs/${hubSlug}/:path*`,
+      destination: `https://climatehub.org/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
       permanent: true,
     })),
     ...LOCATION_HUBS.map((hubSlug) => ({
       source: "/:path*",
       has: [{ type: "host", value: `${hubSlug}.climateconnect.earth` }],
-      destination: `https://climatehub.org/en/hubs/${hubSlug}/:path*`,
+      destination: `https://climatehub.org/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
       permanent: true,
     })),
     // 3. Main domain redirect
@@ -345,13 +316,13 @@ if (CLIMATEORG_ACTIVE) {
         { type: "host", value: `${hubSlug}.climatehub.org` },
         { type: "header", key: "Accept-Language", value: "^de" },
       ],
-      destination: `${BASE_URL}/de/hubs/${hubSlug}/:path*`,
+      destination: `${BASE_URL}/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
       permanent: false,
     })),
     ...LOCATION_HUBS.map((hubSlug) => ({
       source: "/:path*",
       has: [{ type: "host", value: `${hubSlug}.climatehub.org` }],
-      destination: `${BASE_URL}/en/hubs/${hubSlug}/:path*`,
+      destination: `${BASE_URL}/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
       permanent: false,
     })),
     // 3. Main domain redirect
@@ -369,22 +340,6 @@ return [...domainRedirects, ...buildSubdomainRedirects(), ...existingRedirects];
 
 **Note on destination URLs**: Pre-switch, the destination uses `${BASE_URL}` (which is `climateconnect.earth` in production). Post-switch, the destination is hardcoded to `https://climatehub.org` since that is the new canonical domain and `BASE_URL` will still point to the old domain until the env var is updated separately.
 
-### Fix for existing subdomain redirects (path preservation)
-
-In `buildSubdomainRedirects()`, change the destination for generic subdomain redirects from:
-
-```js
-destination: `${BASE_URL}/de/hubs/${hubSlug}?utm_source=...`
-```
-
-to:
-
-```js
-destination: `${BASE_URL}/de/hubs/${hubSlug}/:path*?utm_source=...`
-```
-
-Same for the English fallback entries.
-
 ### Testing
 
 ```bash
@@ -394,24 +349,24 @@ Same for the English fallback entries.
 curl -I -H "Host: climatehub.org" http://localhost:3000/some/path
 # Expected: 302 → http://localhost:3000/some/path
 
-# Subdomain redirect (German, path-preserved)
+# Subdomain redirect (German)
 curl -I -H "Host: erlangen.climatehub.org" -H "Accept-Language: de" \
-  http://localhost:3000/projects/my-project
-# Expected: 302 → /de/hubs/erlangen/projects/my-project?utm_source=...
+  http://localhost:3000/anything
+# Expected: 302 → /de/hubs/erlangen?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
 
-# Subdomain redirect (English, path-preserved)
+# Subdomain redirect (English fallback)
 curl -I -H "Host: erlangen.climatehub.org" \
-  http://localhost:3000/projects/my-project
-# Expected: 302 → /en/hubs/erlangen/projects/my-project?utm_source=...
+  http://localhost:3000/anything
+# Expected: 302 → /hubs/erlangen?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
 
 # Potsdam project shortcut on new domain
 curl -I -H "Host: potsdam.climatehub.org" http://localhost:3000/balkonsolar
 # Expected: 302 → /de/projects/potsdam-balkon-solar?hub=potsdam&utm_source=...
 
-# Existing subdomain redirect (path-preserved after fix)
-curl -I -H "Host: erlangen.climateconnect.earth" -H "Accept-Language: de" \
-  http://localhost:3000/projects/my-project
-# Expected: 301 → /de/hubs/erlangen/projects/my-project?utm_source=...
+# Existing subdomain redirect (English, path dropped)
+curl -I -H "Host: erlangen.climateconnect.earth" \
+  http://localhost:3000/anything
+# Expected: 301 → /hubs/erlangen?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
 
 # Existing static redirect still works
 curl -I http://localhost:3000/spenden
@@ -419,12 +374,12 @@ curl -I http://localhost:3000/spenden
 
 # Post-switch (set CLIMATEORG_ACTIVE="true" in .env, restart)
 
-# Main domain redirect (reversed)
+# Main domain redirect (reversed, path preserved)
 curl -I -H "Host: climateconnect.earth" http://localhost:3000/some/path
 # Expected: 301 → https://climatehub.org/some/path
 
-# Subdomain redirect (reversed)
+# Subdomain redirect (reversed, path dropped)
 curl -I -H "Host: erlangen.climateconnect.earth" -H "Accept-Language: de" \
-  http://localhost:3000/projects/my-project
-# Expected: 301 → https://climatehub.org/de/hubs/erlangen/projects/my-project?utm_source=...
+  http://localhost:3000/anything
+# Expected: 301 → https://climatehub.org/de/hubs/erlangen?utm_source=subdomain&utm_medium=redirect&utm_campaign=erlangen
 ```

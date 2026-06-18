@@ -44,14 +44,14 @@ function buildSubdomainRedirects() {
       { type: "host", value: `${hubSlug}.climateconnect.earth` },
       { type: "header", key: "Accept-Language", value: "^de" },
     ],
-    destination: `${BASE_URL}/de/hubs/${hubSlug}/:path*?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+    destination: `${BASE_URL}/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
     permanent: true,
   }));
 
   const subdomainRedirectsEn = LOCATION_HUBS.map((hubSlug) => ({
     source: "/:path*",
     has: [{ type: "host", value: `${hubSlug}.climateconnect.earth` }],
-    destination: `${BASE_URL}/en/hubs/${hubSlug}/:path*?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+    destination: `${BASE_URL}/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
     permanent: true,
   }));
 
@@ -182,13 +182,13 @@ module.exports = withBundleAnalyzer({
             { type: "host", value: `${hubSlug}.climateconnect.earth` },
             { type: "header", key: "Accept-Language", value: "^de" },
           ],
-          destination: `https://climatehub.org/de/hubs/${hubSlug}/:path*?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          destination: `https://climatehub.org/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
           permanent: true,
         })),
         ...LOCATION_HUBS.map((hubSlug) => ({
           source: "/:path*",
           has: [{ type: "host", value: `${hubSlug}.climateconnect.earth` }],
-          destination: `https://climatehub.org/en/hubs/${hubSlug}/:path*?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          destination: `https://climatehub.org/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
           permanent: true,
         })),
         // 3. Main domain catch-all
@@ -228,13 +228,13 @@ module.exports = withBundleAnalyzer({
             { type: "host", value: `${hubSlug}.climatehub.org` },
             { type: "header", key: "Accept-Language", value: "^de" },
           ],
-          destination: `${BASE_URL}/de/hubs/${hubSlug}/:path*?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          destination: `${BASE_URL}/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
           permanent: false,
         })),
         ...LOCATION_HUBS.map((hubSlug) => ({
           source: "/:path*",
           has: [{ type: "host", value: `${hubSlug}.climatehub.org` }],
-          destination: `${BASE_URL}/en/hubs/${hubSlug}/:path*?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          destination: `${BASE_URL}/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
           permanent: false,
         })),
         // 3. Main domain catch-all
