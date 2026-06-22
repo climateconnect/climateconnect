@@ -102,7 +102,7 @@ The icon uses the same `IconButton` pattern and sizing as the share button. Uses
 
 1. **Three calendar options** as buttons/links:
    - **Google Calendar** — links to `/projects/{slug}/add-to-google-calendar`
-   - **Apple Calendar** — links to `/projects/{slug}.ical` (triggers native calendar app on iOS/macOS, downloads on other platforms)
+   - **Apple Calendar / iCal** — links to `/projects/{slug}.ical` (triggers native calendar app on iOS/macOS, downloads on other platforms; works with any calendar app supporting iCal)
    - **Outlook** — links to `/projects/{slug}/add-to-outlook`
 
 2. **Registration status reminder** (conditional): When the event has registration enabled (`project.registration_config` exists and is not draft) AND the user is logged in, show a small note below the calendar options:

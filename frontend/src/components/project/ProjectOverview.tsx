@@ -92,19 +92,18 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       marginLeft: theme.spacing(1),
       marginTop: theme.spacing(1),
     },
-    shareButtonContainer: {
+    shareButtonContainer: {},
+    calendarButtonContainer: {},
+    actionButtonsGroup: {
       position: "absolute",
       right: 0,
       bottom: 0,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
       marginRight: theme.spacing(1),
       marginBottom: theme.spacing(1.6),
-    },
-    calendarButtonContainer: {
-      position: "absolute",
-      right: 45,
-      bottom: 0,
-      marginRight: theme.spacing(1),
-      marginBottom: theme.spacing(1.6),
+      gap: theme.spacing(0.5),
     },
     imageContainer: {
       position: "relative",
@@ -406,17 +405,19 @@ function SmallScreenOverview({
             project={project}
           />
         )}
-        <ProjectAddToCalendarButton
-          className={classes.calendarButtonContainer}
-          project={project}
-          isUserRegistered={isUserRegistered}
-        />
-        <ProjectSocialMediaShareButton
-          className={classes.shareButtonContainer}
-          project={project}
-          projectAdmin={projectAdmin}
-          hubUrl={hubUrl}
-        />
+        <div className={classes.actionButtonsGroup}>
+          <ProjectAddToCalendarButton
+            className={classes.calendarButtonContainer}
+            project={project}
+            isUserRegistered={isUserRegistered}
+          />
+          <ProjectSocialMediaShareButton
+            className={classes.shareButtonContainer}
+            project={project}
+            projectAdmin={projectAdmin}
+            hubUrl={hubUrl}
+          />
+        </div>
         <img
           className={classes.fullWidthImage}
           src={getImageUrl(project.image)}

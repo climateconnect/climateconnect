@@ -1908,8 +1908,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Google Kalender",
     },
     add_to_apple_calendar: {
-      en: "Apple Calendar",
-      de: "Apple Kalender",
+      en: "Apple Calendar / iCal",
+      de: "Apple Kalender / iCal",
     },
     add_to_outlook: {
       en: "Outlook",

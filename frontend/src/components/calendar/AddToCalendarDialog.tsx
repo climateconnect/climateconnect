@@ -1,4 +1,4 @@
-import { Link as MuiLink, Typography } from "@mui/material";
+import { Alert, Link as MuiLink, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import GenericDialog from "../dialogs/GenericDialog";
@@ -29,17 +29,6 @@ const useStyles = makeStyles((theme) => ({
   },
   registrationReminder: {
     marginTop: theme.spacing(2),
-    padding: theme.spacing(1.5),
-    borderRadius: theme.spacing(1),
-    fontSize: 14,
-  },
-  registered: {
-    backgroundColor: theme.palette.success?.light || "#e8f5e9",
-    color: theme.palette.success?.dark || "#2e7d32",
-  },
-  notRegistered: {
-    backgroundColor: theme.palette.grey[100],
-    color: theme.palette.text.secondary,
   },
 }));
 
@@ -98,15 +87,14 @@ export default function AddToCalendarDialog({
         </MuiLink>
       </div>
       {showRegistrationReminder && (
-        <div
-          className={`${classes.registrationReminder} ${
-            isUserRegistered ? classes.registered : classes.notRegistered
-          }`}
+        <Alert
+          severity={isUserRegistered ? "success" : "info"}
+          className={classes.registrationReminder}
         >
           {isUserRegistered
             ? texts.you_are_registered_for_this_event
             : texts.not_registered_yet_reminder}
-        </div>
+        </Alert>
       )}
     </GenericDialog>
   );

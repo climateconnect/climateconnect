@@ -78,10 +78,12 @@ const useStyles = makeStyles((theme) => {
     projectInteractionButtonContainer: {
       position: "relative",
     },
-    shareButtonContainer: {
-      paddingRight: theme.spacing(4),
-    },
-    calendarButtonContainer: {
+    shareButtonContainer: {},
+    calendarButtonContainer: {},
+    actionButtonsGroup: {
+      display: "flex",
+      alignItems: "center",
+      gap: theme.spacing(1),
       paddingRight: theme.spacing(2),
     },
 
@@ -657,7 +659,7 @@ export default function ProjectPageRoot({
         </div>
 
         {!screenSize.belowSmall && (
-          <>
+          <div className={classes.actionButtonsGroup}>
             <ProjectAddToCalendarButton
               className={classes.calendarButtonContainer}
               project={project}
@@ -669,7 +671,7 @@ export default function ProjectPageRoot({
               projectAdmin={projectAdmin}
               hubUrl={hubPage}
             />
-          </>
+          </div>
         )}
       </Container>
       <Container className={classes.projectInteractionButtonContainer}>
