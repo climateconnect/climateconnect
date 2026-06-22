@@ -136,6 +136,7 @@ def _period_start_from_key(period_type, period_key):
         return dt.replace(tzinfo=timezone.utc)
     elif period_type == "month":
         return datetime.strptime(period_key, "%Y-%m").replace(tzinfo=timezone.utc)
+    raise ValueError(f"Unsupported period_type: {period_type!r}")
 
 
 @shared_task
@@ -149,14 +150,20 @@ def aggregate_nominatim_stats():
     """
     from location.models import NominatimPeriodStats, NominatimRequestLog
 
-    logs = list(NominatimRequestLog.objects.filter(processed=False).order_by("id"))
-    if not logs:
-        NominatimRequestLog.objects.filter(
-            created_at__lt=tz.now() - timedelta(days=7)
-        ).delete()
-        return
+    with transaction.atomic():
+        logs = list(
+            NominatimRequestLog.objects.select_for_update(skip_locked=True)
+            .filter(processed=False)
+            .order_by("id")
+        )
+        if not logs:
+            NominatimRequestLog.objects.filter(
+                created_at__lt=tz.now() - timedelta(days=7)
+            ).delete()
+            return
 
-    max_id = logs[-1].id
+        max_id = logs[-1].id
+
     now = tz.now()
 
     period_buckets = defaultdict(
@@ -184,8 +191,12 @@ def aggregate_nominatim_stats():
             max(bucket["second_counts"].values()) if bucket["second_counts"] else 1
         )
 
-        period_start_dt = _period_start_from_key(period_type, period_key)
-        if period_start_dt is None:
+        try:
+            period_start_dt = _period_start_from_key(period_type, period_key)
+        except ValueError:
+            logger.warning(
+                "Skipping unknown period_type=%r key=%r", period_type, period_key
+            )
             continue
 
         elapsed = max((now - period_start_dt).total_seconds(), 1.0)

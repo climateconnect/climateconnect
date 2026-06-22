@@ -121,8 +121,12 @@ class TestAggregateNominatimStats(TestCase):
     def test_only_unprocessed_rows_aggregated(self):
         now = tz.now()
         mk = _minute_key(now)
-        NominatimRequestLog.objects.create(created_at=now, processed=True, minute_key=mk)
-        NominatimRequestLog.objects.create(created_at=now, processed=False, minute_key=mk)
+        NominatimRequestLog.objects.create(
+            created_at=now, processed=True, minute_key=mk
+        )
+        NominatimRequestLog.objects.create(
+            created_at=now, processed=False, minute_key=mk
+        )
 
         aggregate_nominatim_stats()
 
@@ -136,7 +140,9 @@ class TestAggregateNominatimStats(TestCase):
     def test_old_rows_cleaned_up_after_7_days(self):
         now = tz.now()
         old_dt = now - timedelta(days=8)
-        NominatimRequestLog.objects.create(created_at=old_dt, processed=True, minute_key=_minute_key(old_dt))
+        NominatimRequestLog.objects.create(
+            created_at=old_dt, processed=True, minute_key=_minute_key(old_dt)
+        )
         NominatimRequestLog.objects.create(created_at=now, minute_key=_minute_key(now))
 
         aggregate_nominatim_stats()
@@ -153,7 +159,9 @@ class TestAggregateNominatimStats(TestCase):
 
     def test_new_iso_week_creates_new_row(self):
         fixed_dt = datetime(2026, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
-        NominatimRequestLog.objects.create(created_at=fixed_dt, minute_key=_minute_key(fixed_dt))
+        NominatimRequestLog.objects.create(
+            created_at=fixed_dt, minute_key=_minute_key(fixed_dt)
+        )
 
         aggregate_nominatim_stats()
 
@@ -164,7 +172,9 @@ class TestAggregateNominatimStats(TestCase):
 
     def test_first_of_month_creates_new_row(self):
         fixed_dt = datetime(2026, 7, 1, 12, 0, 0, tzinfo=timezone.utc)
-        NominatimRequestLog.objects.create(created_at=fixed_dt, minute_key=_minute_key(fixed_dt))
+        NominatimRequestLog.objects.create(
+            created_at=fixed_dt, minute_key=_minute_key(fixed_dt)
+        )
 
         aggregate_nominatim_stats()
 

@@ -221,13 +221,6 @@ class NominatimRequestLog(models.Model):
         verbose_name = "nominatim request log"
         verbose_name_plural = "nominatim request logs"
 
-    def requests_this_minute(self):
-        if self.minute_key == -1:
-            return "N/A"
-        return NominatimRequestLog.objects.filter(minute_key=self.minute_key).count()
-
-    requests_this_minute.short_description = "number of requests"
-
     def __str__(self):
         return f"request at {self.created_at}"
 

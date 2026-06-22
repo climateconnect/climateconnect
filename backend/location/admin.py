@@ -171,6 +171,31 @@ class NominatimRequestLogAdmin(admin.ModelAdmin):
     ordering = ("-created_at",)
     readonly_fields = ("created_at", "processed", "minute_key")
 
+    def get_queryset(self, request):
+        from django.db.models import Count, OuterRef, Subquery
+
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(
+                _requests_this_minute=Subquery(
+                    NominatimRequestLog.objects.filter(
+                        minute_key=OuterRef("minute_key"),
+                    )
+                    .order_by()
+                    .values("minute_key")
+                    .annotate(c=Count("id"))
+                    .values("c")[:1]
+                )
+            )
+        )
+
+    def requests_this_minute(self, obj):
+        return obj._requests_this_minute
+
+    requests_this_minute.short_description = "reqs this minute"
+    requests_this_minute.admin_order_field = "_requests_this_minute"
+
     def has_add_permission(self, request):
         return False
 

@@ -1,5 +1,7 @@
 import json
 import logging
+import time
+
 import requests
 from django.conf import settings
 from rest_framework import status
@@ -153,8 +155,6 @@ class TrackNominatimRequestView(APIView):
     throttle_classes = [NominatimTrackThrottle]
 
     def post(self, request):
-        import time
-
         minute_key = int(time.time()) // 60
         NominatimRequestLog.objects.create(minute_key=minute_key)
         return Response(status=status.HTTP_204_NO_CONTENT)
