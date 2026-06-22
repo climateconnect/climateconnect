@@ -1,4 +1,5 @@
 import React from "react";
+import * as Sentry from "@sentry/nextjs";
 import { apiRequest } from "../../../public/lib/apiOperations";
 
 function toGoogleCalendarDate(dateStr) {
@@ -40,6 +41,7 @@ export async function getServerSideProps(ctx) {
     });
     event = resp.data;
   } catch (err) {
+    Sentry.captureException(err);
     res.statusCode = 404;
     res.end("Not Found");
     return { props: {} };

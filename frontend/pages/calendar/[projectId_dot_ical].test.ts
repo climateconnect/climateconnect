@@ -15,6 +15,10 @@ if (typeof global.TextDecoder === "undefined") {
 // Mocks
 // ---------------------------------------------------------------------------
 
+jest.mock("@sentry/nextjs", () => ({
+  captureException: jest.fn(),
+}));
+
 const mockApiRequest = jest.fn();
 jest.mock("../../public/lib/apiOperations", () => ({
   ...jest.requireActual("../../public/lib/apiOperations"),

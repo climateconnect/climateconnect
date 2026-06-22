@@ -4,6 +4,10 @@ import { getServerSideProps } from "./add-to-google-calendar";
 // Mocks
 // ---------------------------------------------------------------------------
 
+jest.mock("@sentry/nextjs", () => ({
+  captureException: jest.fn(),
+}));
+
 const mockApiRequest = jest.fn();
 jest.mock("../../../public/lib/apiOperations", () => ({
   ...jest.requireActual("../../../public/lib/apiOperations"),
