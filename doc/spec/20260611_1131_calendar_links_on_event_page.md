@@ -9,7 +9,7 @@
 
 ## Problem Statement
 
-When a visitor views a Climate Connect event, they have no way to add it to their personal calendar. Guests must manually copy event details into Google Calendar, Apple Calendar, Outlook, or another calendar app. This is a friction point that risks guests forgetting about the event or entering incorrect details.
+When a visitor views a Climate Connect event, they have no way to add it to their personal calendar. Guests must manually copy event details into Google Calendar, Apple Calendar, or another calendar app. This is a friction point that risks guests forgetting about the event or entering incorrect details.
 
 This applies to all events — whether they have registration enabled or not.
 
@@ -34,8 +34,7 @@ This applies to all events — whether they have registration enabled or not.
 
 1. **Public `.ical` web endpoint** — a Next.js page at `/projects/{slug}.ical` that returns a valid iCalendar file for the event.
 2. **Google Calendar redirect endpoint** — a Next.js page at `/projects/{slug}/add-to-google-calendar` that redirects (302) to the Google Calendar URL scheme with pre-filled event details.
-3. **Outlook redirect endpoint** — a Next.js page at `/projects/{slug}/add-to-outlook` that redirects (302) to the Outlook URL scheme with pre-filled event details.
-4. **"Add to Calendar" modal on event page** — a calendar icon next to the share icon that opens a modal dialog (using `GenericDialog`) with three calendar options (Google, Apple, Outlook) and an optional registration status reminder.
+3. **"Add to Calendar" modal on event page** — a calendar icon next to the share icon that opens a modal dialog (using `GenericDialog`) with two calendar options (Google, Apple / iCal) and an optional registration status reminder.
 
 ### Out of scope (for now)
 
@@ -81,16 +80,7 @@ Next.js serves the `.ical` content directly via a page with `getServerSideProps`
 
 Localized variant: `GET /de/projects/{slug}/add-to-google-calendar` — same, with German-language event details in the URL.
 
-### AC-3: Outlook redirect endpoint
-
-`GET /projects/{slug}/add-to-outlook` — a Next.js page with `getServerSideProps` that:
-1. Fetches event data from the Django API.
-2. Constructs the Outlook URL: `https://outlook.live.com/calendar/0/action/compose?subject=...&startdt=...&enddt=...&body=...&location=...`
-3. Returns a 302 redirect to that URL.
-
-Localized variant: `GET /de/projects/{slug}/add-to-outlook` — same, with German-language event details.
-
-### AC-4: "Add to Calendar" UI on event page
+### AC-3: "Add to Calendar" UI on event page
 
 **Icon placement**: A calendar icon button is placed next to the existing share icon (`ProjectSocialMediaShareButton`):
 - **Large screens** (`ProjectPageRoot.tsx`): in the tabs header bar, right-aligned next to the share button.
@@ -100,10 +90,9 @@ The icon uses the same `IconButton` pattern and sizing as the share button. Uses
 
 **Modal**: Clicking the icon opens an "Add to Calendar" modal (`AddToCalendarDialog`), using the project's `GenericDialog` component — the same pattern as `SocialMediaShareDialog`. The modal contains:
 
-1. **Three calendar options** as buttons/links:
+1. **Two calendar options** as buttons/links:
    - **Google Calendar** — links to `/projects/{slug}/add-to-google-calendar`
    - **Apple Calendar / iCal** — links to `/projects/{slug}.ical` (triggers native calendar app on iOS/macOS, downloads on other platforms; works with any calendar app supporting iCal)
-   - **Outlook** — links to `/projects/{slug}/add-to-outlook`
 
 2. **Registration status reminder** (conditional): When the event has registration enabled (`project.registration_config` exists and is not draft) AND the user is logged in, show a small note below the calendar options:
    - If the user **is registered**: a brief confirmation like "You're registered for this event." (green/checkmark styling)
@@ -111,9 +100,9 @@ The icon uses the same `IconButton` pattern and sizing as the share button. Uses
    - The registration state is available from `isRegistered` (passed as a prop to `ProjectPageRoot`) and `myEventRegistration` state.
    - This is a soft reminder only — users can still add the event to their calendar regardless of registration status. Registration might be optional, and some users may just want to attend without formally registering.
 
-**Priority**: The event page UI is a bonus. The primary deliverable is the endpoints (AC-1, AC-2, AC-3). The UI can be iterated on after the endpoints ship.
+**Priority**: The event page UI is a bonus. The primary deliverable is the endpoints (AC-1, AC-2). The UI can be iterated on after the endpoints ship.
 
-### AC-5: Edge cases
+### AC-4: Edge cases
 
 - Online events (`is_online=True`): `LOCATION` is set to "Online". (Online events do have an associated physical location for hub purposes, but the calendar entry should reflect that the event itself is online.)
 - Event with `is_online=True` and a `website` URL: the event URL is included in the `DESCRIPTION` field.
@@ -127,7 +116,7 @@ The icon uses the same `IconButton` pattern and sizing as the share button. Uses
 ## Constraints
 
 - **.ics generation in Next.js** — uses `ical-generator` (Node.js). The page's `getServerSideProps` fetches event data from Django API and generates the iCal response.
-- **Calendar URL construction in Next.js** — Google Calendar and Outlook URL schemes are built at redirect time in `getServerSideProps`. The URLs are not embedded anywhere externally — they're constructed on-the-fly from event data.
+- **Calendar URL construction in Next.js** — Google Calendar URL scheme is built at redirect time in `getServerSideProps`. The URL is not embedded anywhere externally — it's constructed on-the-fly from event data.
 - **Modal requires JavaScript** — the "Add to Calendar" modal is a React component (`GenericDialog`). The calendar links inside the modal are plain `<a>` tags that work without JS if accessed directly (the endpoints themselves are server-rendered). The registration status reminder uses client-side state from `isRegistered` / `myEventRegistration`.
 - **No multiple calendar formats** — `.ics` (iCalendar / RFC 5545) is the only format.
 - **Feature toggle** — calendar UI does NOT require the `EVENT_REGISTRATION` toggle. It applies to all events regardless of registration status. No toggle check needed.
@@ -145,12 +134,10 @@ Event pages are at `FRONTEND_URL/projects/{url_slug}`. The `url_slug` is unique 
 Calendar URLs — all served by Next.js:
 - `.ical` file: `FRONTEND_URL/projects/{url_slug}.ical`
 - Google Calendar redirect: `FRONTEND_URL/projects/{url_slug}/add-to-google-calendar`
-- Outlook redirect: `FRONTEND_URL/projects/{url_slug}/add-to-outlook`
 
 Localized variants (Next.js i18n prefix):
 - `FRONTEND_URL/de/projects/{url_slug}.ical`
 - `FRONTEND_URL/de/projects/{url_slug}/add-to-google-calendar`
-- `FRONTEND_URL/de/projects/{url_slug}/add-to-outlook`
 
 ### Share button pattern (reference for calendar icon)
 
@@ -211,14 +198,13 @@ The modal uses these to determine what to show:
 
 **Direct URL construction** (no library needed)
 - Google Calendar: `https://calendar.google.com/calendar/render?action=TEMPLATE&text=...&dates=.../...&details=...&location=...`
-- Outlook: `https://outlook.live.com/calendar/0/action/compose?subject=...&startdt=...&enddt=...&body=...&location=...`
 - Apple Calendar: `.ics` download link (points to the `.ical` URL)
-- Verdict: Google/Outlook URLs are constructed at redirect time in Next.js `getServerSideProps`.
+- Verdict: Google Calendar URL is constructed at redirect time in Next.js `getServerSideProps`.
 
 ### Recommendation summary
 
 | Layer | Solution | Rationale |
 |-------|----------|-----------|
 | .ics generation | `ical-generator` in Next.js `getServerSideProps` | Fetches event data from Django API, generates .ics, writes to response. |
-| Google Calendar / Outlook redirect | Next.js `getServerSideProps` redirect pages | Fetches event data, constructs provider URL, issues 302. |
+| Google Calendar redirect | Next.js `getServerSideProps` redirect page | Fetches event data, constructs Google Calendar URL, issues 302. |
 | Event page UI | Modal (`GenericDialog`) with calendar links + registration reminder | Same pattern as `SocialMediaShareDialog`. Icon next to share button. No new dependency. |

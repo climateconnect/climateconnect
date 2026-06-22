@@ -1911,10 +1911,6 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Apple Calendar / iCal",
       de: "Apple Kalender / iCal",
     },
-    add_to_outlook: {
-      en: "Outlook",
-      de: "Outlook",
-    },
     you_are_registered_for_this_event: {
       en: "You're registered for this event.",
       de: "Du bist für diese Veranstaltung angemeldet.",

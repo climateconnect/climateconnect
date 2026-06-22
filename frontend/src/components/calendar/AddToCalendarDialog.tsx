@@ -64,7 +64,6 @@ export default function AddToCalendarDialog({
 
   const icalUrl = `${localePrefix}/calendar/${slug}.ical`;
   const googleCalUrl = `${localePrefix}/projects/${slug}/add-to-google-calendar`;
-  const outlookUrl = `${localePrefix}/projects/${slug}/add-to-outlook`;
 
   const showRegistrationReminder =
     isEvent && registrationConfig && !registrationConfig.is_draft && user;
@@ -72,7 +71,13 @@ export default function AddToCalendarDialog({
   return (
     <GenericDialog onClose={handleClose} open={open} title={texts.add_to_calendar}>
       <div className={classes.calendarOptionsContainer}>
-        <MuiLink href={googleCalUrl} className={classes.calendarOption} underline="none">
+        <MuiLink
+          href={googleCalUrl}
+          className={classes.calendarOption}
+          underline="none"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Typography className={classes.calendarOptionLabel}>
             {texts.add_to_google_calendar}
           </Typography>
@@ -81,9 +86,6 @@ export default function AddToCalendarDialog({
           <Typography className={classes.calendarOptionLabel}>
             {texts.add_to_apple_calendar}
           </Typography>
-        </MuiLink>
-        <MuiLink href={outlookUrl} className={classes.calendarOption} underline="none">
-          <Typography className={classes.calendarOptionLabel}>{texts.add_to_outlook}</Typography>
         </MuiLink>
       </div>
       {showRegistrationReminder && (
