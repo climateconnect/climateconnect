@@ -165,34 +165,11 @@ admin.site.register(LocationTranslation, LocationTranslationAdmin)
 
 
 class NominatimRequestLogAdmin(admin.ModelAdmin):
-    list_display = (
-        "time_minute",
-        "count",
-        "bar",
-    )
-    list_filter = ("bucket_key",)
-    ordering = ("-bucket_key",)
-    search_fields = ("bucket_key",)
-    readonly_fields = ("bucket_key", "count", "created_at", "updated_at")
-
-    def time_minute(self, obj):
-        """Convert epoch minute bucket_key to human-readable datetime."""
-        from datetime import datetime, timezone
-
-        dt = datetime.fromtimestamp(obj.bucket_key * 60, tz=timezone.utc)
-        return dt.strftime("%Y-%m-%d %H:%M UTC")
-
-    time_minute.short_description = "Time (minute)"
-    time_minute.admin_order_field = "bucket_key"
-
-    def bar(self, obj):
-        """Simple ASCII bar chart of request count."""
-        if obj.count == 0:
-            return "—"
-        width = min(obj.count, 50)
-        return f'{"█" * width} {obj.count}'
-
-    bar.short_description = "Requests"
+    list_display = ("created_at", "processed", "requests_this_minute")
+    list_filter = ("processed",)
+    list_per_page = 50
+    ordering = ("-created_at",)
+    readonly_fields = ("created_at", "processed", "minute_key")
 
     def has_add_permission(self, request):
         return False

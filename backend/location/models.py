@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.gis.db import models
+from django.utils import timezone as tz
 from climateconnect_api.models.language import Language
 
 logger = logging.getLogger(__name__)
@@ -201,30 +202,34 @@ class LocationTranslation(models.Model):
 
 class NominatimRequestLog(models.Model):
     """
-    Stores per-minute request counts for Nominatim autocomplete requests.
+    Lightweight log of individual Nominatim autocomplete requests.
 
-    One row per calendar minute. Only the current day's buckets are retained;
-    older buckets are deleted inline on each incoming request.
+    One row per request. A periodic Celery task reads unprocessed rows,
+    computes day/week/month aggregates into NominatimPeriodStats, and
+    marks them as processed. Rows older than 7 days are cleaned up.
     """
 
-    bucket_key = models.BigIntegerField(
-        help_text="Epoch minutes (epoch_seconds // 60)",
-        unique=True,
+    created_at = models.DateTimeField(default=tz.now, db_index=True)
+    processed = models.BooleanField(default=False, db_index=True)
+    minute_key = models.BigIntegerField(
+        help_text="Epoch minutes (epoch_seconds // 60) for grouping",
+        db_index=True,
     )
-    count = models.PositiveIntegerField(
-        default=0,
-        help_text="Number of Nominatim requests in this minute",
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         app_label = "location"
         verbose_name = "nominatim request log"
         verbose_name_plural = "nominatim request logs"
 
+    def requests_this_minute(self):
+        if self.minute_key == -1:
+            return "N/A"
+        return NominatimRequestLog.objects.filter(minute_key=self.minute_key).count()
+
+    requests_this_minute.short_description = "number of requests"
+
     def __str__(self):
-        return f"minute:{self.bucket_key} = {self.count}"
+        return f"request at {self.created_at}"
 
 
 class NominatimPeriodStats(models.Model):
@@ -232,8 +237,8 @@ class NominatimPeriodStats(models.Model):
     Persistent per-period (day / ISO-week / calendar-month) aggregation of
     Nominatim autocomplete request metrics.
 
-    One row per (period_type, period_key) combination.  Updated atomically
-    on every tracked request — no Celery, no Redis.
+    One row per (period_type, period_key) combination.  Updated by a periodic
+    Celery task that reads and aggregates raw NominatimRequestLog rows.
     """
 
     class PeriodType(models.TextChoices):
@@ -251,7 +256,10 @@ class NominatimPeriodStats(models.Model):
     )
     total_requests = models.PositiveIntegerField(default=0)
     avg_req_per_second = models.FloatField(default=0)
-    peak_req_per_second = models.FloatField(default=0)
+    peak_req_per_second = models.PositiveIntegerField(
+        default=0,
+        help_text="Maximum number of requests that arrived in the same second",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
