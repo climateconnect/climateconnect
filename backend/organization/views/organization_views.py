@@ -117,6 +117,24 @@ class ListOrganizationsAPIView(ListAPIView):
     pagination_class = OrganizationsPagination
     search_fields = ["name"]
 
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests for search functionality, mirroring
+        ListProjectsView. The frontend sends the selected location as
+        the POST body so it can be used as a fallback when the upstream
+        location service is unavailable.
+        """
+        location = request.data
+
+        query_params = request.query_params.copy()
+
+        if "place_id" in location and "geojson" in location:
+            query_params["location"] = location
+
+        request._request.GET = query_params
+
+        return self.list(request, *args, **kwargs)
+
     def get_serializer_class(self):
         return OrganizationCardSerializer
 

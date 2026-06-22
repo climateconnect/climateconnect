@@ -253,6 +253,22 @@ class TestListOrganizationsAPIView(APITestCase):
                 self.assertNotContains(response, organization.name)
                 self.assertNotContains(response, organization.url_slug)
 
+    @tag("organizations")
+    def test_post_organizations_with_location_payload_does_not_return_405(self):
+        # Regression test for #2062: the frontend sends a POST with the
+        # selected location in the body when filtering by location. The
+        # endpoint must accept POST and return the same shape as GET.
+        response = self.client.post(
+            self.url,
+            data={"place_id": 123, "geojson": {"type": "Point", "coordinates": [0, 0]}},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn("results", data)
+        self.assertEqual(len(data["results"]), NUMBER_OF_ORGANIZATIONS)
+
 
 @unittest.skip("Temporarily disabled: see CI failure #57660401767")
 class TestCreateOrganizationView(APITestCase):
