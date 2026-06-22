@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import calendar
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -11,6 +12,11 @@ from location.tasks import _get_period_keys_for_dt, aggregate_nominatim_stats
 from location.models import NominatimPeriodStats, NominatimRequestLog
 
 User = get_user_model()
+
+
+def _minute_key(dt):
+    ts = calendar.timegm(dt.timetuple())
+    return ts // 60
 
 
 class TestGetPeriodKeysForDt(TestCase):
@@ -48,7 +54,7 @@ class TestAggregateNominatimStats(TestCase):
         NominatimRequestLog.objects.all().delete()
 
     def test_single_request_creates_all_period_rows(self):
-        NominatimRequestLog.objects.create()
+        NominatimRequestLog.objects.create(minute_key=_minute_key(tz.now()))
 
         aggregate_nominatim_stats()
 
@@ -65,8 +71,9 @@ class TestAggregateNominatimStats(TestCase):
 
     def test_60_requests_in_same_second(self):
         now = tz.now()
+        mk = _minute_key(now)
         for _ in range(60):
-            NominatimRequestLog.objects.create(created_at=now)
+            NominatimRequestLog.objects.create(created_at=now, minute_key=mk)
 
         aggregate_nominatim_stats()
 
@@ -83,11 +90,12 @@ class TestAggregateNominatimStats(TestCase):
         base = tz.now().replace(microsecond=0)
         second1 = base
         second2 = base + timedelta(seconds=1)
+        mk = _minute_key(base)
 
         for _ in range(30):
-            NominatimRequestLog.objects.create(created_at=second1)
+            NominatimRequestLog.objects.create(created_at=second1, minute_key=mk)
         for _ in range(10):
-            NominatimRequestLog.objects.create(created_at=second2)
+            NominatimRequestLog.objects.create(created_at=second2, minute_key=mk)
 
         aggregate_nominatim_stats()
 
@@ -100,8 +108,10 @@ class TestAggregateNominatimStats(TestCase):
             self.assertEqual(stats.peak_req_per_second, 30)
 
     def test_log_rows_marked_processed_after_aggregation(self):
-        NominatimRequestLog.objects.create()
-        NominatimRequestLog.objects.create()
+        now = tz.now()
+        mk = _minute_key(now)
+        NominatimRequestLog.objects.create(minute_key=mk)
+        NominatimRequestLog.objects.create(minute_key=mk)
 
         aggregate_nominatim_stats()
 
@@ -110,8 +120,9 @@ class TestAggregateNominatimStats(TestCase):
 
     def test_only_unprocessed_rows_aggregated(self):
         now = tz.now()
-        NominatimRequestLog.objects.create(created_at=now, processed=True)
-        NominatimRequestLog.objects.create(created_at=now, processed=False)
+        mk = _minute_key(now)
+        NominatimRequestLog.objects.create(created_at=now, processed=True, minute_key=mk)
+        NominatimRequestLog.objects.create(created_at=now, processed=False, minute_key=mk)
 
         aggregate_nominatim_stats()
 
@@ -125,8 +136,8 @@ class TestAggregateNominatimStats(TestCase):
     def test_old_rows_cleaned_up_after_7_days(self):
         now = tz.now()
         old_dt = now - timedelta(days=8)
-        NominatimRequestLog.objects.create(created_at=old_dt, processed=True)
-        NominatimRequestLog.objects.create(created_at=now)
+        NominatimRequestLog.objects.create(created_at=old_dt, processed=True, minute_key=_minute_key(old_dt))
+        NominatimRequestLog.objects.create(created_at=now, minute_key=_minute_key(now))
 
         aggregate_nominatim_stats()
 
@@ -142,7 +153,7 @@ class TestAggregateNominatimStats(TestCase):
 
     def test_new_iso_week_creates_new_row(self):
         fixed_dt = datetime(2026, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
-        NominatimRequestLog.objects.create(created_at=fixed_dt)
+        NominatimRequestLog.objects.create(created_at=fixed_dt, minute_key=_minute_key(fixed_dt))
 
         aggregate_nominatim_stats()
 
@@ -153,7 +164,7 @@ class TestAggregateNominatimStats(TestCase):
 
     def test_first_of_month_creates_new_row(self):
         fixed_dt = datetime(2026, 7, 1, 12, 0, 0, tzinfo=timezone.utc)
-        NominatimRequestLog.objects.create(created_at=fixed_dt)
+        NominatimRequestLog.objects.create(created_at=fixed_dt, minute_key=_minute_key(fixed_dt))
 
         aggregate_nominatim_stats()
 
@@ -164,13 +175,14 @@ class TestAggregateNominatimStats(TestCase):
 
     def test_incremental_aggregation(self):
         now = tz.now()
+        mk = _minute_key(now)
         for _ in range(3):
-            NominatimRequestLog.objects.create(created_at=now)
+            NominatimRequestLog.objects.create(created_at=now, minute_key=mk)
 
         aggregate_nominatim_stats()
 
         for _ in range(2):
-            NominatimRequestLog.objects.create(created_at=now)
+            NominatimRequestLog.objects.create(created_at=now, minute_key=mk)
 
         aggregate_nominatim_stats()
 
