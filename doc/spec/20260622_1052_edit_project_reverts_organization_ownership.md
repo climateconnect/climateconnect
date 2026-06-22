@@ -264,3 +264,15 @@ These were discussed with the user and partially resolved:
 3. Should attaching to a different org be open to any project admin, or restricted to members of the target org? (User input needed.)
 4. Should the legacy `is_personal_project` field be removed from the backend, or kept for backward compatibility? (User input needed.)
 5. Are there other frontend edit flows (e.g., the mobile app, if any) that hit the same PATCH endpoint with the same bug? (Out of scope for this doc; check separately if needed.)
+
+
+
+---
+Debug information from manual attempt to reproduce the issue:  
+Payload when user B changes it to organizational project:  
+{"project_parents":{"parent_organization":{"id":39,"name":"Django test","url_slug":"django-test","thumbnail_image":"/media/organization_images/39/profile/5e83994355e7a83214a4c84dcb61694aaddefb21.jpeg","location":null},"parent_user":{"id":84,"first_name":"Harald","last_name":"Walker","url_slug":"harald-walker84","thumbnail_image":"/media/profile_pictures/82/650f19d4c04cb7f92e548a5718dc8ac8328e6f9d.jpeg","location":"Bierde, Petershagen, Germany","badges":null},"created_at":"2026-06-22T11:32:40.776893Z"},"is_personal_project":false,"hubUrl":null,"translations":{},"parent_organization":39}  
+When user A is a member of a different organisation the edit form now shows that organisation. But if the user doesn't change it that won't get submitted, so doesn't change parent organisatio unintentionally. But is also wrong and a potential cause of error.   
+When user A is not a member of any organization, the list of organisations is empty and user can not save unless switching it to a personal project. So, different from the bug description we must assume the user actively made the switch.   
+
+Summary: 
+- Can not reproduce as described in the ticket but there is an issue that needs to be resolved and we need to decide about the right approach.
