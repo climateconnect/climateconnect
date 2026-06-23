@@ -2,15 +2,7 @@ import React from "react";
 import icalGenerator from "ical-generator";
 import * as Sentry from "@sentry/nextjs";
 import { apiRequest } from "../../public/lib/apiOperations";
-
-function escapeIcalText(text) {
-  if (!text) return "";
-  return text
-    .replace(/\\/g, "\\\\")
-    .replace(/;/g, "\\;")
-    .replace(/,/g, "\\,")
-    .replace(/\n/g, "\\n");
-}
+import { buildIcalEventData } from "../../src/utils/calendarHelpers";
 
 async function fetchEvent(slug, locale) {
   try {
@@ -48,18 +40,7 @@ export async function getServerSideProps(ctx) {
     prodId: { company: "Climate Connect", product: "Climate Connect" },
   });
 
-  const eventData = {
-    start: new Date(event.start_date),
-    end: new Date(event.end_date),
-    summary: event.name,
-    url: eventUrl,
-    description: event.description
-      ? escapeIcalText(event.description) + "\\n\\n" + eventUrl
-      : eventUrl,
-    location: event.is_online ? "Online" : event.location || "",
-  };
-
-  cal.createEvent(eventData);
+  cal.createEvent(buildIcalEventData(event, eventUrl));
 
   const icalString = cal.toString();
 
