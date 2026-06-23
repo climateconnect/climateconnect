@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import type { Extensions } from "@tiptap/core";
 // eslint-disable-next-line import/no-named-as-default
 import StarterKit from "@tiptap/starter-kit";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -19,7 +20,7 @@ import UserContext from "../context/UserContext";
 const CHARACTER_LIMIT = 500;
 
 // Defined outside component to avoid recreating extensions on each render
-const EXTENSIONS = [
+const EXTENSIONS: Extensions = [
   StarterKit.configure({
     italic: false,
     strike: false,
@@ -41,7 +42,7 @@ const EXTENSIONS = [
   }),
   LinkBubbleMenuHandler,
   CharacterCount.configure({ limit: CHARACTER_LIMIT }),
-] as any;
+];
 
 const useStyles = makeStyles((theme) => ({
   charCount: {
