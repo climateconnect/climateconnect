@@ -1,37 +1,8 @@
 import {
-  escapeIcalText,
   toGoogleCalendarDate,
   buildGoogleCalendarUrl,
   buildIcalEventData,
 } from "./calendarHelpers";
-
-describe("escapeIcalText", () => {
-  it("returns empty string for null/undefined", () => {
-    expect(escapeIcalText(null)).toBe("");
-    expect(escapeIcalText(undefined)).toBe("");
-    expect(escapeIcalText("")).toBe("");
-  });
-
-  it("escapes backslashes", () => {
-    expect(escapeIcalText("foo\\bar")).toBe("foo\\\\bar");
-  });
-
-  it("escapes semicolons", () => {
-    expect(escapeIcalText("foo;bar")).toBe("foo\\;bar");
-  });
-
-  it("escapes commas", () => {
-    expect(escapeIcalText("foo,bar")).toBe("foo\\,bar");
-  });
-
-  it("escapes newlines", () => {
-    expect(escapeIcalText("foo\nbar")).toBe("foo\\nbar");
-  });
-
-  it("escapes multiple special characters", () => {
-    expect(escapeIcalText("a;b,c\\d\ne")).toBe("a\\;b\\,c\\\\d\\ne");
-  });
-});
 
 describe("toGoogleCalendarDate", () => {
   it("returns empty string for null/undefined", () => {
@@ -97,6 +68,33 @@ describe("buildGoogleCalendarUrl", () => {
     const params = new URL(url).searchParams;
     expect(params.get("details")).toBe("https://example.com/event");
   });
+
+  it("falls back to short_description when description is not set", () => {
+    const event = {
+      name: "Event",
+      start_date: "2026-07-15T10:00:00Z",
+      end_date: "2026-07-15T12:00:00Z",
+      short_description: "A short summary.",
+    };
+    const url = buildGoogleCalendarUrl(event, "https://example.com/event");
+    const params = new URL(url).searchParams;
+    expect(params.get("details")).toContain("A short summary.");
+    expect(params.get("details")).toContain("https://example.com/event");
+  });
+
+  it("prefers description over short_description when both are set", () => {
+    const event = {
+      name: "Event",
+      start_date: "2026-07-15T10:00:00Z",
+      end_date: "2026-07-15T12:00:00Z",
+      description: "Full description.",
+      short_description: "Short summary.",
+    };
+    const url = buildGoogleCalendarUrl(event, "https://example.com/event");
+    const params = new URL(url).searchParams;
+    expect(params.get("details")).toContain("Full description.");
+    expect(params.get("details")).not.toContain("Short summary.");
+  });
 });
 
 describe("buildIcalEventData", () => {
@@ -139,5 +137,52 @@ describe("buildIcalEventData", () => {
     };
     const data = buildIcalEventData(event, "https://example.com/event");
     expect(data.description).toBe("https://example.com/event");
+  });
+
+  it("preserves actual newlines in description (no pre-escaping)", () => {
+    const event = {
+      name: "Event",
+      start_date: "2026-07-15T10:00:00Z",
+      end_date: "2026-07-15T12:00:00Z",
+      description: "Line one.\nLine two.",
+    };
+    const data = buildIcalEventData(event, "https://example.com/event");
+    expect(data.description).toBe("Line one.\nLine two.\n\nhttps://example.com/event");
+  });
+
+  it("preserves commas in description (no pre-escaping)", () => {
+    const event = {
+      name: "Event",
+      start_date: "2026-07-15T10:00:00Z",
+      end_date: "2026-07-15T12:00:00Z",
+      description: "First, second, third.",
+    };
+    const data = buildIcalEventData(event, "https://example.com/event");
+    expect(data.description).toContain("First, second, third.");
+  });
+
+  it("falls back to short_description when description is not set", () => {
+    const event = {
+      name: "Event",
+      start_date: "2026-07-15T10:00:00Z",
+      end_date: "2026-07-15T12:00:00Z",
+      short_description: "A short summary.",
+    };
+    const data = buildIcalEventData(event, "https://example.com/event");
+    expect(data.description).toContain("A short summary.");
+    expect(data.description).toContain("https://example.com/event");
+  });
+
+  it("prefers description over short_description when both are set", () => {
+    const event = {
+      name: "Event",
+      start_date: "2026-07-15T10:00:00Z",
+      end_date: "2026-07-15T12:00:00Z",
+      description: "Full description.",
+      short_description: "Short summary.",
+    };
+    const data = buildIcalEventData(event, "https://example.com/event");
+    expect(data.description).toContain("Full description.");
+    expect(data.description).not.toContain("Short summary.");
   });
 });
