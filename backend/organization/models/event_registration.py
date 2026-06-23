@@ -151,6 +151,18 @@ class EventRegistrationConfig(models.Model):
         verbose_name="Notify Admins",
     )
 
+    last_guest_email_sent_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None,
+        db_index=True,
+        help_text=(
+            "Timestamp of the last bulk email sent to event guests. "
+            "NULL if no email has been sent."
+        ),
+        verbose_name="Last Guest Email Sent At",
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Event Registration Config"

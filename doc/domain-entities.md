@@ -344,6 +344,7 @@ This document provides comprehensive documentation of the main domain entities i
 | `registration_end_date` | DateTimeField (TIMESTAMPTZ) | Nullable (draft allowed); must be ≤ event `end_date`; stored in UTC |
 | `status` | CharField (enum) | `open` (default) / `closed` / `full` — see status table below |
 | `notify_admins` | BooleanField | Default `True`; organiser toggle for admin notification emails on registration changes |
+| `last_guest_email_sent_at` | DateTimeField (TIMESTAMPTZ) | Nullable; timestamp of the last bulk email sent to event guests; used to filter "new guests only" recipients |
 | `created_at` | DateTimeField | Auto-set on creation |
 | `updated_at` | DateTimeField | Auto-updated on save |
 
@@ -1005,3 +1006,4 @@ This architecture supports a comprehensive climate action platform with social n
 - **2026-05-24**: Added `RegistrationFieldAnswer` entity (issue #2004). Stores registrant responses to custom fields. Polymorphic value columns: `value_boolean` (checkbox), `value_option` FK (option_select/inventory/time_slot_select), `value_number` (inventory quantity). Synced atomically via `sync_registration_answers()` on registration POST. `unique_together = [("registration", "field")]`. Updated ER tree. `EventRegistration` now has `field_answers` reverse relationship.
 - **2026-05-25**: Added `inventory` and `time_slot_select` field types to `RegistrationField.field_type` choices (issues #1995, #2006). `RegistrationFieldOption` extended with `available_amount`, `max_amount_per_guest` (inventory capacity) and `start_time`, `end_time` (time slot bounds). `RegistrationFieldAnswer` extended with `value_number` for inventory quantity. Updated `RegistrationField` description to document all four field types.
 - **2026-05-26**: Added `label` field to `RegistrationField` (max 30 chars, unique per config) and `notify_admins` field to `EventRegistrationConfig` (default `True`). Labels are auto-generated on creation and organiser-editable for export display. `notify_admins` controls whether team admins receive notification emails on registration changes.
+- **2026-06-10**: Added `last_guest_email_sent_at` field to `EventRegistrationConfig` (DateTimeField, nullable, indexed). Records when the last non-test bulk email was sent to event guests; used to filter "new guests only" recipients. Frontend toggle allows organisers to send emails only to guests who registered after the last bulk send.

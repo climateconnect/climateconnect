@@ -42,6 +42,8 @@ export type EventRegistrationData = {
   registration_enabled: boolean;
   /** Custom registration fields configured by the organiser (Phase 4a). */
   fields?: RegistrationField[];
+  /** ISO 8601 timestamp of the last bulk email sent to guests. null if never sent. */
+  last_guest_email_sent_at: string | null;
 };
 
 /** Local form state for one custom-field answer while the user is filling in the modal. */

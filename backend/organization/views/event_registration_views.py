@@ -811,12 +811,22 @@ class SendOrganizerEmailView(APIView):
             return Response({"sent_count": 1}, status=status.HTTP_200_OK)
 
         # ── 5. Bulk send — active guests + team admins (deduped) ────────
-        guest_user_ids = set(
-            EventRegistration.objects.filter(
-                registration_config=rc,
-                cancelled_at__isnull=True,
-            ).values_list("user_id", flat=True)
+        send_to_new_guests_only = serializer.validated_data.get(
+            "send_to_new_guests_only", False
         )
+
+        guest_qs = EventRegistration.objects.filter(
+            registration_config=rc,
+            cancelled_at__isnull=True,
+        )
+
+        # Apply new-guests-only filter: only guests who registered after
+        # the last bulk email send.  Ignored when the flag is False or when
+        # no prior bulk email has been sent (last_guest_email_sent_at is NULL).
+        if send_to_new_guests_only and rc.last_guest_email_sent_at:
+            guest_qs = guest_qs.filter(registered_at__gt=rc.last_guest_email_sent_at)
+
+        guest_user_ids = set(guest_qs.values_list("user_id", flat=True))
 
         # Team admins receive a copy so they have full visibility into
         # communications sent to attendees (#1886).
@@ -847,6 +857,10 @@ class SendOrganizerEmailView(APIView):
             len(admin_user_ids),
             len(guest_user_ids & admin_user_ids),
         )
+
+        # Update the timestamp so future "new guests only" sends can filter.
+        rc.last_guest_email_sent_at = timezone.now()
+        rc.save(update_fields=["last_guest_email_sent_at"])
 
         return Response({"sent_count": sent_count}, status=status.HTTP_200_OK)
 

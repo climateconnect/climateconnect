@@ -738,6 +738,8 @@ export default function ProjectRegistrationsContent({
         onClose={() => setEmailModalOpen(false)}
         project={project}
         activeGuestCount={participants.filter((p) => p.cancelled_at === null).length}
+        lastGuestEmailSentAt={eventRegistration.last_guest_email_sent_at ?? null}
+        registrations={participants}
       />
 
       <CancelGuestRegistrationModal
