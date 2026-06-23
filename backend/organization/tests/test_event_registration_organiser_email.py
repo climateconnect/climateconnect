@@ -511,6 +511,224 @@ class TestSendOrganizerEmail(APITestCase):
 
         self.assertEqual(mock_helper.call_count, 5)
 
+    # ------------------------------------------------------------------
+    # send_to_new_guests_only: filtered send — new guests only
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "new_guests_only")
+    def test_filtered_send_new_guests_only(self):
+        """send_to_new_guests_only=True with a set last_guest_email_sent_at
+        includes only guests who registered after that timestamp."""
+        # Create "old" guests (before last_guest_email_sent_at).
+        old_guests = []
+        for i in range(2):
+            old_guests.append(self._make_participant(f"old_guest_{i}"))
+
+        # Set last_guest_email_sent_at to now, then create "new" guests.
+        self.er.last_guest_email_sent_at = timezone.now()
+        self.er.save(update_fields=["last_guest_email_sent_at"])
+
+        new_guests = []
+        for i in range(2):
+            new_guests.append(self._make_participant(f"new_guest_{i}"))
+
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                self._valid_payload(is_test=False) | {"send_to_new_guests_only": True},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        recipient_ids = set(kwargs["user_ids"])
+        # Only new guests + admins should be recipients (old guests excluded).
+        for g in new_guests:
+            self.assertIn(g.id, recipient_ids)
+        for g in old_guests:
+            self.assertNotIn(g.id, recipient_ids)
+        # Admins still included.
+        self.assertIn(self.organiser.id, recipient_ids)
+        self.assertIn(self.team_admin.id, recipient_ids)
+
+    # ------------------------------------------------------------------
+    # send_to_new_guests_only=False sends to all guests
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "new_guests_only")
+    def test_send_to_new_guests_only_false_sends_to_all(self):
+        """send_to_new_guests_only=False includes all active guests."""
+        old_guest = self._make_participant("all_guest_old")
+
+        self.er.last_guest_email_sent_at = timezone.now()
+        self.er.save(update_fields=["last_guest_email_sent_at"])
+
+        new_guest = self._make_participant("all_guest_new")
+
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                self._valid_payload(is_test=False) | {"send_to_new_guests_only": False},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        recipient_ids = set(kwargs["user_ids"])
+        self.assertIn(old_guest.id, recipient_ids)
+        self.assertIn(new_guest.id, recipient_ids)
+
+    # ------------------------------------------------------------------
+    # Timestamp updated after non-test bulk send
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "new_guests_only")
+    def test_timestamp_updated_after_non_test_send(self):
+        """After a non-test bulk send, last_guest_email_sent_at is set."""
+        self.assertIsNone(self.er.last_guest_email_sent_at)
+
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        before_send = timezone.now()
+
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ):
+            self.client.post(
+                self._url(), self._valid_payload(is_test=False), format="json"
+            )
+
+        self.er.refresh_from_db()
+        self.assertIsNotNone(self.er.last_guest_email_sent_at)
+        self.assertGreaterEqual(self.er.last_guest_email_sent_at, before_send)
+
+    # ------------------------------------------------------------------
+    # Test send does NOT update timestamp
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "new_guests_only")
+    def test_test_send_does_not_update_timestamp(self):
+        """After is_test=True send, last_guest_email_sent_at stays unchanged."""
+        self.assertIsNone(self.er.last_guest_email_sent_at)
+
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views.send_organizer_message_to_guest"
+        ):
+            self.client.post(
+                self._url(), self._valid_payload(is_test=True), format="json"
+            )
+
+        self.er.refresh_from_db()
+        self.assertIsNone(self.er.last_guest_email_sent_at)
+
+    # ------------------------------------------------------------------
+    # First send (NULL timestamp) with send_to_new_guests_only=True
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "new_guests_only")
+    def test_first_send_null_timestamp_with_flag_sends_to_all(self):
+        """When last_guest_email_sent_at is NULL and send_to_new_guests_only=True,
+        the backend ignores the flag and sends to all active guests (graceful fallback).
+        """
+        guest = self._make_participant("null_ts_guest")
+        self.assertIsNone(self.er.last_guest_email_sent_at)
+
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                self._valid_payload(is_test=False) | {"send_to_new_guests_only": True},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        self.assertIn(guest.id, kwargs["user_ids"])
+
+    # ------------------------------------------------------------------
+    # Cancelled guests excluded even if registered_at > last_guest_email_sent_at
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "new_guests_only")
+    def test_cancelled_guests_excluded_from_filtered_send(self):
+        """Cancelled registrations are not included even if registered_at > last_guest_email_sent_at."""
+        self._make_participant("cancelled_new_guest")
+
+        self.er.last_guest_email_sent_at = timezone.now()
+        self.er.save(update_fields=["last_guest_email_sent_at"])
+
+        # Create a new guest who registered after last_guest_email_sent_at
+        # but then cancelled.
+        new_guest = self._make_participant("cancelled_guest_after_ts")
+        reg = EventRegistration.objects.get(user=new_guest, registration_config=self.er)
+        reg.cancelled_at = timezone.now()
+        reg.save(update_fields=["cancelled_at"])
+
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                self._valid_payload(is_test=False) | {"send_to_new_guests_only": True},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        recipient_ids = set(kwargs["user_ids"])
+        self.assertNotIn(new_guest.id, recipient_ids)
+
+    # ------------------------------------------------------------------
+    # Admin deduplication still works with filtered send
+    # ------------------------------------------------------------------
+
+    @tag("organizer_email", "new_guests_only")
+    def test_admin_deduplication_with_filtered_send(self):
+        """Admin who is also a registered guest (registered after last_guest_email_sent_at)
+        appears only once in the recipient list."""
+        self.er.last_guest_email_sent_at = timezone.now()
+        self.er.save(update_fields=["last_guest_email_sent_at"])
+
+        # Register the organiser (ALL_TYPE admin) as a guest after last_guest_email_sent_at.
+        EventRegistration.objects.create(
+            user=self.organiser, registration_config=self.er
+        )
+
+        self.client.login(username="organiser_send_email", password="testpassword")
+
+        with mock_patch(
+            "organization.views.event_registration_views._send_organizer_email_task"
+        ) as mock_task:
+            response = self.client.post(
+                self._url(),
+                self._valid_payload(is_test=False) | {"send_to_new_guests_only": True},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        _, kwargs = mock_task.delay.call_args
+        recipient_ids = kwargs["user_ids"]
+        # organiser (guest + admin) counted once + team_admin (admin only) = 2
+        self.assertEqual(len(recipient_ids), 2)
+        self.assertEqual(len(set(recipient_ids)), 2)
+        self.assertIn(self.organiser.id, recipient_ids)
+        self.assertIn(self.team_admin.id, recipient_ids)
+
 
 class TestOrganizerEmailHtmlSanitization(APITestCase):
     """
