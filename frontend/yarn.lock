@@ -2007,13 +2007,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googlemaps/js-api-loader@npm:1.6.0":
-  version: 1.6.0
-  resolution: "@googlemaps/js-api-loader@npm:1.6.0"
-  checksum: 10c0/417c6daf83cf309f754410e33cfc64b455947a6efca4abc32c52ca2fc9204e5f1f44d1766abaed12e7159161d8169a892f2e5d669ee305069b0d7e60a89b111e
-  languageName: node
-  linkType: hard
-
 "@humanwhocodes/config-array@npm:^0.13.0":
   version: 0.13.0
   resolution: "@humanwhocodes/config-array@npm:0.13.0"
@@ -4237,35 +4230,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-google-maps/api@npm:^1.13.0":
-  version: 1.13.0
-  resolution: "@react-google-maps/api@npm:1.13.0"
-  dependencies:
-    "@googlemaps/js-api-loader": "npm:1.6.0"
-    "@react-google-maps/infobox": "npm:1.12.1"
-    "@react-google-maps/marker-clusterer": "npm:1.12.1"
-    invariant: "npm:2.2.4"
-  peerDependencies:
-    react: ^16.6.3
-    react-dom: ^16.6.3
-  checksum: 10c0/f1ae81e7de8afda4d48935a7c37921ebdb5128cc01b22d68bb5b79fd6d9347f7c179600163ac3f953cfbf620532f334692aeff678c7776f8019fd54a24680cef
-  languageName: node
-  linkType: hard
-
-"@react-google-maps/infobox@npm:1.12.1":
-  version: 1.12.1
-  resolution: "@react-google-maps/infobox@npm:1.12.1"
-  checksum: 10c0/8de00ff2f2000856d7d9d66555ee67bebb9fb9421d794fe0c2bead7b8060566d1ca4e6f0cbdadaa7b206d47cee446b8d73faa6c22aa26885d5cb554d7c0a8201
-  languageName: node
-  linkType: hard
-
-"@react-google-maps/marker-clusterer@npm:1.12.1":
-  version: 1.12.1
-  resolution: "@react-google-maps/marker-clusterer@npm:1.12.1"
-  checksum: 10c0/ab9cc4df0da95b1f6ec9ebff133cb1ae6cf795d9281b601df76316f9bc62a3235224deb45b289ea95846681c20392cb26afe7b8b72945418eaf2cf0f72aff801
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-commonjs@npm:28.0.1":
   version: 28.0.1
   resolution: "@rollup/plugin-commonjs@npm:28.0.1"
@@ -5550,16 +5514,6 @@ __metadata:
   peerDependencies:
     "@tiptap/core": 3.27.0
   checksum: 10c0/8355b855591fa3e0c2c593f06335f561635a67f046d8551e1317e038f0f31d766d8980cbc1d66559a3dbb968f78fc54983fbe704b8de24b51b232da82c690d53
-  languageName: node
-  linkType: hard
-
-"@tiptap/extensions@npm:3.26.0":
-  version: 3.26.0
-  resolution: "@tiptap/extensions@npm:3.26.0"
-  peerDependencies:
-    "@tiptap/core": 3.26.0
-    "@tiptap/pm": 3.26.0
-  checksum: 10c0/87f4dc970e9c5db4ae1b8a358335681c715ad1ef48df6fc33100ebfdbe3616eb12d5f8949540d2d955caf1c3c65e49b6e337d43b7d7d25c3fc79b475ba7f334e
   languageName: node
   linkType: hard
 
@@ -7868,7 +7822,6 @@ __metadata:
     "@mui/x-data-grid": "npm:^7.0.0"
     "@mui/x-date-pickers": "npm:^7.0.0"
     "@next/bundle-analyzer": "npm:^15.5.19"
-    "@react-google-maps/api": "npm:^1.13.0"
     "@sentry/nextjs": "npm:^10.57.0"
     "@svgr/webpack": "npm:^8.1.0"
     "@testing-library/dom": "npm:^10.4.1"
@@ -7882,7 +7835,6 @@ __metadata:
     "@tiptap/extension-link": "npm:3.26.0"
     "@tiptap/extension-table": "npm:3.26.0"
     "@tiptap/extension-text-align": "npm:^3.26.0"
-    "@tiptap/extensions": "npm:3.26.0"
     "@tiptap/pm": "npm:3.26.0"
     "@tiptap/react": "npm:3.26.0"
     "@tiptap/starter-kit": "npm:3.26.0"
@@ -11186,7 +11138,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:2.2.4, invariant@npm:^2.2.4":
+"invariant@npm:^2.2.4":
   version: 2.2.4
   resolution: "invariant@npm:2.2.4"
   dependencies:
