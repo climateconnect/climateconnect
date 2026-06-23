@@ -114,6 +114,7 @@ export default function ProjectPageRoot({
   isRegistered,
   hasAttended,
   adminCancelled,
+  onMembersRefreshed,
 }) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -711,6 +712,7 @@ export default function ProjectPageRoot({
             hubUrl={hubPage}
             eventRegistration={currentEventRegistration}
             onEventRegistrationUpdated={setCurrentEventRegistration}
+            onMembersRefreshed={onMembersRefreshed}
           />
         </TabContent>
         {showRegistrationsTab && (

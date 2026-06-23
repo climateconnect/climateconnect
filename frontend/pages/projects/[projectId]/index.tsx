@@ -164,6 +164,7 @@ export default function ProjectPage({
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
+  const [currentMembers, setCurrentMembers] = useState(members);
   const [message, setMessage] = useState({ message: undefined, messageType: undefined });
   const [isUserFollowing, setIsUserFollowing] = useState(following);
   const [isUserLiking, setIsUserLiking] = useState(liking);
@@ -248,6 +249,13 @@ export default function ProjectPage({
     setRequestedToJoinProject(newValue);
   };
 
+  const refreshMembers = async () => {
+    const updatedMembers = await getProjectMembersByIdIfExists(project.url_slug, locale);
+    if (updatedMembers) {
+      setCurrentMembers(updatedMembers);
+    }
+  };
+
   const handleWindowClose = (e) => {
     if (
       curComments.filter((c) => c.unconfirmed).length > 0 ||
@@ -306,7 +314,7 @@ export default function ProjectPage({
               <ProjectPageRoot
                 project={{
                   ...project,
-                  team: members,
+                  team: currentMembers,
                   timeline_posts: posts,
                   comments: curComments,
                 }}
@@ -326,6 +334,7 @@ export default function ProjectPage({
                 showSimilarProjects={showSimilarProjects}
                 requestedToJoinProject={requestedToJoinProject}
                 handleJoinRequest={handleJoinRequest}
+                onMembersRefreshed={refreshMembers}
                 hubSupporters={hubSupporters}
                 hubPage={hubUrl}
                 siblingProjects={siblingProjects}

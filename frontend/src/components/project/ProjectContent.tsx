@@ -158,6 +158,7 @@ export default function ProjectContent({
   hubUrl,
   eventRegistration,
   onEventRegistrationUpdated,
+  onMembersRefreshed,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { locale } = useContext(UserContext);
@@ -214,6 +215,7 @@ export default function ProjectContent({
             hubUrl={hubUrl}
             eventRegistration={eventRegistration}
             onEventRegistrationUpdated={onEventRegistrationUpdated}
+            onMembersRefreshed={onMembersRefreshed}
           />
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
