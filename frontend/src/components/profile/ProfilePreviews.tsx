@@ -1,4 +1,4 @@
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
@@ -69,10 +69,7 @@ export default function ProfilePreviews({
           return (
             <Grid
               key={profile.props?.profile?.url_slug || profile.url_slug}
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
+              size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
               component="li"
               ref={isLastElement ? lastElementRef : null}
             >

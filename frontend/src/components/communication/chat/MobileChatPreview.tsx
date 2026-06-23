@@ -1,4 +1,4 @@
-import { Avatar, Badge, Divider, ListItem, ListItemText } from "@mui/material";
+import { Avatar, Badge, Divider, ListItemButton, ListItemText } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import GroupIcon from "@mui/icons-material/Group";
 import React, { useContext } from "react";
@@ -43,9 +43,8 @@ export default function MobileChatPreview({ chat, isFirstChat, forwardedRef }) {
   return (
     <>
       {isFirstChat && <Divider component="li" />}
-      <ListItem
+      <ListItemButton
         ref={forwardedRef}
-        button
         component="a"
         href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid}
         alignItems="center"
@@ -82,7 +81,7 @@ export default function MobileChatPreview({ chat, isFirstChat, forwardedRef }) {
             </span>
           )}
         </span>
-      </ListItem>
+      </ListItemButton>
       <Divider component="li" />
     </>
   );
