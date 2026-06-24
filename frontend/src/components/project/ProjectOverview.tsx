@@ -27,6 +27,7 @@ import projectOverviewStyles from "../../../public/styles/projectOverviewStyles"
 import UserContext from "../context/UserContext";
 import { Project } from "../../types";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import ProjectAddToCalendarButton from "../calendar/ProjectAddToCalendarButton";
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
 import WasseraktionswochenLink from "../hub/WasseraktionswochenLink";
 import { isWasseraktionswochenSubEvent } from "../../../public/data/wasseraktionswochen_config.js";
@@ -91,12 +92,18 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       marginLeft: theme.spacing(1),
       marginTop: theme.spacing(1),
     },
-    shareButtonContainer: {
+    shareButtonContainer: {},
+    calendarButtonContainer: {},
+    actionButtonsGroup: {
       position: "absolute",
       right: 0,
       bottom: 0,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
       marginRight: theme.spacing(1),
       marginBottom: theme.spacing(1.6),
+      gap: theme.spacing(0.5),
     },
     imageContainer: {
       position: "relative",
@@ -242,6 +249,7 @@ export default function ProjectOverview({
     hubUrl: hubUrl,
     isWasseraktionswochenEnabled: isWasseraktionswochenEnabled,
     showAttendedInPast: registrationState === "attended",
+    isUserRegistered: isUserRegistered,
   };
 
   return (
@@ -379,6 +387,7 @@ function SmallScreenOverview({
   hubUrl,
   isWasseraktionswochenEnabled,
   showAttendedInPast,
+  isUserRegistered,
 }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
@@ -396,12 +405,19 @@ function SmallScreenOverview({
             project={project}
           />
         )}
-        <ProjectSocialMediaShareButton
-          className={classes.shareButtonContainer}
-          project={project}
-          projectAdmin={projectAdmin}
-          hubUrl={hubUrl}
-        />
+        <div className={classes.actionButtonsGroup}>
+          <ProjectAddToCalendarButton
+            className={classes.calendarButtonContainer}
+            project={project}
+            isUserRegistered={isUserRegistered}
+          />
+          <ProjectSocialMediaShareButton
+            className={classes.shareButtonContainer}
+            project={project}
+            projectAdmin={projectAdmin}
+            hubUrl={hubUrl}
+          />
+        </div>
         <img
           className={classes.fullWidthImage}
           src={getImageUrl(project.image)}

@@ -136,6 +136,11 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       {
+        source: "/balkonien-em",
+        destination: "/de/projects/balkonien-26-in-kenzingen?hub=em",
+        permanent: true,
+      },
+      {
         source: "/hubs/prio1",
         destination: "/hubs/prio1/browse",
         permanent: false,

@@ -1593,6 +1593,19 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Team admins will also receive a copy.",
       de: "Team-Admins erhalten ebenfalls eine Kopie.",
     },
+    email_send_to_new_guests_only: {
+      en: "Send only to new guests (registered since {date})",
+      de: "Nur an neue Gäste senden (registriert seit {date})",
+    },
+    email_all_guests_will_receive: {
+      en: "All {count} active guests will receive this message.",
+      de: "Alle {count} aktiven Gäste erhalten diese Nachricht.",
+    },
+    email_new_guests_will_receive: {
+      en: "{count} of {total} guests registered since {date} will receive this message.",
+      de:
+        "{count} von {total} Gästen, die sich seit {date} registriert haben, erhalten diese Nachricht.",
+    },
     editor_bold: {
       en: "Bold",
       de: "Fett",
@@ -1898,6 +1911,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en:
         "*Required fields - unfortunately, you cannot participate without providing this information",
       de: "*Pflichtfelder - ohne diese Angaben ist eine Teilnahme leider nicht möglich",
+    },
+    add_to_calendar: {
+      en: "Add to Calendar",
+      de: "Zum Kalender hinzufügen",
+    },
+    add_to_google_calendar: {
+      en: "Google Calendar",
+      de: "Google Kalender",
+    },
+    add_to_apple_calendar: {
+      en: "Apple Calendar / iCal",
+      de: "Apple Kalender / iCal",
+    },
+    you_are_registered_for_this_event: {
+      en: "You're registered for this event.",
+      de: "Du bist für diese Veranstaltung angemeldet.",
+    },
+    not_registered_yet_reminder: {
+      en: "Not registered yet \u2014 don't forget to sign up!",
+      de: "Noch nicht angemeldet \u2014 Vergiss nicht, dich anzumelden!",
     },
   };
 }

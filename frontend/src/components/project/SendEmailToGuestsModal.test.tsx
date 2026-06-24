@@ -73,16 +73,31 @@ function makeContextValue(email?: string) {
   };
 }
 
+function makeRegistration(
+  overrides: Partial<{ id: number; registered_at: string; cancelled_at: string | null }> = {}
+) {
+  return {
+    id: 1,
+    registered_at: new Date().toISOString(),
+    cancelled_at: null,
+    ...overrides,
+  };
+}
+
 function renderModal({
   project = makeProject(),
   onClose = jest.fn(),
   email = ORGANISER_EMAIL,
   activeGuestCount = 5,
+  lastGuestEmailSentAt = null,
+  registrations = [],
 }: {
   project?: Project;
   onClose?: jest.Mock;
   email?: string;
   activeGuestCount?: number;
+  lastGuestEmailSentAt?: string | null;
+  registrations?: Array<{ id: number; registered_at: string; cancelled_at: string | null }>;
 } = {}) {
   return render(
     <ThemeProvider theme={theme}>
@@ -92,6 +107,8 @@ function renderModal({
           onClose={onClose}
           project={project}
           activeGuestCount={activeGuestCount}
+          lastGuestEmailSentAt={lastGuestEmailSentAt}
+          registrations={registrations}
         />
       </UserContext.Provider>
     </ThemeProvider>
@@ -352,6 +369,8 @@ describe("SendEmailToGuestsModal", () => {
               onClose={onClose}
               project={makeProject()}
               activeGuestCount={3}
+              lastGuestEmailSentAt={null}
+              registrations={[]}
             />
           </UserContext.Provider>
         </ThemeProvider>
@@ -389,6 +408,118 @@ describe("SendEmailToGuestsModal", () => {
       );
       fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
       expect(onClose).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("new guests only toggle", () => {
+    it("hides toggle when lastGuestEmailSentAt is null", () => {
+      renderModal({ lastGuestEmailSentAt: null });
+      expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    });
+
+    it("shows toggle with formatted date when lastGuestEmailSentAt exists and newGuestCount > 0", () => {
+      const lastSend = "2026-06-05T10:00:00Z";
+      const registrations = [
+        makeRegistration({ id: 1, registered_at: "2026-06-01T10:00:00Z" }),
+        makeRegistration({ id: 2, registered_at: "2026-06-10T10:00:00Z" }),
+      ];
+      renderModal({ lastGuestEmailSentAt: lastSend, registrations });
+      const checkbox = screen.getByRole("checkbox");
+      expect(checkbox).toBeInTheDocument();
+      expect(checkbox).not.toBeChecked();
+    });
+
+    it("hides toggle when lastGuestEmailSentAt exists but newGuestCount is 0", () => {
+      const lastSend = "2026-06-15T10:00:00Z";
+      const registrations = [
+        makeRegistration({ id: 1, registered_at: "2026-06-01T10:00:00Z" }),
+        makeRegistration({ id: 2, registered_at: "2026-06-10T10:00:00Z" }),
+      ];
+      renderModal({ lastGuestEmailSentAt: lastSend, registrations });
+      expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    });
+
+    it("updates recipient count when toggle is changed", async () => {
+      const lastSend = "2026-06-05T10:00:00Z";
+      const registrations = [
+        makeRegistration({ id: 1, registered_at: "2026-06-01T10:00:00Z" }),
+        makeRegistration({ id: 2, registered_at: "2026-06-10T10:00:00Z" }),
+      ];
+      renderModal({
+        activeGuestCount: 2,
+        lastGuestEmailSentAt: lastSend,
+        registrations,
+      });
+
+      // Toggle defaults to OFF — confirmation should show 2 guests
+      fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
+        target: { value: "Hi" },
+      });
+      typeInEditor("Body");
+      fireEvent.click(screen.getByRole("button", { name: /send now/i }));
+      await waitFor(() => expect(screen.getByText(/2 registered guests/i)).toBeInTheDocument());
+    });
+
+    it("toggle defaults to OFF", () => {
+      const lastSend = "2026-06-05T10:00:00Z";
+      const registrations = [makeRegistration({ id: 2, registered_at: "2026-06-10T10:00:00Z" })];
+      renderModal({ lastGuestEmailSentAt: lastSend, registrations });
+      expect(screen.getByRole("checkbox")).not.toBeChecked();
+    });
+
+    it("API payload includes send_to_new_guests_only: true when toggle is on", async () => {
+      const lastSend = "2026-06-05T10:00:00Z";
+      const registrations = [makeRegistration({ id: 2, registered_at: "2026-06-10T10:00:00Z" })];
+      renderModal({
+        activeGuestCount: 1,
+        lastGuestEmailSentAt: lastSend,
+        registrations,
+      });
+
+      // Turn on the toggle
+      fireEvent.click(screen.getByRole("checkbox"));
+
+      // Fill and send
+      fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
+        target: { value: "Update" },
+      });
+      typeInEditor("Body");
+      fireEvent.click(screen.getByRole("button", { name: /send now/i }));
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: /confirm and send/i })).toBeInTheDocument()
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole("button", { name: /confirm and send/i }));
+      });
+
+      await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
+      expect(mockApiRequest.mock.calls[0][0].payload.send_to_new_guests_only).toBe(true);
+    });
+
+    it("API payload includes send_to_new_guests_only: false when toggle is off", async () => {
+      const lastSend = "2026-06-05T10:00:00Z";
+      const registrations = [makeRegistration({ id: 2, registered_at: "2026-06-10T10:00:00Z" })];
+      renderModal({
+        activeGuestCount: 1,
+        lastGuestEmailSentAt: lastSend,
+        registrations,
+      });
+
+      // Leave toggle OFF, fill and send
+      fireEvent.change(screen.getByRole("textbox", { name: /subject/i }), {
+        target: { value: "Update" },
+      });
+      typeInEditor("Body");
+      fireEvent.click(screen.getByRole("button", { name: /send now/i }));
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: /confirm and send/i })).toBeInTheDocument()
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole("button", { name: /confirm and send/i }));
+      });
+
+      await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
+      expect(mockApiRequest.mock.calls[0][0].payload.send_to_new_guests_only).toBe(false);
     });
   });
 });

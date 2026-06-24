@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemIcon, Typography } from "@mui/material";
+import { List, ListItemButton, ListItemIcon, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import UserContext from "../../context/UserContext";
@@ -59,11 +59,11 @@ const DonorBadgeListEntry = ({ badge }) => {
     }`,
   };
   return (
-    <ListItem /* TODO(undefined) className={classes.listItem} */>
+    <ListItemButton /* TODO(undefined) className={classes.listItem} */>
       <ListItemIcon className={classes.listItemIcon}>
         <ProfileBadge contentOnly badge={badge} />
       </ListItemIcon>
       <Typography className={classes.badgeExplainerText}>{badgeText[locale]}</Typography>
-    </ListItem>
+    </ListItemButton>
   );
 };

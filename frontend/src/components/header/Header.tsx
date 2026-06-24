@@ -9,7 +9,7 @@ import {
   IconButton,
   Link,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   MenuItem,
@@ -790,13 +790,13 @@ function NarrowScreenLinks({
         >
           <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <List sx={{ flexGrow: 1 }}>
-              <ListItem className={classes.languageSelectMobile}>
+              <ListItemButton className={classes.languageSelectMobile}>
                 <LanguageSelect
                   transparentHeader={transparentHeader}
                   isCustomHub={isCustomHub}
                   isLandingPage={isLandingPage}
                 />
-              </ListItem>
+              </ListItemButton>
               {LINKS.filter(
                 (link) =>
                   (!link.alwaysDisplayDirectly ||
@@ -827,12 +827,12 @@ function NarrowScreenLinks({
                         underline="hover"
                         className={classes.linkUnderline}
                       >
-                        <ListItem button onClick={closeDrawer}>
+                        <ListItemButton component="a" onClick={closeDrawer}>
                           <ListItemIcon>
                             <Icon className={classes.drawerItem} />
                           </ListItemIcon>
                           <ListItemText primary={link.text} className={classes.drawerItem} />
-                        </ListItem>
+                        </ListItemButton>
                       </Link>
                     );
                   }
@@ -871,12 +871,12 @@ function NarrowScreenLinks({
                       );
                     else if (link.isLogoutButton)
                       return (
-                        <ListItem button key={index} onClick={handleLogout}>
+                        <ListItemButton component="a" key={index} onClick={handleLogout}>
                           <ListItemIcon>
                             <Icon className={classes.drawerItem} />
                           </ListItemIcon>
                           <ListItemText primary={link.text} className={classes.drawerItem} />
-                        </ListItem>
+                        </ListItemButton>
                       );
                     else
                       return (
@@ -886,12 +886,12 @@ function NarrowScreenLinks({
                           underline="hover"
                           className={classes.linkUnderline}
                         >
-                          <ListItem button onClick={closeDrawer}>
+                          <ListItemButton component="a" onClick={closeDrawer}>
                             <ListItemIcon>
                               <Icon className={classes.drawerItem} />
                             </ListItemIcon>
                             <ListItemText primary={link.text} className={classes.drawerItem} />
-                          </ListItem>
+                          </ListItemButton>
                         </Link>
                       );
                   }
@@ -904,27 +904,27 @@ function NarrowScreenLinks({
                 underline="hover"
                 className={classes.linkUnderline}
               >
-                <ListItem button onClick={closeDrawer}>
+                <ListItemButton component="a" onClick={closeDrawer}>
                   <ListItemText primary={texts.imprint} className={classes.drawerItem} />
-                </ListItem>
+                </ListItemButton>
               </Link>
               <Link
                 href={localePrefix + "/privacy"}
                 underline="hover"
                 className={classes.linkUnderline}
               >
-                <ListItem button onClick={closeDrawer}>
+                <ListItemButton component="a" onClick={closeDrawer}>
                   <ListItemText primary={texts.privacy} className={classes.drawerItem} />
-                </ListItem>
+                </ListItemButton>
               </Link>
               <Link
                 href={localePrefix + "/terms"}
                 underline="hover"
                 className={classes.linkUnderline}
               >
-                <ListItem button onClick={closeDrawer}>
+                <ListItemButton component="a" onClick={closeDrawer}>
                   <ListItemText primary={texts.terms} className={classes.drawerItem} />
-                </ListItem>
+                </ListItemButton>
               </Link>
             </List>
           </Box>
@@ -946,13 +946,13 @@ const NarrowScreenDropdownMenu = ({
   const toggleDropdownInMobile = setOpenDropdownInMobile.bind(null, !openDropdownInMobile);
   return (
     <>
-      <ListItem button onClick={toggleDropdownInMobile}>
+      <ListItemButton component="a" onClick={toggleDropdownInMobile}>
         <ListItemIcon>
           <Icon className={classes.drawerItem} />
         </ListItemIcon>
         <ListItemText primary={link.text} className={classes.drawerItem} />
         <ArrowDropDownIcon className={classes.drawerItem} />
-      </ListItem>
+      </ListItemButton>
       <div
         className={`${classes.dropDownBgColorInMobile} ${classes.dropdownMenuInMobile} ${
           openDropdownInMobile ? classes.dropdownMenuInMobileOpen : ""
@@ -967,9 +967,9 @@ const NarrowScreenDropdownMenu = ({
               className={classes.linkUnderline}
               target={link.target || "_self"}
             >
-              <ListItem button onClick={closeDrawer}>
+              <ListItemButton component="a" onClick={closeDrawer}>
                 <ListItemText primary={link.text} className={classes.drawerItem} />
-              </ListItem>
+              </ListItemButton>
             </Link>
           );
         })}

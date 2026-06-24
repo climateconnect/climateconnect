@@ -384,9 +384,9 @@ export default function ProjectRegistrationsContent({
         sortable: false,
         filterable: false,
         disableColumnMenu: true,
-        valueGetter: (params) => {
-          const row = params.row as EventRegistration;
-          const answerForField = row.field_answers.find((a) => a.field === field.id);
+        valueGetter: (_value, row) => {
+          const typedRow = row as EventRegistration;
+          const answerForField = typedRow.field_answers.find((a) => a.field === field.id);
           const cols = resolveAnswerToStrings(field, answerForField, locale);
           return cols[i]?.value ?? "";
         },
@@ -534,14 +534,9 @@ export default function ProjectRegistrationsContent({
                     type: "dateTime",
                     flex: 1,
                     minWidth: 160,
-                    valueGetter: (params) =>
-                      params.value ? new Date(params.value as string) : null,
-                    valueFormatter: (params) =>
-                      params.value
-                        ? dayjs(params.value as Date)
-                            .locale(locale)
-                            .format("DD MMM YYYY, HH:mm")
-                        : "—",
+                    valueGetter: (value) => (value ? new Date(value as string) : null),
+                    valueFormatter: (value: Date | null) =>
+                      value ? dayjs(value).locale(locale).format("DD MMM YYYY, HH:mm") : "—",
                   },
                   {
                     // Hidden column — ISO 8601 registration timestamp for CSV export
@@ -551,8 +546,8 @@ export default function ProjectRegistrationsContent({
                     sortable: false,
                     filterable: false,
                     disableColumnMenu: true,
-                    valueGetter: (params) =>
-                      params.row.registered_at ? params.row.registered_at.split(".")[0] + "Z" : "",
+                    valueGetter: (_value, row) =>
+                      row.registered_at ? row.registered_at.split(".")[0] + "Z" : "",
                   },
                   {
                     field: "cancelled_at",
@@ -560,8 +555,8 @@ export default function ProjectRegistrationsContent({
                     width: 120,
                     sortable: true,
                     disableColumnMenu: true,
-                    valueFormatter: (params) =>
-                      params.value
+                    valueFormatter: (value: string | null) =>
+                      value
                         ? (texts.registration_status_cancelled as string)
                         : (texts.registration_status_active as string),
                     renderCell: (params) => {
@@ -602,8 +597,8 @@ export default function ProjectRegistrationsContent({
                     sortable: false,
                     filterable: false,
                     disableColumnMenu: true,
-                    valueGetter: (params) =>
-                      params.row.cancelled_at ? params.row.cancelled_at.split(".")[0] + "Z" : "",
+                    valueGetter: (_value, row) =>
+                      row.cancelled_at ? row.cancelled_at.split(".")[0] + "Z" : "",
                   },
                   ...customFieldColumns,
                   {
@@ -738,6 +733,8 @@ export default function ProjectRegistrationsContent({
         onClose={() => setEmailModalOpen(false)}
         project={project}
         activeGuestCount={participants.filter((p) => p.cancelled_at === null).length}
+        lastGuestEmailSentAt={eventRegistration.last_guest_email_sent_at ?? null}
+        registrations={participants}
       />
 
       <CancelGuestRegistrationModal

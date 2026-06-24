@@ -112,6 +112,7 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
             "notify_admins",
             "is_draft",
             "registration_enabled",
+            "last_guest_email_sent_at",
         ]
         extra_kwargs = {
             # PositiveIntegerField gives us min_value via the model, but we set
@@ -126,6 +127,7 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
             "notify_admins": {"required": False},
             "is_draft": {"required": False},
             "registration_enabled": {"required": False},
+            "last_guest_email_sent_at": {"read_only": True},
         }
 
     def get_available_seats(self, obj):
@@ -642,11 +644,15 @@ class SendOrganizerEmailSerializer(serializers.Serializer):
         message  — HTML body (max 30000 chars, required). Sanitized server-side.
         is_test  — when True, send a single test email to the organiser only;
                    when False (default), bulk-send to all active participants.
+        send_to_new_guests_only — when True, filter recipients to only guests
+                   who registered after the last bulk email send.  Ignored when
+                   is_test is True or when no prior bulk email has been sent.
     """
 
     subject = serializers.CharField(max_length=200, allow_blank=False)
     message = serializers.CharField(max_length=30000, allow_blank=False)
     is_test = serializers.BooleanField(default=False)
+    send_to_new_guests_only = serializers.BooleanField(default=False, required=False)
 
 
 class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
