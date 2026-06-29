@@ -65,7 +65,6 @@ export default function TeamContent({ project, handleReadNotifications, hubUrl }
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
-
   useEffect(() => {
     const readNotifications = async () => {
       try {
@@ -112,6 +111,7 @@ export default function TeamContent({ project, handleReadNotifications, hubUrl }
           allowMessage
           showAdditionalInfo={true}
           hubUrl={hubUrl}
+          parentHandlesGridItems={true}
         />
       </>
     );
