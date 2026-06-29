@@ -13,6 +13,8 @@ type Args = {
   locationOptionsOpen?: boolean;
   handleSetLocationOptionsOpen?: Function;
   onChangeLocation?: Function; //Set this if you want the component to be controlled
+  onChangeLocationString?: Function;
+  locationErrorMessage?: string;
 };
 
 export default function ProjectLocationSearchBar({
@@ -24,16 +26,22 @@ export default function ProjectLocationSearchBar({
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
   onChangeLocation,
+  onChangeLocationString,
+  locationErrorMessage,
 }: Args) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const PROJECT_TYPES_WITH_ADD_INFO = ["event"];
 
   const handleChangeLocationString = (newLocationString) => {
-    handleSetProjectData({
-      ...projectData,
-      loc: newLocationString,
-    });
+    if (onChangeLocationString) {
+      onChangeLocationString(newLocationString);
+    } else {
+      handleSetProjectData({
+        ...projectData,
+        loc: newLocationString,
+      });
+    }
   };
 
   const handleChangeLocation = (location) => {
@@ -79,8 +87,11 @@ export default function ProjectLocationSearchBar({
       className={className}
       label={texts.location}
       helperText={
-        hideHelperText ? null : propsByProjectType[projectData.project_type.type_id]?.helperText
+        hideHelperText
+          ? null
+          : locationErrorMessage || propsByProjectType[projectData.project_type.type_id]?.helperText
       }
+      hasError={Boolean(locationErrorMessage)}
       enableExactLocation
       value={projectData.loc}
       onChange={handleChangeLocationString}

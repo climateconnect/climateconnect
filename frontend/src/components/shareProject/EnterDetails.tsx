@@ -97,6 +97,7 @@ export default function EnterDetails({
     registration_end_date: "",
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [locationErrorMessage, setLocationErrorMessage] = useState("");
   const locationInputRef = useRef(null);
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const classes = useStyles(projectData);
@@ -187,9 +188,59 @@ export default function EnterDetails({
 
   // Validate registration fields for draft saves:
   // required fields are skipped, but if a value was entered it must be valid.
+  const validateDraftLocation = (project) => {
+    if (!project?.loc) return true;
+    if (!isLocationValid(project.loc)) {
+      indicateWrongLocation(
+        locationInputRef,
+        setLocationOptionsOpen,
+        (message) => {
+          setLocationErrorMessage(message);
+          setMessage(message);
+        },
+        texts
+      );
+      return false;
+    }
+    setLocationErrorMessage("");
+    return true;
+  };
+
   const handleSaveAsDraft = (event) => {
+    if (!validateDraftLocation(projectData)) return;
     if (!validateRegistrationSettings(projectData, true)) return;
     saveAsDraft(event);
+  };
+
+  const handleChangeLocation = (location) => {
+    if (!isLocationValid(location)) {
+      indicateWrongLocation(
+        locationInputRef,
+        setLocationOptionsOpen,
+        (message) => {
+          setLocationErrorMessage(message);
+          setMessage(message);
+        },
+        texts
+      );
+      return;
+    }
+    setLocationOptionsOpen(false);
+    setLocationErrorMessage("");
+    setMessage("");
+    handleSetProjectData({
+      ...projectData,
+      loc: location,
+    });
+  };
+
+  const handleChangeLocationString = (newLocationString) => {
+    setLocationErrorMessage("");
+    setMessage("");
+    handleSetProjectData({
+      ...projectData,
+      loc: newLocationString,
+    });
   };
 
   const onClickNextStep = (event) => {
@@ -239,9 +290,18 @@ export default function EnterDetails({
       return false;
     }
     if (!isLocationValid(project.loc)) {
-      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
+      indicateWrongLocation(
+        locationInputRef,
+        setLocationOptionsOpen,
+        (message) => {
+          setLocationErrorMessage(message);
+          setMessage(message);
+        },
+        texts
+      );
       return false;
     }
+    setLocationErrorMessage("");
     // Validate event registration settings when enabled
     if (!validateRegistrationSettings(project)) return false;
     return true;
@@ -268,6 +328,9 @@ export default function EnterDetails({
             locationOptionsOpen={locationOptionsOpen}
             setLocationOptionsOpen={setLocationOptionsOpen}
             errors={errors}
+            onChangeLocation={handleChangeLocation}
+            onChangeLocationString={handleChangeLocationString}
+            locationErrorMessage={locationErrorMessage}
           />
           <div className={classes.block}>
             <AddPhotoSection

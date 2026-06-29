@@ -44,6 +44,7 @@ type Props = {
   hideHelperText?: boolean;
   filterMode?: boolean;
   color?: TextFieldProps["color"];
+  hasError?: boolean;
 };
 
 export default function LocationSearchBar({
@@ -69,6 +70,7 @@ export default function LocationSearchBar({
   hideHelperText,
   filterMode = false, //Are we filtering any content by this location?
   color,
+  hasError,
 }: Props) {
   const { locale, hubUrl } = useContext(UserContext);
   const classes = useStyles({ hideHelperText: hideHelperText });
@@ -345,6 +347,7 @@ export default function LocationSearchBar({
             variant="outlined"
             onChange={handleInputChange}
             helperText={helperText}
+            error={Boolean(hasError)}
             size={smallInput && "small"}
             inputRef={locationInputRef}
             // @ts-ignore - contrast is a custom color defined in theme

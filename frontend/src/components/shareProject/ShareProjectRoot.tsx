@@ -15,7 +15,7 @@ import EnterDetails from "./EnterDetails";
 import ProjectSubmittedPage from "./ProjectSubmittedPage";
 import ShareProject from "./ShareProject";
 import { Project, Role, Organization, Sector } from "../../types";
-import { parseLocation } from "../../../public/lib/locationOperations";
+import { isLocationValid, parseLocation } from "../../../public/lib/locationOperations";
 import SelectSectors from "./SelectSectors";
 import EventRegistrationStep from "./EventRegistrationStep";
 import dayjs from "dayjs";
@@ -532,9 +532,11 @@ const formatProjectForRequest = async (project, translations) => {
     ...projectRest
   } = project;
   const hasLocation = project.loc && Object.keys(project.loc).length > 0;
+  const hasValidLocation = hasLocation && isLocationValid(project.loc);
   return {
     ...projectRest,
-    loc: hasLocation ? parseLocation(project.loc, true) : undefined,
+    // Defensive check: location is already validated in UI, but drafts may still carry typed strings.
+    loc: hasValidLocation ? parseLocation(project.loc, true) : undefined,
     team_members: project.team_members.map((m) => ({
       url_slug: m.url_slug,
       role: m.role.id,

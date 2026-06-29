@@ -37,6 +37,9 @@ type Args = {
   locationOptionsOpen: boolean;
   setLocationOptionsOpen: Function;
   errors: any;
+  onChangeLocation?: Function;
+  onChangeLocationString?: Function;
+  locationErrorMessage?: string;
 };
 
 export default function ProjectTimeAndPlaceSectionAndCustomHub({
@@ -46,6 +49,9 @@ export default function ProjectTimeAndPlaceSectionAndCustomHub({
   locationOptionsOpen,
   setLocationOptionsOpen,
   errors,
+  onChangeLocation,
+  onChangeLocationString,
+  locationErrorMessage,
 }: Args) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -103,6 +109,9 @@ export default function ProjectTimeAndPlaceSectionAndCustomHub({
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={setLocationOptionsOpen}
+          onChangeLocation={onChangeLocation}
+          onChangeLocationString={onChangeLocationString}
+          locationErrorMessage={locationErrorMessage}
         />
         <CustomHubSelection
           currentHubName={projectData.hubName ?? ""}
