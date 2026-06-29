@@ -93,6 +93,7 @@ export default function EnterDetails({
   const [errors, setErrors] = useState({
     start_date: "",
     end_date: "",
+    location: "",
     max_participants: "",
     registration_end_date: "",
   });
@@ -113,6 +114,17 @@ export default function EnterDetails({
       topRef.current.scrollIntoView();
     }
   }, [errors]);
+
+  // If the user clears the location field after an invalid value,
+  // remove stale location errors (empty location is allowed for drafts).
+  useEffect(() => {
+    if (!projectData.loc || isLocationValid(projectData.loc)) {
+      setErrors((prev) => (prev.location ? { ...prev, location: "" } : prev));
+      if (!projectData.loc) {
+        setMessage("");
+      }
+    }
+  }, [projectData.loc, setMessage]);
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
@@ -188,6 +200,15 @@ export default function EnterDetails({
   // Validate registration fields for draft saves:
   // required fields are skipped, but if a value was entered it must be valid.
   const handleSaveAsDraft = (event) => {
+    if (projectData.loc && !isLocationValid(projectData.loc)) {
+      setErrors((prev) => ({
+        ...prev,
+        location: texts.please_choose_one_of_the_location_options,
+      }));
+      indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
+      return;
+    }
+    setErrors((prev) => ({ ...prev, location: "" }));
     if (!validateRegistrationSettings(projectData, true)) return;
     saveAsDraft(event);
   };
@@ -239,9 +260,14 @@ export default function EnterDetails({
       return false;
     }
     if (!isLocationValid(project.loc)) {
+      setErrors((prev) => ({
+        ...prev,
+        location: texts.please_choose_one_of_the_location_options,
+      }));
       indicateWrongLocation(locationInputRef, setLocationOptionsOpen, setMessage, texts);
       return false;
     }
+    setErrors((prev) => ({ ...prev, location: "" }));
     // Validate event registration settings when enabled
     if (!validateRegistrationSettings(project)) return false;
     return true;

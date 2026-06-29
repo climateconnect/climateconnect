@@ -100,6 +100,8 @@ export default function ProjectTimeAndPlaceSectionAndCustomHub({
         <ProjectLocationSearchBar
           projectData={projectData}
           handleSetProjectData={handleSetProjectData}
+          helperText={errors?.location || undefined}
+          error={!!errors?.location}
           locationInputRef={locationInputRef}
           locationOptionsOpen={locationOptionsOpen}
           handleSetLocationOptionsOpen={setLocationOptionsOpen}
