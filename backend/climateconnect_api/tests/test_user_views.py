@@ -509,6 +509,22 @@ class MemberLocationHubFilterTest(TransactionTestCase):
 
         self.assertEqual(len(slugs), 6)
 
+    @tag("location_hub", "members")
+    def test_post_with_location_payload_does_not_return_405(self):
+        """
+        Regression test for #2062: the frontend sends a POST with the
+        selected location in the body when filtering members by location.
+        The endpoint must accept POST and return the same shape as GET.
+        """
+        response = self.client.post(
+            self.url,
+            data={"place_id": 123, "geojson": {"type": "Point", "coordinates": [0, 0]}},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("results", response.json())
+
 
 _counter_login = 0
 
