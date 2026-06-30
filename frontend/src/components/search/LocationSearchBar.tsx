@@ -25,6 +25,7 @@ type Props = {
   label?: any;
   required?: boolean;
   helperText?: string;
+  error?: boolean;
   inputClassName?;
   smallInput?;
   onSelect?;
@@ -50,6 +51,7 @@ export default function LocationSearchBar({
   label,
   required,
   helperText,
+  error,
   inputClassName,
   smallInput,
   onSelect,
@@ -342,6 +344,7 @@ export default function LocationSearchBar({
             {...params}
             label={label}
             required={required}
+            error={error}
             variant="outlined"
             onChange={handleInputChange}
             helperText={helperText}
