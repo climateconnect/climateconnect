@@ -443,7 +443,7 @@ Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row re
 
 **Summary**: Custom fields organisers can add to their event registration form.
 
-**Description**: Defines a custom field on an event's registration form. Up to 5 fields per event. Each field has a type, order, required flag, organiser-facing label (max 30 chars), and type-specific settings stored as JSON. The `label` is auto-generated on creation (localised field type + sequential number) and can be edited by the organiser. Field types: `checkbox` (boolean), `option_select` (single-select dropdown), `inventory` (option + quantity with capacity limits), `time_slot_select` (time slot with optional per-slot capacity).
+**Description**: Defines a custom field on an event's registration form. Up to 10 fields per event. Each field has a type, order, required flag, organiser-facing label (max 30 chars), and type-specific settings stored as JSON. The `label` is auto-generated on creation (localised field type + sequential number) and can be edited by the organiser. Field types: `checkbox` (boolean), `option_select` (single-select dropdown), `inventory` (option + quantity with capacity limits), `time_slot_select` (time slot with optional per-slot capacity).
 
 **Fields**:
 | Field | Type | Notes |
