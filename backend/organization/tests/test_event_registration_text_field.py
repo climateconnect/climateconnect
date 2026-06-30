@@ -39,6 +39,7 @@ from organization.utility.email import (
     _build_field_answers_text,
 )
 
+
 class _TextBase(APITestCase):
     """Shared setUp for text-field tests."""
 
@@ -355,15 +356,28 @@ class TestTextFieldSubmission(_TextBase):
             {"answers": [{"field": self.text_field.id, "value_text": "first"}]},
             format="json",
         )
-        self.client.post(
-            self.register_url,
-            {"answers": [{"field": self.text_field.id, "value_text": "second"}]},
-            format="json",
-        )
         reg = EventRegistration.objects.get(
             user=self.guest, registration_config=self.er
         )
         answer = reg.field_answers.get(field=self.text_field)
+        self.assertEqual(answer.value_text, "first")
+
+        from organization.serializers.event_registration import (
+            sync_registration_answers,
+        )
+
+        sync_registration_answers(
+            reg,
+            [
+                {
+                    "field": self.text_field,
+                    "value_boolean": None,
+                    "value_option": None,
+                    "value_text": "second",
+                }
+            ],
+        )
+        answer.refresh_from_db()
         self.assertEqual(answer.value_text, "second")
 
 
@@ -486,11 +500,11 @@ class TestTextFieldAnswerLock(_TextBase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
 
 
-class TestTextFieldDeleteBlock(_TextBase):
-    """Tests that a text field with answers cannot be deleted."""
+class TestTextFieldDeleteCascade(_TextBase):
+    """Tests that deleting a text field with answers cascades correctly."""
 
     @tag("text_field", "delete")
-    def test_delete_text_field_with_answers_blocked(self):
+    def test_delete_text_field_with_answers_cascades_and_returns_200(self):
         text_field = self._create_text_field()
         registration = EventRegistration.objects.create(
             user=self.guest, registration_config=self.er
@@ -501,15 +515,16 @@ class TestTextFieldDeleteBlock(_TextBase):
             value_text="Answer",
         )
         self.client.login(username="organiser_tf", password="testpassword")
-        # Attempt to remove the field by submitting an empty fields list
-        self.client.patch(
+        response = self.client.patch(
             self.patch_url,
             {"fields": []},
             format="json",
         )
-        # The field has answers so deletion is blocked via the same guard
-        # that other types use. Check the field still exists.
-        self.assertTrue(RegistrationField.objects.filter(id=text_field.id).exists())
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+        self.assertFalse(RegistrationField.objects.filter(id=text_field.id).exists())
+        self.assertFalse(
+            RegistrationFieldAnswer.objects.filter(registration=registration).exists()
+        )
 
 
 class TestTextFieldEmailBuilder(_TextBase):
