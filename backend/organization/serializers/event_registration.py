@@ -338,6 +338,7 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
                 "value_boolean": a.value_boolean,
                 "value_option": a.value_option_id,
                 "value_number": a.value_number,
+                "value_text": a.value_text,
             }
             for a in answers
         ]
@@ -358,12 +359,21 @@ class RegistrationFieldAnswerInputSerializer(serializers.Serializer):
         allow_null=True,
         min_value=1,
     )
+    value_text = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        max_length=300,
+    )
 
     def validate(self, attrs):
         has_boolean = (
             "value_boolean" in attrs and attrs.get("value_boolean") is not None
         )
         has_option = "value_option" in attrs and attrs.get("value_option") is not None
+        has_text = "value_text" in attrs and attrs.get("value_text") is not None
+
+        if has_text:
+            return attrs
 
         if has_boolean and has_option:
             raise serializers.ValidationError(
@@ -560,6 +570,46 @@ class EventRegistrationSubmissionSerializer(serializers.Serializer):
                 )
                 continue
 
+            if field.field_type == RegistrationFieldType.TEXT:
+                value_text = item.get("value_text", None)
+                if value_boolean is not None:
+                    answer_error["value_boolean"] = (
+                        "value_boolean is not allowed for text fields."
+                    )
+                if value_option_id is not None:
+                    answer_error["value_option"] = (
+                        "value_option is not allowed for text fields."
+                    )
+                if value_number is not None:
+                    answer_error["value_number"] = (
+                        "value_number is not allowed for text fields."
+                    )
+                if value_text is None or not value_text.strip():
+                    if field.is_required:
+                        answer_error["value_text"] = (
+                            "This field requires a text answer."
+                        )
+                    else:
+                        value_text = None
+                elif len(value_text) > 300:
+                    answer_error["value_text"] = "Maximum 300 characters allowed."
+                else:
+                    value_text = value_text.replace("\r\n", "\n").replace("\r", "\n")
+
+                if answer_error:
+                    errors.append(answer_error)
+                    continue
+
+                normalized_answers.append(
+                    {
+                        "field": field,
+                        "value_boolean": None,
+                        "value_option": None,
+                        "value_text": value_text,
+                    }
+                )
+                continue
+
             errors.append({"field": "Unsupported field type."})
 
         # Required fields must be present in the payload.
@@ -607,6 +657,7 @@ def sync_registration_answers(registration, normalized_answers):
                     value_boolean=item["value_boolean"],
                     value_option=item["value_option"],
                     value_number=item.get("value_number"),
+                    value_text=item.get("value_text"),
                 )
             )
             continue
@@ -614,11 +665,13 @@ def sync_registration_answers(registration, normalized_answers):
         current.value_boolean = item["value_boolean"]
         current.value_option = item["value_option"]
         current.value_number = item.get("value_number")
+        current.value_text = item.get("value_text")
         current.save(
             update_fields=[
                 "value_boolean",
                 "value_option",
                 "value_number",
+                "value_text",
                 "updated_at",
             ]
         )
@@ -1078,6 +1131,33 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
 
                         elif (
                             field_type == RegistrationFieldType.TIME_SLOT_SELECT
+                            and settings is not None
+                        ):
+                            submitted_title = settings.get("title")
+                            stored_title = (existing_field.settings or {}).get(
+                                "title", ""
+                            )
+                            if (
+                                submitted_title is not None
+                                and submitted_title != stored_title
+                            ):
+                                raise serializers.ValidationError(
+                                    {
+                                        "fields": {
+                                            i: {
+                                                "settings": {
+                                                    "title": (
+                                                        "Cannot change question title after "
+                                                        "registrants have answered this field."
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
+
+                        elif (
+                            field_type == RegistrationFieldType.TEXT
                             and settings is not None
                         ):
                             submitted_title = settings.get("title")

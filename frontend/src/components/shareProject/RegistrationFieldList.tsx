@@ -22,6 +22,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import ShortTextIcon from "@mui/icons-material/ShortText";
 import makeStyles from "@mui/styles/makeStyles";
 import { Dayjs } from "dayjs";
 import getTexts from "../../../public/texts/texts";
@@ -37,6 +38,7 @@ const FIELD_TYPE_LABEL_KEYS: Record<string, string> = {
   option_select: "field_type_option_select",
   inventory: "field_type_inventory",
   time_slot_select: "field_type_time_slot_select",
+  text: "field_type_text",
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -127,7 +129,7 @@ export default function RegistrationFieldList({
   };
 
   const handleAddField = (
-    fieldType: "checkbox" | "option_select" | "inventory" | "time_slot_select"
+    fieldType: "checkbox" | "option_select" | "inventory" | "time_slot_select" | "text"
   ) => {
     const newOrder = fields.length;
     const label = generateDefaultLabel(fieldType, fields, texts);
@@ -141,6 +143,8 @@ export default function RegistrationFieldList({
           ? { description: "" }
           : fieldType === "inventory" || fieldType === "time_slot_select"
           ? { title: "", description: "" }
+          : fieldType === "text"
+          ? { title: "", description: "", is_multiline: false }
           : { title: "" },
       options:
         fieldType === "option_select" ||
@@ -233,6 +237,8 @@ export default function RegistrationFieldList({
         return <InventoryIcon fontSize="small" />;
       case "time_slot_select":
         return <AccessTimeIcon fontSize="small" />;
+      case "text":
+        return <ShortTextIcon fontSize="small" />;
       case "option_select":
       default:
         return <RadioButtonUncheckedIcon fontSize="small" />;
@@ -405,6 +411,12 @@ export default function RegistrationFieldList({
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {getFieldIcon("option_select")}
             {texts.field_type_option_select}
+          </Box>
+        </MenuItem>
+        <MenuItem onClick={() => handleAddField("text")}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {getFieldIcon("text")}
+            {texts.field_type_text}
           </Box>
         </MenuItem>
         <MenuItem onClick={() => handleAddField("inventory")}>
