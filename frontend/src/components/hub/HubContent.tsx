@@ -214,7 +214,11 @@ export default function HubContent({
                             hubSupportersExists={hubSupporters ? true : false}
                           />
                           {hubSupporters?.length > 0 && (
-                            <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                            <HubSupporters
+                              supportersList={hubSupporters}
+                              hubName={hubData?.name}
+                              hubUrl={hubUrl}
+                            />
                           )}
                         </div>
                       )}
@@ -225,7 +229,11 @@ export default function HubContent({
                         <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
                       )}
                       {hubSupporters?.length > 0 && (
-                        <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                        <HubSupporters
+                          supportersList={hubSupporters}
+                          hubName={hubData?.name}
+                          hubUrl={hubUrl}
+                        />
                       )}
                       {!(hubSupporters?.length > 0) && hubUrl === "prio1" && (
                         <PrioOneBackgroundBrowseIcon />

@@ -523,7 +523,7 @@ export default function BrowseContent({
       />
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         {isNarrowScreen && hubSupporters && hubName && (
-          <HubSupporters supportersList={hubSupporters} hubName={hubName} />
+          <HubSupporters supportersList={hubSupporters} hubName={hubName} hubUrl={hubUrl} />
         )}
         <div ref={contentRef} className={classes.contentRef} />
         {isNarrowScreen && linkedHubs && linkedHubs?.length > 0 && (

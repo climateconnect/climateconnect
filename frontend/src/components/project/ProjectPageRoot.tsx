@@ -769,6 +769,7 @@ export default function ProjectPageRoot({
               siblingProjects={siblingProjects}
               isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
               registeredEventSlugs={registeredEventSlugs}
+              hubUrl={hubPage}
             />
           </>
         )}

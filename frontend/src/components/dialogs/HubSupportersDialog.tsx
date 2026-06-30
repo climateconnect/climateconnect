@@ -13,6 +13,7 @@ type HubSupportersDialogProps = {
   open: boolean;
   onClose: () => void;
   hubName: string;
+  hubUrl?: string;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -91,7 +92,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupportersDialogProps) => {
+const HubSupportersDialog = ({
+  supporters,
+  open,
+  onClose,
+  hubName,
+  hubUrl,
+}: HubSupportersDialogProps) => {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
@@ -143,23 +150,23 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubName }: HubSupporte
       showApplyAtBottom
     >
       {supporters?.length > 0 &&
-        supporters.map((supporter) => (
-          <>
-            {supporter?.organization_url_slug ? (
-              <Link
-                href={
-                  getLocalePrefix(locale) + "/organizations/" + supporter?.organization_url_slug
-                }
-                underline="none"
-                className={classes.supporterName}
-              >
+        supporters.map((supporter) => {
+          const baseUrl = `${getLocalePrefix(locale)}/organizations/${
+            supporter?.organization_url_slug
+          }`;
+          const organizationUrl = hubUrl ? `${baseUrl}?hubUrl=${hubUrl}` : baseUrl;
+          return (
+            <>
+              {supporter?.organization_url_slug ? (
+                <Link href={organizationUrl} underline="none" className={classes.supporterName}>
+                  <HubSupporterCarouselEntry supporter={supporter} />
+                </Link>
+              ) : (
                 <HubSupporterCarouselEntry supporter={supporter} />
-              </Link>
-            ) : (
-              <HubSupporterCarouselEntry supporter={supporter} />
-            )}
-          </>
-        ))}
+              )}
+            </>
+          );
+        })}
 
       <div className={classes.donate}>{texts.would_you_like_to_support_the_ClimateHub}</div>
     </GenericDialog>

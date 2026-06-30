@@ -75,6 +75,7 @@ export default function ProjectSideBar({
   siblingProjects,
   isWasseraktionswochenEnabled,
   registeredEventSlugs,
+  hubUrl,
 }) {
   const classes = useStyles({
     isSmallScreen: isSmallScreen,
@@ -136,6 +137,7 @@ export default function ProjectSideBar({
                 containerClass={classes.supporterSliderWidth}
                 mobileVersion={isSmallScreen}
                 hubName={hubName}
+                hubUrl={hubUrl}
               />
             )}
             <ProjectPreviews
