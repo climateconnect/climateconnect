@@ -116,12 +116,14 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const HubSupportersSection = ({ isNarrowScreen, classes, supporters, hubName }) => {
+const HubSupportersSection = ({ isNarrowScreen, classes, supporters, hubName, hubUrl }) => {
   if (!supporters || supporters.length === 0) {
     return null;
   }
 
-  const supportersComponent = <HubSupporters supportersList={supporters} hubName={hubName} />;
+  const supportersComponent = (
+    <HubSupporters supportersList={supporters} hubName={hubName} hubUrl={hubUrl} />
+  );
 
   if (isNarrowScreen) {
     return <Box sx={{ padding: "8px", paddingBottom: "50px" }}>{supportersComponent}</Box>;
@@ -203,6 +205,7 @@ export default function WasseraktionswochenPage({
             classes={classes}
             supporters={hubSupporters}
             hubName={hubData?.name}
+            hubUrl={hubUrl}
           />
         </Container>
         <HubAmbassadorSection

@@ -15,6 +15,7 @@ type HubSupporter = {
   containerClass?: string;
   mobileVersion?: boolean;
   hubName: string;
+  hubUrl?: string;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -135,6 +136,7 @@ const HubSupporters = ({
   containerClass,
   mobileVersion,
   hubName,
+  hubUrl,
 }: HubSupporter) => {
   const classes = useStyles({ containerClass: containerClass });
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
@@ -144,6 +146,7 @@ const HubSupporters = ({
   const toggleOpenSupportersDialog = () => {
     setOpenSupportersDialog(!openSupportersDialog);
   };
+
   return (
     <>
       {!isSmallOrMediumScreen && !mobileVersion ? (
@@ -153,6 +156,7 @@ const HubSupporters = ({
           containerClass={containerClass}
           supportersList={supportersList}
           locale={locale}
+          hubUrl={hubUrl}
         />
       ) : (
         <>
@@ -168,6 +172,7 @@ const HubSupporters = ({
             open={openSupportersDialog}
             onClose={toggleOpenSupportersDialog}
             hubName={hubName}
+            hubUrl={hubUrl}
           />
         </>
       )}
@@ -177,7 +182,9 @@ const HubSupporters = ({
 
 export default HubSupporters;
 
-const CarouselItem = ({ supporter, classes, locale }) => {
+const CarouselItem = ({ supporter, classes, locale, hubUrl }) => {
+  const baseUrl = `${getLocalePrefix(locale)}/organizations/${supporter?.organization_url_slug}`;
+  const organizationUrl = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
   return (
     <div className={classes.carouselEntry} key={supporter.name}>
       {supporter?.standalone_image ? (
@@ -200,13 +207,7 @@ const CarouselItem = ({ supporter, classes, locale }) => {
           <div>
             <p className={classes.supporterName}>
               {supporter?.organization_url_slug ? (
-                <Link
-                  href={
-                    getLocalePrefix(locale) + "/organizations/" + supporter?.organization_url_slug
-                  }
-                  underline="none"
-                  className={classes.supporterName}
-                >
+                <Link href={organizationUrl} underline="none" className={classes.supporterName}>
                   {supporter?.name}
                 </Link>
               ) : (
@@ -221,7 +222,14 @@ const CarouselItem = ({ supporter, classes, locale }) => {
   );
 };
 
-const HubSupportersSlider = ({ classes, texts, containerClass, supportersList, locale }) => {
+const HubSupportersSlider = ({
+  classes,
+  texts,
+  containerClass,
+  supportersList,
+  locale,
+  hubUrl,
+}) => {
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
@@ -249,6 +257,7 @@ const HubSupportersSlider = ({ classes, texts, containerClass, supportersList, l
                 supporter={supporter}
                 classes={classes}
                 locale={locale}
+                hubUrl={hubUrl}
               />
             ))}
         </Carousel>
