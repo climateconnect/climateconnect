@@ -4,7 +4,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import "dayjs/locale/de";
 import "dayjs/locale/en";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 import { DatePicker as DatePickerComponent } from "@mui/x-date-pickers/DatePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -36,17 +36,18 @@ export default function DatePicker({
 }: Props) {
   const { locale } = useContext(UserContext);
   const theme = useTheme();
+  const dateValue: Dayjs | null = date ? dayjs(date) : null;
+  const minDayjsDate: Dayjs | undefined = minDate ? dayjs(minDate) : undefined;
+  const maxDayjsDate: Dayjs | undefined = maxDate ? dayjs(maxDate) : undefined;
+
   const handleDateChange = (value) => {
     handleChange(value);
   };
 
-  const args = {
+  const commonArgs = {
     className: className,
     label: label,
-    value: date ? date : null,
     onChange: handleDateChange,
-    maxDate: maxDate && maxDate,
-    minDate: minDate && minDate,
     slotProps: {
       textField: {
         helperText: error,
@@ -54,6 +55,19 @@ export default function DatePicker({
         required: required,
       },
     },
+  };
+
+  const datePickerArgs = {
+    ...commonArgs,
+    value: dateValue,
+    maxDate: maxDayjsDate,
+    minDate: minDayjsDate,
+  };
+
+  const dateTimePickerArgs = {
+    ...commonArgs,
+    value: dateValue,
+    minDateTime: minDayjsDate,
   };
 
   const helperTheme = {
@@ -72,9 +86,9 @@ export default function DatePicker({
     <LocalizationProvider adapterLocale={locale} dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={helperTheme}>
         {enableTime ? (
-          <DateTimePicker {...args} minDateTime={minDate && minDate} />
+          <DateTimePicker {...dateTimePickerArgs} />
         ) : (
-          <DatePickerComponent {...args} />
+          <DatePickerComponent {...datePickerArgs} />
         )}
       </ThemeProvider>
     </LocalizationProvider>

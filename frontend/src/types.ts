@@ -15,13 +15,14 @@ export type RegistrationFieldOption = {
 
 export type RegistrationField = {
   id?: number | null;
-  field_type: "checkbox" | "option_select" | "inventory" | "time_slot_select";
+  field_type: "checkbox" | "option_select" | "inventory" | "time_slot_select" | "text";
   order: number;
   is_required: boolean;
   label: string;
   settings: {
     description?: string;
     title?: string;
+    is_multiline?: boolean;
   };
   options?: RegistrationFieldOption[];
   has_answers?: boolean;
@@ -42,6 +43,8 @@ export type EventRegistrationData = {
   registration_enabled: boolean;
   /** Custom registration fields configured by the organiser (Phase 4a). */
   fields?: RegistrationField[];
+  /** ISO 8601 timestamp of the last bulk email sent to guests. null if never sent. */
+  last_guest_email_sent_at: string | null;
 };
 
 /** Local form state for one custom-field answer while the user is filling in the modal. */
@@ -50,6 +53,7 @@ export type RegistrationFieldAnswerValue = {
   valueBoolean?: boolean;
   valueOption?: number;
   valueNumber?: number;
+  valueText?: string;
 };
 
 /**
@@ -64,6 +68,7 @@ export type RegistrationFieldAnswer = {
   value_boolean: boolean | null;
   value_option: number | null;
   value_number: number | null;
+  value_text: string | null;
 };
 
 export type User = {

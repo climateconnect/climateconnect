@@ -1394,6 +1394,34 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Time Slot Select",
       de: "Zeitfenster-Auswahl",
     },
+    field_type_text: {
+      en: "Text",
+      de: "Textfeld",
+    },
+    registration_text_field_title_label: {
+      en: "Title (shown to guest)",
+      de: "Titel (wird dem Gast angezeigt)",
+    },
+    registration_text_field_description_label: {
+      en: "Description (optional)",
+      de: "Beschreibung (optional)",
+    },
+    registration_text_field_multiline_label: {
+      en: "Multi-line input",
+      de: "Mehrzeilige Eingabe",
+    },
+    registration_text_field_placeholder: {
+      en: "Your answer\u2026",
+      de: "Deine Antwort\u2026",
+    },
+    registration_text_field_required_error: {
+      en: "Please answer this question.",
+      de: "Bitte beantworte diese Frage.",
+    },
+    registration_text_field_max_length_error: {
+      en: "Maximum 300 characters.",
+      de: "Maximal 300 Zeichen.",
+    },
     time_slot_title: {
       en: "Title",
       de: "Titel",
@@ -1451,8 +1479,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Option löschen",
     },
     max_registration_fields_reached: {
-      en: "Maximum of 5 fields reached",
-      de: "Maximal 5 Felder erreicht",
+      en: "Maximum of 10 fields reached",
+      de: "Maximal 10 Felder erreicht",
     },
     confirm_delete_field_title: {
       en: "Delete field?",
@@ -1592,6 +1620,19 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     email_confirmation_admin_cc: {
       en: "Team admins will also receive a copy.",
       de: "Team-Admins erhalten ebenfalls eine Kopie.",
+    },
+    email_send_to_new_guests_only: {
+      en: "Send only to new guests (registered since {date})",
+      de: "Nur an neue Gäste senden (registriert seit {date})",
+    },
+    email_all_guests_will_receive: {
+      en: "All {count} active guests will receive this message.",
+      de: "Alle {count} aktiven Gäste erhalten diese Nachricht.",
+    },
+    email_new_guests_will_receive: {
+      en: "{count} of {total} guests registered since {date} will receive this message.",
+      de:
+        "{count} von {total} Gästen, die sich seit {date} registriert haben, erhalten diese Nachricht.",
     },
     editor_bold: {
       en: "Bold",
@@ -1898,6 +1939,26 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en:
         "*Required fields - unfortunately, you cannot participate without providing this information",
       de: "*Pflichtfelder - ohne diese Angaben ist eine Teilnahme leider nicht möglich",
+    },
+    add_to_calendar: {
+      en: "Add to Calendar",
+      de: "Zum Kalender hinzufügen",
+    },
+    add_to_google_calendar: {
+      en: "Google Calendar",
+      de: "Google Kalender",
+    },
+    add_to_apple_calendar: {
+      en: "Apple Calendar / iCal",
+      de: "Apple Kalender / iCal",
+    },
+    you_are_registered_for_this_event: {
+      en: "You're registered for this event.",
+      de: "Du bist für diese Veranstaltung angemeldet.",
+    },
+    not_registered_yet_reminder: {
+      en: "Not registered yet \u2014 don't forget to sign up!",
+      de: "Noch nicht angemeldet \u2014 Vergiss nicht, dich anzumelden!",
     },
   };
 }

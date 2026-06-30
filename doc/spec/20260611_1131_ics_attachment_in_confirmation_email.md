@@ -40,7 +40,7 @@ When a guest registers for an event, the confirmation email contains no calendar
 
 ### Out of scope (for now)
 
-- **Calendar links in the email body** (Google Calendar, Outlook, Apple Calendar URLs). These depend on frontend endpoints covered by a separate task (`20260611_1131_calendar_links_on_event_page.md`). Can be added as a future enhancement once those endpoints exist.
+- **Calendar links in the email body** (Google Calendar, Apple Calendar URLs). These depend on frontend endpoints covered by a separate task (`20260611_1131_calendar_links_on_event_page.md`). Can be added as a future enhancement once those endpoints exist.
 - .ics attachments in other email types (organiser notifications, admin alerts, etc.).
 
 ---

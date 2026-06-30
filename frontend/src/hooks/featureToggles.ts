@@ -14,11 +14,9 @@ const API_URL = process.env.API_URL || "http://127.0.0.1:8000";
  * @returns Promise resolving to a record of feature toggle names to boolean values
  */
 export async function getFeatureToggles(environment: CcEnvironment): Promise<FeatureToggles> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 3000);
   try {
     const response = await fetch(`${API_URL}/api/feature_toggles/?environment=${environment}`, {
-      signal: controller.signal,
+      signal: AbortSignal.timeout(3000),
     });
     if (!response.ok) {
       console.error("Failed to fetch feature toggles:", response.statusText);
@@ -26,11 +24,13 @@ export async function getFeatureToggles(environment: CcEnvironment): Promise<Fea
     }
     return await response.json();
   } catch (error) {
-    console.error("Failed to fetch feature toggles:", error);
+    if (error instanceof Error && error.name === "TimeoutError") {
+      console.error("Feature toggles request timed out after 3000ms");
+    } else {
+      console.error("Failed to fetch feature toggles:", error);
+    }
     // Return empty object on error - callers should use fallback values
     return {};
-  } finally {
-    clearTimeout(timeoutId);
   }
 }
 

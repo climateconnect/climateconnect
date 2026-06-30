@@ -151,6 +151,18 @@ class EventRegistrationConfig(models.Model):
         verbose_name="Notify Admins",
     )
 
+    last_guest_email_sent_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        default=None,
+        db_index=True,
+        help_text=(
+            "Timestamp of the last bulk email sent to event guests. "
+            "NULL if no email has been sent."
+        ),
+        verbose_name="Last Guest Email Sent At",
+    )
+
     class Meta:
         app_label = "organization"
         verbose_name = "Event Registration Config"
@@ -264,6 +276,7 @@ class RegistrationFieldAnswer(models.Model):
     - checkbox      -> value_boolean
     - option_select -> value_option
     - inventory     -> value_option + value_number
+    - text          -> value_text
 
     Both foreign keys use CASCADE so deleting a field/option later removes
     dependent answers automatically.
@@ -288,6 +301,7 @@ class RegistrationFieldAnswer(models.Model):
         related_name="answers",
     )
     value_number = models.PositiveIntegerField(null=True, blank=True)
+    value_text = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

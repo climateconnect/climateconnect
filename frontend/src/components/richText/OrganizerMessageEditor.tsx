@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import type { Extensions } from "@tiptap/core";
 // eslint-disable-next-line import/no-named-as-default
 import StarterKit from "@tiptap/starter-kit";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -34,7 +35,7 @@ const CHARACTER_LIMIT = 5000;
 
 const TABLE_HEADER_STYLE = "background-color: #f0f0f0;";
 
-const EXTENSIONS = [
+const EXTENSIONS: Extensions = [
   StarterKit.configure({
     italic: true,
     strike: false,

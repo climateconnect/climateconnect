@@ -9,6 +9,7 @@ class RegistrationFieldType(models.TextChoices):
     OPTION_SELECT = "option_select", _("Option Select")
     INVENTORY = "inventory", _("Inventory")
     TIME_SLOT_SELECT = "time_slot_select", _("Time Slot Select")
+    TEXT = "text", _("Text")
 
 
 class RegistrationField(models.Model):
