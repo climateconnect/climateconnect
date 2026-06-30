@@ -373,6 +373,10 @@ class RegistrationFieldAnswerAdmin(admin.ModelAdmin):
             return obj.value_boolean
         if obj.value_option:
             return obj.value_option.title
+        if obj.value_number is not None:
+            return obj.value_number
+        if obj.value_text is not None:
+            return obj.value_text[:80]
         return "-"
 
     get_value.short_description = "Value"

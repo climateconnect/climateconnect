@@ -294,6 +294,27 @@ export default function ViewRegistrationAnswersModal({
               );
             }
 
+            if (field.field_type === "text") {
+              const fieldTitle = field.settings.title ?? "";
+              const displayValue = answer.value_text || "\u2014";
+
+              return (
+                <Box key={field.id} className={classes.fieldBlock}>
+                  <Typography variant="body1" className={classes.optionFieldTitle}>
+                    {fieldTitle}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    className={classes.optionAnswer}
+                    component="div"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    {displayValue}
+                  </Typography>
+                </Box>
+              );
+            }
+
             return null;
           })
         )}
