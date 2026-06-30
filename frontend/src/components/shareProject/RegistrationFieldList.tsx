@@ -413,6 +413,12 @@ export default function RegistrationFieldList({
             {texts.field_type_option_select}
           </Box>
         </MenuItem>
+        <MenuItem onClick={() => handleAddField("text")}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {getFieldIcon("text")}
+            {texts.field_type_text}
+          </Box>
+        </MenuItem>
         <MenuItem onClick={() => handleAddField("inventory")}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {getFieldIcon("inventory")}
@@ -423,12 +429,6 @@ export default function RegistrationFieldList({
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {getFieldIcon("time_slot_select")}
             {texts.field_type_time_slot_select}
-          </Box>
-        </MenuItem>
-        <MenuItem onClick={() => handleAddField("text")}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {getFieldIcon("text")}
-            {texts.field_type_text}
           </Box>
         </MenuItem>
       </Menu>
