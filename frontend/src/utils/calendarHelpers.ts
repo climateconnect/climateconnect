@@ -1,12 +1,3 @@
-export function escapeIcalText(text: string | null | undefined): string {
-  if (!text) return "";
-  return text
-    .replace(/\\/g, "\\\\")
-    .replace(/;/g, "\\;")
-    .replace(/,/g, "\\,")
-    .replace(/\n/g, "\\n");
-}
-
 export function toGoogleCalendarDate(dateStr: string | null | undefined): string {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -27,16 +18,22 @@ type CalendarEvent = {
   start_date?: string;
   end_date?: string;
   description?: string;
+  short_description?: string;
   location?: string;
   is_online?: boolean;
 };
 
+function getEventDescription(event: CalendarEvent): string | undefined {
+  return event.description || event.short_description || undefined;
+}
+
 export function buildGoogleCalendarUrl(event: CalendarEvent, eventUrl: string): string {
+  const desc = getEventDescription(event);
   const params = new URLSearchParams({
     action: "TEMPLATE",
     text: event.name || "",
     dates: `${toGoogleCalendarDate(event.start_date)}/${toGoogleCalendarDate(event.end_date)}`,
-    details: event.description ? `${event.description}\n\n${eventUrl}` : eventUrl,
+    details: desc ? `${desc}\n\n${eventUrl}` : eventUrl,
     location: event.is_online ? "Online" : event.location || "",
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
@@ -53,14 +50,13 @@ export function buildIcalEventData(
   description: string;
   location: string;
 } {
+  const desc = getEventDescription(event);
   return {
     start: new Date(event.start_date!),
     end: new Date(event.end_date!),
     summary: event.name || "",
     url: eventUrl,
-    description: event.description
-      ? escapeIcalText(event.description) + "\\n\\n" + eventUrl
-      : eventUrl,
+    description: desc ? desc + "\n\n" + eventUrl : eventUrl,
     location: event.is_online ? "Online" : event.location || "",
   };
 }

@@ -1593,6 +1593,19 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Team admins will also receive a copy.",
       de: "Team-Admins erhalten ebenfalls eine Kopie.",
     },
+    email_send_to_new_guests_only: {
+      en: "Send only to new guests (registered since {date})",
+      de: "Nur an neue Gäste senden (registriert seit {date})",
+    },
+    email_all_guests_will_receive: {
+      en: "All {count} active guests will receive this message.",
+      de: "Alle {count} aktiven Gäste erhalten diese Nachricht.",
+    },
+    email_new_guests_will_receive: {
+      en: "{count} of {total} guests registered since {date} will receive this message.",
+      de:
+        "{count} von {total} Gästen, die sich seit {date} registriert haben, erhalten diese Nachricht.",
+    },
     editor_bold: {
       en: "Bold",
       de: "Fett",

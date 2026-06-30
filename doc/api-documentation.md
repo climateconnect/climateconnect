@@ -808,7 +808,8 @@ Sends a plain-text email authored by the organiser to all active registered gues
 {
   "subject": "Important update about the event",
   "message": "Hi everyone, we have an important update…",
-  "is_test": false
+  "is_test": false,
+  "send_to_new_guests_only": false
 }
 ```
 
@@ -817,12 +818,15 @@ Sends a plain-text email authored by the organiser to all active registered gues
 | `subject` | string | Yes | max 200 chars, non-blank |
 | `message` | string | Yes | non-blank |
 | `is_test` | boolean | No | defaults to `false` |
+| `send_to_new_guests_only` | boolean | No | defaults to `false`; when `true`, only guests who registered after `EventRegistrationConfig.last_guest_email_sent_at` receive the email. Ignored when `is_test=true` or when no prior bulk email has been sent (NULL timestamp). |
 
 **Success response** (200 OK):
 ```json
 { "sent_count": 42 }
 ```
-`sent_count` is the number of active participants at request time. For `is_test=true` it is always `1`. Bulk delivery is asynchronous (Celery task); the HTTP response returns immediately.
+`sent_count` is the number of unique recipients (active guests + team admins, deduplicated). For `is_test=true` it is always `1`. Bulk delivery is asynchronous (Celery task); the HTTP response returns immediately.
+
+After a successful non-test bulk send, `EventRegistrationConfig.last_guest_email_sent_at` is set to the current timestamp. This enables future "new guests only" sends to filter recipients correctly.
 
 When `is_test=true`, the subject is prefixed with `[TEST] ` so the organiser can identify the test email in their inbox.
 

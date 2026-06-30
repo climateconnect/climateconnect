@@ -1,5 +1,6 @@
 import React, { FC, ReactNode } from "react";
-import { Grid, Theme, useMediaQuery } from "@mui/material";
+import { Theme, useMediaQuery } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles((theme) => ({
@@ -55,9 +56,7 @@ const ContentImageSplitView: FC<ContentImageSplitViewProps> = ({
     >
       {/* content pane */}
       <Grid
-        item
-        xs={12}
-        md={7}
+        size={{ xs: 12, md: 7 }}
         {...leftGridSizes}
         className={`${classes.centerItems} ${!rightPaneHidden && classes.rightPadding}`}
       >
@@ -66,7 +65,7 @@ const ContentImageSplitView: FC<ContentImageSplitViewProps> = ({
 
       {/* image pane */}
       {!rightPaneHidden && (
-        <Grid item md={5} {...rightGridSizes} style={{ display: "flex" }}>
+        <Grid size={{ md: 5 }} {...rightGridSizes} style={{ display: "flex" }}>
           {image}
         </Grid>
       )}
