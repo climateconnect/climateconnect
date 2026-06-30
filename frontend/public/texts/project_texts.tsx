@@ -1394,6 +1394,34 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Time Slot Select",
       de: "Zeitfenster-Auswahl",
     },
+    field_type_text: {
+      en: "Text",
+      de: "Textfeld",
+    },
+    registration_text_field_title_label: {
+      en: "Title (shown to guest)",
+      de: "Titel (wird dem Gast angezeigt)",
+    },
+    registration_text_field_description_label: {
+      en: "Description (optional)",
+      de: "Beschreibung (optional)",
+    },
+    registration_text_field_multiline_label: {
+      en: "Multi-line input",
+      de: "Mehrzeilige Eingabe",
+    },
+    registration_text_field_placeholder: {
+      en: "Your answer\u2026",
+      de: "Deine Antwort\u2026",
+    },
+    registration_text_field_required_error: {
+      en: "Please answer this question.",
+      de: "Bitte beantworte diese Frage.",
+    },
+    registration_text_field_max_length_error: {
+      en: "Maximum 300 characters.",
+      de: "Maximal 300 Zeichen.",
+    },
     time_slot_title: {
       en: "Title",
       de: "Titel",
@@ -1451,8 +1479,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Option löschen",
     },
     max_registration_fields_reached: {
-      en: "Maximum of 5 fields reached",
-      de: "Maximal 5 Felder erreicht",
+      en: "Maximum of 10 fields reached",
+      de: "Maximal 10 Felder erreicht",
     },
     confirm_delete_field_title: {
       en: "Delete field?",

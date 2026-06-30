@@ -200,11 +200,11 @@ class TestCreateEventWithCustomFields(APITestCase):
             "start_date": "2026-07-01T10:00:00Z",
         }
 
-    # ── Test 1: create with 5 mixed fields ──────────────────────────────────
+    # ── Test 1: create with 10 mixed fields ─────────────────────────────────
 
     @tag("custom_fields", "projects")
-    def test_create_event_with_five_custom_fields(self):
-        """Spec test 1 — up to 5 fields (checkbox + option_select) are saved and returned."""
+    def test_create_event_with_ten_custom_fields(self):
+        """Spec test 1 — up to 10 fields (checkbox + option_select) are saved and returned."""
         self.client.login(username="testuser_cf_create", password="testpassword")
         data = {
             **self.base_event_data,
@@ -252,6 +252,50 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "label": "Checkbox 3",
                         "settings": {"description": "<p>GDPR consent</p>"},
                     },
+                    {
+                        "field_type": "checkbox",
+                        "order": 5,
+                        "is_required": False,
+                        "label": "Checkbox 4",
+                        "settings": {"description": "<p>Additional info</p>"},
+                    },
+                    {
+                        "field_type": "option_select",
+                        "order": 6,
+                        "is_required": False,
+                        "label": "Option Select 3",
+                        "settings": {"title": "T-shirt size"},
+                        "options": [
+                            {"title": "S", "order": 0},
+                            {"title": "M", "order": 1},
+                            {"title": "L", "order": 2},
+                        ],
+                    },
+                    {
+                        "field_type": "checkbox",
+                        "order": 7,
+                        "is_required": False,
+                        "label": "Checkbox 5",
+                        "settings": {"description": "<p>Photo consent</p>"},
+                    },
+                    {
+                        "field_type": "option_select",
+                        "order": 8,
+                        "is_required": False,
+                        "label": "Option Select 4",
+                        "settings": {"title": "Transport"},
+                        "options": [
+                            {"title": "Car", "order": 0},
+                            {"title": "Bike", "order": 1},
+                        ],
+                    },
+                    {
+                        "field_type": "checkbox",
+                        "order": 9,
+                        "is_required": False,
+                        "label": "Checkbox 6",
+                        "settings": {"description": "<p>Terms v2</p>"},
+                    },
                 ],
             },
         }
@@ -264,18 +308,18 @@ class TestCreateEventWithCustomFields(APITestCase):
         fields = RegistrationField.objects.filter(registration_config=er).order_by(
             "order"
         )
-        self.assertEqual(fields.count(), 5)
+        self.assertEqual(fields.count(), 10)
         self.assertEqual(fields[0].field_type, "checkbox")
         self.assertEqual(fields[1].field_type, "option_select")
         self.assertEqual(
             RegistrationFieldOption.objects.filter(field=fields[1]).count(), 2
         )
 
-    # ── Test 2: 6th field rejected ──────────────────────────────────────────
+    # ── Test 2: 11th field rejected ─────────────────────────────────────────
 
     @tag("custom_fields", "projects")
-    def test_create_event_with_six_fields_rejected(self):
-        """Spec test 2 — attempting to create 6 custom fields returns 400."""
+    def test_create_event_with_eleven_fields_rejected(self):
+        """Spec test 2 — attempting to create 11 custom fields returns 400."""
         self.client.login(username="testuser_cf_create", password="testpassword")
         fields = [
             {
@@ -285,7 +329,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                 "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>Field</p>"},
             }
-            for i in range(6)
+            for i in range(11)
         ]
         data = {
             **self.base_event_data,
@@ -716,11 +760,11 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
             RegistrationFieldOption.objects.filter(field=new_field).count(), 1
         )
 
-    # ── Max 5 field enforcement on PATCH ────────────────────────────────────
+    # ── Max 10 field enforcement on PATCH ───────────────────────────────────
 
     @tag("custom_fields", "registration_config")
-    def test_patch_six_fields_rejected(self):
-        """6 fields via PATCH returns 400."""
+    def test_patch_eleven_fields_rejected(self):
+        """11 fields via PATCH returns 400."""
         self.client.login(username="organiser_cf", password="testpassword")
         fields = [
             {
@@ -729,7 +773,7 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
                 "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>x</p>"},
             }
-            for i in range(6)
+            for i in range(11)
         ]
         response = self.client.patch(
             self.draft_patch_url,
@@ -1898,11 +1942,11 @@ class TestInventoryField(_CustomFieldsBase):
         self.assertEqual(option.available_amount, 99)
         self.assertEqual(option.max_amount_per_guest, 5)
 
-    # ── INV-11: 5-field limit includes inventory ──────────────────────────────
+    # ── INV-11: 10-field limit includes inventory ─────────────────────────────
 
     @tag("custom_fields", "inventory")
-    def test_six_fields_including_inventory_rejected(self):
-        """INV-11 — 6th field (inventory) triggers 400 same as other types."""
+    def test_eleven_fields_including_inventory_rejected(self):
+        """INV-11 — 11th field (inventory) triggers 400 same as other types."""
         self.client.login(username="organiser_cf", password="testpassword")
         fields = [
             {
@@ -1911,11 +1955,11 @@ class TestInventoryField(_CustomFieldsBase):
                 "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>x</p>"},
             }
-            for i in range(5)
+            for i in range(10)
         ] + [
             {
                 "field_type": "inventory",
-                "order": 5,
+                "order": 10,
                 "label": "Inventory 1",
                 "settings": {"title": "Extra"},
                 "options": [{"title": "A", "order": 0}],
@@ -2977,11 +3021,11 @@ class TestTimeSlotField(_CustomFieldsBase):
         option.refresh_from_db()
         self.assertEqual(option.available_amount, 50)
 
-    # ── TS-14: 5-field limit includes time slot ───────────────────────────────
+    # ── TS-14: 10-field limit includes time slot ──────────────────────────────
 
     @tag("custom_fields", "time_slot")
-    def test_five_field_limit_includes_time_slot(self):
-        """TS-14 — attempting to add a 6th field (including time slot) returns 400."""
+    def test_ten_field_limit_includes_time_slot(self):
+        """TS-14 — attempting to add an 11th field (including time slot) returns 400."""
         self.client.login(username="organiser_cf", password="testpassword")
         fields = [
             {
@@ -2990,12 +3034,12 @@ class TestTimeSlotField(_CustomFieldsBase):
                 "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>Test</p>"},
             }
-            for i in range(5)
+            for i in range(10)
         ]
         fields.append(
             {
                 "field_type": "time_slot_select",
-                "order": 5,
+                "order": 10,
                 "label": "Time Slot 1",
                 "settings": {"title": "Pickup slot"},
                 "options": [],

@@ -98,6 +98,9 @@ export function resolveAnswerToStrings(
       return [{ columnSuffix: "", value: option?.title ?? "" }];
     }
 
+    case "text":
+      return [{ columnSuffix: "", value: answer.value_text ?? "" }];
+
     default:
       return [{ columnSuffix: "", value: "" }];
   }
