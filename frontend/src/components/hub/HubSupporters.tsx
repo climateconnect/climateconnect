@@ -184,7 +184,7 @@ export default HubSupporters;
 
 const CarouselItem = ({ supporter, classes, locale, hubUrl }) => {
   const baseUrl = `${getLocalePrefix(locale)}/organizations/${supporter?.organization_url_slug}`;
-  const organizationUrl = hubUrl ? `${baseUrl}?hubUrl=${hubUrl}` : baseUrl;
+  const organizationUrl = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
   return (
     <div className={classes.carouselEntry} key={supporter.name}>
       {supporter?.standalone_image ? (

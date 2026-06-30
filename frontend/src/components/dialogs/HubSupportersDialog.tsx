@@ -154,7 +154,7 @@ const HubSupportersDialog = ({
           const baseUrl = `${getLocalePrefix(locale)}/organizations/${
             supporter?.organization_url_slug
           }`;
-          const organizationUrl = hubUrl ? `${baseUrl}?hubUrl=${hubUrl}` : baseUrl;
+          const organizationUrl = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
           return (
             <>
               {supporter?.organization_url_slug ? (
