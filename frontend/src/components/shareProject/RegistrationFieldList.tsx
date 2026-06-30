@@ -30,7 +30,7 @@ import UserContext from "../context/UserContext";
 import { RegistrationField, RegistrationFieldOption } from "../../types";
 import RegistrationFieldEditor from "./RegistrationFieldEditor";
 
-const MAX_FIELDS = 5;
+const MAX_FIELDS = 10;
 const MAX_LABEL_LENGTH = 30;
 
 const FIELD_TYPE_LABEL_KEYS: Record<string, string> = {

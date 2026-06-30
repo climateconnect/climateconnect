@@ -50,7 +50,7 @@ Adding a **text custom field type** closes this gap. It is the most-requested ex
 - Conditional logic (show text field only if another field has value X).
 - Character limits other than the 300-char global cap.
 - Removing or renaming any of the four existing field types.
-- Changing the global 5-fields-per-event cap (`MAX_FIELDS = 5`).
+- Changing the global 10-fields-per-event cap (`MAX_FIELDS = 10`).
 
 ---
 
@@ -243,7 +243,7 @@ If the default serializer does not do this, switch to a custom `csvOptions.value
 - **Backend goes first (Phase 1)**: Frontend cannot be exercised end-to-end without backend changes; Phase 1 must land before Phase 2.
 - **Follow the registry pattern**: A new `TextFieldSettingsSerializer` must be registered in `FIELD_TYPE_SETTINGS_VALIDATORS`. No special-cased branches in the main serializer outside this pattern.
 - **Follow the per-type dispatch**: New code in `EventRegistrationSubmissionSerializer.validate`, `_build_field_answers_html`, and `_build_field_answers_text` must follow the existing `if field_type == X` dispatch pattern.
-- **Max 5 fields per event**: `MAX_FIELDS = 5` constant unchanged. Text fields count toward the cap.
+- **Max 10 fields per event**: `MAX_FIELDS = 10` constant unchanged. Text fields count toward the cap.
 - **Field `label` is admin-only**: Never shown to the guest. `settings.title` is the user-facing prompt. These are two separate things.
 - **300-character cap applies to both single-line and multi-line mode**: Enforced server-side (rejects > 300 chars) and client-side (`maxLength: 300`).
 - **Plaintext only**: Text is stored as plaintext with `\n` line breaks. Never rendered as HTML anywhere — emails use `linebreaksbr` (which escapes the surrounding text), the modal uses `whiteSpace: "pre-wrap"`, the DataGrid renders the string verbatim, CSV uses the MUI X default serializer.
