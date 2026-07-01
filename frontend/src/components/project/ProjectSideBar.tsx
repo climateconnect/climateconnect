@@ -80,7 +80,6 @@ export default function ProjectSideBar({
   const classes = useStyles({
     isSmallScreen: isSmallScreen,
   });
-
   const link = getLocalePrefix(locale) + "/browse";
   const shouldDisplayOneProjectInRow = !isSmallScreen;
 
