@@ -1479,8 +1479,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Option löschen",
     },
     max_registration_fields_reached: {
-      en: "Maximum of 5 fields reached",
-      de: "Maximal 5 Felder erreicht",
+      en: "Maximum of 10 fields reached",
+      de: "Maximal 10 Felder erreicht",
     },
     confirm_delete_field_title: {
       en: "Delete field?",
