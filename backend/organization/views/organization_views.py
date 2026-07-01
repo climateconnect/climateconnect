@@ -968,7 +968,7 @@ class ListOrganizationProjectsAPIView(ListAPIView):
         return ProjectParents.objects.filter(
             parent_organization__url_slug=self.kwargs["url_slug"],
             project__is_draft=False,
-        ).order_by("id")
+        ).order_by("-project__created_at")
 
 
 class ListOrganizationMembersAPIView(ListAPIView):
