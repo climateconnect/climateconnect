@@ -14,7 +14,6 @@ type HubSupporter = {
   supportersList: Supporter[];
   containerClass?: string;
   mobileVersion?: boolean;
-  hubName: string;
   hubUrl?: string;
 };
 
@@ -131,13 +130,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const HubSupporters = ({
-  supportersList,
-  containerClass,
-  mobileVersion,
-  hubName,
-  hubUrl,
-}: HubSupporter) => {
+const HubSupporters = ({ supportersList, containerClass, mobileVersion, hubUrl }: HubSupporter) => {
   const classes = useStyles({ containerClass: containerClass });
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const { locale } = useContext(UserContext);
@@ -171,7 +164,6 @@ const HubSupporters = ({
             supporters={supportersList}
             open={openSupportersDialog}
             onClose={toggleOpenSupportersDialog}
-            hubName={hubName}
             hubUrl={hubUrl}
           />
         </>
