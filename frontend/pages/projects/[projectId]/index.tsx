@@ -349,6 +349,7 @@ export default function ProjectPage({
                   hubName={hubUrl}
                   isSmallScreen={false}
                   registeredEventSlugs={registeredEventSlugs}
+                  hubUrl={hubUrl}
                 />
               )}
             </div>
