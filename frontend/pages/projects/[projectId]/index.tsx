@@ -346,7 +346,7 @@ export default function ProjectPage({
                   locale={locale}
                   texts={texts}
                   hubSupporters={hubSupporters}
-                  hubUrl={hubUrl}
+                  hubName={hubUrl}
                   isSmallScreen={false}
                   registeredEventSlugs={registeredEventSlugs}
                 />

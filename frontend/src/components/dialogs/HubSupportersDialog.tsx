@@ -12,6 +12,7 @@ type HubSupportersDialogProps = {
   supporters: Supporter[];
   open: boolean;
   onClose: () => void;
+  hubName: string;
   hubUrl?: string;
 };
 
@@ -91,7 +92,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const HubSupportersDialog = ({ supporters, open, onClose, hubUrl }: HubSupportersDialogProps) => {
+const HubSupportersDialog = ({
+  supporters,
+  open,
+  onClose,
+  hubName,
+  hubUrl,
+}: HubSupportersDialogProps) => {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
@@ -134,7 +141,7 @@ const HubSupportersDialog = ({ supporters, open, onClose, hubUrl }: HubSupporter
       onClose={handleClose}
       closeButtonRightSide
       open={open}
-      title={texts.all_supporters_and_sponsoring_members + " " + hubUrl}
+      title={texts.all_supporters_and_sponsoring_members + " " + hubName}
       titleTextClassName={classes.dialogTitle}
       closeButtonRightStyle={classes.closeButtonRightStyle}
       applyText={donateText.donate_now}

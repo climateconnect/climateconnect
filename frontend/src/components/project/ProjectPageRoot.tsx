@@ -765,10 +765,11 @@ export default function ProjectPageRoot({
               similarProjects={similarProjects}
               locale={locale}
               hubSupporters={hubSupporters}
-              hubUrl={hubPage}
+              hubName={hubPage}
               siblingProjects={siblingProjects}
               isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
               registeredEventSlugs={registeredEventSlugs}
+              hubUrl={hubPage}
             />
           </>
         )}
