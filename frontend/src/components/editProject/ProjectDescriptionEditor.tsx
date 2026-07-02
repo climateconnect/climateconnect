@@ -46,9 +46,6 @@ const EXTENSIONS: Extensions = [
     heading: false,
     horizontalRule: false,
     blockquote: false,
-    bulletList: true,
-    orderedList: true,
-    listItem: true,
     link: {
       openOnClick: false,
       HTMLAttributes: { rel: "noopener noreferrer" },

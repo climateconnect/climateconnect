@@ -96,6 +96,7 @@ export default function EnterDetails({
     location: "",
     max_participants: "",
     registration_end_date: "",
+    description_html: "",
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const locationInputRef = useRef(null);
