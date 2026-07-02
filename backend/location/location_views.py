@@ -5,11 +5,13 @@ from datetime import datetime, timezone
 
 import requests
 from django.conf import settings
+from django.db import IntegrityError
 from django.db.models import F
 from django.db.models.functions import Greatest
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 
 from location.serializers import LocationStubSerializer
@@ -140,36 +142,33 @@ class GetLocationView(APIView):
 # ---------------------------------------------------------------------------
 
 
-def _increment_nominatim_counters() -> None:
+def _increment_counters(provider="nominatim") -> None:
     """
-    Atomically track a single Nominatim autocomplete request.
+    Atomically track a single autocomplete request for the given provider.
 
-    1. Atomically increment per-minute bucket (for peak-rate detection).
+    1. Create a per-minute log entry (for peak-rate detection).
     2. Atomically upsert current day/week/month in NominatimPeriodStats.
-    3. Delete per-minute buckets older than the current UTC day.
+    3. Delete per-minute log entries older than the current UTC day.
 
     All field updates use F() expressions and PostgreSQL GREATEST() — no
     read-then-write patterns, no lost increments under concurrent access.
     """
     try:
         now = int(time.time())
-        minute_key = now // 60
+        current_minute_key = now // 60
 
-        # --- 1. atomic per-minute bucket increment ---
-        NominatimRequestLog.objects.get_or_create(
-            bucket_key=minute_key,
-            defaults={"count": 0},
+        # --- 1. create per-minute log entry ---
+        NominatimRequestLog.objects.create(
+            minute_key=current_minute_key,
+            provider=provider,
+            processed=True,
         )
-        NominatimRequestLog.objects.filter(
-            bucket_key=minute_key,
-        ).update(count=F("count") + 1)
 
-        # Re-read the atomically-incremented count.
-        current_minute_count = (
-            NominatimRequestLog.objects.filter(bucket_key=minute_key)
-            .values_list("count", flat=True)
-            .first()
-        ) or 1
+        # Count entries in the current minute for rate calculation.
+        current_minute_count = NominatimRequestLog.objects.filter(
+            minute_key=current_minute_key,
+            provider=provider,
+        ).count()
         current_rate = current_minute_count / 60.0
 
         # --- 2. atomic period stats upsert ---
@@ -178,35 +177,45 @@ def _increment_nominatim_counters() -> None:
         for period_type, period_key, period_start in periods:
             elapsed = max(float(now - period_start), 1.0)
 
-            NominatimPeriodStats.objects.get_or_create(
-                period_type=period_type,
-                period_key=period_key,
-                defaults={
-                    "total_requests": 0,
-                    "avg_req_per_second": 0.0,
-                    "peak_req_per_second": 0.0,
-                },
-            )
+            try:
+                NominatimPeriodStats.objects.get_or_create(
+                    period_type=period_type,
+                    period_key=period_key,
+                    provider=provider,
+                    defaults={
+                        "total_requests": 0,
+                        "avg_req_per_second": 0.0,
+                        "peak_req_per_second": 0.0,
+                    },
+                )
+            except IntegrityError:
+                # Race: concurrent request created the row between our check and insert.
+                pass
 
             # Single atomic UPDATE — all three fields computed in PostgreSQL.
             NominatimPeriodStats.objects.filter(
                 period_type=period_type,
                 period_key=period_key,
+                provider=provider,
             ).update(
                 total_requests=F("total_requests") + 1,
                 peak_req_per_second=Greatest(F("peak_req_per_second"), current_rate),
                 avg_req_per_second=(F("total_requests") + 1) / elapsed,
             )
 
-        # --- 3. cleanup old minute buckets (keep current day only) ---
+        # --- 3. cleanup old minute log entries (keep current day only) ---
         today_start = (now // 86400) * 86400
         today_start_minute = today_start // 60
         NominatimRequestLog.objects.filter(
-            bucket_key__lt=today_start_minute,
+            minute_key__lt=today_start_minute,
         ).delete()
 
     except Exception as exc:
-        logger.warning("Failed to track Nominatim request in database: %s", exc)
+        logger.warning("Failed to track autocomplete request in database: %s", exc)
+
+
+# Backward-compatible alias
+_increment_nominatim_counters = _increment_counters
 
 
 def _get_current_period_keys(now_epoch: int):
@@ -248,8 +257,112 @@ class TrackNominatimRequestView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        _increment_nominatim_counters()
+        _increment_counters("nominatim")
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class LocationAutocompleteThrottle(UserRateThrottle):
+    scope = "location_autocomplete"
+
+
+class LocationAutocompleteView(APIView):
+    """
+    GET /api/location_autocomplete/
+
+    Proxied autocomplete endpoint. Tries LocationIQ first, falls back to
+    Nominatim if LocationIQ fails or is not configured.
+    """
+
+    permission_classes = [AllowAny]
+    throttle_classes = [LocationAutocompleteThrottle]
+
+    def get(self, request):
+        q = request.query_params.get("q", "").strip()
+        if len(q) < 3:
+            return Response([], status=status.HTTP_200_OK)
+
+        countrycodes = request.query_params.get("countrycodes", "")
+        accept_language = request.META.get("HTTP_ACCEPT_LANGUAGE", "en-US,en;q=0.9")
+
+        # Try LocationIQ first
+        results, provider = self._try_locationiq(q, countrycodes, accept_language)
+
+        # Fallback to Nominatim if LocationIQ fails
+        if results is None:
+            results, provider = self._try_nominatim(q, countrycodes, accept_language)
+
+        if results is None:
+            return Response(
+                {"message": "All location services are unavailable."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        _increment_counters(provider)
+        return Response(results, status=status.HTTP_200_OK)
+
+    def _try_locationiq(self, q, countrycodes, accept_language):
+        if not settings.LOCATIONIQ_API_KEY:
+            return None, None
+        params = {
+            "key": settings.LOCATIONIQ_API_KEY,
+            "q": q,
+            "limit": 10,
+            "accept-language": accept_language,
+            "format": "json",
+            "addressdetails": 1,
+            "polygon_geojson": 1,
+            "polygon_threshold": 0.001,
+        }
+        if countrycodes:
+            params["countrycodes"] = countrycodes
+        try:
+            resp = requests.get(
+                settings.LOCATIONIQ_AUTOCOMPLETE_URL,
+                params=params,
+                timeout=settings.LOCATIONIQ_TIMEOUT,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                if isinstance(data, list) and data:
+                    return data, "locationiq"
+            logger.warning(
+                "LocationIQ returned status %d for query '%s'", resp.status_code, q
+            )
+        except requests.RequestException as exc:
+            logger.warning("LocationIQ request failed for query '%s': %s", q, exc)
+        return None, None
+
+    def _try_nominatim(self, q, countrycodes, accept_language):
+        url = settings.LOCATION_SERVICE_BASE_URL + "/search"
+        params = {
+            "q": q,
+            "format": "json",
+            "addressdetails": 1,
+            "polygon_geojson": 1,
+            "polygon_threshold": 0.001,
+        }
+        if countrycodes:
+            params["countrycodes"] = countrycodes
+        headers = {
+            "User-Agent": settings.CUSTOM_USER_AGENT,
+            "Accept-Language": accept_language,
+        }
+        try:
+            resp = requests.get(
+                url, params=params, headers=headers, timeout=settings.NOMINATIM_TIMEOUT
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                if isinstance(data, list):
+                    return data, "nominatim"
+            logger.warning(
+                "Nominatim fallback returned status %d for query '%s'",
+                resp.status_code,
+                q,
+            )
+        except requests.RequestException as exc:
+            logger.warning("Nominatim fallback failed for query '%s': %s", q, exc)
+        return None, None
 
 
 class NominatimStatsView(APIView):

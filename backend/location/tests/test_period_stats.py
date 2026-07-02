@@ -77,16 +77,16 @@ class TestIncrementNominatimCounters(TestCase):
     def test_old_minute_buckets_deleted_on_request(self):
         now = int(time.time())
         yesterday_bucket = (now // 86400 - 1) * 24 * 60 + 720
-        NominatimRequestLog.objects.create(bucket_key=yesterday_bucket, count=5)
+        NominatimRequestLog.objects.create(minute_key=yesterday_bucket, processed=True)
 
         _increment_nominatim_counters()
 
         self.assertFalse(
-            NominatimRequestLog.objects.filter(bucket_key=yesterday_bucket).exists()
+            NominatimRequestLog.objects.filter(minute_key=yesterday_bucket).exists()
         )
         today_bucket = now // 60
         self.assertTrue(
-            NominatimRequestLog.objects.filter(bucket_key=today_bucket).exists()
+            NominatimRequestLog.objects.filter(minute_key=today_bucket).exists()
         )
 
     def test_new_iso_week_creates_new_row(self):

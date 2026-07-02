@@ -250,6 +250,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 200,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_RATES": {
+        "location_autocomplete": "30/min",
+    },
 }
 
 SPECTACULAR_SETTINGS = {
@@ -359,6 +362,12 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 NOMINATIM_LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
 CUSTOM_USER_AGENT = "ClimateConnect/1.0 (contact@climateconnect.earth)"
+
+# LocationIQ autocomplete
+LOCATIONIQ_API_KEY = env("LOCATIONIQ_API_KEY", "")
+LOCATIONIQ_AUTOCOMPLETE_URL = "https://us1.locationiq.com/v1/autocomplete"
+LOCATIONIQ_TIMEOUT = 3  # seconds
+NOMINATIM_TIMEOUT = 5  # seconds
 
 LOCALE_PATHS = [
     BASE_DIR + "/translations",
