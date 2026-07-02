@@ -30,7 +30,7 @@ describe("buildGoogleCalendarUrl", () => {
       name: "Climate Summit",
       start_date: "2026-07-15T10:00:00Z",
       end_date: "2026-07-15T12:00:00Z",
-      description: "A great event.",
+      short_description: "A great event.",
       location: "Berlin, Germany",
       is_online: false,
     };
@@ -82,18 +82,16 @@ describe("buildGoogleCalendarUrl", () => {
     expect(params.get("details")).toContain("https://example.com/event");
   });
 
-  it("prefers description over short_description when both are set", () => {
+  it("uses short_description for Google Calendar details", () => {
     const event = {
       name: "Event",
       start_date: "2026-07-15T10:00:00Z",
       end_date: "2026-07-15T12:00:00Z",
-      description: "Full description.",
       short_description: "Short summary.",
     };
     const url = buildGoogleCalendarUrl(event, "https://example.com/event");
     const params = new URL(url).searchParams;
-    expect(params.get("details")).toContain("Full description.");
-    expect(params.get("details")).not.toContain("Short summary.");
+    expect(params.get("details")).toContain("Short summary.");
   });
 });
 
@@ -103,7 +101,7 @@ describe("buildIcalEventData", () => {
       name: "Climate Summit",
       start_date: "2026-07-15T10:00:00Z",
       end_date: "2026-07-15T12:00:00Z",
-      description: "A great event.",
+      short_description: "A great event.",
       location: "Berlin, Germany",
       is_online: false,
     };
@@ -144,7 +142,7 @@ describe("buildIcalEventData", () => {
       name: "Event",
       start_date: "2026-07-15T10:00:00Z",
       end_date: "2026-07-15T12:00:00Z",
-      description: "Line one.\nLine two.",
+      short_description: "Line one.\nLine two.",
     };
     const data = buildIcalEventData(event, "https://example.com/event");
     expect(data.description).toBe("Line one.\nLine two.\n\nhttps://example.com/event");
@@ -155,13 +153,13 @@ describe("buildIcalEventData", () => {
       name: "Event",
       start_date: "2026-07-15T10:00:00Z",
       end_date: "2026-07-15T12:00:00Z",
-      description: "First, second, third.",
+      short_description: "First, second, third.",
     };
     const data = buildIcalEventData(event, "https://example.com/event");
     expect(data.description).toContain("First, second, third.");
   });
 
-  it("falls back to short_description when description is not set", () => {
+  it("uses short_description for the ical description", () => {
     const event = {
       name: "Event",
       start_date: "2026-07-15T10:00:00Z",
@@ -173,16 +171,13 @@ describe("buildIcalEventData", () => {
     expect(data.description).toContain("https://example.com/event");
   });
 
-  it("prefers description over short_description when both are set", () => {
+  it("uses URL only when short_description is not set", () => {
     const event = {
       name: "Event",
       start_date: "2026-07-15T10:00:00Z",
       end_date: "2026-07-15T12:00:00Z",
-      description: "Full description.",
-      short_description: "Short summary.",
     };
     const data = buildIcalEventData(event, "https://example.com/event");
-    expect(data.description).toContain("Full description.");
-    expect(data.description).not.toContain("Short summary.");
+    expect(data.description).toBe("https://example.com/event");
   });
 });
