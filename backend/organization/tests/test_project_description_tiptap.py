@@ -22,9 +22,9 @@ class TestLegacyDescriptionToTiptap(TestCase):
             "<p>Line one</p><p>Line two</p><p>Line three</p>",
         )
 
-    def test_empty_line_paragraph_break(self):
+    def test_empty_line_skipped(self):
         result = legacy_description_to_tiptap_html("A\n\nB")
-        self.assertEqual(result, "<p>A</p><p><br></p><p>B</p>")
+        self.assertEqual(result, "<p>A</p><p>B</p>")
 
     def test_youtube_url_own_line(self):
         url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
@@ -43,6 +43,9 @@ class TestLegacyDescriptionToTiptap(TestCase):
         self.assertIn("Check this out:", result)
         self.assertIn("cool right?", result)
         self.assertIn('<div data-youtube-video="">', result)
+        # Text before the URL should be in its own <p>, text after in another
+        self.assertIn("<p>Check this out:</p>", result)
+        self.assertIn("<p>cool right?</p>", result)
 
     def test_multiple_youtube_urls(self):
         result = legacy_description_to_tiptap_html(
@@ -77,6 +80,17 @@ class TestLegacyDescriptionToTiptap(TestCase):
         self.assertIn("&lt;", result)
         self.assertIn("&amp;", result)
         self.assertIn("&gt;", result)
+
+    def test_youtube_url_with_trailing_comma(self):
+        result = legacy_description_to_tiptap_html("http://youtu.be/dQw4w9WgXcQ ,")
+        self.assertIn('<div data-youtube-video="">', result)
+        self.assertIn("dQw4w9WgXcQ", result)
+        self.assertNotIn(",", result)
+
+    def test_youtube_url_with_trailing_comma_no_space(self):
+        result = legacy_description_to_tiptap_html("http://youtu.be/dQw4w9WgXcQ,")
+        self.assertIn('<div data-youtube-video="">', result)
+        self.assertIn("dQw4w9WgXcQ", result)
 
 
 class TestSanitizeHtmlProjectDescription(TestCase):

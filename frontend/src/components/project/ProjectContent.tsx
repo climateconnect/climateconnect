@@ -133,6 +133,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     "& iframe": {
       maxWidth: 640,
       width: "100%",
+      height: "auto",
+      aspectRatio: "16 / 9",
     },
   },
   descriptionClamped: {

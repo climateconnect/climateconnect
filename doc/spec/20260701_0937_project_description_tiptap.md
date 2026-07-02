@@ -493,7 +493,11 @@ Frontend:
 
 1. Backend: add columns, run schema migration. (No data loss — new columns are nullable.)
 2. Backend: deploy the serializer / view / sanitization / DeepL changes.
-3. Backend: run `migrate_descriptions_to_tiptap` to convert the 112 existing descriptions.
+3. Backend: run `migrate_descriptions_to_tiptap` to convert the 112 existing descriptions:
+   ```bash
+   cd backend && pdm run python manage.py migrate_descriptions_to_tiptap
+   ```
+   Use `--dry-run` first to preview changes without saving. Re-running is safe (idempotent — skips already-migrated projects).
 4. Frontend: deploy the new `ProjectDescriptionEditor` and the display change. The display-side fallback handles any project that somehow has `description_html=null` (shouldn't happen after step 3, but it's a safety net).
 5. Cleanup (follow-up PR): remove the legacy `description` column and the `description` field on the serializer, remove `MessageContent` from `ProjectContent.tsx`, remove the `react-mentions` dependency.
 

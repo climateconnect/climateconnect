@@ -67,29 +67,29 @@ def legacy_description_to_tiptap_html(text: str | None) -> str:
         stripped = line.strip()
 
         if not stripped:
-            # Empty line → empty paragraph (acts as paragraph break)
-            parts.append("<p><br></p>")
+            # Empty line → skip. The natural margin between <p> tags already
+            # provides paragraph spacing. Emitting <p><br></p> would double it.
             continue
 
         # Check if the line contains a YouTube URL
         words = stripped.split()
-        youtube_words = []
-        non_youtube_words = []
+        current_text: list[str] = []
 
         for word in words:
-            if YOUTUBE_RE.match(word):
-                youtube_words.append(word)
-            else:
-                non_youtube_words.append(word)
-
-        if youtube_words:
-            # Emit any non-YouTube text first
-            if non_youtube_words:
-                text_content = " ".join(non_youtube_words)
-                parts.append(f"<p>{_autolink_text(text_content)}</p>")
-            # Emit each YouTube embed
-            for yt_url in youtube_words:
-                video_id = _extract_youtube_id(yt_url)
+            # Strip trailing punctuation (comma, period) that may be glued to
+            # URLs in legacy plain text.  Only do this for words that look like
+            # URLs — regular text like "Hello:" should keep its punctuation.
+            cleaned = word
+            if re.match(r"https?://", word):
+                cleaned = word.rstrip(",.")
+            if not cleaned or re.match(r"^[,.;:]+$", cleaned):
+                continue
+            if YOUTUBE_RE.match(cleaned):
+                # Flush any accumulated text before the embed
+                if current_text:
+                    parts.append(f"<p>{_autolink_text(' '.join(current_text))}</p>")
+                    current_text = []
+                video_id = _extract_youtube_id(cleaned)
                 if video_id:
                     parts.append(
                         f'<div data-youtube-video="">'
@@ -97,8 +97,11 @@ def legacy_description_to_tiptap_html(text: str | None) -> str:
                         f'width="640" height="480" allowfullscreen="true"></iframe>'
                         f"</div>"
                     )
-        else:
-            # Regular text line
-            parts.append(f"<p>{_autolink_text(stripped)}</p>")
+            else:
+                current_text.append(cleaned)
+
+        # Flush any remaining text
+        if current_text:
+            parts.append(f"<p>{_autolink_text(' '.join(current_text))}</p>")
 
     return "".join(parts)
