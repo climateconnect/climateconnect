@@ -150,7 +150,16 @@ Replace the plain-text description input with a TipTap rich-text editor, render 
 
 **AC-2.7** Create-flow translations (line ~550 in `project_views.py`) set `translation.description_html_translation = texts["description_html"]` when present.
 
-**AC-2.8** `max_chars` validation includes `"description_html": 20000` (HTML is larger than plain text; the current `description` cap of 4800 stays for the legacy field). The 20000 limit is enforced as `len(value) <= 20000` and matches the spec in `doc/private-for-agents/description-to-tiptap-migration.md`.
+**AC-2.8** `max_chars` validation for `description_html` enforces **two limits**:
+
+1. **20000 characters** on the raw HTML string (the full `<p>…</p>`, `<ul><li>…</li></ul>`, `<div data-youtube-video>…</div>` markup). This is a hard cap — the database column can accommodate this without issue. Implemented as `len(value) <= 20000`.
+2. **4000 characters** on the **stripped** HTML (text content only, HTML tags removed). Implemented as `len(stripHtml(value)) <= 4000` where `stripHtml` is a small helper that removes all HTML tags (regex `re.sub(r'<[^>]+>', '', value)`). The frontend Tiptap `CharacterCount` already counts text content (not markup), so this matches the user-facing counter exactly (see AC-6.3).
+
+The 4000-char stripped limit matches the legacy frontend cap (`EnterDetails.tsx:235`, `EditProjectContent.tsx:335`) so users see the same limit they're used to. The 20000-char full-HTML cap is generous enough to accommodate the markup overhead.
+
+**AC-2.9** The 4000-char **stripped** limit is **not** applied to `description_html_translation` on the auto-translation path. DeepL may return a German translation that exceeds 4000 characters of text content (German is typically 1.2–1.3× longer than English). The auto-translated HTML is saved as-is. If the user later opens the translation in the editor, they may see a red character counter — this is a known corner case (a maxed-out English description that gets auto-translated) and the user can trim the translation manually. The 20000-char full-HTML cap is still enforced for translations (database constraint). The existing `max_chars["description"]: 4800` cap on the legacy field stays unchanged (only used for the legacy create/edit path; new code does not write to it).
+
+**Note on the legacy limit**: The current codebase has two inconsistent limits on the legacy `description` field — the frontend `substring(0, 4000)` cap in `EnterDetails.tsx:245` and `EditProjectContent.tsx:335`, and the backend `max_length=4800` on the model and `max_chars["description"]: 4800` in `project_views.py:468`. The new `description_html` field uses **4000 stripped characters** (matching the legacy frontend cap, which is the more user-visible of the two) / **20000 full-HTML characters** (database-friendly upper bound).
 
 ### AC-3: Backend DeepL HTML translation
 
@@ -234,7 +243,7 @@ const EXTENSIONS: Extensions = [
     horizontalRule: false,
     blockquote: false,
     bulletList: true,
-    orderedList: false,
+    orderedList: true,
     listItem: true,
     link: {
       openOnClick: false,
@@ -251,18 +260,19 @@ const EXTENSIONS: Extensions = [
 ];
 ```
 
-**AC-6.3** `CHARACTER_LIMIT = 4800` — matches the existing `max_length=4800` on the legacy `description` field. The counter shows `n / 4800` and turns red on overflow.
+**AC-6.3** `CHARACTER_LIMIT = 4000` — the soft limit for the new `description_html` field, matching the legacy frontend cap (`EnterDetails.tsx:235`, `EditProjectContent.tsx:335`). The Tiptap `CharacterCount` extension counts text content (not HTML markup), so `<p>Hello <strong>world</strong></p>` counts as 11 characters. The counter shows `n / 4000` and turns red on overflow. This is a soft warning — the user can still type past the limit, but the backend `max_chars["description_html"]` validation (see AC-2.8) enforces both a 4000 stripped-char limit and a 20000 full-HTML-char hard cap.
 
 **AC-6.4** Toolbar (`renderControls`) contains only basic formatting:
 - `MenuButtonBold`
 - `MenuButtonItalic`
 - `MenuButtonBulletedList`
+- `MenuButtonOrderedList`
 - `MenuButtonEditLink`
 - a custom `MenuButtonAddYoutube` that calls `editor.commands.setYoutubeVideo({ src: ... })` after prompting the user for a URL (or via a simple modal — see AC-6.5).
 
-Bullet lists are useful for project descriptions (agendas, goals, steps, checklists). Ordered lists are intentionally excluded to keep the toolbar minimal — they can be added later if needed. Toolbar button tooltips use mui-tiptap's built-in English labels (no custom i18n key needed; matches the pattern in `CheckboxFieldEditor.tsx`).
+Bullet and ordered lists are useful for project descriptions (agendas, goals, steps, checklists). Toolbar button tooltips use mui-tiptap's built-in English labels (no custom i18n key needed; matches the pattern in `CheckboxFieldEditor.tsx`).
 
-No headings, no tables, no emoji, no ordered lists. These can be added later if/when needed.
+No headings, no tables, no emoji. These can be added later if/when needed.
 
 No headings, no tables, no emoji, no ordered lists. These can be added later if/when needed.
 
@@ -331,7 +341,7 @@ The `dataKey` change is the key wiring: the translation block in `TranslateProje
 
 **AC-9.3** For the source language, the editor is editable (so the user can refine the original). For the target language, the editor is read-only **unless** the user marks the translation as `is_manual_translation`; when manual, the editor is editable.
 
-**AC-9.4** The `maxCharacters` for the description is the Tiptap character count (4800) divided by Tiptap's own counting (which doesn't include HTML markup). The current 1.2x buffer in `TranslationBlockElement` (line 411: `maxCharacters * 1.2`) accommodates the German expansion — keep it.
+**AC-9.4** The translation editor uses the same Tiptap `CharacterCount` configuration as the source editor (limit 4000), but the counter is **display-only** for translations — it does not block input. This is because DeepL's auto-translation can produce German text that exceeds 4000 characters (German is typically 1.2–1.3× longer than English). If a user opens an auto-translated description that's already over 4000 characters, they see a red counter but can still edit; they may need to trim the translation to bring it under the limit. The 20000 full-HTML hard cap is always enforced (database constraint).
 
 **AC-9.5** Manual: an organiser edits the German translation, marks it as manual, sees the same Tiptap editor with the YouTube embed and formatting preserved from the DeepL-translated HTML.
 
@@ -387,7 +397,8 @@ Six lines is the equivalent of the old 500-char truncation for typical body text
 - Renders with HTML content (the `descriptionHtml` prop is loaded into the editor on mount).
 - Typing bold formatting produces `<p><strong>…</strong></p>` in the `onChange` callback.
 - Toggling the bullet list button produces `<ul><li>…</li></ul>` in the `onChange` callback.
-- The character counter updates on typing and turns red when `> 4800`.
+- Toggling the ordered list button produces `<ol><li>…</li></ol>` in the `onChange` callback.
+- The character counter updates on typing and turns red when `> 4000`.
 - Clicking the YouTube button opens a modal; submitting a valid URL inserts an embed; submitting an invalid URL shows an error and keeps the modal open.
 
 **AC-11.2** New `ProjectContent.test.tsx`:
@@ -420,7 +431,8 @@ Six lines is the equivalent of the old 500-char truncation for typical body text
 - **Multiple YouTube embeds allowed**: The old 1-embed cap is lifted. The Tiptap YouTube extension places each embed as a separate block node.
 - **Mentions are dropped**: No mention handling in the editor, the HTML, the migration, or the translation. The `react-mentions` npm dependency can be removed from `package.json` once `InputWithMentions.tsx` is also removed (out of scope here).
 - **No write-through to legacy `description`**: The frontend only sends `description_html`. The backend only writes to `description_html`. The legacy `description` column stays on the model (read-only) so the data migration command can be re-run if needed, but is not maintained by the new code.
-- **`max_length` is generous**: 20000 bytes for `description_html` (HTML inflates). The frontend counter is still 4800 (Tiptap counts characters, not bytes).
+- **Two-tier character limit**: 4000 stripped characters (soft limit, matches the legacy frontend cap users are familiar with) and 20000 full-HTML characters (hard cap, database-friendly). The Tiptap `CharacterCount` extension naturally counts stripped characters (text content, not markup), so the frontend counter aligns with the backend `len(stripHtml(value)) <= 4000` check. The backend `len(value) <= 20000` check is the absolute upper bound.
+- **Translations are allowed to exceed the 4000 stripped limit**: The 4000-char stripped limit and 20000-char full-HTML limit apply to the source language. Auto-translated `description_html_translation` is exempt from the 4000 stripped limit because German text is typically 1.2–1.3× longer than English. The 20000 full-HTML cap is always enforced (database constraint). If a user opens an over-4000-char translation in the editor, they see a red counter but can still edit — a known corner case.
 - **Server-side sanitization is mandatory**: Even though Tiptap produces well-formed HTML, the server runs `sanitize_html` to guard against paste-injected content and direct API calls. The allowlist is tuned for the description field — the checkbox description sanitizer is unchanged.
 - **DeepL `tag_handling=html`**: Use the official DeepL HTML handling. Don't roll our own regex-based tag extraction.
 - **i18n**: English + German translations for all new user-visible strings.
@@ -492,13 +504,14 @@ Frontend:
 | # | Question | Default resolution |
 |---|----------|---------------------|
 | 1 | Should the description be required for non-draft projects? | **Yes** — current behaviour. Empty HTML (`""` or `"<p></p>"`) is treated as missing. The create / edit forms surface an error. |
-| 2 | What's the character limit? | **4800** — matches the existing `max_length=4800` on the legacy field. Frontend counter enforces it; backend allows up to 20000 bytes. |
-| 3 | Should we auto-translate the description? | **Yes** — keep the existing DeepL flow. Use `tag_handling=html` so HTML is preserved. |
-| 4 | Should the YouTube button support playlists (`?list=…`)? | **Yes** — the Tiptap extension handles them via `getEmbedUrlFromYoutubeUrl`. We don't need to special-case them. |
-| 5 | Should the editor support image insertion? | **No** — out of scope. Can be added later as a separate extension. |
-| 6 | Should we keep the legacy `description` column after migration? | **Yes**, for the transition. A follow-up cleanup PR removes it once all 112 projects are migrated and the display-side fallback is removed. |
-| 7 | Six lines for `line-clamp` — is that the right number? | **Yes**, a reasonable default. Adjust in a follow-up if the team wants more/fewer. |
-| 8 | Does the YouTube button work on mobile? | **Yes** — the modal is MUI-based and responsive. |
+| 2 | What's the character limit for the source language? | **4000 stripped characters** (soft limit, matches the legacy frontend cap) / **20000 full-HTML characters** (hard cap, database-friendly). The Tiptap `CharacterCount` extension counts stripped characters (text content, not markup), so the frontend counter aligns with `len(stripHtml(value)) <= 4000` on the backend. This replaces the legacy 4000-char frontend cap and 4800-char backend cap, which were inconsistent. |
+| 3 | Should translations be allowed to exceed the source character limit? | **Yes** — German text is typically 1.2–1.3× longer than English. A 4000-character English description can become ~5000+ characters in German. The translation editor still shows a counter (for reference) but does not block input. The 20000 full-HTML cap is always enforced. If a user opens an over-4000-char translation, they see a red counter — a known corner case the user can fix manually. |
+| 4 | Should we auto-translate the description? | **Yes** — keep the existing DeepL flow. Use `tag_handling=html` so HTML is preserved. |
+| 5 | Should the YouTube button support playlists (`?list=…`)? | **Yes** — the Tiptap extension handles them via `getEmbedUrlFromYoutubeUrl`. We don't need to special-case them. |
+| 6 | Should the editor support image insertion? | **No** — out of scope. Can be added later as a separate extension. |
+| 7 | Should we keep the legacy `description` column after migration? | **Yes**, on the model (read-only) so the data migration command can be re-run if needed. New code does not write to it. A follow-up cleanup PR can drop the column once the migration is confirmed stable. |
+| 8 | Six lines for `line-clamp` — is that the right number? | **Yes**, a reasonable default. Adjust in a follow-up if the team wants more/fewer. |
+| 9 | Does the YouTube button work on mobile? | **Yes** — the modal is MUI-based and responsive. |
 
 ---
 
@@ -521,8 +534,8 @@ Frontend:
   - Add a post-bleach filter that validates `<iframe src>` against the YouTube regex; if it doesn't match, drop the iframe (and its wrapper `<div>`).
   - Keep the existing `_strip_dangerous_tags` but exclude `<iframe>` from the regex (move it into a separate post-bleach step that only keeps YouTube-embed iframes).
 - **`translate()` extension**: add `is_html` parameter and `tag_handling=html` in the payload. Thread it through `translate_text` and the two callers.
-- **`create_new_project`**: set `description_html` from `data["description_html"]`. Also set `description = stripHtml(data["description_html"])` for write-through (or import `bleach` with `tags=[], strip=True` — already used at `backend/organization/utility/email.py:883`).
-- **`get_project_description`**: read from `description_html` / `description_html_translation` first, fall back to `description` / `description_translation` if null.
+- **`create_new_project`**: set `description_html` from `data["description_html"]`. Do not write to the legacy `description` field (no write-through; the legacy column stays read-only on the model so the data migration command can be re-run if needed).
+- **`get_project_description`**: read from `description_html` / `description_html_translation`. Returns `null` / empty string if neither is set.
 - **PATCH view**: add `"description_html"` to `pass_through_params`; sanitize before saving.
 - **`items_to_translate`**: add the new entry.
 - **Management command**: implement `legacy_description_to_tiptap_html` per AC-5.3.
@@ -549,13 +562,12 @@ The current `_strip_dangerous_tags` strips `<iframe>` outright. We need to allow
 
 DeepL's `tag_handling=html` should preserve the `<div data-youtube-video>` and `<iframe>` tags untouched because they have no translatable text. Verify with a manual test using the DeepL API and a sample input. If DeepL misbehaves, the wrapper HTML can be **excluded from translation** by sending only the `<p>…</p>` content to DeepL, then re-attaching the wrapper. This is a fallback — try `tag_handling=html` first.
 
-### Risk: write-through to legacy `description`
+### Risk: legacy `description` column is stale after migration
 
-If the frontend sends `description_html = "<p>Hello <strong>world</strong>.</p>"` and we set `description = stripHtml(...) = "Hello world."`, the legacy renderer (`MessageContent` for un-migrated projects) would lose formatting. This is acceptable because:
+The legacy `description` column is not written to by the new code. After the data migration runs, the column holds the original plain-text descriptions (pre-migration), while `description_html` holds the new HTML. Any code path that still reads from `description` will see the old plain text, not the current HTML. This is acceptable because:
 - `MessageContent` only renders project descriptions, and we're removing that usage in this spec.
 - Other consumers of `description` (e.g. email, search) treat it as plain text anyway.
-
-But it's worth noting in the code comment that the legacy field is now a stripped-down copy.
+- A follow-up cleanup PR can drop the column once the migration is confirmed stable.
 
 ### Test files to mirror
 
