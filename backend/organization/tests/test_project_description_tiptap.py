@@ -1,5 +1,3 @@
-import re
-
 from django.test import TestCase
 
 from climateconnect_api.utility.html import (

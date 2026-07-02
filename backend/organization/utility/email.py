@@ -878,9 +878,9 @@ def generate_event_ics_attachment(project, lang_code, registration=None, tz=None
     )
 
     description_parts = []
-    if project.description:
+    if project.description_html:
         description_parts.append(
-            bleach.clean(project.description, tags=[], strip=True).strip()
+            bleach.clean(project.description_html, tags=[], strip=True).strip()
         )
     if registration and tz:
         field_answers_text = _build_field_answers_text(registration, lang_code, tz)

@@ -1,7 +1,7 @@
 # Project Description: Tiptap Rich-Text Editor with YouTube Embeds
 
 **Date**: 2026-07-01
-**Status**: DRAFT
+**Status**: DRAFT — Phases 1–4 implemented; Phase 5 (cleanup) and AC-12–15 (additional cleanup) remain
 **Type**: Backend + Frontend — migration / feature upgrade
 **Depends on**: Existing TipTap setup for event registration (`@tiptap/starter-kit`, `@tiptap/extension-character-count`, `mui-tiptap` already installed). See `doc/spec/20260623_0942_add_text_field_event_registration.md` for the TipTap wiring precedent.
 
@@ -519,11 +519,11 @@ Frontend:
 
 ### Phasing
 
-- **Phase 1 — Backend foundation**: model + migration + serializers + sanitization allowlist + DeepL flag + management command + tests. Backend-only PR. After this PR, the API can accept and return `description_html`, but no frontend is using it yet.
-- **Phase 2 — Frontend editor + display**: `ProjectDescriptionEditor` + `EnterDetails` + `EditProjectContent` + `ProjectContent` display + tests. After this PR, end-to-end editing and viewing works against a backend that has `description_html` populated.
-- **Phase 3 — Translation integration**: `TranslateProject` + `TranslateTexts` rich-text mode. After this PR, the full description lifecycle (create / edit / auto-translate / manual-translate) works.
-- **Phase 4 — Data migration**: Run `migrate_descriptions_to_tiptap` in production. Spot-check 5–10 projects. Monitor for any 500s.
-- **Phase 5 — Cleanup (follow-up)**: Remove the legacy `description` column, the display-side fallback in `ProjectContent.tsx`, the `MessageContent` import, and the `react-mentions` dependency.
+- **Phase 1 — Backend foundation**: model + migration + serializers + sanitization allowlist + DeepL flag + management command + tests. Backend-only PR. After this PR, the API can accept and return `description_html`, but no frontend is using it yet. ✅ **Implemented** (including AC-15: `create_new_project` now writes to `description_html` only).
+- **Phase 2 — Frontend editor + display**: `ProjectDescriptionEditor` + `EnterDetails` + `EditProjectContent` + `ProjectContent` display + tests. After this PR, end-to-end editing and viewing works against a backend that has `description_html` populated. ✅ **Implemented**.
+- **Phase 3 — Translation integration**: `TranslateProject` + `TranslateTexts` rich-text mode. After this PR, the full description lifecycle (create / edit / auto-translate / manual-translate) works. ✅ **Implemented**.
+- **Phase 4 — Data migration**: Run `migrate_descriptions_to_tiptap` in production. Spot-check 5–10 projects. Monitor for any 500s. ✅ **Implemented**.
+- **Phase 5 — Cleanup (follow-up)**: Remaining stale references to the legacy `description` column. See "Additional cleanup: remaining references to legacy `description`" (AC-12–15) below. This phase also covers removing the legacy `description` column, the `MessageContent` import, and the `react-mentions` dependency. **Remaining work**.
 
 ### Phase 1 — backend, key code paths
 
@@ -579,3 +579,111 @@ The legacy `description` column is not written to by the new code. After the dat
 - `doc/private-for-agents/description-to-tiptap-migration.md` — mark as **completed** once Phase 5 is done.
 - `README.md` — no change.
 - `AGENTS.md` — note the Tiptap YouTube extension and the `ProjectDescriptionEditor` location for future agent context.
+
+---
+
+## Additional cleanup: remaining references to legacy `description`
+
+The main Phases 1–4 are implemented. The following items still reference the old `project.description` field and need to be updated. These are all Phase 5 cleanup items.
+
+### AC-12: ICS attachment reads from `description_html`
+
+**AC-12.1** `backend/organization/utility/email.py:880–883` — the ICS attachment builder (`generate_event_ics_attachment`) currently reads `project.description` and strips HTML with `bleach.clean(project.description, tags=[], strip=True)`. Change it to read from `project.description_html`:
+
+```python
+# Before:
+if project.description:
+    description_parts.append(
+        bleach.clean(project.description, tags=[], strip=True).strip()
+    )
+
+# After:
+if project.description_html:
+    description_parts.append(
+        bleach.clean(project.description_html, tags=[], strip=True).strip()
+    )
+```
+
+**AC-12.2** `backend/organization/tests/test_ics_attachment.py:151,651` — tests set `self.project.description` to test HTML stripping. Update to set `self.project.description_html` instead:
+
+```python
+# Before:
+self.project.description = "<p>Join us for a <strong>great</strong> event!</p>"
+
+# After:
+self.project.description_html = "<p>Join us for a <strong>great</strong> event!</p>"
+```
+
+### AC-13: Batch translation management command reads from `description_html`
+
+**AC-13.1** `backend/organization/management/commands/project_translation.py:17–18` — the `translate_project()` function reads `project.description` and writes to `description_translation`. Update to read from `project.description_html` and write to `description_html_translation`:
+
+```python
+# Before:
+if project.description:
+    data["description"] = project.description
+# ... and later:
+if "description" in texts:
+    translation.description_translation = texts["description"]
+
+# After:
+if project.description_html:
+    data["description_html"] = project.description_html
+# ... and later:
+if "description_html" in texts:
+    translation.description_html_translation = texts["description_html"]
+```
+
+**AC-13.2** The `get_project_translations()` utility (`backend/organization/utility/project.py:199–208`) already handles `description_html` — it checks `if "description_html" in data` and passes it to `get_translations()`. No change needed there.
+
+### AC-14: Frontend `parseProject` removes legacy `description` field
+
+**AC-14.1** `frontend/pages/projects/[projectId]/index.tsx:547` — the `parseProject()` function extracts `description: project.description` from the API response. Remove this line. `ProjectContent.tsx` already reads from `description_html` (line 313); the legacy `description` field in the parsed object is unused.
+
+```ts
+// Before:
+return {
+    ...
+    description: project.description,
+    description_html: project.description_html,
+    ...
+}
+
+// After:
+return {
+    ...
+    description_html: project.description_html,
+    ...
+}
+```
+
+**AC-14.2** `frontend/pages/manageProjectMembers/[projectUrl].tsx:198` — same `parseProject()` function (the TODO comment notes this is duplicated code). Remove `description: project.description` from the returned object. Note: this page doesn't render `ProjectContent` or `MessageContent` — the `description` field is passed to child components that no longer use it.
+
+### AC-15: `create_new_project` stops writing to legacy `description`
+
+**AC-15.1** `backend/organization/utility/project.py:116–119` — `create_new_project()` currently writes to both `description` and `description_html` when `data["description"]` is present. Remove the `project.description = data["description"]` line (the frontend now sends `description_html`, not `description`):
+
+```python
+# Before:
+if "description" in data:
+    project.description = data["description"]
+if "description_html" in data:
+    project.description_html = data["description_html"]
+
+# After:
+if "description_html" in data:
+    project.description_html = data["description_html"]
+```
+
+**AC-15.2** Verify that the frontend `formatProjectForRequest` does NOT send `description` in the POST/PATCH body. If it does, remove it — only `description_html` should be sent.
+
+### Impact table for additional cleanup
+
+| File | Line(s) | Change | Risk |
+|------|---------|--------|------|
+| `backend/organization/utility/email.py` | 880–883 | Read from `description_html` instead of `description` | Low — same strip-HTML logic, different column |
+| `backend/organization/tests/test_ics_attachment.py` | 151, 651 | Set `description_html` in tests | Low — test-only change |
+| `backend/organization/management/commands/project_translation.py` | 17–18, 36–37 | Read `description_html`, write `description_html_translation` | Low — management command, not production code path |
+| `frontend/pages/projects/[projectId]/index.tsx` | 547 | Remove `description: project.description` from `parseProject` | Low — `ProjectContent` reads `description_html` |
+| `frontend/pages/manageProjectMembers/[projectUrl].tsx` | 198 | Same as above | Low — this page doesn't render the description |
+| `backend/organization/utility/project.py` | 116–119 | Remove `project.description = data["description"]` in `create_new_project` | Low — frontend no longer sends `description` |
