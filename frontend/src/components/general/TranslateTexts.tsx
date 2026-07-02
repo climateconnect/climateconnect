@@ -21,6 +21,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import VisibleFooterHeight from "../hooks/VisibleFooterHeight";
 import SaveIcon from "@mui/icons-material/Save";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import ProjectDescriptionEditor from "../editProject/ProjectDescriptionEditor";
 
 const useStyles = makeStyles<Theme, { visibleFooterHeight?: number }>((theme) => ({
   root: {
@@ -213,7 +214,8 @@ export default function TranslateTexts({
 
   const areTextsToTranslateEmpty = () => {
     const textsWithContent = textsToTranslate.filter((t) => {
-      return getNestedValue(data, t.textKey) && getNestedValue(data, t.textKey).length > 0;
+      const key = t.dataKey || t.textKey;
+      return getNestedValue(data, key) && getNestedValue(data, key).length > 0;
     });
     if (textsWithContent.length === 0) return "all";
     if (textsWithContent.length === textsToTranslate.length) {
@@ -238,10 +240,11 @@ export default function TranslateTexts({
     setWaitingForTranslation(true);
     try {
       const payloadTexts = textsToTranslate.reduce((obj, textToTranslate) => {
-        const flatKey = textToTranslate.textKey.includes(".")
-          ? textToTranslate.textKey.split(".")[textToTranslate.textKey.split(".").length - 1]
-          : textToTranslate.textKey;
-        obj[flatKey] = getNestedValue(data, textToTranslate.textKey);
+        const effectiveKey = textToTranslate.dataKey || textToTranslate.textKey;
+        const flatKey = effectiveKey.includes(".")
+          ? effectiveKey.split(".")[effectiveKey.split(".").length - 1]
+          : effectiveKey;
+        obj[flatKey] = getNestedValue(data, effectiveKey);
         return obj;
       }, {});
       const response = await apiRequest({
@@ -295,13 +298,14 @@ export default function TranslateTexts({
         />
         <div className={classes.translationBlocksHeader}>
           {textsToTranslate.map((textObj, index) => {
+            const effectiveDataKey = textObj.dataKey || textObj.textKey;
             if (textObj.isArray) {
               return data[textObj.textKey].map((entry, index) => (
                 <TranslationBlock
                   key={index}
                   data={data}
                   headlineTextKey={textObj.headlineTextKey}
-                  dataKey={textObj.textKey}
+                  dataKey={effectiveDataKey}
                   indexInArray={index}
                   isInArray
                   rows={textObj.rows}
@@ -319,7 +323,7 @@ export default function TranslateTexts({
                   key={index}
                   data={data}
                   headlineTextKey={textObj.headlineTextKey}
-                  dataKey={textObj.textKey}
+                  dataKey={effectiveDataKey}
                   rows={textObj.rows}
                   handleOriginalTextChange={handleOriginalTextChange}
                   handleTranslationChange={handleTranslationChange}
@@ -329,6 +333,7 @@ export default function TranslateTexts({
                   targetLanguageTexts={targetLanguageTexts}
                   maxCharacters={textObj.maxCharacters}
                   showCharacterCounter={textObj.showCharacterCounter}
+                  richText={textObj.richText}
                 />
               );
           })}
@@ -363,6 +368,7 @@ function TranslationBlock({
   targetLanguageTexts,
   maxCharacters,
   showCharacterCounter,
+  richText,
 }: any) {
   const classes = useStyles({});
   const flatDataKey = dataKey.includes(".")
@@ -378,40 +384,72 @@ function TranslationBlock({
       handleOriginalTextChange(newArrayValue, dataKey, data);
     }
   };
+
+  const originalContent = isInArray
+    ? getNestedValue(data, dataKey)[indexInArray]
+    : getNestedValue(data, dataKey);
+
+  const translationContent =
+    translations[targetLanguage] &&
+    (isInArray
+      ? translations[targetLanguage][flatDataKey][indexInArray]
+      : translations[targetLanguage][flatDataKey]);
+
   return (
     <div className={classes.translationBlock}>
-      <TranslationBlockElement
-        headline={texts[headlineTextKey]}
-        noHeadline={noHeadline}
-        rows={rows}
-        content={
-          isInArray ? getNestedValue(data, dataKey)[indexInArray] : getNestedValue(data, dataKey)
-        }
-        handleContentChange={(event) => {
-          changeOriginalText(event.target.value, dataKey);
-        }}
-        maxCharacters={maxCharacters}
-        characterText={texts.characters}
-        showCharacterCounter={showCharacterCounter}
-      />
-      <TranslationBlockElement
-        headline={targetLanguageTexts[headlineTextKey]}
-        noHeadline={noHeadline}
-        rows={rows}
-        //TODO(unused) isTranslation
-        content={
-          translations[targetLanguage] &&
-          (isInArray
-            ? translations[targetLanguage][flatDataKey][indexInArray]
-            : translations[targetLanguage][flatDataKey])
-        }
-        handleContentChange={(event) => {
-          handleTranslationChange(event.target.value, dataKey, indexInArray);
-        }}
-        maxCharacters={maxCharacters * 1.2}
-        characterText={texts.characters}
-        showCharacterCounter={showCharacterCounter}
-      />
+      {richText ? (
+        <>
+          <div className={classes.translationBlockElement}>
+            {!noHeadline && (
+              <Typography color="primary" className={classes.sectionHeader}>
+                {texts[headlineTextKey]}
+              </Typography>
+            )}
+            <ProjectDescriptionEditor
+              descriptionHtml={originalContent || ""}
+              onChange={(html) => changeOriginalText(html, dataKey)}
+            />
+          </div>
+          <div className={classes.translationBlockElement}>
+            {!noHeadline && (
+              <Typography color="primary" className={classes.sectionHeader}>
+                {targetLanguageTexts[headlineTextKey]}
+              </Typography>
+            )}
+            <ProjectDescriptionEditor
+              descriptionHtml={translationContent || ""}
+              onChange={(html) => handleTranslationChange(html, dataKey, indexInArray)}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <TranslationBlockElement
+            headline={texts[headlineTextKey]}
+            noHeadline={noHeadline}
+            rows={rows}
+            content={originalContent}
+            handleContentChange={(event) => {
+              changeOriginalText(event.target.value, dataKey);
+            }}
+            maxCharacters={maxCharacters}
+            characterText={texts.characters}
+            showCharacterCounter={showCharacterCounter}
+          />
+          <TranslationBlockElement
+            headline={targetLanguageTexts[headlineTextKey]}
+            noHeadline={noHeadline}
+            rows={rows}
+            content={translationContent}
+            handleContentChange={(event) => {
+              handleTranslationChange(event.target.value, dataKey, indexInArray);
+            }}
+            maxCharacters={maxCharacters * 1.2}
+            characterText={texts.characters}
+            showCharacterCounter={showCharacterCounter}
+          />
+        </>
+      )}
     </div>
   );
 }

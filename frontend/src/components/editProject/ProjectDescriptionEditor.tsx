@@ -170,13 +170,21 @@ export default function ProjectDescriptionEditor({
         }
         RichTextFieldProps={{
           disabled: disabled,
-          sx: disabled
-            ? {
-                "& .MuiTiptap-RichTextContent-readonly p": {
-                  color: "text.disabled",
-                },
-              }
-            : undefined,
+          sx: {
+            "& iframe": {
+              maxWidth: 640,
+              width: "100%",
+              height: "auto",
+              aspectRatio: "16 / 9",
+            },
+            ...(disabled
+              ? {
+                  "& .MuiTiptap-RichTextContent-readonly p": {
+                    color: "text.disabled",
+                  },
+                }
+              : {}),
+          },
           footer: disabled ? undefined : (
             <Box className={classes.charCount}>
               <Typography

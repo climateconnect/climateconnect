@@ -377,6 +377,7 @@ export default function EditProjectRoot({
       dataKey: "description_html",
       rows: 15,
       headlineTextKey: "project_description",
+      richText: true,
     },
   ];
 
