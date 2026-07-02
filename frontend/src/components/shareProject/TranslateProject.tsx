@@ -95,7 +95,7 @@ export default function TranslateProject({
           texts: {
             name: projectData.name,
             short_description: projectData.short_description,
-            description: projectData.description,
+            description_html: projectData.description_html,
           },
           target_language: "en",
         },
@@ -163,7 +163,7 @@ export default function TranslateProject({
           />
           <TranslationBlock
             projectData={projectData}
-            projectDataKey="description"
+            projectDataKey="description_html"
             headlineTextKey="project_description"
             rows={15}
             handleOriginalTextChange={handleOriginalTextChange}

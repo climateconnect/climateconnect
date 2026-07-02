@@ -33,6 +33,11 @@ from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_api.utility.translation import (
     edit_translations,
 )
+from climateconnect_api.utility.html import (
+    sanitize_html,
+    PROJECT_DESCRIPTION_ALLOWED_TAGS,
+    PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+)
 from climateconnect_main.utility.general import get_image_from_data_url
 from hubs.models.hub import Hub
 from location.models import Location
@@ -466,6 +471,7 @@ class CreateProjectView(APIView):
             "name": 1024,
             "short_description": 280,
             "description": 4800,
+            "description_html": 20000,
             "website": 256,
             "additional_loc_info": 256,
         }
@@ -476,6 +482,18 @@ class CreateProjectView(APIView):
                         "message": "Your value for this field is too long: "
                         + param
                         + ". Please make a change or contact an administrator at contact@climateconnect.earth"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        if "description_html" in request.data:
+            import re
+
+            stripped = re.sub(r"<[^>]+>", "", request.data["description_html"])
+            if len(stripped) > 4000:
+                return Response(
+                    {
+                        "message": "Your description text is too long (max 4000 characters). Please shorten it."
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -514,6 +532,14 @@ class CreateProjectView(APIView):
                         request.data["status"]
                     )
                 }
+            )
+
+        # Sanitize description_html before saving
+        if "description_html" in request.data:
+            request.data["description_html"] = sanitize_html(
+                request.data["description_html"],
+                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
             )
 
         translations_object = None
@@ -561,6 +587,10 @@ class CreateProjectView(APIView):
                         if "short_description" in texts:
                             translation.short_description_translation = texts[
                                 "short_description"
+                            ]
+                        if "description_html" in texts:
+                            translation.description_html_translation = texts[
+                                "description_html"
                             ]
                         if "description" in texts:
                             translation.description_translation = texts["description"]
@@ -777,6 +807,7 @@ class ProjectAPIView(APIView):
             "collaborators_welcome",
             "additional_loc_info",
             "description",
+            "description_html",
             "helpful_connections",
             "is_online",
             "short_description",
@@ -785,6 +816,13 @@ class ProjectAPIView(APIView):
         for param in pass_through_params:
             if param in request.data:
                 setattr(project, param, request.data[param])
+
+        if "description_html" in request.data:
+            project.description_html = sanitize_html(
+                request.data["description_html"],
+                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+            )
 
         if "name" in request.data and request.data["name"] != project.name:
             project.name = request.data["name"]
@@ -957,6 +995,10 @@ class ProjectAPIView(APIView):
                 "translation_key": "short_description_translation",
             },
             {"key": "description", "translation_key": "description_translation"},
+            {
+                "key": "description_html",
+                "translation_key": "description_html_translation",
+            },
             {
                 "key": "helpful_connections",
                 "translation_key": "helpful_connections_translation",

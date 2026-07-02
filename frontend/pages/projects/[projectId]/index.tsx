@@ -545,6 +545,7 @@ function parseProject(project) {
     image: project.image,
     location: project.location,
     description: project.description,
+    description_html: project.description_html,
     short_description: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
     start_date: project.start_date,

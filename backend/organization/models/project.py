@@ -110,6 +110,13 @@ class Project(models.Model):
         max_length=4800,
     )
 
+    description_html = models.TextField(
+        help_text="Rich-text HTML description (Tiptap output)",
+        verbose_name="Description HTML",
+        null=True,
+        blank=True,
+    )
+
     # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="Points to a country of the project",

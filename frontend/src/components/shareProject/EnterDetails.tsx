@@ -7,10 +7,10 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import ProjectTimeAndPlaceSectionAndCustomHub from "./TimeAndPlaceSection";
-import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
 import ProjectNameSection from "./ProjectNameSection";
+import ProjectDescriptionEditor from "../editProject/ProjectDescriptionEditor";
 import { checkProjectDatesValid } from "../../../public/lib/dateOperations";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
@@ -331,16 +331,10 @@ export default function EnterDetails({
                 </IconButton>
               </Tooltip>
             </Typography>
-            <ProjectDescriptionHelp typeId={projectData.project_type.type_id} />
-            <TextField
-              variant="outlined"
-              color={backgroundContrastColor}
-              fullWidth
-              multiline
-              rows={9}
-              onChange={(event) => onTextChange(event, "description")}
-              placeholder={texts.describe_your_project_in_more_detail}
-              value={projectData.description}
+            <ProjectDescriptionEditor
+              descriptionHtml={projectData.description_html ?? ""}
+              onChange={(html) => handleSetProjectData({ description_html: html })}
+              error={errors?.description_html}
             />
           </div>
           <div className={classes.block}>

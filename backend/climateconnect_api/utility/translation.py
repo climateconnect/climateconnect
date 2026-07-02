@@ -52,7 +52,7 @@ def get_attribute_in_correct_language(obj, attr, language_code):
     return getattr(obj, attr)
 
 
-def translate(text, target_lang):
+def translate(text, target_lang, is_html=False):
     if text is None or len(text) == 0:
         return {"text": text}
     if not settings.DEEPL_API_KEY:
@@ -62,6 +62,8 @@ def translate(text, target_lang):
     payload = {"text": text, "target_lang": target_lang}
     if target_lang == "de":
         payload["formality"] = "less"
+    if is_html:
+        payload["tag_handling"] = "html"
 
     url = "https://api.deepl.com/v2/translate"
     headers = {"Authorization": f"DeepL-Auth-Key {settings.DEEPL_API_KEY}"}
@@ -69,7 +71,7 @@ def translate(text, target_lang):
     return json.loads(translation.content)["translations"][0]
 
 
-def translate_text(text, original_lang, target_lang):
+def translate_text(text, original_lang, target_lang, is_html=False):
     ALLOWED_LANGUAGE_CODES = ["en", "de"]
     original_locale = get_locale(original_lang)
     target_locale = get_locale(target_lang)
@@ -90,7 +92,9 @@ def translate_text(text, original_lang, target_lang):
     if isinstance(text, list):
         translation_objects = []
         for element in text:
-            translation_objects.append(translate(element, target_locale))
+            translation_objects.append(
+                translate(element, target_locale, is_html=is_html)
+            )
         print(translation_objects)
         translation = {
             "detected_source_language": original_lang,
@@ -102,7 +106,7 @@ def translate_text(text, original_lang, target_lang):
             ),
         }
     else:
-        translation = translate(text, target_locale)
+        translation = translate(text, target_locale, is_html=is_html)
         # If the source language is actually the target language (person with german locale wrote english text),
         # Switch source language and target language (change original lang from german to english and target lang from english to german)
         # Since this means we just translated a text from german to german, we need to call the translate function again and translate to english
@@ -114,7 +118,7 @@ def translate_text(text, original_lang, target_lang):
             ):
                 target_locale = original_locale
                 original_locale = get_locale(translation["detected_source_language"])
-                translation = translate(text, target_locale)
+                translation = translate(text, target_locale, is_html=is_html)
 
             # If the detected source language is complete different from target_lang or original_lan: adapt original lang
             # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
@@ -171,8 +175,9 @@ def get_translations(
                         "translated_text": texts[key],
                     }
                 else:
+                    is_html = key == "description_html"
                     translated_text_object = translate_text(
-                        texts[key], source_language, target_language
+                        texts[key], source_language, target_language, is_html=is_html
                     )
                 # If we got the source language wrong start over
                 # with the correct source language
@@ -255,6 +260,7 @@ def edit_translations(items_to_translate, data, item, type):
                         passed_lang_translation[translation_keys["key"]],
                     )
                 else:
+                    is_html = translation_keys["key"] == "description_html"
                     setattr(
                         db_translation,
                         translation_keys["translation_key"],
@@ -262,6 +268,7 @@ def edit_translations(items_to_translate, data, item, type):
                             getattr(item, translation_keys["key"]),
                             item.language.language_code,
                             language_code,
+                            is_html=is_html,
                         )["translated_text"],
                     )
 
@@ -287,6 +294,7 @@ def edit_translation(
                 or db_translation.is_manual_translation is False
             ):
                 if translation_keys["key"] in changed_properties:
+                    is_html = translation_keys["key"] == "description_html"
                     setattr(
                         db_translation,
                         translation_keys["translation_key"],
@@ -294,6 +302,7 @@ def edit_translation(
                             getattr(item, translation_keys["key"]),
                             item.language.language_code,
                             language_code,
+                            is_html=is_html,
                         )["translated_text"],
                     )
             else:
@@ -306,6 +315,7 @@ def edit_translation(
             translation_keys["key"] in changed_properties
             and db_translation.is_manual_translation is False
         ):
+            is_html = translation_keys["key"] == "description_html"
             setattr(
                 db_translation,
                 translation_keys["translation_key"],
@@ -313,6 +323,7 @@ def edit_translation(
                     getattr(item, translation_keys["key"]),
                     item.language.language_code,
                     language_code,
+                    is_html=is_html,
                 )["translated_text"],
             )
 

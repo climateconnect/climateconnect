@@ -374,6 +374,7 @@ export default function EditProjectRoot({
     },
     {
       textKey: "description",
+      dataKey: "description_html",
       rows: 15,
       headlineTextKey: "project_description",
     },

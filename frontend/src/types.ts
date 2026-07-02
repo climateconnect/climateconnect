@@ -120,6 +120,7 @@ export type Project = {
   additional_loc_info?: string;
   short_description?: string;
   description?: string;
+  description_html?: string;
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
   hubName?: string;

@@ -4,7 +4,6 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import humanizeDuration from "humanize-duration";
 import React, { useState, useContext } from "react";
-import youtubeRegex from "youtube-regex";
 import { Theme } from "@mui/material/styles";
 
 // Relative imports
@@ -12,15 +11,12 @@ import DateDisplay from "./../general/DateDisplay";
 import LocalizedTimeAgo from "./../general/LocalizedTimeAgo";
 import DiscussionPreview from "./DiscussionPreview";
 import getTexts from "../../../public/texts/texts";
-import MessageContent from "../communication/MessageContent";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import Posts from "./../communication/Posts";
 import UserContext from "../context/UserContext";
 import ProjectContentSideButtons from "./Buttons/ProjectContentSideButtons";
 import { getDevlinkComponent } from "../../utils/getDevlinkComponent";
-
-const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
 
 const useStyles = makeStyles((theme: Theme) => ({
   createdBy: {
@@ -130,6 +126,20 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   projectDescription: {
     wordBreak: "break-word",
+    "& ul, & ol": {
+      paddingLeft: "1.5em",
+      margin: "0.5em 0",
+    },
+    "& iframe": {
+      maxWidth: 640,
+      width: "100%",
+    },
+  },
+  descriptionClamped: {
+    display: "-webkit-box",
+    "-webkit-line-clamp": 6,
+    "-webkit-box-orient": "vertical",
+    overflow: "hidden",
   },
   projectParentContainer: {
     display: "flex",
@@ -165,26 +175,6 @@ export default function ProjectContent({
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showFullDescription, setShowFullDescription] = useState(false);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
-
-  const calculateMaxDisplayedDescriptionLength = (description) => {
-    const words = description.split(" ");
-    const youtubeLink = words.find((el) => youtubeRegex().test(el));
-    if (youtubeLink) {
-      const firstIndex = description.indexOf(youtubeLink);
-      const lastIndex = firstIndex + youtubeLink.length - 1;
-      const maxLength =
-        firstIndex <= MAX_DISPLAYED_DESCRIPTION_LENGTH &&
-        lastIndex > MAX_DISPLAYED_DESCRIPTION_LENGTH
-          ? lastIndex
-          : MAX_DISPLAYED_DESCRIPTION_LENGTH;
-      return maxLength;
-    } else {
-      return MAX_DISPLAYED_DESCRIPTION_LENGTH;
-    }
-  };
-  const maxDisplayedDescriptionLength = project.description
-    ? calculateMaxDisplayedDescriptionLength(project.description)
-    : 0;
 
   //return the right static text depending on the project type
   const getProjectDescriptionHeadline = () => {
@@ -320,21 +310,18 @@ export default function ProjectContent({
                 {getProjectDescriptionHeadline()}
               </Typography>
               <Typography className={classes.projectDescription} component="div">
-                {project.description ? (
-                  showFullDescription ||
-                  project.description.length <= maxDisplayedDescriptionLength ? (
-                    <MessageContent content={project.description} renderYoutubeVideos={true} />
-                  ) : (
-                    <MessageContent
-                      content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
-                      renderYoutubeVideos={true}
-                    />
-                  )
+                {project.description_html ? (
+                  <div
+                    className={`${classes.projectDescription} ${
+                      showFullDescription ? "" : classes.descriptionClamped
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: project.description_html }}
+                  />
                 ) : (
                   <Typography variant="body2">{getNoProjectDescriptionText()}</Typography>
                 )}
               </Typography>
-              {project.description && project.description.length > maxDisplayedDescriptionLength && (
+              {project.description_html && (
                 <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
                   {showFullDescription ? (
                     <div>

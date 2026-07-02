@@ -5636,6 +5636,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tiptap/extension-youtube@npm:^3.27.1":
+  version: 3.27.1
+  resolution: "@tiptap/extension-youtube@npm:3.27.1"
+  peerDependencies:
+    "@tiptap/core": 3.27.1
+  checksum: 10c0/b526f299892a12d7c34c8b7de7cfb43c5c61daa078f76d0dbc3d1bb446013645fd5a794e66bf3f4a737c3f16330c79ce4b2b1e6646dc21c8e08a9c73bc700ff8
+  languageName: node
+  linkType: hard
+
 "@tiptap/extensions@npm:^3.26.0":
   version: 3.26.0
   resolution: "@tiptap/extensions@npm:3.26.0"
@@ -7913,6 +7922,7 @@ __metadata:
     "@tiptap/extension-link": "npm:3.26.0"
     "@tiptap/extension-table": "npm:3.26.0"
     "@tiptap/extension-text-align": "npm:^3.26.0"
+    "@tiptap/extension-youtube": "npm:^3.27.1"
     "@tiptap/pm": "npm:3.26.0"
     "@tiptap/react": "npm:3.26.0"
     "@tiptap/starter-kit": "npm:3.26.0"
