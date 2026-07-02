@@ -295,6 +295,8 @@ export default function Header({
     CUSTOM_HUB_URLS,
     LOCATION_HUBS,
   } = useContext(UserContext);
+  console.log("notifications", notifications);
+
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -457,7 +459,7 @@ function NormalScreenLinks({
   const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub && hubUrl);
-
+  console.log("notifications in Normal", notifications);
   return (
     <Box className={classes.linkContainer}>
       {LINKS.filter(
@@ -516,11 +518,12 @@ function NormalScreenLinks({
                         </Typography>
                         <Divider />
                         {notifications && notifications.length > 0 ? (
-                          notifications.map((n, index) => (
-                            <Notification key={index} notification={n} />
-                          ))
+                          notifications.map((n, index) => {
+                            console.log("notif in map", hubUrl);
+                            return <Notification key={index} notification={n} hubUrl={hubUrl} />;
+                          })
                         ) : (
-                          <Notification key={index} isPlaceholder />
+                          <Notification key={index} isPlaceholder hubUrl={hubUrl} />
                         )}
                       </NotificationsBox>
                     )}
@@ -743,10 +746,10 @@ function NarrowScreenLinks({
                       <Divider />
                       {notifications && notifications.length > 0 ? (
                         notifications.map((n, index) => (
-                          <Notification key={index} notification={n} />
+                          <Notification key={index} notification={n} hubUrl={hubUrl} />
                         ))
                       ) : (
-                        <Notification key={index} isPlaceholder />
+                        <Notification key={index} isPlaceholder hubUrl={hubUrl} />
                       )}
                     </NotificationsBox>
                   )}

@@ -53,6 +53,8 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
+  const hubUrl = ctx.query.hub;
+
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "chat", locale: ctx.locale });
     const message = texts.you_have_to_log_in_to_see_your_inbox;
@@ -63,11 +65,12 @@ export async function getServerSideProps(ctx) {
     props: {
       chatData: chatData?.chats || null,
       initialNextPage: chatData?.nextPage || null,
+      hubUrl: hubUrl,
     },
   };
 }
 
-export default function Inbox({ chatData, initialNextPage }) {
+export default function Inbox({ chatData, initialNextPage, hubUrl }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -205,6 +208,7 @@ export default function Inbox({ chatData, initialNextPage }) {
         messageType="error"
         message={errorMessage}
         resetAlertMessage={resetAlertMessage}
+        hubUrl={hubUrl}
       >
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
