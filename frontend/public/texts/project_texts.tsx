@@ -1395,8 +1395,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Zeitfenster-Auswahl",
     },
     field_type_text: {
-      en: "Text",
-      de: "Textfeld",
+      en: "Text Input",
+      de: "Texteingabe",
     },
     registration_text_field_title_label: {
       en: "Title (shown to guest)",
