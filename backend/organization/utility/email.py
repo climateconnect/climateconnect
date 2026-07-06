@@ -3,7 +3,6 @@ import html as html_module
 import logging
 import re
 
-import bleach
 from icalendar import Calendar, Event as IcalEvent
 
 from organization.utility.project import get_project_name
@@ -878,10 +877,8 @@ def generate_event_ics_attachment(project, lang_code, registration=None, tz=None
     )
 
     description_parts = []
-    if project.description:
-        description_parts.append(
-            bleach.clean(project.description, tags=[], strip=True).strip()
-        )
+    if project.short_description:
+        description_parts.append(project.short_description.strip())
     if registration and tz:
         field_answers_text = _build_field_answers_text(registration, lang_code, tz)
         if field_answers_text:

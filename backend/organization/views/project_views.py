@@ -1,4 +1,5 @@
 import logging
+import re
 import traceback
 
 from dateutil.parser import parse
@@ -32,6 +33,11 @@ from climateconnect_api.tasks import calculate_project_rankings
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_api.utility.translation import (
     edit_translations,
+)
+from climateconnect_api.utility.html import (
+    sanitize_html,
+    PROJECT_DESCRIPTION_ALLOWED_TAGS,
+    PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
 )
 from climateconnect_main.utility.general import get_image_from_data_url
 from hubs.models.hub import Hub
@@ -466,6 +472,7 @@ class CreateProjectView(APIView):
             "name": 1024,
             "short_description": 280,
             "description": 4800,
+            "description_html": 20000,
             "website": 256,
             "additional_loc_info": 256,
         }
@@ -476,6 +483,16 @@ class CreateProjectView(APIView):
                         "message": "Your value for this field is too long: "
                         + param
                         + ". Please make a change or contact an administrator at contact@climateconnect.earth"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        if "description_html" in request.data:
+            stripped = re.sub(r"<[^>]+>", "", request.data["description_html"])
+            if len(stripped) > 4000:
+                return Response(
+                    {
+                        "message": "Your description text is too long (max 4000 characters). Please shorten it."
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -514,6 +531,14 @@ class CreateProjectView(APIView):
                         request.data["status"]
                     )
                 }
+            )
+
+        # Sanitize description_html before saving
+        if "description_html" in request.data:
+            request.data["description_html"] = sanitize_html(
+                request.data["description_html"],
+                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
             )
 
         translations_object = None
@@ -562,6 +587,12 @@ class CreateProjectView(APIView):
                             translation.short_description_translation = texts[
                                 "short_description"
                             ]
+                        if "description_html" in texts:
+                            translation.description_html_translation = sanitize_html(
+                                texts["description_html"],
+                                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                            )
                         if "description" in texts:
                             translation.description_translation = texts["description"]
                         translation.save()
@@ -777,6 +808,7 @@ class ProjectAPIView(APIView):
             "collaborators_welcome",
             "additional_loc_info",
             "description",
+            "description_html",
             "helpful_connections",
             "is_online",
             "short_description",
@@ -785,6 +817,38 @@ class ProjectAPIView(APIView):
         for param in pass_through_params:
             if param in request.data:
                 setattr(project, param, request.data[param])
+
+        # Rollout compat: old frontend may send description (plain text) without
+        # description_html.  Convert on the fly so description_html is always set.
+        if "description" in request.data and "description_html" not in request.data:
+            from organization.utility.legacy_description_to_tiptap import (
+                legacy_description_to_tiptap_html,
+            )
+
+            project.description_html = legacy_description_to_tiptap_html(
+                request.data["description"]
+            )
+
+        if "description_html" in request.data:
+            raw = request.data["description_html"]
+            if len(raw) > 20000:
+                return Response(
+                    {"message": "Description HTML is too long (max 20000 characters)."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            stripped = re.sub(r"<[^>]+>", "", raw)
+            if len(stripped) > 4000:
+                return Response(
+                    {
+                        "message": "Your description text is too long (max 4000 characters). Please shorten it."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            project.description_html = sanitize_html(
+                raw,
+                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+            )
 
         if "name" in request.data and request.data["name"] != project.name:
             project.name = request.data["name"]
@@ -957,6 +1021,10 @@ class ProjectAPIView(APIView):
                 "translation_key": "short_description_translation",
             },
             {"key": "description", "translation_key": "description_translation"},
+            {
+                "key": "description_html",
+                "translation_key": "description_html_translation",
+            },
             {
                 "key": "helpful_connections",
                 "translation_key": "helpful_connections_translation",

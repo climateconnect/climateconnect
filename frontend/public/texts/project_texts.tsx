@@ -586,6 +586,30 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: `Describe your ${project?.project_type?.name} in more detail`,
       de: `Beschreibe dein ${project?.project_type?.name} detaillierter.`,
     },
+    project_description_youTube_button: {
+      en: "Insert YouTube video",
+      de: "YouTube-Video einfügen",
+    },
+    project_description_youTube_url_label: {
+      en: "YouTube URL",
+      de: "YouTube-URL",
+    },
+    project_description_youTube_url_invalid: {
+      en: "Please enter a valid YouTube URL.",
+      de: "Bitte gib eine gültige YouTube-URL ein.",
+    },
+    project_description_youTube_cancel: {
+      en: "Cancel",
+      de: "Abbrechen",
+    },
+    project_description_youTube_insert: {
+      en: "Insert",
+      de: "Einfügen",
+    },
+    project_description_character_counter: {
+      en: "characters",
+      de: "Zeichen",
+    },
     add_connections: {
       en: "Add Connections",
       de: "Connections hinzufügen",

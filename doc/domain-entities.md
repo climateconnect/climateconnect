@@ -177,6 +177,11 @@ This document provides comprehensive documentation of the main domain entities i
 - Geographic and hub-based discovery
 - Collaborative memberships with roles
 - Engagement tracking (followers, likes)
+- Rich-text descriptions via Tiptap (HTML stored in `description_html`)
+
+**Key fields**:
+- `description` (legacy) — plain-text description, max 4800 chars. Kept for backwards compatibility; no longer written to by new code.
+- `description_html` — rich-text HTML description produced by the Tiptap editor. Supports bold, italic, lists, links, blockquotes, and YouTube embeds. Validated at 4000 stripped characters / 20000 full-HTML characters. Sanitized server-side with a dedicated allowlist (`PROJECT_DESCRIPTION_ALLOWED_TAGS`).
 
 **Relationships**:
 - **ForeignKey**: `ProjectStatus`, `Location`, `Language`
@@ -1007,3 +1012,4 @@ This architecture supports a comprehensive climate action platform with social n
 - **2026-05-25**: Added `inventory` and `time_slot_select` field types to `RegistrationField.field_type` choices (issues #1995, #2006). `RegistrationFieldOption` extended with `available_amount`, `max_amount_per_guest` (inventory capacity) and `start_time`, `end_time` (time slot bounds). `RegistrationFieldAnswer` extended with `value_number` for inventory quantity. Updated `RegistrationField` description to document all four field types.
 - **2026-05-26**: Added `label` field to `RegistrationField` (max 30 chars, unique per config) and `notify_admins` field to `EventRegistrationConfig` (default `True`). Labels are auto-generated on creation and organiser-editable for export display. `notify_admins` controls whether team admins receive notification emails on registration changes.
 - **2026-06-10**: Added `last_guest_email_sent_at` field to `EventRegistrationConfig` (DateTimeField, nullable, indexed). Records when the last non-test bulk email was sent to event guests; used to filter "new guests only" recipients. Frontend toggle allows organisers to send emails only to guests who registered after the last bulk send.
+- **2026-07-02**: Added `description_html` field to `Project` (TextField, nullable) and `description_html_translation` to `ProjectTranslation` (TextField, nullable). Project descriptions now use rich-text HTML produced by a Tiptap editor, supporting bold, italic, lists, links, blockquotes, and YouTube embeds. The legacy `description` field is kept (read-only) for backwards compatibility. ICS calendar attachments use `short_description` (plain text) instead of the HTML description. Updated `Project` entity documentation with key fields and rich-text feature.

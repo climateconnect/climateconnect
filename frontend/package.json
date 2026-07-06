@@ -40,6 +40,7 @@
     "@tiptap/extension-link": "3.26.0",
     "@tiptap/extension-table": "3.26.0",
     "@tiptap/extension-text-align": "^3.26.0",
+    "@tiptap/extension-youtube": "^3.27.1",
     "@tiptap/pm": "3.26.0",
     "@tiptap/react": "3.26.0",
     "@tiptap/starter-kit": "3.26.0",

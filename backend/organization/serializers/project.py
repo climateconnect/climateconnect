@@ -75,6 +75,7 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    description_html = serializers.SerializerMethodField()
     project_parents = serializers.SerializerMethodField()
     sectors = serializers.SerializerMethodField()
 
@@ -113,6 +114,7 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
             "end_date",
             "short_description",
             "description",
+            "description_html",
             "loc",
             "location",
             "collaborators_welcome",
@@ -146,6 +148,9 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
         return get_project_short_description(obj, get_language())
 
     def get_description(self, obj):
+        return get_project_description(obj, get_language())
+
+    def get_description_html(self, obj):
         return get_project_description(obj, get_language())
 
     def get_collaborating_organizations(self, obj):
@@ -306,6 +311,7 @@ class EditProjectSerializer(ProjectSerializer):
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    description_html = serializers.SerializerMethodField()
     related_hubs = serializers.SerializerMethodField()
 
     def get_loc(self, obj):
@@ -329,6 +335,9 @@ class EditProjectSerializer(ProjectSerializer):
 
     def get_description(self, obj):
         return obj.description
+
+    def get_description_html(self, obj):
+        return obj.description_html
 
     def get_related_hubs(self, obj):
         return [hub.url_slug for hub in obj.related_hubs.all()]

@@ -110,6 +110,13 @@ class Project(models.Model):
         max_length=4800,
     )
 
+    description_html = models.TextField(
+        help_text="Rich-text HTML description (Tiptap output)",
+        verbose_name="Description HTML",
+        null=True,
+        blank=True,
+    )
+
     # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="Points to a country of the project",
@@ -257,7 +264,7 @@ class Project(models.Model):
     @property
     def ranking(self) -> int:
         return ProjectRanking().calculate_ranking(
-            description=self.description,
+            description=self.description_html,
             location=self.loc,
             project_id=self.id,
             project_manually_set_rating=self.rating,
