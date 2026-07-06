@@ -294,6 +294,11 @@ const parseForRequest = async (org) => {
   const parsedOrg = {
     ...org,
   };
+  // Only include location if it's a structured object (selected from the location picker).
+  // A plain string means the location was not re-selected and should not be sent to the backend.
+  if (typeof parsedOrg.location === "string") {
+    delete parsedOrg.location;
+  }
   if (org.organization_size) parsedOrg.organization_size = org.organization_size;
   if (org.get_involved) parsedOrg.get_involved = org.get_involved;
   if (org.short_description) parsedOrg.short_description = org.short_description;
