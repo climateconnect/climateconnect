@@ -3,7 +3,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import humanizeDuration from "humanize-duration";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef, useLayoutEffect } from "react";
 import { Theme } from "@mui/material/styles";
 
 // Relative imports
@@ -176,7 +176,37 @@ export default function ProjectContent({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const descRef = useRef<HTMLDivElement>(null);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
+
+  useLayoutEffect(() => {
+    // When expanded there is no clamp, so scrollHeight === clientHeight and the
+    // measurement would incorrectly clear the overflow flag.
+    if (showFullDescription || !descRef.current) return;
+
+    const element = descRef.current;
+
+    const checkOverflow = () => {
+      // clientHeight is 0 when the element is inside a hidden tab panel –
+      // skip the measurement and wait for the ResizeObserver to fire once
+      // the panel becomes visible.
+      if (element.clientHeight > 0) {
+        setIsOverflowing(element.scrollHeight > element.clientHeight);
+      }
+    };
+
+    checkOverflow();
+
+    // Re-check whenever the element's size changes:
+    //   • the tab panel transitions from hidden → visible (clientHeight: 0 → N)
+    //   • web fonts finish loading and reflow the text
+    //   • the viewport is resized
+    const observer = new ResizeObserver(checkOverflow);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [project.description_html, showFullDescription]);
 
   //return the right static text depending on the project type
   const getProjectDescriptionHeadline = () => {
@@ -314,6 +344,7 @@ export default function ProjectContent({
               <Typography className={classes.projectDescription} component="div">
                 {project.description_html ? (
                   <div
+                    ref={descRef}
                     className={`${classes.projectDescription} ${
                       showFullDescription ? "" : classes.descriptionClamped
                     }`}
@@ -323,7 +354,7 @@ export default function ProjectContent({
                   <Typography variant="body2">{getNoProjectDescriptionText()}</Typography>
                 )}
               </Typography>
-              {project.description_html && (
+              {project.description_html && (showFullDescription || isOverflowing) && (
                 <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
                   {showFullDescription ? (
                     <div>
