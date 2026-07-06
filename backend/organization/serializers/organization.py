@@ -181,7 +181,9 @@ class EditOrganizationSerializer(OrganizationSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(
+            obj.location, get_language_code_from_context(self.context)
+        )
 
     def get_translations(self, obj):
         translations = OrganizationTranslation.objects.filter(organization=obj)

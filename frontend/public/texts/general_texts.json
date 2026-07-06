@@ -826,5 +826,13 @@
   "search": {
     "en": "Search",
     "de": "Suche"
+  },
+  "load_more": {
+    "en": "Load more",
+    "de": "Mehr laden"
+  },
+  "loading": {
+    "en": "Loading...",
+    "de": "Lädt..."
   }
 }
