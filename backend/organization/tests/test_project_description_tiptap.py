@@ -210,7 +210,7 @@ class TestGetProjectDescription(TestCase):
         result = get_project_description(project, "en")
         self.assertEqual(result, "<p>Hello HTML</p>")
 
-    def test_falls_back_to_description(self):
+    def test_returns_none_when_no_html(self):
         from unittest.mock import MagicMock
 
         from organization.utility.project import get_project_description
@@ -222,7 +222,7 @@ class TestGetProjectDescription(TestCase):
         project.translation_project.filter.return_value.exists.return_value = False
 
         result = get_project_description(project, "en")
-        self.assertEqual(result, "Hello plain")
+        self.assertIsNone(result)
 
     def test_returns_html_translation_when_available(self):
         from unittest.mock import MagicMock
@@ -242,7 +242,7 @@ class TestGetProjectDescription(TestCase):
         result = get_project_description(project, "de")
         self.assertEqual(result, "<p>Hallo</p>")
 
-    def test_falls_back_to_plain_translation(self):
+    def test_returns_none_when_no_html_translation(self):
         from unittest.mock import MagicMock
 
         from organization.utility.project import get_project_description
@@ -258,4 +258,4 @@ class TestGetProjectDescription(TestCase):
         project.translation_project.get.return_value = translation
 
         result = get_project_description(project, "de")
-        self.assertEqual(result, "Hallo")
+        self.assertIsNone(result)

@@ -264,7 +264,7 @@ class Project(models.Model):
     @property
     def ranking(self) -> int:
         return ProjectRanking().calculate_ranking(
-            description=self.description,
+            description=self.description_html,
             location=self.loc,
             project_id=self.id,
             project_manually_set_rating=self.rating,

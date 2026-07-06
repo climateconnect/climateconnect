@@ -334,10 +334,10 @@ class EditProjectSerializer(ProjectSerializer):
         return obj.short_description
 
     def get_description(self, obj):
-        return obj.description_html or obj.description
+        return get_project_description(obj, get_language())
 
     def get_description_html(self, obj):
-        return obj.description_html
+        return get_project_description(obj, get_language())
 
     def get_related_hubs(self, obj):
         return [hub.url_slug for hub in obj.related_hubs.all()]

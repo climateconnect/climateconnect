@@ -1,4 +1,5 @@
 import logging
+import re
 import traceback
 
 from dateutil.parser import parse
@@ -487,8 +488,6 @@ class CreateProjectView(APIView):
                 )
 
         if "description_html" in request.data:
-            import re
-
             stripped = re.sub(r"<[^>]+>", "", request.data["description_html"])
             if len(stripped) > 4000:
                 return Response(
@@ -589,9 +588,11 @@ class CreateProjectView(APIView):
                                 "short_description"
                             ]
                         if "description_html" in texts:
-                            translation.description_html_translation = texts[
-                                "description_html"
-                            ]
+                            translation.description_html_translation = sanitize_html(
+                                texts["description_html"],
+                                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                            )
                         if "description" in texts:
                             translation.description_translation = texts["description"]
                         translation.save()
@@ -817,9 +818,34 @@ class ProjectAPIView(APIView):
             if param in request.data:
                 setattr(project, param, request.data[param])
 
+        # Rollout compat: old frontend may send description (plain text) without
+        # description_html.  Convert on the fly so description_html is always set.
+        if "description" in request.data and "description_html" not in request.data:
+            from organization.utility.legacy_description_to_tiptap import (
+                legacy_description_to_tiptap_html,
+            )
+
+            project.description_html = legacy_description_to_tiptap_html(
+                request.data["description"]
+            )
+
         if "description_html" in request.data:
+            raw = request.data["description_html"]
+            if len(raw) > 20000:
+                return Response(
+                    {"message": "Description HTML is too long (max 20000 characters)."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            stripped = re.sub(r"<[^>]+>", "", raw)
+            if len(stripped) > 4000:
+                return Response(
+                    {
+                        "message": "Your description text is too long (max 4000 characters). Please shorten it."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             project.description_html = sanitize_html(
-                request.data["description_html"],
+                raw,
                 allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
                 allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
             )

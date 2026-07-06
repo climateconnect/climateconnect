@@ -254,10 +254,23 @@ def edit_translations(items_to_translate, data, item, type):
                     and translation_keys["key"] in passed_lang_translation
                     and len(passed_lang_translation[translation_keys["key"]]) > 0
                 ):
+                    value = passed_lang_translation[translation_keys["key"]]
+                    if translation_keys["key"] == "description_html":
+                        from climateconnect_api.utility.html import (
+                            sanitize_html,
+                            PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                            PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                        )
+
+                        value = sanitize_html(
+                            value,
+                            allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                            allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                        )
                     setattr(
                         db_translation,
                         translation_keys["translation_key"],
-                        passed_lang_translation[translation_keys["key"]],
+                        value,
                     )
                 else:
                     is_html = translation_keys["key"] == "description_html"
@@ -306,10 +319,23 @@ def edit_translation(
                         )["translated_text"],
                     )
             else:
+                value = passed_translation[translation_keys["key"]]
+                if translation_keys["key"] == "description_html":
+                    from climateconnect_api.utility.html import (
+                        sanitize_html,
+                        PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                        PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                    )
+
+                    value = sanitize_html(
+                        value,
+                        allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                        allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                    )
                 setattr(
                     db_translation,
                     translation_keys["translation_key"],
-                    passed_translation[translation_keys["key"]],
+                    value,
                 )
         elif (
             translation_keys["key"] in changed_properties
