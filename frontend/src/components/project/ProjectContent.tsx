@@ -202,7 +202,7 @@ export default function ProjectContent({
     //   • the tab panel transitions from hidden → visible (clientHeight: 0 → N)
     //   • web fonts finish loading and reflow the text
     //   • the viewport is resized
-    const observer = new ResizeObserver(() => checkOverflow());
+    const observer = new ResizeObserver(checkOverflow);
     observer.observe(element);
 
     return () => observer.disconnect();
