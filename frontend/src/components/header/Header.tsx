@@ -295,7 +295,6 @@ export default function Header({
     CUSTOM_HUB_URLS,
     LOCATION_HUBS,
   } = useContext(UserContext);
-  console.log("notifications", notifications);
 
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
