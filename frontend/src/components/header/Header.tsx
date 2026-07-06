@@ -458,7 +458,6 @@ function NormalScreenLinks({
   const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub && hubUrl);
-  console.log("notifications in Normal", notifications);
   return (
     <Box className={classes.linkContainer}>
       {LINKS.filter(
