@@ -285,6 +285,7 @@ export default function ProjectPageRoot({
   const router = useRouter();
   const handleClickContact = async (event) => {
     event.preventDefault();
+    const queryString = hubPage ? `?hub=${encodeURIComponent(hubPage)}` : "";
 
     const creator = project.team.filter((m) => m.permission === ROLE_TYPES.all_type)[0];
     if (!user) {
@@ -295,7 +296,7 @@ export default function ProjectPageRoot({
       });
     }
     const chat = await startPrivateChat(creator, token, locale);
-    router.push("/chat/" + chat.chat_uuid + "/");
+    router.push("/chat/" + chat.chat_uuid + "/" + queryString);
   };
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
 
