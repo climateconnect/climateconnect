@@ -6,12 +6,12 @@ from datetime import datetime, timezone
 import requests
 from django.conf import settings
 from django.db import IntegrityError
+from django.http import JsonResponse
 from django.db.models import F
 from django.db.models.functions import Greatest
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 
 from location.serializers import LocationStubSerializer
@@ -261,22 +261,39 @@ class TrackNominatimRequestView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class LocationAutocompleteThrottle(UserRateThrottle):
-    scope = "location_autocomplete"
-
-
 class LocationAutocompleteView(APIView):
     """
     GET /api/location_autocomplete/
 
-    Proxied autocomplete endpoint. Tries LocationIQ first, falls back to
-    Nominatim if LocationIQ fails or is not configured.
+    Proxied autocomplete endpoint. Requests are queued and processed at a
+    global rate of 2 req/s. Per-IP rate limited to 1 req/s via django-ratelimit.
     """
 
     permission_classes = [AllowAny]
-    throttle_classes = [LocationAutocompleteThrottle]
+
+    def dispatch(self, request, *args, **kwargs):
+        from django_ratelimit import ALL as RATELIMIT_ALL
+        from django_ratelimit.core import is_ratelimited
+
+        if is_ratelimited(
+            request,
+            fn=LocationAutocompleteView.dispatch,
+            key="ip",
+            rate="1/s",
+            method=RATELIMIT_ALL,
+            increment=True,
+        ):
+            response = JsonResponse(
+                {"detail": "Too many requests. Please try again later."},
+                status=429,
+            )
+            response["Retry-After"] = "1"
+            return response
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
+        from location.queue import enqueue_request
+
         q = request.query_params.get("q", "").strip()
         if len(q) < 3:
             return Response([], status=status.HTTP_200_OK)
@@ -284,85 +301,27 @@ class LocationAutocompleteView(APIView):
         countrycodes = request.query_params.get("countrycodes", "")
         accept_language = request.META.get("HTTP_ACCEPT_LANGUAGE", "en-US,en;q=0.9")
 
-        # Try LocationIQ first
-        results, provider = self._try_locationiq(q, countrycodes, accept_language)
+        result = enqueue_request(q, countrycodes, accept_language)
 
-        # Fallback to Nominatim if LocationIQ fails
-        if results is None:
-            results, provider = self._try_nominatim(q, countrycodes, accept_language)
+        if result["status"] == "queue_full":
+            return Response(
+                {"detail": "Service temporarily overloaded. Please retry."},
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
 
-        if results is None:
+        if result["status"] == "timeout":
+            return Response(
+                {"detail": "Location service timed out. Please retry."},
+                status=status.HTTP_504_GATEWAY_TIMEOUT,
+            )
+
+        if result["results"] is None:
             return Response(
                 {"message": "All location services are unavailable."},
                 status=status.HTTP_502_BAD_GATEWAY,
             )
 
-        _increment_counters(provider)
-        return Response(results, status=status.HTTP_200_OK)
-
-    def _try_locationiq(self, q, countrycodes, accept_language):
-        if not settings.LOCATIONIQ_API_KEY:
-            return None, None
-        params = {
-            "key": settings.LOCATIONIQ_API_KEY,
-            "q": q,
-            "limit": 10,
-            "accept-language": accept_language,
-            "format": "json",
-            "addressdetails": 1,
-            "polygon_geojson": 1,
-            "polygon_threshold": 0.001,
-        }
-        if countrycodes:
-            params["countrycodes"] = countrycodes
-        try:
-            resp = requests.get(
-                settings.LOCATIONIQ_AUTOCOMPLETE_URL,
-                params=params,
-                timeout=settings.LOCATIONIQ_TIMEOUT,
-            )
-            if resp.status_code == 200:
-                data = resp.json()
-                if isinstance(data, list) and data:
-                    return data, "locationiq"
-            logger.warning(
-                "LocationIQ returned status %d for query '%s'", resp.status_code, q
-            )
-        except requests.RequestException as exc:
-            logger.warning("LocationIQ request failed for query '%s': %s", q, exc)
-        return None, None
-
-    def _try_nominatim(self, q, countrycodes, accept_language):
-        url = settings.LOCATION_SERVICE_BASE_URL + "/search"
-        params = {
-            "q": q,
-            "format": "json",
-            "addressdetails": 1,
-            "polygon_geojson": 1,
-            "polygon_threshold": 0.001,
-        }
-        if countrycodes:
-            params["countrycodes"] = countrycodes
-        headers = {
-            "User-Agent": settings.CUSTOM_USER_AGENT,
-            "Accept-Language": accept_language,
-        }
-        try:
-            resp = requests.get(
-                url, params=params, headers=headers, timeout=settings.NOMINATIM_TIMEOUT
-            )
-            if resp.status_code == 200:
-                data = resp.json()
-                if isinstance(data, list):
-                    return data, "nominatim"
-            logger.warning(
-                "Nominatim fallback returned status %d for query '%s'",
-                resp.status_code,
-                q,
-            )
-        except requests.RequestException as exc:
-            logger.warning("Nominatim fallback failed for query '%s': %s", q, exc)
-        return None, None
+        return Response(result["results"], status=status.HTTP_200_OK)
 
 
 class NominatimStatsView(APIView):

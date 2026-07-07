@@ -1,8 +1,7 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import makeStyles from "@mui/styles/makeStyles";
-import { debounce } from "lodash";
-import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import {
   getDisplayLocationFromLocation,
@@ -279,21 +278,12 @@ export default function LocationSearchBar({
     }
     setInputValue(event.target.value);
     if (event.target.value.length >= 3) {
-      setSearchValueThrottled(event.target.value);
+      setSearchValue(event.target.value);
     } else {
-      setSearchValueThrottled.cancel();
       setOptions([]);
       setLoading(false);
     }
   };
-
-  const setSearchValueThrottled = useMemo(
-    () =>
-      debounce((value) => {
-        setSearchValue(value);
-      }, 1000),
-    []
-  );
 
   const handleChange = (event, value, reason) => {
     if (reason === "selectOption") {
