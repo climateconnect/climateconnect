@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
-  const hubUrl = ctx.query.hub;
+  const hubUrl = ctx?.query?.hub ?? null;
 
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "chat", locale: ctx.locale });
@@ -65,7 +65,7 @@ export async function getServerSideProps(ctx) {
     props: {
       chatData: chatData?.chats || null,
       initialNextPage: chatData?.nextPage || null,
-      hubUrl: hubUrl,
+      hubUrl,
     },
   };
 }

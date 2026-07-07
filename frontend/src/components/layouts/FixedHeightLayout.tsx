@@ -7,6 +7,7 @@ import theme from "../../themes/theme";
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
 import LayoutWrapper from "./LayoutWrapper";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles({
   root: {
@@ -26,6 +27,9 @@ export default function FixedHeightLayout({ children, message, messageType, titl
   const [initialMessageType, setInitialMessageType] = useState(null);
   const [alertOpen, setAlertOpen] = useState(true);
   const [initialMessage, setInitialMessage] = useState("");
+  const router = useRouter();
+  const hubUrl = typeof router.query.hub === "string" ? router.query.hub : null;
+
   useEffect(() => {
     const params = getParams(window.location.href);
     if (params.message) {
@@ -39,7 +43,7 @@ export default function FixedHeightLayout({ children, message, messageType, titl
   return (
     <LayoutWrapper theme={theme} title={title} fixedHeight>
       <div className={classes.root}>
-        <Header noSpacingBottom className={classes.noFlex} />
+        <Header noSpacingBottom className={classes.noFlex} hubUrl={hubUrl} />
         {(message || initialMessage) && alertOpen && (
           <Alert
             className={classes.alert}
