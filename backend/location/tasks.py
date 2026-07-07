@@ -127,18 +127,6 @@ def _get_period_keys_for_dt(dt):
     ]
 
 
-def _period_start_from_key(period_type, period_key):
-    """Derive the start datetime for a period from its key."""
-    if period_type == "day":
-        return datetime.strptime(period_key, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-    elif period_type == "week":
-        dt = datetime.strptime(f"{period_key}-1", "%G-W%V-%u")
-        return dt.replace(tzinfo=timezone.utc)
-    elif period_type == "month":
-        return datetime.strptime(period_key, "%Y-%m").replace(tzinfo=timezone.utc)
-    raise ValueError(f"Unsupported period_type: {period_type!r}")
-
-
 @shared_task
 def aggregate_nominatim_stats():
     """
@@ -181,6 +169,7 @@ def aggregate_nominatim_stats():
             bucket = period_buckets[(period_type, period_key)]
             bucket["count"] += 1
             bucket["second_counts"][second_key] += 1
+            bucket["period_start"] = period_start
 
     for (period_type, period_key), bucket in period_buckets.items():
         total = bucket["count"]
@@ -191,14 +180,7 @@ def aggregate_nominatim_stats():
             max(bucket["second_counts"].values()) if bucket["second_counts"] else 1
         )
 
-        try:
-            period_start_dt = _period_start_from_key(period_type, period_key)
-        except ValueError:
-            logger.warning(
-                "Skipping unknown period_type=%r key=%r", period_type, period_key
-            )
-            continue
-
+        period_start_dt = bucket["period_start"]
         elapsed = max((now - period_start_dt).total_seconds(), 1.0)
         avg_rate = total / elapsed
 
@@ -217,7 +199,9 @@ def aggregate_nominatim_stats():
             obj.avg_req_per_second = obj.total_requests / elapsed
             obj.save()
 
-    NominatimRequestLog.objects.filter(id__lte=max_id).update(processed=True)
+    NominatimRequestLog.objects.filter(id__lte=max_id, processed=False).update(
+        processed=True
+    )
 
     deleted_count, _ = NominatimRequestLog.objects.filter(
         created_at__lt=now - timedelta(days=7)

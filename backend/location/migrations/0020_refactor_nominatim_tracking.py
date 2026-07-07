@@ -4,6 +4,14 @@ from django.db import migrations, models
 import django.utils.timezone
 
 
+def mark_existing_rows_processed(apps, schema_editor):
+    """Mark all pre-existing NominatimRequestLog rows as processed so the
+    aggregation task doesn't misinterpret old per-minute bucket rows (which
+    each represented N requests) as single-request rows."""
+    NominatimRequestLog = apps.get_model("location", "NominatimRequestLog")
+    NominatimRequestLog.objects.filter(processed=False).update(processed=True)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -27,6 +35,10 @@ class Migration(migrations.Migration):
             model_name="nominatimrequestlog",
             name="processed",
             field=models.BooleanField(db_index=True, default=False),
+        ),
+        migrations.RunPython(
+            mark_existing_rows_processed,
+            reverse_code=migrations.RunPython.noop,
         ),
         migrations.AlterField(
             model_name="nominatimperiodstats",
