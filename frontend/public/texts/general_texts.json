@@ -914,5 +914,33 @@
   "loading": {
     "en": "Loading...",
     "de": "Lädt..."
+  },
+  "event_calendar": {
+    "en": "Event calendar",
+    "de": "Veranstaltungskalender"
+  },
+  "filters": {
+    "en": "Filters",
+    "de": "Filter"
+  },
+  "today": {
+    "en": "Today",
+    "de": "Heute"
+  },
+  "topic": {
+    "en": "Topics",
+    "de": "Themen"
+  },
+  "reset": {
+    "en": "Reset",
+    "de": "Zurücksetzen"
+  },
+  "no_events": {
+    "en": "No events found for the selected filters.",
+    "de": "Keine Veranstaltungen für die ausgewählten Filter gefunden."
+  },
+  "error_loading_events": {
+    "en": "Failed to load events.",
+    "de": "Veranstaltungen konnten nicht geladen werden."
   }
 }

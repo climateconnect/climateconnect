@@ -144,9 +144,12 @@ export default function BrowseContent({
   } = useContext(FilterContext);
 
   const classes = useStyles();
+  // Events are intentionally NOT a tab here. They are exposed as a separate
+  // route (/events and /hubs/[hubUrl]/events) linked from HubTabsNavigation,
+  // behind the EVENT_CALENDAR_FEATURE toggle. See eventCalendar components.
   const TYPES_BY_TAB_VALUE: BrowseTab[] = hideMembers
-    ? ["projects", "organizations"] // TODO: add "events" here, after implementing event calendar
-    : ["projects", "organizations", "members"]; // TODO: add "events" here, after implementing event calendar
+    ? ["projects", "organizations"]
+    : ["projects", "organizations", "members"];
   const { locale } = useContext(UserContext);
   const texts = useMemo(() => getTexts({ page: "hub", locale: locale, hubName: hubData?.name }), [
     locale,
