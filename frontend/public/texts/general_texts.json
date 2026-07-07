@@ -35,6 +35,86 @@
     "en": "Website",
     "de": "Webseite"
   },
+  "edit_link_add_title": {
+    "en": "Add link",
+    "de": "Link hinzufügen"
+  },
+  "edit_link_edit_title": {
+    "en": "Edit link",
+    "de": "Link bearbeiten"
+  },
+  "edit_link_text_input_label": {
+    "en": "Text",
+    "de": "Text"
+  },
+  "edit_link_href_input_label": {
+    "en": "Link",
+    "de": "Link"
+  },
+  "edit_link_cancel_button_label": {
+    "en": "Cancel",
+    "de": "Abbrechen"
+  },
+  "edit_link_save_button_label": {
+    "en": "Save",
+    "de": "Speichern"
+  },
+  "view_link_edit_button_label": {
+    "en": "Edit",
+    "de": "Bearbeiten"
+  },
+  "view_link_remove_button_label": {
+    "en": "Remove",
+    "de": "Entfernen"
+  },
+  "table_insert_column_before": {
+    "en": "Insert column before",
+    "de": "Spalte davor einfügen"
+  },
+  "table_insert_column_after": {
+    "en": "Insert column after",
+    "de": "Spalte danach einfügen"
+  },
+  "table_delete_column": {
+    "en": "Delete column",
+    "de": "Spalte löschen"
+  },
+  "table_insert_row_above": {
+    "en": "Insert row above",
+    "de": "Zeile oben einfügen"
+  },
+  "table_insert_row_below": {
+    "en": "Insert row below",
+    "de": "Zeile unten einfügen"
+  },
+  "table_delete_row": {
+    "en": "Delete row",
+    "de": "Zeile löschen"
+  },
+  "table_merge_cells": {
+    "en": "Merge cells",
+    "de": "Zellen verbinden"
+  },
+  "table_split_cell": {
+    "en": "Split cell",
+    "de": "Zelle teilen"
+  },
+  "table_toggle_header_row": {
+    "en": "Toggle header row",
+    "de": "Kopfzeile umschalten"
+  },
+  "table_toggle_header_column": {
+    "en": "Toggle header column",
+    "de": "Kopfspalte umschalten"
+  },
+  "table_toggle_header_cell": {
+    "en": "Toggle header cell",
+    "de": "Kopfzelle umschalten"
+  },
+  "table_delete_table": {
+    "en": "Delete table",
+    "de": "Tabelle löschen"
+  },
   "description": {
     "en": "Description",
     "de": "Beschreibung"
