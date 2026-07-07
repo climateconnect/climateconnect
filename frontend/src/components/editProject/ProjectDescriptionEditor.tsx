@@ -32,6 +32,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { getLinkBubbleMenuLabels } from "../richText/richTextLabels";
 
 const CHARACTER_LIMIT = 4000;
 
@@ -156,7 +157,7 @@ export default function ProjectDescriptionEditor({
                   <MenuButtonItalic />
                   <MenuButtonBulletedList />
                   <MenuButtonOrderedList />
-                  <MenuButtonEditLink />
+                  <MenuButtonEditLink tooltipLabel={texts.editor_edit_link} />
                   <MenuButton
                     tooltipLabel={texts.project_description_youTube_button}
                     IconComponent={YouTubeIcon}
@@ -194,7 +195,7 @@ export default function ProjectDescriptionEditor({
           ),
         }}
       >
-        {() => <LinkBubbleMenu />}
+        {() => <LinkBubbleMenu labels={getLinkBubbleMenuLabels(locale)} />}
       </RichTextEditor>
 
       <Dialog open={youtubeModalOpen} onClose={handleCloseYoutubeModal} maxWidth="sm" fullWidth>

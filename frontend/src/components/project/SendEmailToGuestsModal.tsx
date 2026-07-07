@@ -28,6 +28,7 @@ import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
 import OrganizerMessageEditor, { stripHtml } from "../richText/OrganizerMessageEditor";
+import { getLinkBubbleMenuLabels, getTableMenuControlLabels } from "../richText/richTextLabels";
 
 // ---------------------------------------------------------------------------
 // Styles
@@ -403,6 +404,8 @@ export default function SendEmailToGuestsModal({
                 editable={!isSending}
                 error={errors.message}
                 ariaLabel={texts.email_message}
+                linkBubbleMenuLabels={getLinkBubbleMenuLabels(locale)}
+                tableMenuControlLabels={getTableMenuControlLabels(locale)}
                 tooltipLabels={{
                   bold: texts.editor_bold,
                   italic: texts.editor_italic,

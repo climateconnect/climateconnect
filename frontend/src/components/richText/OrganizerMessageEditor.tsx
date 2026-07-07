@@ -30,6 +30,7 @@ import {
 } from "mui-tiptap";
 
 import { emojiItems, emojiRender } from "./emojiSuggestion";
+import type { LinkBubbleMenuLabels, TableMenuControlLabels } from "./richTextLabels";
 
 const CHARACTER_LIMIT = 5000;
 
@@ -110,6 +111,8 @@ type Props = {
   showCharCount?: boolean;
   ariaLabel?: string;
   tooltipLabels?: TooltipLabels;
+  linkBubbleMenuLabels?: LinkBubbleMenuLabels;
+  tableMenuControlLabels?: TableMenuControlLabels;
 };
 
 const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "").trim();
@@ -122,6 +125,8 @@ export default function OrganizerMessageEditor({
   showCharCount = true,
   ariaLabel,
   tooltipLabels,
+  linkBubbleMenuLabels,
+  tableMenuControlLabels,
 }: Props) {
   const classes = useStyles();
   const rteRef = useRef<RichTextEditorRef>(null);
@@ -162,7 +167,7 @@ export default function OrganizerMessageEditor({
             <MenuDivider />
             <MenuButtonEditLink tooltipLabel={t?.editLink ?? "Edit link"} />
             <MenuButtonAddTable tooltipLabel={t?.addTable ?? "Add table"} />
-            <TableMenuControls />
+            <TableMenuControls labels={tableMenuControlLabels} />
           </MenuControlsContainer>
         )}
         RichTextFieldProps={{
@@ -178,7 +183,7 @@ export default function OrganizerMessageEditor({
           ) : undefined,
         }}
       >
-        {() => <LinkBubbleMenu />}
+        {() => <LinkBubbleMenu labels={linkBubbleMenuLabels} />}
       </RichTextEditor>
       {error && <Typography className={classes.errorText}>{error}</Typography>}
     </div>

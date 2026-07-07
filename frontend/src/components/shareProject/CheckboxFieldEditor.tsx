@@ -16,6 +16,7 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { getLinkBubbleMenuLabels } from "../richText/richTextLabels";
 
 const CHARACTER_LIMIT = 500;
 
@@ -116,7 +117,7 @@ export default function CheckboxFieldEditor({
             : () => (
                 <MenuControlsContainer>
                   <MenuButtonBold />
-                  <MenuButtonEditLink />
+                  <MenuButtonEditLink tooltipLabel={texts.editor_edit_link} />
                 </MenuControlsContainer>
               )
         }
@@ -142,7 +143,7 @@ export default function CheckboxFieldEditor({
         }}
       >
         {/* render prop ensures LinkBubbleMenu re-renders on every editor transaction */}
-        {() => <LinkBubbleMenu />}
+        {() => <LinkBubbleMenu labels={getLinkBubbleMenuLabels(locale)} />}
       </RichTextEditor>
     </>
   );
