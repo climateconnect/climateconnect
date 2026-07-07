@@ -120,7 +120,9 @@ export default function ProjectMetaData({
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
-  const main_project_sector = project.sectors!.map((t) => t.name)[0];
+  const main_project_sector = project
+    .sectors!.map((t: any) => t.sector?.name ?? t.name)
+    .filter(Boolean)[0];
 
   // Use prop if provided, otherwise compute from user context as fallback
   // The prop should now always be passed from parent components
@@ -261,7 +263,7 @@ const WithOutDescription = ({
   );
 };
 
-const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_parent }) => {
+export const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_parent }) => {
   const collaborating_organizations = collaborating_organization.slice(0, 2); // only show 2 collaborating orgs
   const classes = useStyles({});
   return (
