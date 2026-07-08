@@ -150,6 +150,76 @@ class TestMemberCancelRegistration(_CancellationTestBase):
         seats_after = resp_after.data["registration_config"]["available_seats"]
         self.assertEqual(seats_after, seats_before + 1)
 
+    @tag("cancel_registration", "member_cancel")
+    def test_cancellation_message_is_saved_and_task_dispatched(self):
+        """DELETE with message saves reason and dispatches chat task."""
+        reg = self._register(self.member)
+        self.client.login(username="member_cancel", password="testpassword")
+
+        with (
+            mock_patch(
+                "organization.views.event_registration_views._send_cancellation_chat_task"
+            ) as mock_task,
+            mock_patch(
+                "organization.views.event_registration_views.transaction.on_commit",
+                side_effect=lambda fn: fn(),
+            ),
+        ):
+            response = self.client.delete(
+                self._cancel_url(),
+                data={"message": "  I cannot make it this time.  "},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        reg.refresh_from_db()
+        self.assertEqual(reg.cancellation_reason, "I cannot make it this time.")
+        mock_task.delay.assert_called_once_with(
+            guest_user_id=self.member.id,
+            project_url_slug=self.event.url_slug,
+            registration_id=reg.id,
+            message="I cannot make it this time.",
+        )
+
+    @tag("cancel_registration", "member_cancel")
+    def test_blank_cancellation_message_keeps_existing_reason(self):
+        """DELETE with blank message preserves existing cancellation_reason."""
+        reg = self._register(self.member)
+        reg.cancellation_reason = "Existing reason"
+        reg.save(update_fields=["cancellation_reason"])
+
+        self.client.login(username="member_cancel", password="testpassword")
+        with mock_patch(
+            "organization.views.event_registration_views._send_cancellation_chat_task"
+        ) as mock_task:
+            response = self.client.delete(
+                self._cancel_url(),
+                data={"message": "   "},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        reg.refresh_from_db()
+        self.assertEqual(reg.cancellation_reason, "Existing reason")
+        mock_task.delay.assert_not_called()
+
+    @tag("cancel_registration", "member_cancel")
+    def test_too_long_cancellation_message_returns_400(self):
+        """DELETE with >1000 chars message returns 400 and does not cancel."""
+        reg = self._register(self.member)
+        self.client.login(username="member_cancel", password="testpassword")
+
+        response = self.client.delete(
+            self._cancel_url(),
+            data={"message": "x" * 1001},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        reg.refresh_from_db()
+        self.assertIsNone(reg.cancelled_at)
+        self.assertIsNone(reg.cancelled_by)
+
 
 # ===========================================================================
 # Member re-registration after cancellation

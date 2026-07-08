@@ -1,39 +1,42 @@
+import logging
+from uuid import uuid4
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db.models import Q
+from django.utils import timezone
+from rest_framework import status
+from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from chat_messages.models import Message, MessageParticipants, Participant
+from chat_messages.models.message import MessageReceiver
+from chat_messages.pagination import ChatMessagePagination, ChatsPagination
+from chat_messages.permissions import (
+    AddParticipantsPermission,
+    ChangeChatCreatorPermission,
+    ParticipantReadWritePermission,
+)
+from chat_messages.serializers.message import (
+    MessageParticipantSerializer,
+    MessageSerializer,
+    UpdateParticipateSerializer,
+)
+from chat_messages.utility.chat_setup import (
+    check_can_start_chat,
+    get_or_create_private_chat,
+    set_read,
+)
 from chat_messages.utility.notification import create_chat_message_notification
+from climateconnect_api.models import Role, UserProfile
 from climateconnect_api.utility.notification import (
     create_email_notification,
     create_user_notification,
 )
-from chat_messages.models.message import MessageReceiver
-from django.utils import timezone
-from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.exceptions import NotFound, PermissionDenied
-from django.conf import settings
-
-from uuid import uuid4
-
-from django.db.models import Count
-from django.contrib.auth.models import User
-from django.db.models import Q
-from chat_messages.models import MessageParticipants, Message, Participant
-from chat_messages.serializers.message import (
-    MessageSerializer,
-    MessageParticipantSerializer,
-    UpdateParticipateSerializer,
-)
-from chat_messages.pagination import ChatMessagePagination, ChatsPagination
-from climateconnect_api.models import UserProfile, Role
-from chat_messages.utility.chat_setup import set_read, check_can_start_chat
-from chat_messages.permissions import (
-    ChangeChatCreatorPermission,
-    AddParticipantsPermission,
-    ParticipantReadWritePermission,
-)
 from constants import NUM_OF_WORDS_REQUIRED_FOR_FIRST_MESSAGE
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -88,31 +91,11 @@ class StartPrivateChat(APIView):
             )
 
         chatting_partner_user = user_profile.user
-        participants = [request.user, chatting_partner_user]
-
-        chats_with_creator = Participant.objects.filter(
-            user=request.user, is_active=True
-        ).values_list("chat", flat=True)
-        chats_with_both_users = Participant.objects.filter(
-            user=chatting_partner_user, chat__in=chats_with_creator, is_active=True
-        ).values_list("chat", flat=True)
-
-        private_chat_with_both_users = MessageParticipants.objects.annotate(
-            num_participants=Count("participant_participants")
-        ).filter(
-            id__in=chats_with_both_users, num_participants=2, related_idea=None, name=""
+        private_chat = get_or_create_private_chat(
+            request.user,
+            chatting_partner_user,
+            created_by=request.user,
         )
-        if private_chat_with_both_users.exists():
-            private_chat = private_chat_with_both_users[0]
-        else:
-            private_chat = MessageParticipants.objects.create(
-                chat_uuid=str(uuid4()), created_by=request.user
-            )
-            basic_role = Role.objects.get(role_type=0)
-            for participant in participants:
-                Participant.objects.create(
-                    user=participant, chat=private_chat, role=basic_role
-                )
         serializer = MessageParticipantSerializer(
             private_chat, context={"request": request}
         )
