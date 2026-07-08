@@ -43,6 +43,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
   const [newChatMembers, setNewChatMembers] = useState<any[]>([]);
   const [groupName, setGroupName] = useState("");
   const router = useRouter();
+  const hubUrl = typeof router.query.hub === "string" ? router.query.hub : null;
 
   const handleAddNewChatMember = (member) => {
     setNewChatMembers([...newChatMembers, member]);
@@ -97,7 +98,8 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
       })
         .then(async function (response) {
           console.log(response);
-          router.push("/chat/" + response.data.chat_uuid + "/");
+          const queryString = hubUrl ? `?hub=${encodeURIComponent(hubUrl)}` : "";
+          router.push("/chat/" + response.data.chat_uuid + "/" + queryString);
         })
         .catch(function (error) {
           console.log(error.response.data.message);

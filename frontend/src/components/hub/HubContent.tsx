@@ -226,7 +226,11 @@ export default function HubContent({
                   ) : (
                     <>
                       {hubAmbassador && (
-                        <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
+                        <ContactAmbassadorButton
+                          hubAmbassador={hubAmbassador}
+                          mobile={false}
+                          hubUrl={hubUrl}
+                        />
                       )}
                       {hubSupporters?.length > 0 && (
                         <HubSupporters
@@ -261,6 +265,7 @@ export default function HubContent({
               isLocationHub={isLocationHub}
               hubAmbassador={hubAmbassador}
               isNarrowScreen={isNarrowScreen}
+              hubUrl={hubUrl}
             />
           </Container>
         )}
@@ -296,6 +301,7 @@ const BottomContent = ({
   hubAmbassador,
   isLocationHub,
   isNarrowScreen,
+  hubUrl,
 }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -334,7 +340,9 @@ const BottomContent = ({
           </Button>
         </div>
       )}
-      {!isNarrowScreen && <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />}
+      {!isNarrowScreen && (
+        <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} hubUrl={hubUrl} />
+      )}
     </>
   );
 };
