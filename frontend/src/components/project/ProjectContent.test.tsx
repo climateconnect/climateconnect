@@ -96,6 +96,16 @@ describe("ProjectContent", () => {
       expect(screen.getByText("Hello")).toBeInTheDocument();
     });
 
+    it("keeps empty <p> tags from the editor (blank lines) in the DOM", () => {
+      // The tiptap editor stores a blank line the author created as an empty
+      // <p></p>. It must not be stripped, so the display CSS can render it as a
+      // visible empty line (WYSIWYG with the editor).
+      renderProjectContent({
+        description_html: "<p>And a new paragraph</p><p></p><p>Empty line above</p>",
+      });
+      expect(document.querySelector("p:empty")).not.toBeNull();
+    });
+
     it("renders YouTube iframe from description_html", () => {
       const html =
         '<div data-youtube-video=""><iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" width="640" height="480"></iframe></div>';

@@ -17,6 +17,7 @@ import Posts from "./../communication/Posts";
 import UserContext from "../context/UserContext";
 import ProjectContentSideButtons from "./Buttons/ProjectContentSideButtons";
 import { getDevlinkComponent } from "../../utils/getDevlinkComponent";
+import { getEditorStyles } from "mui-tiptap";
 
 const useStyles = makeStyles((theme: Theme) => ({
   createdBy: {
@@ -126,9 +127,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   projectDescription: {
     wordBreak: "break-word",
+    // Reuse the tiptap editor's own styles (margin:0 on p/headings/lists, link &
+    // list styling) so the rendered description is WYSIWYG with the editor.
+    ...getEditorStyles(theme),
+    // The tiptap editor renders an empty paragraph (<p></p>, e.g. a blank line
+    // the author created) as a visible empty line — ProseMirror injects a <br>
+    // into empty blocks in the editable view. In the read-only display that <br>
+    // is absent, so an empty <p> collapses to zero height. Give it one line of
+    // height (via a hidden non-breaking space) so blank lines created in the
+    // editor stay visible. This matches the editor without changing global CSS.
+    "& p:empty::before": {
+      content: '"\\00a0"',
+      visibility: "hidden",
+    },
     "& ul, & ol": {
       paddingLeft: "1.5em",
-      margin: "0.5em 0",
     },
     "& iframe": {
       maxWidth: 640,
