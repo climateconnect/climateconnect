@@ -166,5 +166,9 @@
   "no_chats_found_for_this_search": {
     "en": "No matches found for your search",
     "de": "Keine Suchergebnisse gefunden"
+  },
+  "chat_message_origin_event_registration": {
+    "en": "This message is about the registration for {event_name}",
+    "de": "Diese Nachricht betrifft die Anmeldung für {event_name}"
   }
 }
