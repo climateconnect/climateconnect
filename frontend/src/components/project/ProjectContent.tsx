@@ -17,6 +17,7 @@ import Posts from "./../communication/Posts";
 import UserContext from "../context/UserContext";
 import ProjectContentSideButtons from "./Buttons/ProjectContentSideButtons";
 import { getDevlinkComponent } from "../../utils/getDevlinkComponent";
+import { getEditorStyles } from "mui-tiptap";
 
 const useStyles = makeStyles((theme: Theme) => ({
   createdBy: {
@@ -126,9 +127,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   projectDescription: {
     wordBreak: "break-word",
+    // Reuse the tiptap editor's own styles (margin:0 on p/headings/lists, link &
+    // list styling) so the rendered description is WYSIWYG with the editor.
+    ...getEditorStyles(theme),
     "& ul, & ol": {
       paddingLeft: "1.5em",
-      margin: "0.5em 0",
     },
     "& iframe": {
       maxWidth: 640,
