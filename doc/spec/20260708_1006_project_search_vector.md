@@ -27,7 +27,7 @@ Searching for projects on the browse/project-list pages is currently limited and
 ### Desired behavior
 
 - A user can search projects by a free-text term and get relevant matches across **name, short description, sector, and location**, ranked by relevance.
-- The search is **scoped to the user's selected language**: only text in that language is matched. When a translation in the requested language is missing, the search falls back to the default language so projects are not silently dropped.
+- The search is **scoped to the user's selected language**: only text in that language is matched. When a translation in the requested language is missing, the search falls back to the default language so projects are not silently dropped. The language is taken from the existing request-language mechanism (`Accept-Language` header → `request.LANGUAGE_CODE`, set by Django's `LocaleMiddleware`) — the same mechanism the rest of the API already uses — not from a new query parameter.
 - The search executes against a **precomputed, indexed search document** rather than joining translation/sector/location tables on every request.
 - The same capability is available to the event-list and event-calendar endpoints so behavior is consistent.
 - No new external infrastructure (e.g. Elasticsearch) is introduced — the solution stays within the existing PostgreSQL stack.
@@ -42,7 +42,7 @@ Searching for projects on the browse/project-list pages is currently limited and
 3. Substring/partial-word and basic stemming behavior is reasonable for the supported languages (e.g. searching "energy" also ranks "energies" appropriately).
 
 ### Language scoping
-4. Search accepts a language context (the user's selected UI language). Only that language's text is searched.
+4. Search derives the language from the existing request-language mechanism (`Accept-Language` header → `request.LANGUAGE_CODE`, via `LocaleMiddleware`) — the same mechanism the rest of the API uses (e.g. `get_language_code_from_context`). No new language query parameter is introduced. Only that language's text is searched.
 5. When a project has no translation in the requested language, the search falls back to the default language so the project remains findable by its base/translated name and description.
 6. A German search does **not** return a project merely because the substring appears in an unrelated-language translation row.
 
@@ -65,6 +65,7 @@ Searching for projects on the browse/project-list pages is currently limited and
 - **Translation data shapes differ.** Sector names live as `name` + `name_de_translation` columns on `Sector`; location names live in a `LocationTranslation` table keyed by `language`; project name/short-description live both on `Project` (base/default) and in `ProjectTranslation` (per `language`). The search document must reconcile these three shapes into one language-scoped document.
 - **Existing endpoints must keep working.** `ListProjectsView`, `ListEventsView`, and `EventCalendarCountsView` all depend on the current `search` param and should continue to accept it.
 - **Backward compatibility of the API contract.** The `?search=` query parameter and its meaning (free-text filter) should be preserved; this is an internal improvement to *how* search works, not a change to the public contract.
+- **Reuse the existing language mechanism.** Language must be resolved from `request.LANGUAGE_CODE` (populated by `LocaleMiddleware` from the `Accept-Language` header), consistent with `get_language_code_from_context`. Do **not** introduce a new `?language=` query parameter; the search should behave like the rest of the API with respect to language.
 
 ---
 
@@ -73,6 +74,7 @@ Searching for projects on the browse/project-list pages is currently limited and
 - **Recommended direction (medium-term):** maintain a **precomputed, language-scoped search document** stored as a dedicated column on the project (one document per supported language, or a single document built for the requested language), backed by a GIN index. At request time the endpoint filters against that indexed column instead of joining translation/sector/location tables. This removes the join complexity and gives relevance ranking for free.
 - **Why not substring `icontains`:** it cannot rank by relevance and forces per-field OR-joins. PostgreSQL full-text search (`tsvector`/`tsquery`) provides stemming, weight, and `ts_rank` relevance ordering natively.
 - **Language handling is the crux.** Because translations are per-language rows, the document must be built *per language* (with fallback to the default language when a translation is absent). A single language-agnostic document would reintroduce the cross-language false-match bug.
+- **Language is already available on the request.** `LocaleMiddleware` is enabled (`settings.py:107`), so `request.LANGUAGE_CODE` is set from the `Accept-Language` header — the same source `get_language_code_from_context` (`location/utility.py:161`) uses for serializers. The search endpoint should read `request.LANGUAGE_CODE` directly rather than re-deriving language, keeping it consistent with the rest of the API and avoiding a new query param.
 - **Maintenance is the main engineering risk.** The document must be regenerated whenever any contributing field changes — project fields, any `ProjectTranslation` for that language, sector mappings, or the location. A DB-level mechanism (generated column / trigger) is more robust than application-level save hooks, which can miss bulk updates or related-model changes. The exact mechanism is an architecture decision (see System Impact).
 - **Two translation shapes for sectors vs locations** mean the document-builder needs distinct logic per source; this is the trickiest part of keeping the document correct.
 - **Scope to the three endpoints.** All three (`ListProjectsView`, `ListEventsView`, `EventCalendarCountsView`) currently repeat the `name`/`name_translation` search; consolidating them onto the shared document is the clean win.
