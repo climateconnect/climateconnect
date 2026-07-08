@@ -164,7 +164,9 @@ def legacy_description_to_tiptap_html_v2(text: str | None) -> str:
 
     def flush() -> None:
         if current:
-            autolinked = [_autolink_text(line.strip()) for line in current if line.strip()]
+            autolinked = [
+                _autolink_text(line.strip()) for line in current if line.strip()
+            ]
             if autolinked:
                 parts.append(f"<p>{'<br>'.join(autolinked)}</p>")
             current.clear()
@@ -194,7 +196,7 @@ def legacy_description_to_tiptap_html_v2(text: str | None) -> str:
             if vid:
                 flush()
                 before = stripped[: mixed.start()].strip()
-                after = stripped[mixed.end():].strip()
+                after = stripped[mixed.end() :].strip()
                 if before:
                     parts.append(f"<p>{_autolink_text(before)}</p>")
                 parts.append(_youtube_embed(vid))

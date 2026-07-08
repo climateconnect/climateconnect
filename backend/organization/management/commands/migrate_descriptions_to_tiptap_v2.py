@@ -85,9 +85,7 @@ class Command(BaseCommand):
         if trans_total == 0:
             self.stdout.write("No translations to migrate.")
         elif dry_run:
-            self.stdout.write(
-                f"DRY RUN: {trans_total} translations would be migrated."
-            )
+            self.stdout.write(f"DRY RUN: {trans_total} translations would be migrated.")
         else:
             migrated_trans = self._migrate(
                 translations,
