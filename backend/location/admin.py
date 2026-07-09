@@ -167,32 +167,23 @@ admin.site.register(LocationTranslation, LocationTranslationAdmin)
 class NominatimRequestLogAdmin(admin.ModelAdmin):
     list_display = (
         "time_minute",
-        "count",
-        "bar",
+        "provider",
+        "processed",
     )
-    list_filter = ("bucket_key",)
-    ordering = ("-bucket_key",)
-    search_fields = ("bucket_key",)
-    readonly_fields = ("bucket_key", "count", "created_at", "updated_at")
+    list_filter = ("provider", "processed")
+    ordering = ("-minute_key",)
+    search_fields = ("minute_key",)
+    readonly_fields = ("minute_key", "provider", "processed", "created_at")
 
     def time_minute(self, obj):
-        """Convert epoch minute bucket_key to human-readable datetime."""
+        """Convert epoch minute to human-readable datetime."""
         from datetime import datetime, timezone
 
-        dt = datetime.fromtimestamp(obj.bucket_key * 60, tz=timezone.utc)
+        dt = datetime.fromtimestamp(obj.minute_key * 60, tz=timezone.utc)
         return dt.strftime("%Y-%m-%d %H:%M UTC")
 
     time_minute.short_description = "Time (minute)"
-    time_minute.admin_order_field = "bucket_key"
-
-    def bar(self, obj):
-        """Simple ASCII bar chart of request count."""
-        if obj.count == 0:
-            return "—"
-        width = min(obj.count, 50)
-        return f'{"█" * width} {obj.count}'
-
-    bar.short_description = "Requests"
+    time_minute.admin_order_field = "minute_key"
 
     def has_add_permission(self, request):
         return False
@@ -208,15 +199,17 @@ class NominatimPeriodStatsAdmin(admin.ModelAdmin):
     list_display = (
         "period_type",
         "period_key",
+        "provider",
         "total_requests",
         "avg_req_per_second",
         "peak_req_per_second",
     )
-    list_filter = ("period_type",)
+    list_filter = ("period_type", "provider")
     search_fields = ("period_key",)
     readonly_fields = (
         "period_type",
         "period_key",
+        "provider",
         "total_requests",
         "avg_req_per_second",
         "peak_req_per_second",

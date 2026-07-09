@@ -1,9 +1,7 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import makeStyles from "@mui/styles/makeStyles";
-import axios from "axios";
-import { debounce } from "lodash";
-import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import {
   getDisplayLocationFromLocation,
@@ -12,7 +10,6 @@ import {
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
-import { getLocaleHeader } from "../../utils/locationUtils";
 
 const useStyles = makeStyles((theme) => ({
   additionalInfos: {
@@ -122,16 +119,11 @@ export default function LocationSearchBar({
         const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           : searchValue;
-        let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          searchParam
-        )}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001`;
+        let url = `/api/location_autocomplete/?q=${encodeURIComponent(searchParam)}`;
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
-        // Fire-and-forget: count this Nominatim request for rate monitoring.
-        // The call is intentionally not awaited so it never blocks the UX.
-        apiRequest({ method: "post", url: "/api/nominatim_request_count/" }).catch(() => {});
-        const response = await axios.get(url, { headers: getLocaleHeader(locale) });
+        const response = await apiRequest({ method: "get", url, locale });
         const bannedClasses = [
           "tourism",
           "railway",
@@ -287,16 +279,13 @@ export default function LocationSearchBar({
       onChange(event.target.value);
     }
     setInputValue(event.target.value);
-    setSearchValueThrottled(event.target.value);
+    if (event.target.value.length >= 3) {
+      setSearchValue(event.target.value);
+    } else {
+      setOptions([]);
+      setLoading(false);
+    }
   };
-
-  const setSearchValueThrottled = useMemo(
-    () =>
-      debounce((value) => {
-        setSearchValue(value);
-      }, 1000),
-    []
-  );
 
   const handleChange = (event, value, reason) => {
     if (reason === "selectOption") {

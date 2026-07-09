@@ -201,22 +201,30 @@ class LocationTranslation(models.Model):
 
 class NominatimRequestLog(models.Model):
     """
-    Stores per-minute request counts for Nominatim autocomplete requests.
+    Stores per-minute request counts for autocomplete requests.
 
-    One row per calendar minute. Only the current day's buckets are retained;
-    older buckets are deleted inline on each incoming request.
+    One row per (calendar minute, provider) combination. Only the current
+    day's buckets are retained; older buckets are deleted inline on each
+    incoming request.
     """
 
-    bucket_key = models.BigIntegerField(
+    PROVIDER_CHOICES = [
+        ("nominatim", "Nominatim"),
+        ("locationiq", "LocationIQ"),
+    ]
+
+    minute_key = models.BigIntegerField(
         help_text="Epoch minutes (epoch_seconds // 60)",
-        unique=True,
     )
-    count = models.PositiveIntegerField(
-        default=0,
-        help_text="Number of Nominatim requests in this minute",
+    provider = models.CharField(
+        max_length=20,
+        choices=PROVIDER_CHOICES,
+        default="nominatim",
+    )
+    processed = models.BooleanField(
+        default=False,
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         app_label = "location"
@@ -224,17 +232,22 @@ class NominatimRequestLog(models.Model):
         verbose_name_plural = "nominatim request logs"
 
     def __str__(self):
-        return f"minute:{self.bucket_key} = {self.count}"
+        return f"minute:{self.minute_key} ({self.provider}) processed={self.processed}"
 
 
 class NominatimPeriodStats(models.Model):
     """
     Persistent per-period (day / ISO-week / calendar-month) aggregation of
-    Nominatim autocomplete request metrics.
+    autocomplete request metrics, broken down by provider.
 
-    One row per (period_type, period_key) combination.  Updated atomically
-    on every tracked request — no Celery, no Redis.
+    One row per (period_type, period_key, provider) combination.  Updated
+    atomically on every tracked request — no Celery, no Redis.
     """
+
+    PROVIDER_CHOICES = [
+        ("nominatim", "Nominatim"),
+        ("locationiq", "LocationIQ"),
+    ]
 
     class PeriodType(models.TextChoices):
         DAY = "day", "Day"
@@ -249,6 +262,11 @@ class NominatimPeriodStats(models.Model):
         max_length=10,
         help_text="YYYY-MM-DD, YYYY-Www, or YYYY-MM",
     )
+    provider = models.CharField(
+        max_length=20,
+        choices=PROVIDER_CHOICES,
+        default="nominatim",
+    )
     total_requests = models.PositiveIntegerField(default=0)
     avg_req_per_second = models.FloatField(default=0)
     peak_req_per_second = models.FloatField(default=0)
@@ -259,10 +277,10 @@ class NominatimPeriodStats(models.Model):
         app_label = "location"
         verbose_name = "nominatim period stats"
         verbose_name_plural = "nominatim period stats"
-        unique_together = [("period_type", "period_key")]
+        unique_together = [("period_type", "period_key", "provider")]
         indexes = [
-            models.Index(fields=["period_type", "period_key"]),
+            models.Index(fields=["period_type", "period_key", "provider"]),
         ]
 
     def __str__(self):
-        return f"{self.period_type}:{self.period_key} reqs={self.total_requests}"
+        return f"{self.period_type}:{self.period_key} ({self.provider}) reqs={self.total_requests}"
