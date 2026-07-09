@@ -12,6 +12,7 @@ Currently includes:
 """
 
 import logging
+from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -374,23 +375,56 @@ def send_cancellation_chat_message(
             organizer,
             created_by=guest_user,
         )
-        sent_at = timezone.now()
-        chat_message = Message.objects.create(
-            message_participant=chat,
-            content=message,
-            sender=guest_user,
-            origin_type="event_registration",
-            origin_id=registration_id,
-            sent_at=sent_at,
-        )
-        chat.last_message_at = sent_at
-        chat.save(update_fields=["last_message_at"])
 
-        MessageReceiver.objects.create(receiver=organizer, message=chat_message)
+        # Idempotency guard: Celery retries can happen after message creation
+        # (for example when downstream notification/email delivery fails).
+        # Reuse a very recent matching origin message instead of creating duplicates.
+        recent_cutoff = timezone.now() - timedelta(minutes=10)
+        chat_message = (
+            Message.objects.filter(
+                message_participant=chat,
+                sender=guest_user,
+                origin_type="event_registration",
+                origin_id=registration_id,
+                content=message,
+                sent_at__gte=recent_cutoff,
+            )
+            .order_by("-id")
+            .first()
+        )
+
+        if chat_message is None:
+            sent_at = timezone.now()
+            chat_message = Message.objects.create(
+                message_participant=chat,
+                content=message,
+                sender=guest_user,
+                origin_type="event_registration",
+                origin_id=registration_id,
+                sent_at=sent_at,
+            )
+            chat.last_message_at = sent_at
+            chat.save(update_fields=["last_message_at"])
+
+        MessageReceiver.objects.get_or_create(receiver=organizer, message=chat_message)
 
         notification = create_chat_message_notification(chat)
-        create_user_notification(organizer, notification)
-        create_email_notification(organizer, chat, message, guest_user, notification)
+        try:
+            create_user_notification(organizer, notification)
+        except Exception as exc:
+            logger.error(
+                "[CancellationChat] Failed to create in-app notification for organizer %s: %s",
+                organizer.id,
+                exc,
+            )
+        try:
+            create_email_notification(organizer, chat, message, guest_user, notification)
+        except Exception as exc:
+            logger.error(
+                "[CancellationChat] Failed to create email notification for organizer %s: %s",
+                organizer.id,
+                exc,
+            )
     except Exception as exc:
         logger.error(
             "[CancellationChat] Failed for guest %s on project '%s': %s",

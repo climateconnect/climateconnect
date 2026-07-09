@@ -48,9 +48,18 @@ class TestCancellationChatTask(APITestCase):
             last_name="User",
         )
 
-        self.admin_role = Role.objects.create(
-            name="Admin_cancel_message_task",
-            role_type=Role.ALL_TYPE,
+        # Required by get_project_admin_creators(...) and get_or_create_private_chat(...)
+        self.admin_role, _ = Role.objects.get_or_create(
+            name="Super-Admin",
+            defaults={"role_type": Role.ALL_TYPE},
+        )
+        Role.objects.get_or_create(
+            name="Administrator",
+            defaults={"role_type": Role.READ_WRITE_TYPE},
+        )
+        Role.objects.get_or_create(
+            role_type=Role.READ_ONLY_TYPE,
+            defaults={"name": "Read Only"},
         )
 
         self.event = Project.objects.create(
@@ -143,6 +152,40 @@ class TestCancellationChatTask(APITestCase):
         self.assertEqual(messages[0].message_participant_id, first_chat.id)
         self.assertEqual(messages[1].message_participant_id, first_chat.id)
 
+    @tag("cancel_registration", "cancellation_message")
+    def test_task_is_idempotent_for_retry_same_payload(self):
+        with (
+            mock_patch("climateconnect_api.utility.notification.create_email_notification"),
+            mock_patch("climateconnect_api.utility.notification.create_user_notification"),
+        ):
+            send_cancellation_chat_message.run(
+                guest_user_id=self.guest.id,
+                project_url_slug=self.event.url_slug,
+                registration_id=self.registration.id,
+                message="Retry-safe cancellation message",
+            )
+            # Simulate Celery retry of the exact same payload.
+            send_cancellation_chat_message.run(
+                guest_user_id=self.guest.id,
+                project_url_slug=self.event.url_slug,
+                registration_id=self.registration.id,
+                message="Retry-safe cancellation message",
+            )
+
+        messages = Message.objects.filter(
+            sender=self.guest,
+            origin_type="event_registration",
+            origin_id=self.registration.id,
+            content="Retry-safe cancellation message",
+        )
+        self.assertEqual(messages.count(), 1)
+        self.assertEqual(
+            MessageReceiver.objects.filter(
+                message=messages.first(), receiver=self.organiser
+            ).count(),
+            1,
+        )
+
 
 class TestEventRegistrationOriginEndpoint(APITestCase):
     def setUp(self):
@@ -173,9 +216,18 @@ class TestEventRegistrationOriginEndpoint(APITestCase):
             password="testpassword",
         )
 
-        self.admin_role = Role.objects.create(
-            name="Admin_cancel_message_origin",
-            role_type=Role.ALL_TYPE,
+        # Required by get_project_admin_creators(...) and get_or_create_private_chat(...)
+        self.admin_role, _ = Role.objects.get_or_create(
+            name="Super-Admin",
+            defaults={"role_type": Role.ALL_TYPE},
+        )
+        Role.objects.get_or_create(
+            name="Administrator",
+            defaults={"role_type": Role.READ_WRITE_TYPE},
+        )
+        Role.objects.get_or_create(
+            role_type=Role.READ_ONLY_TYPE,
+            defaults={"name": "Read Only"},
         )
 
         self.event = Project.objects.create(
