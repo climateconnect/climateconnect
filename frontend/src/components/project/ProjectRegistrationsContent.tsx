@@ -30,6 +30,7 @@ import {
   GridColumnMenuProps,
   GridFooterContainer,
   GridPagination,
+  GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarExport,
 } from "@mui/x-data-grid";
@@ -151,6 +152,7 @@ function RegistrationsToolbar({
           {emailGuestsLabel}
         </Button>
       )}
+      <GridToolbarColumnsButton />
       <GridToolbarExport
         csvOptions={{ fileName: csvFileName, fields: csvFields }}
         printOptions={{ hideFooter: true, hideToolbar: true, fields: printFields }}
