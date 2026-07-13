@@ -87,6 +87,14 @@ urlpatterns = [
     ),
     # Project URLs
     path("projects/", project_views.ListProjectsView.as_view(), name="list-projects"),
+    # Event Calendar (POC) - lists event-type projects chronologically
+    path("events/", project_views.ListEventsView.as_view(), name="list-events"),
+    # Event Calendar (POC) - per-day event counts for a month (picker highlight)
+    path(
+        "events/calendar/",
+        project_views.EventCalendarCountsView.as_view(),
+        name="events-calendar-counts",
+    ),
     path(
         "projects/<str:url_slug>/",
         project_views.ProjectAPIView.as_view(),

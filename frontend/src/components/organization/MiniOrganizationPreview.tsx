@@ -1,4 +1,4 @@
-import { Avatar, IconButton, Link, Theme, Typography } from "@mui/material";
+import { Avatar, IconButton, Link, Theme, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
@@ -10,6 +10,15 @@ import { getImageUrl } from "./../../../public/lib/imageOperations";
 const useStyles = makeStyles<Theme, { showBorder: boolean }>((theme) => ({
   orgName: {
     display: "inline-block",
+    wordBreak: "break-word",
+  },
+  tinyOrgName: {
+    display: "-webkit-box",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: 3,
+    lineHeight: 1.4,
     wordBreak: "break-word",
   },
   smallAvatar: (props) => ({
@@ -109,15 +118,34 @@ function Content({ organization, size, onDelete, doNotShowName, inline }) {
       {!doNotShowName && (
         <>
           {size === "tiny" || size === "small" ? (
-            <Typography className={size === "small" ? classes.boldOrgName : ""}>
-              {organization.name}
-            </Typography>
+            size === "tiny" ? (
+              <Tooltip title={organization.name} placement="bottom">
+                <Typography variant="body2" className={classes.tinyOrgName}>
+                  {organization.name}
+                </Typography>
+              </Tooltip>
+            ) : (
+              <Tooltip title={organization.name} placement="bottom">
+                <Typography
+                  variant="body2"
+                  className={`${classes.boldOrgName} ${classes.tinyOrgName}`}
+                >
+                  {organization.name}
+                </Typography>
+              </Tooltip>
+            )
           ) : size === "medium" ? (
-            <Typography className={classes.mediumOrgName}>{organization.name}</Typography>
+            <Tooltip title={organization.name} placement="bottom">
+              <Typography className={`${classes.mediumOrgName} ${classes.tinyOrgName}`}>
+                {organization.name}
+              </Typography>
+            </Tooltip>
           ) : (
-            <Typography variant="h5" className={classes.orgName}>
-              {organization.name}
-            </Typography>
+            <Tooltip title={organization.name} placement="bottom">
+              <Typography variant="body2" className={`${classes.orgName} ${classes.tinyOrgName}`}>
+                {organization.name}
+              </Typography>
+            </Tooltip>
           )}
           {onDelete && (
             <IconButton onClick={() => onDelete(organization)} size="large">

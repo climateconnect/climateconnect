@@ -227,7 +227,7 @@ const getLoggedInLinks = ({ loggedInUser, texts, queryString }) => {
       iconForDrawer: AccountCircleIcon,
     },
     {
-      href: "/inbox",
+      href: "/inbox" + queryString,
       text: texts.inbox,
       iconForDrawer: MailOutlineIcon,
     },

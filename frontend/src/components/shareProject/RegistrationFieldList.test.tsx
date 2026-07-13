@@ -387,11 +387,11 @@ describe("RegistrationFieldList", () => {
     });
   });
 
-  // ── Spec test case 4: max 10 fields limit ─────────────────────────────────
+  // ── Spec test case 4: max 15 fields limit ─────────────────────────────────
 
   describe("max fields limit", () => {
-    it("disables the Add field button when 10 fields are already present", () => {
-      const fields = Array.from({ length: 10 }, (_, i) =>
+    it("disables the Add field button when 15 fields are already present", () => {
+      const fields = Array.from({ length: 15 }, (_, i) =>
         makeField({ order: i, label: `Field ${i + 1}`, _clientKey: `key_${i}` })
       );
       renderFieldList({ fields });
@@ -399,11 +399,11 @@ describe("RegistrationFieldList", () => {
     });
 
     it("shows the max-reached message on the button when 10 fields are present", () => {
-      const fields = Array.from({ length: 10 }, (_, i) =>
+      const fields = Array.from({ length: 15 }, (_, i) =>
         makeField({ order: i, label: `Field ${i + 1}`, _clientKey: `key_${i}` })
       );
       renderFieldList({ fields });
-      expect(screen.getByText(/maximum of 10 fields reached/i)).toBeInTheDocument();
+      expect(screen.getByText(/maximum of 15 fields reached/i)).toBeInTheDocument();
     });
   });
 

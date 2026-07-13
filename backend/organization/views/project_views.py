@@ -1,14 +1,17 @@
 import logging
 import re
 import traceback
+import zoneinfo
 
 from dateutil.parser import parse
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Case, Prefetch, Q, When
+from datetime import datetime
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
@@ -421,6 +424,225 @@ class ListProjectsView(ListAPIView):
         _context = create_context_for_hub_specific_sector(self.request)
         context.update({**_context})
         return context
+
+
+class ListEventsView(ListAPIView):
+    """
+    Lists event-type projects chronologically for the Event Calendar feature.
+
+    Always available (no feature toggle). Supports text search, topic (sectors),
+    hub scoping, and a start/end date range. Orders strictly by start_date.
+    """
+
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ["name", "translation_project__name_translation"]
+    serializer_class = ProjectStubSerializer
+    # The calendar loads the full window in a single request (no pagination).
+    pagination_class = None
+
+    # Maximum window span returned in a single request (unpaginated safety cap).
+    MAX_WINDOW = relativedelta(months=6)
+
+    def get_queryset(self):
+        queryset = (
+            Project.objects.filter(
+                is_draft=False,
+                is_active=True,
+                project_type=ProjectTypesChoices.event,
+                start_date__isnull=False,
+            )
+            .select_related("loc", "language", "status", "registration_config")
+            .prefetch_related(
+                "loc__translate_location__language",
+                Prefetch(
+                    "project_sector_mapping",
+                    queryset=ProjectSectorMapping.objects.select_related("sector"),
+                ),
+            )
+        )
+
+        # --- Date range filtering ---
+        start_date = self._parse_date_param(self.request.query_params.get("start_date"))
+        end_date = self._parse_date_param(self.request.query_params.get("end_date"))
+
+        # Default window (UTC fallback) when the frontend sends no dates.
+        if start_date is None and end_date is None:
+            now = timezone.now()
+            start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            end_date = (
+                start_date + relativedelta(months=3) - relativedelta(days=1)
+            ).replace(hour=23, minute=59, second=59)
+
+        # Hard cap: clamp the effective range to MAX_WINDOW to avoid
+        # unbounded payloads on the unpaginated endpoint.
+        if start_date is not None and end_date is not None:
+            max_end = start_date + self.MAX_WINDOW
+            if end_date > max_end:
+                end_date = max_end
+
+        if start_date is not None and end_date is not None:
+            # Window membership: the event's start_date falls within the window.
+            # The calendar shows each event only on its start date, so an event
+            # with a start_date outside the window has no day to render on.
+            queryset = queryset.filter(
+                Q(start_date__gte=start_date) & Q(start_date__lte=end_date)
+            )
+        elif start_date is not None:
+            queryset = queryset.filter(start_date__gte=start_date)
+        elif end_date is not None:
+            queryset = queryset.filter(start_date__lte=end_date)
+
+        # --- Topic (sectors) filter ---
+        if "sectors" in self.request.query_params:
+            _sector_names = self.request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
+            if not err:
+                queryset = queryset.filter(
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
+                )
+
+        # --- Hub scoping ---
+        if "hub" in self.request.query_params:
+            queryset = apply_hub_filter(queryset, self.request.query_params["hub"])
+
+        # The sector filter joins project_sector_mapping, which can produce
+        # multiple rows for a single event (e.g. an event matching several
+        # selected topics, or a topic and its parent sector). Deduplicate so
+        # each event is returned exactly once.
+        return queryset.distinct().order_by("start_date")
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        _context = create_context_for_hub_specific_sector(self.request)
+        context.update({**_context})
+        return context
+
+    @staticmethod
+    def _parse_date_param(value):
+        if not value:
+            return None
+        try:
+            return parse(value)
+        except (ValueError, OverflowError):
+            return None
+
+
+class EventCalendarCountsView(APIView):
+    """
+    Returns per-day event counts for a given month so the Event Calendar
+    picker can highlight days that have events.
+
+    Always available (no feature toggle). Accepts `year` and `month`
+    (required) plus the same filters as ListEventsView (`search`, `sectors`,
+    `hub`). An optional `timezone` param (IANA name, e.g. "Europe/Berlin")
+    controls the day the counts are bucketed into — this must match the
+    viewer's timezone so the highlighted days line up with the events that
+    the frontend groups by the browser's local day. When omitted, the
+    server's timezone is used as a fallback.
+
+    Each event is counted on its start_date day only (multi-day events are
+    NOT counted on the days they span). Returns a list of
+    {"date": "YYYY-MM-DD", "count": N} objects.
+    """
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            year = int(request.query_params.get("year"))
+            month = int(request.query_params.get("month"))
+        except (TypeError, ValueError):
+            return Response(
+                {"error": "year and month query parameters are required as integers"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not (1 <= month <= 12):
+            return Response(
+                {"error": "month must be an integer between 1 and 12"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Bucket per-day counts in the viewer's timezone so the highlighted
+        # days match the browser-local day grouping used on the frontend.
+        tz = self._resolve_timezone(request.query_params.get("timezone"))
+
+        # Build the month window in the viewer's timezone, then convert to UTC
+        # for the database overlap query. This keeps the window aligned with
+        # the local month the user actually sees in the picker (not the
+        # server's timezone).
+        month_start_local = datetime(year, month, 1, tzinfo=tz)
+        month_end_local = (
+            month_start_local + relativedelta(months=1) - relativedelta(days=1)
+        ).replace(hour=23, minute=59, second=59)
+        month_start = month_start_local.astimezone(timezone.utc)
+        month_end = month_end_local.astimezone(timezone.utc)
+
+        queryset = Project.objects.filter(
+            is_draft=False,
+            is_active=True,
+            project_type=ProjectTypesChoices.event,
+            start_date__isnull=False,
+        ).filter(
+            # Count each event on its start_date day only: the calendar shows
+            # a multi-day event solely on its start date, so spanned days are
+            # not highlighted.
+            Q(start_date__gte=month_start)
+            & Q(start_date__lte=month_end)
+        )
+
+        search = request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search)
+                | Q(translation_project__name_translation__icontains=search)
+            )
+
+        if "sectors" in request.query_params:
+            _sector_names = request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
+            if not err:
+                queryset = queryset.filter(
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
+                )
+
+        if "hub" in request.query_params:
+            queryset = apply_hub_filter(queryset, request.query_params["hub"])
+
+        # Deduplicate: the sector filter joins project_sector_mapping and can
+        # yield multiple rows per event (matching several topics, or a topic
+        # and its parent sector). Without this, multi-topic events would be
+        # counted more than once on their start day.
+        queryset = queryset.distinct()
+
+        counts = {}
+        for start_date in queryset.values_list("start_date", flat=True):
+            # Bucket each event on its start_date, converted into the viewer's
+            # timezone so the highlighted day matches the frontend's local day
+            # grouping. Multi-day events are counted on the start day only.
+            key = start_date.astimezone(tz).date().isoformat()
+            counts[key] = counts.get(key, 0) + 1
+
+        result = [
+            {"date": date, "count": count} for date, count in sorted(counts.items())
+        ]
+        return Response(result, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def _resolve_timezone(timezone_name):
+        if timezone_name:
+            try:
+                return zoneinfo.ZoneInfo(timezone_name)
+            except (ValueError, zoneinfo.ZoneInfoNotFoundError):
+                pass
+        return timezone.get_current_timezone()
 
 
 class CreateProjectView(APIView):

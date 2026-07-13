@@ -1503,8 +1503,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Option löschen",
     },
     max_registration_fields_reached: {
-      en: "Maximum of 10 fields reached",
-      de: "Maximal 10 Felder erreicht",
+      en: "Maximum of 15 fields reached",
+      de: "Maximal 15 Felder erreicht",
     },
     confirm_delete_field_title: {
       en: "Delete field?",
@@ -1712,8 +1712,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Für Veranstaltung anmelden",
     },
     register_now: {
-      en: "Register now",
-      de: "Jetzt anmelden",
+      en: "Register",
+      de: "Anmelden",
     },
     booked_out: {
       en: "Booked Out",

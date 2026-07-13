@@ -86,7 +86,7 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
     fontSize: 12,
   },
   sectorField: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(1.25),
   },
 }));
 
@@ -461,19 +461,17 @@ const InputSectors = ({
           />
         ))}
         <Grid2 container>
-          <Grid2 size={{ xs: 12, sm: 8, md: 5, lg: 5 }}>
-            <SelectField
-              options={sectorOptions}
-              className={classes.sectorField}
-              multiple
-              values={project.sectors?.map((s) => s.name)}
-              label={<div className={classes.iconLabel}>{texts.project_categories}</div>}
-              size="small"
-              onChange={(event) => {
-                handleValueChange(event.target.value);
-              }}
-            />
-          </Grid2>
+          <SelectField
+            options={sectorOptions}
+            className={classes.sectorField}
+            multiple
+            values={project.sectors?.map((s) => s.name)}
+            label={<div className={classes.iconLabel}>{texts.project_categories}</div>}
+            size="small"
+            onChange={(event) => {
+              handleValueChange(event.target.value);
+            }}
+          />
         </Grid2>
       </List>
     </div>

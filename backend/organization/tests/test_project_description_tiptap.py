@@ -7,6 +7,7 @@ from climateconnect_api.utility.html import (
 )
 from organization.utility.legacy_description_to_tiptap import (
     legacy_description_to_tiptap_html,
+    legacy_description_to_tiptap_html_v2,
 )
 
 
@@ -91,6 +92,110 @@ class TestLegacyDescriptionToTiptap(TestCase):
         result = legacy_description_to_tiptap_html("http://youtu.be/dQw4w9WgXcQ,")
         self.assertIn('<div data-youtube-video="">', result)
         self.assertIn("dQw4w9WgXcQ", result)
+
+
+class TestLegacyDescriptionToTiptapV2(TestCase):
+    """v2 preserves the original line-break layout: blank lines become empty
+    <p><br></p> (visible even with margin:0, matching the tiptap editor), and
+    intra-paragraph single newlines become <br>."""
+
+    def test_blank_lines_create_empty_paragraphs(self):
+        # A blank line becomes an empty <p><br></p> so it stays visible even with
+        # margin:0 (mirrors project 775's structure).
+        text = "First paragraph.\n\nSecond paragraph.\n\nThird paragraph."
+        result = legacy_description_to_tiptap_html_v2(text)
+        self.assertEqual(
+            result,
+            "<p>First paragraph.</p><p><br></p><p>Second paragraph.</p>"
+            "<p><br></p><p>Third paragraph.</p>",
+        )
+
+    def test_intra_paragraph_newline_becomes_br(self):
+        text = "Line one\nLine two\nLine three"
+        result = legacy_description_to_tiptap_html_v2(text)
+        self.assertEqual(result, "<p>Line one<br>Line two<br>Line three</p>")
+
+    def test_mixed_blank_and_soft_breaks(self):
+        text = "Title\n\nBullet line 1\nBullet line 2\n\nFooter"
+        result = legacy_description_to_tiptap_html_v2(text)
+        self.assertEqual(
+            result,
+            "<p>Title</p><p><br></p><p>Bullet line 1<br>Bullet line 2</p>"
+            "<p><br></p><p>Footer</p>",
+        )
+
+    def test_youtube_url_own_line(self):
+        url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        result = legacy_description_to_tiptap_html_v2(url)
+        self.assertIn('<div data-youtube-video="">', result)
+        self.assertIn(
+            'src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"', result
+        )
+
+    def test_youtube_embed_kept_within_paragraph(self):
+        text = "Intro text\n\nhttps://www.youtube.com/watch?v=dQw4w9WgXcQ\n\nOutro"
+        result = legacy_description_to_tiptap_html_v2(text)
+        self.assertIn("<p>Intro text</p><p><br></p>", result)
+        self.assertIn('<div data-youtube-video="">', result)
+        self.assertIn("<p><br></p><p>Outro</p>", result)
+
+    def test_youtube_url_mixed_with_text_v2(self):
+        # Mirrors the v1 test_youtube_url_mixed_with_text: a YouTube URL embedded
+        # in a line of text must become an embed, with the surrounding text in
+        # their own paragraphs (not just an autolinked <a>).
+        result = legacy_description_to_tiptap_html_v2(
+            "Check this out: https://www.youtube.com/watch?v=dQw4w9WgXcQ cool right?"
+        )
+        self.assertIn("Check this out:", result)
+        self.assertIn("cool right?", result)
+        self.assertIn('<div data-youtube-video="">', result)
+        self.assertIn("<p>Check this out:</p>", result)
+        self.assertIn("<p>cool right?</p>", result)
+        # The URL itself must NOT appear as a plain autolinked <a>.
+        self.assertNotIn(
+            '<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"', result
+        )
+
+    def test_bare_url_autolinked(self):
+        result = legacy_description_to_tiptap_html_v2(
+            "Visit https://example.com for info"
+        )
+        self.assertIn('<a href="https://example.com"', result)
+        self.assertIn("https://example.com</a>", result)
+
+    def test_html_escaped_in_text(self):
+        result = legacy_description_to_tiptap_html_v2("A < B & C > D")
+        self.assertIn("&lt;", result)
+        self.assertIn("&amp;", result)
+        self.assertIn("&gt;", result)
+
+    def test_empty_input(self):
+        self.assertEqual(legacy_description_to_tiptap_html_v2(""), "")
+        self.assertEqual(legacy_description_to_tiptap_html_v2(None), "")
+        self.assertEqual(legacy_description_to_tiptap_html_v2("   "), "")
+
+    def test_trailing_blank_lines_ignored(self):
+        text = "Only paragraph.\n\n\n"
+        result = legacy_description_to_tiptap_html_v2(text)
+        self.assertEqual(result, "<p>Only paragraph.</p>")
+
+    def test_blank_line_preserves_visible_gap_like_old_display(self):
+        # Reproduces the user's reported structure: text A, blank, text B, blank,
+        # then C/D/E on consecutive lines. Blank lines must become empty <p> so
+        # the rendered output shows a gap (matching the old display), while the
+        # single line breaks between C/D/E stay as <br>.
+        text = "text A\n\ntext B\n\ntext C\ntext D\ntext E"
+        result = legacy_description_to_tiptap_html_v2(text)
+        self.assertEqual(
+            result,
+            "<p>text A</p><p><br></p><p>text B</p><p><br></p>"
+            "<p>text C<br>text D<br>text E</p>",
+        )
+
+    def test_leading_and_trailing_blank_lines_ignored(self):
+        text = "\n\nOnly paragraph.\n\n\n"
+        result = legacy_description_to_tiptap_html_v2(text)
+        self.assertEqual(result, "<p>Only paragraph.</p>")
 
 
 class TestSanitizeHtmlProjectDescription(TestCase):
