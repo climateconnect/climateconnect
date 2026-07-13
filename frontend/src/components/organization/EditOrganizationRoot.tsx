@@ -1,8 +1,9 @@
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useRouter } from "next/router";
 import React, { useContext, useState, useEffect, useRef } from "react";
 import Cookies from "universal-cookie";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
 import { arraysEqual } from "../../../public/lib/generalOperations";
 import { blobFromObjectUrl } from "../../../public/lib/imageOperations";
@@ -16,6 +17,7 @@ import EditAccountPage from "../account/EditAccountPage";
 import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
+import ConfirmDialog from "../dialogs/ConfirmDialog";
 
 import Alert from "@mui/material/Alert";
 
@@ -31,6 +33,14 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     maxWidth: 1280,
     margin: "0 auto",
+  },
+  deleteButtonContainer: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: theme.spacing(2),
+  },
+  deleteButton: {
+    minWidth: theme.spacing(28),
   },
 }));
 
@@ -53,10 +63,11 @@ export default function EditOrganizationRoot({
   const classes = useStyles();
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
-  const { locale, locales } = useContext(UserContext);
+  const { locale, locales, user } = useContext(UserContext);
   const router = useRouter();
   const STEPS = ["edit_organization", "edit_translations"];
   const [editedOrganization, setEditedOrganization] = useState({ ...organization });
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const texts = getTexts({
     page: "organization",
     locale: locale,
@@ -155,6 +166,38 @@ export default function EditOrganizationRoot({
     router.push("/organizations/" + organization.url_slug);
   };
 
+  const deleteOrganization = () => {
+    apiRequest({
+      method: "delete",
+      url: "/api/organizations/" + encodeURI(organization.url_slug) + "/",
+      token: token,
+      locale: locale,
+    })
+      .then(function () {
+        router.push({
+          pathname: "/organizations",
+          query: {
+            message: texts.you_have_successfully_deleted_your_organization,
+          },
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        if (error) console.log(error.response);
+        showFeedbackMessage({
+          message: error?.response?.data?.message || "Something went wrong. Please try again.",
+          isError: true,
+        });
+      });
+  };
+
+  const handleDeleteDialogClose = (confirmed) => {
+    if (confirmed) {
+      deleteOrganization();
+    }
+    setDeleteDialogOpen(false);
+  };
+
   const handleGoToPreviousStep = () => {
     setStep(STEPS[STEPS.indexOf(step) - 1]);
   };
@@ -209,6 +252,9 @@ export default function EditOrganizationRoot({
     : standardTextsToTranslate.concat(getInvolvedText);
 
   const { showFeedbackMessage } = useContext(FeedbackContext);
+  const canDeleteOrganization =
+    !!user && !!organization?.creator && organization?.creator?.url_slug === user?.url_slug;
+
   useEffect(() => {
     if (organization.language && organization.language !== locale) {
       showFeedbackMessage({
@@ -224,22 +270,46 @@ export default function EditOrganizationRoot({
     <>
       {organization ? (
         step === "edit_organization" ? (
-          <EditAccountPage
-            account={organization}
-            possibleAccountTypes={tagOptions}
-            infoMetadata={infoMetadata}
-            accountHref={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
-            maxAccountTypes={2}
-            handleSubmit={saveChanges}
-            handleCancel={handleCancel}
-            errorMessage={errorMessage}
-            existingName={existingName}
-            existingUrlSlug={existingUrlSlug}
-            onClickCheckTranslations={onClickCheckTranslations}
-            allSectors={allSectors}
-            type="organization"
-            checkTranslationsRef={checkTranslationsButtonRef}
-          />
+          <>
+            <EditAccountPage
+              account={organization}
+              possibleAccountTypes={tagOptions}
+              infoMetadata={infoMetadata}
+              accountHref={getLocalePrefix(locale) + "/organizations/" + organization.url_slug}
+              maxAccountTypes={2}
+              handleSubmit={saveChanges}
+              handleCancel={handleCancel}
+              errorMessage={errorMessage}
+              existingName={existingName}
+              existingUrlSlug={existingUrlSlug}
+              onClickCheckTranslations={onClickCheckTranslations}
+              allSectors={allSectors}
+              type="organization"
+              checkTranslationsRef={checkTranslationsButtonRef}
+            />
+            {canDeleteOrganization && (
+              <div className={classes.deleteButtonContainer}>
+                <Button
+                  className={classes.deleteButton}
+                  color="error"
+                  variant="contained"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => setDeleteDialogOpen(true)}
+                  aria-label={texts.delete_organization}
+                >
+                  {texts.delete_organization}
+                </Button>
+              </div>
+            )}
+            <ConfirmDialog
+              open={deleteDialogOpen}
+              onClose={handleDeleteDialogClose}
+              cancelText={texts.no}
+              confirmText={texts.yes}
+              title={texts.do_you_really_want_to_delete_your_organization}
+              text={texts.deleting_organization_is_irreversible}
+            />
+          </>
         ) : (
           <>
             {errorMessage && (
