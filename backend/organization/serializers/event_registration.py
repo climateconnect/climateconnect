@@ -237,9 +237,9 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
         # Field count and uniqueness checks.
         if "fields" in attrs:
             fields_data = attrs["fields"]
-            if len(fields_data) > 10:
+            if len(fields_data) > 15:
                 raise serializers.ValidationError(
-                    {"fields": "Maximum 10 custom fields allowed per event."}
+                    {"fields": "Maximum 15 custom fields allowed per event."}
                 )
             orders = [f.get("order") for f in fields_data if "order" in f]
             if len(orders) != len(set(orders)):
@@ -896,17 +896,17 @@ class EditEventRegistrationConfigSerializer(EventRegistrationConfigBaseSerialize
                     )
                 # Validate custom fields when publishing.
                 fields_data = attrs.get("fields")
-                if fields_data is not None and len(fields_data) > 10:
+                if fields_data is not None and len(fields_data) > 15:
                     raise serializers.ValidationError(
-                        {"fields": "Maximum 10 custom fields allowed per event."}
+                        {"fields": "Maximum 15 custom fields allowed per event."}
                     )
 
         # Field count and uniqueness checks — run for both draft and published.
         if "fields" in attrs:
             fields_data = attrs["fields"]
-            if len(fields_data) > 10:
+            if len(fields_data) > 15:
                 raise serializers.ValidationError(
-                    {"fields": "Maximum 10 custom fields allowed per event."}
+                    {"fields": "Maximum 15 custom fields allowed per event."}
                 )
             orders = [f.get("order") for f in fields_data if "order" in f]
             if len(orders) != len(set(orders)):

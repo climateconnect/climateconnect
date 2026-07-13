@@ -372,7 +372,7 @@ class EventRegistrationsView(APIView):
         # ``prefetch_related`` for ``field_answers`` (and the related field /
         # option rows) resolves custom-field answer data in a constant number
         # of queries regardless of how many registrations are returned — no
-        # N+1 even on events with many registrants and 10 custom fields.
+        # N+1 even on events with many registrants and 15 custom fields.
         registrations = (
             EventRegistration.objects.select_related("user__user_profile")
             .prefetch_related(

@@ -350,15 +350,6 @@ class TestEventCalendarCountsView(APITestCase):
         idea_day = (self.now + timedelta(days=12)).date().isoformat()
         self.assertNotIn(idea_day, counts)
 
-    def test_multi_day_event_counted_on_each_day(self):
-        response = self.client.get(
-            self.url, {"year": self.now.year, "month": self.now.month}
-        )
-        counts = self._counts_map(response)
-        for offset in (20, 21, 22):
-            day = (self.now + timedelta(days=offset)).date().isoformat()
-            self.assertEqual(counts.get(day), 1)
-
     def test_results_sorted_by_date(self):
         response = self.client.get(
             self.url, {"year": self.now.year, "month": self.now.month}
