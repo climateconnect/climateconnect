@@ -161,6 +161,9 @@ class TestMemberCancelRegistration(_CancellationTestBase):
                 "organization.views.event_registration_views._send_cancellation_chat_task"
             ) as mock_task,
             mock_patch(
+                "organization.views.event_registration_views._notify_admins_task"
+            ),
+            mock_patch(
                 "organization.views.event_registration_views.transaction.on_commit",
                 side_effect=lambda fn: fn(),
             ),
