@@ -12,6 +12,11 @@ import UserContext from "../../../src/components/context/UserContext";
 import WideLayout from "../../../src/components/layouts/WideLayout";
 import HubTabsNavigation from "../../../src/components/hub/HubTabsNavigation";
 import EventCalendarContent from "../../../src/components/eventCalendar/EventCalendarContent";
+import { getHubData } from "../../../public/lib/getHubData";
+import getHubTheme from "../../../src/themes/fetchHubTheme";
+import { transformThemeData } from "../../../src/themes/transformThemeData";
+import { getImageUrl } from "../../../public/lib/imageOperations";
+import theme from "../../../src/themes/hubTheme";
 
 const toOffsetIso = (d: Date): string => {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -54,6 +59,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const sectorOptions = await getSectorOptions(locale);
 
+  const [hubData, hubThemeData] = await Promise.all([
+    getHubData(hubUrl, locale),
+    getHubTheme(hubUrl),
+  ]);
+
   let initialEvents: any[] = [];
   try {
     const params = new URLSearchParams(getDefaultWindowParams(hubUrl));
@@ -74,15 +84,25 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       hubUrl,
       filterChoices: { sectors: sectorOptions },
       initialEvents,
+      hubData,
+      hubThemeData,
     },
   };
 };
 
-export default function HubEventsPage({ hubs, hubUrl, filterChoices, initialEvents }: any) {
+export default function HubEventsPage({
+  hubs,
+  hubUrl,
+  filterChoices,
+  initialEvents,
+  hubData,
+  hubThemeData,
+}: any) {
   const { locale } = useContext(UserContext);
   const router = useRouter();
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const texts = useMemo(() => getTexts({ page: "hub", locale: locale }), [locale]);
+  const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
   const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members"];
   const type_names = {
@@ -93,11 +113,25 @@ export default function HubEventsPage({ hubs, hubUrl, filterChoices, initialEven
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     const tab = TYPES_BY_TAB_VALUE[newValue];
-    router.push(`/hubs/${hubUrl}#${tab}`);
+    router.push(`/hubs/${hubUrl}/browse#${tab}`);
   };
 
   return (
-    <WideLayout>
+    <WideLayout
+      title={hubData?.headline ?? undefined}
+      hideAlert
+      headerBackground={
+        customTheme ? customTheme.palette.header.background : theme.palette.background.default
+      }
+      image={hubData?.image ? getImageUrl(hubData.image) : undefined}
+      isHubPage
+      hubUrl={hubUrl}
+      customFooterImage={
+        hubData?.custom_footer_image ? getImageUrl(hubData.custom_footer_image) : undefined
+      }
+      customTheme={customTheme}
+      hasHubLandingPage={hubData?.landing_page_component ? true : false}
+    >
       <HubTabsNavigation
         TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
         tabValue={-1}

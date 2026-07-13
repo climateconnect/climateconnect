@@ -146,8 +146,10 @@ class TestEventCalendarListView(APITestCase):
         self.assertIn(self.event1.url_slug, slugs)
         self.assertNotIn(self.event2.url_slug, slugs)
 
-    def test_overlap_semantics_for_multi_day_event(self):
-        # Event starts before the window but is still ongoing inside it.
+    def test_event_starting_before_window_is_excluded(self):
+        # Events are shown only on their start_date, so an event whose
+        # start_date falls before the requested window is not returned (even
+        # if it is still ongoing inside the window).
         now = timezone.now()
         multi = Project.objects.create(
             name="Multi Day Event",
@@ -163,7 +165,7 @@ class TestEventCalendarListView(APITestCase):
         start = (now + timedelta(days=5)).isoformat()
         end = (now + timedelta(days=30)).isoformat()
         response = self.client.get(self.url, {"start_date": start, "end_date": end})
-        self.assertIn(multi.url_slug, self._slugs(response))
+        self.assertNotIn(multi.url_slug, self._slugs(response))
 
     def test_sectors_filter(self):
         sector = Sector.objects.create(
@@ -375,6 +377,19 @@ class TestEventCalendarCountsView(APITestCase):
         day2 = (self.now + timedelta(days=20)).date().isoformat()
         self.assertEqual(counts.get(day1), 1)
         self.assertNotIn(day2, counts)
+
+    def test_multi_day_event_counted_only_on_start_day(self):
+        # event2 starts now+20 and spans 3 days. It must contribute a single
+        # count=1 on its start day only; the spanned days must NOT be highlighted.
+        start = self.event2.start_date
+        response = self.client.get(self.url, {"year": start.year, "month": start.month})
+        counts = self._counts_map(response)
+        start_day = start.date().isoformat()
+        spanned_day_1 = (start + timedelta(days=1)).date().isoformat()
+        spanned_day_2 = (start + timedelta(days=2)).date().isoformat()
+        self.assertEqual(counts.get(start_day), 1)
+        self.assertNotIn(spanned_day_1, counts)
+        self.assertNotIn(spanned_day_2, counts)
 
     def test_multi_sector_event_counted_once_per_day(self):
         sector_a = Sector.objects.create(
