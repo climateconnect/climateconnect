@@ -1712,8 +1712,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Für Veranstaltung anmelden",
     },
     register_now: {
-      en: "Register now",
-      de: "Jetzt anmelden",
+      en: "Register",
+      de: "Anmelden",
     },
     booked_out: {
       en: "Booked Out",
