@@ -818,6 +818,32 @@ class OrganizationAPIView(APIView):
             status=status.HTTP_200_OK,
         )
 
+    def delete(self, request, url_slug, format=None):
+        try:
+            organization = Organization.objects.get(url_slug=str(url_slug))
+        except Organization.DoesNotExist:
+            return Response(
+                {"message": _("Organization not found:") + url_slug},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        project_count = organization.project_parent_org.count()
+        if project_count > 0:
+            return Response(
+                {
+                    "message": _(
+                        "The organisation has %(count)d project(s). Please first delete these"
+                        " projects or assign them to other organisations or users."
+                    )
+                    % {"count": project_count}
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        organization.delete()
+        return Response(
+            {"message": _("Organisation %(name)s successfully deleted.") % {"name": organization.name}},
+            status=status.HTTP_200_OK,
+        )
+
 
 class UpdateOrganizationMemberView(RetrieveUpdateDestroyAPIView):
     permission_classes = [OrganizationMemberReadWritePermission]
