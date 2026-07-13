@@ -203,8 +203,8 @@ class TestCreateEventWithCustomFields(APITestCase):
     # ── Test 1: create with 10 mixed fields ─────────────────────────────────
 
     @tag("custom_fields", "projects")
-    def test_create_event_with_ten_custom_fields(self):
-        """Spec test 1 — up to 10 fields (checkbox + option_select) are saved and returned."""
+    def test_create_event_with_15_custom_fields(self):
+        """Spec test 1 — up to 15 fields (checkbox + option_select) are saved and returned."""
         self.client.login(username="testuser_cf_create", password="testpassword")
         data = {
             **self.base_event_data,
@@ -296,6 +296,41 @@ class TestCreateEventWithCustomFields(APITestCase):
                         "label": "Checkbox 6",
                         "settings": {"description": "<p>Terms v2</p>"},
                     },
+                    {
+                        "field_type": "checkbox",
+                        "order": 10,
+                        "is_required": False,
+                        "label": "Checkbox 7",
+                        "settings": {"description": "<p>Terms v2</p>"},
+                    },
+                    {
+                        "field_type": "checkbox",
+                        "order": 11,
+                        "is_required": False,
+                        "label": "Checkbox 8",
+                        "settings": {"description": "<p>Terms v2</p>"},
+                    },
+                    {
+                        "field_type": "checkbox",
+                        "order": 12,
+                        "is_required": False,
+                        "label": "Checkbox 9",
+                        "settings": {"description": "<p>Terms v2</p>"},
+                    },
+                    {
+                        "field_type": "checkbox",
+                        "order": 13,
+                        "is_required": False,
+                        "label": "Checkbox 10",
+                        "settings": {"description": "<p>Terms v2</p>"},
+                    },
+                    {
+                        "field_type": "checkbox",
+                        "order": 14,
+                        "is_required": False,
+                        "label": "Checkbox 11",
+                        "settings": {"description": "<p>Terms v2</p>"},
+                    },
                 ],
             },
         }
@@ -308,18 +343,18 @@ class TestCreateEventWithCustomFields(APITestCase):
         fields = RegistrationField.objects.filter(registration_config=er).order_by(
             "order"
         )
-        self.assertEqual(fields.count(), 10)
+        self.assertEqual(fields.count(), 15)
         self.assertEqual(fields[0].field_type, "checkbox")
         self.assertEqual(fields[1].field_type, "option_select")
         self.assertEqual(
             RegistrationFieldOption.objects.filter(field=fields[1]).count(), 2
         )
 
-    # ── Test 2: 11th field rejected ─────────────────────────────────────────
+    # ── Test 2: 16th field rejected ─────────────────────────────────────────
 
     @tag("custom_fields", "projects")
     def test_create_event_with_eleven_fields_rejected(self):
-        """Spec test 2 — attempting to create 11 custom fields returns 400."""
+        """Spec test 2 — attempting to create 16 custom fields returns 400."""
         self.client.login(username="testuser_cf_create", password="testpassword")
         fields = [
             {
@@ -329,7 +364,7 @@ class TestCreateEventWithCustomFields(APITestCase):
                 "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>Field</p>"},
             }
-            for i in range(11)
+            for i in range(16)
         ]
         data = {
             **self.base_event_data,
@@ -760,7 +795,7 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
             RegistrationFieldOption.objects.filter(field=new_field).count(), 1
         )
 
-    # ── Max 10 field enforcement on PATCH ───────────────────────────────────
+    # ── Max 15 field enforcement on PATCH ───────────────────────────────────
 
     @tag("custom_fields", "registration_config")
     def test_patch_eleven_fields_rejected(self):
@@ -773,7 +808,7 @@ class TestEditRegistrationConfigFields(_CustomFieldsBase):
                 "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>x</p>"},
             }
-            for i in range(11)
+            for i in range(16)
         ]
         response = self.client.patch(
             self.draft_patch_url,
@@ -1955,11 +1990,11 @@ class TestInventoryField(_CustomFieldsBase):
                 "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>x</p>"},
             }
-            for i in range(10)
+            for i in range(15)
         ] + [
             {
                 "field_type": "inventory",
-                "order": 10,
+                "order": 15,
                 "label": "Inventory 1",
                 "settings": {"title": "Extra"},
                 "options": [{"title": "A", "order": 0}],
@@ -3034,12 +3069,12 @@ class TestTimeSlotField(_CustomFieldsBase):
                 "label": f"Checkbox {i + 1}",
                 "settings": {"description": "<p>Test</p>"},
             }
-            for i in range(10)
+            for i in range(15)
         ]
         fields.append(
             {
                 "field_type": "time_slot_select",
-                "order": 10,
+                "order": 15,
                 "label": "Time Slot 1",
                 "settings": {"title": "Pickup slot"},
                 "options": [],
