@@ -84,6 +84,7 @@ export type ViewRegistrationAnswersModalRegistration = {
   user_first_name: string;
   user_last_name: string;
   cancelled_at: string | null;
+  cancellation_reason?: string | null;
   field_answers: RegistrationFieldAnswer[];
 };
 
@@ -192,7 +193,13 @@ export default function ViewRegistrationAnswersModal({
         )}
         {registration.cancelled_at && (
           <Alert severity="warning" className={classes.cancelledNotice}>
-            {texts.registration_answers_cancelled_notice}
+            <Typography variant="body2">{texts.registration_answers_cancelled_notice}</Typography>
+            {registration.cancellation_reason && (
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                <strong>{texts.cancellation_reason as string}:</strong>{" "}
+                {registration.cancellation_reason}
+              </Typography>
+            )}
           </Alert>
         )}
 

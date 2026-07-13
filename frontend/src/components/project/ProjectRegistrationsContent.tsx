@@ -30,7 +30,6 @@ import {
   GridColumnMenuProps,
   GridFooterContainer,
   GridPagination,
-  GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarExport,
 } from "@mui/x-data-grid";
@@ -152,7 +151,6 @@ function RegistrationsToolbar({
           {emailGuestsLabel}
         </Button>
       )}
-      <GridToolbarColumnsButton />
       <GridToolbarExport
         csvOptions={{ fileName: csvFileName, fields: csvFields }}
         printOptions={{ hideFooter: true, hideToolbar: true, fields: printFields }}
@@ -593,21 +591,6 @@ export default function ProjectRegistrationsContent({
                     },
                   },
                   {
-                    field: "cancellation_reason",
-                    headerName: texts.cancellation_reason as string,
-                    width: 200,
-                    sortable: false,
-                    filterable: false,
-                    disableColumnMenu: true,
-                    valueGetter: (_value, row) => row.cancellation_reason ?? "",
-                    renderCell: (params) =>
-                      params.value ? (
-                        <Typography variant="body2">{params.value}</Typography>
-                      ) : (
-                        <Typography variant="body2">—</Typography>
-                      ),
-                  },
-                  {
                     // Hidden column — ISO 8601 cancellation timestamp for CSV export
                     field: "cancelled_at_iso",
                     headerName: "Cancellation date (ISO)",
@@ -665,7 +648,6 @@ export default function ProjectRegistrationsContent({
                   columnVisibilityModel: {
                     registered_at_iso: false,
                     cancelled_at_iso: false,
-                    cancellation_reason: false,
                     ...Object.fromEntries(customFieldColumnNames.map((name) => [name, false])),
                   },
                 },
@@ -700,7 +682,6 @@ export default function ProjectRegistrationsContent({
                     "registered_at_iso",
                     "cancelled_at",
                     "cancelled_at_iso",
-                    "cancellation_reason",
                     ...customFieldColumnNames,
                   ],
                   printFields: ["user_first_name", "user_last_name", ...customFieldColumnNames],
