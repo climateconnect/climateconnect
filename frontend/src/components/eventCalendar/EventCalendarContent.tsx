@@ -174,27 +174,25 @@ const buildDayGroups = (events: any[], locale: string): DayGroup[] => {
   const groups = new Map<string, DayGroup>();
 
   events.forEach((project) => {
+    // The calendar shows a multi-day event only on its start date, so we
+    // create a single group for the start day and never expand onto the
+    // days the event spans.
     const start = new Date(project.start_date);
-    const end = project.end_date ? new Date(project.end_date) : start;
-    let day = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-    const lastDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    const day = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const dayStartMs = day.getTime();
+    const key = toYyyyMmDd(day);
 
-    while (day <= lastDay) {
-      const dayStartMs = day.getTime();
-      const key = toYyyyMmDd(day);
-      if (!groups.has(key)) {
-        groups.set(key, {
-          key,
-          dayStartMs,
-          weekday: day.toLocaleDateString(locale, { weekday: "long" }),
-          dayNumber: day.toLocaleDateString(locale, { day: "numeric" }),
-          monthName: day.toLocaleDateString(locale, { month: "long" }),
-          occurrences: [],
-        });
-      }
-      groups.get(key)!.occurrences.push({ project });
-      day = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1);
+    if (!groups.has(key)) {
+      groups.set(key, {
+        key,
+        dayStartMs,
+        weekday: day.toLocaleDateString(locale, { weekday: "long" }),
+        dayNumber: day.toLocaleDateString(locale, { day: "numeric" }),
+        monthName: day.toLocaleDateString(locale, { month: "long" }),
+        occurrences: [],
+      });
     }
+    groups.get(key)!.occurrences.push({ project });
   });
 
   const sortedGroups = Array.from(groups.values()).sort((a, b) => a.dayStartMs - b.dayStartMs);
@@ -365,12 +363,11 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
     );
   };
 
-  // Only show day groups inside the selected window (selected day → +90 days).
-  // The API returns events overlapping that window (overlap semantics), so a
-  // multi-day event that started before the selected day is still included —
-  // buildDayGroups would otherwise create groups for its earlier days too.
-  // Those pre-selected-day groups are dropped here; the card itself clamps
-  // its displayed start to the rendered day.
+  // The API already returns only events whose start_date falls within the
+  // selected window (selected day → +90 days), and buildDayGroups now places
+  // each event on its single start day — so there is no multi-day expansion
+  // to drop. Keep the window guard as a safety net against timezone-boundary
+  // drift between the backend window and the local day grouping.
   const windowStartMs = selectedDay.startOf("day").valueOf();
   const windowEndMs = selectedDay.add(90, "day").endOf("day").valueOf();
   const dayGroups = buildDayGroups(events, locale).filter(

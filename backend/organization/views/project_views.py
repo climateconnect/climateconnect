@@ -11,7 +11,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Case, Prefetch, Q, When
-from datetime import datetime, timedelta
+from datetime import datetime
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
@@ -482,17 +482,16 @@ class ListEventsView(ListAPIView):
                 end_date = max_end
 
         if start_date is not None and end_date is not None:
-            # Overlap semantics: the event interval overlaps the window.
+            # Window membership: the event's start_date falls within the window.
+            # The calendar shows each event only on its start date, so an event
+            # with a start_date outside the window has no day to render on.
             queryset = queryset.filter(
-                Q(start_date__lte=end_date)
-                & (Q(end_date__isnull=True) | Q(end_date__gte=start_date))
+                Q(start_date__gte=start_date) & Q(start_date__lte=end_date)
             )
         elif start_date is not None:
             queryset = queryset.filter(start_date__gte=start_date)
         elif end_date is not None:
-            queryset = queryset.filter(
-                Q(start_date__lte=end_date) | Q(end_date__lte=end_date)
-            )
+            queryset = queryset.filter(start_date__lte=end_date)
 
         # --- Topic (sectors) filter ---
         if "sectors" in self.request.query_params:
@@ -545,8 +544,9 @@ class EventCalendarCountsView(APIView):
     the frontend groups by the browser's local day. When omitted, the
     server's timezone is used as a fallback.
 
-    Multi-day events are counted on every day they span within the month.
-    Returns a list of {"date": "YYYY-MM-DD", "count": N} objects.
+    Each event is counted on its start_date day only (multi-day events are
+    NOT counted on the days they span). Returns a list of
+    {"date": "YYYY-MM-DD", "count": N} objects.
     """
 
     permission_classes = [AllowAny]
@@ -588,8 +588,11 @@ class EventCalendarCountsView(APIView):
             project_type=ProjectTypesChoices.event,
             start_date__isnull=False,
         ).filter(
-            Q(start_date__lte=month_end)
-            & (Q(end_date__isnull=True) | Q(end_date__gte=month_start))
+            # Count each event on its start_date day only: the calendar shows
+            # a multi-day event solely on its start date, so spanned days are
+            # not highlighted.
+            Q(start_date__gte=month_start)
+            & Q(start_date__lte=month_end)
         )
 
         search = request.query_params.get("search")
@@ -616,26 +619,16 @@ class EventCalendarCountsView(APIView):
         # Deduplicate: the sector filter joins project_sector_mapping and can
         # yield multiple rows per event (matching several topics, or a topic
         # and its parent sector). Without this, multi-topic events would be
-        # counted more than once per day.
+        # counted more than once on their start day.
         queryset = queryset.distinct()
 
-        month_start_local = month_start.astimezone(tz).date()
-        month_end_local = month_end.astimezone(tz).date()
-
         counts = {}
-        one_day = timedelta(days=1)
-        for start_date, end_date in queryset.values_list("start_date", "end_date"):
-            # Convert each event's UTC timestamps into the viewer's timezone
-            # before deciding which local day(s) it belongs to.
-            start_local = start_date.astimezone(tz)
-            end_local = end_date.astimezone(tz) if end_date else start_local
-            start_day = max(start_local.date(), month_start_local)
-            last_day = min(end_local.date(), month_end_local)
-            day = start_day
-            while day <= last_day:
-                key = day.isoformat()
-                counts[key] = counts.get(key, 0) + 1
-                day += one_day
+        for start_date in queryset.values_list("start_date", flat=True):
+            # Bucket each event on its start_date, converted into the viewer's
+            # timezone so the highlighted day matches the frontend's local day
+            # grouping. Multi-day events are counted on the start day only.
+            key = start_date.astimezone(tz).date().isoformat()
+            counts[key] = counts.get(key, 0) + 1
 
         result = [
             {"date": date, "count": count} for date, count in sorted(counts.items())
