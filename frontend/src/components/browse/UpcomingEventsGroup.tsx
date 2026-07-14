@@ -1,5 +1,6 @@
-import AddIcon from "@mui/icons-material/Add";
-import { Link as MuiLink, Typography } from "@mui/material";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -78,40 +79,29 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     fontSize: 22,
     color: theme.palette.primary.main,
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(1),
+    // Align the title with the project cards, which are inset 8px by the
+    // grid item padding in ProjectPreviews (see classes.items -> padding: 8px).
+    paddingLeft: theme.spacing(1),
   },
-  viewAllLink: {
-    fontWeight: 600,
-    textDecoration: "none",
-    color: theme.palette.primary.main,
-    whiteSpace: "nowrap",
-    "&:hover": {
-      textDecoration: "underline",
-    },
+  titleIcon: {
+    fontSize: 24,
   },
   headerActions: {
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(1.5),
     flexWrap: "wrap",
+    // Mirror the title's 8px inset so the button's right edge lines up
+    // with the project cards (which are inset 8px by the grid item padding).
+    paddingRight: theme.spacing(1),
   },
-  morePill: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: theme.spacing(0.5),
-    border: `1px solid ${theme.palette.primary.main}`,
-    borderRadius: 999,
-    padding: theme.spacing(0.25, 1),
-    color: theme.palette.primary.main,
-    textDecoration: "none",
-    fontWeight: 600,
-    fontSize: 14,
+  calendarButton: {
     whiteSpace: "nowrap",
-    "&:hover": {
-      backgroundColor: theme.palette.primary.extraLight,
-    },
-  },
-  moreCount: {
-    fontWeight: 700,
+    textTransform: "none",
+    alignSelf: "center",
   },
 }));
 
@@ -138,23 +128,22 @@ export default function UpcomingEventsGroup({
       <div className={classes.inner}>
         <div className={classes.headerRow}>
           <Typography component="h2" className={classes.title}>
+            <AccessTimeIcon className={classes.titleIcon} />
             {texts.upcoming_events}
           </Typography>
           <div className={classes.headerActions}>
             {more > 0 && (
-              <MuiLink
-                className={classes.morePill}
+              <Button
+                className={classes.calendarButton}
                 href={calendarHref}
-                underline="hover"
-                aria-label={texts.more_upcoming_events}
+                endIcon={<ArrowForwardIcon />}
+                variant="contained"
+                color="primary"
+                size="small"
               >
-                <AddIcon fontSize="small" />
-                <span className={classes.moreCount}>+{more}</span>
-              </MuiLink>
+                {texts.event_calendar}
+              </Button>
             )}
-            <MuiLink className={classes.viewAllLink} href={calendarHref} underline="hover">
-              {texts.view_event_calendar}
-            </MuiLink>
           </div>
         </div>
         <ProjectPreviews
