@@ -49,7 +49,12 @@ const useStyles = makeStyles((theme) => ({
     height: 20,
     width: 20,
     marginRight: theme.spacing(0.5),
-    verticalAlign: "middle",
+    flexShrink: 0,
+  },
+  topicLabel: {
+    display: "flex",
+    alignItems: "center",
+    minWidth: 0,
   },
   layout: {
     display: "flex",
@@ -124,15 +129,17 @@ const useStyles = makeStyles((theme) => ({
   mobileFilterButton: {
     marginBottom: theme.spacing(2),
   },
-  resetButton: {
+  filterButtons: {
+    display: "flex",
+    gap: theme.spacing(1),
     alignSelf: "flex-start",
-  },
-  todayButton: {
-    alignSelf: "flex-start",
-    marginBottom: theme.spacing(1),
   },
   calendar: {
     width: "100%",
+    // The day circles can be taller/wider than their 1fr grid track (the
+    // panel is only 260px wide). Allow them to render without being clipped
+    // at the panel edges.
+    overflow: "visible",
   },
   dayCell: {
     display: "flex",
@@ -352,7 +359,12 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
     const count = dayCounts[key] || 0;
     return (
       <div className={classes.dayCell}>
-        <PickersDay {...other} day={day} outsideCurrentMonth={outsideCurrentMonth} />
+        <PickersDay
+          {...other}
+          day={day}
+          outsideCurrentMonth={outsideCurrentMonth}
+          sx={{ width: 32, height: 32, fontSize: 13, margin: 0 }}
+        />
         {!outsideCurrentMonth && count > 0 && (
           <span
             className={classes.eventDot}
@@ -427,13 +439,14 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
                 slots={{ day: DayWithEvents }}
               />
             </LocalizationProvider>
-            <Button
-              className={classes.todayButton}
-              variant="outlined"
-              onClick={() => setSelectedDay(dayjs())}
-            >
-              {texts.today ?? "Today"}
-            </Button>
+            <div className={classes.filterButtons}>
+              <Button variant="outlined" color="primary" onClick={() => setSelectedDay(dayjs())}>
+                {texts.today ?? "Today"}
+              </Button>
+              <Button variant="outlined" color="primary" onClick={handleReset}>
+                {texts.reset ?? "Reset"}
+              </Button>
+            </div>
 
             <FormControl component="fieldset" fullWidth>
               <Typography component="legend" className={classes.filterLabel}>
@@ -455,21 +468,19 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
                       />
                     }
                     label={
-                      <span>
+                      <span className={classes.topicLabel}>
                         {s.icon && (
                           <img src={getImageUrl(s.icon)} className={classes.topicIcon} alt="" />
                         )}
-                        {s.name}
+                        <Typography component="span" variant="body2" noWrap>
+                          {s.name}
+                        </Typography>
                       </span>
                     }
                   />
                 ))}
               </div>
             </FormControl>
-
-            <Button className={classes.resetButton} onClick={handleReset} color="primary">
-              {texts.reset ?? "Reset"}
-            </Button>
           </div>
         )}
 

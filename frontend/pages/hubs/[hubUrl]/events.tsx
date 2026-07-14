@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import NextCookies from "next-cookies";
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { Theme, useMediaQuery } from "@mui/material";
 import { getAllHubs } from "../../../public/lib/hubOperations";
@@ -11,8 +11,15 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../../../src/components/context/UserContext";
 import WideLayout from "../../../src/components/layouts/WideLayout";
 import HubTabsNavigation from "../../../src/components/hub/HubTabsNavigation";
+import HubHeaderImage from "../../../src/components/hub/HubHeaderImage";
+import HubContent from "../../../src/components/hub/HubContent";
 import EventCalendarContent from "../../../src/components/eventCalendar/EventCalendarContent";
-import { getHubData } from "../../../public/lib/getHubData";
+import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
+import {
+  getHubAmbassadorData,
+  getHubData,
+  getHubSupportersData,
+} from "../../../public/lib/getHubData";
 import getHubTheme from "../../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../../src/themes/transformThemeData";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -104,6 +111,26 @@ export default function HubEventsPage({
   const texts = useMemo(() => getTexts({ page: "hub", locale: locale }), [locale]);
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
+  const isLocationHub = isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub);
+  const [hubAmbassador, setHubAmbassador] = useState(null);
+  const [hubSupporters, setHubSupporters] = useState(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    (async () => {
+      const retrievedHubAmbassador = await getHubAmbassadorData(hubUrl, locale);
+      setHubAmbassador(retrievedHubAmbassador);
+      if (isLocationHub) {
+        const retrievedHubSupporters = await getHubSupportersData(hubUrl, locale);
+        setHubSupporters(retrievedHubSupporters);
+      }
+    })();
+  }, [hubUrl, locale]);
+
+  const scrollToContent = () => {
+    contentRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members"];
   const type_names = {
     projects: texts.projects,
@@ -132,6 +159,29 @@ export default function HubEventsPage({
       customTheme={customTheme}
       hasHubLandingPage={hubData?.landing_page_component ? true : false}
     >
+      {!isLocationHub && (
+        <HubHeaderImage
+          image={hubData?.image ? getImageUrl(hubData.image) : undefined}
+          source={hubData?.image_attribution}
+          isLocationHub={isLocationHub}
+        />
+      )}
+      <HubContent
+        headline={hubData?.headline}
+        hubAmbassador={hubAmbassador}
+        hubSupporters={hubSupporters}
+        quickInfo={hubData?.quick_info}
+        statBoxTitle={hubData?.stat_box_title}
+        stats={hubData?.stats}
+        scrollToSolutions={scrollToContent}
+        subHeadline={hubData?.sub_headline}
+        welcomeMessageLoggedIn={hubData?.welcome_message_logged_in}
+        welcomeMessageLoggedOut={hubData?.welcome_message_logged_out}
+        isLocationHub={isLocationHub}
+        hubData={hubData}
+        hubUrl={hubUrl}
+        image={hubData?.image ? getImageUrl(hubData.image) : undefined}
+      />
       <HubTabsNavigation
         TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
         tabValue={-1}
@@ -142,11 +192,13 @@ export default function HubEventsPage({
         allHubs={hubs}
         fromPage="hub"
       />
-      <EventCalendarContent
-        initialEvents={initialEvents}
-        filterChoices={filterChoices}
-        hubUrl={hubUrl}
-      />
+      <div ref={contentRef}>
+        <EventCalendarContent
+          initialEvents={initialEvents}
+          filterChoices={filterChoices}
+          hubUrl={hubUrl}
+        />
+      </div>
     </WideLayout>
   );
 }
