@@ -712,6 +712,13 @@ export default function ProjectRegistrationsContent({
                 "& .registration-row--cancelled": {
                   color: "text.disabled",
                 },
+                "& .MuiDataGrid-cell": {
+                  display: "flex",
+                  alignItems: "center",
+                },
+                "& .MuiDataGrid-columnSeparator": {
+                  display: "none",
+                },
               }}
             />
 
