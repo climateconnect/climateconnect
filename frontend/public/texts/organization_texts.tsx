@@ -398,20 +398,20 @@ export default function getOrganizationTexts({ organization, locale }) {
     },
     delete_organization: {
       en: "Delete organisation",
-      de: "Organisation loeschen",
+      de: "Organisation löschen",
     },
     do_you_really_want_to_delete_your_organization: {
       en: "Do you really want to delete your organisation?",
-      de: "Moechtest du deine Organisation wirklich loeschen?",
+      de: "Möchtest du deine Organisation wirklich löschen?",
     },
     deleting_organization_is_irreversible: {
       en: "This action is irreversible. All members, followers, and related data will be removed.",
       de:
-        "Diese Aktion ist unwiderruflich. Alle Mitglieder, Follower und zugehoerigen Daten werden entfernt.",
+        "Diese Aktion ist unwiderruflich. Alle Mitglieder, Follower und zugehörigen Daten werden entfernt.",
     },
     you_have_successfully_deleted_your_organization: {
       en: "You have successfully deleted your organisation.",
-      de: "Du hast deine Organisation erfolgreich geloescht.",
+      de: "Du hast deine Organisation erfolgreich gelöscht.",
     },
     server_error: {
       en: "Something went wrong. Please try again.",
