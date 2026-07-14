@@ -1,9 +1,12 @@
 import logging
+from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 
 import requests
 from celery import shared_task
 from django.conf import settings
 from django.db import IntegrityError, transaction
+from django.utils import timezone as tz
 
 from climateconnect_api.models.language import Language
 from location.utility import format_location_name
@@ -99,3 +102,113 @@ def fetch_and_create_location_translations(self, loc_id):
                 f"unknown error while saving translation for {instance.pk}/{language.id}: {e}"
             )
             continue
+
+
+def _get_period_keys_for_dt(dt):
+    """
+    Return [(period_type, period_key, period_start_dt), ...] for the given
+    datetime — one entry each for day, ISO week, and calendar month.
+    """
+    day_key = dt.strftime("%Y-%m-%d")
+    day_start = dt.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    iso_year, iso_week, _ = dt.isocalendar()
+    week_key = f"{iso_year}-W{iso_week:02d}"
+    week_start_dt = datetime.strptime(f"{iso_year}-W{iso_week:02d}-1", "%G-W%V-%u")
+    week_start_dt = week_start_dt.replace(tzinfo=timezone.utc)
+
+    month_key = dt.strftime("%Y-%m")
+    month_start = dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    return [
+        ("day", day_key, day_start),
+        ("week", week_key, week_start_dt),
+        ("month", month_key, month_start),
+    ]
+
+
+@shared_task
+def aggregate_nominatim_stats():
+    """
+    Read unprocessed NominatimRequestLog rows, compute day/week/month
+    aggregates, upsert into NominatimPeriodStats, and mark rows as processed.
+    Rows older than 7 days are cleaned up.
+
+    Scheduled to run every 10 minutes via Celery Beat.
+    """
+    from location.models import NominatimPeriodStats, NominatimRequestLog
+
+    with transaction.atomic():
+        logs = list(
+            NominatimRequestLog.objects.select_for_update(skip_locked=True)
+            .filter(processed=False)
+            .order_by("id")
+        )
+        if not logs:
+            NominatimRequestLog.objects.filter(
+                created_at__lt=tz.now() - timedelta(days=7)
+            ).delete()
+            return
+
+        max_id = logs[-1].id
+
+    now = tz.now()
+
+    period_buckets = defaultdict(
+        lambda: {"count": 0, "second_counts": defaultdict(int)}
+    )
+
+    for log in logs:
+        log_dt = log.created_at
+        if log_dt.tzinfo is None:
+            log_dt = log_dt.replace(tzinfo=timezone.utc)
+
+        second_key = log_dt.replace(microsecond=0)
+
+        for period_type, period_key, period_start in _get_period_keys_for_dt(log_dt):
+            bucket = period_buckets[(period_type, period_key)]
+            bucket["count"] += 1
+            bucket["second_counts"][second_key] += 1
+            bucket["period_start"] = period_start
+
+    for (period_type, period_key), bucket in period_buckets.items():
+        total = bucket["count"]
+        if total == 0:
+            continue
+
+        peak_per_second = (
+            max(bucket["second_counts"].values()) if bucket["second_counts"] else 1
+        )
+
+        period_start_dt = bucket["period_start"]
+        elapsed = max((now - period_start_dt).total_seconds(), 1.0)
+        avg_rate = total / elapsed
+
+        obj, created = NominatimPeriodStats.objects.get_or_create(
+            period_type=period_type,
+            period_key=period_key,
+            defaults={
+                "total_requests": total,
+                "avg_req_per_second": avg_rate,
+                "peak_req_per_second": peak_per_second,
+            },
+        )
+        if not created:
+            obj.total_requests += total
+            obj.peak_req_per_second = max(obj.peak_req_per_second, peak_per_second)
+            obj.avg_req_per_second = obj.total_requests / elapsed
+            obj.save()
+
+    NominatimRequestLog.objects.filter(id__lte=max_id, processed=False).update(
+        processed=True
+    )
+
+    deleted_count, _ = NominatimRequestLog.objects.filter(
+        created_at__lt=now - timedelta(days=7)
+    ).delete()
+    logger.info(
+        "Aggregated %d Nominatim log rows into %d period stats, cleaned up %d old rows.",
+        len(logs),
+        len(period_buckets),
+        deleted_count,
+    )
