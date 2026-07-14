@@ -622,7 +622,8 @@ export default function ProjectRegistrationsContent({
                     disableColumnMenu: true,
                     renderCell: (params) => {
                       const row = params.row as EventRegistration;
-                      const showViewIcon = (row.field_answers?.length ?? 0) > 0;
+                      const showViewIcon =
+                        (row.field_answers?.length ?? 0) > 0 || !!row.cancellation_reason;
                       const showMenu = !row.cancelled_at;
                       if (!showViewIcon && !showMenu) return null;
                       return (
