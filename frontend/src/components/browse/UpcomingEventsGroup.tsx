@@ -108,20 +108,15 @@ const useStyles = makeStyles((theme) => ({
 export default function UpcomingEventsGroup({
   events,
   hubUrl,
-  totalUpcoming,
 }: {
   events: any[];
   hubUrl?: string;
-  totalUpcoming?: number;
 }) {
   const { locale } = useContext(UserContext);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale });
 
   const calendarHref = `${getLocalePrefix(locale)}${hubUrl ? `/hubs/${hubUrl}/events` : "/events"}`;
-
-  // How many upcoming events are hidden beyond the shown highlights.
-  const more = Math.max(0, (totalUpcoming ?? 0) - events.length);
 
   return (
     <section className={classes.group} aria-label={texts.upcoming_events}>
@@ -132,18 +127,16 @@ export default function UpcomingEventsGroup({
             {texts.upcoming_events}
           </Typography>
           <div className={classes.headerActions}>
-            {more > 0 && (
-              <Button
-                className={classes.calendarButton}
-                href={calendarHref}
-                endIcon={<ArrowForwardIcon />}
-                variant="contained"
-                color="primary"
-                size="small"
-              >
-                {texts.event_calendar}
-              </Button>
-            )}
+            <Button
+              className={classes.calendarButton}
+              href={calendarHref}
+              endIcon={<ArrowForwardIcon />}
+              variant="contained"
+              color="primary"
+              size="small"
+            >
+              {texts.event_calendar}
+            </Button>
           </div>
         </div>
         <ProjectPreviews
