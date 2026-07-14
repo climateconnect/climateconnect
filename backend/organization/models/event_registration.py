@@ -246,6 +246,13 @@ class EventRegistration(models.Model):
         ),
         verbose_name="Cancelled By",
     )
+    cancellation_reason = models.TextField(
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Optional message provided by the guest when they cancelled.",
+        verbose_name="Cancellation Reason",
+    )
 
     class Meta:
         app_label = "organization"

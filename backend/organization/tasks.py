@@ -12,8 +12,10 @@ Currently includes:
 """
 
 import logging
+from datetime import timedelta
 
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from climateconnect_main.celery import app
 
@@ -201,8 +203,8 @@ def notify_admins_of_registration_change(
         change_type:   ``"registered"`` or ``"cancelled"``.
     """
     from climateconnect_api.models import Role
-    from organization.models.project import Project
     from organization.models.event_registration import EventRegistrationConfig
+    from organization.models.project import Project
     from organization.utility.email import send_admin_event_notification
 
     # ── 1. Look up project ────────────────────────────────────────────────────
@@ -298,3 +300,136 @@ def notify_admins_of_registration_change(
                 f"[AdminNotification] One or more admin notifications failed for project {project_id}"
             )
         )
+
+
+@app.task(bind=True, max_retries=3, default_retry_delay=60)
+def send_cancellation_chat_message(
+    self,
+    guest_user_id: int,
+    project_url_slug: str,
+    registration_id: int,
+    message: str,
+):
+    """Send a cancellation chat message from guest to event organizer.
+
+    The created message is tagged with origin metadata so the frontend can
+    render event-registration context in chat.
+    """
+    from chat_messages.models import Message, MessageReceiver
+    from chat_messages.utility.chat_setup import get_or_create_private_chat
+    from chat_messages.utility.notification import create_chat_message_notification
+    from climateconnect_api.utility.notification import (
+        create_email_notification,
+        create_user_notification,
+    )
+    from organization.models.project import Project
+    from organization.utility.project import get_project_admin_creators
+
+    try:
+        guest_user = User.objects.select_related("user_profile").get(id=guest_user_id)
+    except User.DoesNotExist:
+        logger.warning(
+            "[CancellationChat] Guest user %s not found; skipping",
+            guest_user_id,
+        )
+        return
+
+    try:
+        project = (
+            Project.objects.select_related("loc", "language")
+            .prefetch_related(
+                "translation_project__language",
+                "project_parent__parent_organization__language",
+                "project_parent__parent_organization__translation_org__language",
+                "project_parent__parent_user__user_profile",
+            )
+            .get(url_slug=project_url_slug)
+        )
+    except Project.DoesNotExist:
+        logger.warning(
+            "[CancellationChat] Project '%s' not found; skipping",
+            project_url_slug,
+        )
+        return
+
+    try:
+        organizers = get_project_admin_creators(project)
+        if not organizers:
+            logger.warning(
+                "[CancellationChat] No organizers found for project '%s'; skipping",
+                project_url_slug,
+            )
+            return
+
+        organizer = organizers[0]
+        if organizer.id == guest_user.id:
+            logger.info(
+                "[CancellationChat] Guest %s is organizer for project '%s'; skipping self-message",
+                guest_user.id,
+                project_url_slug,
+            )
+            return
+
+        chat = get_or_create_private_chat(
+            guest_user,
+            organizer,
+            created_by=guest_user,
+        )
+
+        # Idempotency guard: Celery retries can happen after message creation
+        # (for example when downstream notification/email delivery fails).
+        # Reuse a very recent matching origin message instead of creating duplicates.
+        recent_cutoff = timezone.now() - timedelta(minutes=10)
+        chat_message = (
+            Message.objects.filter(
+                message_participant=chat,
+                sender=guest_user,
+                origin_type="event_registration",
+                origin_id=registration_id,
+                content=message,
+                sent_at__gte=recent_cutoff,
+            )
+            .order_by("-id")
+            .first()
+        )
+
+        if chat_message is None:
+            sent_at = timezone.now()
+            chat_message = Message.objects.create(
+                message_participant=chat,
+                content=message,
+                sender=guest_user,
+                origin_type="event_registration",
+                origin_id=registration_id,
+                sent_at=sent_at,
+            )
+            chat.last_message_at = sent_at
+            chat.save(update_fields=["last_message_at"])
+
+        MessageReceiver.objects.get_or_create(receiver=organizer, message=chat_message)
+
+        notification = create_chat_message_notification(chat)
+        try:
+            create_user_notification(organizer, notification)
+        except Exception as exc:
+            logger.error(
+                "[CancellationChat] Failed to create in-app notification for organizer %s: %s",
+                organizer.id,
+                exc,
+            )
+        try:
+            create_email_notification(organizer, chat, message, guest_user, notification)
+        except Exception as exc:
+            logger.error(
+                "[CancellationChat] Failed to create email notification for organizer %s: %s",
+                organizer.id,
+                exc,
+            )
+    except Exception as exc:
+        logger.error(
+            "[CancellationChat] Failed for guest %s on project '%s': %s",
+            guest_user_id,
+            project_url_slug,
+            exc,
+        )
+        raise self.retry(exc=exc)

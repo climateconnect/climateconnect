@@ -82,6 +82,7 @@ This document defines the core system entities for Climate Connect, serving as t
   - `registered_at`: DateTimeField
   - `cancelled_at`: DateTimeField, nullable (NULL = active registration)
   - `cancelled_by`: FK → User, nullable (self-cancel vs admin-cancel distinction)
+  - `cancellation_reason`: TextField, nullable (optional guest-provided reason at self-cancellation; persists across re-registration)
 - **Relationships**:
   - FK → `User`
   - FK → `EventRegistrationConfig`
@@ -185,7 +186,7 @@ This document defines the core system entities for Climate Connect, serving as t
 
 ### Message
 - **Definition**: A single text unit in a conversation.
-- **Properties**: `content`, `timestamp`.
+  - **Properties**: `content`, `sent_at`, `origin_type` (context tag: `""` / `event_registration` / `project` / `organization` / `hub`; server-set), `origin_id` (PK of origin entity, nullable).
 - **Relationships**:
   - Sent by `User`.
   - Belongs to `MessageParticipants`.

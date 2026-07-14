@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import { Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Cookies from "universal-cookie";
@@ -54,10 +54,18 @@ export default function CancelRegistrationModal({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+    setError(null);
+    setMessage("");
+  }, [open]);
 
   const handleClose = () => {
     if (loading) return;
     setError(null);
+    setMessage("");
     onClose();
   };
 
@@ -66,9 +74,11 @@ export default function CancelRegistrationModal({
     setError(null);
     try {
       const token = new Cookies().get("auth_token");
+      const trimmedMessage = message.trim();
       await apiRequest({
         method: "delete",
         url: `/api/projects/${project.url_slug}/registrations/`,
+        payload: trimmedMessage ? { message: trimmedMessage } : {},
         token,
         locale,
       });
@@ -97,6 +107,19 @@ export default function CancelRegistrationModal({
     >
       <Box className={classes.content}>
         <Typography variant="body1">{confirmMessage}</Typography>
+
+        <TextField
+          fullWidth
+          multiline
+          rows={3}
+          margin="normal"
+          label={texts.cancellation_message_to_organizer_label as string}
+          placeholder={texts.cancellation_message_to_organizer_placeholder as string}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          inputProps={{ maxLength: 1000 }}
+          disabled={loading}
+        />
 
         {error && (
           <Typography variant="body2" className={classes.errorText}>

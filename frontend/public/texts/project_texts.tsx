@@ -1907,6 +1907,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Are you sure you want to cancel your registration for {event}?",
       de: "Bist du sicher, dass du deine Anmeldung für {event} stornieren möchtest?",
     },
+    cancellation_message_to_organizer_label: {
+      en: "Message to organizer (optional)",
+      de: "Nachricht an den Veranstalter (optional)",
+    },
+    cancellation_message_to_organizer_placeholder: {
+      en: "Tell the organizer why you're cancelling...",
+      de: "Erkläre dem Veranstalter, warum du absagst...",
+    },
+    cancellation_reason: {
+      en: "Cancellation reason",
+      de: "Stornierungsgrund",
+    },
     you_attended_this_event: {
       en: "You attended this event",
       de: "Du hast an dieser Veranstaltung teilgenommen",

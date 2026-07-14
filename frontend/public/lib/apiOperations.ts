@@ -24,9 +24,12 @@ export const apiRequest = async <T = any>(args: Args) => {
     Object.assign(headers, getLocaleHeader(locale));
   }
   const config: AxiosRequestConfig = tokenConfig(token, headers);
+  const lowerMethod = method.toLowerCase();
 
   const requestPromise: Promise<AxiosResponse<T>> = payload
-    ? axios[method](process.env.API_URL + url, payload, config)
+    ? lowerMethod === "delete"
+      ? axios.delete(process.env.API_URL + url, { ...config, data: payload })
+      : axios[method](process.env.API_URL + url, payload, config)
     : axios[method](process.env.API_URL + url, config);
 
   // Handle promise result wherever this method is called, either on a try catch block or with .then | .catch methods.
