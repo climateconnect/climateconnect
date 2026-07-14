@@ -128,10 +128,10 @@ export default function LocationSearchBar({
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
-        // Fire-and-forget: count this Nominatim request for rate monitoring.
-        // The call is intentionally not awaited so it never blocks the UX.
-        apiRequest({ method: "post", url: "/api/nominatim_request_count/" }).catch(() => {});
         const response = await axios.get(url, { headers: getLocaleHeader(locale) });
+        // Fire-and-forget: count this Nominatim request for rate monitoring.
+        // Placed after the Nominatim call so we only track successful API usage.
+        apiRequest({ method: "post", url: "/api/nominatim_request_count/" }).catch(() => {});
         const bannedClasses = [
           "tourism",
           "railway",
