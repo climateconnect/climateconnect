@@ -146,8 +146,15 @@ export default function Message({ message, classes, isPrivateChat }) {
         <MessageContent content={message.content} received={received} />
         {originContext && message.origin_type === "event_registration" && (
           <Box className={ownClasses.originContext}>
-            <EventIcon fontSize="inherit" />
-            <Typography variant="caption" className={ownClasses.originContextText}>
+            <EventIcon
+              fontSize="inherit"
+              sx={(theme) => ({ color: received ? "inherit" : theme.palette.text.primary })}
+            />
+            <Typography
+              variant="caption"
+              className={ownClasses.originContextText}
+              sx={(theme) => ({ color: received ? "inherit" : theme.palette.text.primary })}
+            >
               {originParts[0]}
               <Link
                 href={`${getLocalePrefix(locale)}/projects/${originContext.event_url_slug}`}
