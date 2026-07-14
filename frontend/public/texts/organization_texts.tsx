@@ -396,5 +396,26 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: `Because you shared your organisation in ${org_lang_name}, you can only edit the text in ${org_lang_name} here. If you want to change the text in other languages click on "Check Translations" below.`,
       de: `Weil du deine Organisation auf ${org_lang_name} geteilt hast, kannst du hier den Text nur auf ${org_lang_name} bearbeiten. Wenn Du die anderen Sprachen bearbeiten möchtest, klicke auf "Übersetzungen überprüfen" weiter unten.`,
     },
+    delete_organization: {
+      en: "Delete organisation",
+      de: "Organisation loeschen",
+    },
+    do_you_really_want_to_delete_your_organization: {
+      en: "Do you really want to delete your organisation?",
+      de: "Moechtest du deine Organisation wirklich loeschen?",
+    },
+    deleting_organization_is_irreversible: {
+      en: "This action is irreversible. All members, followers, and related data will be removed.",
+      de:
+        "Diese Aktion ist unwiderruflich. Alle Mitglieder, Follower und zugehoerigen Daten werden entfernt.",
+    },
+    you_have_successfully_deleted_your_organization: {
+      en: "You have successfully deleted your organisation.",
+      de: "Du hast deine Organisation erfolgreich geloescht.",
+    },
+    server_error: {
+      en: "Something went wrong. Please try again.",
+      de: "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    },
   };
 }
