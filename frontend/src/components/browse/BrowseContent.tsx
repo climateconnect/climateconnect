@@ -163,6 +163,7 @@ export default function BrowseContent({
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const isLargeScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.up("lg"));
 
   const type_names = {
     projects: texts.projects,
@@ -175,14 +176,18 @@ export default function BrowseContent({
   const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
   const [state, setState] = useState(initialState);
 
-  // Curate up to 4 upcoming events from the existing ranked grid
-  // (no separate API call). They are rendered as a highlighted
-  // "Upcoming events" group at the top; the rest of the grid
-  // excludes them so they are not shown twice.
+  // Curate upcoming events from the existing ranked grid (no separate API
+  // call). They are rendered as a highlighted "Upcoming events" group at the
+  // top; the rest of the grid excludes them so they are not shown twice.
+  // Limit to a single row per breakpoint, matching the main project grid's
+  // column count so the group never wraps into a broken, partly-empty second
+  // row: lg+ = 4 columns, md = 3, sm = 2 (horizontal), and on very narrow
+  // screens (xs) 2 events render as two stacked rows at one column.
+  const upcomingEventLimit = isLargeScreen ? 4 : isNarrowScreen ? 2 : 3;
   const isEventsEnabled = isEnabled("EVENT_CALENDAR_FEATURE");
-  const { highlights, remaining, total: totalUpcoming } = useMemo(
-    () => getUpcomingEventHighlights(state.items.projects),
-    [state.items.projects]
+  const { highlights, remaining } = useMemo(
+    () => getUpcomingEventHighlights(state.items.projects, upcomingEventLimit),
+    [state.items.projects, upcomingEventLimit]
   );
 
   const locationInputRefs = {
@@ -582,11 +587,7 @@ export default function BrowseContent({
               </div>
             )}
             {isEventsEnabled && highlights.length > 0 && (
-              <UpcomingEventsGroup
-                events={highlights}
-                hubUrl={hubUrl}
-                totalUpcoming={totalUpcoming}
-              />
+              <UpcomingEventsGroup events={highlights} hubUrl={hubUrl} />
             )}
             <ProjectPreviews
               hasMore={state.hasMore.projects}
