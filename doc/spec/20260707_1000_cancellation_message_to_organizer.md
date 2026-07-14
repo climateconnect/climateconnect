@@ -1,7 +1,7 @@
 # Allow User to Provide a Message When Canceling an Event Registration
 
 **Date**: 2026-07-07
-**Status**: DRAFT
+**Status**: DRAFT — implemented on branch `canceling-message-for-an-event` with deviations (see *Implementation Decisions & Deviations*)
 **Type**: Backend + Frontend — new feature
 **GitHub Issue**: [#2102](https://github.com/climateconnect/climateconnect/issues/2102)
 
@@ -56,8 +56,9 @@ harder for organisers to triage messages.
    the DELETE request body.
 6. **Frontend**: Render a context banner in the chat view when a message has
    `origin_type = "event_registration"`.
-7. **Frontend**: Add a `Cancellation reason` column to the organiser's guest list DataGrid and include it
-   in CSV export.
+   7. **Frontend**: Include `cancellation_reason` in the organiser's guest list CSV export (via a hidden
+    DataGrid column) and surface it in the per-registration detail (`ViewRegistrationAnswersModal`). No
+    *visible* grid column is added — see *Implementation Decisions & Deviations*.
 
 ### Out of scope
 
@@ -267,12 +268,17 @@ banner slot is left empty (no rendering, no crash). These origin types are reser
 
 ### AC-6: Frontend — Organiser guest list
 
-**AC-6.1** `ProjectRegistrationsContent` DataGrid adds a `Cancellation reason` column:
-- `field: "cancellation_reason"`, `width: 200`, `sortable: false`, `filterable: false`.
-- Hidden by default (`columnVisibilityModel` initial value sets it to `false`); toggled via the DataGrid
-  column-visibility panel.
-- `valueGetter`: returns `row.cancellation_reason ?? ""` (renders `—` via MUI DataGrid default empty
-  cell rendering, or an explicit `renderCell` that returns `—` for null/empty).
+**AC-6.1** The organiser's guest list does **not** get a *visible* `Cancellation reason` DataGrid
+column. Instead the reason is carried by a **hidden** `cancellation_reason` column that exists purely to
+feed the CSV export:
+- `field: "cancellation_reason"`, `width: 0`, `sortable: false`, `filterable: false`,
+  `disableColumnMenu: true`.
+- Hidden by default (`columnVisibilityModel` initial value sets `cancellation_reason` to `false`).
+- `valueGetter`: returns `row.cancellation_reason ?? ""`. Null/empty reasons render as an empty cell
+  (no `—` placeholder) — the value is only meaningful in the CSV export and the detail modal (AC-6.5).
+- The eye/"view answers" icon in the actions column is shown whenever a registration has a
+  `cancellation_reason` (in addition to having custom-field answers), so organisers can open the detail
+  for cancelled registrations that carry a reason.
 
 **AC-6.2** CSV export includes `cancellation_reason`. The exported column header uses the i18n key from
 AC-6.4. An empty / null reason exports as an empty string (not `"null"` or `"undefined"`).
@@ -284,6 +290,34 @@ AC-6.4. An empty / null reason exports as an empty string (not `"null"` or `"und
 | Key | English | German |
 |-----|---------|--------|
 | `cancellation_reason` | Cancellation reason | Stornierungsgrund |
+
+**AC-6.5** The per-registration detail modal (`ViewRegistrationAnswersModal`) surfaces the reason for
+cancelled registrations. When `registration.cancelled_at` is set and `registration.cancellation_reason`
+is present, the cancelled-alert shows the reason beneath the existing notice, using the `cancellation_reason`
+i18n key as a label (see AC-6.4). This is the primary place an organiser reads *why* a guest cancelled;
+the hidden grid column (AC-6.1) only exists to support CSV export. The `ViewRegistrationAnswersModal`
+registration type gains an optional `cancellation_reason: string | null` field.
+
+---
+
+## Implementation Decisions & Deviations
+
+This section records decisions made during implementation that differ from the original acceptance
+criteria, for traceability. Specs are working documents; these deviations were validated manually.
+
+- **No visible grid column for the cancellation reason (deviation from original AC-6.1).** The original
+  spec described a visible `Cancellation reason` DataGrid column at `width: 200` that could be toggled via
+  the column-visibility panel and rendered `—` for empty values. During implementation it was decided the
+  reason should not be shown inline in the grid. The final behaviour:
+  1. A **hidden** `cancellation_reason` column (`width: 0`) exists only to feed the CSV export.
+  2. The reason is shown to organisers in the **per-registration detail** (`ViewRegistrationAnswersModal`,
+     AC-6.5) when a cancelled registration carries one.
+  This keeps the guest list compact while still making the reason available both interactively and via
+  export.
+
+- Additional review findings (Celery-retry notification idempotency, `MessageSerializer` read-only
+  origin fields, API/domain documentation updates) are tracked separately and discussed after this
+  implementation pass.
 
 ---
 
