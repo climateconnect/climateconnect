@@ -1,35 +1,65 @@
-import concurrent.futures
-import time
-from datetime import datetime, timezone
-from unittest.mock import patch
+from datetime import datetime, timedelta, timezone
+import calendar
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone as tz
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from location.location_views import (
-    _get_current_period_keys,
-    _increment_nominatim_counters,
-)
+from location.tasks import _get_period_keys_for_dt, aggregate_nominatim_stats
 from location.models import NominatimPeriodStats, NominatimRequestLog
 
 User = get_user_model()
 
 
-class TestIncrementNominatimCounters(TestCase):
-    """Tests for the _increment_nominatim_counters() function."""
+def _minute_key(dt):
+    ts = calendar.timegm(dt.timetuple())
+    return ts // 60
+
+
+class TestGetPeriodKeysForDt(TestCase):
+    """Tests for the _get_period_keys_for_dt() helper."""
+
+    def test_iso_year_boundary_dec_29(self):
+        dt = datetime(2025, 12, 29, 12, 0, 0, tzinfo=timezone.utc)
+        periods = _get_period_keys_for_dt(dt)
+        week_entry = [p for p in periods if p[0] == "week"][0]
+
+        self.assertEqual(week_entry[1], "2026-W01")
+
+    def test_returns_day_week_month(self):
+        dt = tz.now()
+        periods = _get_period_keys_for_dt(dt)
+
+        period_types = [p[0] for p in periods]
+        self.assertEqual(period_types, ["day", "week", "month"])
+
+    def test_period_key_formats(self):
+        dt = datetime(2026, 6, 11, 14, 30, 0, tzinfo=timezone.utc)
+        periods = _get_period_keys_for_dt(dt)
+        by_type = {p[0]: p[1] for p in periods}
+
+        self.assertEqual(by_type["day"], "2026-06-11")
+        self.assertEqual(by_type["week"], "2026-W24")
+        self.assertEqual(by_type["month"], "2026-06")
+
+
+class TestAggregateNominatimStats(TestCase):
+    """Tests for the aggregate_nominatim_stats Celery task."""
 
     def setUp(self):
         NominatimPeriodStats.objects.all().delete()
         NominatimRequestLog.objects.all().delete()
 
     def test_single_request_creates_all_period_rows(self):
-        _increment_nominatim_counters()
+        NominatimRequestLog.objects.create(minute_key=_minute_key(tz.now()))
 
-        now = int(time.time())
-        periods = _get_current_period_keys(now)
+        aggregate_nominatim_stats()
+
+        now = tz.now()
+        periods = _get_period_keys_for_dt(now)
 
         for period_type, period_key, _ in periods:
             stats = NominatimPeriodStats.objects.get(
@@ -37,64 +67,103 @@ class TestIncrementNominatimCounters(TestCase):
             )
             self.assertEqual(stats.total_requests, 1)
             self.assertGreater(stats.avg_req_per_second, 0)
-            self.assertAlmostEqual(stats.peak_req_per_second, 1 / 60, places=4)
+            self.assertEqual(stats.peak_req_per_second, 1)
 
-    def test_60_requests_in_one_minute(self):
+    def test_60_requests_in_same_second(self):
+        now = tz.now()
+        mk = _minute_key(now)
         for _ in range(60):
-            _increment_nominatim_counters()
+            NominatimRequestLog.objects.create(created_at=now, minute_key=mk)
 
-        now = int(time.time())
-        periods = _get_current_period_keys(now)
+        aggregate_nominatim_stats()
+
+        periods = _get_period_keys_for_dt(now)
 
         for period_type, period_key, _ in periods:
             stats = NominatimPeriodStats.objects.get(
                 period_type=period_type, period_key=period_key
             )
             self.assertEqual(stats.total_requests, 60)
-            self.assertAlmostEqual(stats.peak_req_per_second, 1.0, places=4)
+            self.assertEqual(stats.peak_req_per_second, 60)
 
-    def test_requests_span_two_minutes_peak_preserved(self):
-        fixed_now = int(time.time())
-        fixed_minute_key = fixed_now // 60
+    def test_requests_across_seconds_peak_is_max(self):
+        base = tz.now().replace(microsecond=0)
+        second1 = base
+        second2 = base + timedelta(seconds=1)
+        mk = _minute_key(base)
 
-        with patch("location.location_views.time") as mock_time:
-            mock_time.time.return_value = fixed_minute_key * 60 + 30
-            for _ in range(30):
-                _increment_nominatim_counters()
+        for _ in range(30):
+            NominatimRequestLog.objects.create(created_at=second1, minute_key=mk)
+        for _ in range(10):
+            NominatimRequestLog.objects.create(created_at=second2, minute_key=mk)
 
-            mock_time.time.return_value = (fixed_minute_key + 1) * 60 + 5
-            for _ in range(10):
-                _increment_nominatim_counters()
+        aggregate_nominatim_stats()
 
-        periods = _get_current_period_keys(fixed_now)
+        periods = _get_period_keys_for_dt(base)
         for period_type, period_key, _ in periods:
             stats = NominatimPeriodStats.objects.get(
                 period_type=period_type, period_key=period_key
             )
             self.assertEqual(stats.total_requests, 40)
-            self.assertAlmostEqual(stats.peak_req_per_second, 0.5, places=4)
+            self.assertEqual(stats.peak_req_per_second, 30)
 
-    def test_old_minute_buckets_deleted_on_request(self):
-        now = int(time.time())
-        yesterday_bucket = (now // 86400 - 1) * 24 * 60 + 720
-        NominatimRequestLog.objects.create(bucket_key=yesterday_bucket, count=5)
+    def test_log_rows_marked_processed_after_aggregation(self):
+        now = tz.now()
+        mk = _minute_key(now)
+        NominatimRequestLog.objects.create(minute_key=mk)
+        NominatimRequestLog.objects.create(minute_key=mk)
 
-        _increment_nominatim_counters()
+        aggregate_nominatim_stats()
 
-        self.assertFalse(
-            NominatimRequestLog.objects.filter(bucket_key=yesterday_bucket).exists()
+        self.assertEqual(NominatimRequestLog.objects.count(), 2)
+        self.assertEqual(NominatimRequestLog.objects.filter(processed=True).count(), 2)
+
+    def test_only_unprocessed_rows_aggregated(self):
+        now = tz.now()
+        mk = _minute_key(now)
+        NominatimRequestLog.objects.create(
+            created_at=now, processed=True, minute_key=mk
         )
-        today_bucket = now // 60
+        NominatimRequestLog.objects.create(
+            created_at=now, processed=False, minute_key=mk
+        )
+
+        aggregate_nominatim_stats()
+
+        periods = _get_period_keys_for_dt(now)
+        for period_type, period_key, _ in periods:
+            stats = NominatimPeriodStats.objects.get(
+                period_type=period_type, period_key=period_key
+            )
+            self.assertEqual(stats.total_requests, 1)
+
+    def test_old_rows_cleaned_up_after_7_days(self):
+        now = tz.now()
+        old_dt = now - timedelta(days=8)
+        NominatimRequestLog.objects.create(
+            created_at=old_dt, processed=True, minute_key=_minute_key(old_dt)
+        )
+        NominatimRequestLog.objects.create(created_at=now, minute_key=_minute_key(now))
+
+        aggregate_nominatim_stats()
+
+        self.assertEqual(NominatimRequestLog.objects.count(), 1)
         self.assertTrue(
-            NominatimRequestLog.objects.filter(bucket_key=today_bucket).exists()
+            NominatimRequestLog.objects.filter(created_at=now, processed=True).exists()
         )
+
+    def test_empty_log_does_nothing(self):
+        aggregate_nominatim_stats()
+
+        self.assertEqual(NominatimPeriodStats.objects.count(), 0)
 
     def test_new_iso_week_creates_new_row(self):
-        fixed_ts = int(datetime(2026, 6, 15, 12, 0, 0, tzinfo=timezone.utc).timestamp())
+        fixed_dt = datetime(2026, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
+        NominatimRequestLog.objects.create(
+            created_at=fixed_dt, minute_key=_minute_key(fixed_dt)
+        )
 
-        with patch("location.location_views.time") as mock_time:
-            mock_time.time.return_value = fixed_ts
-            _increment_nominatim_counters()
+        aggregate_nominatim_stats()
 
         stats = NominatimPeriodStats.objects.get(
             period_type="week", period_key="2026-W25"
@@ -102,80 +171,37 @@ class TestIncrementNominatimCounters(TestCase):
         self.assertEqual(stats.total_requests, 1)
 
     def test_first_of_month_creates_new_row(self):
-        fixed_ts = int(datetime(2026, 7, 1, 12, 0, 0, tzinfo=timezone.utc).timestamp())
+        fixed_dt = datetime(2026, 7, 1, 12, 0, 0, tzinfo=timezone.utc)
+        NominatimRequestLog.objects.create(
+            created_at=fixed_dt, minute_key=_minute_key(fixed_dt)
+        )
 
-        with patch("location.location_views.time") as mock_time:
-            mock_time.time.return_value = fixed_ts
-            _increment_nominatim_counters()
+        aggregate_nominatim_stats()
 
         stats = NominatimPeriodStats.objects.get(
             period_type="month", period_key="2026-07"
         )
         self.assertEqual(stats.total_requests, 1)
 
+    def test_incremental_aggregation(self):
+        now = tz.now()
+        mk = _minute_key(now)
+        for _ in range(3):
+            NominatimRequestLog.objects.create(created_at=now, minute_key=mk)
 
-class TestConcurrentIncrements(TransactionTestCase):
-    """
-    Concurrency proof: N concurrent tracked requests produce exactly N total_requests.
+        aggregate_nominatim_stats()
 
-    Uses TransactionTestCase because ThreadPoolExecutor spawns threads that use
-    separate DB connections — the outer TestCase transaction cannot cover them.
-    """
+        for _ in range(2):
+            NominatimRequestLog.objects.create(created_at=now, minute_key=mk)
 
-    def setUp(self):
-        NominatimPeriodStats.objects.all().delete()
-        NominatimRequestLog.objects.all().delete()
+        aggregate_nominatim_stats()
 
-    def test_concurrent_increments_zero_lost(self):
-        N = 100
-
-        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as pool:
-            futures = [pool.submit(_increment_nominatim_counters) for _ in range(N)]
-            concurrent.futures.wait(futures)
-
-        now = int(time.time())
-        periods = _get_current_period_keys(now)
-
+        periods = _get_period_keys_for_dt(now)
         for period_type, period_key, _ in periods:
             stats = NominatimPeriodStats.objects.get(
                 period_type=period_type, period_key=period_key
             )
-            self.assertEqual(
-                stats.total_requests,
-                N,
-                f"{period_type}: expected {N}, got {stats.total_requests}",
-            )
-
-
-class TestGetCurrentPeriodKeys(TestCase):
-    """Tests for the _get_current_period_keys() helper."""
-
-    def test_iso_year_boundary_dec_29(self):
-        dt = datetime(2025, 12, 29, 12, 0, 0, tzinfo=timezone.utc)
-        epoch = int(dt.timestamp())
-
-        periods = _get_current_period_keys(epoch)
-        week_entry = [p for p in periods if p[0] == "week"][0]
-
-        self.assertEqual(week_entry[1], "2026-W01")
-
-    def test_returns_day_week_month(self):
-        now = int(time.time())
-        periods = _get_current_period_keys(now)
-
-        period_types = [p[0] for p in periods]
-        self.assertEqual(period_types, ["day", "week", "month"])
-
-    def test_period_key_formats(self):
-        dt = datetime(2026, 6, 11, 14, 30, 0, tzinfo=timezone.utc)
-        epoch = int(dt.timestamp())
-
-        periods = _get_current_period_keys(epoch)
-        by_type = {p[0]: p[1] for p in periods}
-
-        self.assertEqual(by_type["day"], "2026-06-11")
-        self.assertEqual(by_type["week"], "2026-W24")
-        self.assertEqual(by_type["month"], "2026-06")
+            self.assertEqual(stats.total_requests, 5)
 
 
 class TestNominatimStatsView(APITestCase):
@@ -200,7 +226,7 @@ class TestNominatimStatsView(APITestCase):
                 period_key=key,
                 total_requests=100 + i,
                 avg_req_per_second=0.01 + i * 0.001,
-                peak_req_per_second=0.1 + i * 0.01,
+                peak_req_per_second=5 + i,
             )
         for i in range(4):
             NominatimPeriodStats.objects.create(
@@ -208,14 +234,14 @@ class TestNominatimStatsView(APITestCase):
                 period_key=f"2026-W{24 - i:02d}",
                 total_requests=700 + i,
                 avg_req_per_second=0.008 + i * 0.001,
-                peak_req_per_second=0.2 + i * 0.01,
+                peak_req_per_second=10 + i,
             )
         NominatimPeriodStats.objects.create(
             period_type="month",
             period_key="2026-06",
             total_requests=5000,
             avg_req_per_second=0.005,
-            peak_req_per_second=0.3,
+            peak_req_per_second=15,
         )
 
     def test_no_params_returns_day_week_month(self):
@@ -295,16 +321,8 @@ class TestTrackNominatimRequestView(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_post_creates_period_stats(self):
+    def test_post_creates_log_row(self):
         url = reverse("location:track-nominatim-request")
         self.client.post(url)
 
-        now = int(time.time())
-        periods = _get_current_period_keys(now)
-
-        for period_type, period_key, _ in periods:
-            self.assertTrue(
-                NominatimPeriodStats.objects.filter(
-                    period_type=period_type, period_key=period_key
-                ).exists()
-            )
+        self.assertEqual(NominatimRequestLog.objects.count(), 1)
