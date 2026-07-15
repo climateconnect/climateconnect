@@ -8,7 +8,7 @@ Companion to `doc/spec/20260701_1205_refactor_frontend_hub_context.md`.
 - **Start additive.** Phase 1–3 add new code (context, utilities, component) without changing any existing behavior, so they carry near-zero regression risk.
 - **Prove it, then spread it.** After the additive foundation, migrate a *small* showcase set of links, manual-test it thoroughly, then roll the rest out in batches.
 - **Tests + lint + format gate every phase.** Frontend: `yarn lint`, `yarn format`, `yarn test` (Jest), and a production build (`yarn build`) to confirm SSR still compiles. There are **no automated e2e tests**, so each "important phase" below has a manual e2e checklist that must be walked before merge.
-- **Hub migration before locale migration.** Per the spec, the ~30 `?hub=` sites are migrated before the ~200 `getLocalePrefix` sites, because the link-component pattern is established by the hub work.
+- **Boy-scout rule from Phase 3 onward.** Once the showcase (Phase 3) has merged, the new machinery is the default for *all* link-building: any **new** feature must use `<HubLink>`/`withHub`, and any **old** link touched incidentally during other work should be migrated to it on the spot. This keeps the migration moving without needing a dedicated pass, and prevents new `?hub=`/`getLocalePrefix` concatenations from creeping back in. (Phases 4–7 remain the structured batches for the bulk of the existing ~30 / ~200 sites.)
 
 ## Phase overview
 
@@ -57,10 +57,11 @@ Companion to `doc/spec/20260701_1205_refactor_frontend_hub_context.md`.
 **Automated tests:** Resolver unit tests (from `?hub=`, from `/hubs/<slug>`, from sub-hub `/hubs/<slug>/<subHub>/browse` → top-level slug); hubs-list fetched once.
 
 **Manual e2e checklist (walk before merge):**
-- [ ] Deep-link a hub page directly (e.g. `/de/hubs/erlangen`) — theming renders correctly on first load (SSR), no flash to unstyled/global.
-- [ ] Deep-link a project with `?hub=erlangen` — hub theming present.
-- [ ] Browse the site normally; visual/behavior identical to before.
-- [ ] Switch locale on a hub page; hub context preserved.
+- [ ] Browse the site normally; visual/behavior identical to before (regression smoke test — the shim returns the same slug the old code computed).
+- [ ] On a hub page, `UserContext.hubUrl` still resolves to the correct slug (devtools / a temporary log), confirming the shim matches the pre-refactor value from both `?hub=` and `/hubs/<slug>` URLs.
+- [ ] Hub-dependent UI that reads the shared hubs list (e.g. the hub switcher) still populates — the server-fetched list is available.
+
+> Note: theming is **not** yet driven by `HubContext` in this phase — each page still fetches `getHubTheme` itself. Theming/SSR-render checks move to Phase 3, where `withHub`/`HubLink` first build hub-scoped URLs. Phase 1 is effectively a regression smoke test for the shim + resolver + shared hubs list.
 
 ---
 
