@@ -8,36 +8,36 @@ Companion to `doc/spec/20260701_1205_refactor_frontend_hub_context.md`.
 - **Start additive.** Phase 1–3 add new code (context, utilities, component) without changing any existing behavior, so they carry near-zero regression risk.
 - **Prove it, then spread it.** After the additive foundation, migrate a *small* showcase set of links, manual-test it thoroughly, then roll the rest out in batches.
 - **Tests + lint + format gate every phase.** Frontend: `yarn lint`, `yarn format`, `yarn test` (Jest), and a production build (`yarn build`) to confirm SSR still compiles. There are **no automated e2e tests**, so each "important phase" below has a manual e2e checklist that must be walked before merge.
-- **Boy-scout rule from Phase 3 onward.** Once the showcase (Phase 3) has merged, the new machinery is the default for *all* link-building: any **new** feature must use `<HubLink>`/`withHub`, and any **old** link touched incidentally during other work should be migrated to it on the spot. This keeps the migration moving without needing a dedicated pass, and prevents new `?hub=`/`getLocalePrefix` concatenations from creeping back in. (Phases 4–7 remain the structured batches for the bulk of the existing ~30 / ~200 sites.)
+- **Boy-scout rule from Phase 3 onward.** Once the showcase (Phase 3) has merged, the new machinery is the default for *all* link-building: any **new** feature must use `<AppLink>`/`appHref`, and any **old** link touched incidentally during other work should be migrated to it on the spot. This keeps the migration moving without needing a dedicated pass, and prevents new `?hub=`/`getLocalePrefix` concatenations from creeping back in. (Phases 4–7 remain the structured batches for the bulk of the existing ~30 / ~200 sites.)
 
 ## Phase overview
 
 | Phase | What | Behavior change | Risk | Manual test |
 |------|------|-----------------|------|-------------|
-| 0 | Scaffolding: URI utility + `withHub` + keep `getLocalePrefix` | None (additive) | None | No (unit only) |
+| 0 | Scaffolding: URI utility + `appHref` + keep `getLocalePrefix` | None (additive) | None | No (unit only) |
 | 1 | `HubProvider` + `HubContext` (server-fetched hubs list, `UserContext.hubUrl` shim) | None (shim keeps old API working) | Low | Yes |
-| 2 | `<HubLink>` component (unused for now) | None (additive) | None | No (unit only) |
+| 2 | `<AppLink>` component (unused for now) | None (additive) | None | No (unit only) |
 | 3 | **Showcase:** migrate a handful of representative links | Yes (links now use new machinery) | Medium | **Yes — primary manual gate** |
 | 4 | Batch A — hub landing / browse pages | Yes | Medium | Yes |
 | 5 | Batch B — project / organization / profile cross-entity links (Category A) | Yes | Medium | Yes |
 | 6 | Batch C — global nav / footer / settings / dashboard (Category B, `leaveHub`) | Yes | Medium | Yes |
-| 7 | Batch D — hub switcher / `HubsDropDown` (Category C, no `HubLink`) | Yes | Low–Med | Yes |
+| 7 | Batch D — hub switcher / `HubsDropDown` (Category C, no `AppLink`) | Yes | Low–Med | Yes |
 | 8 | Cleanup: remove shim + `UserContext.hubUrl`, drop per-page `getAllHubs` calls | Yes (deletes legacy paths) | Low | Yes |
 
 ---
 
-## Phase 0 — URI utility + `withHub` (additive, zero risk)
+## Phase 0 — URI utility + `appHref` (additive, zero risk)
 
 **Objective:** Land the shared link-building primitives with full unit coverage. Nothing consumes them yet.
 
 **Changes**
 - New `appendQueryParam` / `withQuery(href, params)` on `URL` + `URLSearchParams` in `public/lib/urlOperations.ts` (or `public/lib/uriOperations.ts`).
-- New `withHub(href, { leaveHub, hubUrl, locale })` next to `getLocalePrefix`. It must: strip optional locale prefix before the hub-in-path check; skip `?hub=` when (a) `leaveHub`, (b) no active hub, (c) destination is a hub route (`/hubs/...`), or (d) `?hub=` already present; join with `&` when a query exists; place params before `#`; URL-encode the slug.
+- New `appHref(href, { leaveHub, hubUrl, locale })` next to `getLocalePrefix`. It must: strip optional locale prefix before the hub-in-path check; skip `?hub=` when (a) `leaveHub`, (b) no active hub, (c) destination is a hub route (`/hubs/...`), or (d) `?hub=` already present; join with `&` when a query exists; place params before `#`; URL-encode the slug.
 - `getLocalePrefix` stays unchanged (server-side use).
 
 **Risk:** None — no call sites yet.
 
-**Automated tests:** Unit tests for the URI utility and `withHub` covering: locale prefix on/off, `&` join, anchor preservation (`#` after query), already-present `?hub=`, hub-route skip (with and without `/de` prefix), absolute-URL passthrough, encoding.
+**Automated tests:** Unit tests for the URI utility and `appHref` covering: locale prefix on/off, `&` join, anchor preservation (`#` after query), already-present `?hub=`, hub-route skip (with and without `/de` prefix), absolute-URL passthrough, encoding.
 
 **Exit:** `yarn lint && yarn format && yarn test && yarn build` green.
 
@@ -61,16 +61,16 @@ Companion to `doc/spec/20260701_1205_refactor_frontend_hub_context.md`.
 - [ ] On a hub page, `UserContext.hubUrl` still resolves to the correct slug (devtools / a temporary log), confirming the shim matches the pre-refactor value from both `?hub=` and `/hubs/<slug>` URLs.
 - [ ] Hub-dependent UI that reads the shared hubs list (e.g. the hub switcher) still populates — the server-fetched list is available.
 
-> Note: theming is **not** yet driven by `HubContext` in this phase — each page still fetches `getHubTheme` itself. Theming/SSR-render checks move to Phase 3, where `withHub`/`HubLink` first build hub-scoped URLs. Phase 1 is effectively a regression smoke test for the shim + resolver + shared hubs list.
+> Note: theming is **not** yet driven by `HubContext` in this phase — each page still fetches `getHubTheme` itself. Theming/SSR-render checks move to Phase 3, where `appHref`/`AppLink` first build hub-scoped URLs. Phase 1 is effectively a regression smoke test for the shim + resolver + shared hubs list.
 
 ---
 
-## Phase 2 — `<HubLink>` component (additive, unused)
+## Phase 2 — `<AppLink>` component (additive, unused)
 
 **Objective:** Land the component wrapper with tests; do not wire it into any page yet.
 
 **Changes**
-- `<HubLink>` wraps `next/link`, accepts the same props + `leaveHub`, computes `href` via `withHub`. (Confirmed: existing `next/link` usage passes a pre-prefixed `href` with **no** `locale` prop, so we match that — no double prefix.)
+- `<AppLink>` wraps `next/link`, accepts the same props + `leaveHub`, computes `href` via `appHref`. (Confirmed: existing `next/link` usage passes a pre-prefixed `href` with **no** `locale` prop, so we match that — no double prefix.)
 
 **Risk:** None — not referenced anywhere yet.
 
@@ -89,7 +89,7 @@ Companion to `doc/spec/20260701_1205_refactor_frontend_hub_context.md`.
 - One cross-entity link on a hub-scoped page, e.g. a project → its organisation (`ProjectPageRoot`) — Category A, exercises `?hub=` + existing query/anchor.
 - Footer "Imprint"/"Privacy" (`Footer.tsx`) — Category B (`leaveHub`), exercises locale prefix + global destination.
 - `LoginNudge.tsx` signin/signup redirect — exercises `&` join and existing query string (the known buggy spot).
-- One hub switcher target in `HubsDropDown` / `HubLinks` — Category C (constructed directly, **not** via `HubLink`).
+- One hub switcher target in `HubsDropDown` / `HubLinks` — Category C (constructed directly, **not** via `AppLink`).
 
 **Risk:** Medium — this is the first real behavior change.
 
@@ -110,14 +110,14 @@ Companion to `doc/spec/20260701_1205_refactor_frontend_hub_context.md`.
 
 ## Phases 4–7 — Incremental batch migration
 
-Each batch follows the same shape: migrate the area's links to `<HubLink>`/`withHub`, remove the bare `?hub=` / `getLocalePrefix` concatenation at those call sites, then run the manual checklist focused on that area.
+Each batch follows the same shape: migrate the area's links to `<AppLink>`/`appHref`, remove the bare `?hub=` / `getLocalePrefix` concatenation at those call sites, then run the manual checklist focused on that area.
 
 - **Phase 4 — Batch A: hub landing / browse pages.** Highest value: these are where the path-based hub (`/hubs/<slug>`) lives, so the "skip `?hub=` when hub already in path" rule is exercised. Manual: navigate within `/hubs/<slug>` and `/hubs/<slug>/<subHub>/browse`; confirm no redundant `?hub=` and correct cross-entity behavior.
 - **Phase 5 — Batch B: project / organization / profile cross-entity links (Category A).** The bulk of "preserve hub" links.
 - **Phase 6 — Batch C: global nav / footer / settings / dashboard (`leaveHub`).** Audit these for "leave hub" decisions; they must be greppable (`leaveHub`).
-- **Phase 7 — Batch D: hub switcher / `HubsDropDown` (Category C).** Construct target paths directly from the hubs list; confirm no current-hub `?hub=` leaks. No `HubLink` used here.
+- **Phase 7 — Batch D: hub switcher / `HubsDropDown` (Category C).** Construct target paths directly from the hubs list; confirm no current-hub `?hub=` leaks. No `AppLink` used here.
 
-Order note: do the **hub** batches (4–7 as they apply) before the broad **locale**-only migration, per the spec. The locale work reuses the same component/helper, so once BATCH B/C are done, a follow-up pass converts the remaining `getLocalePrefix(locale) + "/path"` sites to `withHub(href, { locale })` / `<HubLink>` in further small PRs.
+Order note: do the **hub** batches (4–7 as they apply) before the broad **locale**-only migration, per the spec. The locale work reuses the same component/helper, so once BATCH B/C are done, a follow-up pass converts the remaining `getLocalePrefix(locale) + "/path"` sites to `appHref(href, { locale })` / `<AppLink>` in further small PRs.
 
 **Per-batch manual checklist (subset relevant to the area) + full automated gate.**
 

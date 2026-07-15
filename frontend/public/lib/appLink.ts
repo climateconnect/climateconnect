@@ -1,7 +1,7 @@
 import { getLocalePrefix } from "./apiOperations";
 import { appendQueryParam } from "./urlOperations";
 
-export interface WithHubOptions {
+export interface AppHrefOptions {
   /** When true, the `?hub=` parameter is never appended (Category B). */
   leaveHub?: boolean;
   /** Active hub slug. Falls back to the empty string (no hub active). */
@@ -48,13 +48,13 @@ const hrefHasQueryParam = (href: string, key: string): boolean => {
  *
  * All query/fragment/encoding construction is delegated to the shared URI
  * utility (`appendQueryParam`), so the result is always well-formed. This is
- * the function form of the future `<HubLink>` component.
+ * the function form of the `<AppLink>` component.
  *
- * `withHub` leaves absolute/external URLs untouched and never appends `?hub=`
+ * `appHref` leaves absolute/external URLs untouched and never appends `?hub=`
  * when: `leaveHub` is set, no hub is active, the destination is a hub route
  * (`/hubs/...`), or a `?hub=` is already present.
  */
-export const withHub = (href: string, options?: WithHubOptions): string => {
+export const appHref = (href: string, options?: AppHrefOptions): string => {
   if (!href || isAbsoluteUrl(href)) {
     return href;
   }
