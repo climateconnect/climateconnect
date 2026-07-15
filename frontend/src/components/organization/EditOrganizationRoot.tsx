@@ -175,18 +175,11 @@ export default function EditOrganizationRoot({
     })
       .then(function () {
         const profileUrlSlug = user?.url_slug || organization?.creator?.url_slug;
-        if (profileUrlSlug) {
-          const query = new URLSearchParams({
-            message: texts.you_have_successfully_deleted_your_organization,
-            ...(hubUrl ? { hub: hubUrl } : {}),
-          });
-          router.push(`/profiles/${profileUrlSlug}?${query.toString()}#organizations`);
-        } else {
-          router.push({
-            pathname: "/browse",
-            hash: "organizations",
-          });
-        }
+        const query = new URLSearchParams({
+          message: texts.you_have_successfully_deleted_your_organization,
+          ...(hubUrl ? { hub: hubUrl } : {}),
+        });
+        router.push(`/profiles/${profileUrlSlug}?${query.toString()}#organizations`);
       })
       .catch(function (error) {
         console.log(error);
