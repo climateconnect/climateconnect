@@ -224,6 +224,24 @@ export default function EditProjectRoot({
     ? texts.delete_draft
     : projectTypeTexts.deleteProject[typeId];
 
+  const activeRegistrationsCount =
+    project.project_type?.type_id === "event"
+      ? project.registration_config?.active_registrations_count ?? 0
+      : 0;
+
+  const deleteDialogTitle =
+    activeRegistrationsCount > 0
+      ? texts.delete_event_with_registrations_title
+      : texts.do_you_really_want_to_delete_your_project;
+
+  const deleteDialogText =
+    activeRegistrationsCount > 0
+      ? texts.delete_event_with_registrations_text.replace(
+          "{count}",
+          String(activeRegistrationsCount)
+        )
+      : texts.if_you_delete_your_project_it_will_be_lost;
+
   const additionalButtons = [
     {
       text: texts.check_translations,
@@ -311,10 +329,15 @@ export default function EditProjectRoot({
       token: token,
       locale: locale,
     })
-      .then(function () {
+      .then(function (response) {
         if (user && user.url_slug) {
+          const notifiedGuests = response?.data?.notified_guests;
+          const successMessage =
+            notifiedGuests > 0
+              ? texts.event_deleted_guests_notified
+              : texts.you_have_successfully_deleted_your_project;
           const query: any = {
-            message: texts.you_have_successfully_deleted_your_project,
+            message: successMessage,
           };
           if (hubUrl) {
             query.hub = hubUrl;
@@ -428,8 +451,8 @@ export default function EditProjectRoot({
             onClose={handleDeleteDialogClose}
             cancelText={texts.no}
             confirmText={texts.yes}
-            title={texts.do_you_really_want_to_delete_your_project}
-            text={texts.if_you_delete_your_project_it_will_be_lost}
+            title={deleteDialogTitle}
+            text={deleteDialogText}
           />
         </form>
       ) : (

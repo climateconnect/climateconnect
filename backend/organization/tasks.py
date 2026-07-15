@@ -9,6 +9,8 @@ Currently includes:
     - notify_admins_of_registration_change: async notification emails to all
       team admins when a member registers or self-cancels (gated by
       EventRegistrationConfig.notify_admins).
+    - send_event_deletion_guest_notifications: async notification emails to all
+      registered guests when an event is deleted by an admin.
 """
 
 import logging
@@ -170,10 +172,34 @@ def send_organizer_message_to_guests(
             )
             raise self.retry(exc=exc)
 
+
+@app.task(bind=True, max_retries=3, default_retry_delay=60)
+def send_event_deletion_guest_notifications(self, user_ids: list, event_names: dict):
+    from climateconnect_api.utility.translation import get_user_lang_code
+    from organization.utility.email import send_event_deleted_notification_to_guest
+
+    users = User.objects.select_related("user_profile__location").filter(
+        id__in=user_ids
+    )
+
+    failed = 0
+    for user in users:
+        lang_code = get_user_lang_code(user)
+        event_name = event_names.get(lang_code, event_names.get("en", ""))
+        try:
+            send_event_deleted_notification_to_guest(user, event_name)
+        except Exception as exc:
+            failed += 1
+            logger.warning(
+                "[EventDeletion] Failed to notify user %s: %s",
+                user.id,
+                exc,
+            )
+
     logger.info(
-        "[OrganizerEmail] Sent organiser email to %d guests for event '%s'",
+        "[EventDeletion] Attempted %d guest notifications, %d failed",
         len(user_ids),
-        event_slug,
+        failed,
     )
 
 
@@ -418,7 +444,9 @@ def send_cancellation_chat_message(
                 exc,
             )
         try:
-            create_email_notification(organizer, chat, message, guest_user, notification)
+            create_email_notification(
+                organizer, chat, message, guest_user, notification
+            )
         except Exception as exc:
             logger.error(
                 "[CancellationChat] Failed to create email notification for organizer %s: %s",

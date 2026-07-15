@@ -37,6 +37,8 @@ from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_api.utility.translation import (
     edit_translations,
 )
+from organization.tasks import send_event_deletion_guest_notifications
+from organization.utility.project import get_project_name
 from climateconnect_api.utility.html import (
     sanitize_html,
     PROJECT_DESCRIPTION_ALLOWED_TAGS,
@@ -1266,20 +1268,64 @@ class ProjectAPIView(APIView):
 
     def delete(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(url_slug=str(url_slug))
+            project = Project.objects.select_related("registration_config").get(
+                url_slug=str(url_slug)
+            )
         except Project.DoesNotExist:
             return Response(
                 {"message": "Project not found: {}".format(url_slug)},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        user_ids = []
+        event_names = {}
+        has_active_registrations = False
+
+        if project.project_type == ProjectTypesChoices.event:
+            try:
+                rc = project.registration_config
+            except EventRegistrationConfig.DoesNotExist:
+                rc = None
+
+            if rc is not None:
+                active_registrations = EventRegistration.objects.filter(
+                    registration_config=rc, cancelled_at__isnull=True
+                ).select_related("user__user_profile__language")
+                user_ids = list(active_registrations.values_list("user_id", flat=True))
+
+                if user_ids:
+                    has_active_registrations = True
+                    language_codes = set(
+                        active_registrations.values_list(
+                            "user__user_profile__language__language_code", flat=True
+                        )
+                    )
+                    language_codes.add("en")
+                    language_codes.add("de")
+                    for lang_code in language_codes:
+                        if lang_code:
+                            event_names[lang_code] = get_project_name(
+                                project, lang_code
+                            )
+
+        project_name = project.name
+        project_url_slug = project.url_slug
         project.delete()
-        return Response(
-            {
-                "message": "Project {} successfully deleted".format(project.name),
-                "url_slug": project.url_slug,
-            },
-            status=status.HTTP_200_OK,
-        )
+
+        response_data = {
+            "message": "Project {} successfully deleted".format(project_name),
+            "url_slug": project_url_slug,
+        }
+
+        if has_active_registrations:
+            response_data["notified_guests"] = len(user_ids)
+            transaction.on_commit(
+                lambda: send_event_deletion_guest_notifications.delay(
+                    user_ids, event_names
+                )
+            )
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class ListProjectPostsView(ListAPIView):

@@ -103,12 +103,15 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
         - Returns ``None`` when ``max_participants`` is None (unlimited capacity).
     """
 
+    active_registrations_count = serializers.SerializerMethodField()
+
     class Meta(EventRegistrationConfigBaseSerializer.Meta):
         fields = [
             "max_participants",
             "registration_end_date",
             "status",
             "available_seats",
+            "active_registrations_count",
             "notify_admins",
             "is_draft",
             "registration_enabled",
@@ -140,6 +143,11 @@ class EventRegistrationConfigSerializer(EventRegistrationConfigBaseSerializer):
         if not self.context.get("include_seat_count", False):
             return None
         return super().get_available_seats(obj)
+
+    def get_active_registrations_count(self, obj):
+        if not self.context.get("include_seat_count", False):
+            return None
+        return obj.registrations.filter(cancelled_at__isnull=True).count()
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

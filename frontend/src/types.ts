@@ -33,6 +33,7 @@ export type RegistrationField = {
 export type EventRegistrationData = {
   max_participants: number | null;
   available_seats: number | null;
+  active_registrations_count: number | null;
   registration_end_date: string | null; // ISO 8601 string from API
   status: "open" | "closed" | "full" | "ended";
   /** When true, team admins receive an email on registration/cancellation. */

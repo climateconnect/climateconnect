@@ -566,6 +566,25 @@ def send_guest_cancellation_notification(user, project, admin_message: str):
     )
 
 
+def send_event_deleted_notification_to_guest(user, event_name: str):
+    variables = {
+        "FirstName": user.first_name or user.username,
+        "EventTitle": event_name,
+    }
+    subjects_by_language = {
+        "en": f"The event {event_name} has been cancelled",
+        "de": f"Die Veranstaltung {event_name} wurde abgesagt",
+    }
+    send_email(
+        user=user,
+        variables=variables,
+        template_key="EVENT_DELETED_GUEST_NOTIFICATION_TEMPLATE_ID",
+        subjects_by_language=subjects_by_language,
+        should_send_email_setting="",
+        notification=None,
+    )
+
+
 _DE_DAYS = {
     "Mon": "Mo",
     "Tue": "Di",

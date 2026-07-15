@@ -1,7 +1,7 @@
 # Notify Event Guests When Event Is Being Deleted
 
 **Date**: 2026-07-15
-**Status**: DRAFT
+**Status**: IMPLEMENTED
 **Type**: Backend + Frontend — new feature
 **GitHub Issue**: [#1985](https://github.com/climateconnect/climateconnect/issues/1985)
 
@@ -87,7 +87,7 @@ data — with no notification whatsoever to the registered guests.
 | Backend task | `backend/organization/tasks.py` | New `send_event_deletion_guest_notifications` Celery task |
 | Backend email | `backend/organization/utility/email.py` | New `send_event_deleted_notification_to_guest` function |
 | Backend settings | `backend/climateconnect_main/settings.py` | New `EVENT_DELETED_GUEST_NOTIFICATION_TEMPLATE_ID` + `_DE` env vars |
-| Backend serializer | `backend/organization/serializers/project.py` | Add `active_registrations_count` field to the project serializer used by the edit page |
+| Backend serializer | `backend/organization/serializers/event_registration.py` | Add `active_registrations_count` field to `EventRegistrationConfigSerializer` (gated behind `include_seat_count`, same as `available_seats`) |
 | Backend tests | `backend/organization/tests/test_project_views.py` | New tests for the delete-with-registrations flow |
 | Backend tests | `backend/organization/tests/test_tasks.py` (new or existing) | Tests for the Celery task |
 | Frontend component | `frontend/src/components/editProject/EditProjectRoot.tsx` | Conditional delete warning with registration count |
@@ -132,17 +132,21 @@ data — with no notification whatsoever to the registered guests.
 
 ### AC-1: Backend — Expose active registration count
 
-**AC-1.1** The project detail serializer (the one used by the edit page) includes an
-`active_registrations_count` field. This field is an integer representing the count of
-`EventRegistration` rows where `cancelled_at__isnull=True` for the project's
-`registration_config`. For projects without a `registration_config`, the field is `0`.
+**AC-1.1** The `EventRegistrationConfigSerializer` includes an `active_registrations_count`
+field. This field is an integer representing the count of `EventRegistration` rows where
+`cancelled_at__isnull=True` for the config's `registrations` relation. It is gated behind
+the existing `include_seat_count` context flag (same gating as `available_seats`), so it is
+only populated on detail/edit responses, not on list endpoints.
 
-**AC-1.2** The field is **read-only** and computed (analogous to `available_seats` on
-`EventRegistrationConfigSerializer`). It is included on the project detail response so the
-edit page can read it without an additional API call.
+**AC-1.2** The field is **read-only** and computed via `SerializerMethodField` (analogous to
+`available_seats`). It reuses the same `registrations` queryset and does not issue an
+additional COUNT query — the active count is derived from the `available_seats` computation
+or a single `Count` annotation. For events without `max_participants` (unlimited capacity),
+the count is still computed independently.
 
-**AC-1.3** The field is annotated efficiently — a single `Count` annotation or
-`prefetch_related`-backed computation, not an N+1 query.
+**AC-1.3** The field lives on `EventRegistrationConfigSerializer` (not on the project
+serializer) to avoid polluting the project API for non-event projects. The frontend already
+accesses `project.registration_config` for events and can read the count from there.
 
 ---
 
@@ -262,8 +266,8 @@ manual step (Mailjet dashboard) and is tracked as a prerequisite for deployment.
 ### AC-5: Frontend — Enhanced delete confirmation for events with registrations
 
 **AC-5.1** In `EditProjectRoot.tsx`, when the project is an event (`project_type.type_id ===
-"event"`) and `project.active_registrations_count > 0`, the `ConfirmDialog` uses enhanced
-text:
+"event"`) and `project.registration_config?.active_registrations_count > 0`, the
+`ConfirmDialog` uses enhanced text:
 
 - **Title** (i18n key `delete_event_with_registrations_title`):
   EN: `"Delete event with registered guests?"`
@@ -273,11 +277,11 @@ text:
   EN: `"This event has {count} registered guest(s). If you delete this event, all registered guests will be notified by email that the event has been cancelled. Are you sure?"`
   DE: `"Diese Veranstaltung hat {count} angemeldete Gäst(e). Wenn du diese Veranstaltung löschst, werden alle angemeldeten Gäste per E-Mail darüber informiert, dass die Veranstaltung abgesagt wurde. Bist du dir sicher?"`
 
-  `{count}` is replaced with `project.active_registrations_count`.
+  `{count}` is replaced with `project.registration_config.active_registrations_count`.
 
-**AC-5.2** When the project is an event but `active_registrations_count === 0`, or when the
-project is not an event, the existing generic delete dialog text is shown (no change to
-current behavior).
+**AC-5.2** When the project is an event but `registration_config` is absent or
+`active_registrations_count === 0`, or when the project is not an event, the existing
+generic delete dialog text is shown (no change to current behavior).
 
 **AC-5.3** The `deleteProject` function checks for the `notified_guests` key in the
 response. When present and `> 0`, the success toast uses the i18n key
@@ -309,13 +313,11 @@ When `notified_guests` is absent or `0`, the existing generic success toast is s
   `send_email()` requires a full `User` instance for email address lookup, language
   resolution, and Mailjet delivery.
 
-- **Serializer field location**: `active_registrations_count` should be added to the
-  project serializer that serves the edit page detail view. Check which serializer is used
-  by `ProjectAPIView.get()` — it likely uses a "detail" serializer variant (e.g.
-  `ProjectStubSerializer` or a full `ProjectSerializer`). The field can be implemented as a
-  `SerializerMethodField` or as a `Count` annotation on the queryset in the view's
-  `get_object()`. The annotation approach is more efficient (no extra query) but requires
-  careful handling of the `registration_config` OneToOne join.
+- **Serializer field location**: `active_registrations_count` is added to
+  `EventRegistrationConfigSerializer` in `backend/organization/serializers/event_registration.py`,
+  gated behind the existing `include_seat_count` context flag. This keeps the field out of
+  list responses and out of the project serializer for non-event projects. The frontend reads
+  it from `project.registration_config.active_registrations_count`.
 
 - **`transaction.on_commit` pattern**: The Celery task must be scheduled via
   `transaction.on_commit(lambda: task.delay(...))` to ensure the deletion (and its
@@ -374,7 +376,8 @@ any decisions deviate from the spec.)*
 - `doc/api-documentation.md`:
   - Update `DELETE /api/projects/{slug}/` section to document the `notified_guests` field
     in the response when the event has active registrations.
-  - Document `active_registrations_count` on the project detail response.
+  - Document `active_registrations_count` on the `registration_config` object in the
+    project detail response.
 - `doc/domain-entities.md`:
   - No model changes (no new fields or models). Optionally note the notification behavior
     for events with registrations on deletion.

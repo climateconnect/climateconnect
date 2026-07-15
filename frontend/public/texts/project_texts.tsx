@@ -635,6 +635,16 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de:
         "Wenn du dein Projekt löscht, geht es verloren. Bist du dir sicher, dass du es löschen möchtest?",
     },
+    delete_event_with_registrations_title: {
+      en: "Delete event with registered guests?",
+      de: "Veranstaltung mit angemeldeten Gästen löschen?",
+    },
+    delete_event_with_registrations_text: {
+      en:
+        "This event has {count} registered guest(s). If you delete this event, all registered guests will be notified by email that the event has been cancelled. Are you sure?",
+      de:
+        "Diese Veranstaltung hat {count} angemeldete Gäst(e). Wenn du diese Veranstaltung löschst, werden alle angemeldeten Gäste per E-Mail darüber informiert, dass die Veranstaltung abgesagt wurde. Bist du dir sicher?",
+    },
     briefly_summarise_what_you_are_doing_please_only_use_english: {
       en: "Briefly summarise what you are doing (up to 280 characters)\n\nPlease only use English!",
       de: "Fass kurz zusammen, was ihr tun (bis zu 280 Zeichen)",
@@ -710,6 +720,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     you_have_successfully_deleted_your_project: {
       en: "You have successfully deleted your project.",
       de: "Du hast dein Projekt erfolgreich gelöscht.",
+    },
+    event_deleted_guests_notified: {
+      en: "Your event has been deleted. Registered guests have been notified.",
+      de: "Deine Veranstaltung wurde gelöscht. Angemeldete Gäste wurden benachrichtigt.",
     },
     leave_without_saving_changes: {
       en: "Leave without saving changes?",
