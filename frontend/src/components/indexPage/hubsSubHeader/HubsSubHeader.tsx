@@ -57,6 +57,7 @@ export default function HubsSubHeader({
   isCustomHub,
   hubSlug,
   project,
+  defaultBackUrl,
 }: any) {
   const classes = useStyles({ hubSlug: hubSlug });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
@@ -74,6 +75,7 @@ export default function HubsSubHeader({
               tinyScreen={isNarrowScreen}
               hubSlug={hubSlug}
               project={project}
+              defaultBackUrl={defaultBackUrl}
             />
           )}
         </div>

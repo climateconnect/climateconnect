@@ -165,6 +165,7 @@ export default function OrganizationPage({
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const defaultBackUrl = hubUrl ? "/" + locale + "/hubs/" + hubUrl : "/" + locale;
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
@@ -182,6 +183,7 @@ export default function OrganizationPage({
           onlyShowDropDown={true}
           isCustomHub={isCustomHub}
           hubSlug={hubUrl}
+          defaultBackUrl={defaultBackUrl}
         />
       }
     >

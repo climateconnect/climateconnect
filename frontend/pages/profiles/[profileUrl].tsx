@@ -73,6 +73,7 @@ export default function ProfilePage({
 
   const isOwnProfile = !!(user && profile && user.url_slug === profile.url_slug);
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const defaultBackUrl = hubUrl ? "/" + locale + "/hubs/" + hubUrl : "/" + locale;
 
   const contextValues = {
     projectTypes: projectTypes,
@@ -101,6 +102,7 @@ export default function ProfilePage({
             onlyShowDropDown={true}
             isCustomHub={isCustomHub}
             hubSlug={hubUrl}
+            defaultBackUrl={defaultBackUrl}
           />
         ) : (
           <></>
