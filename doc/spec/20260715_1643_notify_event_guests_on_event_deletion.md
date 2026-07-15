@@ -46,9 +46,9 @@ data — with no notification whatsoever to the registered guests.
 
 1. **Backend**: Return active registration count in the project data so the frontend can
    warn the admin before deletion.
-2. **Backend**: Before deleting an event with active registrations, dispatch an async Celery
-   task that sends cancellation emails to all active registrants, then performs the hard
-   delete.
+2. **Backend**: On delete of an event with active registrations, pre-capture guest data
+   and localized event name, delete the project immediately, then dispatch an async Celery
+   task that sends cancellation emails from the pre-captured data.
 3. **Backend**: New email utility function and Mailjet template (EN + DE) for "event deleted"
    guest notifications.
 4. **Frontend**: Enhanced delete confirmation dialog for events with registered guests,
@@ -83,8 +83,8 @@ data — with no notification whatsoever to the registered guests.
 
 | Layer | File | Change |
 |-------|------|--------|
-| Backend view | `backend/organization/views/project_views.py` | Refactor `ProjectAPIView.delete()` to check for active registrations, dispatch Celery task, and let the task handle both email + deletion |
-| Backend task | `backend/organization/tasks.py` | New `send_event_deletion_notifications_and_delete` Celery task |
+| Backend view | `backend/organization/views/project_views.py` | Extend `ProjectAPIView.delete()` to pre-capture guest data and event names, delete immediately, dispatch Celery task for email delivery |
+| Backend task | `backend/organization/tasks.py` | New `send_event_deletion_guest_notifications` Celery task |
 | Backend email | `backend/organization/utility/email.py` | New `send_event_deleted_notification_to_guest` function |
 | Backend settings | `backend/climateconnect_main/settings.py` | New `EVENT_DELETED_GUEST_NOTIFICATION_TEMPLATE_ID` + `_DE` env vars |
 | Backend serializer | `backend/organization/serializers/project.py` | Add `active_registrations_count` field to the project serializer used by the edit page |
@@ -146,86 +146,102 @@ edit page can read it without an additional API call.
 
 ---
 
-### AC-2: Backend — Refactored delete flow with guest notification
+### AC-2: Backend — Delete flow with guest notification
 
 **AC-2.1** When the admin sends `DELETE /api/projects/{url_slug}/` and the project is an
 event (`project_type == "EV"`) with an `EventRegistrationConfig` that has active
-registrations:
+registrations, the view performs the following steps **inside a single request**:
 
-1. The view collects the following data **before** scheduling the task:
-   - `project_id` (int)
-   - A list of `{ user_id, event_name }` for every active registrant. `event_name` is
-     resolved per-user in their language via `get_project_name(project, lang_code)`.
-     `user_id` is sufficient because the task fetches the full `User` object internally
-     (matching the existing `send_organizer_message_to_guests` pattern).
-2. The view schedules a Celery task
-   `send_event_deletion_notifications_and_delete.delay(project_id, url_slug, guest_data)`
-   wrapped in `transaction.on_commit()`.
-3. The view returns `202 Accepted` with
-   `{"message": "Event deletion initiated. Registered guests will be notified.",
-     "url_slug": url_slug, "notified_guests": len(guest_data)}`.
-4. The project is **not** deleted in the view — the Celery task handles deletion after
-   sending emails.
+1. **Pre-capture**: collect `user_ids` (list of `int`) for every active registrant, and
+   resolve `event_names` — a dict of `{lang_code: localized_event_name}` for each
+   language that at least one registrant speaks (at minimum `{"en": "...", "de": "..."}`).
+   Use `get_project_name(project, lang_code)` for each unique language.
+2. **Delete immediately**: call `project.delete()`. The project and all cascade-deleted
+   data are gone before the response is returned. No guest can see or interact with the
+   event after this point.
+3. **Dispatch email task**: schedule
+   `send_event_deletion_guest_notifications.delay(user_ids, event_names)` via
+   `transaction.on_commit()`. The task operates entirely from pre-captured data — it never
+   needs to look up the deleted project.
+4. **Return 200 OK** with
+   `{"message": "Project {name} successfully deleted",
+     "url_slug": url_slug,
+     "notified_guests": len(user_ids)}`.
+
+The `notified_guests` key is present only when the event had active registrations; it is
+absent for non-event projects or events without registrations.
 
 **AC-2.2** When the project is an event with a `registration_config` but **zero** active
 registrations, or when the project is not an event, the current behavior is preserved:
 `project.delete()` is called directly and `200 OK` is returned with the existing success
-message.
+message (no `notified_guests` key).
 
-**AC-2.3** If the Celery task fails (broker down, unhandled exception after retries), the
-project remains in the database. The admin can retry the delete. A log at `ERROR` level
-records the failure.
+**AC-2.3** The project deletion is **always synchronous and immediate** — it happens in the
+view, not in a Celery task. This ensures the event is never visible to guests (or in
+browse/search) after the admin confirms deletion.
 
 ---
 
-### AC-3: Backend — Celery task for email + deletion
+### AC-3: Backend — Celery task for email delivery
 
-**AC-3.1** New Celery task `send_event_deletion_notifications_and_delete(self, project_id,
-url_slug, guest_data)` in `backend/organization/tasks.py`, decorated with
+**AC-3.1** New Celery task `send_event_deletion_guest_notifications(self, user_ids,
+event_names)` in `backend/organization/tasks.py`, decorated with
 `@app.task(bind=True, max_retries=3, default_retry_delay=60)`.
 
-**AC-3.2** Task steps:
-1. For each entry in `guest_data` (list of dicts with `user_id`, `first_name`, `email`,
-   `lang_code`, `event_name`):
-   a. Build email variables: `FirstName`, `EventTitle`, `EventUrl` (language-aware project
-      URL — will 404 after deletion, but the email serves as the notification).
-   b. Call `send_event_deleted_notification_to_guest(user, variables)`.
-   c. Wrap each email send in try/except; on failure, log a warning and continue to the
-      next guest (do not abort the whole batch for one email failure).
-2. After all emails are dispatched, attempt `Project.objects.filter(pk=project_id).delete()`.
-   If the project was already deleted (e.g. admin retried), log a warning and return.
-3. On any unhandled exception in step 2 (not per-email failures), retry via
-   `self.retry(exc=exc)`.
+Parameters:
+- `user_ids`: list of `int` — User PKs of active registrants at deletion time.
+- `event_names`: dict of `{lang_code: str}` — localized event name per language (at
+  minimum `{"en": "...", "de": "..."}`).
 
-**AC-3.3** The task fetches `User` objects inside the loop using `user_id` with
-`select_related("user_profile__location")` (matching the pattern of existing email tasks).
-The `email` field from `guest_data` is not used for sending (Mailjet uses the `user`
-object), but is included for logging/debugging.
+**AC-3.2** Task steps:
+1. Fetch all users in one query: `User.objects.select_related("user_profile__location").filter(id__in=user_ids)`.
+2. For each user:
+   a. Determine `lang_code` via `get_user_lang_code(user)`.
+   b. Look up `event_name` from `event_names` using `lang_code` (fall back to `"en"` if
+      the user's language is not in the dict).
+   c. Call `send_event_deleted_notification_to_guest(user, event_name)`.
+   d. Wrap each email send in try/except; on failure, log a warning and **continue** to
+      the next guest. Individual email failures do not abort the batch or trigger a task
+      retry. This is an improvement over `send_organizer_message_to_guests` which retries
+      the entire task on the first failure (re-sending already-delivered emails).
+3. After the loop, log a summary: how many emails were attempted, how many failed.
+
+**AC-3.3** The task does **not** look up the `Project` — it operates entirely from
+`user_ids` and `event_names`. This is by design: the project is already deleted by the
+time the task runs.
 
 **AC-3.4** Backend tests (use `--keepdb`; set `CELERY_TASK_ALWAYS_EAGER = True`):
 - Deleting an event with 3 active registrations dispatches the Celery task and returns
-  202 with `notified_guests: 3`.
-- Deleting an event with no active registrations (or a non-event project) still calls
-  `project.delete()` directly and returns 200.
+  200 with `notified_guests: 3`. The project is deleted before the task runs.
+- Deleting an event with no active registrations (or a non-event project) does not
+  dispatch the task and returns 200 without `notified_guests`.
 - The Celery task sends an email for each guest (assert via `EmailNotification` count or
   mocked Mailjet call).
-- The Celery task deletes the project after emails are sent.
-- A guest email failure does not prevent other emails or the project deletion.
+- The Celery task does not attempt to look up the deleted project.
+- A guest email failure does not prevent other emails from being sent (remaining emails
+  are delivered; the failure is logged).
 
 ---
 
 ### AC-4: Backend — Email utility and template
 
-**AC-4.1** New function `send_event_deleted_notification_to_guest(user, variables)` in
-`backend/organization/utility/email.py`. Signature follows the pattern of
-`send_guest_cancellation_notification`:
+**AC-4.1** New function `send_event_deleted_notification_to_guest(user, event_name)` in
+`backend/organization/utility/email.py`:
 - `user`: Django `User` instance (for language resolution and `send_email`).
-- `variables`: dict with keys `FirstName`, `EventTitle`, `EventUrl`.
+- `event_name`: `str` — the event name localized to the user's language.
+- Internally builds `variables = {"FirstName": user.first_name or user.username, "EventTitle": event_name}`.
+- Internally builds `subjects_by_language` with at least EN and DE subjects (see AC-4.2).
+  The event name in each subject is looked up from the caller's perspective — but since
+  the function only receives the already-localized `event_name`, the subject for the
+  user's language uses that directly. For the *other* language subjects, the function uses
+  the same `event_name` string (acceptable: the subject language is matched to the
+  recipient's language by `send_email()`, so only the user's own language subject is ever
+  sent).
 - Calls `send_email()` with `template_key="EVENT_DELETED_GUEST_NOTIFICATION_TEMPLATE_ID"`,
-  `should_send_email_setting=""` (always send — this is critical notification),
+  `should_send_email_setting=""` (always send — this is a critical notification),
   `notification=None`.
 
-**AC-4.2** Email subjects by language:
+**AC-4.2** Email subjects (the subject matching the user's language is used):
 - EN: `"The event {event_name} has been cancelled"`
 - DE: `"Die Veranstaltung {event_name} wurde abgesagt"`
 
@@ -236,10 +252,10 @@ EVENT_DELETED_GUEST_NOTIFICATION_TEMPLATE_ID_DE = env("EVENT_DELETED_GUEST_NOTIF
 ```
 
 **AC-4.4** New Mailjet templates must be created (EN + DE) with the following variables:
-`FirstName`, `EventTitle`, `EventUrl`. The template content should convey that the event
-has been cancelled by the organizer and the guest's registration is no longer valid.
-Template creation is a manual step (Mailjet dashboard) and is tracked as a prerequisite
-for deployment.
+`FirstName`, `EventTitle`. The template content should convey that the event has been
+cancelled by the organizer and the guest's registration is no longer valid. No event URL
+is included — the event no longer exists, so the URL would 404. Template creation is a
+manual step (Mailjet dashboard) and is tracked as a prerequisite for deployment.
 
 ---
 
@@ -255,7 +271,7 @@ text:
 
 - **Body** (i18n key `delete_event_with_registrations_text`):
   EN: `"This event has {count} registered guest(s). If you delete this event, all registered guests will be notified by email that the event has been cancelled. Are you sure?"`
-  DE: `"Diese Veranstaltung hat {count} angemeldete Gäst(e). Wenn du diese Veranstaltung löschchst, werden alle angemeldeten Gäste per E-Mail darüber informiert, dass die Veranstaltung abgesagt wurde. Bist du dir sicher?"`
+  DE: `"Diese Veranstaltung hat {count} angemeldete Gäst(e). Wenn du diese Veranstaltung löschst, werden alle angemeldeten Gäste per E-Mail darüber informiert, dass die Veranstaltung abgesagt wurde. Bist du dir sicher?"`
 
   `{count}` is replaced with `project.active_registrations_count`.
 
@@ -263,13 +279,13 @@ text:
 project is not an event, the existing generic delete dialog text is shown (no change to
 current behavior).
 
-**AC-5.3** The `deleteProject` function handles both response codes:
-- `200 OK` (immediate delete, no registrations): current behavior — redirect to profile
-  with success toast.
-- `202 Accepted` (async delete with notifications): redirect to profile with a different
-  success toast (i18n key `event_deleted_guests_notified`):
-  EN: `"Your event has been deleted. Registered guests have been notified."`
-  DE: `"Deine Veranstaltung wurde gelöscht. Angemeldete Gäste wurden benachrichtigt."`
+**AC-5.3** The `deleteProject` function checks for the `notified_guests` key in the
+response. When present and `> 0`, the success toast uses the i18n key
+`event_deleted_guests_notified` instead of the generic delete success message:
+- EN: `"Your event has been deleted. Registered guests have been notified."`
+- DE: `"Deine Veranstaltung wurde gelöscht. Angemeldete Gäste wurden benachrichtigt."`
+
+When `notified_guests` is absent or `0`, the existing generic success toast is shown.
 
 **AC-5.4** New i18n keys in `frontend/public/texts/project_texts.tsx`:
 
@@ -285,12 +301,13 @@ current behavior).
 
 ### Implementation Hints
 
-- **Pre-captured data for Celery**: The `guest_data` list is built in the view before
-  scheduling the task. This avoids a race condition where the task tries to fetch the
-  project after it has been deleted. Each entry contains the minimum data needed to
-  personalise the email. The `User` object is still fetched inside the task (by `user_id`)
-  because `send_email()` requires a full `User` instance for language resolution and
-  Mailjet delivery.
+- **Pre-captured data pattern**: The view captures `user_ids` and `event_names` before
+  calling `project.delete()`. This is the same principle used by
+  `send_organizer_message_to_guests` (which receives pre-computed `user_ids`), extended
+  one step further: the event name is also pre-captured so the task never needs the
+  project. The `User` objects are fetched inside the task (by `user_ids`) because
+  `send_email()` requires a full `User` instance for email address lookup, language
+  resolution, and Mailjet delivery.
 
 - **Serializer field location**: `active_registrations_count` should be added to the
   project serializer that serves the edit page detail view. Check which serializer is used
@@ -301,55 +318,47 @@ current behavior).
   careful handling of the `registration_config` OneToOne join.
 
 - **`transaction.on_commit` pattern**: The Celery task must be scheduled via
-  `transaction.on_commit(lambda: task.delay(...))` to ensure the registration data is
-  committed before the task runs. This matches the pattern used by
+  `transaction.on_commit(lambda: task.delay(...))` to ensure the deletion (and its
+  cascade) is committed before the task runs. This matches the pattern used by
   `notify_admins_of_registration_change` in `event_registration_views.py`.
 
-- **202 vs 200 response**: Returning 202 Accepted when registrations exist signals to the
-  frontend that the deletion is asynchronous. The frontend should handle both status codes
-  in the `.then()` callback. The 202 response body includes `notified_guests` count for
-  the success toast.
+- **Email "from" name**: Verify during implementation whether `send_email()` resolves
+  the "from" name from the project's parent organization. If it does, note that the
+  project is already deleted when the task runs. Fallback: `send_email()` uses "Climate
+  Connect" as the default from_name when no project context is available. If a different
+  from_name is required, capture it in the view and pass it as an additional task
+  parameter.
 
-- **Email "from" name**: The `send_email()` utility resolves the `from_name` from the
-  project's parent organization (or falls back to "Climate Connect"). Since the project is
-  about to be deleted, the organization data must be available at email-send time. The
-  Celery task does not need the project for this — the `from_name` is baked into the
-  Mailjet payload by `send_email()` using the user's profile context, not the project.
-  Verify this during implementation; if `send_email()` requires project context, include
-  `from_name` in `guest_data`.
-
-- **Event URL in email**: The `EventUrl` variable points to the event page
-  (`/projects/{url_slug}`). After deletion, this URL will 404. This is acceptable — the
-  email itself is the notification, and the URL serves as a reference the guest may have
-  bookmarked. An alternative (landing page saying "this event was cancelled") is out of
-  scope.
+- **Bulk email sending pattern**: Emails are sent **one by one** in a loop, matching the
+  existing pattern in `send_organizer_message_to_guests`. Each call to `send_email()` makes
+  an individual Mailjet API call. Mailjet supports batch sending (up to 50 recipients per
+  call), but the codebase does not use it. One-by-one sending is chosen for consistency and
+  simplicity. If email volume ever grows large enough to warrant batching, that is a
+  separate optimization.
 
 ### Trade-off Notes
 
-- **Async (Celery) vs synchronous email sending**: Async is chosen because: (a) it matches
-  the existing pattern for event emails, (b) the admin should not wait for N emails to
-  send, and (c) `send_email()` makes HTTP calls to Mailjet which could be slow. The
-  trade-off is that the project is not deleted immediately — it persists until the task
-  completes. This is acceptable because the admin sees a success toast and the project is
-  effectively "gone" from their perspective (they are redirected).
+- **Immediate delete + async emails vs. async delete**: The project is deleted immediately
+  in the view (synchronous), and emails are sent afterwards from pre-captured data. This
+  was chosen over the alternative (defer deletion to a Celery task) because:
+  - The event must not be visible to guests (or in browse/search) after the admin confirms
+    deletion. An async delete would leave a window where the event is still live.
+  - Pre-captured data is sufficient for email personalization — `send_email()` needs only
+    the `User` object and template variables, not the `Project`.
+  - If the email task fails entirely (broker down, all retries exhausted), the project is
+    already deleted — which is the correct end state. Guests lose the notification email
+    but the event is gone. This is an acceptable trade-off; monitoring via logs catches it.
 
-- **Pre-captured `guest_data` vs task-fetches-registrations**: Pre-capturing in the view
-  avoids the race condition (project deleted before task runs). The alternative — keeping
-  the project alive until the task fetches registrations, then deleting — would require a
-  two-phase commit or a "pending deletion" state on the project, which is over-engineered
-  for this feature.
-
-- **New Mailjet template vs reusing `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID`**: A new
+- **New Mailjet template vs. reusing `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID`**: A new
   template is chosen because: (a) the semantics are different ("the event was cancelled"
-  vs "an admin cancelled your registration"), (b) the existing template includes an
+  vs. "an admin cancelled your registration"), (b) the existing template includes an
   `OrganizerMessage` variable which does not apply here, and (c) separate templates allow
   independent content updates. The cost is one additional Mailjet template to create and
   manage.
 
-- **202 Accepted vs 200 OK with deferred delete**: Returning 202 when registrations exist
-  is more REST-semantically correct (the action is accepted but not yet completed) and
-  allows the frontend to show a different toast message. The alternative (always return 200
-  and do the delete asynchronously) is simpler but loses the signal to the frontend.
+- **No event URL in email**: The email does not include a link to the event page because
+  the project is deleted before emails are sent — the URL would 404. The email itself is
+  the notification; no further action is needed from the guest.
 
 ---
 
@@ -363,12 +372,11 @@ any decisions deviate from the spec.)*
 ## Documentation to Update
 
 - `doc/api-documentation.md`:
-  - Update `DELETE /api/projects/{slug}/` section to document the 202 response when
-    the event has active registrations, the `notified_guests` field in the response, and
-    the async deletion behavior.
+  - Update `DELETE /api/projects/{slug}/` section to document the `notified_guests` field
+    in the response when the event has active registrations.
   - Document `active_registrations_count` on the project detail response.
 - `doc/domain-entities.md`:
-  - No model changes (no new fields or models). Optionally note the async deletion
-    behavior for events with registrations.
+  - No model changes (no new fields or models). Optionally note the notification behavior
+    for events with registrations on deletion.
 - `doc/mosy/entities/system-entities.md`:
   - Update if the project entity description mentions deletion behavior.
