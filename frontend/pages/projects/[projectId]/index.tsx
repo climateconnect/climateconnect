@@ -275,7 +275,6 @@ export default function ProjectPage({
     };
   });
 
-  const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
@@ -287,17 +286,13 @@ export default function ProjectPage({
       title={project ? project.name : texts.project + " " + texts.not_found}
       showDonationGoal={true}
       subHeader={
-        !tinyScreen ? (
-          <HubsSubHeader
-            hubs={hubs}
-            onlyShowDropDown={true}
-            isCustomHub={isCustomHub}
-            hubSlug={hubUrl}
-            project={project}
-          />
-        ) : (
-          <></>
-        )
+        <HubsSubHeader
+          hubs={hubs}
+          onlyShowDropDown={true}
+          isCustomHub={isCustomHub}
+          hubSlug={hubUrl}
+          project={project}
+        />
       }
       customTheme={customTheme}
       isHubPage={!!hubUrl}

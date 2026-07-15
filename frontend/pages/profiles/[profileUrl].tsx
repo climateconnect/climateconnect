@@ -15,6 +15,8 @@ import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import theme from "../../src/themes/theme";
 import { parseProjectStubs } from "../../public/lib/parsingOperations";
+import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
+import { getAllHubs } from "../../public/lib/hubOperations";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
@@ -34,12 +36,13 @@ export async function getServerSideProps(ctx) {
     };
   }
   const hubUrl = ctx.query.hub;
-  const [profile, organizations, projects, projectTypes, hubThemeData] = await Promise.all([
+  const [profile, organizations, projects, projectTypes, hubThemeData, hubs] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, auth_token, ctx.locale),
     getOrganizationsByUser(profileUrl, auth_token, ctx.locale),
     getProjectsByUser(profileUrl, auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -49,6 +52,7 @@ export async function getServerSideProps(ctx) {
       projectTypes: projectTypes,
       hubUrl: hubUrl,
       hubThemeData: hubThemeData,
+      hubs: hubs,
     }),
   };
 }
@@ -60,11 +64,15 @@ export default function ProfilePage({
   projectTypes,
   hubUrl,
   hubThemeData,
+  hubs,
 }) {
   const token = new Cookies().get("auth_token");
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const infoMetadata = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale, profile: profile });
+
+  const isOwnProfile = !!(user && profile && user.url_slug === profile.url_slug);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
 
   const contextValues = {
     projectTypes: projectTypes,
@@ -85,6 +93,18 @@ export default function ProfilePage({
       customTheme={customTheme}
       headerBackground={
         customTheme ? customTheme.palette.header.background : theme.palette.background.default
+      }
+      subHeader={
+        profile && !isOwnProfile ? (
+          <HubsSubHeader
+            hubs={hubs}
+            onlyShowDropDown={true}
+            isCustomHub={isCustomHub}
+            hubSlug={hubUrl}
+          />
+        ) : (
+          <></>
+        )
       }
     >
       {profile ? (
