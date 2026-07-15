@@ -1,7 +1,9 @@
 import CssBaseline from "@mui/material/CssBaseline";
 import { Theme, StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useContext, useState } from "react";
+import App from "next/app";
+import { getAllHubs } from "../public/lib/hubOperations";
 import ReactGA from "react-ga4";
 // Add global styles
 import "react-multi-carousel/lib/styles.css";
@@ -10,13 +12,13 @@ import { apiRequest } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
+import { HubContext, HubProvider } from "../src/components/context/HubContext";
 import { FeatureToggleProvider } from "../src/components/featureToggle";
 import { FeatureToggles } from "../src/hooks/types/featureToggle";
 import type { CcEnvironment } from "../public/lib/environmentOperations";
 import theme from "../src/themes/theme";
-import { CcLocale, DonationGoal } from "../src/types";
+import { CcLocale, DonationGoal, HubListItem } from "../src/types";
 import "../devlink/css/global.css";
-import { getHubslugFromUrl } from "../public/lib/hubOperations";
 
 declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line no-unused-vars
@@ -25,7 +27,7 @@ declare module "@mui/styles/defaultTheme" {
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default function MyApp({
+function AppContent({
   Component,
   pageProps = {},
 }: {
@@ -33,10 +35,14 @@ export default function MyApp({
   pageProps: {
     featureToggles?: FeatureToggles;
     environment?: CcEnvironment;
+    hubs?: HubListItem[];
     [key: string]: any;
   };
 }) {
   const router = useRouter();
+  // `hubUrl` is shimmed to read from HubContext so existing consumers of
+  // `UserContext.hubUrl` keep working unchanged during the migration.
+  const { hubUrl: activeHubUrl } = useContext(HubContext);
   // Cookies
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -281,7 +287,7 @@ export default function MyApp({
     CUSTOM_HUB_URLS: CUSTOM_HUB_URLS,
     setNotificationsRead: setNotificationsRead,
     pathName: pathName,
-    hubUrl: getHubslugFromUrl(router.query),
+    hubUrl: activeHubUrl,
     ReactGA: ReactGA,
     updateCookies: updateCookies,
     socketConnectionState: socketConnectionState,
@@ -323,6 +329,36 @@ export default function MyApp({
     </>
   );
 }
+
+export default function MyApp({
+  Component,
+  pageProps = {},
+}: {
+  Component: any;
+  pageProps: {
+    hubs?: HubListItem[];
+    [key: string]: any;
+  };
+}) {
+  return (
+    <HubProvider initialHubs={pageProps.hubs}>
+      <AppContent Component={Component} pageProps={pageProps} />
+    </HubProvider>
+  );
+}
+
+MyApp.getInitialProps = async (appContext: any) => {
+  // Run the page's own data fetching first so existing pageProps are preserved.
+  const appProps = await App.getInitialProps(appContext);
+  const locale = appContext.router.locale ?? "en";
+  let hubs = null;
+  try {
+    hubs = await getAllHubs(locale);
+  } catch (e) {
+    console.log(e);
+  }
+  return { ...appProps, pageProps: { ...appProps.pageProps, hubs } };
+};
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
   let notifications_to_set_unread: any[] = [];

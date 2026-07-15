@@ -278,6 +278,17 @@ export interface HubData {
   [key: string]: any;
 }
 
+/**
+ * Minimal shape of an item in the shared hubs list (from `/api/hubs/`).
+ * `url_slug` and `name` are the fields consumed app-wide; the index signature
+ * keeps the type permissive for optional fields like `icon` / `landing_page_component`.
+ */
+export interface HubListItem {
+  url_slug: string;
+  name: string;
+  [key: string]: any;
+}
+
 export type DonationGoal = {
   goal_name: string | undefined;
   goal_start: string | undefined;
