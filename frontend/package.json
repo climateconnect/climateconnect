@@ -82,7 +82,7 @@
     "youtube-regex": "^1.0.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.3",
+    "@babel/core": "^7.29.6",
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.1",
     "@testing-library/dom": "^10.4.1",

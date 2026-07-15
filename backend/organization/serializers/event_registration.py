@@ -268,6 +268,7 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
     ``id`` is included so the frontend can target individual registrations for
     admin-cancellation (DELETE /api/projects/{slug}/registrations/{id}/).
     ``cancelled_at`` lets the frontend distinguish active from cancelled rows.
+    ``cancellation_reason`` stores the guest-provided message from self-cancellation.
 
     Requires ``select_related("user__user_profile")`` on the queryset to avoid
     N+1 queries when resolving ``url_slug`` and ``thumbnail_image`` from the
@@ -292,6 +293,7 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
             "user_thumbnail_image",
             "registered_at",
             "cancelled_at",
+            "cancellation_reason",
             "field_answers",
         ]
         read_only_fields = fields

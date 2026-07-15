@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from chat_messages.models import Participant
 from climateconnect_api.models import Role
 from climateconnect_api.utility.html import sanitize_html
 from organization.models import Project, ProjectMember
@@ -19,8 +20,8 @@ from organization.models.event_registration import (
     RegistrationStatus,
 )
 from organization.models.registration_field import (
-    RegistrationFieldType,
     RegistrationFieldOption,
+    RegistrationFieldType,
 )
 from organization.serializers.event_registration import (
     EditEventRegistrationConfigSerializer,
@@ -33,6 +34,9 @@ from organization.serializers.event_registration import (
 )
 from organization.tasks import (
     notify_admins_of_registration_change as _notify_admins_task,
+)
+from organization.tasks import (
+    send_cancellation_chat_message as _send_cancellation_chat_task,
 )
 from organization.tasks import (
     send_event_registration_confirmation_email as _send_registration_email,
@@ -463,10 +467,30 @@ class EventRegistrationsView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # ── 6a. Optional cancellation message ───────────────────────────────
+        message_raw = request.data.get("message", "")
+        if message_raw is None:
+            message_raw = ""
+        if not isinstance(message_raw, str):
+            return Response(
+                {"message": "Message must be a string."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        message = message_raw.strip()
+        if message and len(message) > 1000:
+            return Response(
+                {"message": "Message must be 1000 characters or fewer."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # ── 7. Soft-delete: set cancelled_at and cancelled_by ────────────────
         reg.cancelled_at = timezone.now()
         reg.cancelled_by = request.user
-        reg.save(update_fields=["cancelled_at", "cancelled_by"])
+        update_fields = ["cancelled_at", "cancelled_by"]
+        if message:
+            reg.cancellation_reason = message
+            update_fields.append("cancellation_reason")
+        reg.save(update_fields=update_fields)
 
         # ── 8. Revert FULL → OPEN if cancellation freed capacity ────────────
         if rc.status == RegistrationStatus.FULL:
@@ -495,7 +519,82 @@ class EventRegistrationsView(APIView):
                 )
             )
 
+        # ── 10. Optional cancellation chat message to organizer ─────────────
+        if message:
+            _guest_user_id = request.user.id
+            _project_url_slug = project.url_slug
+            _registration_id = reg.id
+            _message = message
+
+            def _dispatch_cancellation_chat_message():
+                try:
+                    _send_cancellation_chat_task.delay(
+                        guest_user_id=_guest_user_id,
+                        project_url_slug=_project_url_slug,
+                        registration_id=_registration_id,
+                        message=_message,
+                    )
+                except Exception as exc:
+                    logger.error(
+                        "[EventRegistration] Failed to dispatch cancellation chat message "
+                        "for registration %s: %s",
+                        _registration_id,
+                        exc,
+                    )
+
+            transaction.on_commit(_dispatch_cancellation_chat_message)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class EventRegistrationOriginView(APIView):
+    """Resolve event context for event-registration-origin chat messages."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, registration_id):
+        try:
+            registration = EventRegistration.objects.select_related(
+                "registration_config__project"
+            ).get(id=registration_id)
+        except EventRegistration.DoesNotExist:
+            return Response(
+                {"message": "Registration not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        project = registration.registration_config.project
+
+        is_chat_participant = Participant.objects.filter(
+            user=request.user,
+            is_active=True,
+            chat__participant_message__origin_type="event_registration",
+            chat__participant_message__origin_id=registration_id,
+        ).exists()
+
+        is_project_admin = ProjectMember.objects.filter(
+            user=request.user,
+            role__role_type__in=[Role.ALL_TYPE, Role.READ_WRITE_TYPE],
+            project=project,
+        ).exists()
+
+        if not (is_chat_participant or is_project_admin):
+            return Response(
+                {
+                    "message": (
+                        "You do not have permission to access this registration origin."
+                    )
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return Response(
+            {
+                "event_name": project.name,
+                "event_url_slug": project.url_slug,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class EditRegistrationConfigView(APIView):

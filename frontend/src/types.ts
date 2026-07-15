@@ -71,6 +71,17 @@ export type RegistrationFieldAnswer = {
   value_text: string | null;
 };
 
+export type ChatMessage = {
+  id?: number;
+  content: string;
+  sender: any;
+  sent_at: string | Date;
+  updated_at?: string | Date | null;
+  unconfirmed?: boolean;
+  origin_type?: string;
+  origin_id?: number | null;
+};
+
 export type User = {
   id: string;
   first_name?: string;
@@ -158,6 +169,7 @@ export type MyEventRegistration = {
   user_thumbnail_image: string | null;
   registered_at: string;
   cancelled_at: string | null;
+  cancellation_reason?: string | null;
   field_answers: RegistrationFieldAnswer[];
 };
 

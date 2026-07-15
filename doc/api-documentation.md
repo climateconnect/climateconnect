@@ -387,6 +387,7 @@ curl -X POST http://localhost:8000/api/auth/verify-token \
 | `/api/projects/{slug}/registrations/` | DELETE | Yes | Cancel own registration (member self-cancellation) |
 | `/api/projects/{slug}/registrations/{id}/` | PATCH | Yes | Cancel a specific guest's registration (organiser/admin only) |
 | `/api/projects/{slug}/registrations/email/` | POST | Yes | Send email to all active guests (organiser/admin only) |
+| `/api/event-registration-origin/{registration_id}/` | GET | Yes | Resolve event context for an event-registration-origin chat message (issue #2102) |
 
 #### Project description (`description_html`)
 
@@ -599,20 +600,47 @@ Allows the authenticated member to cancel their own registration for an upcoming
 
 **Authentication**: Required (401 if unauthenticated).
 
+**Request body** (optional): `{ "message": "<string>" }` — plain-text reason (max 1000 chars) the guest wants to share with the organiser. If provided and non-empty (after stripping), it is stored on the registration as `cancellation_reason` and dispatched as a private chat message to the event organiser (tagged `origin_type="event_registration"`, `origin_id=<registration id>`). If absent, blank, or whitespace-only, the cancellation proceeds with no message.
+
 **Success response**: 204 No Content (no body).
 
 **Error responses**:
 | Status | Condition |
 |---|---|
 | 400 Bad Request | Event `start_date` has already passed |
+| 400 Bad Request | `message` is not a string |
+| 400 Bad Request | `message` exceeds 1000 characters |
 | 401 Unauthorized | Request is not authenticated |
 | 404 Not Found | `{slug}` does not match any project |
 | 404 Not Found | Project has no `EventRegistrationConfig` record |
 | 404 Not Found | User has no active registration for this event |
 
+**Chat message dispatch**: When a non-empty `message` is supplied, the chat message is created by the Celery task `send_cancellation_chat_message`, dispatched via `transaction.on_commit`. A broker/dispatch failure is logged at ERROR but does not roll back the cancellation (already committed, returns 204). `cancellation_reason` is stored atomically with the soft-delete inside the same transaction.
+
 **OPEN recovery**: if the event was at full capacity (`status = "full"`) and this cancellation frees a seat, `EventRegistrationConfig.status` is atomically reverted to `"open"`.
 
 **Seat count**: all places that compute `available_seats` filter by `cancelled_at IS NULL` so cancelled registrations never hold capacity.
+
+#### GET `/api/event-registration-origin/{registration_id}/` — Resolve event context for a cancellation chat message (issue #2102)
+
+Resolves the event referenced by an `event_registration` chat message so the frontend can render a context banner without embedding project data in the `Message` response.
+
+**Authentication**: Required (401 if unauthenticated).
+
+**Authorization**: The requesting user must be a participant of a chat that contains a message with `origin_type = "event_registration"` and `origin_id = {registration_id}`, **or** a project admin/editor of the related event. Returns 403 otherwise.
+
+**Success response** (200 OK):
+| Field | Type | Notes |
+|---|---|---|
+| `event_name` | string | Name of the event |
+| `event_url_slug` | string | URL slug used to build `/projects/{event_url_slug}` |
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | User is neither a chat participant nor a project admin for the related event |
+| 404 Not Found | `{registration_id}` does not match any `EventRegistration` |
 
 #### PATCH `/api/projects/{slug}/registration-config/` — Edit registration settings (issue #1851)
 

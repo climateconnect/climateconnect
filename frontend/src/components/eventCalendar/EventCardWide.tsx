@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.75),
   },
   topicDesktop: {
     [theme.breakpoints.down("sm")]: {
@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme) => ({
   textBlock: {
     display: "flex",
     flexDirection: "column",
-    gap: theme.spacing(0.5),
+    gap: theme.spacing(0.75),
   },
   title: {
     fontWeight: "bold",
@@ -119,12 +119,8 @@ const useStyles = makeStyles((theme) => ({
   locationText: {
     fontSize: 14,
   },
-  owner: {
-    marginTop: theme.spacing(0.25),
-  },
   bottomRow: {
-    marginTop: "auto",
-    paddingTop: theme.spacing(1.5),
+    marginTop: theme.spacing(0.75),
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -270,7 +266,7 @@ export default function EventCardWide({ project, hubUrl }: any) {
             <Typography component="h3" className={classes.title}>
               {project.name}
             </Typography>
-            <div className={classes.owner}>
+            <div>
               <CreatorAndCollaboratorPreviews
                 collaborating_organization={project.collaborating_organizations}
                 project_parent={project.project_parents ? project.project_parents[0] : undefined}

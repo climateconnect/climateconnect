@@ -57,6 +57,7 @@ type EventRegistration = {
   registered_at: string;
   /** null = active registration; ISO string = cancelled */
   cancelled_at: string | null;
+  cancellation_reason: string | null;
   /** Custom-field answers (Phase 4a). Empty array if none. */
   field_answers: RegistrationFieldAnswer[];
 };
@@ -600,6 +601,16 @@ export default function ProjectRegistrationsContent({
                     valueGetter: (_value, row) =>
                       row.cancelled_at ? row.cancelled_at.split(".")[0] + "Z" : "",
                   },
+                  {
+                    // Hidden column — cancellation reason for CSV export
+                    field: "cancellation_reason",
+                    headerName: "Cancellation reason",
+                    width: 0,
+                    sortable: false,
+                    filterable: false,
+                    disableColumnMenu: true,
+                    valueGetter: (value: string | null) => value ?? "",
+                  },
                   ...customFieldColumns,
                   {
                     field: "__actions__",
@@ -611,7 +622,8 @@ export default function ProjectRegistrationsContent({
                     disableColumnMenu: true,
                     renderCell: (params) => {
                       const row = params.row as EventRegistration;
-                      const showViewIcon = (row.field_answers?.length ?? 0) > 0;
+                      const showViewIcon =
+                        (row.field_answers?.length ?? 0) > 0 || !!row.cancellation_reason;
                       const showMenu = !row.cancelled_at;
                       if (!showViewIcon && !showMenu) return null;
                       return (
@@ -647,6 +659,7 @@ export default function ProjectRegistrationsContent({
                   columnVisibilityModel: {
                     registered_at_iso: false,
                     cancelled_at_iso: false,
+                    cancellation_reason: false,
                     ...Object.fromEntries(customFieldColumnNames.map((name) => [name, false])),
                   },
                 },
@@ -681,6 +694,7 @@ export default function ProjectRegistrationsContent({
                     "registered_at_iso",
                     "cancelled_at",
                     "cancelled_at_iso",
+                    "cancellation_reason",
                     ...customFieldColumnNames,
                   ],
                   printFields: ["user_first_name", "user_last_name", ...customFieldColumnNames],
@@ -698,6 +712,13 @@ export default function ProjectRegistrationsContent({
                 border: "none",
                 "& .registration-row--cancelled": {
                   color: "text.disabled",
+                },
+                "& .MuiDataGrid-cell": {
+                  display: "flex",
+                  alignItems: "center",
+                },
+                "& .MuiDataGrid-columnSeparator": {
+                  display: "none",
                 },
               }}
             />
