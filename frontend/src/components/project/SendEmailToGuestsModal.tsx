@@ -399,7 +399,7 @@ export default function SendEmailToGuestsModal({
 
             <Box className={classes.field}>
               <OrganizerMessageEditor
-                content=""
+                content={message}
                 onChange={setMessage}
                 editable={!isSending}
                 error={errors.message}
