@@ -1,7 +1,7 @@
-import { Link, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import AppLink from "../general/AppLink";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { useRouter } from "next/router";
@@ -29,31 +29,26 @@ export default function LoginNudge({ whatToDo, fullPage, className }: Props) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "general", locale: locale });
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const hub = urlParams.get("hub");
   const router = useRouter();
   const currentPath = router.asPath;
   const encodedRedirectUrl = encodeURIComponent(currentPath);
-  let path_to_signin = `${getLocalePrefix(locale)}/signin?`;
-  let path_to_signup = `${getLocalePrefix(locale)}/signup`;
-  path_to_signin += `redirect=${encodedRedirectUrl}`;
-
-  if (hub && hub !== "") {
-    path_to_signin += `&hub=${hub}`;
-    path_to_signup += `?hub=${hub}`;
-  }
+  // `AppLink` reads the active hub from `HubContext` and applies the locale,
+  // appending `?hub=<slug>` and joining the existing `?redirect=` query with
+  // `&` (never a second `?`). The component no longer has to source hub state.
+  const signinHref = `/signin?redirect=${encodedRedirectUrl}`;
+  const signupHref = "/signup";
 
   return (
     <div className={`${fullPage && classes.loginNudge} ${className}`}>
       <Typography className={fullPage ? classes.loginNudgeText : undefined}>
         {texts.please}{" "}
-        <Link underline="always" color="primary" href={path_to_signin}>
+        <AppLink underline="always" color="primary" href={signinHref}>
           {texts.log_in}
-        </Link>{" "}
+        </AppLink>{" "}
         {texts.or}{" "}
-        <Link underline="always" color="primary" href={path_to_signup}>
+        <AppLink underline="always" color="primary" href={signupHref}>
           {texts.sign_up}
-        </Link>{" "}
+        </AppLink>{" "}
         {whatToDo}.
       </Typography>
     </div>

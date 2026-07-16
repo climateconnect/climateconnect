@@ -1,4 +1,4 @@
-import { Box, Link, Theme, useMediaQuery } from "@mui/material";
+import { Box, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -6,7 +6,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import AppLink from "../general/AppLink";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SocialMediaButton from "../general/SocialMediaButton";
@@ -163,15 +163,15 @@ const SmallFooter = ({
     >
       <Box className={classes.flexContainer}>
         <Box className={classes.leftBox}>
-          <Link href={getLocalePrefix(locale) + "/imprint"} color="inherit" underline="hover">
+          <AppLink href="/imprint" leaveHub color="inherit" underline="hover">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.imprint}</span>
-          </Link>
-          <Link href={getLocalePrefix(locale) + "/privacy"} color="inherit" underline="hover">
+          </AppLink>
+          <AppLink href="/privacy" leaveHub color="inherit" underline="hover">
             <span className={`${classes.inheritColor} ${classes.link}`}>{texts.privacy}</span>
-          </Link>
-          <Link href={getLocalePrefix(locale) + "/terms"} color="inherit" underline="hover">
+          </AppLink>
+          <AppLink href="/terms" leaveHub color="inherit" underline="hover">
             <span className={classes.inheritColor}>{texts.terms}</span>
-          </Link>
+          </AppLink>
         </Box>
         {!isNarrowScreen && (
           <Box component="span" className={classes.centerText}>
