@@ -4,7 +4,15 @@ import "@testing-library/jest-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
+import { HubContext } from "../context/HubContext";
 import ProjectContent from "./ProjectContent";
+
+// `AppLink` (used via `MiniOrganizationPreview`) reads the active hub from
+// `HubContext` and the locale from the Next router, so tests that render
+// `ProjectContent` must provide both contexts.
+jest.mock("next/router", () => ({
+  useRouter: () => ({ locale: "en" }),
+}));
 
 // ResizeObserver is not available in JSDOM
 beforeAll(() => {
@@ -55,23 +63,25 @@ function renderProjectContent(projectOverrides = {}) {
   return render(
     <ThemeProvider theme={theme}>
       <UserContext.Provider value={defaultContext as any}>
-        <ProjectContent
-          discussionTabLabel=""
-          handleTabChange={jest.fn()}
-          latestParentComment={[]}
-          leaveProject={jest.fn()}
-          project={project}
-          projectTabsRef={{ current: null }}
-          typesByTabValue={{}}
-          showRequesters={false}
-          toggleShowRequests={jest.fn()}
-          handleSendProjectJoinRequest={jest.fn()}
-          requestedToJoinProject={false}
-          hubUrl={undefined}
-          eventRegistration={null}
-          onEventRegistrationUpdated={jest.fn()}
-          onMembersRefreshed={jest.fn()}
-        />
+        <HubContext.Provider value={{ hubUrl: "", hubData: null, hubTheme: null, hubs: [] }}>
+          <ProjectContent
+            discussionTabLabel=""
+            handleTabChange={jest.fn()}
+            latestParentComment={[]}
+            leaveProject={jest.fn()}
+            project={project}
+            projectTabsRef={{ current: null }}
+            typesByTabValue={{}}
+            showRequesters={false}
+            toggleShowRequests={jest.fn()}
+            handleSendProjectJoinRequest={jest.fn()}
+            requestedToJoinProject={false}
+            hubUrl={undefined}
+            eventRegistration={null}
+            onEventRegistrationUpdated={jest.fn()}
+            onMembersRefreshed={jest.fn()}
+          />
+        </HubContext.Provider>
       </UserContext.Provider>
     </ThemeProvider>
   );

@@ -9,7 +9,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { getLocalePrefix } from "./apiOperations";
+import { appHref } from "./appLink";
 import { getCustomHubData } from "../data/customHubData";
 import { WASSERAKTIONSWOCHEN_PATH } from "../data/wasseraktionswochen_config";
 
@@ -24,12 +24,10 @@ const COMMON_LINKS = {
     onlyShowIconOnMobile: true,
     icon: NotificationsIcon,
     alwaysDisplayDirectly: true,
-    onlyShowLoggedIn: true,
-    // Fixed issue where missing href caused redirection issues on mobile.
     onlyShowOnNormalScreen: true,
   },
   SHARE: (hubUrl?: string) => ({
-    href: hubUrl ? `/share?hub=${hubUrl}` : `/share`,
+    href: appHref("/share", { hubUrl }),
     iconForDrawer: AddCircleIcon,
     icon: AddCircleOutlineIcon,
     hideDesktopIconUnderSm: true,
@@ -328,7 +326,12 @@ const getStaticLinkFromItem = (locale, item) => {
   if (item.isExternalLink) {
     return item.href;
   }
-  return `${getLocalePrefix(locale)}${item.href}`;
+  // Static / hub-switcher targets are global or hub-route destinations, so the
+  // active `?hub=` must never be appended (Category C). `appHref` applies the
+  // locale prefix and — because hub routes (`/hubs/...`) already convey the hub
+  // in their path — skips `?hub=` automatically, preventing a stale
+  // `?hub=<old>` from leaking onto a different hub.
+  return appHref(item.href, { leaveHub: true, locale });
 };
 
 export { getLinks, getLoggedInLinks, getStaticLinks, getStaticLinkFromItem, COMMON_LINKS };
