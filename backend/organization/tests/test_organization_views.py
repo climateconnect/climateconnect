@@ -1,6 +1,7 @@
 import io
 import unittest
 from base64 import b64encode
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
@@ -1365,3 +1366,51 @@ class OrganizationLocationHubFilterTest(TransactionTestCase):
         )
 
         self.assertEqual(len(org_ids), 6)
+
+
+class TestListOrganizationsAPIViewPost(APITestCase):
+    def setUp(self):
+        self.url = reverse("organization:list-organizations-api-view")
+        self.organizations = [
+            Organization.objects.create(
+                name=f"Test Organization {i}",
+                url_slug=f"test-organization-{i}",
+            )
+            for i in range(NUMBER_OF_ORGANIZATIONS)
+        ]
+
+    @tag("organizations")
+    def test_post_with_location_body_returns_200(self):
+        # Regression test: the frontend sends the location object in the POST
+        # body for location search. The endpoint must accept POST (not 405)
+        # and fall back to the client-supplied location when OSM lookup fails.
+        location_body = {
+            "place_id": "abc123",
+            "geojson": {"type": "Point", "coordinates": [11.0, 49.0]},
+            "osm_id": 123,
+            "osm_type": "node",
+            "lat": 49.0,
+            "lon": 11.0,
+        }
+
+        with patch(
+            "organization.views.organization_views.get_location_with_range"
+        ) as mock_loc:
+            mock_loc.return_value = {
+                "location": Point(11.0, 49.0),
+                "radius": 0,
+                "country": "Germany",
+            }
+            response = self.client.post(self.url, location_body, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        self.assertEqual(len(results), NUMBER_OF_ORGANIZATIONS)
+
+    @tag("organizations")
+    def test_post_without_location_body_returns_200(self):
+        # A plain POST without a location object should still work like GET.
+        response = self.client.post(self.url, {}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        self.assertEqual(len(results), NUMBER_OF_ORGANIZATIONS)

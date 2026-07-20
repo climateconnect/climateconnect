@@ -113,7 +113,9 @@ class TestCancellationChatTask(APITestCase):
         )
         self.assertEqual(message.content, "I cannot attend anymore.")
         self.assertTrue(
-            MessageReceiver.objects.filter(message=message, receiver=self.organiser).exists()
+            MessageReceiver.objects.filter(
+                message=message, receiver=self.organiser
+            ).exists()
         )
         mock_user_notif.assert_called_once()
         mock_email.assert_called_once()
@@ -127,8 +129,12 @@ class TestCancellationChatTask(APITestCase):
         )
 
         with (
-            mock_patch("climateconnect_api.utility.notification.create_email_notification"),
-            mock_patch("climateconnect_api.utility.notification.create_user_notification"),
+            mock_patch(
+                "climateconnect_api.utility.notification.create_email_notification"
+            ),
+            mock_patch(
+                "climateconnect_api.utility.notification.create_user_notification"
+            ),
         ):
             send_cancellation_chat_message.run(
                 guest_user_id=self.guest.id,
@@ -155,8 +161,12 @@ class TestCancellationChatTask(APITestCase):
     @tag("cancel_registration", "cancellation_message")
     def test_task_is_idempotent_for_retry_same_payload(self):
         with (
-            mock_patch("climateconnect_api.utility.notification.create_email_notification"),
-            mock_patch("climateconnect_api.utility.notification.create_user_notification"),
+            mock_patch(
+                "climateconnect_api.utility.notification.create_email_notification"
+            ),
+            mock_patch(
+                "climateconnect_api.utility.notification.create_user_notification"
+            ),
         ):
             send_cancellation_chat_message.run(
                 guest_user_id=self.guest.id,
@@ -281,7 +291,9 @@ class TestEventRegistrationOriginEndpoint(APITestCase):
 
     @tag("cancel_registration", "cancellation_message")
     def test_participant_can_read_origin(self):
-        self.client.login(username="organiser_cancel_message_origin", password="testpassword")
+        self.client.login(
+            username="organiser_cancel_message_origin", password="testpassword"
+        )
         response = self.client.get(self._origin_url(self.registration.id))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -290,12 +302,16 @@ class TestEventRegistrationOriginEndpoint(APITestCase):
 
     @tag("cancel_registration", "cancellation_message")
     def test_unrelated_user_gets_403(self):
-        self.client.login(username="outsider_cancel_message_origin", password="testpassword")
+        self.client.login(
+            username="outsider_cancel_message_origin", password="testpassword"
+        )
         response = self.client.get(self._origin_url(self.registration.id))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @tag("cancel_registration", "cancellation_message")
     def test_missing_registration_returns_404(self):
-        self.client.login(username="organiser_cancel_message_origin", password="testpassword")
+        self.client.login(
+            username="organiser_cancel_message_origin", password="testpassword"
+        )
         response = self.client.get(self._origin_url(999999))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
