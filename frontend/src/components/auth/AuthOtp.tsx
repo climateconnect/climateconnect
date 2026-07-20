@@ -16,7 +16,7 @@ import { trackAuthEvent } from "../../utils/analytics";
 import makeStyles from "@mui/styles/makeStyles";
 
 const SESSION_KEY = "auth_session_key";
-const RESEND_COOLDOWN_SECONDS = 60;
+const RESEND_COOLDOWN_SECONDS = 180;
 
 interface AuthOtpProps {
   email: string;
@@ -262,6 +262,10 @@ export default function AuthOtp({
         style={{ marginBottom: 16 }}
         autoFocus
       />
+
+      <Typography variant="body2" style={{ marginBottom: 16, color: "rgba(0, 0, 0, 0.6)" }}>
+        {texts.code_delivery_note}
+      </Typography>
 
       <Button
         type="submit"
