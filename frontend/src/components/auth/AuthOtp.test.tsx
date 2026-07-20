@@ -88,7 +88,7 @@ describe("AuthOtp", () => {
       renderAuthOtp();
       // Wait for request-token to complete and countdown to show
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /resend code \(60s\)/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /resend code \(180s\)/i })).toBeInTheDocument();
       });
       expect(screen.getByRole("button", { name: /verify/i })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe("AuthOtp", () => {
     it("starts resend countdown after token is requested", async () => {
       renderAuthOtp();
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /resend code \(60s\)/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /resend code \(180s\)/i })).toBeInTheDocument();
       });
     });
   });
@@ -217,7 +217,7 @@ describe("AuthOtp", () => {
 
       // Advance past initial countdown
       act(() => {
-        jest.advanceTimersByTime(60000);
+        jest.advanceTimersByTime(180000);
       });
 
       const input = screen.getByRole("textbox", { name: /6-digit code/i });
@@ -237,7 +237,7 @@ describe("AuthOtp", () => {
       renderAuthOtp();
       await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
       act(() => {
-        jest.advanceTimersByTime(60000);
+        jest.advanceTimersByTime(180000);
       });
 
       const input = screen.getByRole("textbox", { name: /6-digit code/i });
@@ -257,7 +257,7 @@ describe("AuthOtp", () => {
       renderAuthOtp();
       await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
       act(() => {
-        jest.advanceTimersByTime(60000);
+        jest.advanceTimersByTime(180000);
       });
 
       const input = screen.getByRole("textbox", { name: /6-digit code/i });
@@ -277,7 +277,7 @@ describe("AuthOtp", () => {
       renderAuthOtp();
       await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
       act(() => {
-        jest.advanceTimersByTime(60000);
+        jest.advanceTimersByTime(180000);
       });
 
       const input = screen.getByRole("textbox", { name: /6-digit code/i });
@@ -294,7 +294,7 @@ describe("AuthOtp", () => {
     it("resend button is disabled during countdown", async () => {
       renderAuthOtp();
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /resend code \(60s\)/i })).toBeDisabled();
+        expect(screen.getByRole("button", { name: /resend code \(180s\)/i })).toBeDisabled();
       });
     });
 
@@ -303,7 +303,7 @@ describe("AuthOtp", () => {
       await waitFor(() => expect(mockApiRequest).toHaveBeenCalledTimes(1));
 
       act(() => {
-        jest.advanceTimersByTime(60000);
+        jest.advanceTimersByTime(180000);
       });
 
       await waitFor(() => {
@@ -325,7 +325,7 @@ describe("AuthOtp", () => {
 
       // Advance past countdown
       act(() => {
-        jest.advanceTimersByTime(60000);
+        jest.advanceTimersByTime(180000);
       });
 
       const resendBtn = await screen.findByRole("button", { name: /^resend code$/i });

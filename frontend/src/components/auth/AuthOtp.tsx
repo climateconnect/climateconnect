@@ -125,6 +125,12 @@ export default function AuthOtp({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleCodePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").trim().replace(/\D/g, "").slice(0, 6);
+    setCode(pasted);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!sessionKey || code.length !== 6) return;
@@ -251,6 +257,7 @@ export default function AuthOtp({
         label={texts.enter_your_code || "Enter your code"}
         value={code}
         onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+        onPaste={handleCodePaste}
         inputProps={{
           maxLength: 6,
           inputMode: "numeric",
