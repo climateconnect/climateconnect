@@ -57,7 +57,7 @@ class RequestTokenViewTest(TestCase):
     @patch("auth_app.views.send_login_code_email")
     def test_valid_email_previous_token_old_returns_200_and_resent(self, mock_task):
         user = _make_user("resend@example.com")
-        old_token = _make_token(user, "resend@example.com", seconds_ago=120)
+        old_token = _make_token(user, "resend@example.com", seconds_ago=200)
         response = self.client.post(
             URL, {"email": "resend@example.com"}, content_type="application/json"
         )
@@ -81,6 +81,34 @@ class RequestTokenViewTest(TestCase):
         self.assertIn("Retry-After", response.headers)
         self.assertEqual(
             LoginToken.objects.filter(email="cooldown@example.com").count(), 1
+        )
+        mock_task.delay.assert_not_called()
+
+    @patch("auth_app.views.send_login_code_email")
+    def test_cooldown_exactly_at_threshold_returns_200(self, mock_task):
+        user = _make_user("cooldown_boundary@example.com")
+        _make_token(user, "cooldown_boundary@example.com", seconds_ago=180)
+        response = self.client.post(
+            URL,
+            {"email": "cooldown_boundary@example.com"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        mock_task.delay.assert_called_once()
+
+    @patch("auth_app.views.send_login_code_email")
+    def test_cooldown_within_threshold_returns_429(self, mock_task):
+        user = _make_user("cooldown_within@example.com")
+        _make_token(user, "cooldown_within@example.com", seconds_ago=90)
+        response = self.client.post(
+            URL,
+            {"email": "cooldown_within@example.com"},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 429)
+        self.assertIn("Retry-After", response.headers)
+        self.assertEqual(
+            LoginToken.objects.filter(email="cooldown_within@example.com").count(), 1
         )
         mock_task.delay.assert_not_called()
 
