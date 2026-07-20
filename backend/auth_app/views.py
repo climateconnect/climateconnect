@@ -166,8 +166,8 @@ class RequestTokenView(APIView):
         )
         if recent_token is not None:
             seconds_since = (now - recent_token.created_at).total_seconds()
-            if seconds_since < 60:
-                retry_after = int(60 - seconds_since) + 1
+            if seconds_since < 180:
+                retry_after = int(180 - seconds_since) + 1
                 LoginAuditLog.objects.create(
                     email=email,
                     user=None,
