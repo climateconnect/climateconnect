@@ -29,6 +29,8 @@ import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import { parseProjectStubs } from "../../public/lib/parsingOperations";
+import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
+import { getAllHubs } from "../../public/lib/hubOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -88,6 +90,7 @@ export async function getServerSideProps(ctx) {
     rolesOptions,
     following,
     hubThemeData,
+    hubs,
   ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale, hubUrl),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
@@ -96,6 +99,7 @@ export async function getServerSideProps(ctx) {
     getRolesOptions(auth_token, ctx.locale),
     getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
     getHubTheme(hubUrl),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -107,6 +111,7 @@ export async function getServerSideProps(ctx) {
       rolesOptions: rolesOptions,
       following: following,
       hubThemeData: hubThemeData,
+      hubs: hubs,
       hubUrl: hubUrl,
     }),
   };
@@ -120,9 +125,10 @@ export default function OrganizationPage({
   rolesOptions,
   following,
   hubThemeData,
+  hubs,
   hubUrl,
 }) {
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   // l. 105-137 handles following Organizations
@@ -158,6 +164,8 @@ export default function OrganizationPage({
   });
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const defaultBackUrl = hubUrl ? "/" + locale + "/hubs/" + hubUrl : "/" + locale;
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
@@ -169,6 +177,15 @@ export default function OrganizationPage({
       }
       hubUrl={hubUrl}
       showDonationGoal={true}
+      subHeader={
+        <HubsSubHeader
+          hubs={hubs}
+          onlyShowDropDown={true}
+          isCustomHub={isCustomHub}
+          hubSlug={hubUrl}
+          defaultBackUrl={defaultBackUrl}
+        />
+      }
     >
       {organization ? (
         <OrganizationLayout

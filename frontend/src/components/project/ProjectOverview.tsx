@@ -17,7 +17,6 @@ import { getDateTimeRange } from "../../../public/lib/dateOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
-import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
 import RegistrationActionButton from "./Buttons/RegistrationActionButton";
 import MessageContent from "../communication/MessageContent";
@@ -86,11 +85,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
     headerContainer: {
       display: "flex",
       justifyContent: "center",
-    },
-    goBackButtonContainer: {
-      position: "absolute",
-      marginLeft: theme.spacing(1),
-      marginTop: theme.spacing(1),
     },
     shareButtonContainer: {},
     calendarButtonContainer: {},
@@ -381,7 +375,6 @@ function ShortProjectInfo({ project, isWasseraktionswochenEnabled, showAttendedI
 }
 
 function SmallScreenOverview({
-  screenSize,
   project,
   projectAdmin,
   hubUrl,
@@ -396,15 +389,6 @@ function SmallScreenOverview({
   return (
     <>
       <div className={classes.imageContainer}>
-        {screenSize?.belowTiny && (
-          <GoBackFromProjectPageButton
-            containerClassName={classes.goBackButtonContainer}
-            texts={texts}
-            tinyScreen={screenSize.belowTiny}
-            locale={locale}
-            project={project}
-          />
-        )}
         <div className={classes.actionButtonsGroup}>
           <ProjectAddToCalendarButton
             className={classes.calendarButtonContainer}
