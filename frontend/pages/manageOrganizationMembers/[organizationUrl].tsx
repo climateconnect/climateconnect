@@ -5,7 +5,10 @@ import React, { useContext, useState } from "react";
 
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getRolesOptions, sendToLogin } from "../../public/lib/apiOperations";
-import { parseOrganization } from "../../public/lib/organizationOperations";
+import {
+  parseOrganization,
+  getMembersByOrganization,
+} from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -146,42 +149,6 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-async function getMembersByOrganization(organizationUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
-      token: token,
-      locale: locale,
-    });
-    if (!resp.data) return null;
-    else {
-      return parseOrganizationMembers(resp.data.results);
-    }
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
-function parseOrganizationMembers(members) {
-  return members.map((m) => {
-    const member = m.user;
-    return {
-      ...member,
-      member_id: m.id,
-      image: process.env.API_URL + member.image,
-      name: member.first_name + " " + member.last_name,
-      role: m.permission,
-      time_per_week: m.time_per_week,
-      role_in_organization: m.role_in_organization ? m.role_in_organization : "",
-      location: member.location,
-      isCreator: m.permission.role_type === ROLE_TYPES.all_type,
-    };
-  });
 }
 
 const getAvailabilityOptions = async (token, locale) => {

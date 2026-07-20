@@ -1,5 +1,6 @@
 import { apiRequest } from "./apiOperations";
 import { getImageUrl } from "./imageOperations";
+import ROLE_TYPES from "../../public/data/role_types";
 
 export function parseOrganization(organization, editMode: boolean = false) {
   const org = {
@@ -58,6 +59,43 @@ export async function getUserOrganizations(token, locale) {
   }
 }
 
+export async function getMembersByOrganization(organizationUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
+      token: token,
+      locale: locale,
+    });
+    if (!resp.data) return null;
+    else {
+      return parseOrganizationMembers(resp.data.results);
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+export function parseOrganizationMembers(members) {
+  return members.map((m) => {
+    const member = m.user;
+    return {
+      ...member,
+      member_id: m.id,
+      image: process.env.API_URL + member.image,
+      name: member.first_name + " " + member.last_name,
+      role: m.permission,
+      permission: m.permission.role_type,
+      time_per_week: m.time_per_week,
+      role_in_organization: m.role_in_organization ? m.role_in_organization : "",
+      location: member.location,
+      isCreator: m.permission.role_type === ROLE_TYPES.all_type,
+    };
+  });
+}
+
 function getOrganizationInfo(organization, editMode) {
   const info = {
     location: organization.location,
@@ -77,7 +115,7 @@ function getOrganizationInfo(organization, editMode) {
   /* For organization sizes and involvement we must differ between editing and non editing attribute for this object.
          When editing, it is required to have the attributes separate in order to use the generic functions to modify the fields in EditAccountPage.js
          When displaying the Org page outside of editing we want to have the info be contained inside the same attribute to display them side by side.
- */
+  */
   if (editMode) {
     return {
       ...info,
