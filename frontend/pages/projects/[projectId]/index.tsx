@@ -10,7 +10,6 @@ import PageNotFound from "../../../src/components/general/PageNotFound";
 import WideLayout from "../../../src/components/layouts/WideLayout";
 import ProjectPageRoot from "../../../src/components/project/ProjectPageRoot";
 import HubsSubHeader from "../../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
-import { getAllHubs } from "../../../public/lib/hubOperations";
 import { useMediaQuery } from "@mui/material";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import { Theme } from "@mui/material/styles";
@@ -22,6 +21,7 @@ import theme from "../../../src/themes/theme";
 import { NOTIFICATION_TYPES } from "../../../src/components/communication/notifications/Notification";
 import { getProjectTypeOptions } from "../../../public/lib/getOptions";
 import BrowseContext from "../../../src/components/context/BrowseContext";
+import { HubContext } from "../../../src/components/context/HubContext";
 import { parseData } from "../../../public/lib/parsingOperations";
 import {
   WASSERAKTIONSWOCHEN_PARENT_SLUG,
@@ -89,7 +89,6 @@ export async function getServerSideProps(ctx) {
     posts,
     comments,
     userInteractions,
-    hubs,
     similarProjects,
     hubSupporters,
     hubThemeData,
@@ -99,7 +98,6 @@ export async function getServerSideProps(ctx) {
     getPostsByProject(projectUrl, auth_token, ctx.locale),
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
-    getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale, hubUrl),
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
@@ -132,7 +130,6 @@ export async function getServerSideProps(ctx) {
       isRegistered: userInteractions.is_registered ?? false,
       hasAttended: userInteractions.has_attended ?? false,
       adminCancelled: userInteractions.admin_cancelled ?? false,
-      hubs: hubs,
       similarProjects: similarProjects,
       hubSupporters: hubSupporters,
       hubUrl,
@@ -154,7 +151,6 @@ export default function ProjectPage({
   isRegistered,
   hasAttended,
   adminCancelled,
-  hubs,
   similarProjects,
   hubSupporters,
   hubUrl,
@@ -174,6 +170,7 @@ export default function ProjectPage({
   const [numberOfLikes, setNumberOfLikes] = useState(project?.number_of_likes);
   const [numberOfFollowers, setNumberOfFollowers] = useState(project?.number_of_followers);
   const { CUSTOM_HUB_URLS, locale, user } = useContext(UserContext);
+  const { hubs } = useContext(HubContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = useState(true);
   const [projectTypes, setProjectTypes] = useState([]);

@@ -27,7 +27,7 @@ jest.mock("../richText/OrganizerMessageEditor", () => {
   return {
     __esModule: true,
     stripHtml: (html: string) => html.replace(/<[^>]*>/g, "").trim(),
-    default: ({ _content, onChange, editable, error, ariaLabel }: any) => (
+    default: ({ content, onChange, editable, error, ariaLabel }: any) => (
       <div>
         <div
           role="textbox"
@@ -38,7 +38,9 @@ jest.mock("../richText/OrganizerMessageEditor", () => {
             onChange(html === "<p></p>" ? "" : html);
           }}
           data-testid="rich-text-editor"
-        />
+        >
+          {content}
+        </div>
         {error && <div data-testid="editor-error">{error}</div>}
       </div>
     ),
@@ -211,11 +213,13 @@ describe("SendEmailToGuestsModal", () => {
       expect(screen.getByText(/team admins will also receive a copy/i)).toBeInTheDocument();
     });
 
-    it("Back button returns to the compose form with subject preserved", async () => {
+    it("Back button returns to the compose form with subject and message preserved", async () => {
       await fillAndClickSendNow();
       fireEvent.click(screen.getByRole("button", { name: /back/i }));
       expect(screen.getByRole("textbox", { name: /subject/i })).toHaveValue("Event update");
-      expect(screen.getByTestId("rich-text-editor")).toBeInTheDocument();
+      expect(screen.getByTestId("rich-text-editor")).toHaveTextContent(
+        "Please note the time change."
+      );
       expect(mockApiRequest).not.toHaveBeenCalled();
     });
   });

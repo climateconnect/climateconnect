@@ -3,12 +3,12 @@ import NextCookies from "next-cookies";
 import React, { useContext, useMemo } from "react";
 import { useRouter } from "next/router";
 import { Theme, useMediaQuery } from "@mui/material";
-import { getAllHubs } from "../public/lib/hubOperations";
 import { getSectorOptions } from "../public/lib/getOptions";
 import { apiRequest } from "../public/lib/apiOperations";
 import { getFeatureTogglesFromRequest } from "../src/hooks/featureToggles";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
+import { HubContext } from "../src/components/context/HubContext";
 import WideLayout from "../src/components/layouts/WideLayout";
 import HubTabsNavigation from "../src/components/hub/HubTabsNavigation";
 import EventCalendarContent from "../src/components/eventCalendar/EventCalendarContent";
@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const locale = ctx.locale ?? "en";
   const token = NextCookies(ctx).auth_token;
 
-  const [hubs, sectorOptions] = await Promise.all([getAllHubs(locale), getSectorOptions(locale)]);
+  const [sectorOptions] = await Promise.all([getSectorOptions(locale)]);
 
   let initialEvents: any[] = [];
   try {
@@ -62,15 +62,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   return {
     props: {
-      hubs,
       filterChoices: { sectors: sectorOptions },
       initialEvents,
     },
   };
 };
 
-export default function EventsPage({ hubs, filterChoices, initialEvents }: any) {
+export default function EventsPage({ filterChoices, initialEvents }: any) {
   const { locale, hubUrl } = useContext(UserContext);
+  const { hubs } = useContext(HubContext);
   const router = useRouter();
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const texts = useMemo(() => getTexts({ page: "hub", locale: locale }), [locale]);

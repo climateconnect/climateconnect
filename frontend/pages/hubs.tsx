@@ -1,9 +1,9 @@
 import { Container, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { getAllHubs } from "../public/lib/hubOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
+import { HubContext } from "../src/components/context/HubContext";
 import HubHeaderImage from "../src/components/hub/HubHeaderImage";
 import HubPreviews from "../src/components/hub/HubPreviews";
 import NavigationSubHeader from "../src/components/hub/NavigationSubHeader";
@@ -41,18 +41,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export async function getServerSideProps(ctx: { locale: any }) {
+export async function getServerSideProps() {
   return {
-    props: {
-      hubs: await getAllHubs(ctx.locale),
-    },
+    props: {},
   };
 }
 
-export default function Hubs({ hubs }) {
+export default function Hubs() {
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
+  const { hubs } = useContext(HubContext);
   const texts = getTexts({ page: "hub", locale: locale });
   return (
     <WideLayout largeFooter noSpaceBottom title={texts.climate_action_hubs}>
