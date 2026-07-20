@@ -1,5 +1,6 @@
 import NextCookies from "next-cookies";
 import React, { useContext, useRef, useState } from "react";
+import ROLE_TYPES from "../../public/data/role_types";
 import getOrganizationInfoMetadata from "../../public/data/organization_info_metadata";
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
 import { getSectorOptions, getOrganizationTagsOptions } from "../../public/lib/getOptions";
@@ -23,8 +24,9 @@ export async function getServerSideProps(ctx) {
   }
   const hubUrl = ctx.query.hub;
   const url = encodeURI(ctx.query.organizationUrl);
-  const [organization, tagOptions, allSectors, hubThemeData] = await Promise.all([
+  const [organization, members, tagOptions, allSectors, hubThemeData] = await Promise.all([
     getOrganizationByUrlIfExists(url, auth_token, ctx.locale, hubUrl),
+    getMembersByOrganization(url, auth_token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSectorOptions(ctx.locale, hubUrl),
     getHubTheme(hubUrl),
@@ -33,6 +35,7 @@ export async function getServerSideProps(ctx) {
   return {
     props: nullifyUndefinedValues({
       organization: organization,
+      members: members,
       tagOptions: tagOptions,
       allSectors: getSectorOptionsForEditOrg(organization, allSectors),
       hubUrl: hubUrl,
@@ -44,19 +47,21 @@ export async function getServerSideProps(ctx) {
 //This route should only be accessible to admins of the organization
 export default function EditOrganizationPage({
   organization,
+  members,
   tagOptions,
   allSectors,
   hubUrl,
   hubThemeData,
 }: {
   organization: any;
+  members: any[];
   tagOptions: any;
   allSectors: SectorOptionType[];
   hubUrl?: string;
   hubThemeData?: any;
 }) {
   const { locale, user } = useContext(UserContext);
-  const user_role = organization?.members?.find((m) => m.user && m.user.id === user?.id);
+  const user_role = members?.find((m) => m.id === user?.id)?.role;
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -159,4 +164,40 @@ async function getOrganizationByUrlIfExists(organizationUrl, token, locale, hubU
     console.log("Error when getting organization " + organizationUrl);
     return null;
   }
+}
+
+async function getMembersByOrganization(organizationUrl, token, locale) {
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
+      token: token,
+      locale: locale,
+    });
+    if (!resp.data) return null;
+    else {
+      return parseOrganizationMembers(resp.data.results);
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
+function parseOrganizationMembers(members) {
+  return members.map((m) => {
+    const member = m.user;
+    return {
+      ...member,
+      member_id: m.id,
+      image: process.env.API_URL + member.image,
+      name: member.first_name + " " + member.last_name,
+      role: m.permission,
+      time_per_week: m.time_per_week,
+      role_in_organization: m.role_in_organization ? m.role_in_organization : "",
+      location: member.location,
+      isCreator: m.permission.role_type === ROLE_TYPES.all_type,
+    };
+  });
 }
