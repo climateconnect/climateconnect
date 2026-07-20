@@ -1,6 +1,7 @@
 import { Button, ButtonProps } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { useRouter } from "next/router";
 import React, { useContext, useRef } from "react";
 import getTexts from "../../../../public/texts/texts";
 import UserContext from "../../context/UserContext";
@@ -38,6 +39,8 @@ export default function HubsDropDown({
   const popperRef = useRef<HTMLAnchorElement | null>(null);
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
+  const router = useRouter();
+  const isEventsPage = router.pathname.includes("events");
 
   const toggleButtonProps: ButtonProps = {};
   if (!isNarrowScreen) {
@@ -51,8 +54,12 @@ export default function HubsDropDown({
     }
   };
 
+  const currentHash = typeof window !== "undefined" ? window.location.hash : "";
   const dropDownHubItems = hubs.map((h) => ({
-    href: !user && h.landing_page_component ? `/hubs/${h.url_slug}` : `/hubs/${h.url_slug}/browse`,
+    href: isEventsPage
+      ? `/hubs/${h.url_slug}/events`
+      : (!user && h.landing_page_component ? `/hubs/${h.url_slug}` : `/hubs/${h.url_slug}/browse`) +
+        currentHash,
     text: h.name,
   }));
 
