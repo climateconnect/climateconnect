@@ -55,7 +55,8 @@ export default function EditOrganizationPage({
   hubUrl?: string;
   hubThemeData?: any;
 }) {
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
+  const user_role = organization?.members?.find((m) => m.user && m.user.id === user?.id);
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -113,6 +114,7 @@ export default function EditOrganizationPage({
         organization={organization}
         tagOptions={tagOptions}
         hubUrl={hubUrl}
+        user_role={user_role}
       />
     </WideLayout>
   );

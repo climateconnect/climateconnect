@@ -23,6 +23,7 @@ import Alert from "@mui/material/Alert";
 
 import { parseOrganization } from "../../../public/lib/organizationOperations";
 import FeedbackContext from "../context/FeedbackContext";
+import ROLE_TYPES from "../../../public/data/role_types";
 
 const useStyles = makeStyles((theme) => ({
   headline: {
@@ -59,6 +60,7 @@ export default function EditOrganizationRoot({
   organization,
   tagOptions,
   hubUrl,
+  user_role,
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
@@ -252,8 +254,7 @@ export default function EditOrganizationRoot({
     : standardTextsToTranslate.concat(getInvolvedText);
 
   const { showFeedbackMessage } = useContext(FeedbackContext);
-  const canDeleteOrganization =
-    !!user && !!organization?.creator && organization?.creator?.url_slug === user?.url_slug;
+  const canDeleteOrganization = !!user_role && user_role.role_type === ROLE_TYPES.all_type;
 
   useEffect(() => {
     if (organization.language && organization.language !== locale) {
