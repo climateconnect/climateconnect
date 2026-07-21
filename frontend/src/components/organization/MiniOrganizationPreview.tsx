@@ -1,8 +1,8 @@
-import { Avatar, IconButton, Link, Theme, Tooltip, Typography } from "@mui/material";
+import { Avatar, IconButton, Theme, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import AppLink from "../general/AppLink";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { getImageUrl } from "./../../../public/lib/imageOperations";
@@ -63,16 +63,13 @@ export default function MiniOrganizationPreview({
   nolink,
   doNotShowName,
   inline,
-  hubUrl,
 }: any) {
-  const { locale } = useContext(UserContext);
-  const queryString = hubUrl ? "?hub=" + hubUrl : "";
   if (!nolink)
     return (
-      <Link
+      <AppLink
         className={className}
         color="inherit"
-        href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}${queryString}`}
+        href={`/organizations/${organization.url_slug}`}
         target="_blank"
         underline="hover"
       >
@@ -83,7 +80,7 @@ export default function MiniOrganizationPreview({
           doNotShowName={doNotShowName}
           inline={inline}
         />
-      </Link>
+      </AppLink>
     );
   else
     return (

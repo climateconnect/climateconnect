@@ -1,8 +1,7 @@
-import { Box, Card, CardActions, Link, Tooltip, Typography } from "@mui/material";
+import { Box, Card, CardActions, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import UserContext from "../context/UserContext";
+import React from "react";
+import AppLink from "../general/AppLink";
 import OrganizationPreviewHeader from "./OrganizationPreviewHeader";
 import OrganizationPreviewBody from "./OrganizationPreviewBody";
 import { AssignmentSharp, GroupSharp } from "@mui/icons-material";
@@ -74,16 +73,14 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function OrganizationPreview({ organization, hubUrl }) {
+export default function OrganizationPreview({ organization }: { organization: any }) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
-  const queryString = hubUrl ? "?hub=" + hubUrl : "";
 
   return (
-    <Link
-      href={getLocalePrefix(locale) + `/organizations/${organization.url_slug}${queryString}`}
-      className={classes.noUnderline}
+    <AppLink
+      href={`/organizations/${organization.url_slug}`}
       underline="hover"
+      className={classes.noUnderline}
     >
       <Card className={classes.root} variant="outlined">
         <OrganizationPreviewHeader organization={organization} />
@@ -107,6 +104,6 @@ export default function OrganizationPreview({ organization, hubUrl }) {
           </Box>
         </CardActions>
       </Card>
-    </Link>
+    </AppLink>
   );
 }

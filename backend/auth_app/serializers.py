@@ -12,3 +12,6 @@ class RequestTokenSerializer(serializers.Serializer):
 class VerifyTokenSerializer(serializers.Serializer):
     session_key = serializers.CharField(required=True)
     code = serializers.CharField(required=True)
+
+    def validate_code(self, value):
+        return value.strip()
