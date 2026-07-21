@@ -13,6 +13,7 @@ export function parseOrganization(organization, editMode: boolean = false) {
     translations: organization.translations,
     sectors: organization.sectors,
     number_of_followers: organization.number_of_followers,
+    projects_count: organization.projects_count,
     info: getOrganizationInfo(organization, editMode) as any,
   };
 

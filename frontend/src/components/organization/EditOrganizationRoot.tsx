@@ -17,7 +17,7 @@ import EditAccountPage from "../account/EditAccountPage";
 import UserContext from "../context/UserContext";
 import PageNotFound from "../general/PageNotFound";
 import TranslateTexts from "../general/TranslateTexts";
-import ConfirmDialog from "../dialogs/ConfirmDialog";
+import DeleteOrganizationDialog from "./DeleteOrganizationDialog";
 
 import Alert from "@mui/material/Alert";
 
@@ -81,6 +81,8 @@ export default function EditOrganizationRoot({
   );
   const [sourceLanguage] = useState(organization.language);
   const [targetLanguage] = useState(locales.find((l) => l !== sourceLanguage));
+  const visibleProjectsCount = organization?.projects_count ?? 0;
+  const hasVisibleProjects = visibleProjectsCount > 0;
 
   const handleSetEditedOrganization = (newOrganizationData) => {
     setEditedOrganization({ ...editedOrganization, ...newOrganizationData });
@@ -181,7 +183,7 @@ export default function EditOrganizationRoot({
           message: texts.you_have_successfully_deleted_your_organization,
           ...(hubUrl ? { hub: hubUrl } : {}),
         });
-        router.push(`/profiles/${profileUrlSlug}?${query.toString()}#organizations`);
+        router.push(`/profiles/${profileUrlSlug}?${query.toString()}`);
       })
       .catch(function (error) {
         console.log(error);
@@ -194,7 +196,7 @@ export default function EditOrganizationRoot({
   };
 
   const handleDeleteDialogClose = (confirmed) => {
-    if (confirmed) {
+    if (confirmed && !hasVisibleProjects) {
       deleteOrganization();
     }
     setDeleteDialogOpen(false);
@@ -302,13 +304,21 @@ export default function EditOrganizationRoot({
                 </Button>
               </div>
             )}
-            <ConfirmDialog
+            <DeleteOrganizationDialog
               open={deleteDialogOpen}
               onClose={handleDeleteDialogClose}
-              cancelText={texts.no}
-              confirmText={texts.yes}
+              cancelText={texts.cancel}
+              confirmText={texts.delete_organization}
               title={texts.do_you_really_want_to_delete_your_organization}
-              text={texts.deleting_organization_is_irreversible}
+              text={
+                hasVisibleProjects
+                  ? texts.organization_has_projects_cannot_delete.replace(
+                      "{count}",
+                      String(visibleProjectsCount)
+                    )
+                  : texts.deleting_organization_is_irreversible
+              }
+              showConfirmButton={!hasVisibleProjects}
             />
           </>
         ) : (

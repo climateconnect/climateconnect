@@ -78,6 +78,7 @@ from organization.utility.organization import (
     create_organization_translation,
     get_existing_name_message,
     is_valid_organization_size,
+    get_visible_organization_projects_queryset,
 )
 from organization.utility.sector import (
     create_context_for_hub_specific_sector,
@@ -845,21 +846,25 @@ class OrganizationAPIView(APIView):
                 {"message": _("Organization not found:") + url_slug},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        project_count = organization.project_parent_org.count()
+        project_count = get_visible_organization_projects_queryset(organization).count()
         if project_count > 0:
             return Response(
                 {
                     "message": _(
-                        "The organisation has %(count)d project(s). Please first delete these"
+                        "The organisation has %(count)d projects. Please first delete these"
                         " projects or assign them to other organisations or users."
                     )
                     % {"count": project_count}
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        organization_name = organization.name
         organization.delete()
         return Response(
-            {"message": _("Organisation %(name)s successfully deleted.") % {"name": organization.name}},
+            {
+                "message": _("Organisation %(name)s successfully deleted.")
+                % {"name": organization_name}
+            },
             status=status.HTTP_200_OK,
         )
 
@@ -1013,6 +1018,7 @@ class ListOrganizationProjectsAPIView(ListAPIView):
         return ProjectParents.objects.filter(
             parent_organization__url_slug=self.kwargs["url_slug"],
             project__is_draft=False,
+            project__is_active=True,
         ).order_by("-project__created_at")
 
 

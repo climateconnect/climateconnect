@@ -400,6 +400,12 @@ export default function getOrganizationTexts({ organization, locale }) {
       en: "Delete organisation",
       de: "Organisation löschen",
     },
+    organization_has_projects_cannot_delete: {
+      en:
+        "The organisation has {count} projects. Please first delete these projects or assign them to other organisations or users.",
+      de:
+        "Die Organisation hat {count} Projekte. Bitte lösche diese zuerst oder ordne sie anderen Organisationen oder Benutzer:innen zu.",
+    },
     do_you_really_want_to_delete_your_organization: {
       en: "Do you really want to delete your organisation?",
       de: "Möchtest du deine Organisation wirklich löschen?",

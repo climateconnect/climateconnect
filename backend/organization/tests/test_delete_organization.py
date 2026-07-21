@@ -119,6 +119,27 @@ class TestDeleteOrganizationAPIView(APITestCase):
         )
 
     @tag("organization", "delete")
+    def test_super_admin_can_delete_org_with_only_inactive_projects(self):
+        project = Project.objects.create(
+            name="Inactive Project",
+            url_slug="inactive-project-del-test",
+            status=self.project_status,
+            is_active=False,
+        )
+        ProjectParents.objects.create(
+            project=project,
+            parent_organization=self.org,
+        )
+        self.client.force_authenticate(user=self.super_admin)
+
+        response = self.client.delete(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(
+            Organization.objects.filter(url_slug=self.url_slug).exists()
+        )
+
+    @tag("organization", "delete")
     def test_delete_blocked_response_contains_project_count(self):
         project = Project.objects.create(
             name="Linked Project",
@@ -135,6 +156,27 @@ class TestDeleteOrganizationAPIView(APITestCase):
 
         self.assertIn("message", response.json())
         self.assertIn("1", response.json()["message"])
+
+    @tag("organization", "delete")
+    def test_organization_projects_count_excludes_inactive_projects(self):
+        project = Project.objects.create(
+            name="Inactive Project Count",
+            url_slug="inactive-project-count-test",
+            status=self.project_status,
+            is_active=False,
+        )
+        ProjectParents.objects.create(
+            project=project,
+            parent_organization=self.org,
+        )
+        self.client.force_authenticate(user=self.super_admin)
+
+        response = self.client.get(
+            self.url + "?edit_view=true",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json().get("projects_count"), 0)
 
     # ------------------------------------------------------------------
     # Permission checks
