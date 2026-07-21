@@ -418,7 +418,9 @@ def send_cancellation_chat_message(
                 exc,
             )
         try:
-            create_email_notification(organizer, chat, message, guest_user, notification)
+            create_email_notification(
+                organizer, chat, message, guest_user, notification
+            )
         except Exception as exc:
             logger.error(
                 "[CancellationChat] Failed to create email notification for organizer %s: %s",
