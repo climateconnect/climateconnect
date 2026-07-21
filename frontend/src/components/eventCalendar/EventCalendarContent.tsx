@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Checkbox,
@@ -12,7 +13,7 @@ import {
   Theme,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
@@ -21,6 +22,7 @@ import UserContext from "../context/UserContext";
 import { getDisplaySortTimestamp, toTimestamp } from "../../utils/eventSorting";
 import EventCardWide from "./EventCardWide";
 import FilterSearchBar from "../filter/FilterSearchBar";
+import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/de";
 import "dayjs/locale/en";
@@ -64,8 +66,6 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: "column",
     },
   },
-  // Match the browse page's content container top spacing
-  // (BrowseContent uses contentRefContainer with paddingTop spacing(4)).
   pageContainer: {
     paddingTop: theme.spacing(4),
     [theme.breakpoints.down("md")]: {
@@ -129,16 +129,12 @@ const useStyles = makeStyles((theme) => ({
   mobileFilterButton: {
     marginBottom: theme.spacing(2),
   },
-  filterButtons: {
-    display: "flex",
-    gap: theme.spacing(1),
+  resetButton: {
     alignSelf: "flex-start",
+    marginTop: theme.spacing(1),
   },
   calendar: {
     width: "100%",
-    // The day circles can be taller/wider than their 1fr grid track (the
-    // panel is only 260px wide). Allow them to render without being clipped
-    // at the panel edges.
     overflow: "visible",
   },
   dayCell: {
@@ -158,6 +154,16 @@ const useStyles = makeStyles((theme) => ({
   emptyState: {
     color: theme.palette.text.secondary,
     marginTop: theme.spacing(4),
+  },
+  todayBadge: {
+    "& .MuiBadge-badge": {
+      fontSize: 9,
+      height: 16,
+      minWidth: 36,
+      padding: "0 4px",
+      borderRadius: 8,
+      fontWeight: 700,
+    },
   },
 }));
 
@@ -181,9 +187,6 @@ const buildDayGroups = (events: any[], locale: string): DayGroup[] => {
   const groups = new Map<string, DayGroup>();
 
   events.forEach((project) => {
-    // The calendar shows a multi-day event only on its start date, so we
-    // create a single group for the start day and never expand onto the
-    // days the event spans.
     const start = new Date(project.start_date);
     const day = new Date(start.getFullYear(), start.getMonth(), start.getDate());
     const dayStartMs = day.getTime();
@@ -221,8 +224,13 @@ const buildDayGroups = (events: any[], locale: string): DayGroup[] => {
   return sortedGroups;
 };
 
-export default function EventCalendarContent({ initialEvents = [], filterChoices, hubUrl }: any) {
-  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+export default function EventCalendarContent({
+  initialEvents = [],
+  initialHasMore = false,
+  filterChoices,
+  hubUrl,
+}: any) {
+  const { locale } = useContext(UserContext);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
@@ -230,7 +238,9 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
   const [search, setSearch] = useState("");
   const [sectors, setSectors] = useState<string[]>([]);
   const [selectedDay, setSelectedDay] = useState<Dayjs>(dayjs());
-  const [events, setEvents] = useState<any[]>(initialEvents);
+  const [allEvents, setAllEvents] = useState<any[]>(initialEvents);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -238,54 +248,67 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
   const [dayCounts, setDayCounts] = useState<Record<string, number>>({});
   const didInitFetch = useRef(false);
   const theme = useTheme();
-  const isCustomHub = CUSTOM_HUB_URLS?.includes(hubUrl);
   const startOfTodayMs = (() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d.getTime();
   })();
 
-  const fetchEvents = async () => {
-    setLoading(true);
-    setError(false);
-    const token = new Cookies().get("auth_token");
-    const params = new URLSearchParams();
-    if (search) params.set("search", search);
-    if (sectors.length) params.set("sectors", sectors.join(","));
-    const start = selectedDay.startOf("day");
-    const end = selectedDay.add(90, "day").endOf("day");
-    // Send the local day boundaries WITH the browser timezone offset (e.g.
-    // "2026-07-02T00:00:00+02:00") so the backend interprets the window in
-    // the viewer's local time rather than as UTC.
-    params.set("start_date", start.format("YYYY-MM-DDTHH:mm:ssZ"));
-    params.set("end_date", end.format("YYYY-MM-DDTHH:mm:ssZ"));
-    if (hubUrl) params.set("hub", hubUrl);
+  const fetchEvents = useCallback(
+    async (page: number, append: boolean) => {
+      setLoading(true);
+      setError(false);
+      const token = new Cookies().get("auth_token");
+      const params = new URLSearchParams();
+      if (search) params.set("search", search);
+      if (sectors.length) params.set("sectors", sectors.join(","));
+      const start = selectedDay.startOf("day");
+      params.set("start_date", start.format("YYYY-MM-DDTHH:mm:ssZ"));
+      params.set("page", String(page));
+      params.set("page_size", "12");
+      if (hubUrl) params.set("hub", hubUrl);
 
-    try {
-      const { data } = await apiRequest({
-        method: "get",
-        url: `/api/events/?${params.toString()}`,
-        token,
-        locale,
-      });
-      setEvents(Array.isArray(data) ? data : []);
-    } catch (e) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        const { data } = await apiRequest({
+          method: "get",
+          url: `/api/events/?${params.toString()}`,
+          token,
+          locale,
+        });
+        const results = data.results || [];
+        setAllEvents((prev) => (append ? [...prev, ...results] : results));
+        setCurrentPage(page);
+        setHasMore(data.next !== null);
+      } catch (e) {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [search, sectors, selectedDay, hubUrl, locale]
+  );
+
+  const loadMore = useCallback(async () => {
+    await fetchEvents(currentPage + 1, true);
+  }, [fetchEvents, currentPage]);
+
+  const { lastElementRef } = useInfiniteScroll({
+    hasMore,
+    isLoading: loading,
+    onLoadMore: loadMore,
+  });
 
   // Skip the initial fetch: the SSR-provided `initialEvents` already covers
-  // the default window (today + 90 days), so re-fetching on mount is
-  // redundant and causes a loading flash. We still fetch once if SSR returned
-  // nothing (e.g. it failed or there are genuinely no events) so the UI is
-  // never stuck empty.
+  // page 1, so re-fetching on mount is redundant. We still fetch once if SSR
+  // returned nothing so the UI is never stuck empty.
   useEffect(() => {
     if (didInitFetch.current) {
       const handler = setTimeout(
         () => {
-          fetchEvents();
+          setAllEvents([]);
+          setCurrentPage(1);
+          setHasMore(false);
+          fetchEvents(1, false);
         },
         search ? 400 : 0
       );
@@ -294,7 +317,7 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
     didInitFetch.current = true;
     if (initialEvents.length === 0) {
       const handler = setTimeout(() => {
-        fetchEvents();
+        fetchEvents(1, false);
       }, 0);
       return () => clearTimeout(handler);
     }
@@ -306,8 +329,6 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
     const params = new URLSearchParams();
     params.set("year", String(viewMonth.year()));
     params.set("month", String(viewMonth.month() + 1));
-    // Send the viewer's timezone so the per-day counts are bucketed in the
-    // same local day the frontend uses to group the event list.
     params.set("timezone", Intl.DateTimeFormat().resolvedOptions().timeZone);
     if (search) params.set("search", search);
     if (sectors.length) params.set("sectors", sectors.join(","));
@@ -327,7 +348,6 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
       }
       setDayCounts(map);
     } catch (e) {
-      // Non-fatal: the calendar simply won't show highlights.
       setDayCounts({});
     }
   };
@@ -375,16 +395,7 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
     );
   };
 
-  // The API already returns only events whose start_date falls within the
-  // selected window (selected day → +90 days), and buildDayGroups now places
-  // each event on its single start day — so there is no multi-day expansion
-  // to drop. Keep the window guard as a safety net against timezone-boundary
-  // drift between the backend window and the local day grouping.
-  const windowStartMs = selectedDay.startOf("day").valueOf();
-  const windowEndMs = selectedDay.add(90, "day").endOf("day").valueOf();
-  const dayGroups = buildDayGroups(events, locale).filter(
-    (g) => g.dayStartMs >= windowStartMs && g.dayStartMs <= windowEndMs
-  );
+  const dayGroups = buildDayGroups(allEvents, locale);
 
   const showLeftPanel = !isNarrowScreen || mobileFiltersOpen;
 
@@ -439,14 +450,6 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
                 slots={{ day: DayWithEvents }}
               />
             </LocalizationProvider>
-            <div className={classes.filterButtons}>
-              <Button variant="outlined" color="primary" onClick={() => setSelectedDay(dayjs())}>
-                {texts.today ?? "Today"}
-              </Button>
-              <Button variant="outlined" color="primary" onClick={handleReset}>
-                {texts.reset ?? "Reset"}
-              </Button>
-            </div>
 
             <FormControl component="fieldset" fullWidth>
               <Typography component="legend" className={classes.filterLabel}>
@@ -455,10 +458,6 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
               <div className={classes.topicList}>
                 {(filterChoices?.sectors || []).map((s: any) => (
                   <FormControlLabel
-                    // Use original_name (default-language) as the value so it
-                    // matches the backend's sector.name filter. The browse page
-                    // does the same; sending the localized `name` would never
-                    // match for non-English locales.
                     key={s.original_name}
                     control={
                       <Checkbox
@@ -481,11 +480,20 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
                 ))}
               </div>
             </FormControl>
+
+            <Button
+              className={classes.resetButton}
+              variant="outlined"
+              color="primary"
+              onClick={handleReset}
+            >
+              {texts.reset ?? "Reset"}
+            </Button>
           </div>
         )}
 
         <div className={classes.rightPanel}>
-          {loading && <CircularProgress />}
+          {loading && allEvents.length === 0 && <CircularProgress />}
           {error && (
             <Typography className={classes.emptyState}>
               {texts.error_loading_events ?? "Failed to load events."}
@@ -496,48 +504,57 @@ export default function EventCalendarContent({ initialEvents = [], filterChoices
               {texts.no_events ?? "No events found for the selected filters."}
             </Typography>
           )}
-          {!loading &&
-            !error &&
-            dayGroups.map((group) => (
-              <Box key={group.key}>
-                <div className={classes.dayHeader}>
-                  <div
-                    className={classes.dayTile}
-                    style={{
-                      backgroundColor:
-                        group.dayStartMs < startOfTodayMs
-                          ? isCustomHub
-                            ? theme.palette.grey.light
-                            : theme.palette.secondary.extraLight
-                          : isCustomHub
-                          ? theme.palette.primary.main
-                          : theme.palette.yellow.main,
-                      color:
-                        group.dayStartMs < startOfTodayMs
-                          ? isCustomHub
-                            ? theme.palette.text.primary
-                            : theme.palette.secondary.main
-                          : theme.palette.background.default_contrastText,
-                    }}
-                  >
-                    <span className={classes.dayTileMonth}>{group.monthName}</span>
-                    <span className={classes.dayTileDay}>{group.dayNumber}</span>
+          {!error &&
+            dayGroups.map((group, groupIdx) => {
+              const isLastGroup = groupIdx === dayGroups.length - 1;
+              const isToday = group.dayStartMs === startOfTodayMs;
+              const isPast = group.dayStartMs < startOfTodayMs;
+              const tileBg = isPast
+                ? theme.palette.grey[200]
+                : isToday
+                ? theme.palette.primary.main
+                : theme.palette.secondary.main;
+              const tileColor = isPast
+                ? theme.palette.text.primary
+                : theme.palette.primary.contrastText;
+
+              return (
+                <Box key={group.key} ref={isLastGroup ? lastElementRef : undefined}>
+                  <div className={classes.dayHeader}>
+                    <Badge
+                      badgeContent={isToday ? "Today" : null}
+                      color="secondary"
+                      className={classes.todayBadge}
+                      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                    >
+                      <div
+                        className={classes.dayTile}
+                        style={{
+                          backgroundColor: tileBg,
+                          color: tileColor,
+                        }}
+                      >
+                        <span className={classes.dayTileMonth}>{group.monthName}</span>
+                        <span className={classes.dayTileDay}>{group.dayNumber}</span>
+                      </div>
+                    </Badge>
+                    <Typography className={classes.dayWeekday} component="span">
+                      {group.weekday}
+                    </Typography>
                   </div>
-                  <Typography className={classes.dayWeekday} component="span">
-                    {group.weekday}
-                  </Typography>
-                </div>
-                <div className={classes.dayGroup}>
-                  {group.occurrences.map((occurrence) => (
-                    <EventCardWide
-                      key={occurrence.project.url_slug}
-                      project={occurrence.project}
-                      hubUrl={hubUrl}
-                    />
-                  ))}
-                </div>
-              </Box>
-            ))}
+                  <div className={classes.dayGroup}>
+                    {group.occurrences.map((occurrence) => (
+                      <EventCardWide
+                        key={occurrence.project.url_slug}
+                        project={occurrence.project}
+                        hubUrl={hubUrl}
+                      />
+                    ))}
+                  </div>
+                </Box>
+              );
+            })}
+          {loading && allEvents.length > 0 && <CircularProgress size={24} />}
         </div>
       </div>
     </Container>

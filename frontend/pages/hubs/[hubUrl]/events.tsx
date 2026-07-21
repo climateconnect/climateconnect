@@ -37,13 +37,11 @@ const toOffsetIso = (d: Date): string => {
   );
 };
 
-const getDefaultWindowParams = (hubUrl: string): Record<string, string> => {
+const getDefaultStartDateParams = (hubUrl: string): Record<string, string> => {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 90, 23, 59, 59);
   return {
     start_date: toOffsetIso(start),
-    end_date: toOffsetIso(end),
     hub: hubUrl,
   };
 };
@@ -72,15 +70,21 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   ]);
 
   let initialEvents: any[] = [];
+  let initialHasMore = false;
   try {
-    const params = new URLSearchParams(getDefaultWindowParams(hubUrl));
+    const params = new URLSearchParams({
+      ...getDefaultStartDateParams(hubUrl),
+      page: "1",
+      page_size: "12",
+    });
     const { data } = await apiRequest({
       method: "get",
       url: `/api/events/?${params.toString()}`,
       token,
       locale: locale as any,
     });
-    initialEvents = Array.isArray(data) ? data : [];
+    initialEvents = data.results || [];
+    initialHasMore = data.next !== null;
   } catch (e) {
     // Initial fetch failed; the client will retry when filters change.
   }
@@ -91,6 +95,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       hubUrl,
       filterChoices: { sectors: sectorOptions },
       initialEvents,
+      initialHasMore,
       hubData,
       hubThemeData,
     },
@@ -102,6 +107,7 @@ export default function HubEventsPage({
   hubUrl,
   filterChoices,
   initialEvents,
+  initialHasMore,
   hubData,
   hubThemeData,
 }: any) {
@@ -195,6 +201,7 @@ export default function HubEventsPage({
       <div ref={contentRef}>
         <EventCalendarContent
           initialEvents={initialEvents}
+          initialHasMore={initialHasMore}
           filterChoices={filterChoices}
           hubUrl={hubUrl}
         />
