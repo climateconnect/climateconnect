@@ -358,6 +358,19 @@ CELERY_TIMEZONE = "UTC"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+# Route the LocationIQ autocomplete task to its own queue/worker so it never
+# competes with the rest of the app's Celery workload for concurrency slots.
+CELERY_TASK_ROUTES = {
+    "location.tasks.fetch_autocomplete": {"queue": "lookup"},
+}
+# Fail fast if the broker is unreachable when enqueuing a LocationIQ lookup,
+# so LocationAutocompleteView's direct-fetch fallback kicks in within ~2s
+# instead of the request hanging. See Gap #4 in
+# doc/spec/20260720_1400_locationiq_rate_limited_queue_design.md.
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    "socket_connect_timeout": 2,
+    "socket_timeout": 2,
+}
 NOMINATIM_LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
 CUSTOM_USER_AGENT = "ClimateConnect/1.0 (contact@climateconnect.earth)"
 
@@ -366,6 +379,24 @@ LOCATIONIQ_API_KEY = env("LOCATIONIQ_API_KEY", "")
 LOCATIONIQ_AUTOCOMPLETE_URL = "https://us1.locationiq.com/v1/autocomplete"
 LOCATIONIQ_TIMEOUT = 3  # seconds
 NOMINATIM_TIMEOUT = 5  # seconds
+LOCATIONIQ_MAX_RATE = "2/s"  # Celery rate_limit for the fetch_autocomplete task
+LOCATIONIQ_PENDING_CAP = 16  # max distinct in-flight lookups before 503 (backpressure)
+# Pending-sentinel lifetime. Keep >= (LOCATIONIQ_PENDING_CAP / rate implied by
+# LOCATIONIQ_MAX_RATE) + worst-case fetch time (LOCATIONIQ_TIMEOUT + NOMINATIM_TIMEOUT),
+# or a queued job can outlive its own sentinel — see Gap #1 in the design doc.
+LOCATIONIQ_SENTINEL_TTL_S = 20
+LOCATIONIQ_RESULT_TTL_S = 300  # cache lifetime for a successful lookup
+LOCATIONIQ_NEGATIVE_TTL_S = (
+    8  # cache lifetime for a failed lookup (avoid negative-caching an outage)
+)
+LOCATIONIQ_IP_RATE_STRICT = "1/s"  # per-IP limit for creating a new lookup
+LOCATIONIQ_IP_RATE_LOOSE = (
+    "10/s"  # per-IP limit for all autocomplete traffic, incl. polling
+)
+_locationiq_daily_budget_raw = env("LOCATIONIQ_DAILY_BUDGET", "")
+LOCATIONIQ_DAILY_BUDGET = (
+    int(_locationiq_daily_budget_raw) if _locationiq_daily_budget_raw else None
+)
 
 LOCALE_PATHS = [
     BASE_DIR + "/translations",

@@ -1,26 +1,24 @@
+import datetime as dt
 import json
-import threading
+import time
 from unittest.mock import MagicMock, patch
 
+from django.core.cache import cache
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from location.queue import (
-    QUEUE_KEY,
-    RESULT_PREFIX,
-    WAITERS_FOR_PREFIX,
-    RequestState,
+    LOCATIONIQ_LOOKUP_KEY_PREFIX,
+    LOCATIONIQ_PENDING_JOBS_KEY,
+    _locationiq_daily_budget_exceeded,
     _normalize_query,
-    _process_one,
-    _request_registry,
-    _registry_lock,
-    enqueue_request,
+    _store_result,
+    _try_locationiq,
     get_client_ip,
-    start_worker,
-    stop_worker,
 )
+from location.tasks import fetch_autocomplete
 
 
 class TestNormalizeQuery(TestCase):
@@ -58,7 +56,24 @@ class TestGetClientIp(TestCase):
 
 
 def _make_mock_redis():
+    """
+    Single-process, in-memory stand-in for the LocationIQ rendezvous. Only
+    implements the redis-py surface this design actually uses (string
+    get/set/setex/delete and the pending_jobs sorted set).
+    """
     store = {}
+    zsets = {}
+
+    def _to_score(value):
+        if isinstance(value, str):
+            if value.lstrip("+") in ("inf", "Inf", "INF") and value.startswith("-"):
+                return float("-inf")
+            if value in ("+inf", "inf", "+Inf", "INF"):
+                return float("inf")
+            if value == "-inf":
+                return float("-inf")
+            return float(value)
+        return float(value)
 
     def _get(key):
         val = store.get(key)
@@ -74,230 +89,212 @@ def _make_mock_redis():
 
     def _setex(key, ttl, value):
         store[key] = value
+        return True
 
     def _delete(key):
         store.pop(key, None)
 
-    def _llen(key):
-        return len(store.get(key, []))
+    def _zadd(key, mapping):
+        zsets.setdefault(key, {}).update(mapping)
 
-    def _lpush(key, value):
-        store.setdefault(key, []).append(value)
+    def _zcard(key):
+        return len(zsets.get(key, {}))
 
-    def _brpop(key, timeout=0):
-        lst = store.get(key, [])
-        if lst:
-            val = lst.pop(0)
-            return (key, val.encode() if isinstance(val, str) else val)
-        return None
+    def _zrem(key, member):
+        zsets.get(key, {}).pop(member, None)
 
-    def _sadd(key, value):
-        store.setdefault(key, set()).add(value)
-
-    def _smembers(key):
-        return store.get(key, set())
-
-    def _srem(key, value):
-        s = store.get(key)
-        if s:
-            s.discard(value)
-
-    def _expire(key, ttl):
-        pass
+    def _zremrangebyscore(key, min_score, max_score):
+        members = zsets.get(key, {})
+        lo, hi = _to_score(min_score), _to_score(max_score)
+        for member in [m for m, s in members.items() if lo <= s <= hi]:
+            members.pop(member, None)
 
     redis = MagicMock()
     redis.get = MagicMock(side_effect=_get)
     redis.set = MagicMock(side_effect=_set)
     redis.setex = MagicMock(side_effect=_setex)
     redis.delete = MagicMock(side_effect=_delete)
-    redis.llen = MagicMock(side_effect=_llen)
-    redis.lpush = MagicMock(side_effect=_lpush)
-    redis.brpop = MagicMock(side_effect=_brpop)
-    redis.sadd = MagicMock(side_effect=_sadd)
-    redis.smembers = MagicMock(side_effect=_smembers)
-    redis.srem = MagicMock(side_effect=_srem)
-    redis.expire = MagicMock(side_effect=_expire)
+    redis.zadd = MagicMock(side_effect=_zadd)
+    redis.zcard = MagicMock(side_effect=_zcard)
+    redis.zrem = MagicMock(side_effect=_zrem)
+    redis.zremrangebyscore = MagicMock(side_effect=_zremrangebyscore)
     redis._store = store
+    redis._zsets = zsets
     return redis
 
 
-class TestEnqueueRequest(TestCase):
-    def setUp(self):
-        _request_registry.clear()
+class TestTryLocationiq(TestCase):
+    def test_no_api_key_skips_locationiq(self):
+        with override_settings(LOCATIONIQ_API_KEY=""):
+            results, provider = _try_locationiq("berlin", "", "en")
+        self.assertIsNone(results)
+        self.assertIsNone(provider)
 
-    def tearDown(self):
-        _request_registry.clear()
+    @override_settings(LOCATIONIQ_API_KEY="test-key")
+    @patch("location.queue.requests.get")
+    def test_empty_result_list_is_success_not_failure(self, mock_get):
+        # A valid 200 with an empty list is a real "no matches" answer, not
+        # a failure — it must not trigger a Nominatim fallback attempt.
+        mock_get.return_value = MagicMock(status_code=200, json=lambda: [])
+        results, provider = _try_locationiq("asdkjasjdk", "", "en")
+        self.assertEqual(results, [])
+        self.assertEqual(provider, "locationiq")
 
-    @patch("location.queue.get_redis_conn")
-    def test_returns_cached_result(self, mock_conn):
-        mock_redis = _make_mock_redis()
-        mock_conn.return_value = mock_redis
-        cached_data = [{"display_name": "Berlin, Germany"}]
-        mock_redis._store[f"{RESULT_PREFIX}berlin|de"] = json.dumps(cached_data)
-        result = enqueue_request("Berlin", "de", "en")
-        self.assertEqual(result["status"], "ok")
-        self.assertEqual(result["results"], cached_data)
-        self.assertEqual(result["provider"], "cached")
-
-    @patch("location.queue.get_redis_conn")
-    def test_queue_full_returns_error(self, mock_conn):
-        mock_redis = _make_mock_redis()
-        mock_conn.return_value = mock_redis
-        mock_redis._store[QUEUE_KEY] = ["x"] * 100
-        result = enqueue_request("Berlin", "de", "en")
-        self.assertEqual(result["status"], "queue_full")
-
-    @patch("location.queue.get_redis_conn")
-    def test_redis_down_falls_back(self, mock_conn):
-        mock_conn.side_effect = Exception("Redis connection refused")
-        with patch(
-            "location.queue._fetch_results",
-            return_value=([{"test": True}], "locationiq"),
-        ):
-            result = enqueue_request("Berlin", "de", "en")
-        self.assertEqual(result["status"], "ok")
-        self.assertEqual(result["provider"], "locationiq")
-
-
-class TestWorkerDeduplication(TestCase):
-    def setUp(self):
-        _request_registry.clear()
-
-    def tearDown(self):
-        _request_registry.clear()
-
-    @patch("location.queue.get_redis_conn")
-    @patch("location.queue.DRAIN_INTERVAL_S", 0.01)
-    @patch("location.queue.REQUEST_TIMEOUT_S", 10)
-    def test_same_query_only_one_fetch(self, mock_conn):
-        mock_redis = _make_mock_redis()
-        mock_conn.return_value = mock_redis
-
-        call_count = 0
-
-        def mock_fetch(q, countrycodes, accept_language):
-            nonlocal call_count
-            call_count += 1
-            return [{"display_name": f"{q}, Germany"}], "locationiq"
-
-        results = []
-
-        def make_request():
-            result = enqueue_request("Berlin", "de", "en")
-            results.append(result)
-
-        with patch("location.queue._fetch_results", side_effect=mock_fetch):
-            start_worker()
-            try:
-                threads = [threading.Thread(target=make_request) for _ in range(3)]
-                for t in threads:
-                    t.start()
-                for t in threads:
-                    t.join(timeout=15)
-            finally:
-                stop_worker()
-
-        for r in results:
-            self.assertEqual(r["status"], "ok")
-        self.assertEqual(call_count, 1)
-
-
-class TestWorkerTimeout(TestCase):
-    def setUp(self):
-        _request_registry.clear()
-
-    def tearDown(self):
-        _request_registry.clear()
-
-    @patch("location.queue.get_redis_conn")
-    def test_timeout_returns_timeout(self, mock_conn):
-        mock_redis = _make_mock_redis()
-        mock_conn.return_value = mock_redis
-        with patch("location.queue.REQUEST_TIMEOUT_S", 0.3):
-            result = enqueue_request("TestCity", "us", "en")
-        self.assertEqual(result["status"], "timeout")
-
-
-class TestProcessOne(TestCase):
-    @patch("location.queue.get_redis_conn")
-    def test_process_one_signals_waiters(self, mock_conn):
-        mock_redis = _make_mock_redis()
-        mock_conn.return_value = mock_redis
-
-        event = threading.Event()
-        state = RequestState(
-            request_id="test123", event=event, result=None, arrived_at=0
+    @override_settings(LOCATIONIQ_API_KEY="test-key")
+    @patch("location.queue.requests.get")
+    def test_non_list_body_is_a_failure(self, mock_get):
+        mock_get.return_value = MagicMock(
+            status_code=200, json=lambda: {"error": "bad"}
         )
-        with _registry_lock:
-            _request_registry["test123"] = state
+        results, provider = _try_locationiq("berlin", "", "en")
+        self.assertIsNone(results)
+        self.assertIsNone(provider)
 
-        normalized_q = "berlin|de"
-        mock_redis.sadd(f"{WAITERS_FOR_PREFIX}{normalized_q}", "test123")
+    @override_settings(LOCATIONIQ_API_KEY="test-key", LOCATIONIQ_DAILY_BUDGET=5)
+    @patch("location.queue._locationiq_daily_budget_exceeded", return_value=True)
+    @patch("location.queue.requests.get")
+    def test_daily_budget_exceeded_skips_locationiq_entirely(
+        self, mock_get, _mock_budget
+    ):
+        results, provider = _try_locationiq("berlin", "", "en")
+        self.assertIsNone(results)
+        self.assertIsNone(provider)
+        mock_get.assert_not_called()
 
-        item = json.dumps(
+
+class TestLocationiqDailyBudget(TestCase):
+    def _seed_today(self, total_requests):
+        from location.models import NominatimPeriodStats
+
+        today_key = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
+        NominatimPeriodStats.objects.create(
+            period_type="day",
+            period_key=today_key,
+            provider="locationiq",
+            total_requests=total_requests,
+        )
+
+    def test_not_configured_never_exceeded(self):
+        with override_settings(LOCATIONIQ_DAILY_BUDGET=None):
+            self.assertFalse(_locationiq_daily_budget_exceeded())
+
+    @override_settings(LOCATIONIQ_DAILY_BUDGET=5)
+    def test_below_budget_not_exceeded(self):
+        self._seed_today(4)
+        self.assertFalse(_locationiq_daily_budget_exceeded())
+
+    @override_settings(LOCATIONIQ_DAILY_BUDGET=5)
+    def test_at_budget_is_exceeded(self):
+        self._seed_today(5)
+        self.assertTrue(_locationiq_daily_budget_exceeded())
+
+    @override_settings(LOCATIONIQ_DAILY_BUDGET=5)
+    def test_no_rows_yet_not_exceeded(self):
+        self.assertFalse(_locationiq_daily_budget_exceeded())
+
+
+class TestStoreResult(TestCase):
+    @override_settings(LOCATIONIQ_RESULT_TTL_S=300, LOCATIONIQ_NEGATIVE_TTL_S=8)
+    def test_success_uses_positive_ttl(self):
+        mock_redis = _make_mock_redis()
+        _store_result(mock_redis, "key1", "job1", [{"a": 1}], "locationiq")
+        key, ttl, payload = mock_redis.setex.call_args[0]
+        self.assertEqual(key, "key1")
+        self.assertEqual(ttl, 300)
+        stored = json.loads(payload)
+        self.assertEqual(
+            stored,
             {
-                "request_id": "test123",
-                "q": "Berlin",
-                "countrycodes": "de",
-                "accept_language": "en",
-                "normalized_q": normalized_q,
-                "ts": 0,
-            }
+                "status": "done",
+                "results": [{"a": 1}],
+                "provider": "locationiq",
+                "job_id": "job1",
+            },
         )
 
-        with patch(
-            "location.queue._fetch_results",
-            return_value=([{"display_name": "Berlin"}], "locationiq"),
-        ):
-            _process_one(item.encode(), mock_redis)
+    @override_settings(LOCATIONIQ_RESULT_TTL_S=300, LOCATIONIQ_NEGATIVE_TTL_S=8)
+    def test_empty_but_real_result_uses_positive_ttl(self):
+        # Distinguishes a legitimate "no matches" ([]) from a failure (None).
+        mock_redis = _make_mock_redis()
+        _store_result(mock_redis, "key1", "job1", [], "locationiq")
+        _, ttl, _ = mock_redis.setex.call_args[0]
+        self.assertEqual(ttl, 300)
 
-        self.assertTrue(event.is_set())
-        self.assertEqual(state.result, [{"display_name": "Berlin"}])
+    @override_settings(LOCATIONIQ_RESULT_TTL_S=300, LOCATIONIQ_NEGATIVE_TTL_S=8)
+    def test_failure_uses_negative_ttl(self):
+        mock_redis = _make_mock_redis()
+        _store_result(mock_redis, "key1", "job1", None, None)
+        _, ttl, payload = mock_redis.setex.call_args[0]
+        self.assertEqual(ttl, 8)
+        self.assertIsNone(json.loads(payload)["results"])
 
-    @patch("location.queue.get_redis_conn")
-    def test_process_one_skips_if_cached(self, mock_conn):
+
+class TestFetchAutocompleteTask(TestCase):
+    @patch("location.location_views._increment_counters")
+    @patch("location.tasks._fetch_results")
+    @patch("location.tasks.get_redis_conn")
+    def test_success_stores_result_and_clears_pending(
+        self, mock_conn, mock_fetch, mock_incr
+    ):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
+        mock_fetch.return_value = ([{"display_name": "Berlin"}], "locationiq")
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "job1"})
+        mock_redis._zsets[LOCATIONIQ_PENDING_JOBS_KEY] = {key: time.time()}
 
-        normalized_q = "berlin|de"
-        cached = [{"display_name": "Berlin Cached"}]
-        mock_redis._store[f"{RESULT_PREFIX}{normalized_q}"] = json.dumps(cached)
+        fetch_autocomplete.run(key, "job1", "Berlin", "", "en")
 
-        event = threading.Event()
-        state = RequestState(
-            request_id="test456", event=event, result=None, arrived_at=0
+        stored = json.loads(mock_redis._store[key])
+        self.assertEqual(stored["status"], "done")
+        self.assertEqual(stored["results"], [{"display_name": "Berlin"}])
+        self.assertNotIn(key, mock_redis._zsets.get(LOCATIONIQ_PENDING_JOBS_KEY, {}))
+        mock_incr.assert_called_once_with("locationiq")
+
+    @patch("location.location_views._increment_counters")
+    @patch("location.tasks._fetch_results")
+    @patch("location.tasks.get_redis_conn")
+    def test_superseded_generation_does_not_overwrite(
+        self, mock_conn, mock_fetch, mock_incr
+    ):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        mock_fetch.return_value = ([{"display_name": "Stale"}], "locationiq")
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        # A newer generation already overwrote the sentinel under a different job_id.
+        mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "job2"})
+
+        fetch_autocomplete.run(key, "job1", "Berlin", "", "en")
+
+        self.assertEqual(
+            json.loads(mock_redis._store[key]), {"status": "pending", "job_id": "job2"}
         )
-        with _registry_lock:
-            _request_registry["test456"] = state
-        mock_redis.sadd(f"{WAITERS_FOR_PREFIX}{normalized_q}", "test456")
+        mock_incr.assert_not_called()
 
-        item = json.dumps(
-            {
-                "request_id": "test456",
-                "q": "Berlin",
-                "countrycodes": "de",
-                "accept_language": "en",
-                "normalized_q": normalized_q,
-                "ts": 0,
-            }
-        )
+    @patch("location.location_views._increment_counters")
+    @patch("location.tasks._fetch_results", side_effect=RuntimeError("boom"))
+    @patch("location.tasks.get_redis_conn")
+    def test_unexpected_exception_still_resolves_to_terminal_state(
+        self, mock_conn, _mock_fetch, mock_incr
+    ):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "job1"})
 
-        with patch("location.queue._fetch_results") as mock_fetch:
-            _process_one(item.encode(), mock_redis)
+        fetch_autocomplete.run(key, "job1", "Berlin", "", "en")
 
-        mock_fetch.assert_not_called()
-        self.assertTrue(event.is_set())
-        self.assertEqual(state.result, cached)
+        stored = json.loads(mock_redis._store[key])
+        self.assertEqual(stored["status"], "done")
+        self.assertIsNone(stored["results"])
+        mock_incr.assert_not_called()
 
 
 class TestLocationAutocompleteView(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.url = reverse("location:location-autocomplete")
-        _request_registry.clear()
-
-    def tearDown(self):
-        _request_registry.clear()
+        cache.clear()
 
     @override_settings(RATELIMIT_ENABLE=False)
     def test_short_query_returns_empty(self):
@@ -305,53 +302,152 @@ class TestLocationAutocompleteView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, [])
 
-    @patch("location.queue.enqueue_request")
     @override_settings(RATELIMIT_ENABLE=False)
-    def test_returns_results_through_queue(self, mock_enqueue):
-        mock_enqueue.return_value = {
-            "results": [{"display_name": "Berlin"}],
-            "provider": "locationiq",
-            "status": "ok",
-        }
+    def test_too_long_query_returns_empty(self):
+        response = self.client.get(self.url, {"q": "b" * 201})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])
+
+    @override_settings(RATELIMIT_ENABLE=False)
+    @patch("location.location_views.get_redis_conn")
+    def test_cache_hit_returns_200_with_results(self, mock_conn):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        mock_redis._store[key] = json.dumps(
+            {
+                "status": "done",
+                "results": [{"display_name": "Berlin"}],
+                "provider": "locationiq",
+                "job_id": "j",
+            }
+        )
         response = self.client.get(self.url, {"q": "Berlin"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
-    @patch("location.queue.enqueue_request")
     @override_settings(RATELIMIT_ENABLE=False)
-    def test_queue_full_returns_429(self, mock_enqueue):
-        mock_enqueue.return_value = {
-            "results": None,
-            "provider": None,
-            "status": "queue_full",
-        }
+    @patch("location.location_views.get_redis_conn")
+    def test_cache_hit_with_empty_results_returns_200_with_empty_list(self, mock_conn):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        mock_redis._store[key] = json.dumps(
+            {"status": "done", "results": [], "provider": "locationiq", "job_id": "j"}
+        )
         response = self.client.get(self.url, {"q": "Berlin"})
-        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])
 
-    @patch("location.queue.enqueue_request")
     @override_settings(RATELIMIT_ENABLE=False)
-    def test_timeout_returns_504(self, mock_enqueue):
-        mock_enqueue.return_value = {
-            "results": None,
-            "provider": None,
-            "status": "timeout",
-        }
+    @patch("location.location_views.get_redis_conn")
+    def test_pending_sentinel_returns_202(self, mock_conn):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "j"})
         response = self.client.get(self.url, {"q": "Berlin"})
-        self.assertEqual(response.status_code, status.HTTP_504_GATEWAY_TIMEOUT)
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
 
-    @patch("location.queue.enqueue_request")
     @override_settings(RATELIMIT_ENABLE=False)
-    def test_no_results_returns_502(self, mock_enqueue):
-        mock_enqueue.return_value = {
-            "results": None,
-            "provider": None,
-            "status": "ok",
-        }
-        response = self.client.get(self.url, {"q": "Berlin"})
-        self.assertEqual(response.status_code, status.HTTP_502_BAD_GATEWAY)
+    @patch("location.location_views.fetch_autocomplete.apply_async")
+    @patch("location.location_views.get_redis_conn")
+    def test_new_query_creates_sentinel_and_dispatches_task(
+        self, mock_conn, mock_apply_async
+    ):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
 
-    @patch("django_ratelimit.core.is_ratelimited", return_value=True)
-    def test_ratelimit_returns_429(self, mock_rl):
         response = self.client.get(self.url, {"q": "Berlin"})
-        self.assertEqual(response.status_code, 429)
-        self.assertIn("Retry-After", response)
+
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        mock_apply_async.assert_called_once()
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        self.assertIn(key, mock_redis._store)
+        self.assertEqual(json.loads(mock_redis._store[key])["status"], "pending")
+        self.assertIn(key, mock_redis._zsets.get(LOCATIONIQ_PENDING_JOBS_KEY, {}))
+
+    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_PENDING_CAP=1)
+    @patch("location.location_views.fetch_autocomplete.apply_async")
+    @patch("location.location_views.get_redis_conn")
+    def test_backpressure_cap_returns_503(self, mock_conn, mock_apply_async):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        mock_redis._zsets[LOCATIONIQ_PENDING_JOBS_KEY] = {"some:other:key": time.time()}
+
+        response = self.client.get(self.url, {"q": "Berlin"})
+
+        self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+        mock_apply_async.assert_not_called()
+
+    @override_settings(RATELIMIT_ENABLE=False)
+    @patch("location.location_views._fetch_results")
+    @patch(
+        "location.location_views.fetch_autocomplete.apply_async",
+        side_effect=Exception("broker down"),
+    )
+    @patch("location.location_views.get_redis_conn")
+    def test_broker_unavailable_falls_back_to_direct_fetch(
+        self, mock_conn, _mock_apply_async, mock_fetch
+    ):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        mock_fetch.return_value = ([{"display_name": "Berlin"}], "locationiq")
+
+        response = self.client.get(self.url, {"q": "Berlin"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        # Terminal state written directly, and the backpressure slot released
+        # rather than leaked until sentinel-TTL pruning.
+        self.assertEqual(json.loads(mock_redis._store[key])["status"], "done")
+        self.assertNotIn(key, mock_redis._zsets.get(LOCATIONIQ_PENDING_JOBS_KEY, {}))
+
+    @patch("location.location_views.get_redis_conn")
+    def test_pending_poll_does_not_consume_strict_ip_limit(self, mock_conn):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "j"})
+
+        with override_settings(
+            LOCATIONIQ_IP_RATE_STRICT="1/s", LOCATIONIQ_IP_RATE_LOOSE="1000/s"
+        ):
+            for _ in range(5):
+                response = self.client.get(self.url, {"q": "Berlin"})
+                self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+    @patch("location.location_views.fetch_autocomplete.apply_async")
+    @patch("location.location_views.get_redis_conn")
+    def test_strict_limit_blocks_second_new_query_same_second(
+        self, mock_conn, _mock_apply_async
+    ):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+
+        with override_settings(
+            LOCATIONIQ_IP_RATE_STRICT="1/s", LOCATIONIQ_IP_RATE_LOOSE="1000/s"
+        ):
+            first = self.client.get(self.url, {"q": "Berlin"})
+            second = self.client.get(
+                self.url, {"q": "Munich"}
+            )  # distinct query, not a poll
+
+        self.assertEqual(first.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(second.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        self.assertIn("Retry-After", second)
+
+    @patch("location.location_views.get_redis_conn")
+    def test_loose_limit_blocks_all_traffic_including_polls(self, mock_conn):
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "j"})
+
+        with override_settings(LOCATIONIQ_IP_RATE_LOOSE="1/s"):
+            first = self.client.get(self.url, {"q": "Berlin"})
+            second = self.client.get(self.url, {"q": "Berlin"})
+
+        self.assertEqual(first.status_code, status.HTTP_202_ACCEPTED)
+        self.assertEqual(second.status_code, status.HTTP_429_TOO_MANY_REQUESTS)

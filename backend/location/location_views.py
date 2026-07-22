@@ -1,12 +1,12 @@
 import json
 import logging
 import time
+import uuid
 from datetime import datetime, timezone
 
 import requests
 from django.conf import settings
 from django.db import IntegrityError
-from django.http import JsonResponse
 from django.db.models import F
 from django.db.models.functions import Greatest
 from rest_framework import status
@@ -14,7 +14,16 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from location.queue import (
+    LOCATIONIQ_LOOKUP_KEY_PREFIX,
+    LOCATIONIQ_PENDING_JOBS_KEY,
+    _fetch_results,
+    _normalize_query,
+    _store_result,
+    get_redis_conn,
+)
 from location.serializers import LocationStubSerializer
+from location.tasks import fetch_autocomplete
 from location.models import (
     Location as LocationModel,
     NominatimPeriodStats,
@@ -261,67 +270,121 @@ class TrackNominatimRequestView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+def _too_many_requests_response():
+    response = Response(
+        {"detail": "Too many requests. Please try again later."},
+        status=status.HTTP_429_TOO_MANY_REQUESTS,
+    )
+    response["Retry-After"] = "1"
+    return response
+
+
 class LocationAutocompleteView(APIView):
     """
     GET /api/location_autocomplete/
 
-    Proxied autocomplete endpoint. Requests are queued and processed at a
-    global rate of 2 req/s. Per-IP rate limited to 1 req/s via django-ratelimit.
+    Proxied, rate-limited, non-blocking autocomplete endpoint backed by
+    LocationIQ with a Nominatim fallback. A cache miss claims a Redis
+    sentinel, enqueues a Celery task (rate-limited to LOCATIONIQ_MAX_RATE,
+    routed to its own queue/worker), and returns 202 — the frontend polls
+    this same endpoint until the result is ready. See
+    doc/spec/20260720_1400_locationiq_rate_limited_queue_design.md for the
+    full design (Redis key contract, HTTP contract, gap fixes).
     """
 
     permission_classes = [AllowAny]
 
-    def dispatch(self, request, *args, **kwargs):
-        from django_ratelimit import ALL as RATELIMIT_ALL
+    def get(self, request):
         from django_ratelimit.core import is_ratelimited
 
+        # Loose blanket limit on all traffic (including cheap status polls)
+        # — a backstop against a buggy/runaway polling client, not the real
+        # quota protection.
         if is_ratelimited(
             request,
-            fn=LocationAutocompleteView.dispatch,
+            group="location-autocomplete-any",
             key="ip",
-            rate="1/s",
-            method=RATELIMIT_ALL,
+            rate=settings.LOCATIONIQ_IP_RATE_LOOSE,
             increment=True,
         ):
-            response = JsonResponse(
-                {"detail": "Too many requests. Please try again later."},
-                status=429,
-            )
-            response["Retry-After"] = "1"
-            return response
-        return super().dispatch(request, *args, **kwargs)
-
-    def get(self, request):
-        from location.queue import enqueue_request
+            return _too_many_requests_response()
 
         q = request.query_params.get("q", "").strip()
-        if len(q) < 3:
+        if not (3 <= len(q) <= 200):
             return Response([], status=status.HTTP_200_OK)
 
         countrycodes = request.query_params.get("countrycodes", "")
         accept_language = request.META.get("HTTP_ACCEPT_LANGUAGE", "en-US,en;q=0.9")
 
-        result = enqueue_request(q, countrycodes, accept_language)
+        redis_conn = get_redis_conn()
+        normalized_q = _normalize_query(q, countrycodes)
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}{normalized_q}"
 
-        if result["status"] == "queue_full":
+        raw = redis_conn.get(key)
+        if raw:
+            data = json.loads(raw)
+            if data["status"] == "done":
+                return Response(data["results"] or [], status=status.HTTP_200_OK)
+            # Someone else's (or our own earlier poll's) lookup is already in
+            # flight for this query — cheap check, doesn't count against the
+            # strict per-IP limit below, and doesn't create a duplicate task.
+            return Response({"status": "pending"}, status=status.HTTP_202_ACCEPTED)
+
+        # Strict limit — only applies to genuinely creating new, expensive work.
+        if is_ratelimited(
+            request,
+            group="location-autocomplete-new",
+            key="ip",
+            rate=settings.LOCATIONIQ_IP_RATE_STRICT,
+            increment=True,
+        ):
+            return _too_many_requests_response()
+
+        now = time.time()
+        redis_conn.zremrangebyscore(
+            LOCATIONIQ_PENDING_JOBS_KEY,
+            "-inf",
+            now - settings.LOCATIONIQ_SENTINEL_TTL_S,
+        )
+        if (
+            redis_conn.zcard(LOCATIONIQ_PENDING_JOBS_KEY)
+            >= settings.LOCATIONIQ_PENDING_CAP
+        ):
             return Response(
-                {"detail": "Service temporarily overloaded. Please retry."},
-                status=status.HTTP_429_TOO_MANY_REQUESTS,
+                {"detail": "Service busy, please retry."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
-        if result["status"] == "timeout":
-            return Response(
-                {"detail": "Location service timed out. Please retry."},
-                status=status.HTTP_504_GATEWAY_TIMEOUT,
-            )
+        job_id = uuid.uuid4().hex
+        created = redis_conn.set(
+            key,
+            json.dumps({"status": "pending", "job_id": job_id}),
+            nx=True,
+            ex=settings.LOCATIONIQ_SENTINEL_TTL_S,
+        )
+        if not created:
+            # Lost the race to a concurrent identical request — fall into
+            # whatever state it left behind.
+            return Response({"status": "pending"}, status=status.HTTP_202_ACCEPTED)
 
-        if result["results"] is None:
-            return Response(
-                {"message": "All location services are unavailable."},
-                status=status.HTTP_502_BAD_GATEWAY,
+        redis_conn.zadd(LOCATIONIQ_PENDING_JOBS_KEY, {key: now})
+        try:
+            fetch_autocomplete.apply_async(
+                args=[key, job_id, q, countrycodes, accept_language]
             )
+        except Exception:
+            logger.exception(
+                "Celery broker unavailable for LocationIQ autocomplete, "
+                "falling back to direct fetch"
+            )
+            results, provider = _fetch_results(q, countrycodes, accept_language)
+            _store_result(redis_conn, key, job_id, results, provider)
+            redis_conn.zrem(LOCATIONIQ_PENDING_JOBS_KEY, key)
+            if results is not None:
+                _increment_counters(provider)
+            return Response(results or [], status=status.HTTP_200_OK)
 
-        return Response(result["results"], status=status.HTTP_200_OK)
+        return Response({"status": "pending"}, status=status.HTTP_202_ACCEPTED)
 
 
 class NominatimStatsView(APIView):

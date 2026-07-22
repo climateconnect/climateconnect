@@ -19,6 +19,12 @@ celery_beat:
 	$(info )
 	celery -A climateconnect_main beat -l INFO
 
+celery_lookup:
+	$(info )
+	$(info -- Starting Celery worker for LocationIQ autocomplete (queue: lookup) --)
+	$(info )
+	celery -A climateconnect_main worker -Q lookup -c 4 -l INFO
+
 shell:
 	python3 manage.py shell
 

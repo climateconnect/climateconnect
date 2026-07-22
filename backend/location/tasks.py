@@ -1,3 +1,4 @@
+import json
 import logging
 
 import requests
@@ -6,9 +7,50 @@ from django.conf import settings
 from django.db import IntegrityError, transaction
 
 from climateconnect_api.models.language import Language
+from location.queue import (
+    LOCATIONIQ_PENDING_JOBS_KEY,
+    _fetch_results,
+    _store_result,
+    get_redis_conn,
+)
 from location.utility import format_location_name
 
 logger = logging.getLogger(__name__)
+
+
+@shared_task(rate_limit=settings.LOCATIONIQ_MAX_RATE)
+def fetch_autocomplete(key, job_id, q, countrycodes, accept_language):
+    """
+    Fetch LocationIQ (with Nominatim fallback) results for one autocomplete
+    lookup and write them back into the shared Redis rendezvous key that
+    LocationAutocompleteView polls. Rate-limited to LOCATIONIQ_MAX_RATE and
+    routed to its own queue/worker (see CELERY_TASK_ROUTES in settings) so
+    this is the only thing calling LocationIQ, at the intended global rate.
+
+    No retries: _fetch_results already exhausts both providers internally,
+    so a Celery-level retry would just repeat that same double-provider
+    attempt at extra quota cost for no benefit on a time-sensitive request.
+    """
+    redis_conn = get_redis_conn()
+    try:
+        results, provider = _fetch_results(q, countrycodes, accept_language)
+    except Exception:
+        logger.exception("fetch_autocomplete failed unexpectedly for %r", q)
+        results, provider = None, None
+
+    current = redis_conn.get(key)
+    if current and json.loads(current).get("job_id") != job_id:
+        # A newer sentinel generation already superseded this one (its TTL
+        # expired mid-flight and a fresh lookup was started) — don't clobber
+        # the newer job's data with this stale result.
+        return
+
+    _store_result(redis_conn, key, job_id, results, provider)
+    redis_conn.zrem(LOCATIONIQ_PENDING_JOBS_KEY, key)
+    if results is not None:
+        from location.location_views import _increment_counters
+
+        _increment_counters(provider)
 
 
 @shared_task(bind=True, max_retries=5, rate_limit="1/s")

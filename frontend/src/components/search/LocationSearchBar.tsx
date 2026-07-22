@@ -1,7 +1,8 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import { debounce } from "lodash";
+import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import {
   getDisplayLocationFromLocation,
@@ -10,6 +11,13 @@ import {
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+
+// Fast-first, then backing-off poll schedule (ms) for GET /api/location_autocomplete/
+// while it's returning 202 (pending). Keeps the common, uncontended case snappy
+// (first re-poll at 250ms) while not hammering the server if a lookup is queued.
+// Sums to ~6.75s of waiting between requests before giving up; see
+// doc/spec/20260720_1400_locationiq_rate_limited_queue_design.md.
+const AUTOCOMPLETE_POLL_SCHEDULE_MS = [250, 500, 1000, 1000, 1000, 1000, 1000, 1000];
 
 const useStyles = makeStyles((theme) => ({
   additionalInfos: {
@@ -100,6 +108,10 @@ export default function LocationSearchBar({
     [value]
   );
   const [loading, setLoading] = useState(false);
+  const setSearchValueDebounced = useMemo(
+    () => debounce((value: string) => setSearchValue(value), 400),
+    []
+  );
   const HUB_COUNTRY_RESTRICTIONS = {
     perth: "gb",
   };
@@ -111,114 +123,156 @@ export default function LocationSearchBar({
 
   useEffect(() => {
     let active = true;
+    let pollTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
-    (async () => {
-      if (searchValue) {
-        const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
-          ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
-          : searchValue;
-        let url = `/api/location_autocomplete/?q=${encodeURIComponent(searchParam)}`;
-        if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
-          url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
+    const sleep = (ms: number) =>
+      new Promise<void>((resolve) => {
+        pollTimeoutId = setTimeout(resolve, ms);
+      });
+
+    const processResponseData = (rawData) => {
+      if (!active) return;
+      const bannedClasses = [
+        "tourism",
+        "railway",
+        "waterway",
+        "natural",
+        "shop",
+        "leisure",
+        "amenity",
+        "highway",
+        "aeroway",
+        "historic",
+      ];
+      const additionalOptions = [
+        {
+          simple_name: "Global",
+          name: "Global",
+          type: "global",
+          added_manually: "true",
+          city: "",
+          country: "Global",
+          state: "",
+          place_id: 1,
+          osm_id: -1,
+          osm_type: "relation",
+          class: "global",
+          osm_class: "global",
+          osm_class_type: "global",
+          lon: -1,
+          lat: -1,
+        },
+      ];
+      const bannedTypes = [
+        "claimed_administrative",
+        "isolated_dwelling",
+        "croft",
+        "construction",
+        "postcode",
+      ];
+      const minimumImportance = {
+        exactAddresses: 0.25,
+        places: 0.5,
+      };
+      const filteredData = rawData.filter((o) => {
+        return (
+          (isExactLocation(o)
+            ? o.importance > minimumImportance.exactAddresses
+            : o.importance > minimumImportance.places) &&
+          (enableExactLocation || !bannedClasses.includes(o.class)) &&
+          !bannedTypes.includes(o.type)
+        );
+      });
+      const data =
+        filteredData.length > 0
+          ? filteredData
+          : rawData.slice(0, 2).filter((o) => {
+              if (filterMode && o.type === "postcode") {
+                return false;
+              } else {
+                return enableExactLocation || !bannedClasses.includes(o.class);
+              }
+            });
+      for (const option of additionalOptions) {
+        if (option.simple_name.toLowerCase().includes(searchValue.toLowerCase())) {
+          data.push(option);
         }
-        const response = await apiRequest({ method: "get", url, locale });
-        const bannedClasses = [
-          "tourism",
-          "railway",
-          "waterway",
-          "natural",
-          "shop",
-          "leisure",
-          "amenity",
-          "highway",
-          "aeroway",
-          "historic",
-        ];
-        const additionalOptions = [
-          {
-            simple_name: "Global",
-            name: "Global",
-            type: "global",
-            added_manually: "true",
-            city: "",
-            country: "Global",
-            state: "",
-            place_id: 1,
-            osm_id: -1,
-            osm_type: "relation",
-            class: "global",
-            osm_class: "global",
-            osm_class_type: "global",
-            lon: -1,
-            lat: -1,
-          },
-        ];
-        const bannedTypes = [
-          "claimed_administrative",
-          "isolated_dwelling",
-          "croft",
-          "construction",
-          "postcode",
-        ];
-        const minimumImportance = {
-          exactAddresses: 0.25,
-          places: 0.5,
-        };
-        if (active) {
-          const filteredData = response.data.filter((o) => {
-            return (
-              (isExactLocation(o)
-                ? o.importance > minimumImportance.exactAddresses
-                : o.importance > minimumImportance.places) &&
-              (enableExactLocation || !bannedClasses.includes(o.class)) &&
-              !bannedTypes.includes(o.type)
-            );
-          });
-          const data =
-            filteredData.length > 0
-              ? filteredData
-              : response.data.slice(0, 2).filter((o) => {
-                  if (filterMode && o.type === "postcode") {
-                    return false;
-                  } else {
-                    return enableExactLocation || !bannedClasses.includes(o.class);
-                  }
-                });
-          for (const option of additionalOptions) {
-            if (option.simple_name.toLowerCase().includes(searchValue.toLowerCase())) {
-              data.push(option);
-            }
-          }
-
-          const getSimpleName = (location, enableExactLocation: boolean = false): string => {
-            if (!enableExactLocation) {
-              return getDisplayLocationFromLocation(location).name;
-            }
-
-            return getDisplayLocationFromExactLocation(location).name;
-          };
-
-          const options = data.map((option) => ({
-            ...option,
-            // Nominatim returns "class" but our app uses "osm_class" consistently.
-            // Same with "type" and "osm_class_type".
-            osm_class: option.osm_class ?? option.class,
-            osm_class_type: option.osm_class_type ?? option.type,
-            simple_name: getSimpleName(option, enableExactLocation),
-            key: `${option.osm_id || "na"}-${option.osm_type}-${
-              option.osm_class ?? option.class ?? "na"
-            }`,
-          }));
-          setOptions(getOptionsWithoutRedundancies(options));
-          setLoading(false);
-        }
-      } else {
-        setOptions([]);
       }
-    })();
+
+      const getSimpleName = (location, enableExactLocation: boolean = false): string => {
+        if (!enableExactLocation) {
+          return getDisplayLocationFromLocation(location).name;
+        }
+
+        return getDisplayLocationFromExactLocation(location).name;
+      };
+
+      const options = data.map((option) => ({
+        ...option,
+        // Nominatim returns "class" but our app uses "osm_class" consistently.
+        // Same with "type" and "osm_class_type".
+        osm_class: option.osm_class ?? option.class,
+        osm_class_type: option.osm_class_type ?? option.type,
+        simple_name: getSimpleName(option, enableExactLocation),
+        key: `${option.osm_id || "na"}-${option.osm_type}-${
+          option.osm_class ?? option.class ?? "na"
+        }`,
+      }));
+      setOptions(getOptionsWithoutRedundancies(options));
+      setLoading(false);
+    };
+
+    const fetchWithPolling = async () => {
+      if (!searchValue) {
+        setOptions([]);
+        return;
+      }
+      const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
+        ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
+        : searchValue;
+      let url = `/api/location_autocomplete/?q=${encodeURIComponent(searchParam)}`;
+      if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
+        url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
+      }
+
+      let attempt = 0;
+      while (active) {
+        try {
+          const response = await apiRequest({ method: "get", url, locale });
+          if (!active) return;
+          if (response.status === 202) {
+            if (attempt >= AUTOCOMPLETE_POLL_SCHEDULE_MS.length) {
+              // Gave up waiting — leave whatever's currently shown (likely
+              // nothing, since options were cleared on this keystroke) and
+              // stop the spinner rather than hanging indefinitely.
+              setLoading(false);
+              return;
+            }
+            await sleep(AUTOCOMPLETE_POLL_SCHEDULE_MS[attempt]);
+            attempt += 1;
+            continue;
+          }
+          processResponseData(response.data);
+          return;
+        } catch (error: any) {
+          const responseStatus = error?.response?.status;
+          if (responseStatus === 429 || responseStatus === 503) {
+            // Transient "busy, try again" signal — not a real failure, so
+            // don't surface an error to the user, just stop this attempt.
+            if (active) setLoading(false);
+            return;
+          }
+          if (active) setLoading(false);
+          return;
+        }
+      }
+    };
+
+    fetchWithPolling();
 
     return () => {
       active = false;
+      if (pollTimeoutId) clearTimeout(pollTimeoutId);
     };
   }, [searchValue, locale, hubUrl]);
 
@@ -278,8 +332,9 @@ export default function LocationSearchBar({
     }
     setInputValue(event.target.value);
     if (event.target.value.length >= 3) {
-      setSearchValue(event.target.value);
+      setSearchValueDebounced(event.target.value);
     } else {
+      setSearchValueDebounced.cancel();
       setOptions([]);
       setLoading(false);
     }
