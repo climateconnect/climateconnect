@@ -89,7 +89,6 @@ export async function getServerSideProps(ctx) {
     posts,
     comments,
     userInteractions,
-    similarProjects,
     hubSupporters,
     hubThemeData,
   ] = await Promise.all([
@@ -98,10 +97,12 @@ export async function getServerSideProps(ctx) {
     getPostsByProject(projectUrl, auth_token, ctx.locale),
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
-    getSimilarProjects(projectUrl, ctx.locale, hubUrl),
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
   ]);
+
+  const similarProjects =
+    project && !project.is_draft ? await getSimilarProjects(projectUrl, ctx.locale, hubUrl) : null;
 
   // Fetch sibling events if this is a Wasseraktionswochen event
   let siblingProjects = null;
