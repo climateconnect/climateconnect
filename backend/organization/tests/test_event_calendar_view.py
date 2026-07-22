@@ -615,7 +615,10 @@ class TestListUpcomingEventsView(APITestCase):
         results = response.json()
         slugs = [item["url_slug"] for item in results]
         # Should be event-0, 1, 2, 3 (first 4 chronologically)
-        self.assertEqual(slugs[:4], ["future-event-0", "future-event-1", "future-event-2", "future-event-3"])
+        self.assertEqual(
+            slugs[:4],
+            ["future-event-0", "future-event-1", "future-event-2", "future-event-3"],
+        )
 
     def test_start_date_filter_respected(self):
         # Request events starting from day 12 onwards (event-2 onwards)

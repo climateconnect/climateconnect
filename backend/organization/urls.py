@@ -96,7 +96,11 @@ urlpatterns = [
         name="events-calendar-counts",
     ),
     # Upcoming events for Browse page highlights (max 4, parallel load)
-    path("events/upcoming/", project_views.ListUpcomingEventsView.as_view(), name="events-upcoming"),
+    path(
+        "events/upcoming/",
+        project_views.ListUpcomingEventsView.as_view(),
+        name="events-upcoming",
+    ),
     path(
         "projects/<str:url_slug>/",
         project_views.ProjectAPIView.as_view(),

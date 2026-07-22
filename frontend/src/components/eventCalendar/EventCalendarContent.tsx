@@ -120,7 +120,7 @@ function syncFiltersToUrl(search: string, sectors: string[], selectedDay: Dayjs)
   const pathname = window.location.pathname;
   const newUrl = `${origin}${pathname}?${qs}`;
   if (newUrl !== window.location.href) {
-    window.history.pushState({}, "", newUrl);
+    window.history.replaceState({}, "", newUrl);
   }
 }
 
@@ -168,9 +168,16 @@ export default function EventCalendarContent({
   const [viewMonth, setViewMonth] = useState<Dayjs>(initialDay.startOf("month"));
   const [dayCounts, setDayCounts] = useState<Record<string, number>>({});
 
-  // Sync filter state to URL on every change
+  // Sync filter state to URL — debounced when search changes to avoid
+  // excessive history entries and give the user time to finish typing.
   useEffect(() => {
-    syncFiltersToUrl(search, sectors, selectedDay);
+    const handler = setTimeout(
+      () => {
+        syncFiltersToUrl(search, sectors, selectedDay);
+      },
+      search ? 400 : 0
+    );
+    return () => clearTimeout(handler);
   }, [search, sectors, selectedDay]);
 
   const fetchCounts = async () => {

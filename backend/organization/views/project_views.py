@@ -689,40 +689,31 @@ class ListUpcomingEventsView(APIView):
             )
 
         if (
-            "osm_id" in request.query_params
-            and "osm_type" in request.query_params
+            "osm_id" in request.query_params and "osm_type" in request.query_params
         ) or "place_id" in request.query_params:
             location_data = get_location_with_range(request.query_params)
-            queryset = (
-                queryset.filter(
-                    Q(loc__country=location_data["country"])
-                    & (
-                        Q(
-                            loc__multi_polygon__distance_lte=(
-                                location_data["location"],
-                                location_data["radius"],
-                            )
+            queryset = queryset.filter(
+                Q(loc__country=location_data["country"])
+                & (
+                    Q(
+                        loc__multi_polygon__distance_lte=(
+                            location_data["location"],
+                            location_data["radius"],
                         )
-                        | Q(
-                            loc__centre_point__distance_lte=(
-                                location_data["location"],
-                                location_data["radius"],
-                            )
+                    )
+                    | Q(
+                        loc__centre_point__distance_lte=(
+                            location_data["location"],
+                            location_data["radius"],
                         )
                     )
                 )
-                .annotate(
-                    distance=Distance("loc__centre_point", location_data["location"])
-                )
-                .order_by("distance")
             )
 
         queryset = queryset.distinct().order_by("start_date")[:4]
 
         context = create_context_for_hub_specific_sector(request)
-        serializer = ProjectStubSerializer(
-            queryset, many=True, context=context
-        )
+        serializer = ProjectStubSerializer(queryset, many=True, context=context)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @staticmethod

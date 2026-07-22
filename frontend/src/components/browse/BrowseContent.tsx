@@ -345,31 +345,27 @@ export default function BrowseContent({
     //persist the old location filter when switching tabs
     const tabKey = TYPES_BY_TAB_VALUE[newValue];
 
-    if (tabKey === "events") {
-      // TODO: add event calendar here!
-    } else {
-      const possibleFilters = getFilters({
-        key: tabKey,
-        filterChoices: filterChoices,
-        locale: locale,
-      });
-      const locationFilter: any = possibleFilters.find((f) => f.type === "location");
-      queryObject[locationFilter.key] = filters[locationFilter.key];
-      const splitQueryObject = splitFiltersFromQueryObject(
-        /*TODO(undefined) newFilters*/ queryObject,
-        possibleFilters
-      );
+    const possibleFilters = getFilters({
+      key: tabKey,
+      filterChoices: filterChoices,
+      locale: locale,
+    });
+    const locationFilter: any = possibleFilters.find((f) => f.type === "location");
+    queryObject[locationFilter.key] = filters[locationFilter.key];
+    const splitQueryObject = splitFiltersFromQueryObject(
+      /*TODO(undefined) newFilters*/ queryObject,
+      possibleFilters
+    );
 
-      const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
-      const tabValue = TYPES_BY_TAB_VALUE[newValue];
-      // Apply new filters with the query object immediately:
-      handleApplyNewFilters({
-        type: tabValue,
-        newFilters: newFilters,
-        closeFilters: false,
-        nonFilterParams: splitQueryObject.nonFilters,
-      });
-    }
+    const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
+    const tabValue = TYPES_BY_TAB_VALUE[newValue];
+    // Apply new filters with the query object immediately:
+    handleApplyNewFilters({
+      type: tabValue,
+      newFilters: newFilters,
+      closeFilters: false,
+      nonFilterParams: splitQueryObject.nonFilters,
+    });
 
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);
