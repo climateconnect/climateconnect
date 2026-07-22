@@ -304,6 +304,25 @@ class ListOrganizationsAPIView(ListAPIView):
 
         return organizations
 
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests for search functionality.
+
+        Mirrors ListProjectsView.post(): the frontend sends the location object
+        in the request body. When present (place_id + geojson), inject it into
+        query_params so the existing get_queryset() location filter works.
+        """
+        location = request.data
+
+        query_params = request.query_params.copy()
+
+        if "place_id" in location and "geojson" in location:
+            query_params["location"] = location
+
+        request._request.GET = query_params
+
+        return self.list(request, *args, **kwargs)
+
 
 class CreateOrganizationView(APIView):
     permission_classes = [IsAuthenticated]

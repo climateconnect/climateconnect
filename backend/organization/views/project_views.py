@@ -431,18 +431,15 @@ class ListEventsView(ListAPIView):
     Lists event-type projects chronologically for the Event Calendar feature.
 
     Always available (no feature toggle). Supports text search, topic (sectors),
-    hub scoping, and a start/end date range. Orders strictly by start_date.
+    hub scoping, and a start_date "jump to date" filter. Paginated via
+    ProjectsPagination (default page_size=12). Orders strictly by start_date.
     """
 
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
     search_fields = ["name", "translation_project__name_translation"]
     serializer_class = ProjectStubSerializer
-    # The calendar loads the full window in a single request (no pagination).
-    pagination_class = None
-
-    # Maximum window span returned in a single request (unpaginated safety cap).
-    MAX_WINDOW = relativedelta(months=6)
+    pagination_class = ProjectsPagination
 
     def get_queryset(self):
         queryset = (
@@ -462,36 +459,10 @@ class ListEventsView(ListAPIView):
             )
         )
 
-        # --- Date range filtering ---
+        # --- Jump-to-date filter ---
         start_date = self._parse_date_param(self.request.query_params.get("start_date"))
-        end_date = self._parse_date_param(self.request.query_params.get("end_date"))
-
-        # Default window (UTC fallback) when the frontend sends no dates.
-        if start_date is None and end_date is None:
-            now = timezone.now()
-            start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            end_date = (
-                start_date + relativedelta(months=3) - relativedelta(days=1)
-            ).replace(hour=23, minute=59, second=59)
-
-        # Hard cap: clamp the effective range to MAX_WINDOW to avoid
-        # unbounded payloads on the unpaginated endpoint.
-        if start_date is not None and end_date is not None:
-            max_end = start_date + self.MAX_WINDOW
-            if end_date > max_end:
-                end_date = max_end
-
-        if start_date is not None and end_date is not None:
-            # Window membership: the event's start_date falls within the window.
-            # The calendar shows each event only on its start date, so an event
-            # with a start_date outside the window has no day to render on.
-            queryset = queryset.filter(
-                Q(start_date__gte=start_date) & Q(start_date__lte=end_date)
-            )
-        elif start_date is not None:
+        if start_date is not None:
             queryset = queryset.filter(start_date__gte=start_date)
-        elif end_date is not None:
-            queryset = queryset.filter(start_date__lte=end_date)
 
         # --- Topic (sectors) filter ---
         if "sectors" in self.request.query_params:

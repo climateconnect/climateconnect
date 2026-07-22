@@ -25,13 +25,11 @@ const toOffsetIso = (d: Date): string => {
   );
 };
 
-const getDefaultWindowParams = (): Record<string, string> => {
+const getDefaultStartDateParams = (): Record<string, string> => {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 90, 23, 59, 59);
   return {
     start_date: toOffsetIso(start),
-    end_date: toOffsetIso(end),
   };
 };
 
@@ -47,15 +45,21 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const [sectorOptions] = await Promise.all([getSectorOptions(locale)]);
 
   let initialEvents: any[] = [];
+  let initialHasMore = false;
   try {
-    const params = new URLSearchParams(getDefaultWindowParams());
+    const params = new URLSearchParams({
+      ...getDefaultStartDateParams(),
+      page: "1",
+      page_size: "12",
+    });
     const { data } = await apiRequest({
       method: "get",
       url: `/api/events/?${params.toString()}`,
       token,
       locale: locale as any,
     });
-    initialEvents = Array.isArray(data) ? data : [];
+    initialEvents = data.results || [];
+    initialHasMore = data.next !== null;
   } catch (e) {
     // Initial fetch failed; the client will retry when filters change.
   }
@@ -64,11 +68,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     props: {
       filterChoices: { sectors: sectorOptions },
       initialEvents,
+      initialHasMore,
     },
   };
 };
 
-export default function EventsPage({ filterChoices, initialEvents }: any) {
+export default function EventsPage({ filterChoices, initialEvents, initialHasMore }: any) {
   const { locale, hubUrl } = useContext(UserContext);
   const { hubs } = useContext(HubContext);
   const router = useRouter();
@@ -102,6 +107,7 @@ export default function EventsPage({ filterChoices, initialEvents }: any) {
       />
       <EventCalendarContent
         initialEvents={initialEvents}
+        initialHasMore={initialHasMore}
         filterChoices={filterChoices}
         hubUrl={hubUrl}
       />

@@ -59,6 +59,7 @@ function buildSubdomainRedirects() {
 }
 
 module.exports = withBundleAnalyzer({
+  generateBuildId: async () => process.env.BUILD_SHA || "dev",
   // Workaround for Next 15 pages-router dev HMR crash when receiving malformed
   // `isrManifest` payloads (data can be `{}` before router is ready).
   devIndicators: false,
@@ -73,6 +74,8 @@ module.exports = withBundleAnalyzer({
     "API_URL",
     "BASE_URL",
     "BASE_URL_HOST",
+    "BUILD_SHA",
+    "BUILD_TIMESTAMP",
     "CUSTOM_HUB_URLS",
     "DONATION_CAMPAIGN_RUNNING",
     "ENVIRONMENT",

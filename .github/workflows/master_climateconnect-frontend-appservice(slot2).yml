@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '22.x'
 
@@ -48,6 +48,8 @@ jobs:
           yarn devlink-sync
           yarn build
         env:
+          BUILD_SHA: ${{ github.sha }}
+          BUILD_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
           API_HOST: ${{ secrets.API_HOST }}
           CUSTOM_HUB_URLS: ${{ secrets.CUSTOM_HUB_URLS }}
           API_URL: ${{ secrets.API_URL }}

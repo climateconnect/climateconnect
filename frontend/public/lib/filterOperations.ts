@@ -219,12 +219,21 @@ export async function applyNewFilters({
   handleSetErrorMessage(null);
 
   try {
+    // Only treat a location as "active" when it is a non-empty object or a
+    // non-empty string. An empty string (e.g. after clearing the location
+    // filter) must be treated as "no location" so the request falls back to
+    // GET instead of a POST with an empty body.
+    const rawLocation = newFilters.location;
+    const hasLocation =
+      !!rawLocation &&
+      (typeof rawLocation !== "string" || rawLocation.trim() !== "") &&
+      (typeof rawLocation !== "object" || Object.keys(rawLocation).length > 0);
     const payload: any = {
       type: type,
       page: 1,
       token: token,
       urlEnding: newUrlEnding,
-      location: newFilters.location ?? undefined,
+      location: hasLocation ? rawLocation : undefined,
       locale: locale,
     };
 
