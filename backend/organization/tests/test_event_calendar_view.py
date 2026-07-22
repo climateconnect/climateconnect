@@ -14,6 +14,12 @@ from organization.models import (
     Sector,
 )
 
+# Fixed dates so tests are deterministic regardless of when they run.
+# Using 2026-03 (March) avoids DST edge cases and end-of-month overflow.
+FIXED_NOW = datetime(2026, 3, 15, 12, 0, 0, tzinfo=timezone.utc)
+FIXED_YEAR = 2026
+FIXED_MONTH = 3
+
 
 class TestEventCalendarListView(APITestCase):
     """
@@ -42,7 +48,6 @@ class TestEventCalendarListView(APITestCase):
             defaults={"name": "English", "native_name": "English"},
         )
 
-        now = timezone.now()
         # Two active, non-draft events in the future.
         self.event1 = Project.objects.create(
             name="Future Event Alpha",
@@ -52,8 +57,8 @@ class TestEventCalendarListView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="EV",
-            start_date=now + timedelta(days=10),
-            end_date=now + timedelta(days=10, hours=2),
+            start_date=FIXED_NOW + timedelta(days=10),
+            end_date=FIXED_NOW + timedelta(days=10, hours=2),
         )
         self.event2 = Project.objects.create(
             name="Future Event Beta",
@@ -63,8 +68,8 @@ class TestEventCalendarListView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="EV",
-            start_date=now + timedelta(days=20),
-            end_date=now + timedelta(days=20, hours=2),
+            start_date=FIXED_NOW + timedelta(days=20),
+            end_date=FIXED_NOW + timedelta(days=20, hours=2),
         )
         # Draft event -> excluded.
         Project.objects.create(
@@ -75,8 +80,8 @@ class TestEventCalendarListView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="EV",
-            start_date=now + timedelta(days=15),
-            end_date=now + timedelta(days=15, hours=2),
+            start_date=FIXED_NOW + timedelta(days=15),
+            end_date=FIXED_NOW + timedelta(days=15, hours=2),
         )
         # Inactive event -> excluded.
         Project.objects.create(
@@ -87,8 +92,8 @@ class TestEventCalendarListView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="EV",
-            start_date=now + timedelta(days=15),
-            end_date=now + timedelta(days=15, hours=2),
+            start_date=FIXED_NOW + timedelta(days=15),
+            end_date=FIXED_NOW + timedelta(days=15, hours=2),
         )
         # Idea (not an event) -> excluded.
         Project.objects.create(
@@ -99,7 +104,7 @@ class TestEventCalendarListView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="ID",
-            start_date=now + timedelta(days=12),
+            start_date=FIXED_NOW + timedelta(days=12),
         )
         # Project (not an event) -> excluded.
         Project.objects.create(
@@ -110,7 +115,7 @@ class TestEventCalendarListView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="PR",
-            start_date=now + timedelta(days=12),
+            start_date=FIXED_NOW + timedelta(days=12),
         )
 
     def _paginated_slugs(self, response):
@@ -155,7 +160,7 @@ class TestEventCalendarListView(APITestCase):
 
     def test_start_date_filter_returns_events_from_date_forward(self):
         # Filtering by start_date should return events on or after that date.
-        start = (timezone.now() + timedelta(days=15)).isoformat()
+        start = (FIXED_NOW + timedelta(days=15)).isoformat()
         response = self.client.get(self.url, {"start_date": start})
         slugs = self._paginated_slugs(response)
         self.assertNotIn(self.event1.url_slug, slugs)
@@ -174,7 +179,6 @@ class TestEventCalendarListView(APITestCase):
     def test_event_starting_before_filter_is_excluded(self):
         # Events are shown only on their start_date, so an event whose
         # start_date falls before the requested start_date is not returned.
-        now = timezone.now()
         past = Project.objects.create(
             name="Past Event",
             url_slug="past-event",
@@ -183,10 +187,10 @@ class TestEventCalendarListView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="EV",
-            start_date=now - timedelta(days=2),
-            end_date=now - timedelta(days=2, hours=-2),
+            start_date=FIXED_NOW - timedelta(days=2),
+            end_date=FIXED_NOW - timedelta(days=2, hours=-2),
         )
-        start = (now + timedelta(days=5)).isoformat()
+        start = (FIXED_NOW + timedelta(days=5)).isoformat()
         response = self.client.get(self.url, {"start_date": start})
         self.assertNotIn(past.url_slug, self._paginated_slugs(response))
 
@@ -237,8 +241,6 @@ class TestEventCalendarListView(APITestCase):
         self.assertNotIn(self.event2.url_slug, slugs)
 
     def test_pagination_page_and_page_size(self):
-        # Create enough events to span multiple pages.
-        now = timezone.now()
         for i in range(15):
             Project.objects.create(
                 name=f"Page Event {i}",
@@ -248,8 +250,8 @@ class TestEventCalendarListView(APITestCase):
                 status=self.project_status,
                 language=self.language,
                 project_type="EV",
-                start_date=now + timedelta(days=30 + i),
-                end_date=now + timedelta(days=30 + i, hours=2),
+                start_date=FIXED_NOW + timedelta(days=30 + i),
+                end_date=FIXED_NOW + timedelta(days=30 + i, hours=2),
             )
         # Default page_size = 12. Total events = 2 (setUp) + 15 = 17.
         page1 = self.client.get(self.url)
@@ -270,7 +272,6 @@ class TestEventCalendarListView(APITestCase):
         sector = Sector.objects.create(
             name="Combo Sector", name_de_translation="Combo", key="combo"
         )
-        now = timezone.now()
         for i in range(5):
             ev = Project.objects.create(
                 name=f"Combo Event {i}",
@@ -280,8 +281,8 @@ class TestEventCalendarListView(APITestCase):
                 status=self.project_status,
                 language=self.language,
                 project_type="EV",
-                start_date=now + timedelta(days=40 + i),
-                end_date=now + timedelta(days=40 + i, hours=2),
+                start_date=FIXED_NOW + timedelta(days=40 + i),
+                end_date=FIXED_NOW + timedelta(days=40 + i, hours=2),
             )
             ProjectSectorMapping.objects.create(sector=sector, project=ev)
         response = self.client.get(self.url, {"sectors": sector.name, "page_size": 3})
@@ -316,9 +317,13 @@ class TestEventCalendarCountsView(APITestCase):
             defaults={"name": "English", "native_name": "English"},
         )
 
-        now = timezone.now()
-        self.now = now
-        # event1: single day in the current month.
+        # Fixed dates within FIXED_MONTH so tests are deterministic.
+        self.day1_dt = datetime(2026, 3, 5, 12, 0, 0, tzinfo=timezone.utc)
+        self.day2_dt = datetime(2026, 3, 15, 12, 0, 0, tzinfo=timezone.utc)
+        draft_dt = datetime(2026, 3, 10, 12, 0, 0, tzinfo=timezone.utc)
+        idea_dt = datetime(2026, 3, 8, 12, 0, 0, tzinfo=timezone.utc)
+
+        # event1: single day in the month.
         self.event1 = Project.objects.create(
             name="Count Event Alpha",
             url_slug="count-event-alpha",
@@ -327,10 +332,10 @@ class TestEventCalendarCountsView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="EV",
-            start_date=now + timedelta(days=10),
-            end_date=now + timedelta(days=10, hours=2),
+            start_date=self.day1_dt,
+            end_date=self.day1_dt + timedelta(hours=2),
         )
-        # event2: multi-day event spanning 3 days in the current month.
+        # event2: multi-day event spanning 3 days.
         self.event2 = Project.objects.create(
             name="Count Event Beta",
             url_slug="count-event-beta",
@@ -339,8 +344,8 @@ class TestEventCalendarCountsView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="EV",
-            start_date=now + timedelta(days=20),
-            end_date=now + timedelta(days=22, hours=2),
+            start_date=self.day2_dt,
+            end_date=self.day2_dt + timedelta(days=2, hours=2),
         )
         # Draft / inactive / non-event -> excluded from counts.
         Project.objects.create(
@@ -351,8 +356,8 @@ class TestEventCalendarCountsView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="EV",
-            start_date=now + timedelta(days=15),
-            end_date=now + timedelta(days=15, hours=2),
+            start_date=draft_dt,
+            end_date=draft_dt + timedelta(hours=2),
         )
         Project.objects.create(
             name="Inactive Count Event",
@@ -362,8 +367,8 @@ class TestEventCalendarCountsView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="EV",
-            start_date=now + timedelta(days=15),
-            end_date=now + timedelta(days=15, hours=2),
+            start_date=draft_dt,
+            end_date=draft_dt + timedelta(hours=2),
         )
         Project.objects.create(
             name="Count Idea",
@@ -373,7 +378,7 @@ class TestEventCalendarCountsView(APITestCase):
             status=self.project_status,
             language=self.language,
             project_type="ID",
-            start_date=now + timedelta(days=12),
+            start_date=idea_dt,
         )
 
     def _counts_map(self, response):
@@ -386,32 +391,25 @@ class TestEventCalendarCountsView(APITestCase):
     def test_requires_year_and_month(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        response = self.client.get(self.url, {"year": self.now.year})
+        response = self.client.get(self.url, {"year": FIXED_YEAR})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        response = self.client.get(self.url, {"month": self.now.month})
+        response = self.client.get(self.url, {"month": FIXED_MONTH})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_invalid_month_rejected(self):
-        response = self.client.get(self.url, {"year": self.now.year, "month": 13})
+        response = self.client.get(self.url, {"year": FIXED_YEAR, "month": 13})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_counts_exclude_draft_inactive_and_non_events(self):
-        response = self.client.get(
-            self.url, {"year": self.now.year, "month": self.now.month}
-        )
+        response = self.client.get(self.url, {"year": FIXED_YEAR, "month": FIXED_MONTH})
         counts = self._counts_map(response)
-        day1 = (self.now + timedelta(days=10)).date().isoformat()
-        self.assertEqual(counts.get(day1), 1)
+        self.assertEqual(counts.get("2026-03-05"), 1)
         # Draft / inactive / idea days must not appear.
-        draft_day = (self.now + timedelta(days=15)).date().isoformat()
-        self.assertNotIn(draft_day, counts)
-        idea_day = (self.now + timedelta(days=12)).date().isoformat()
-        self.assertNotIn(idea_day, counts)
+        self.assertNotIn("2026-03-10", counts)
+        self.assertNotIn("2026-03-08", counts)
 
     def test_results_sorted_by_date(self):
-        response = self.client.get(
-            self.url, {"year": self.now.year, "month": self.now.month}
-        )
+        response = self.client.get(self.url, {"year": FIXED_YEAR, "month": FIXED_MONTH})
         dates = [item["date"] for item in response.json()]
         self.assertEqual(dates, sorted(dates))
 
@@ -423,29 +421,23 @@ class TestEventCalendarCountsView(APITestCase):
         response = self.client.get(
             self.url,
             {
-                "year": self.now.year,
-                "month": self.now.month,
+                "year": FIXED_YEAR,
+                "month": FIXED_MONTH,
                 "sectors": sector.name,
             },
         )
         counts = self._counts_map(response)
-        day1 = (self.now + timedelta(days=10)).date().isoformat()
-        day2 = (self.now + timedelta(days=20)).date().isoformat()
-        self.assertEqual(counts.get(day1), 1)
-        self.assertNotIn(day2, counts)
+        self.assertEqual(counts.get("2026-03-05"), 1)
+        self.assertNotIn("2026-03-15", counts)
 
     def test_multi_day_event_counted_only_on_start_day(self):
-        # event2 starts now+20 and spans 3 days. It must contribute a single
-        # count=1 on its start day only; the spanned days must NOT be highlighted.
-        start = self.event2.start_date
-        response = self.client.get(self.url, {"year": start.year, "month": start.month})
+        # event2 starts on the 15th and spans 3 days. It must contribute a
+        # single count=1 on its start day only; spanned days must NOT appear.
+        response = self.client.get(self.url, {"year": FIXED_YEAR, "month": FIXED_MONTH})
         counts = self._counts_map(response)
-        start_day = start.date().isoformat()
-        spanned_day_1 = (start + timedelta(days=1)).date().isoformat()
-        spanned_day_2 = (start + timedelta(days=2)).date().isoformat()
-        self.assertEqual(counts.get(start_day), 1)
-        self.assertNotIn(spanned_day_1, counts)
-        self.assertNotIn(spanned_day_2, counts)
+        self.assertEqual(counts.get("2026-03-15"), 1)
+        self.assertNotIn("2026-03-16", counts)
+        self.assertNotIn("2026-03-17", counts)
 
     def test_multi_sector_event_counted_once_per_day(self):
         sector_a = Sector.objects.create(
@@ -459,31 +451,28 @@ class TestEventCalendarCountsView(APITestCase):
         response = self.client.get(
             self.url,
             {
-                "year": self.now.year,
-                "month": self.now.month,
+                "year": FIXED_YEAR,
+                "month": FIXED_MONTH,
                 "sectors": f"{sector_a.name},{sector_b.name}",
             },
         )
         counts = self._counts_map(response)
-        day1 = (self.now + timedelta(days=10)).date().isoformat()
         # event1 spans a single day and matches both topics; it must be
         # counted exactly once, not once per matching topic.
-        self.assertEqual(counts.get(day1), 1)
+        self.assertEqual(counts.get("2026-03-05"), 1)
 
     def test_search_filter(self):
         response = self.client.get(
             self.url,
             {
-                "year": self.now.year,
-                "month": self.now.month,
+                "year": FIXED_YEAR,
+                "month": FIXED_MONTH,
                 "search": "Alpha",
             },
         )
         counts = self._counts_map(response)
-        day1 = (self.now + timedelta(days=10)).date().isoformat()
-        day2 = (self.now + timedelta(days=20)).date().isoformat()
-        self.assertEqual(counts.get(day1), 1)
-        self.assertNotIn(day2, counts)
+        self.assertEqual(counts.get("2026-03-05"), 1)
+        self.assertNotIn("2026-03-15", counts)
 
     def test_hub_filter(self):
         hub = Hub.objects.create(
@@ -496,16 +485,14 @@ class TestEventCalendarCountsView(APITestCase):
         response = self.client.get(
             self.url,
             {
-                "year": self.now.year,
-                "month": self.now.month,
+                "year": FIXED_YEAR,
+                "month": FIXED_MONTH,
                 "hub": hub.url_slug,
             },
         )
         counts = self._counts_map(response)
-        day1 = (self.now + timedelta(days=10)).date().isoformat()
-        day2 = (self.now + timedelta(days=20)).date().isoformat()
-        self.assertEqual(counts.get(day1), 1)
-        self.assertNotIn(day2, counts)
+        self.assertEqual(counts.get("2026-03-05"), 1)
+        self.assertNotIn("2026-03-15", counts)
 
     def test_counts_are_bucketed_in_requested_timezone(self):
         # An event at 2026-02-01 23:00 UTC is on 2026-02-02 in Asia/Tokyo
