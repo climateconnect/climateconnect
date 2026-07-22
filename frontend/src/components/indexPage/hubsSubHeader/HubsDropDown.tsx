@@ -62,12 +62,13 @@ export default function HubsDropDown({
         currentHash,
     text: h.name,
   }));
+  const allLocationsHref = isEventsPage ? "/events" : `/browse${currentHash}`;
 
   const dropDownItems = addLocationHubExplainerLink
     ? [
         ...dropDownHubItems,
         {
-          href: `/browse`,
+          href: allLocationsHref,
           text: texts.all_locations,
         },
       ]
