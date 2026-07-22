@@ -87,6 +87,7 @@ export default function ProjectSideBar({
   const showingSiblings =
     isWasseraktionswochenEnabled && siblingProjects && siblingProjects.length > 0;
   const projectsToDisplay = showingSiblings ? siblingProjects : similarProjects;
+  const hasProjectsToDisplay = !!projectsToDisplay?.length;
   const headerText = showingSiblings
     ? texts.events_in_this_series
     : texts.you_may_also_like_these_projects;
@@ -99,21 +100,27 @@ export default function ProjectSideBar({
     <>
       {isSmallScreen ? (
         <>
-          <Divider className={classes.divider} />
-          <Typography
-            component="h2"
-            variant="h6"
-            color="background.default_contrastText"
-            className={classes.subHeader}
-          >
-            {headerText}
-          </Typography>
+          {hasProjectsToDisplay && (
+            <>
+              <Divider className={classes.divider} />
+              <Typography
+                component="h2"
+                variant="h6"
+                color="background.default_contrastText"
+                className={classes.subHeader}
+              >
+                {headerText}
+              </Typography>
+            </>
+          )}
         </>
       ) : (
         <>
-          <IconButton size="small" onClick={handleHideContent}>
-            <MenuIcon />
-          </IconButton>
+          {hasProjectsToDisplay && (
+            <IconButton size="small" onClick={handleHideContent}>
+              <MenuIcon />
+            </IconButton>
+          )}
         </>
       )}
       <div
@@ -123,7 +130,7 @@ export default function ProjectSideBar({
             : classes.largeSimilarProjectsContainer
         }
       >
-        {isSmallScreen && (
+        {isSmallScreen && hasProjectsToDisplay && (
           <Button className={classes.expandButton} onClick={handleHideContent}>
             {showSimilarProjects ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </Button>
@@ -139,17 +146,26 @@ export default function ProjectSideBar({
                 hubUrl={hubUrl}
               />
             )}
-            <ProjectPreviews
-              displayOnePreviewInRow={shouldDisplayOneProjectInRow}
-              projects={projectsToDisplay}
-              hubUrl={hubName}
-              registeredEventSlugs={registeredEventSlugs}
-              analyticsSurface="similar_projects_sidebar"
-            />
-            <Button variant="outlined" className={classes.showAllProjectsButton} href={showAllLink}>
-              <SearchIcon />
-              {showAllText}
-            </Button>
+
+            {hasProjectsToDisplay && (
+              <>
+                <ProjectPreviews
+                  displayOnePreviewInRow={shouldDisplayOneProjectInRow}
+                  projects={projectsToDisplay}
+                  hubUrl={hubName}
+                  registeredEventSlugs={registeredEventSlugs}
+                  analyticsSurface="similar_projects_sidebar"
+                />
+                <Button
+                  variant="outlined"
+                  className={classes.showAllProjectsButton}
+                  href={showAllLink}
+                >
+                  <SearchIcon />
+                  {showAllText}
+                </Button>
+              </>
+            )}
           </>
         )}
       </div>
