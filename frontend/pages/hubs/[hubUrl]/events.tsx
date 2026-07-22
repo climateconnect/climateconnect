@@ -37,15 +37,6 @@ const toOffsetIso = (d: Date): string => {
   );
 };
 
-const getDefaultStartDateParams = (hubUrl: string): Record<string, string> => {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-  return {
-    start_date: toOffsetIso(start),
-    hub: hubUrl,
-  };
-};
-
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const hubUrl = ctx.query.hubUrl as string;
   const { featureToggles } = await getFeatureTogglesFromRequest(ctx.req);
@@ -69,14 +60,33 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     getHubTheme(hubUrl),
   ]);
 
+  const querySearch = (ctx.query.search as string) || "";
+  const querySectors = (ctx.query.sectors as string) || "";
+  const queryDate = ctx.query.date as string | undefined;
+
+  let startDateStr: string;
+  let initialSelectedDay: string | undefined;
+  if (queryDate && /^\d{4}-\d{2}-\d{2}$/.test(queryDate)) {
+    const [y, m, d] = queryDate.split("-").map(Number);
+    startDateStr = toOffsetIso(new Date(y, m - 1, d, 0, 0, 0));
+    initialSelectedDay = queryDate;
+  } else {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    startDateStr = toOffsetIso(start);
+  }
+
   let initialEvents: any[] = [];
   let initialHasMore = false;
   try {
     const params = new URLSearchParams({
-      ...getDefaultStartDateParams(hubUrl),
+      start_date: startDateStr,
       page: "1",
       page_size: "12",
+      hub: hubUrl,
     });
+    if (querySearch) params.set("search", querySearch);
+    if (querySectors) params.set("sectors", querySectors);
     const { data } = await apiRequest({
       method: "get",
       url: `/api/events/?${params.toString()}`,
@@ -96,6 +106,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       filterChoices: { sectors: sectorOptions },
       initialEvents,
       initialHasMore,
+      initialSearch: querySearch,
+      initialSectors: querySectors ? querySectors.split(",") : [],
+      initialSelectedDay: initialSelectedDay || null,
       hubData,
       hubThemeData,
     },
@@ -108,6 +121,9 @@ export default function HubEventsPage({
   filterChoices,
   initialEvents,
   initialHasMore,
+  initialSearch,
+  initialSectors,
+  initialSelectedDay,
   hubData,
   hubThemeData,
 }: any) {
@@ -202,6 +218,9 @@ export default function HubEventsPage({
         <EventCalendarContent
           initialEvents={initialEvents}
           initialHasMore={initialHasMore}
+          initialSearch={initialSearch}
+          initialSectors={initialSectors}
+          initialSelectedDay={initialSelectedDay}
           filterChoices={filterChoices}
           hubUrl={hubUrl}
         />
