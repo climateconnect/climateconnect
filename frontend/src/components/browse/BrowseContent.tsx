@@ -5,7 +5,7 @@ import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
 import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
-import { loadMoreData } from "../../../public/lib/getDataOperations";
+import { getUpcomingEvents, loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import {
@@ -30,7 +30,7 @@ import { BrowseTab, LinkedHub } from "../../types";
 import { FilterContext } from "../context/FilterContext";
 import HubLinkButton from "../hub/HubLinkButton";
 import { useFeatureToggles } from "../featureToggle";
-import UpcomingEventsGroup, { getUpcomingEventHighlights } from "./UpcomingEventsGroup";
+import UpcomingEventsGroup from "./UpcomingEventsGroup";
 const OrganizationPreviews = lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = lazy(() => import("../profile/ProfilePreviews"));
 const ProjectPreviews = lazy(() => import("../project/ProjectPreviews"));
@@ -163,7 +163,6 @@ export default function BrowseContent({
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const isLargeScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.up("lg"));
 
   const type_names = {
     projects: texts.projects,
@@ -176,19 +175,61 @@ export default function BrowseContent({
   const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
   const [state, setState] = useState(initialState);
 
-  // Curate upcoming events from the existing ranked grid (no separate API
-  // call). They are rendered as a highlighted "Upcoming events" group at the
-  // top; the rest of the grid excludes them so they are not shown twice.
-  // Limit to a single row per breakpoint, matching the main project grid's
-  // column count so the group never wraps into a broken, partly-empty second
-  // row: lg+ = 4 columns, md = 3, sm = 2 (horizontal), and on very narrow
-  // screens (xs) 2 events render as two stacked rows at one column.
-  const upcomingEventLimit = isLargeScreen ? 4 : isNarrowScreen ? 2 : 3;
+  // Upcoming events state - fetched in parallel with projects when feature enabled
   const isEventsEnabled = isEnabled("EVENT_CALENDAR_FEATURE");
-  const { highlights, remaining } = useMemo(
-    () => getUpcomingEventHighlights(state.items.projects, upcomingEventLimit),
-    [state.items.projects, upcomingEventLimit]
-  );
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+
+  // Build start_date filter for "today" at local midnight (browser timezone)
+  // This ensures "upcoming" aligns with the user's local day
+  const startDateFilter = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // Include timezone offset for accurate server-side filtering
+    return today.toISOString();
+  }, []);
+
+  // Fetch upcoming events in parallel with projects
+  useEffect(() => {
+    if (!isEventsEnabled) {
+      setUpcomingEvents([]);
+      return;
+    }
+
+    const fetchUpcoming = async () => {
+      const events = await getUpcomingEvents({
+        token,
+        locale,
+        hubUrl: hubData?.url_slug,
+        filters: {
+          search: filters.search,
+          sectors: filters.sectors,
+          start_date: startDateFilter,
+        },
+        location: filters.location,
+      });
+      setUpcomingEvents(events || []);
+    };
+
+    fetchUpcoming();
+  }, [
+    isEventsEnabled,
+    filters.search,
+    filters.sectors,
+    startDateFilter,
+    filters.location,
+    token,
+    locale,
+    hubData?.url_slug,
+  ]);
+
+  // Deduplicate: remove events from projects grid that appear in upcoming events
+  const projectsForGrid = useMemo(() => {
+    if (!isEventsEnabled || upcomingEvents.length === 0) {
+      return state.items.projects;
+    }
+    const upcomingSlugs = new Set(upcomingEvents.map((e) => e.url_slug));
+    return state.items.projects.filter((p) => !upcomingSlugs.has(p.url_slug));
+  }, [state.items.projects, isEventsEnabled, upcomingEvents]);
 
   const locationInputRefs = {
     projects: useRef(null),
@@ -586,14 +627,14 @@ export default function BrowseContent({
                 {texts.you_are_seeing_projects_related_to}
               </div>
             )}
-            {isEventsEnabled && highlights.length > 0 && (
-              <UpcomingEventsGroup events={highlights} hubUrl={hubUrl} />
+            {isEventsEnabled && upcomingEvents.length > 0 && (
+              <UpcomingEventsGroup events={upcomingEvents} hubUrl={hubUrl} />
             )}
             <ProjectPreviews
               hasMore={state.hasMore.projects}
               loadFunc={() => handleLoadMoreData("projects")}
               parentHandlesGridItems
-              projects={isEventsEnabled ? remaining : state.items.projects}
+              projects={projectsForGrid}
               hubUrl={hubUrl}
               isLoading={isFetchingMoreData}
               analyticsSurface="browse_card"
