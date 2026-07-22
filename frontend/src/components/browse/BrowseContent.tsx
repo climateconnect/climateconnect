@@ -158,8 +158,13 @@ export default function BrowseContent({
     locale,
   ]);
 
-  const [hash, setHash] = useState<BrowseTab | null>(null);
-  const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
+  const [tabValue, setTabValue] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    const h = window.location.hash.replace("#", "");
+    return (TYPES_BY_TAB_VALUE as string[]).indexOf(h) >= 0
+      ? (TYPES_BY_TAB_VALUE as string[]).indexOf(h)
+      : 0;
+  });
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -264,10 +269,8 @@ export default function BrowseContent({
     const newHash = window?.location?.hash.replace("#", "") as BrowseTab;
 
     if (window.location.hash && TYPES_BY_TAB_VALUE.includes(newHash)) {
-      setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
     } else {
-      setHash(TYPES_BY_TAB_VALUE[0]);
       setTabValue(0);
     }
 

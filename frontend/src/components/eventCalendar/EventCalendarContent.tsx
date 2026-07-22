@@ -230,7 +230,7 @@ export default function EventCalendarContent({
   filterChoices,
   hubUrl,
 }: any) {
-  const { locale } = useContext(UserContext);
+  const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
@@ -239,7 +239,7 @@ export default function EventCalendarContent({
   const [sectors, setSectors] = useState<string[]>([]);
   const [selectedDay, setSelectedDay] = useState<Dayjs>(dayjs());
   const [allEvents, setAllEvents] = useState<any[]>(initialEvents);
-  const [currentPage, setCurrentPage] = useState(1);
+  const currentPageRef = useRef(1);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -248,6 +248,7 @@ export default function EventCalendarContent({
   const [dayCounts, setDayCounts] = useState<Record<string, number>>({});
   const didInitFetch = useRef(false);
   const theme = useTheme();
+  const isCustomHub = CUSTOM_HUB_URLS?.includes(hubUrl);
   const startOfTodayMs = (() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -277,7 +278,7 @@ export default function EventCalendarContent({
         });
         const results = data.results || [];
         setAllEvents((prev) => (append ? [...prev, ...results] : results));
-        setCurrentPage(page);
+        currentPageRef.current = page;
         setHasMore(data.next !== null);
       } catch (e) {
         setError(true);
@@ -289,8 +290,8 @@ export default function EventCalendarContent({
   );
 
   const loadMore = useCallback(async () => {
-    await fetchEvents(currentPage + 1, true);
-  }, [fetchEvents, currentPage]);
+    await fetchEvents(currentPageRef.current + 1, true);
+  }, [fetchEvents]);
 
   const { lastElementRef } = useInfiniteScroll({
     hasMore,
@@ -306,7 +307,7 @@ export default function EventCalendarContent({
       const handler = setTimeout(
         () => {
           setAllEvents([]);
-          setCurrentPage(1);
+          currentPageRef.current = 1;
           setHasMore(false);
           fetchEvents(1, false);
         },
@@ -510,13 +511,17 @@ export default function EventCalendarContent({
               const isToday = group.dayStartMs === startOfTodayMs;
               const isPast = group.dayStartMs < startOfTodayMs;
               const tileBg = isPast
-                ? theme.palette.grey[200]
-                : isToday
+                ? isCustomHub
+                  ? theme.palette.grey.light
+                  : theme.palette.secondary.extraLight
+                : isCustomHub
                 ? theme.palette.primary.main
-                : theme.palette.secondary.main;
+                : theme.palette.yellow.main;
               const tileColor = isPast
-                ? theme.palette.text.primary
-                : theme.palette.primary.contrastText;
+                ? isCustomHub
+                  ? theme.palette.text.primary
+                  : theme.palette.secondary.main
+                : theme.palette.background.default_contrastText;
 
               return (
                 <Box key={group.key} ref={isLastGroup ? lastElementRef : undefined}>
