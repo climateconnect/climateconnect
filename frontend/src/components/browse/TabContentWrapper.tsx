@@ -1,10 +1,11 @@
 import makeStyles from "@mui/styles/makeStyles";
 import React, { ReactNode, useContext, useRef } from "react";
-import { LinearProgress, Theme, useMediaQuery } from "@mui/material";
+import { Theme, useMediaQuery } from "@mui/material";
 import getFilters from "../../../public/data/possibleFilters";
 import UserContext from "../context/UserContext";
 import FilterContent from "../filter/FilterContent";
 import NoItemsFound from "./NoItemsFound";
+import LoadingSpinner from "../general/LoadingSpinner";
 import HubLinkButton from "../hub/HubLinkButton";
 import { LinkedHub } from "../../types";
 
@@ -146,7 +147,7 @@ export default function TabContentWrapper({
       )}
 
       {eventsContent}
-      {isFiltering && !childrenRenderedRef.current && <LinearProgress />}
+      {isFiltering && !childrenRenderedRef.current && <LoadingSpinner isLoading />}
       <div style={{ opacity: isFiltering && showChildren ? 0.5 : 1, transition: "opacity 150ms" }}>
         {showChildren && children}
       </div>

@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => {
   return {
     wrapper: {
       position: "relative",
+      display: "block",
       height: "100%",
       paddingTop: theme.spacing(0.25),
     },
@@ -140,7 +141,11 @@ export default function ProjectPreview({
     : `/projects/${project.url_slug}`;
 
   return (
-    <AppLink href={projectUrl} underline="hover" className={classes.noUnderline}>
+    <AppLink
+      href={projectUrl}
+      underline="hover"
+      className={`${classes.wrapper} ${classes.noUnderline}`}
+    >
       {projectType.type_id === "event" && project.start_date && project.end_date && (
         <EventDateIndicator project={project} hubUrl={hubUrl} />
       )}
