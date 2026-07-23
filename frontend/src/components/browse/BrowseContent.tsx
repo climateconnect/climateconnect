@@ -193,6 +193,14 @@ export default function BrowseContent({
     return today.toISOString();
   }, []);
 
+  // Stabilize location: only treat it as changed when a valid location object
+  // is selected from the autocomplete. During typing, filters.location is a
+  // string (changes on every keystroke) which would trigger unnecessary refetches.
+  const stableLocation = useMemo(
+    () => (isLocationValid(filters.location) ? filters.location : undefined),
+    [filters.location]
+  );
+
   // Fetch upcoming events in parallel with projects
   useEffect(() => {
     if (!isEventsEnabled) {
@@ -210,7 +218,7 @@ export default function BrowseContent({
           sectors: filters.sectors,
           start_date: startDateFilter,
         },
-        location: filters.location,
+        location: stableLocation,
       });
       setUpcomingEvents(events || []);
     };
@@ -221,7 +229,7 @@ export default function BrowseContent({
     filters.search,
     filters.sectors,
     startDateFilter,
-    filters.location,
+    stableLocation,
     token,
     locale,
     hubData?.url_slug,
@@ -235,6 +243,11 @@ export default function BrowseContent({
     const upcomingSlugs = new Set(upcomingEvents.map((e) => e.url_slug));
     return state.items.projects.filter((p) => !upcomingSlugs.has(p.url_slug));
   }, [state.items.projects, isEventsEnabled, upcomingEvents]);
+
+  const eventsContent = useMemo(() => {
+    if (!isEventsEnabled || upcomingEvents.length === 0) return undefined;
+    return <UpcomingEventsGroup events={upcomingEvents} hubUrl={hubUrl} />;
+  }, [isEventsEnabled, upcomingEvents, hubUrl]);
 
   const locationInputRefs = {
     projects: useRef(null),
@@ -620,24 +633,27 @@ export default function BrowseContent({
           />
         )}
         <Suspense fallback={<LoadingSpinner isLoading />}>
-          <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
+          <TabContentWrapper
+            type={"projects"}
+            {...tabContentWrapperProps}
+            eventsContent={eventsContent}
+          >
             {hubData?.parent_hub && (
               <div className={classes.subHubInfoText}>
                 {texts.you_are_seeing_projects_related_to}
               </div>
             )}
-            {isEventsEnabled && upcomingEvents.length > 0 && (
-              <UpcomingEventsGroup events={upcomingEvents} hubUrl={hubUrl} />
-            )}
-            <ProjectPreviews
-              hasMore={state.hasMore.projects}
-              loadFunc={() => handleLoadMoreData("projects")}
-              parentHandlesGridItems
-              projects={projectsForGrid}
-              hubUrl={hubUrl}
-              isLoading={isFetchingMoreData}
-              analyticsSurface="browse_card"
-            />
+            <Suspense fallback={null}>
+              <ProjectPreviews
+                hasMore={state.hasMore.projects}
+                loadFunc={() => handleLoadMoreData("projects")}
+                parentHandlesGridItems
+                projects={projectsForGrid}
+                hubUrl={hubUrl}
+                isLoading={isFetchingMoreData}
+                analyticsSurface="browse_card"
+              />
+            </Suspense>
           </TabContentWrapper>
           <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
             {hubData?.parent_hub && (
@@ -645,13 +661,15 @@ export default function BrowseContent({
                 {texts.you_are_seeing_organizations_related_to}
               </div>
             )}
-            <OrganizationPreviews
-              hasMore={state.hasMore.organizations}
-              loadFunc={() => handleLoadMoreData("organizations")}
-              organizations={state.items.organizations}
-              parentHandlesGridItems
-              isLoading={isFetchingMoreData}
-            />
+            <Suspense fallback={null}>
+              <OrganizationPreviews
+                hasMore={state.hasMore.organizations}
+                loadFunc={() => handleLoadMoreData("organizations")}
+                organizations={state.items.organizations}
+                parentHandlesGridItems
+                isLoading={isFetchingMoreData}
+              />
+            </Suspense>
           </TabContentWrapper>
           {!hideMembers && (
             <TabContentWrapper type={"members"} {...tabContentWrapperProps}>
@@ -660,15 +678,17 @@ export default function BrowseContent({
                   {texts.you_are_seeing_members_related_to}
                 </div>
               )}
-              <ProfilePreviews
-                hasMore={state.hasMore.members}
-                loadFunc={() => handleLoadMoreData("members")}
-                parentHandlesGridItems
-                profiles={state.items.members}
-                hubUrl={hubUrl}
-                showAdditionalInfo
-                isLoading={isFetchingMoreData}
-              />
+              <Suspense fallback={null}>
+                <ProfilePreviews
+                  hasMore={state.hasMore.members}
+                  loadFunc={() => handleLoadMoreData("members")}
+                  parentHandlesGridItems
+                  profiles={state.items.members}
+                  hubUrl={hubUrl}
+                  showAdditionalInfo
+                  isLoading={isFetchingMoreData}
+                />
+              </Suspense>
             </TabContentWrapper>
           )}
         </Suspense>
