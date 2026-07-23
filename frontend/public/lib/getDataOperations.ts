@@ -110,6 +110,10 @@ export async function getUpcomingEvents({
     url += `start_date=${filters.start_date}&`;
   }
 
+  if (location) {
+    url += `place_id=${location.place_id}&osm_id=${location.osm_id}&osm_type=${location.osm_type}&osm_class=${location.osm_class}&`;
+  }
+
   try {
     const apiLocale = locale as "en" | "de" | undefined;
     const resp = location
