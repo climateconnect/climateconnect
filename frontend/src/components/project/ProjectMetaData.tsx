@@ -2,6 +2,7 @@ import { Box, Collapse, Container, Theme, Tooltip, Typography, Button } from "@m
 import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
 import React, { useContext, useEffect } from "react";
+import { useRouter } from "next/router";
 import getTexts from "../../../public/texts/texts";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
@@ -313,6 +314,7 @@ const AdditionalPreviewInfo = ({ project, isUserRegistered, analyticsSurface }) 
   const { projectTypes } = useContext(BrowseContext);
   const { locale, user, ReactGA } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale });
+  const router = useRouter();
 
   const projectType =
     projectTypes && projectTypes.length > 0
@@ -397,13 +399,12 @@ const AdditionalPreviewInfo = ({ project, isUserRegistered, analyticsSurface }) 
           size="small"
           disabled={buttonConfig.disabled}
           onClick={(event) => {
+            event.preventDefault();
             event.stopPropagation();
+            if (!buttonConfig.disabled) {
+              router.push(`${getLocalePrefix(locale)}/projects/${project.url_slug}/register`);
+            }
           }}
-          href={
-            buttonConfig.disabled
-              ? undefined
-              : `${getLocalePrefix(locale)}/projects/${project.url_slug}/register`
-          }
         >
           {buttonConfig.label}
         </Button>
