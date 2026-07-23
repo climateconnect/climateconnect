@@ -4,8 +4,8 @@ const prio1_texts = {
     de: "Dem PRIO1 Hub beitreten oder mit bestehendem Account einloggen:",
   },
   here_you_can_create_your_personal_account: {
-    en: "Create your personal Climate Connect account here to join the PRIO1 Hub.",
-    de: "Erstelle hier deinen persönlichen Climate Connect Account, um dem PRIO1 Hub beizuteten.",
+    en: "Create your personal ClimateHub Network account here to join the PRIO1 Hub.",
+    de: "Erstelle hier deinen persönlichen ClimateHub Netzwerk, um dem PRIO1 Hub beizuteten.",
   },
   // overwrite/delete the default text
   you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up: {
@@ -14,9 +14,9 @@ const prio1_texts = {
   },
   auth_image_subtitle: {
     en:
-      "PRIO1 Hub is integrated into the Germany-wide Climate Connect platform. To become part of the PRIO1 Hub, simply register here and you're in!",
+      "PRIO1 Hub is integrated into the Germany-wide ClimateHub Network platform. To become part of the PRIO1 Hub, simply register here and you're in!",
     de:
-      "PRIO1 Hub ist integriert in die deutschlandweite Climate Connect Plattform. Um Teil des PRIO1 Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
+      "PRIO1 Hub ist integriert in die deutschlandweite ClimateHub Netzwerk Plattform. Um Teil des PRIO1 Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
   },
 };
 // TODO: make generic these texts, because they are the same for PRIO1 and Perth
@@ -26,9 +26,9 @@ const perth_texts = {
     de: "Dem Perth und Kinross Hub beitreten oder mit bestehendem Account einloggen:",
   },
   here_you_can_create_your_personal_account: {
-    en: "Create your personal Climate Connect account here to join the Perth and Kinross Hub.",
+    en: "Create your personal ClimateHub Network account here to join the Perth and Kinross Hub.",
     de:
-      "Erstelle hier deinen persönlichen Climate Connect Account, um dem Perth und Kinross Hub beizuteten.",
+      "Erstelle hier deinen persönlichen ClimateHub Netzwerk Account, um dem Perth und Kinross Hub beizuteten.",
   },
   // overwrite/delete the default text
   you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up: {
@@ -37,9 +37,9 @@ const perth_texts = {
   },
   auth_image_subtitle: {
     en:
-      "Perth and Kinross Hub is integrated into the global Climate Connect platform. To become part of the Perth and Kinross Hub, simply register here and you're in!",
+      "Perth and Kinross Hub is integrated into the global ClimateHub Network. To become part of the Perth and Kinross Hub, simply register here and you're in!",
     de:
-      "Der Perth und Kinross Hub ist integriert in die global Climate Connect Plattform. Um Teil des Perth and Kinross Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
+      "Der Perth und Kinross Hub ist integriert in das globale ClimateHub Netzwerk. Um Teil des Perth and Kinross Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
   },
   // hubUrl
   perth_welcometext: {
