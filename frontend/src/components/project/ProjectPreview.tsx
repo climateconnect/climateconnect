@@ -1,8 +1,7 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { useRouter } from "next/router";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import AppLink from "../general/AppLink";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import BrowseContext from "../context/BrowseContext";
@@ -120,7 +119,6 @@ export default function ProjectPreview({
   // const [hovering, setHovering] = useState(false);
   const hovering = false; // Hover effect disabled
   const { locale } = useContext(UserContext);
-  const router = useRouter();
   const { projectTypes } = useContext(BrowseContext);
   const projectType =
     projectTypes && projectTypes.length > 0
@@ -137,32 +135,12 @@ export default function ProjectPreview({
   //   setHovering(false);
   // };
 
-  const queryString = hubUrl ? "?hub=" + hubUrl : "";
   const projectUrl = project.is_draft
-    ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}`
-    : `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`;
-
-  const handleCardClick = () => {
-    router.push(projectUrl);
-  };
-
-  const handleCardKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.target !== event.currentTarget) return;
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      router.push(projectUrl);
-    }
-  };
+    ? `/editProject/${project.url_slug}`
+    : `/projects/${project.url_slug}`;
 
   return (
-    <div
-      className={`${classes.wrapper} ${classes.noUnderline}`}
-      role="link"
-      tabIndex={0}
-      onClick={handleCardClick}
-      onKeyDown={handleCardKeyDown}
-      aria-label={project.name}
-    >
+    <AppLink href={projectUrl} underline="hover" className={classes.noUnderline}>
       {projectType.type_id === "event" && project.start_date && project.end_date && (
         <EventDateIndicator project={project} hubUrl={hubUrl} />
       )}
@@ -206,7 +184,7 @@ export default function ProjectPreview({
           />
         </div>
       </Card>
-    </div>
+    </AppLink>
   );
 }
 
