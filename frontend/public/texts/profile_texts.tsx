@@ -184,9 +184,9 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Du hast dich bisher für keine bevorstehenden Veranstaltungen angemeldet.",
     },
     sign_up_message: {
-      en: "You are now a Climate Connect member. On this page you can customize your profile.",
+      en: "You are now a ClimateHub Network member. On this page you can customize your profile.",
       de:
-        "Du bist jetzt ein Climate Connect Mitglied. Auf dieser Seite kannst du dein Profil anpassen.",
+        "Du bist jetzt ein ClimateHub Netzwerk Mitglied. Auf dieser Seite kannst du dein Profil anpassen.",
     },
     account_created: {
       en: "Account created",
@@ -260,8 +260,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Du hast dein Profil erfolgreich aktualisiert!",
     },
     new_to_climate_connect: {
-      en: "New to Climate Connect?",
-      de: "Neu bei Climate Connect?",
+      en: "New to the ClimateHub Network?",
+      de: "Neu beim ClimateHub Netzwerk?",
     },
     click_here_to_create_an_account: {
       en: "Click here to create an account",

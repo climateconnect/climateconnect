@@ -183,7 +183,7 @@ class ChangeEmailView(APIView):
                     "message": _("User profile not found.")
                     + " "
                     + _(
-                        "Contact contact@climateconnect.earth if you repeatedly experience problems."
+                        "Contact contact@climatehub.org if you repeatedly experience problems."
                     )
                 },
                 status=status.HTTP_400_BAD_REQUEST,

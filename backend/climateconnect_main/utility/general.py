@@ -47,6 +47,7 @@ def get_allowed_hosts(ALLOWED_HOSTS_ENV):
         "localhost",
         "127.0.0.1",
         "api.climateconnect.earth",
+        "api.climatehub.org",
         "climateconnect-backend.azurewebsites.net",
         "climateconnect-frontend.azurewebsites.net",
         "api.cc-test-domain.com",

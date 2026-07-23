@@ -37,9 +37,9 @@ from climateconnect_api.views import (
 
 # Customize admin site to show Django version
 admin.site.site_header = (
-    f"Climate Connect Administration (Django {django.get_version()})"
+    f"ClimateHub Network Administration (Django {django.get_version()})"
 )
-admin.site.site_title = "Climate Connect Admin"
+admin.site.site_title = "ClimateHub Network Admin"
 
 urls = [
     path("__debug__/", include("debug_toolbar.urls")),

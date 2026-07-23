@@ -42,8 +42,8 @@ def send_project_comment_reply_email(
 ):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Someone replied to your comment on Climate Connect",
-        "de": "Jemand hat auf deinen Kommentar auf Climate Connect geantwortet",
+        "en": "Someone replied to your comment",
+        "de": "Jemand hat auf deinen Kommentar geantwortet",
     }
     base_url = settings.FRONTEND_URL
     hub_query = ("?hub=" + hub_url) if hub_url else ""
@@ -71,10 +71,10 @@ def send_project_comment_email(
 ):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Somebody left a comment on your project {} on Climate Connect".format(
+        "en": "Somebody left a comment on your project {}".format(
             project.name
         ),
-        "de": "Jemand hat dein Projekt {} auf Climate Connect kommentiert".format(
+        "de": "Jemand hat dein Projekt {} kommentiert".format(
             project.name
         ),
     }
@@ -102,10 +102,10 @@ def send_project_comment_email(
 def send_idea_comment_email(user, idea, comment, sender, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Somebody left a comment on your idea '{}' on Climate Connect".format(
+        "en": "Somebody left a comment on your idea '{}'".format(
             idea.name
         ),
-        "de": "Jemand hat einen Kommentar zu deiner Idee '{}' auf Climate Connect hinterlassen.".format(
+        "de": "Jemand hat einen Kommentar zu deiner Idee '{}' auf hinterlassen.".format(
             idea.name
         ),
     }
@@ -138,8 +138,8 @@ def send_mention_email(
 ):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Somebody mentioned you in a comment on Climate Connect",
-        "de": "Jemand hat dich in einem Kommentar auf Climate Connect erwähnt",
+        "en": "Somebody mentioned you in a comment",
+        "de": "Jemand hat dich in einem Kommentar erwähnt",
     }
 
     base_url = settings.FRONTEND_URL
@@ -181,8 +181,8 @@ def send_idea_comment_reply_email(
 ):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Someone replied to your comment on Climate Connect",
-        "de": "Jemand hat auf deinen Kommentar auf Climate Connect geantwortet.",
+        "en": "Someone replied to your comment",
+        "de": "Jemand hat auf deinen Kommentar geantwortet.",
     }
 
     base_url = settings.FRONTEND_URL
@@ -213,8 +213,8 @@ def send_project_follower_email(user, project_follower, notification, hub_url=No
         project_follower.user.first_name + " " + project_follower.user.last_name
     )
     subjects_by_language = {
-        "en": "{} now follows your project on Climate Connect".format(follower_name),
-        "de": "{} folgt jetzt deinem Projekt auf Climate Connect".format(follower_name),
+        "en": "{} now follows your project".format(follower_name),
+        "de": "{} folgt jetzt deinem Projekt".format(follower_name),
     }
 
     base_url = settings.FRONTEND_URL
@@ -257,10 +257,10 @@ def send_organization_follower_email(
     )
 
     subjects_by_language = {
-        "en": "{} now follows {} on Climate Connect".format(
+        "en": "{} now follows {}".format(
             following_user_full_name, organization_name
         ),
-        "de": "{} folgt jetzt {} auf Climate Connect".format(
+        "de": "{} folgt jetzt {}".format(
             following_user_full_name, organization_name
         ),
     }
@@ -334,8 +334,8 @@ def send_project_like_email(user, project_like, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     liking_user_name = project_like.user.first_name + " " + project_like.user.last_name
     subjects_by_language = {
-        "en": "{} liked your project on Climate Connect".format(liking_user_name),
-        "de": "{} gefällt dein Projekt auf Climate Connect".format(liking_user_name),
+        "en": "{} liked your project".format(liking_user_name),
+        "de": "{} gefällt dein Projekt".format(liking_user_name),
     }
 
     base_url = settings.FRONTEND_URL
@@ -364,10 +364,10 @@ def send_join_project_request_email(user, request, requester, notification, hub_
     lang_code = get_user_lang_code(user)
     requester_name = requester.first_name + " " + requester.last_name
     subjects_by_language = {
-        "en": "{} requested to join your project on Climate Connect".format(
+        "en": "{} requested to join your project".format(
             requester_name
         ),
-        "de": "{} möchte bei deinem Project auf Climate Connect mitmachen".format(
+        "de": "{} möchte bei deinem Project mitmachen".format(
             requester_name
         ),
     }
@@ -860,7 +860,7 @@ def generate_event_ics_attachment(project, lang_code, registration=None, tz=None
     cal.add("method", "PUBLISH")
 
     event = IcalEvent()
-    event.add("uid", f"{project.id}@climateconnect.earth")
+    event.add("uid", f"{project.id}@climatehub.org")
     event.add("summary", get_project_name(project, lang_code))
     event.add("dtstart", project.start_date)
     event.add("dtend", project.end_date)
@@ -963,7 +963,7 @@ def generate_timeslot_ics_attachments(project, lang_code, registration):
 
         ical_event = IcalEvent()
         ical_event.add(
-            "uid", f"{registration.id}_{answer.field.id}@climateconnect.earth"
+            "uid", f"{registration.id}_{answer.field.id}@climatehub.org"
         )
         ical_event.add("summary", f"{summary_prefix} {event_name}")
         ical_event.add("dtstart", option.start_time)
