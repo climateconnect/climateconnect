@@ -1,5 +1,11 @@
 const DEVELOPMENT = ["development", "develop", "test"].includes(process.env.ENVIRONMENT!);
 
+export function getLogoSrc(variant: "normal" | "white" = "normal", locale?: string): string {
+  const base = variant === "white" ? "logo_white" : "logo";
+  const langSuffix = locale === "de" ? "_de" : "";
+  return `/images/${base}${langSuffix}.svg`;
+}
+
 export function getImageUrl(url) {
   if (!url) return;
   if (DEVELOPMENT && !url.includes("http:") && !url.includes("https:")) {

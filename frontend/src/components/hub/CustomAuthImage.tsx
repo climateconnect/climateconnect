@@ -1,7 +1,9 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import { makeStyles } from "@mui/styles";
 import Image from "next/legacy/image";
 import { Theme } from "@mui/material/styles";
+import { getLogoSrc } from "../../../public/lib/imageOperations";
+import UserContext from "../context/UserContext";
 
 type Props = { hubUrl: string | undefined; texts: any | null; authStep?: string };
 
@@ -57,13 +59,15 @@ function isNumber(value: any): boolean {
 }
 
 export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): ReactElement | null {
+  const { locale } = useContext(UserContext);
+
   if (!hubUrl) {
     return <DefaultAuthImage authStep={authStep} />;
   }
 
   switch (hubUrl.toLowerCase()) {
     case PRIO1_SLUG: {
-      return <AuthImage texts={texts} hubSlug={PRIO1_SLUG} logoSrc="/images/logo_white.png" />;
+      return <AuthImage texts={texts} hubSlug={PRIO1_SLUG} logoSrc={getLogoSrc("white", locale)} />;
     }
     case PERTH_SLUG: {
       return (
@@ -71,7 +75,7 @@ export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): Rea
           texts={texts}
           hubSlug={PERTH_SLUG}
           authStep={authStep}
-          logoSrc="/images/logo.svg"
+          logoSrc={getLogoSrc("normal", locale)}
         />
       );
     }
