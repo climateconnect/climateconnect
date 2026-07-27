@@ -169,9 +169,14 @@ class Message(models.Model):
         ordering = ["-id"]
 
     def __str__(self):
+        sender_name = (
+            self.sender.first_name + " " + self.sender.last_name
+            if self.sender
+            else "deleted user"
+        )
         return "Message %s from %s in chat %s" % (
             self.id,
-            self.sender.first_name + " " + self.sender.last_name,
+            sender_name,
             self.message_participant_id,
         )
 
