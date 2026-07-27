@@ -32,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(4),
     paddingTop: theme.spacing(2),
   },
+  requiredFieldsNotice: {
+    marginTop: theme.spacing(2),
+    color: theme.palette.text.secondary,
+  },
   field: {
     marginTop: theme.spacing(3),
   },
@@ -107,6 +111,11 @@ export default function Share({
         handleChangeValue={onChangeSwitch}
         color={mainColor}
       />
+      {project.is_organization_project && (
+        <Typography variant="body2" className={classes.requiredFieldsNotice}>
+          {texts.required_fields_general_notice}
+        </Typography>
+      )}
       {project.is_organization_project && (
         <>
           <SelectField

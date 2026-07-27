@@ -27,6 +27,10 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "bold",
     },
   },
+  requiredFieldsNotice: {
+    display: "block",
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 export default function AuthEmailStep({
@@ -130,6 +134,13 @@ export default function AuthEmailStep({
           disabled={isLoading}
           style={{ marginBottom: 16 }}
         />
+        <Typography
+          variant="caption"
+          color="textSecondary"
+          className={classes.requiredFieldsNotice}
+        >
+          {texts.required_fields_general_notice}
+        </Typography>
 
         {errorMessage && (
           <Alert severity="error" role="alert" style={{ marginBottom: 16 }}>

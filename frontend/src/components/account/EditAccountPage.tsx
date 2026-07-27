@@ -179,6 +179,11 @@ const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
   detailledDescriptionContainer: {
     marginTop: theme.spacing(5),
   },
+  requiredFieldsNotice: {
+    display: "block",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(3),
+  },
 }));
 
 //Generic page for editing your personal profile or organization profile
@@ -474,6 +479,13 @@ export default function EditAccountPage({
               open={i.locationOptionsOpen}
               locationInputRef={i.locationInputRef}
             />
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              className={classes.requiredFieldsNotice}
+            >
+              {texts.required_fields_general_notice}
+            </Typography>
           </div>
         );
       } else if (i.type === "sectors") {

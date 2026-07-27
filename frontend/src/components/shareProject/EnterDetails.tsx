@@ -67,6 +67,10 @@ const useStyles = makeStyles((theme) => {
     tooltip: {
       fontSize: 16,
     },
+    requiredFieldsNotice: {
+      display: "block",
+      marginBottom: theme.spacing(2),
+    },
   };
 });
 
@@ -284,6 +288,13 @@ export default function EnterDetails({
     <>
       <Container maxWidth="lg">
         <form ref={topRef} onSubmit={onClickNextStep}>
+          <Typography
+            variant="caption"
+            color="textSecondary"
+            className={classes.requiredFieldsNotice}
+          >
+            {texts.required_fields_general_notice}
+          </Typography>
           <ProjectNameSection
             projectData={projectData}
             handleSetProjectData={handleSetProjectData}

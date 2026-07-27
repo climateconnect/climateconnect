@@ -44,6 +44,11 @@ const useStyles = makeStyles((theme) => {
       textAlign: "center",
       marginTop: theme.spacing(4),
     },
+    requiredFieldsNotice: {
+      display: "block",
+      marginBottom: theme.spacing(2),
+      marginTop: theme.spacing(4),
+    },
   };
 });
 
@@ -385,6 +390,13 @@ export default function EditProjectRoot({
     <Container>
       {step === "edit_project" ? (
         <form onSubmit={handleSubmit}>
+          <Typography
+            variant="caption"
+            color="textSecondary"
+            className={classes.requiredFieldsNotice}
+          >
+            {texts.required_fields_general_notice}
+          </Typography>
           {!isNarrowScreen && (
             <NavigationButtons
               position="top"

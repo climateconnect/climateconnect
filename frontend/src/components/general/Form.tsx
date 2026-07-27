@@ -11,7 +11,9 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import Link from "next/link";
-import React, { Fragment, ReactElement, useState } from "react";
+import React, { Fragment, ReactElement, useContext, useState } from "react";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
 // Relative imports
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
@@ -29,6 +31,11 @@ const useStyles = makeStyles((theme) => ({
     height: 56,
     margin: "0 auto",
     marginTop: theme.spacing(2),
+  },
+  requiredFieldsNotice: {
+    height: "auto",
+    marginBottom: theme.spacing(1),
+    marginTop: 0,
   },
   checkbox: {
     display: "block",
@@ -151,6 +158,9 @@ export default function Form({
   autocomplete,
 }: Props) {
   const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = getTexts({ page: "general", locale: locale });
+  const hasRequiredFields = fields.some((field) => !!field.required);
   const [curPercentage, setCurPercentage] = useState(percentage);
   const [values, setValues] = useState(
     fields.reduce((obj, field) => {
@@ -237,6 +247,15 @@ export default function Form({
         {errorMessage && (
           <Typography component="div" color="error">
             {errorMessage}
+          </Typography>
+        )}
+        {hasRequiredFields && (
+          <Typography
+            variant="caption"
+            color="textSecondary"
+            className={`${classes.blockElement} ${classes.requiredFieldsNotice}`}
+          >
+            {texts.required_fields_general_notice}
           </Typography>
         )}
         {fields.map((field) => {

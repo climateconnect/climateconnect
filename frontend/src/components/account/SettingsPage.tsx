@@ -60,6 +60,11 @@ const useStyles = makeStyles((theme) => ({
   textColor: {
     color: theme.palette.background.default_contrastText,
   },
+  requiredFieldsNotice: {
+    display: "block",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
@@ -409,17 +414,26 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           </Typography>
         )}
         {settings.has_password && (
-          <div className={classes.blockElement}>
-            <TextField
-              variant="outlined"
-              style={{ minWidth: 360 }}
-              type="password"
-              label={texts.old_password}
-              value={passwordInputs.oldpassword}
-              onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
-              required
-            />
-          </div>
+          <>
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              className={classes.requiredFieldsNotice}
+            >
+              {texts.required_fields_general_notice}
+            </Typography>
+            <div className={classes.blockElement}>
+              <TextField
+                variant="outlined"
+                style={{ minWidth: 360 }}
+                type="password"
+                label={texts.old_password}
+                value={passwordInputs.oldpassword}
+                onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
+                required
+              />
+            </div>
+          </>
         )}
         <div className={classes.blockElement}>
           <TextField

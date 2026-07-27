@@ -259,6 +259,10 @@
     "en": "Log in",
     "de": "Einloggen"
   },
+  "required_fields_general_notice": {
+    "en": "*Indicates a required field.",
+    "de": "*Kennzeichnet ein Pflichtfeld."
+  },
   "auth_log_in": {
     "en": "Log in",
     "de": "Anmelden"
