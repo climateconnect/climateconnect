@@ -156,7 +156,11 @@ export default function LayoutWrapper({
   return (
     <>
       <Head>
-        <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
+        <title>
+          {title
+            ? title + ` | ClimateHub ${locale === "de" ? "Netzwerk" : "Network"}`
+            : `ClimateHub ${locale === "de" ? "Netzwerk" : "Network"}`}
+        </title>
         {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link href="/fonts/openSans.css" rel="stylesheet" />
         <meta
@@ -165,7 +169,7 @@ export default function LayoutWrapper({
         />
         <meta
           property="og:image"
-          content={image ? image : "https://climateconnect.earth/images/landing_image_small.jpg"}
+          content={image ? image : "https://climatehub.org/images/landing_image_small.jpg"}
         />
         <meta property="og:title" content={title ? title : texts.default_title} />
         <meta property="og:type" content="website" />

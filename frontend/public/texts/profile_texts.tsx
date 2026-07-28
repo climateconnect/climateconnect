@@ -221,9 +221,8 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       de: "Bitte überprüfe auch deinen Spam-/Junk-Ordner, falls du die E-Mail nicht finden kannst.",
     },
     if_you_are_experiencing_any_problems_contact_us: {
-      en: "If you are experiencing any problems, email us at contact@climateconnect.earth",
-      de:
-        "Wenn du Probleme haben solltest, kontaktiere uns einfach unter contact@climateconnect.earth",
+      en: "If you are experiencing any problems, email us at contact@climatehub.org",
+      de: "Wenn du Probleme haben solltest, kontaktiere uns einfach unter contact@climatehub.org",
     },
     if_the_email_does_not_arrive_after_5_minutes: {
       en: (

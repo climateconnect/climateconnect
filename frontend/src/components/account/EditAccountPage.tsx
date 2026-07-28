@@ -927,8 +927,8 @@ const editErrorMessage = (
           {existingName}
         </Link>
         {secondSentenceText}
-        <Link href="mailto:support@climateconnect.earth" target="_blank" underline="hover">
-          support@climateconnect.earth
+        <Link href="mailto:support@climatehub.org" target="_blank" underline="hover">
+          support@climatehub.org
         </Link>
       </>
     );
