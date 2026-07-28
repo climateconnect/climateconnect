@@ -199,7 +199,23 @@ module.exports = withBundleAnalyzer({
           destination: `https://climatehub.org/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
           permanent: true,
         })),
-        // 3. Main domain catch-all (locale: false to preserve /de prefix in external redirect)
+        // 3. New-domain subdomain redirects (potsdam.climatehub.org → climatehub.org/hubs/potsdam)
+        ...LOCATION_HUBS.map((hubSlug) => ({
+          source: "/:path*",
+          has: [
+            { type: "host", value: `${hubSlug}.climatehub.org` },
+            { type: "header", key: "Accept-Language", value: "^de" },
+          ],
+          destination: `https://climatehub.org/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          permanent: true,
+        })),
+        ...LOCATION_HUBS.map((hubSlug) => ({
+          source: "/:path*",
+          has: [{ type: "host", value: `${hubSlug}.climatehub.org` }],
+          destination: `https://climatehub.org/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          permanent: true,
+        })),
+        // 4. Main domain catch-all (locale: false to preserve /de prefix in external redirect)
         {
           source: "/de/:path*",
           has: [{ type: "host", value: "climateconnect.earth" }],
