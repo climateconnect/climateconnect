@@ -14,7 +14,7 @@ import UserContext from "./../../src/components/context/UserContext";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import theme from "../../src/themes/theme";
-import { parseProjectStubs } from "../../public/lib/parsingOperations";
+import { parseOrganizationStubs, parseProjectStubs } from "../../public/lib/parsingOperations";
 import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
 import { getAllHubs } from "../../public/lib/hubOperations";
 
@@ -28,7 +28,9 @@ export async function getServerSideProps(ctx) {
       props: nullifyUndefinedValues({
         profile: null,
         organizations: null,
+        organizationsHasMore: false,
         projects: null,
+        projectsHasMore: false,
         projectTypes: null,
         hubUrl: ctx.query.hub,
         hubThemeData: null,
@@ -36,7 +38,14 @@ export async function getServerSideProps(ctx) {
     };
   }
   const hubUrl = ctx.query.hub;
-  const [profile, organizations, projects, projectTypes, hubThemeData, hubs] = await Promise.all([
+  const [
+    profile,
+    organizationsData,
+    projectsData,
+    projectTypes,
+    hubThemeData,
+    hubs,
+  ] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, auth_token, ctx.locale),
     getOrganizationsByUser(profileUrl, auth_token, ctx.locale),
     getProjectsByUser(profileUrl, auth_token, ctx.locale),
@@ -47,8 +56,10 @@ export async function getServerSideProps(ctx) {
   return {
     props: nullifyUndefinedValues({
       profile: profile,
-      organizations: organizations,
-      projects: projects,
+      organizations: organizationsData?.organizations ?? null,
+      organizationsHasMore: organizationsData?.hasMore ?? false,
+      projects: projectsData?.projects ?? null,
+      projectsHasMore: projectsData?.hasMore ?? false,
       projectTypes: projectTypes,
       hubUrl: hubUrl,
       hubThemeData: hubThemeData,
@@ -60,7 +71,9 @@ export async function getServerSideProps(ctx) {
 export default function ProfilePage({
   profile,
   projects,
+  projectsHasMore,
   organizations,
+  organizationsHasMore,
   projectTypes,
   hubUrl,
   hubThemeData,
@@ -114,7 +127,9 @@ export default function ProfilePage({
           <ProfileRoot
             profile={profile}
             projects={projects}
+            projectsHasMore={projectsHasMore}
             organizations={organizations}
+            organizationsHasMore={organizationsHasMore}
             infoMetadata={infoMetadata}
             user={user}
             token={token}
@@ -158,7 +173,10 @@ async function getProjectsByUser(profileUrl, token, locale) {
     });
     if (!resp.data) return null;
     else {
-      return parseProjectStubs(resp.data.results);
+      return {
+        projects: parseProjectStubs(resp.data.results),
+        hasMore: !!resp.data.next,
+      };
     }
   } catch (err) {
     console.log(err);
@@ -177,22 +195,14 @@ async function getOrganizationsByUser(profileUrl, token, locale) {
     });
     if (!resp.data) return null;
     else {
-      return parseOrganizationStubs(resp.data.results);
+      return {
+        organizations: parseOrganizationStubs(resp.data.results),
+        hasMore: !!resp.data.next,
+      };
     }
   } catch (err) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-function parseOrganizationStubs(organizations) {
-  return organizations.map((o) => ({
-    ...o.organization,
-    types: o.organization.types.map((type) => type.organization_tag),
-    info: {
-      location: o.organization.location,
-      short_description: o.organization?.short_description,
-    },
-  }));
 }
