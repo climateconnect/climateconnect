@@ -212,7 +212,6 @@ module.exports = withBundleAnalyzer({
           has: [{ type: "host", value: "climateconnect.earth" }],
           destination: `https://climatehub.org/:path*`,
           permanent: true,
-          locale: false,
         },
       ];
     } else {
@@ -253,7 +252,14 @@ module.exports = withBundleAnalyzer({
           destination: `${BASE_URL}/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
           permanent: false,
         })),
-        // 3. Main domain catch-all
+        // 3. Main domain catch-all (locale: false to preserve /de prefix in external redirect)
+        {
+          source: "/de/:path*",
+          has: [{ type: "host", value: "climatehub.org" }],
+          destination: `${BASE_URL}/de/:path*`,
+          permanent: false,
+          locale: false,
+        },
         {
           source: "/:path*",
           has: [{ type: "host", value: "climatehub.org" }],
