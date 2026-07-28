@@ -141,7 +141,7 @@ export default function EditAccountRoot({
         step === "edit_profile" ? (
           <EditAccountPage
             account={editedProfile}
-            deleteEmail="support@climateconnect.earth"
+            deleteEmail="support@climatehub.org"
             handleCancel={handleCancel}
             handleSubmit={handleEditAccountPageSubmit}
             infoMetadata={infoMetadata}

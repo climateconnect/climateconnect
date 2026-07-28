@@ -199,7 +199,30 @@ module.exports = withBundleAnalyzer({
           destination: `https://climatehub.org/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
           permanent: true,
         })),
-        // 3. Main domain catch-all
+        // 3. New-domain subdomain redirects (potsdam.climatehub.org → climatehub.org/hubs/potsdam)
+        ...LOCATION_HUBS.map((hubSlug) => ({
+          source: "/:path*",
+          has: [
+            { type: "host", value: `${hubSlug}.climatehub.org` },
+            { type: "header", key: "Accept-Language", value: "^de" },
+          ],
+          destination: `https://climatehub.org/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          permanent: true,
+        })),
+        ...LOCATION_HUBS.map((hubSlug) => ({
+          source: "/:path*",
+          has: [{ type: "host", value: `${hubSlug}.climatehub.org` }],
+          destination: `https://climatehub.org/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
+          permanent: true,
+        })),
+        // 4. Main domain catch-all (locale: false to preserve /de prefix in external redirect)
+        {
+          source: "/de/:path*",
+          has: [{ type: "host", value: "climateconnect.earth" }],
+          destination: `https://climatehub.org/de/:path*`,
+          permanent: true,
+          locale: false,
+        },
         {
           source: "/:path*",
           has: [{ type: "host", value: "climateconnect.earth" }],
@@ -245,7 +268,14 @@ module.exports = withBundleAnalyzer({
           destination: `${BASE_URL}/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
           permanent: false,
         })),
-        // 3. Main domain catch-all
+        // 3. Main domain catch-all (locale: false to preserve /de prefix in external redirect)
+        {
+          source: "/de/:path*",
+          has: [{ type: "host", value: "climatehub.org" }],
+          destination: `${BASE_URL}/de/:path*`,
+          permanent: false,
+          locale: false,
+        },
         {
           source: "/:path*",
           has: [{ type: "host", value: "climatehub.org" }],

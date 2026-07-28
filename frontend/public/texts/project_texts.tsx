@@ -724,8 +724,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Nächster Schritt",
     },
     climate_action_projects_shared_by_climate_connect_users: {
-      en: "Climate action projects shared by Climate Connect users",
-      de: "Klimaschutzprojekte, die Climate Connect Nutzer*innen geteilt haben",
+      en: "Climate action projects shared by ClimateHub Network users",
+      de: "Klimaschutzprojekte, die ClimateHub Netzwerk Nutzer*innen geteilt haben",
     },
     climate_action_projects_shared_by_climate_connect_users_text: {
       en: `Find the best climate change solutions from around the world. Get involved, share your own
@@ -1103,13 +1103,13 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         <>
           There has been an error when publishing your project.
           <br />
-          Please contact contact@climateconnect.earth for support
+          Please contact contact@climatehub.org for support
         </>
       ),
       de: (
         <>
           Beim Veröffentlichen deines Projektes gab es einen Fehler.
-          <br /> Bitte wende dich an contact@climateconnect.earth.
+          <br /> Bitte wende dich an contact@climatehub.org.
         </>
       ),
     },
