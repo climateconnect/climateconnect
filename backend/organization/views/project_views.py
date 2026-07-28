@@ -785,7 +785,7 @@ class CreateProjectView(APIView):
                     {
                         "message": "Your value for this field is too long: "
                         + param
-                        + ". Please make a change or contact an administrator at contact@climateconnect.earth"
+                        + ". Please make a change or contact an administrator at contact@climatehub.org"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )

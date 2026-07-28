@@ -99,7 +99,7 @@ class TestGenerateEventIcsAttachment(TestCase):
         events = cal.walk("VEVENT")
         self.assertEqual(len(events), 1)
         self.assertEqual(
-            events[0].get("uid"), f"{self.project.id}@climateconnect.earth"
+            events[0].get("uid"), f"{self.project.id}@climatehub.org"
         )
 
     @tag("ics_attachment")
@@ -922,7 +922,7 @@ class TestTimeslotIcsAttachments(TestCase):
         )
         cal = self._parse_ics(attachments[0])
         event = cal.walk("VEVENT")[0]
-        expected_uid = f"{self.registration.id}_{field.id}@climateconnect.earth"
+        expected_uid = f"{self.registration.id}_{field.id}@climatehub.org"
         self.assertEqual(str(event.get("uid")), expected_uid)
 
     @tag("ics_attachment")

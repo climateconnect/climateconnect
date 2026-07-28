@@ -66,7 +66,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
-  const emailLink = "contact@climateconnect.earth";
+  const emailLink = "contact@climatehub.org";
   const possibleEmailPreferences = [
     {
       key: "send_newsletter",
@@ -591,7 +591,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         <InfoOutlinedIcon />
         {texts.if_you_wish_to_delete_this_account}
         <div className={classes.spaceStrings} />
-        <Link href="mailto:contact@climateconnect.earth" className={classes.textColor}>
+        <Link href="mailto:contact@climatehub.org" className={classes.textColor}>
           {emailLink}
         </Link>
       </Typography>

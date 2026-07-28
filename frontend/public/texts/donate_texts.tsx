@@ -27,7 +27,7 @@ export default function getDonateTexts({ classes, goal }) {
       en: `Great that you want to support us!
       We believe that the possibility to connect and get active in the climate movement should be free and include everyone.
       With a donation you enable us to stay independent. Our full-time team is working hard every day to multiply the impact of climate actors around the globe.`,
-      de: `Schön, dass du uns unterstützen möchtest! 
+      de: `Schön, dass du uns unterstützen möchtest!
 	    Wir glauben, dass die Möglichkeit, sich in der Klimabewegung zu vernetzen und aktiv zu werden, kostenlos sein und jeden einschließen sollte.
       Mit einer Spende ermöglichst du uns, unabhängig zu bleiben. Unser hauptamtliches Team arbeitet jeden Tag hart daran, die Wirkung von Klimaakteuren rund um den Globus zu vervielfachen.`,
     },
@@ -52,11 +52,11 @@ export default function getDonateTexts({ classes, goal }) {
       will not be able to solve this crisis by working alone or in silos and with your
       donation Climate Connect can multiply the impact of even more climate actors
       worldwide.`,
-      de: `Es gibt derzeit viele Menschen auf der ganzen Welt, die an ähnlichen Lösungen 
-	  für den Klimawandel arbeiten, ohne überhaupt voneinander zu wissen. Climate Connect 
-	  ermöglicht es ihnen, sich zu verbinden, Wissen auszutauschen und ihre Kräfte zu bündeln, 
-	  um gemeinsam viel mehr zu erreichen. Wir werden diese Krise nicht lösen können, indem wir 
-	  allein oder in Silos arbeiten. Mit Deiner Spende kann Climate Connect die Wirkung 
+      de: `Es gibt derzeit viele Menschen auf der ganzen Welt, die an ähnlichen Lösungen
+	  für den Klimawandel arbeiten, ohne überhaupt voneinander zu wissen. Climate Connect
+	  ermöglicht es ihnen, sich zu verbinden, Wissen auszutauschen und ihre Kräfte zu bündeln,
+	  um gemeinsam viel mehr zu erreichen. Wir werden diese Krise nicht lösen können, indem wir
+	  allein oder in Silos arbeiten. Mit Deiner Spende kann Climate Connect die Wirkung
 	  von noch mehr Klimaakteuren weltweit vervielfachen.`,
     },
     your_support_keeps_climate_connect_independent_and_free_for_everyone: {
@@ -94,12 +94,12 @@ export default function getDonateTexts({ classes, goal }) {
         "Neben unseren Freiwilligen aus aller Welt hat Climate Connect 3 Vollzeitmitarbeiter, die jeden Tag hart daran arbeiten, Klimaakteure zusammenzubringen, um ihren positiven Einfluss auf unseren Planeten zu vervielfachen. Dies können wir nur mit deiner finanziellen Unterstützung nachhaltig tun.",
     },
     we_can_only_prevent_a_global_climate_catastrophe_if_everyone: {
-      en: `We can only prevent a global climate catastrophe if everyone working 
-      in climate action coordinates their efforts and the most effective solutions 
+      en: `We can only prevent a global climate catastrophe if everyone working
+      in climate action coordinates their efforts and the most effective solutions
       get spread globally - support our vision by donating.`,
-      de: `Wir können eine globale Klimakatastrophe nur verhindern, wenn alle, 
-	  die sich für den Klimaschutz engagieren, ihre Anstrengungen koordinieren und 
-	  die effektivsten Lösungen global verbreitet werden - unterstütze unsere 
+      de: `Wir können eine globale Klimakatastrophe nur verhindern, wenn alle,
+	  die sich für den Klimaschutz engagieren, ihre Anstrengungen koordinieren und
+	  die effektivsten Lösungen global verbreitet werden - unterstütze unsere
 	  Vision mit einer Spende.`,
     },
     improving_and_updating_climate_connect: {
@@ -143,10 +143,10 @@ export default function getDonateTexts({ classes, goal }) {
       towards our vision of connecting all climate actors worldwide. We are also
       constantly in contact with our community and connect users between which we see
       synergies to spark collaboration between Climate Connect users.`,
-      de: `Eine Plattform zu schaffen, ist nicht genug. Unsere ehrenamtlichen und Vollzeit-Mitarbeiter 
-	  verbringen unzählige Stunden damit, Climate Connect bekannt zu machen, um auf unsere Vision 
-	  hinzuarbeiten, alle Klimaakteure weltweit zu verbinden. Wir sind auch ständig in Kontakt mit 
-	  unserer Community und den Nutzern von Climate Connect, zwischen denen wir Synergien sehen, 
+      de: `Eine Plattform zu schaffen, ist nicht genug. Unsere ehrenamtlichen und Vollzeit-Mitarbeiter
+	  verbringen unzählige Stunden damit, Climate Connect bekannt zu machen, um auf unsere Vision
+	  hinzuarbeiten, alle Klimaakteure weltweit zu verbinden. Wir sind auch ständig in Kontakt mit
+	  unserer Community und den Nutzern von Climate Connect, zwischen denen wir Synergien sehen,
 	  um die Zusammenarbeit zwischen den Nutzern von Climate Connect zu fördern.`,
     },
     ongoing_expenses: {
@@ -168,8 +168,8 @@ export default function getDonateTexts({ classes, goal }) {
       bigger donations. To pay our current full-time employees a wage that they can live on,
       we would need around 5,000€ in donations per month.`,
       de: `Um Climate Connect auf Dauer tragfähig zu machen, sind wir darauf angewiesen, dass Menschen wie Du
-	  uns kontinuierlich unterstützen. Deshalb bevorzugen wir kleinere wiederkehrende Spenden gegenüber 
-	  einmaligen Großspenden. Um unseren derzeitigen Vollzeitmitarbeitern einen Lohn zu zahlen, 
+	  uns kontinuierlich unterstützen. Deshalb bevorzugen wir kleinere wiederkehrende Spenden gegenüber
+	  einmaligen Großspenden. Um unseren derzeitigen Vollzeitmitarbeitern einen Lohn zu zahlen,
 	  von dem sie leben können, bräuchten wir etwa 5.000 € an Spenden pro Monat`,
     },
     who_we_are: {
@@ -183,11 +183,11 @@ export default function getDonateTexts({ classes, goal }) {
       through marketing and trying the best to serve our community. We have all decided to
       dedicate our time towards trying to make the biggest difference in the fight against
       climate change.`,
-      de: `Das ist der europäische Teil unseres Teams am Tag des Starts unserer Beta Website. 
-	  Insgesamt sind wir ein Team von 4 Vollzeitmitarbeitern und 15 aktiven Freiwilligen aus 
-	  der ganzen Welt. Gemeinsam arbeiten wir an der Entwicklung und dem Design der Plattform, 
-	  verbreiten das Wort durch Marketing und versuchen das Beste für unsere Community zu tun. 
-	  Wir haben alle beschlossen, unsere Zeit dem größten Unterschied im Kampf gegen 
+      de: `Das ist der europäische Teil unseres Teams am Tag des Starts unserer Beta Website.
+	  Insgesamt sind wir ein Team von 4 Vollzeitmitarbeitern und 15 aktiven Freiwilligen aus
+	  der ganzen Welt. Gemeinsam arbeiten wir an der Entwicklung und dem Design der Plattform,
+	  verbreiten das Wort durch Marketing und versuchen das Beste für unsere Community zu tun.
+	  Wir haben alle beschlossen, unsere Zeit dem größten Unterschied im Kampf gegen
 	  den Klimawandel zu widmen.`,
     },
     donation_receipts: {
@@ -199,9 +199,9 @@ export default function getDonateTexts({ classes, goal }) {
         (haftungsbeschränkt)). This means we can issue tax deductible donations receipts. For
         german citizens with accumulated donations of less than 300€ per year a simplified
         proof of grant is sufficient.`,
-      de: `Wir sind eine in Deutschland offiziell eingetragene gemeinnützige Gesellschaft 
-	  (Climate Connect gUG (haftungsbeschränkt)). Das bedeutet, dass wir steuerlich absetzbare 
-	  Spendenbescheinigungen ausstellen können. Für deutsche Bürger mit kumulierten Spenden von 
+      de: `Wir sind eine in Deutschland offiziell eingetragene gemeinnützige Gesellschaft
+	  (Climate Connect gUG (haftungsbeschränkt)). Das bedeutet, dass wir steuerlich absetzbare
+	  Spendenbescheinigungen ausstellen können. Für deutsche Bürger mit kumulierten Spenden von
 	  weniger als 300€ pro Jahr ist ein vereinfachter Zuwendungsnachweis ausreichend.`,
     },
     donation_receipts_text_middle_part: {
@@ -238,7 +238,7 @@ export default function getDonateTexts({ classes, goal }) {
       en: (
         <>
           For donors who donate over 300€ per year we issue a donation receipt.{" "}
-          <Link href="mailto:contact@climateconnect.earth" underline="hover">
+          <Link href="mailto:contact@climatehub.org" underline="hover">
             Contact us
           </Link>{" "}
           if you need any other documents.
@@ -248,7 +248,7 @@ export default function getDonateTexts({ classes, goal }) {
         <>
           Für Spender, die mehr als 300€ pro Jahr spenden, stellen wir eine Spendenbescheinigung
           aus.{" "}
-          <Link href="mailto:contact@climateconnect.earth" underline="hover">
+          <Link href="mailto:contact@climatehub.org" underline="hover">
             Kontaktiere uns
           </Link>
           , wenn du weitere Unterlagen benötigst.
@@ -271,7 +271,7 @@ export default function getDonateTexts({ classes, goal }) {
     we_are_non_profit_and_running_only_on_donations: {
       en: `We are non-profit and running only on donations. Only with your financial support we can
       connect climate actors worldwide sustainably in the long run.`,
-      de: `Wir sind gemeinnützig und finanzierung uns ausschließlich durch Spenden. Nur mit deiner finanziellen Unterstützung 
+      de: `Wir sind gemeinnützig und finanzierung uns ausschließlich durch Spenden. Nur mit deiner finanziellen Unterstützung
 	  können wir langfristig und nachhaltig Klimaakteure weltweit vernetzen.`,
     },
     donate_now: {
@@ -308,13 +308,13 @@ export default function getDonateTexts({ classes, goal }) {
       de: "Der Spendenwald",
     },
     donor_forest_dialog_explainer_text: {
-      en: `When you start donating to Climate Connect you get a digital sapling as a reward. 
+      en: `When you start donating to Climate Connect you get a digital sapling as a reward.
       If you donate monthly or yearly your tree keeps growing. Your donation amount determines
       the initial size of your sapling.
       Your tree is displayed in the donor forest and next to your account on the platform.`,
       de: `Wenn du an Climate Connect spendest, bekommst du einen digitalen Setzling. Mit welchem
       Setzling du startest, hängt von der Höhe deiner Spende ab.
-      Wenn du monatlich oder jährlich spendest, wächst dein Baum immer weiter. Dein Baum wird im 
+      Wenn du monatlich oder jährlich spendest, wächst dein Baum immer weiter. Dein Baum wird im
       Spendenwald und immer neben deinem Profilbild auf der Plattform angezeigt.`,
     },
     donor_forest_dialog_call_to_action_text: {
@@ -372,7 +372,7 @@ export default function getDonateTexts({ classes, goal }) {
       en: `In our December raffle everybody who donates to Climate Connect in the
       month of December has a chance to win prizes like the compensation of their year's
       CO2-footprint kindly sponsored by `,
-      de: `Alle, die im Dezember spenden, können tolle Preise gewinnen, z.B. ein Jahr 
+      de: `Alle, die im Dezember spenden, können tolle Preise gewinnen, z.B. ein Jahr
       klimapositiv Leben, gesponsort von `,
     },
   };
