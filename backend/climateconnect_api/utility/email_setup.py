@@ -92,10 +92,17 @@ def check_send_email_notification(user):
     return not recent_email_notification.exists()
 
 
-def get_email_data(hub_url):
+FROM_NAMES_BY_LANGUAGE = {
+    "en": "ClimateHub Network",
+    "de": "ClimateHub Netzwerk",
+}
+
+
+def get_email_data(hub_url, lang_code="en"):
+    from_name = FROM_NAMES_BY_LANGUAGE.get(lang_code, FROM_NAMES_BY_LANGUAGE["en"])
     email_data = {
         "from_email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-        "from_name": "ClimateHub Network",
+        "from_name": from_name,
     }
     if hub_url:
         try:
@@ -134,7 +141,7 @@ def send_email(
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(template_key=template_key, lang_code=lang_code)
 
-    email_data = get_email_data(hub_url)
+    email_data = get_email_data(hub_url, lang_code=lang_code)
     data = {
         "Messages": [
             {
@@ -420,12 +427,13 @@ def send_email_reminder_for_unread_notifications(
         "de": f"<p>Hallo {user.first_name},</p><p>Du hast {total_notifications} ungelesene {'Nachrichten' if total_notifications > 1 else 'Nachricht'} von anderen Klimaschützer*innen. Bitte beantworte die Nachrichten.<br />Nur gemeinsam und durch Zusammenarbeit und Wissensaustausch können wir das 1,5 Grad Ziel erreichen.</p><p><b><a href={website_link}>Klicke hier</a>, um deinen Posteingang anzusehen.</b></p><p>Bis bald,</p><p>Dein Team vom ClimateHub Netzwerk</p>",  # NOQA
     }
     email_text = email_text_by_language.get(language_code, "en")
+    from_name = FROM_NAMES_BY_LANGUAGE.get(language_code, FROM_NAMES_BY_LANGUAGE["en"])
     data = {
         "Messages": [
             {
                 "From": {
                     "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "ClimateHub Network",
+                    "Name": from_name,
                 },
                 "To": [
                     {"Email": user.email, "Name": f"{user.first_name} {user.last_name}"}
