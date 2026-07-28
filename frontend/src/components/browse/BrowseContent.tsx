@@ -30,6 +30,7 @@ import { BrowseTab, LinkedHub } from "../../types";
 import { FilterContext } from "../context/FilterContext";
 import HubLinkButton from "../hub/HubLinkButton";
 import { useFeatureToggles } from "../featureToggle";
+import { useUpcomingEventsDisplayCount } from "../../hooks/useUpcomingEventsDisplayCount";
 import UpcomingEventsGroup from "./UpcomingEventsGroup";
 const OrganizationPreviews = lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = lazy(() => import("../profile/ProfilePreviews"));
@@ -168,6 +169,7 @@ export default function BrowseContent({
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const eventsDisplayCount = useUpcomingEventsDisplayCount();
 
   const type_names = {
     projects: texts.projects,
@@ -235,19 +237,39 @@ export default function BrowseContent({
     hubData?.url_slug,
   ]);
 
-  // Deduplicate: remove events from projects grid that appear in upcoming events
-  const projectsForGrid = useMemo(() => {
-    if (!isEventsEnabled || upcomingEvents.length === 0) {
-      return state.items.projects;
-    }
-    const upcomingSlugs = new Set(upcomingEvents.map((e) => e.url_slug));
-    return state.items.projects.filter((p) => !upcomingSlugs.has(p.url_slug));
-  }, [state.items.projects, isEventsEnabled, upcomingEvents]);
+  // Upcoming events: split into "band" (shown in dedicated UpcomingEventsGroup
+  // when there are enough to fill a row) and "featured" (prepended to the
+  // project grid). The grid handles its own dedup against the regular projects,
+  // which makes the merge/separate transition robust on resize.
+  const visibleEvents = useMemo(() => upcomingEvents.slice(0, eventsDisplayCount), [
+    upcomingEvents,
+    eventsDisplayCount,
+  ]);
+  const shouldRenderUpcomingBand = isEventsEnabled && upcomingEvents.length >= eventsDisplayCount;
+  // Events not shown in the band are prepended to the grid. When the band is
+  // hidden, all events are prepended.
+  const featuredProjects = useMemo(() => {
+    if (!isEventsEnabled || upcomingEvents.length === 0) return [];
+    return shouldRenderUpcomingBand ? upcomingEvents.slice(eventsDisplayCount) : upcomingEvents;
+  }, [isEventsEnabled, upcomingEvents, shouldRenderUpcomingBand, eventsDisplayCount]);
+  // Slugs of events already shown in the band — removed from the regular
+  // projects list so they are not duplicated in the grid below.
+  const bandEventSlugs = useMemo(
+    () => (shouldRenderUpcomingBand ? new Set(visibleEvents.map((e) => e.url_slug)) : new Set()),
+    [shouldRenderUpcomingBand, visibleEvents]
+  );
+  const projectsForGrid = useMemo(
+    () =>
+      bandEventSlugs.size > 0
+        ? state.items.projects.filter((p) => !bandEventSlugs.has(p.url_slug))
+        : state.items.projects,
+    [state.items.projects, bandEventSlugs]
+  );
 
   const eventsContent = useMemo(() => {
-    if (!isEventsEnabled || upcomingEvents.length === 0) return undefined;
-    return <UpcomingEventsGroup events={upcomingEvents} hubUrl={hubUrl} />;
-  }, [isEventsEnabled, upcomingEvents, hubUrl]);
+    if (!shouldRenderUpcomingBand) return undefined;
+    return <UpcomingEventsGroup events={visibleEvents} hubUrl={hubUrl} />;
+  }, [shouldRenderUpcomingBand, visibleEvents, hubUrl]);
 
   const locationInputRefs = {
     projects: useRef(null),
@@ -649,6 +671,7 @@ export default function BrowseContent({
                 loadFunc={() => handleLoadMoreData("projects")}
                 parentHandlesGridItems
                 projects={projectsForGrid}
+                featuredProjects={featuredProjects}
                 hubUrl={hubUrl}
                 isLoading={isFetchingMoreData}
                 analyticsSurface="browse_card"
