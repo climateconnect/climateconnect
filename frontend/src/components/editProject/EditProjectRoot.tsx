@@ -23,6 +23,7 @@ import ROLE_TYPES from "../../../public/data/role_types";
 import { Project, Role, Sector } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 import TranslateTexts from "../general/TranslateTexts";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import EditProjectContent from "./EditProjectContent";
@@ -390,13 +391,6 @@ export default function EditProjectRoot({
     <Container>
       {step === "edit_project" ? (
         <form onSubmit={handleSubmit}>
-          <Typography
-            variant="caption"
-            color="textSecondary"
-            className={classes.requiredFieldsNotice}
-          >
-            {texts.required_fields_general_notice}
-          </Typography>
           {!isNarrowScreen && (
             <NavigationButtons
               position="top"
@@ -406,6 +400,7 @@ export default function EditProjectRoot({
               className={classes.navigationButtons}
             />
           )}
+          <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
           <EditProjectOverview
             project={project}
             smallScreen={isNarrowScreen}

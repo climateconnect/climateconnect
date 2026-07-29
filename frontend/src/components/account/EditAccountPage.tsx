@@ -33,6 +33,7 @@ import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import SelectField from "../general/SelectField";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 import { AvatarImage, UserAvatar } from "./UserAvatar";
 import CloseIcon from "@mui/icons-material/Close";
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
@@ -479,13 +480,7 @@ export default function EditAccountPage({
               open={i.locationOptionsOpen}
               locationInputRef={i.locationInputRef}
             />
-            <Typography
-              variant="caption"
-              color="textSecondary"
-              className={classes.requiredFieldsNotice}
-            >
-              {texts.required_fields_general_notice}
-            </Typography>
+            <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
           </div>
         );
       } else if (i.type === "sectors") {

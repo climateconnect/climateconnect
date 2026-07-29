@@ -8,6 +8,7 @@ import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import Switcher from "../general/Switcher";
 import SelectField from "../general/SelectField";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 import { useTheme } from "@mui/material/styles";
 import NavigationButtons from "../general/NavigationButtons";
 
@@ -112,9 +113,7 @@ export default function Share({
         color={mainColor}
       />
       {project.is_organization_project && (
-        <Typography variant="body2" className={classes.requiredFieldsNotice}>
-          {texts.required_fields_general_notice}
-        </Typography>
+        <RequiredFieldsNotice variant="body2" className={classes.requiredFieldsNotice} />
       )}
       {project.is_organization_project && (
         <>

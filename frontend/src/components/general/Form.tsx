@@ -11,13 +11,12 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import Link from "next/link";
-import React, { Fragment, ReactElement, useContext, useState } from "react";
-import getTexts from "../../../public/texts/texts";
-import UserContext from "../context/UserContext";
+import React, { Fragment, ReactElement, useState } from "react";
 
 // Relative imports
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
+import RequiredFieldsNotice from "./RequiredFieldsNotice";
 import SelectField from "./SelectField";
 
 const useStyles = makeStyles((theme) => ({
@@ -158,8 +157,6 @@ export default function Form({
   autocomplete,
 }: Props) {
   const classes = useStyles();
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "general", locale: locale });
   const hasRequiredFields = fields.some((field) => !!field.required);
   const [curPercentage, setCurPercentage] = useState(percentage);
   const [values, setValues] = useState(
@@ -250,13 +247,9 @@ export default function Form({
           </Typography>
         )}
         {hasRequiredFields && (
-          <Typography
-            variant="caption"
-            color="textSecondary"
+          <RequiredFieldsNotice
             className={`${classes.blockElement} ${classes.requiredFieldsNotice}`}
-          >
-            {texts.required_fields_general_notice}
-          </Typography>
+          />
         )}
         {fields.map((field) => {
           if (

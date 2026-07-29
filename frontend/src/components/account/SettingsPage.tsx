@@ -17,6 +17,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
 import Switcher from "../general/Switcher";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 
 const useStyles = makeStyles((theme) => ({
   blockElement: {
@@ -380,6 +381,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
 
   return (
     <>
+      <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
       <Typography variant="h5" component="h2" className={classes.textColor}>
         {texts.login_method}
       </Typography>
@@ -415,13 +417,6 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         )}
         {settings.has_password && (
           <>
-            <Typography
-              variant="caption"
-              color="textSecondary"
-              className={classes.requiredFieldsNotice}
-            >
-              {texts.required_fields_general_notice}
-            </Typography>
             <div className={classes.blockElement}>
               <TextField
                 variant="outlined"
