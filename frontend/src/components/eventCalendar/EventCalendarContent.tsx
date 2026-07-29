@@ -9,13 +9,13 @@ import {
   Theme,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import TuneIcon from "@mui/icons-material/Tune";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
+import GenericDialog from "../dialogs/GenericDialog";
 import EventCalendarEventList from "./EventCalendarEventList";
 import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/de";
@@ -101,6 +101,12 @@ const useStyles = makeStyles((theme) => ({
   mobileFilterIcon: {
     color: theme.palette.background.default_contrastText,
   },
+  mobileFilterDialogContent: {
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(2),
+    padding: theme.spacing(0, 1),
+  },
   resetButton: {
     alignSelf: "flex-start",
     marginTop: theme.spacing(1),
@@ -167,6 +173,7 @@ export default function EventCalendarContent({
   const { locale } = useContext(UserContext);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale });
+  const filterTexts = getTexts({ page: "filter_and_search", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
 
   const urlFilters = useRef(readFiltersFromUrl());
@@ -266,7 +273,9 @@ export default function EventCalendarContent({
     );
   };
 
-  const showLeftPanel = !isNarrowScreen || mobileFiltersOpen;
+  const handleApplyMobileFilters = () => {
+    setMobileFiltersOpen(false);
+  };
 
   return (
     <Container maxWidth="lg" className={classes.pageContainer}>
@@ -283,33 +292,95 @@ export default function EventCalendarContent({
           <Button
             className={classes.mobileFilterButton}
             variant="outlined"
-            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-            startIcon={
-              mobileFiltersOpen ? (
-                <HighlightOffIcon className={classes.mobileFilterIcon} />
-              ) : (
-                <TuneIcon className={classes.mobileFilterIcon} />
-              )
-            }
+            onClick={() => setMobileFiltersOpen(true)}
+            startIcon={<TuneIcon className={classes.mobileFilterIcon} />}
           >
             {texts.filters ?? "Filters"}
           </Button>
         </div>
       )}
 
-      <div className={classes.layout}>
-        {showLeftPanel && (
-          <div className={classes.leftPanel}>
-            {!isNarrowScreen && (
-              <FilterSearchBar
-                className={classes.leftSearchBar}
-                label={texts.search_events ?? "Search events"}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onSubmit={(_type, value) => setSearch(value)}
-                type="events"
+      {isNarrowScreen && (
+        <GenericDialog
+          open={mobileFiltersOpen}
+          onClose={() => setMobileFiltersOpen(false)}
+          onApply={handleApplyMobileFilters}
+          title={filterTexts.filters ?? "Filters"}
+          fullScreen
+          useApplyButton
+          applyText={filterTexts.apply_filters ?? "Apply filters"}
+          topBarFixed
+        >
+          <div className={classes.mobileFilterDialogContent}>
+            <LocalizationProvider adapterLocale={locale} dateAdapter={AdapterDayjs}>
+              <DateCalendar
+                className={classes.calendar}
+                value={selectedDay}
+                onChange={(newValue: Dayjs | null) => {
+                  const value = newValue ?? dayjs();
+                  setSelectedDay(value);
+                  if (value.year() !== viewMonth.year() || value.month() !== viewMonth.month()) {
+                    setViewMonth(value.startOf("month"));
+                  }
+                }}
+                onMonthChange={(newValue: Dayjs) => setViewMonth(newValue.startOf("month"))}
+                slots={{ day: DayWithEvents }}
               />
-            )}
+            </LocalizationProvider>
+
+            <FormControl component="fieldset" fullWidth>
+              <Typography component="legend" className={classes.filterLabel}>
+                {texts.topic ?? "Topics"}
+              </Typography>
+              <div className={classes.topicList}>
+                {(filterChoices?.sectors || []).map((s: any) => (
+                  <FormControlLabel
+                    key={s.original_name}
+                    control={
+                      <Checkbox
+                        size="small"
+                        checked={sectors.includes(s.original_name)}
+                        onChange={() => handleToggleSector(s.original_name)}
+                      />
+                    }
+                    label={
+                      <span className={classes.topicLabel}>
+                        {s.icon && (
+                          <img src={getImageUrl(s.icon)} className={classes.topicIcon} alt="" />
+                        )}
+                        <Typography component="span" variant="body2" noWrap>
+                          {s.name}
+                        </Typography>
+                      </span>
+                    }
+                  />
+                ))}
+              </div>
+            </FormControl>
+
+            <Button
+              className={classes.resetButton}
+              variant="outlined"
+              color="primary"
+              onClick={handleReset}
+            >
+              {texts.reset ?? "Reset"}
+            </Button>
+          </div>
+        </GenericDialog>
+      )}
+
+      <div className={classes.layout}>
+        {!isNarrowScreen && (
+          <div className={classes.leftPanel}>
+            <FilterSearchBar
+              className={classes.leftSearchBar}
+              label={texts.search_events ?? "Search events"}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onSubmit={(_type, value) => setSearch(value)}
+              type="events"
+            />
             <LocalizationProvider adapterLocale={locale} dateAdapter={AdapterDayjs}>
               <DateCalendar
                 className={classes.calendar}
