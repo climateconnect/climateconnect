@@ -32,6 +32,14 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       width: "11rem",
       height: "11rem",
 
+      // Hide the decorative icon on narrow viewports (<= 915px) where it
+      // would otherwise overlap the auth split-view text. No MUI breakpoint
+      // is defined at 915px in the project theme (defaults are sm:600,
+      // md:900, lg:1200, xl:1536), so a raw media query is used here.
+      "@media (max-width: 915px)": {
+        display: "none",
+      },
+
       [theme.breakpoints.up("xl")]: {
         top: "40vh",
         left: "auto",
@@ -121,8 +129,10 @@ const BackgroundSplitSection = ({ classes }) => {
 };
 
 function PrioOneBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponentProps) {
+  // On mobile we still render the colored background but skip the
+  // decorative split-triangle and group icon so the auth card stays clean.
   if (mobileScreenSize) {
-    return <></>;
+    return <div className={`${classes.background} ${classes.defaultBackground}`} />;
   }
 
   return (
@@ -140,8 +150,10 @@ function PrioOneBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponen
   );
 }
 function PerthBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponentProps) {
+  // On mobile we still render the colored background but skip the
+  // decorative split-triangle so the auth card stays clean.
   if (mobileScreenSize) {
-    return <></>;
+    return <div className={`${classes.background} ${classes.defaultBackground}`} />;
   }
   return (
     <div className={`${classes.background} ${classes.defaultBackground}`}>
