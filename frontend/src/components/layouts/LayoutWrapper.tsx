@@ -21,11 +21,17 @@ declare module "@mui/styles/defaultTheme" {
 }
 
 const useStyles = makeStyles<Theme>((theme) => ({
-  leaveSpaceForFooter: {
+  pageWrapper: {
+    // Always establish a positioned containing block that is at least the
+    // viewport height so absolutely-positioned page backgrounds (e.g. the
+    // hub `CustomBackground`) cover the whole visible area — even on
+    // scrollable tablet layouts where the content grows past 100vh.
     position: "relative",
+    minHeight: "100vh",
+  },
+  leaveSpaceForFooter: {
     //height of footer + spacing(1)
     paddingBottom: theme.spacing(12),
-    minHeight: "100vh",
   },
   spinnerContainer: {
     display: "flex",
@@ -186,7 +192,9 @@ export default function LayoutWrapper({
           ) : (
             <FeedbackContext.Provider value={contextValues}>
               <div
-                className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}
+                className={`${classes.pageWrapper} ${
+                  !fixedHeight && !noSpaceForFooter ? classes.leaveSpaceForFooter : ""
+                }`}
               >
                 {children}
                 {shouldShowCookieBanner() && <CookieBanner closeBanner={closeBanner} />}

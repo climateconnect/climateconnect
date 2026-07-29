@@ -6,6 +6,7 @@ import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 import ProjectTimeAndPlaceSectionAndCustomHub from "./TimeAndPlaceSection";
 import AddPhotoSection from "./AddPhotoSection";
 import AddSummarySection from "./AddSummarySection";
@@ -66,6 +67,10 @@ const useStyles = makeStyles((theme) => {
     },
     tooltip: {
       fontSize: 16,
+    },
+    requiredFieldsNotice: {
+      display: "block",
+      marginBottom: theme.spacing(2),
     },
   };
 });
@@ -284,6 +289,7 @@ export default function EnterDetails({
     <>
       <Container maxWidth="lg">
         <form ref={topRef} onSubmit={onClickNextStep}>
+          <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
           <ProjectNameSection
             projectData={projectData}
             handleSetProjectData={handleSetProjectData}

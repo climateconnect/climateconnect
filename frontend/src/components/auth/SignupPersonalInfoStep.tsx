@@ -17,6 +17,7 @@ import LocationSearchBar from "../search/LocationSearchBar";
 import { isLocationValid } from "../../../public/lib/locationOperations";
 import { trackAuthEvent } from "../../utils/analytics";
 import makeStyles from "@mui/styles/makeStyles";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 
 interface SignupPersonalInfoStepProps {
   email: string;
@@ -43,6 +44,10 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 35,
       fontWeight: "bold",
     },
+  },
+  requiredFieldsNotice: {
+    display: "block",
+    marginBottom: theme.spacing(3),
   },
 }));
 
@@ -188,6 +193,7 @@ export default function SignupPersonalInfoStep({
       <Typography variant="body1" sx={{ mb: 2 }}>
         {headlineText}
       </Typography>
+      <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
 
       {/* Email field - read-only */}
       <TextField
