@@ -480,7 +480,6 @@ export default function EditAccountPage({
               open={i.locationOptionsOpen}
               locationInputRef={i.locationInputRef}
             />
-            <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
           </div>
         );
       } else if (i.type === "sectors") {
@@ -810,6 +809,7 @@ export default function EditAccountPage({
           </Container>
           <Container className={classes.accountInfo}>
             {/*Contains all the possible info a user can put about their account e.g. website, location, summary, bio, ...*/}
+            <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
             {displayAccountInfo(editedAccount.info)}
             <div className={classes.checkTranslationsButtonAndManageMembersButtonContainer}>
               {onClickCheckTranslations && (
