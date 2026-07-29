@@ -8,6 +8,7 @@ import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import Switcher from "../general/Switcher";
 import SelectField from "../general/SelectField";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 import { useTheme } from "@mui/material/styles";
 import NavigationButtons from "../general/NavigationButtons";
 
@@ -31,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
     padding: theme.spacing(4),
     paddingTop: theme.spacing(2),
+  },
+  requiredFieldsNotice: {
+    marginTop: theme.spacing(2),
+    color: theme.palette.text.secondary,
   },
   field: {
     marginTop: theme.spacing(3),
@@ -107,6 +112,9 @@ export default function Share({
         handleChangeValue={onChangeSwitch}
         color={mainColor}
       />
+      {project.is_organization_project && (
+        <RequiredFieldsNotice variant="body2" className={classes.requiredFieldsNotice} />
+      )}
       {project.is_organization_project && (
         <>
           <SelectField

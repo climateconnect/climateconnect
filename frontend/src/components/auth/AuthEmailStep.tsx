@@ -5,6 +5,7 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { trackAuthEvent } from "../../utils/analytics";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 import makeStyles from "@mui/styles/makeStyles";
 
 interface AuthEmailStepProps {
@@ -26,6 +27,10 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 35,
       fontWeight: "bold",
     },
+  },
+  requiredFieldsNotice: {
+    display: "block",
+    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -130,6 +135,7 @@ export default function AuthEmailStep({
           disabled={isLoading}
           style={{ marginBottom: 16 }}
         />
+        <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
 
         {errorMessage && (
           <Alert severity="error" role="alert" style={{ marginBottom: 16 }}>
