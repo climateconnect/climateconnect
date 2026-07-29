@@ -92,10 +92,17 @@ def check_send_email_notification(user):
     return not recent_email_notification.exists()
 
 
-def get_email_data(hub_url):
+FROM_NAMES_BY_LANGUAGE = {
+    "en": "ClimateHub Network",
+    "de": "ClimateHub Netzwerk",
+}
+
+
+def get_email_data(hub_url, lang_code="en"):
+    from_name = FROM_NAMES_BY_LANGUAGE.get(lang_code, FROM_NAMES_BY_LANGUAGE["en"])
     email_data = {
         "from_email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-        "from_name": "Climate Connect",
+        "from_name": from_name,
     }
     if hub_url:
         try:
@@ -134,7 +141,7 @@ def send_email(
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(template_key=template_key, lang_code=lang_code)
 
-    email_data = get_email_data(hub_url)
+    email_data = get_email_data(hub_url, lang_code=lang_code)
     data = {
         "Messages": [
             {
@@ -144,7 +151,7 @@ def send_email(
                     ],  # from_email if from_email else settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
                     "Name": email_data[
                         "from_name"
-                    ],  # from_name if from_name else "Climate Connect",
+                    ],  # from_name if from_name else "ClimateHub Network",
                 },
                 "To": [
                     {
@@ -220,8 +227,8 @@ def send_user_verification_email(user, verification_key, hub_url=None):
     url = get_user_verification_url(verification_key, lang_url, hub_url)
 
     subjects_by_language = {
-        "en": "Welcome to Climate Connect! Verify your email address",
-        "de": "Willkommen bei Climate Connect! Verifiziere deine Email-Adresse!",
+        "en": "Welcome to the ClimateHub Network! Verify your email address",
+        "de": "Willkommen beim ClimateHub Netzwerk! Verifiziere deine E-Mail-Adresse!",
     }
 
     variables = {"FirstName": user.first_name, "url": url}
@@ -261,8 +268,8 @@ def send_password_link(user, password_reset_key, hub_url=None):
     url = get_reset_password_url(password_reset_key, lang_url, hub_url)
 
     subjects_by_language = {
-        "en": "Reset your Climate Connect password",
-        "de": "Setze deine Climate Connect Passwort zurück",
+        "en": "Reset your password",
+        "de": "Setze dein Passwort zurück",
     }
 
     variables = {"FirstName": user.first_name, "url": url}
@@ -303,17 +310,17 @@ def send_feedback_email(email, message, send_response, user_agent=None, path=Non
             {
                 "From": {
                     "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "Climate Connect",
+                    "Name": "ClimateHub Network",
                 },
                 "To": [
                     {
-                        "Email": "feedback@climateconnect.earth",
-                        "Name": "Climate Connect",
+                        "Email": "feedback@climatehub.org",
+                        "Name": "ClimateHub Network",
                     }
                 ],
                 "TemplateID": int(settings.FEEDBACK_TEMPLATE_ID),
                 "TemplateLanguage": True,
-                "Subject": "Climate Connect User Feedback",
+                "Subject": "ClimateHub Network User Feedback",
                 "Variables": variables,
             }
         ]
@@ -377,11 +384,11 @@ def send_test_mail_to_engineering_email(subject, text_body):
             {
                 "From": {
                     "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "Climate Connect",
+                    "Name": "ClimateHub",
                 },
                 "To": [
                     {
-                        "Email": "engineering@climateconnect.earth",
+                        "Email": "engineering@climatehub.org",
                         "Name": f"Engineering",
                     }
                 ],
@@ -411,21 +418,22 @@ def send_email_reminder_for_unread_notifications(
     }
     subject = subject_by_language.get(language_code, "en")
     website_link_by_language = {
-        "en": "https://climateconnect.earth/inbox",
-        "de": "https://climateconnect.earth/de/inbox",
+        "en": "https://climatehub.org/inbox",
+        "de": "https://climatehub.org/de/inbox",
     }
     website_link = website_link_by_language.get(language_code, "en")
     email_text_by_language = {
-        "en": f"<p>Dear {user.first_name},</p><p>You have {total_notifications} unread {'messages' if total_notifications > 1 else 'message'} from other climate protectors. Please respond to the people who reached out. <br />We can only effectively fight the climate crisis if we work together and exchange knowledge.</p> <p><b><a href={website_link}>Click here</a> to check your inbox.</b></p><p>See you soon,</p><p>The Climate Connect Team</p>",  # NOQA
-        "de": f"<p>Hallo {user.first_name},</p><p>Du hast {total_notifications} ungelesene {'Nachrichten' if total_notifications > 1 else 'Nachricht'} von anderen Klimaschützer*innen. Bitte beantworte die Nachrichten.<br />Nur gemeinsam und durch Zusammenarbeit und Wissensaustausch können wir das 1,5 Grad Ziel erreichen.</p><p><b><a href={website_link}>Klicke hier</a>, um deinen Posteingang anzusehen.</b></p><p>Bis bald,</p><p>Deine Climate Connect Team</p>",  # NOQA
+        "en": f"<p>Dear {user.first_name},</p><p>You have {total_notifications} unread {'messages' if total_notifications > 1 else 'message'} from other climate protectors. Please respond to the people who reached out. <br />We can only effectively fight the climate crisis if we work together and exchange knowledge.</p> <p><b><a href={website_link}>Click here</a> to check your inbox.</b></p><p>See you soon,</p><p>your team of the ClimateHub Network</p>",  # NOQA
+        "de": f"<p>Hallo {user.first_name},</p><p>Du hast {total_notifications} ungelesene {'Nachrichten' if total_notifications > 1 else 'Nachricht'} von anderen Klimaschützer*innen. Bitte beantworte die Nachrichten.<br />Nur gemeinsam und durch Zusammenarbeit und Wissensaustausch können wir das 1,5 Grad Ziel erreichen.</p><p><b><a href={website_link}>Klicke hier</a>, um deinen Posteingang anzusehen.</b></p><p>Bis bald,</p><p>Dein Team vom ClimateHub Netzwerk</p>",  # NOQA
     }
     email_text = email_text_by_language.get(language_code, "en")
+    from_name = FROM_NAMES_BY_LANGUAGE.get(language_code, FROM_NAMES_BY_LANGUAGE["en"])
     data = {
         "Messages": [
             {
                 "From": {
                     "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "Climate Connect",
+                    "Name": from_name,
                 },
                 "To": [
                     {"Email": user.email, "Name": f"{user.first_name} {user.last_name}"}

@@ -180,7 +180,7 @@ export default function getAboutTexts(classes) {
     contact_us_if_youre_interested_in_joining_the_team: {
       en: (
         <>
-          <Link underline="always" href="mailto:contact@climateconnect.earth">
+          <Link underline="always" href="mailto:contact@climatehub.org">
             Contact us
           </Link>{" "}
           if you are interested in joining the team!
@@ -188,7 +188,7 @@ export default function getAboutTexts(classes) {
       ),
       de: (
         <>
-          <Link underline="always" href="mailto:contact@climateconnect.earth">
+          <Link underline="always" href="mailto:contact@climatehub.org">
             Kontaktiere uns,
           </Link>{" "}
           wenn du interessiert bist, mitzumachen!

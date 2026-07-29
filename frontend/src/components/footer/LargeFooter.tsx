@@ -244,9 +244,7 @@ const SiteLinks = ({ texts, locale }) => {
           {texts.contact}
         </Typography>
         <div className={classes.links}>
-          <FooterLink href="mailto:contact@climateconnect.earth">
-            contact@climateconnect.earth
-          </FooterLink>
+          <FooterLink href="mailto:contact@climatehub.org">contact@climatehub.org</FooterLink>
           <FooterLink href="tel:+4915730101056">+4915730101056</FooterLink>
           <FeedbackButton justLink>
             <Typography className={classes.li}>{texts.leave_feedback}</Typography>

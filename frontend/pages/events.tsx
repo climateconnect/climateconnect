@@ -25,14 +25,6 @@ const toOffsetIso = (d: Date): string => {
   );
 };
 
-const getDefaultStartDateParams = (): Record<string, string> => {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-  return {
-    start_date: toOffsetIso(start),
-  };
-};
-
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { featureToggles } = await getFeatureTogglesFromRequest(ctx.req);
   if (!featureToggles.EVENT_CALENDAR_FEATURE) {
@@ -44,14 +36,32 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const [sectorOptions] = await Promise.all([getSectorOptions(locale)]);
 
+  const querySearch = (ctx.query.search as string) || "";
+  const querySectors = (ctx.query.sectors as string) || "";
+  const queryDate = ctx.query.date as string | undefined;
+
+  let startDateStr: string;
+  let initialSelectedDay: string | undefined;
+  if (queryDate && /^\d{4}-\d{2}-\d{2}$/.test(queryDate)) {
+    const [y, m, d] = queryDate.split("-").map(Number);
+    startDateStr = toOffsetIso(new Date(y, m - 1, d, 0, 0, 0));
+    initialSelectedDay = queryDate;
+  } else {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    startDateStr = toOffsetIso(start);
+  }
+
   let initialEvents: any[] = [];
   let initialHasMore = false;
   try {
     const params = new URLSearchParams({
-      ...getDefaultStartDateParams(),
+      start_date: startDateStr,
       page: "1",
       page_size: "12",
     });
+    if (querySearch) params.set("search", querySearch);
+    if (querySectors) params.set("sectors", querySectors);
     const { data } = await apiRequest({
       method: "get",
       url: `/api/events/?${params.toString()}`,
@@ -69,11 +79,21 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       filterChoices: { sectors: sectorOptions },
       initialEvents,
       initialHasMore,
+      initialSearch: querySearch,
+      initialSectors: querySectors ? querySectors.split(",") : [],
+      initialSelectedDay: initialSelectedDay || null,
     },
   };
 };
 
-export default function EventsPage({ filterChoices, initialEvents, initialHasMore }: any) {
+export default function EventsPage({
+  filterChoices,
+  initialEvents,
+  initialHasMore,
+  initialSearch,
+  initialSectors,
+  initialSelectedDay,
+}: any) {
   const { locale, hubUrl } = useContext(UserContext);
   const { hubs } = useContext(HubContext);
   const router = useRouter();
@@ -108,6 +128,9 @@ export default function EventsPage({ filterChoices, initialEvents, initialHasMor
       <EventCalendarContent
         initialEvents={initialEvents}
         initialHasMore={initialHasMore}
+        initialSearch={initialSearch}
+        initialSectors={initialSectors}
+        initialSelectedDay={initialSelectedDay}
         filterChoices={filterChoices}
         hubUrl={hubUrl}
       />

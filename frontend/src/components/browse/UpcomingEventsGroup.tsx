@@ -7,34 +7,6 @@ import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ProjectPreviews from "../project/ProjectPreviews";
-import { getClassificationTimestamp, getStartOfTodayMs } from "../../utils/eventSorting";
-
-// Pull the next `limit` upcoming events out of the existing browse grid
-// (we intentionally reuse the ranked projects list instead of calling the
-// events API). Returns the highlighted events plus the rest of the list
-// with those highlights removed, so they are not shown twice.
-export const getUpcomingEventHighlights = (
-  projects: any[] = [],
-  limit = 4
-): { highlights: any[]; remaining: any[]; total: number } => {
-  const today = getStartOfTodayMs();
-  const upcoming = (projects || [])
-    .filter((p) => {
-      const ts = getClassificationTimestamp(p);
-      // Only event-type projects that have not ended yet.
-      return p.project_type === "event" && ts != null && ts >= today;
-    })
-    .sort((a, b) => {
-      const ta = a.start_date ? new Date(a.start_date).getTime() : 0;
-      const tb = b.start_date ? new Date(b.start_date).getTime() : 0;
-      return ta - tb;
-    });
-
-  const highlights = upcoming.slice(0, limit);
-  const slugs = new Set(highlights.map((e) => e.url_slug));
-  const remaining = (projects || []).filter((p) => !slugs.has(p.url_slug));
-  return { highlights, remaining, total: upcoming.length };
-};
 
 const useStyles = makeStyles((theme) => ({
   // Option 1 highlight: a light tint behind just this event section.

@@ -68,7 +68,30 @@ jobs:
           WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID}}
           FRONTEND_SENTRY_DSN: ${{ secrets.FRONTEND_SENTRY_DSN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          
+
+      - name: Write build env
+        run: |
+          echo '{
+            "sha": "${{ github.sha }}",
+            "ref": "${{ github.ref_name }}",
+            "built_at": "${{ github.event.head_commit.timestamp }}",
+            "API_HOST": "${{ secrets.API_HOST }}",
+            "API_URL": "${{ secrets.API_URL }}",
+            "BASE_URL": "${{ secrets.BASE_URL }}",
+            "BASE_URL_HOST": "${{ secrets.BASE_URL_HOST }}",
+            "CLIMATEORG_ACTIVE": "${{ secrets.CLIMATEORG_ACTIVE }}",
+            "CUSTOM_HUB_URLS": "${{ secrets.CUSTOM_HUB_URLS }}",
+            "DONATION_CAMPAIGN_RUNNING": "${{ secrets.DONATION_CAMPAIGN_RUNNING }}",
+            "FRONTEND_SENTRY_DSN": "${{ secrets.FRONTEND_SENTRY_DSN }}",
+            "GOOGLE_ANALYTICS_CODE": "${{ secrets.GOOGLE_ANALYTICS_CODE }}",
+            "LATEST_NEWSLETTER_LINK": "${{ secrets.LATEST_NEWSLETTER_LINK }}",
+            "LETS_ENCRYPT_FILE_CONTENT": "${{ secrets.LETS_ENCRYPT_FILE_CONTENT }}",
+            "LOCATION_HUBS": "${{ secrets.LOCATION_HUBS }}",
+            "SOCKET_URL": "${{ secrets.SOCKET_URL }}",
+            "WASSERAKTIONSWOCHEN_FEATURE": "${{ secrets.WASSERAKTIONSWOCHEN_FEATURE }}",
+            "WEBFLOW_SITE_ID": "${{ secrets.WEBFLOW_SITE_ID }}"
+          }' > frontend/build_info.json
+
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
