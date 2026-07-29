@@ -17,6 +17,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
 import Switcher from "../general/Switcher";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 
 const useStyles = makeStyles((theme) => ({
   blockElement: {
@@ -60,13 +61,18 @@ const useStyles = makeStyles((theme) => ({
   textColor: {
     color: theme.palette.background.default_contrastText,
   },
+  requiredFieldsNotice: {
+    display: "block",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 export default function SettingsPage({ settings, setSettings, token, setMessage }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
-  const emailLink = "contact@climateconnect.earth";
+  const emailLink = "contact@climatehub.org";
   const possibleEmailPreferences = [
     {
       key: "send_newsletter",
@@ -375,6 +381,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
 
   return (
     <>
+      <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
       <Typography variant="h5" component="h2" className={classes.textColor}>
         {texts.login_method}
       </Typography>
@@ -409,17 +416,19 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
           </Typography>
         )}
         {settings.has_password && (
-          <div className={classes.blockElement}>
-            <TextField
-              variant="outlined"
-              style={{ minWidth: 360 }}
-              type="password"
-              label={texts.old_password}
-              value={passwordInputs.oldpassword}
-              onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
-              required
-            />
-          </div>
+          <>
+            <div className={classes.blockElement}>
+              <TextField
+                variant="outlined"
+                style={{ minWidth: 360 }}
+                type="password"
+                label={texts.old_password}
+                value={passwordInputs.oldpassword}
+                onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
+                required
+              />
+            </div>
+          </>
         )}
         <div className={classes.blockElement}>
           <TextField
@@ -591,7 +600,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         <InfoOutlinedIcon />
         {texts.if_you_wish_to_delete_this_account}
         <div className={classes.spaceStrings} />
-        <Link href="mailto:contact@climateconnect.earth" className={classes.textColor}>
+        <Link href="mailto:contact@climatehub.org" className={classes.textColor}>
           {emailLink}
         </Link>
       </Typography>

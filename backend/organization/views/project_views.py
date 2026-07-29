@@ -431,18 +431,15 @@ class ListEventsView(ListAPIView):
     Lists event-type projects chronologically for the Event Calendar feature.
 
     Always available (no feature toggle). Supports text search, topic (sectors),
-    hub scoping, and a start/end date range. Orders strictly by start_date.
+    hub scoping, and a start_date "jump to date" filter. Paginated via
+    ProjectsPagination (default page_size=12). Orders strictly by start_date.
     """
 
     permission_classes = [AllowAny]
     filter_backends = [SearchFilter]
     search_fields = ["name", "translation_project__name_translation"]
     serializer_class = ProjectStubSerializer
-    # The calendar loads the full window in a single request (no pagination).
-    pagination_class = None
-
-    # Maximum window span returned in a single request (unpaginated safety cap).
-    MAX_WINDOW = relativedelta(months=6)
+    pagination_class = ProjectsPagination
 
     def get_queryset(self):
         queryset = (
@@ -462,36 +459,10 @@ class ListEventsView(ListAPIView):
             )
         )
 
-        # --- Date range filtering ---
+        # --- Jump-to-date filter ---
         start_date = self._parse_date_param(self.request.query_params.get("start_date"))
-        end_date = self._parse_date_param(self.request.query_params.get("end_date"))
-
-        # Default window (UTC fallback) when the frontend sends no dates.
-        if start_date is None and end_date is None:
-            now = timezone.now()
-            start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            end_date = (
-                start_date + relativedelta(months=3) - relativedelta(days=1)
-            ).replace(hour=23, minute=59, second=59)
-
-        # Hard cap: clamp the effective range to MAX_WINDOW to avoid
-        # unbounded payloads on the unpaginated endpoint.
-        if start_date is not None and end_date is not None:
-            max_end = start_date + self.MAX_WINDOW
-            if end_date > max_end:
-                end_date = max_end
-
-        if start_date is not None and end_date is not None:
-            # Window membership: the event's start_date falls within the window.
-            # The calendar shows each event only on its start date, so an event
-            # with a start_date outside the window has no day to render on.
-            queryset = queryset.filter(
-                Q(start_date__gte=start_date) & Q(start_date__lte=end_date)
-            )
-        elif start_date is not None:
+        if start_date is not None:
             queryset = queryset.filter(start_date__gte=start_date)
-        elif end_date is not None:
-            queryset = queryset.filter(start_date__lte=end_date)
 
         # --- Topic (sectors) filter ---
         if "sectors" in self.request.query_params:
@@ -645,6 +616,116 @@ class EventCalendarCountsView(APIView):
         return timezone.get_current_timezone()
 
 
+class ListUpcomingEventsView(APIView):
+    """
+    Returns up to 4 upcoming event-type projects for the Browse page highlights.
+
+    Always available (no feature toggle). Accepts the same filters as ListProjectsView
+    (search, hub, sectors, location) with start_date being the "current time" baseline.
+    The frontend sends the browser's local midnight timestamp so that "upcoming"
+    aligns with the user's local day.
+
+    Returns a plain list (no pagination) of ProjectStubSerializer results,
+    ordered by start_date ascending. Events returned are removed from the
+    main projects grid to avoid duplication.
+    """
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return self._list_events(request)
+
+    def post(self, request):
+        location = request.data
+        query_params = request.query_params.copy()
+        if "place_id" in location and "geojson" in location:
+            query_params["location"] = location
+        request._request.GET = query_params
+        return self._list_events(request)
+
+    def _list_events(self, request):
+        queryset = (
+            Project.objects.filter(
+                is_draft=False,
+                is_active=True,
+                project_type=ProjectTypesChoices.event,
+                start_date__isnull=False,
+            )
+            .select_related("loc", "language", "status", "registration_config")
+            .prefetch_related(
+                "loc__translate_location__language",
+                Prefetch(
+                    "project_sector_mapping",
+                    queryset=ProjectSectorMapping.objects.select_related("sector"),
+                ),
+            )
+        )
+
+        start_date = self._parse_date_param(request.query_params.get("start_date"))
+        if start_date is not None:
+            queryset = queryset.filter(start_date__gte=start_date)
+        else:
+            queryset = queryset.filter(start_date__gte=timezone.now())
+
+        if "sectors" in request.query_params:
+            _sector_names = request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
+            if not err:
+                queryset = queryset.filter(
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
+                )
+
+        if "hub" in request.query_params:
+            queryset = apply_hub_filter(queryset, request.query_params["hub"])
+
+        search = request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search)
+                | Q(translation_project__name_translation__icontains=search)
+            )
+
+        if (
+            "osm_id" in request.query_params and "osm_type" in request.query_params
+        ) or "place_id" in request.query_params:
+            location_data = get_location_with_range(request.query_params)
+            queryset = queryset.filter(
+                Q(loc__country=location_data["country"])
+                & (
+                    Q(
+                        loc__multi_polygon__distance_lte=(
+                            location_data["location"],
+                            location_data["radius"],
+                        )
+                    )
+                    | Q(
+                        loc__centre_point__distance_lte=(
+                            location_data["location"],
+                            location_data["radius"],
+                        )
+                    )
+                )
+            )
+
+        queryset = queryset.distinct().order_by("start_date")[:4]
+
+        context = create_context_for_hub_specific_sector(request)
+        serializer = ProjectStubSerializer(queryset, many=True, context=context)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def _parse_date_param(value):
+        if not value:
+            return None
+        try:
+            return parse(value)
+        except (ValueError, OverflowError):
+            return None
+
+
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -704,7 +785,7 @@ class CreateProjectView(APIView):
                     {
                         "message": "Your value for this field is too long: "
                         + param
-                        + ". Please make a change or contact an administrator at contact@climateconnect.earth"
+                        + ". Please make a change or contact an administrator at contact@climatehub.org"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )

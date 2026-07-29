@@ -179,7 +179,7 @@ def check_existing_name_translation(name):
 
 def get_existing_name_message(name):
     return _(
-        "Someone has already created the organization {}. Please join the organization or use a different name. If you're having problems please contact support@climateconnect.earth"
+        "Someone has already created the organization {}. Please join the organization or use a different name. If you're having problems please contact support@climatehub.org"
     ).format(name)
 
 

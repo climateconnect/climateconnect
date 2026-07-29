@@ -20,6 +20,11 @@ class BuildInfoView(APIView):
     def get(self, request):
         info_path = pathlib.Path(__file__).resolve().parents[2] / "build_info.json"
         try:
-            return Response(json.loads(info_path.read_text()), status=status.HTTP_200_OK)
+            return Response(
+                json.loads(info_path.read_text()), status=status.HTTP_200_OK
+            )
         except FileNotFoundError:
-            return Response({"sha": "dev", "ref": "local", "built_at": None}, status=status.HTTP_200_OK)
+            return Response(
+                {"sha": "dev", "ref": "local", "built_at": None},
+                status=status.HTTP_200_OK,
+            )

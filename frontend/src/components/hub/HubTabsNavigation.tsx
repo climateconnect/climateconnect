@@ -45,15 +45,29 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   path: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     fontWeight: 600,
   },
   link: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     display: "inline-block",
     fontWeight: 600,
     marginRight: theme.spacing(2),
     marginLeft: theme.spacing(2),
+  },
+  activeEventLink: {
+    color: theme.palette.primary.main,
+    background: theme.palette.primary.contrastText,
+    borderRadius: 15,
+    padding: "3px 12px",
+    fontWeight: 600,
+    display: "inline-flex",
+    alignItems: "center",
+    marginRight: theme.spacing(2),
+    marginLeft: theme.spacing(2),
+    "&:hover": {
+      textDecoration: "none",
+    },
   },
   flexContainer: {
     display: "flex",
@@ -233,9 +247,9 @@ export default function HubTabsNavigation({
           {renderTabs()}
           {isEventsEnabled && (
             <Link
-              className={classes.link}
+              className={isEventsPage ? classes.activeEventLink : classes.link}
               href={`${getLocalePrefix(locale)}${hubUrl ? `/hubs/${hubUrl}/events` : "/events"}`}
-              underline={isEventsPage ? "always" : "hover"}
+              underline={isEventsPage ? "none" : "hover"}
             >
               {texts.event_calendar ?? "Event calendar"}
             </Link>

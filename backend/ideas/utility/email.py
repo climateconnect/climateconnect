@@ -6,10 +6,10 @@ from django.conf import settings
 def send_idea_join_email(user, joining_user, idea, chat_uuid, notification):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "{} joined your idea on Climate Connect".format(
+        "en": "{} joined your idea".format(
             joining_user.first_name + " " + joining_user.last_name
         ),
-        "de": "{} macht jetzt bei deiner Idee auf Climate Connect mit!".format(
+        "de": "{} macht jetzt bei deiner Idee mit!".format(
             joining_user.first_name + " " + joining_user.last_name
         ),
     }

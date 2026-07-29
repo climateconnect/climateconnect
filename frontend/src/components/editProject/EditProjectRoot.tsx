@@ -23,6 +23,7 @@ import ROLE_TYPES from "../../../public/data/role_types";
 import { Project, Role, Sector } from "../../types";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 import TranslateTexts from "../general/TranslateTexts";
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import EditProjectContent from "./EditProjectContent";
@@ -42,6 +43,11 @@ const useStyles = makeStyles((theme) => {
     },
     headline: {
       textAlign: "center",
+      marginTop: theme.spacing(4),
+    },
+    requiredFieldsNotice: {
+      display: "block",
+      marginBottom: theme.spacing(2),
       marginTop: theme.spacing(4),
     },
   };
@@ -394,6 +400,7 @@ export default function EditProjectRoot({
               className={classes.navigationButtons}
             />
           )}
+          <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
           <EditProjectOverview
             project={project}
             smallScreen={isNarrowScreen}
