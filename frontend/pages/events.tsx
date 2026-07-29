@@ -12,6 +12,7 @@ import { HubContext } from "../src/components/context/HubContext";
 import WideLayout from "../src/components/layouts/WideLayout";
 import HubTabsNavigation from "../src/components/hub/HubTabsNavigation";
 import EventCalendarContent from "../src/components/eventCalendar/EventCalendarContent";
+import MobileBottomMenu from "../src/components/browse/MobileBottomMenu";
 
 const toOffsetIso = (d: Date): string => {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -100,7 +101,8 @@ export default function EventsPage({
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const texts = useMemo(() => getTexts({ page: "hub", locale: locale }), [locale]);
 
-  const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members"];
+  const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members", "events"];
+  const EVENTS_TAB_INDEX = TYPES_BY_TAB_VALUE.indexOf("events");
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -109,6 +111,7 @@ export default function EventsPage({
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     const tab = TYPES_BY_TAB_VALUE[newValue];
+    if (tab === "events") return;
     const base = hubUrl ? `/hubs/${hubUrl}` : "/browse";
     router.push(`${base}#${tab}`);
   };
@@ -116,9 +119,13 @@ export default function EventsPage({
   return (
     <WideLayout>
       <HubTabsNavigation
-        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+        TYPES_BY_TAB_VALUE={["projects", "organizations", "members"]}
         tabValue={-1}
-        handleTabChange={handleTabChange}
+        handleTabChange={(e, v) => {
+          const tab = ["projects", "organizations", "members"][v];
+          const base = hubUrl ? `/hubs/${hubUrl}` : "/browse";
+          router.push(`${base}#${tab}`);
+        }}
         type_names={type_names}
         hubUrl={hubUrl}
         className=""
@@ -134,6 +141,15 @@ export default function EventsPage({
         filterChoices={filterChoices}
         hubUrl={hubUrl}
       />
+      {isNarrowScreen && (
+        <MobileBottomMenu
+          tabValue={EVENTS_TAB_INDEX}
+          handleTabChange={handleTabChange}
+          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+          hubAmbassador={null}
+          hubUrl={hubUrl}
+        />
+      )}
     </WideLayout>
   );
 }

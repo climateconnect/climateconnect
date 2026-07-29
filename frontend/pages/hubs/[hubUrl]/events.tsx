@@ -14,6 +14,7 @@ import HubTabsNavigation from "../../../src/components/hub/HubTabsNavigation";
 import HubHeaderImage from "../../../src/components/hub/HubHeaderImage";
 import HubContent from "../../../src/components/hub/HubContent";
 import EventCalendarContent from "../../../src/components/eventCalendar/EventCalendarContent";
+import MobileBottomMenu from "../../../src/components/browse/MobileBottomMenu";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import {
   getHubAmbassadorData,
@@ -153,7 +154,8 @@ export default function HubEventsPage({
     contentRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members"];
+  const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members", "events"];
+  const EVENTS_TAB_INDEX = TYPES_BY_TAB_VALUE.indexOf("events");
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -162,6 +164,13 @@ export default function HubEventsPage({
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     const tab = TYPES_BY_TAB_VALUE[newValue];
+    if (tab === "events") return;
+    router.push(`/hubs/${hubUrl}/browse#${tab}`);
+  };
+
+  const BROWSE_TAB_TYPES = ["projects", "organizations", "members"];
+  const handleBrowseTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    const tab = BROWSE_TAB_TYPES[newValue];
     router.push(`/hubs/${hubUrl}/browse#${tab}`);
   };
 
@@ -205,9 +214,9 @@ export default function HubEventsPage({
         image={hubData?.image ? getImageUrl(hubData.image) : undefined}
       />
       <HubTabsNavigation
-        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+        TYPES_BY_TAB_VALUE={BROWSE_TAB_TYPES}
         tabValue={-1}
-        handleTabChange={handleTabChange}
+        handleTabChange={handleBrowseTabChange}
         type_names={type_names}
         hubUrl={hubUrl}
         className=""
@@ -225,6 +234,15 @@ export default function HubEventsPage({
           hubUrl={hubUrl}
         />
       </div>
+      {isNarrowScreen && (
+        <MobileBottomMenu
+          tabValue={EVENTS_TAB_INDEX}
+          handleTabChange={handleTabChange}
+          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+          hubAmbassador={hubAmbassador}
+          hubUrl={hubUrl}
+        />
+      )}
     </WideLayout>
   );
 }

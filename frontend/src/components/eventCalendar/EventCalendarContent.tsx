@@ -9,6 +9,8 @@ import {
   Theme,
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import TuneIcon from "@mui/icons-material/Tune";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -28,7 +30,7 @@ import { apiRequest } from "../../../public/lib/apiOperations";
 const useStyles = makeStyles((theme) => ({
   mobileSearchBar: {
     width: "100%",
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(0),
   },
   leftSearchBar: {
     width: "100%",
@@ -62,8 +64,10 @@ const useStyles = makeStyles((theme) => ({
   },
   pageContainer: {
     paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(2),
     [theme.breakpoints.down("md")]: {
       paddingTop: theme.spacing(2),
+      paddingBottom: theme.spacing(10),
     },
   },
   leftPanel: {
@@ -83,8 +87,19 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     gap: theme.spacing(3),
   },
-  mobileFilterButton: {
+  mobileFilterRow: {
+    display: "flex",
+    alignItems: "center",
     marginBottom: theme.spacing(2),
+  },
+  mobileFilterButton: {
+    borderColor: "#707070",
+    height: 40,
+    flexShrink: 0,
+    marginLeft: theme.spacing(1),
+  },
+  mobileFilterIcon: {
+    color: theme.palette.background.default_contrastText,
   },
   resetButton: {
     alignSelf: "flex-start",
@@ -256,24 +271,30 @@ export default function EventCalendarContent({
   return (
     <Container maxWidth="lg" className={classes.pageContainer}>
       {isNarrowScreen && (
-        <FilterSearchBar
-          className={classes.mobileSearchBar}
-          label={texts.search_events ?? "Search events"}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onSubmit={(_type, value) => setSearch(value)}
-          type="events"
-        />
-      )}
-
-      {isNarrowScreen && (
-        <Button
-          className={classes.mobileFilterButton}
-          variant="outlined"
-          onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-        >
-          {texts.filters ?? "Filters"}
-        </Button>
+        <div className={classes.mobileFilterRow}>
+          <FilterSearchBar
+            className={classes.mobileSearchBar}
+            label={texts.search_events ?? "Search events"}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onSubmit={(_type, value) => setSearch(value)}
+            type="events"
+          />
+          <Button
+            className={classes.mobileFilterButton}
+            variant="outlined"
+            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+            startIcon={
+              mobileFiltersOpen ? (
+                <HighlightOffIcon className={classes.mobileFilterIcon} />
+              ) : (
+                <TuneIcon className={classes.mobileFilterIcon} />
+              )
+            }
+          >
+            {texts.filters ?? "Filters"}
+          </Button>
+        </div>
       )}
 
       <div className={classes.layout}>
