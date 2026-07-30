@@ -17,10 +17,6 @@ const baseTexts = {
   back_to_parent: "Back to {parent_name}",
 };
 
-function setHistoryLength(length: number) {
-  jest.spyOn(window.history, "length", "get").mockReturnValue(length);
-}
-
 function setLocationSearch(search: string) {
   window.history.pushState({}, "", "/" + search);
 }
@@ -50,6 +46,9 @@ describe("GoBackButton", () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+    // Reset the search string set by setLocationSearch so it doesn't leak
+    // into other tests.
+    window.history.pushState({}, "", "/");
   });
 
   it("renders the go back label", () => {
@@ -57,16 +56,15 @@ describe("GoBackButton", () => {
     expect(screen.getByText("Go back")).toBeInTheDocument();
   });
 
-  it("navigates back in history when there is a previous page", () => {
-    setHistoryLength(3);
+  it("navigates back in history when the referrer is internal", () => {
+    setReferrer("http://localhost/en/browse");
     renderButton();
     fireEvent.click(screen.getByText("Go back"));
     expect(mockBack).toHaveBeenCalledTimes(1);
     expect(mockPush).not.toHaveBeenCalled();
   });
 
-  it("falls back to the browse page when there is no history", () => {
-    setHistoryLength(1);
+  it("falls back to the browse page when there is no referrer", () => {
     renderButton({ locale: "en" });
     fireEvent.click(screen.getByText("Go back"));
     expect(mockBack).not.toHaveBeenCalled();
@@ -74,15 +72,13 @@ describe("GoBackButton", () => {
   });
 
   it("falls back to the hub browse page when a hub parameter is present", () => {
-    setHistoryLength(1);
     setLocationSearch("?hub=em");
     renderButton({ locale: "en" });
     fireEvent.click(screen.getByText("Go back"));
     expect(mockPush).toHaveBeenCalledWith("/en/hubs/em/browse");
   });
 
-  it("uses the provided defaultBackUrl when there is no history", () => {
-    setHistoryLength(1);
+  it("uses the provided defaultBackUrl when there is no referrer", () => {
     renderButton({ defaultBackUrl: "/en/some-page" });
     fireEvent.click(screen.getByText("Go back"));
     expect(mockPush).toHaveBeenCalledWith("/en/some-page");
@@ -110,10 +106,43 @@ describe("GoBackButton", () => {
   });
 
   it("navigates back from the tiny screen button", () => {
-    setHistoryLength(2);
+    setReferrer("http://localhost/en/browse");
     renderButton({ tinyScreen: true });
     fireEvent.click(screen.getByRole("button"));
     expect(mockBack).toHaveBeenCalledTimes(1);
     expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it("falls back to the browse page when referrer is an external site (e.g. Google)", () => {
+    setReferrer("https://www.google.com/search?q=climate+hub");
+    renderButton({ locale: "en" });
+    fireEvent.click(screen.getByText("Go back"));
+    expect(mockBack).not.toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith("/en/browse");
+  });
+
+  it("falls back to the browse page when referrer is empty (e.g. external link opened in new tab)", () => {
+    setReferrer("");
+    renderButton({ locale: "en" });
+    fireEvent.click(screen.getByText("Go back"));
+    expect(mockBack).not.toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith("/en/browse");
+  });
+
+  it("falls back to the browse page when referrer is on a different host", () => {
+    setReferrer("http://example.com/en/browse");
+    renderButton({ locale: "en" });
+    fireEvent.click(screen.getByText("Go back"));
+    expect(mockBack).not.toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith("/en/browse");
+  });
+
+  it("falls back to the hub browse page when referrer is external and a hub param is present", () => {
+    setReferrer("https://www.google.com/search?q=climate+hub");
+    setLocationSearch("?hub=em");
+    renderButton({ locale: "en" });
+    fireEvent.click(screen.getByText("Go back"));
+    expect(mockBack).not.toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith("/en/hubs/em/browse");
   });
 });
