@@ -171,6 +171,10 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: "More upcoming events",
       de: "Weitere anstehende Veranstaltungen",
     },
+    search_events: {
+      en: "Search events",
+      de: "Veranstaltungen suchen",
+    },
   };
 
   if (hubName === "Fashion") return { ...generalHubTexts, ...getFashionHubDescription() };

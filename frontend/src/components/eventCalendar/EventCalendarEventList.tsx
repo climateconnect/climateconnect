@@ -260,7 +260,7 @@ export default function EventCalendarEventList({
             <Box key={group.key} ref={isLastGroup ? lastElementRef : undefined}>
               <div className={classes.dayHeader}>
                 <Badge
-                  badgeContent={isToday ? "Today" : null}
+                  badgeContent={isToday ? texts.today : null}
                   color="secondary"
                   className={classes.todayBadge}
                   anchorOrigin={{ vertical: "top", horizontal: "right" }}
