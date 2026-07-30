@@ -161,19 +161,19 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
     },
     upcoming_events: {
       en: "Upcoming events",
-      de: "Anstehende Veranstaltungen",
+      de: "Kommende Events",
     },
     event_calendar: {
       en: "Event Calendar",
-      de: "Event-Kalender",
+      de: "Eventkalender",
     },
     more_upcoming_events: {
       en: "More upcoming events",
-      de: "Weitere anstehende Veranstaltungen",
+      de: "Weitere anstehende Events",
     },
     search_events: {
       en: "Search events",
-      de: "Veranstaltungen suchen",
+      de: "Events suchen",
     },
   };
 
