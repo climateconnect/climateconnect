@@ -113,8 +113,17 @@ def create_new_project(data: Dict, source_language: Language) -> Project:
         project.image = get_image_from_data_url(data["image"])[0]
     if "thumbnail_image" in data:
         project.thumbnail_image = get_image_from_data_url(data["thumbnail_image"])[0]
-    if "description" in data:
+    if "description_html" in data:
+        project.description_html = data["description_html"]
+    elif "description" in data:
+        from organization.utility.legacy_description_to_tiptap import (
+            legacy_description_to_tiptap_html,
+        )
+
         project.description = data["description"]
+        project.description_html = legacy_description_to_tiptap_html(
+            data["description"]
+        )
     if "end_date" in data:
         project.end_date = data["end_date"]
     if "is_draft" in data:
@@ -179,11 +188,12 @@ def get_project_description(project: Project, language_code: str) -> str:
             language__language_code=language_code
         ).exists()
     ):
-        return project.translation_project.get(
+        translation = project.translation_project.get(
             language__language_code=language_code
-        ).description_translation
+        )
+        return translation.description_html_translation
 
-    return project.description
+    return project.description_html
 
 
 # TODO (Karol): remove ProjectTags
@@ -200,7 +210,9 @@ def get_project_translations(data: Dict):
     texts = {"name": data["name"]}
     if "short_description" in data:
         texts["short_description"] = data["short_description"]
-    if "description" in data:
+    if "description_html" in data:
+        texts["description_html"] = data["description_html"]
+    elif "description" in data:
         texts["description"] = data["description"]
     try:
         return get_translations(texts, data["translations"], data["source_language"])

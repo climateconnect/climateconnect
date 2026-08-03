@@ -261,7 +261,7 @@ export default function ProfileRoot({
           )}
         </div>
         {organizations && organizations.length > 0 ? (
-          <OrganizationPreviews organizations={organizations} hubUrl={hubUrl} />
+          <OrganizationPreviews organizations={organizations} />
         ) : (
           <Typography>
             {(isOwnAccount ? texts.you_are : texts.user_name_is) +

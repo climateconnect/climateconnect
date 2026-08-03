@@ -9,7 +9,7 @@ import {
   IconButton,
   Link,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   MenuItem,
@@ -295,6 +295,7 @@ export default function Header({
     CUSTOM_HUB_URLS,
     LOCATION_HUBS,
   } = useContext(UserContext);
+
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -457,7 +458,6 @@ function NormalScreenLinks({
   const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub && hubUrl);
-
   return (
     <Box className={classes.linkContainer}>
       {LINKS.filter(
@@ -516,11 +516,12 @@ function NormalScreenLinks({
                         </Typography>
                         <Divider />
                         {notifications && notifications.length > 0 ? (
-                          notifications.map((n, index) => (
-                            <Notification key={index} notification={n} />
-                          ))
+                          notifications.map((n, index) => {
+                            console.log("notif in map", hubUrl);
+                            return <Notification key={index} notification={n} hubUrl={hubUrl} />;
+                          })
                         ) : (
-                          <Notification key={index} isPlaceholder />
+                          <Notification key={index} isPlaceholder hubUrl={hubUrl} />
                         )}
                       </NotificationsBox>
                     )}
@@ -743,10 +744,10 @@ function NarrowScreenLinks({
                       <Divider />
                       {notifications && notifications.length > 0 ? (
                         notifications.map((n, index) => (
-                          <Notification key={index} notification={n} />
+                          <Notification key={index} notification={n} hubUrl={hubUrl} />
                         ))
                       ) : (
-                        <Notification key={index} isPlaceholder />
+                        <Notification key={index} isPlaceholder hubUrl={hubUrl} />
                       )}
                     </NotificationsBox>
                   )}
@@ -790,13 +791,13 @@ function NarrowScreenLinks({
         >
           <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <List sx={{ flexGrow: 1 }}>
-              <ListItem className={classes.languageSelectMobile}>
+              <ListItemButton className={classes.languageSelectMobile}>
                 <LanguageSelect
                   transparentHeader={transparentHeader}
                   isCustomHub={isCustomHub}
                   isLandingPage={isLandingPage}
                 />
-              </ListItem>
+              </ListItemButton>
               {LINKS.filter(
                 (link) =>
                   (!link.alwaysDisplayDirectly ||
@@ -827,12 +828,12 @@ function NarrowScreenLinks({
                         underline="hover"
                         className={classes.linkUnderline}
                       >
-                        <ListItem button onClick={closeDrawer}>
+                        <ListItemButton component="a" onClick={closeDrawer}>
                           <ListItemIcon>
                             <Icon className={classes.drawerItem} />
                           </ListItemIcon>
                           <ListItemText primary={link.text} className={classes.drawerItem} />
-                        </ListItem>
+                        </ListItemButton>
                       </Link>
                     );
                   }
@@ -871,12 +872,12 @@ function NarrowScreenLinks({
                       );
                     else if (link.isLogoutButton)
                       return (
-                        <ListItem button key={index} onClick={handleLogout}>
+                        <ListItemButton component="a" key={index} onClick={handleLogout}>
                           <ListItemIcon>
                             <Icon className={classes.drawerItem} />
                           </ListItemIcon>
                           <ListItemText primary={link.text} className={classes.drawerItem} />
-                        </ListItem>
+                        </ListItemButton>
                       );
                     else
                       return (
@@ -886,12 +887,12 @@ function NarrowScreenLinks({
                           underline="hover"
                           className={classes.linkUnderline}
                         >
-                          <ListItem button onClick={closeDrawer}>
+                          <ListItemButton component="a" onClick={closeDrawer}>
                             <ListItemIcon>
                               <Icon className={classes.drawerItem} />
                             </ListItemIcon>
                             <ListItemText primary={link.text} className={classes.drawerItem} />
-                          </ListItem>
+                          </ListItemButton>
                         </Link>
                       );
                   }
@@ -904,27 +905,27 @@ function NarrowScreenLinks({
                 underline="hover"
                 className={classes.linkUnderline}
               >
-                <ListItem button onClick={closeDrawer}>
+                <ListItemButton component="a" onClick={closeDrawer}>
                   <ListItemText primary={texts.imprint} className={classes.drawerItem} />
-                </ListItem>
+                </ListItemButton>
               </Link>
               <Link
                 href={localePrefix + "/privacy"}
                 underline="hover"
                 className={classes.linkUnderline}
               >
-                <ListItem button onClick={closeDrawer}>
+                <ListItemButton component="a" onClick={closeDrawer}>
                   <ListItemText primary={texts.privacy} className={classes.drawerItem} />
-                </ListItem>
+                </ListItemButton>
               </Link>
               <Link
                 href={localePrefix + "/terms"}
                 underline="hover"
                 className={classes.linkUnderline}
               >
-                <ListItem button onClick={closeDrawer}>
+                <ListItemButton component="a" onClick={closeDrawer}>
                   <ListItemText primary={texts.terms} className={classes.drawerItem} />
-                </ListItem>
+                </ListItemButton>
               </Link>
             </List>
           </Box>
@@ -946,13 +947,13 @@ const NarrowScreenDropdownMenu = ({
   const toggleDropdownInMobile = setOpenDropdownInMobile.bind(null, !openDropdownInMobile);
   return (
     <>
-      <ListItem button onClick={toggleDropdownInMobile}>
+      <ListItemButton component="a" onClick={toggleDropdownInMobile}>
         <ListItemIcon>
           <Icon className={classes.drawerItem} />
         </ListItemIcon>
         <ListItemText primary={link.text} className={classes.drawerItem} />
         <ArrowDropDownIcon className={classes.drawerItem} />
-      </ListItem>
+      </ListItemButton>
       <div
         className={`${classes.dropDownBgColorInMobile} ${classes.dropdownMenuInMobile} ${
           openDropdownInMobile ? classes.dropdownMenuInMobileOpen : ""
@@ -967,9 +968,9 @@ const NarrowScreenDropdownMenu = ({
               className={classes.linkUnderline}
               target={link.target || "_self"}
             >
-              <ListItem button onClick={closeDrawer}>
+              <ListItemButton component="a" onClick={closeDrawer}>
                 <ListItemText primary={link.text} className={classes.drawerItem} />
-              </ListItem>
+              </ListItemButton>
             </Link>
           );
         })}

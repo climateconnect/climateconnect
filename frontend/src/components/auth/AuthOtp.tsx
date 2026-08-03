@@ -16,7 +16,7 @@ import { trackAuthEvent } from "../../utils/analytics";
 import makeStyles from "@mui/styles/makeStyles";
 
 const SESSION_KEY = "auth_session_key";
-const RESEND_COOLDOWN_SECONDS = 60;
+const RESEND_COOLDOWN_SECONDS = 180;
 
 interface AuthOtpProps {
   email: string;
@@ -124,6 +124,12 @@ export default function AuthOtp({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleCodePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").trim().replace(/\D/g, "").slice(0, 6);
+    setCode(pasted);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -251,6 +257,7 @@ export default function AuthOtp({
         label={texts.enter_your_code || "Enter your code"}
         value={code}
         onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+        onPaste={handleCodePaste}
         inputProps={{
           maxLength: 6,
           inputMode: "numeric",
@@ -262,6 +269,10 @@ export default function AuthOtp({
         style={{ marginBottom: 16 }}
         autoFocus
       />
+
+      <Typography variant="body2" style={{ marginBottom: 16, color: "rgba(0, 0, 0, 0.6)" }}>
+        {texts.code_delivery_note}
+      </Typography>
 
       <Button
         type="submit"

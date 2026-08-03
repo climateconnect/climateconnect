@@ -5,6 +5,7 @@ from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.test import TestCase, TransactionTestCase, override_settings, tag
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APITestCase
 
 from auth_app.models import LoginAuditLog
 from climateconnect_api.models import Language, UserProfile
@@ -508,6 +509,60 @@ class MemberLocationHubFilterTest(TransactionTestCase):
         )
 
         self.assertEqual(len(slugs), 6)
+
+
+@override_settings(
+    CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+)
+class TestListMemberProfilesAPIViewPost(APITestCase):
+    """
+    Regression tests for POST location-body search on the members list endpoint.
+
+    The frontend sends the location object in the POST body. The endpoint must
+    accept POST (not 405) and route it through the existing location filter.
+    """
+
+    def setUp(self):
+        self._cache_patcher = patch("climateconnect_api.models.user.cache", MagicMock())
+        self._cache_patcher.start()
+        self.addCleanup(self._cache_patcher.stop)
+        self.url = reverse("member-profiles-api")
+        self.location = Location.objects.create(name="Munich", country="Germany")
+        for i in range(3):
+            _create_verified_member(f"member_{i}", self.location, f"member-{i}")
+
+    @tag("members")
+    def test_post_with_location_body_returns_200(self):
+        location_body = {
+            "place_id": "abc123",
+            "geojson": {"type": "Point", "coordinates": [11.0, 49.0]},
+            "osm_id": 123,
+            "osm_type": "node",
+            "lat": 49.0,
+            "lon": 11.0,
+        }
+        with patch(
+            "climateconnect_api.views.user_views.get_location_with_range"
+        ) as mock_loc:
+            from django.contrib.gis.geos import Point
+
+            mock_loc.return_value = {
+                "location": Point(11.0, 49.0),
+                "radius": 0,
+                "country": "Germany",
+            }
+            response = self.client.post(self.url, location_body, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        self.assertEqual(len(results), 3)
+
+    @tag("members")
+    def test_post_without_location_body_returns_200(self):
+        response = self.client.post(self.url, {}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json().get("results", [])
+        self.assertEqual(len(results), 3)
 
 
 _counter_login = 0

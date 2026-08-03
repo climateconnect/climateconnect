@@ -586,6 +586,30 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: `Describe your ${project?.project_type?.name} in more detail`,
       de: `Beschreibe dein ${project?.project_type?.name} detaillierter.`,
     },
+    project_description_youTube_button: {
+      en: "Insert YouTube video",
+      de: "YouTube-Video einfügen",
+    },
+    project_description_youTube_url_label: {
+      en: "YouTube URL",
+      de: "YouTube-URL",
+    },
+    project_description_youTube_url_invalid: {
+      en: "Please enter a valid YouTube URL.",
+      de: "Bitte gib eine gültige YouTube-URL ein.",
+    },
+    project_description_youTube_cancel: {
+      en: "Cancel",
+      de: "Abbrechen",
+    },
+    project_description_youTube_insert: {
+      en: "Insert",
+      de: "Einfügen",
+    },
+    project_description_character_counter: {
+      en: "characters",
+      de: "Zeichen",
+    },
     add_connections: {
       en: "Add Connections",
       de: "Connections hinzufügen",
@@ -1394,6 +1418,34 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Time Slot Select",
       de: "Zeitfenster-Auswahl",
     },
+    field_type_text: {
+      en: "Text Input",
+      de: "Texteingabe",
+    },
+    registration_text_field_title_label: {
+      en: "Title (shown to guest)",
+      de: "Titel (wird dem Gast angezeigt)",
+    },
+    registration_text_field_description_label: {
+      en: "Description (optional)",
+      de: "Beschreibung (optional)",
+    },
+    registration_text_field_multiline_label: {
+      en: "Multi-line input",
+      de: "Mehrzeilige Eingabe",
+    },
+    registration_text_field_placeholder: {
+      en: "Your answer\u2026",
+      de: "Deine Antwort\u2026",
+    },
+    registration_text_field_required_error: {
+      en: "Please answer this question.",
+      de: "Bitte beantworte diese Frage.",
+    },
+    registration_text_field_max_length_error: {
+      en: "Maximum 300 characters.",
+      de: "Maximal 300 Zeichen.",
+    },
     time_slot_title: {
       en: "Title",
       de: "Titel",
@@ -1451,8 +1503,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Option löschen",
     },
     max_registration_fields_reached: {
-      en: "Maximum of 5 fields reached",
-      de: "Maximal 5 Felder erreicht",
+      en: "Maximum of 15 fields reached",
+      de: "Maximal 15 Felder erreicht",
     },
     confirm_delete_field_title: {
       en: "Delete field?",
@@ -1593,6 +1645,19 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Team admins will also receive a copy.",
       de: "Team-Admins erhalten ebenfalls eine Kopie.",
     },
+    email_send_to_new_guests_only: {
+      en: "Send only to new guests (registered since {date})",
+      de: "Nur an neue Gäste senden (registriert seit {date})",
+    },
+    email_all_guests_will_receive: {
+      en: "All {count} active guests will receive this message.",
+      de: "Alle {count} aktiven Gäste erhalten diese Nachricht.",
+    },
+    email_new_guests_will_receive: {
+      en: "{count} of {total} guests registered since {date} will receive this message.",
+      de:
+        "{count} von {total} Gästen, die sich seit {date} registriert haben, erhalten diese Nachricht.",
+    },
     editor_bold: {
       en: "Bold",
       de: "Fett",
@@ -1647,8 +1712,8 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: "Für Veranstaltung anmelden",
     },
     register_now: {
-      en: "Register now",
-      de: "Jetzt anmelden",
+      en: "Register",
+      de: "Anmelden",
     },
     booked_out: {
       en: "Booked Out",
@@ -1841,6 +1906,18 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     cancel_registration_confirm: {
       en: "Are you sure you want to cancel your registration for {event}?",
       de: "Bist du sicher, dass du deine Anmeldung für {event} stornieren möchtest?",
+    },
+    cancellation_message_to_organizer_label: {
+      en: "Message to organizer (optional)",
+      de: "Nachricht an den Veranstalter (optional)",
+    },
+    cancellation_message_to_organizer_placeholder: {
+      en: "Tell the organizer why you're cancelling...",
+      de: "Erkläre dem Veranstalter, warum du absagst...",
+    },
+    cancellation_reason: {
+      en: "Cancellation reason",
+      de: "Stornierungsgrund",
     },
     you_attended_this_event: {
       en: "You attended this event",

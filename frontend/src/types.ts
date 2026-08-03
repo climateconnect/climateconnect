@@ -15,13 +15,14 @@ export type RegistrationFieldOption = {
 
 export type RegistrationField = {
   id?: number | null;
-  field_type: "checkbox" | "option_select" | "inventory" | "time_slot_select";
+  field_type: "checkbox" | "option_select" | "inventory" | "time_slot_select" | "text";
   order: number;
   is_required: boolean;
   label: string;
   settings: {
     description?: string;
     title?: string;
+    is_multiline?: boolean;
   };
   options?: RegistrationFieldOption[];
   has_answers?: boolean;
@@ -42,6 +43,8 @@ export type EventRegistrationData = {
   registration_enabled: boolean;
   /** Custom registration fields configured by the organiser (Phase 4a). */
   fields?: RegistrationField[];
+  /** ISO 8601 timestamp of the last bulk email sent to guests. null if never sent. */
+  last_guest_email_sent_at: string | null;
 };
 
 /** Local form state for one custom-field answer while the user is filling in the modal. */
@@ -50,6 +53,7 @@ export type RegistrationFieldAnswerValue = {
   valueBoolean?: boolean;
   valueOption?: number;
   valueNumber?: number;
+  valueText?: string;
 };
 
 /**
@@ -64,6 +68,18 @@ export type RegistrationFieldAnswer = {
   value_boolean: boolean | null;
   value_option: number | null;
   value_number: number | null;
+  value_text: string | null;
+};
+
+export type ChatMessage = {
+  id?: number;
+  content: string;
+  sender: any;
+  sent_at: string | Date;
+  updated_at?: string | Date | null;
+  unconfirmed?: boolean;
+  origin_type?: string;
+  origin_id?: number | null;
 };
 
 export type User = {
@@ -115,6 +131,7 @@ export type Project = {
   additional_loc_info?: string;
   short_description?: string;
   description?: string;
+  description_html?: string;
   creator?: User | Organization | any; //TODO: remove 'any' once User and Organization types are properly defined
   image?: string;
   hubName?: string;
@@ -152,6 +169,7 @@ export type MyEventRegistration = {
   user_thumbnail_image: string | null;
   registered_at: string;
   cancelled_at: string | null;
+  cancellation_reason?: string | null;
   field_answers: RegistrationFieldAnswer[];
 };
 
@@ -257,6 +275,17 @@ export type LocaleType = "en" | "de" | undefined;
 export interface HubData {
   landing_page_component: string;
   hub_type: string;
+  [key: string]: any;
+}
+
+/**
+ * Minimal shape of an item in the shared hubs list (from `/api/hubs/`).
+ * `url_slug` and `name` are the fields consumed app-wide; the index signature
+ * keeps the type permissive for optional fields like `icon` / `landing_page_component`.
+ */
+export interface HubListItem {
+  url_slug: string;
+  name: string;
   [key: string]: any;
 }
 

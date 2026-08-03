@@ -77,6 +77,7 @@ export default function ProjectContentSideButtons({
   hubUrl,
   eventRegistration,
   onEventRegistrationUpdated,
+  onMembersRefreshed,
 }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
@@ -107,6 +108,13 @@ export default function ProjectContentSideButtons({
   const [requesters, setRequesters] = useState([]);
   const [requestersRetrieved, setRequestersRetrieved] = useState(false);
   const queryString = hubUrl ? `?hub=${hubUrl}` : "";
+
+  const handleRequestersUpdated = async (updatedRequesters) => {
+    setRequesters(updatedRequesters);
+    if (onMembersRefreshed) {
+      await onMembersRefreshed();
+    }
+  };
 
   async function refreshRequesters() {
     // short circuit if the user doesn't have the necessary permissions to see join requests
@@ -265,7 +273,7 @@ export default function ProjectContentSideButtons({
         project={project}
         requesters={requesters}
         url=""
-        onRequestersUpdated={setRequesters}
+        onRequestersUpdated={handleRequestersUpdated}
         onClose={toggleShowRequests}
         user={user}
         loading={!requestersRetrieved}

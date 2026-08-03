@@ -346,6 +346,7 @@ export default function EventRegistrationModal({
         value_boolean?: boolean;
         value_option?: number;
         value_number?: number;
+        value_text?: string;
       }[];
     } = {};
     if (showCustomFields && answers && answers.length > 0) {
@@ -355,12 +356,14 @@ export default function EventRegistrationModal({
           value_boolean?: boolean;
           value_option?: number;
           value_number?: number;
+          value_text?: string;
         } = {
           field: a.fieldId,
         };
         if (a.valueBoolean !== undefined) entry.value_boolean = a.valueBoolean;
         if (a.valueOption !== undefined) entry.value_option = a.valueOption;
         if (a.valueNumber !== undefined) entry.value_number = a.valueNumber;
+        if (a.valueText !== undefined) entry.value_text = a.valueText;
         return entry;
       });
     }
@@ -521,6 +524,9 @@ export default function EventRegistrationModal({
               quantity_exceeds_max: texts.quantity_exceeds_max,
               please_select_time_slot: texts.please_select_time_slot,
               seats_available: texts.seats_available,
+              registration_text_field_required_error: texts.registration_text_field_required_error,
+              registration_text_field_max_length_error:
+                texts.registration_text_field_max_length_error,
             }}
           />
         </Box>

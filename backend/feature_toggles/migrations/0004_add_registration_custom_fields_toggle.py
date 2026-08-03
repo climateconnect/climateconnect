@@ -10,7 +10,7 @@ def create_registration_custom_fields_toggle(apps, schema_editor):
         defaults={
             "description": (
                 "Enables the custom registration fields UI for event organisers. "
-                "When active, organisers can add up to 5 custom fields (checkbox, "
+                "When active, organisers can add up to 10 custom fields (checkbox, "
                 "option select) to an event's registration form. All Phase 4a tasks "
                 "must be validated on staging simultaneously before flipping this to "
                 "production."
@@ -28,7 +28,6 @@ def remove_registration_custom_fields_toggle(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("feature_toggles", "0003_add_auth_unification_toggle"),
     ]

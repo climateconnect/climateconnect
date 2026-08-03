@@ -179,6 +179,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
   const classes = useStyles();
   const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "general", locale: locale });
+
   async function handleRequest(approve: boolean): Promise<void> {
     const url = `/api/projects/${project.url_slug}/request_membership/${
       approve ? "approve" : "reject"
@@ -193,6 +194,7 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
         },
         payload: {},
       });
+
       const responseMessage = approve
         ? texts.user_request_approved_successfully
         : texts.user_request_rejected_successfully;
@@ -215,7 +217,6 @@ const Requester = ({ handleUpdateRequesters, locale, project, requester, request
       console.log(e);
     }
   }
-
   return (
     <>
       <TableCell>

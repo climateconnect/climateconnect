@@ -52,6 +52,7 @@ urls = [
         name="swagger-ui",
     ),
     path("ping/", status_views.PingPongView.as_view(), name="ping-pong-api"),
+    path("api/version/", status_views.BuildInfoView.as_view(), name="build-info-api"),
     # User views
     path("login/", user_views.LoginView.as_view(), name="login-api"),
     path("logout/", knox_views.LogoutView.as_view(), name="logout-api"),

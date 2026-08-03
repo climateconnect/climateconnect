@@ -24,7 +24,7 @@ type CalendarEvent = {
 };
 
 function getEventDescription(event: CalendarEvent): string | undefined {
-  return event.description || event.short_description || undefined;
+  return event.short_description || undefined;
 }
 
 export function buildGoogleCalendarUrl(event: CalendarEvent, eventUrl: string): string {

@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import {
   WASSERAKTIONSWOCHEN_PATH,
   getWasseraktionswochenUrl,
-} from "../../../../public/data/wasseraktionswochen_config.js";
+} from "../../../public/data/wasseraktionswochen_config.js";
 
 type StyleProps = {
   hubSlug?: string;
@@ -35,13 +35,14 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
   }),
 }));
 
-export default function GoBackFromProjectPageButton({
+export default function GoBackButton({
   texts,
   tinyScreen,
   locale,
   containerClassName,
   hubSlug,
   project,
+  defaultBackUrl,
 }: any) {
   const classes = useStyles({ hubSlug: hubSlug });
   const router = useRouter();
@@ -67,26 +68,36 @@ export default function GoBackFromProjectPageButton({
     }
   }, [project?.parent_project_slug, project?.parent_project_name, texts, locale]);
 
-  const goBack = () => {
+  const getDefaultBackUrl = () => {
+    if (defaultBackUrl) {
+      return defaultBackUrl;
+    }
     const urlParams = new URLSearchParams(window.location.search);
     const hubPage = urlParams.get("hub");
 
-    let backUrl;
+    // If hub parameter exists, go to hub browse page
+    if (hubPage) {
+      return "/" + locale + "/hubs/" + hubPage + "/browse";
+    }
+    // Default to general browse page
+    return "/" + locale + "/browse";
+  };
 
-    // Priority 1: If user came from special event page, go back there
+  const goBack = () => {
+    // Priority 1: If user came from a special event page, go back there
     if (specialEventPagePath) {
-      backUrl = specialEventPagePath;
-    }
-    // Priority 2: If hub parameter exists, go to hub browse page
-    else if (hubPage) {
-      backUrl = "/" + locale + "/hubs/" + hubPage + "/browse";
-    }
-    // Priority 3: Default to general browse page
-    else {
-      backUrl = "/" + locale + "/browse";
+      router.push(specialEventPagePath);
+      return;
     }
 
-    router.push(backUrl);
+    // Priority 2: Go back to the page the user actually came from, acting like
+    // the browser back button. Only fall back to a hard-coded url when there is
+    // no previous history (e.g. the user opened the page directly).
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(getDefaultBackUrl());
+    }
   };
 
   if (tinyScreen)

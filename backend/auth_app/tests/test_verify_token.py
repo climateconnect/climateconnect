@@ -77,6 +77,13 @@ class VerifyTokenViewTest(TestCase):
         )
         self.assertIsNotNone(log)
 
+    def test_code_with_surrounding_whitespace_returns_token_and_user(self):
+        user = _make_user("ws@example.com")
+        token = _make_token(user, "ws@example.com")
+        resp = _post(self.client, token.session_key, "  {} \n".format(RAW_CODE))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(AuthToken.objects.filter(user=user).exists())
+
     def test_expired_token_returns_401_expired(self):
         user = _make_user("exp@example.com")
         token = _make_token(user, "exp@example.com", expired=True)

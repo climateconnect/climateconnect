@@ -1,4 +1,4 @@
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
@@ -21,14 +21,13 @@ export default function OrganizationPreviews({
   loadFunc,
   organizations,
   parentHandlesGridItems,
-  hubUrl,
   isLoading = false,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const toOrganizationPreviews = (organizations) =>
-    organizations.map((o) => <GridItem key={o.url_slug} organization={o} hubUrl={hubUrl} />);
+    organizations.map((o) => <GridItem key={o.url_slug} organization={o} />);
 
   const [gridItems, setGridItems] = useState(toOrganizationPreviews(organizations));
 
@@ -61,17 +60,14 @@ export default function OrganizationPreviews({
           return (
             <Grid
               key={organization.props?.organization?.url_slug || organization.url_slug}
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
+              size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
               component="li"
               ref={isLastElement ? lastElementRef : null}
             >
               {organization.props ? (
                 organization
               ) : (
-                <OrganizationPreview organization={organization} hubUrl={hubUrl} />
+                <OrganizationPreview organization={organization} />
               )}
             </Grid>
           );
@@ -82,6 +78,6 @@ export default function OrganizationPreviews({
   );
 }
 
-function GridItem({ organization, hubUrl }) {
-  return <OrganizationPreview organization={organization} hubUrl={hubUrl} />;
+function GridItem({ organization }) {
+  return <OrganizationPreview organization={organization} />;
 }

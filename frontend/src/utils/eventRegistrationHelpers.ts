@@ -132,6 +132,11 @@ export function validateRegistrationFields(
         result.errors[fieldKey] = requiredText;
         result.hasError = true;
       }
+    } else if (field.field_type === "text") {
+      if (!settings.title || !settings.title.trim()) {
+        result.errors[fieldKey] = requiredText;
+        result.hasError = true;
+      }
     } else if (
       field.field_type === "option_select" ||
       field.field_type === "inventory" ||

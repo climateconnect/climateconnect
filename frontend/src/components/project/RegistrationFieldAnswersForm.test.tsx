@@ -20,6 +20,8 @@ const texts = {
   quantity_exceeds_max: "Quantity exceeds max",
   please_select_time_slot: "Please select a time slot",
   seats_available: "seats available",
+  registration_text_field_required_error: "Please answer this question.",
+  registration_text_field_max_length_error: "Maximum 300 characters.",
 };
 
 function makeCheckboxField(overrides: Partial<RegistrationField> = {}): RegistrationField {

@@ -9,6 +9,8 @@ type Args = {
   handleSetProjectData: Function;
   className?: any;
   hideHelperText?: boolean;
+  helperText?: string;
+  error?: boolean;
   locationInputRef?: any;
   locationOptionsOpen?: boolean;
   handleSetLocationOptionsOpen?: Function;
@@ -20,6 +22,8 @@ export default function ProjectLocationSearchBar({
   handleSetProjectData,
   className,
   hideHelperText,
+  helperText,
+  error,
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
@@ -79,8 +83,11 @@ export default function ProjectLocationSearchBar({
       className={className}
       label={texts.location}
       helperText={
-        hideHelperText ? null : propsByProjectType[projectData.project_type.type_id]?.helperText
+        hideHelperText
+          ? null
+          : helperText ?? propsByProjectType[projectData.project_type.type_id]?.helperText
       }
+      error={!!error}
       enableExactLocation
       value={projectData.loc}
       onChange={handleChangeLocationString}

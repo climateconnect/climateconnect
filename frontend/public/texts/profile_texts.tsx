@@ -483,6 +483,12 @@ export default function getProfileTexts({ profile, hubName, locale }) {
       en: "Too many attempts. Please try again later.",
       de: "Zu viele Versuche. Bitte versuche es später erneut.",
     },
+    code_delivery_note: {
+      en:
+        "Haven't received an email yet? It may take a few minutes—especially when logging in for the first time. In the meantime, feel free to check your spam folder. You'll be able to resend it shortly.",
+      de:
+        "Noch keine E-Mail angekommen? Das kann – besonders beim ersten Login – ein paar Minuten dauern. Schau in der Zwischenzeit gern im Spam-Ordner nach. Ein erneuter Versand ist in Kürze möglich.",
+    },
     // --- Signup Flow ---
     create_your_account: {
       en: "Create your account",

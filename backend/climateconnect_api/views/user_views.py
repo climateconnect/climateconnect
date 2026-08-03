@@ -415,6 +415,28 @@ class ListMemberProfilesView(ListAPIView):
 
         return user_profiles
 
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests for search functionality.
+
+        Mirrors ListProjectsView.post(): the frontend sends the location object
+        in the request body. When present (place_id + geojson), inject it into
+        query_params so the existing get_queryset() location filter works.
+
+        NOTE: this method intentionally does not touch dispatch() so the
+        @cache_page decorator stays effective for GET responses.
+        """
+        location = request.data
+
+        query_params = request.query_params.copy()
+
+        if "place_id" in location and "geojson" in location:
+            query_params["location"] = location
+
+        request._request.GET = query_params
+
+        return self.list(request, *args, **kwargs)
+
 
 class MemberProfileView(APIView):
     permission_classes = [AllowAny]

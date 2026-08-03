@@ -10,7 +10,6 @@ import PageNotFound from "../../../src/components/general/PageNotFound";
 import WideLayout from "../../../src/components/layouts/WideLayout";
 import ProjectPageRoot from "../../../src/components/project/ProjectPageRoot";
 import HubsSubHeader from "../../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
-import { getAllHubs } from "../../../public/lib/hubOperations";
 import { useMediaQuery } from "@mui/material";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import { Theme } from "@mui/material/styles";
@@ -22,6 +21,7 @@ import theme from "../../../src/themes/theme";
 import { NOTIFICATION_TYPES } from "../../../src/components/communication/notifications/Notification";
 import { getProjectTypeOptions } from "../../../public/lib/getOptions";
 import BrowseContext from "../../../src/components/context/BrowseContext";
+import { HubContext } from "../../../src/components/context/HubContext";
 import { parseData } from "../../../public/lib/parsingOperations";
 import {
   WASSERAKTIONSWOCHEN_PARENT_SLUG,
@@ -89,7 +89,6 @@ export async function getServerSideProps(ctx) {
     posts,
     comments,
     userInteractions,
-    hubs,
     similarProjects,
     hubSupporters,
     hubThemeData,
@@ -99,7 +98,6 @@ export async function getServerSideProps(ctx) {
     getPostsByProject(projectUrl, auth_token, ctx.locale),
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
-    getAllHubs(ctx.locale),
     getSimilarProjects(projectUrl, ctx.locale, hubUrl),
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
@@ -132,7 +130,6 @@ export async function getServerSideProps(ctx) {
       isRegistered: userInteractions.is_registered ?? false,
       hasAttended: userInteractions.has_attended ?? false,
       adminCancelled: userInteractions.admin_cancelled ?? false,
-      hubs: hubs,
       similarProjects: similarProjects,
       hubSupporters: hubSupporters,
       hubUrl,
@@ -154,7 +151,6 @@ export default function ProjectPage({
   isRegistered,
   hasAttended,
   adminCancelled,
-  hubs,
   similarProjects,
   hubSupporters,
   hubUrl,
@@ -164,6 +160,7 @@ export default function ProjectPage({
 }) {
   const token = new Cookies().get("auth_token");
   const [curComments, setCurComments] = useState(parseComments(comments));
+  const [currentMembers, setCurrentMembers] = useState(members);
   const [message, setMessage] = useState({ message: undefined, messageType: undefined });
   const [isUserFollowing, setIsUserFollowing] = useState(following);
   const [isUserLiking, setIsUserLiking] = useState(liking);
@@ -173,6 +170,7 @@ export default function ProjectPage({
   const [numberOfLikes, setNumberOfLikes] = useState(project?.number_of_likes);
   const [numberOfFollowers, setNumberOfFollowers] = useState(project?.number_of_followers);
   const { CUSTOM_HUB_URLS, locale, user } = useContext(UserContext);
+  const { hubs } = useContext(HubContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = useState(true);
   const [projectTypes, setProjectTypes] = useState([]);
@@ -248,6 +246,13 @@ export default function ProjectPage({
     setRequestedToJoinProject(newValue);
   };
 
+  const refreshMembers = async () => {
+    const updatedMembers = await getProjectMembersByIdIfExists(project.url_slug, locale);
+    if (updatedMembers) {
+      setCurrentMembers(updatedMembers);
+    }
+  };
+
   const handleWindowClose = (e) => {
     if (
       curComments.filter((c) => c.unconfirmed).length > 0 ||
@@ -267,7 +272,6 @@ export default function ProjectPage({
     };
   });
 
-  const tinyScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
   const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
 
@@ -279,17 +283,13 @@ export default function ProjectPage({
       title={project ? project.name : texts.project + " " + texts.not_found}
       showDonationGoal={true}
       subHeader={
-        !tinyScreen ? (
-          <HubsSubHeader
-            hubs={hubs}
-            onlyShowDropDown={true}
-            isCustomHub={isCustomHub}
-            hubSlug={hubUrl}
-            project={project}
-          />
-        ) : (
-          <></>
-        )
+        <HubsSubHeader
+          hubs={hubs}
+          onlyShowDropDown={true}
+          isCustomHub={isCustomHub}
+          hubSlug={hubUrl}
+          project={project}
+        />
       }
       customTheme={customTheme}
       isHubPage={!!hubUrl}
@@ -306,7 +306,7 @@ export default function ProjectPage({
               <ProjectPageRoot
                 project={{
                   ...project,
-                  team: members,
+                  team: currentMembers,
                   timeline_posts: posts,
                   comments: curComments,
                 }}
@@ -326,6 +326,7 @@ export default function ProjectPage({
                 showSimilarProjects={showSimilarProjects}
                 requestedToJoinProject={requestedToJoinProject}
                 handleJoinRequest={handleJoinRequest}
+                onMembersRefreshed={refreshMembers}
                 hubSupporters={hubSupporters}
                 hubPage={hubUrl}
                 siblingProjects={siblingProjects}
@@ -349,6 +350,7 @@ export default function ProjectPage({
                   hubName={hubUrl}
                   isSmallScreen={false}
                   registeredEventSlugs={registeredEventSlugs}
+                  hubUrl={hubUrl}
                 />
               )}
             </div>
@@ -534,7 +536,7 @@ function parseProject(project) {
     url_slug: project.url_slug,
     image: project.image,
     location: project.location,
-    description: project.description,
+    description_html: project.description_html,
     short_description: project.short_description,
     collaborators_welcome: project.collaborators_welcome,
     start_date: project.start_date,

@@ -57,6 +57,7 @@ type EventRegistration = {
   registered_at: string;
   /** null = active registration; ISO string = cancelled */
   cancelled_at: string | null;
+  cancellation_reason: string | null;
   /** Custom-field answers (Phase 4a). Empty array if none. */
   field_answers: RegistrationFieldAnswer[];
 };
@@ -384,9 +385,9 @@ export default function ProjectRegistrationsContent({
         sortable: false,
         filterable: false,
         disableColumnMenu: true,
-        valueGetter: (params) => {
-          const row = params.row as EventRegistration;
-          const answerForField = row.field_answers.find((a) => a.field === field.id);
+        valueGetter: (_value, row) => {
+          const typedRow = row as EventRegistration;
+          const answerForField = typedRow.field_answers.find((a) => a.field === field.id);
           const cols = resolveAnswerToStrings(field, answerForField, locale);
           return cols[i]?.value ?? "";
         },
@@ -534,14 +535,9 @@ export default function ProjectRegistrationsContent({
                     type: "dateTime",
                     flex: 1,
                     minWidth: 160,
-                    valueGetter: (params) =>
-                      params.value ? new Date(params.value as string) : null,
-                    valueFormatter: (params) =>
-                      params.value
-                        ? dayjs(params.value as Date)
-                            .locale(locale)
-                            .format("DD MMM YYYY, HH:mm")
-                        : "—",
+                    valueGetter: (value) => (value ? new Date(value as string) : null),
+                    valueFormatter: (value: Date | null) =>
+                      value ? dayjs(value).locale(locale).format("DD MMM YYYY, HH:mm") : "—",
                   },
                   {
                     // Hidden column — ISO 8601 registration timestamp for CSV export
@@ -551,8 +547,8 @@ export default function ProjectRegistrationsContent({
                     sortable: false,
                     filterable: false,
                     disableColumnMenu: true,
-                    valueGetter: (params) =>
-                      params.row.registered_at ? params.row.registered_at.split(".")[0] + "Z" : "",
+                    valueGetter: (_value, row) =>
+                      row.registered_at ? row.registered_at.split(".")[0] + "Z" : "",
                   },
                   {
                     field: "cancelled_at",
@@ -560,8 +556,8 @@ export default function ProjectRegistrationsContent({
                     width: 120,
                     sortable: true,
                     disableColumnMenu: true,
-                    valueFormatter: (params) =>
-                      params.value
+                    valueFormatter: (value: string | null) =>
+                      value
                         ? (texts.registration_status_cancelled as string)
                         : (texts.registration_status_active as string),
                     renderCell: (params) => {
@@ -602,8 +598,18 @@ export default function ProjectRegistrationsContent({
                     sortable: false,
                     filterable: false,
                     disableColumnMenu: true,
-                    valueGetter: (params) =>
-                      params.row.cancelled_at ? params.row.cancelled_at.split(".")[0] + "Z" : "",
+                    valueGetter: (_value, row) =>
+                      row.cancelled_at ? row.cancelled_at.split(".")[0] + "Z" : "",
+                  },
+                  {
+                    // Hidden column — cancellation reason for CSV export
+                    field: "cancellation_reason",
+                    headerName: "Cancellation reason",
+                    width: 0,
+                    sortable: false,
+                    filterable: false,
+                    disableColumnMenu: true,
+                    valueGetter: (value: string | null) => value ?? "",
                   },
                   ...customFieldColumns,
                   {
@@ -616,7 +622,8 @@ export default function ProjectRegistrationsContent({
                     disableColumnMenu: true,
                     renderCell: (params) => {
                       const row = params.row as EventRegistration;
-                      const showViewIcon = (row.field_answers?.length ?? 0) > 0;
+                      const showViewIcon =
+                        (row.field_answers?.length ?? 0) > 0 || !!row.cancellation_reason;
                       const showMenu = !row.cancelled_at;
                       if (!showViewIcon && !showMenu) return null;
                       return (
@@ -652,6 +659,7 @@ export default function ProjectRegistrationsContent({
                   columnVisibilityModel: {
                     registered_at_iso: false,
                     cancelled_at_iso: false,
+                    cancellation_reason: false,
                     ...Object.fromEntries(customFieldColumnNames.map((name) => [name, false])),
                   },
                 },
@@ -686,6 +694,7 @@ export default function ProjectRegistrationsContent({
                     "registered_at_iso",
                     "cancelled_at",
                     "cancelled_at_iso",
+                    "cancellation_reason",
                     ...customFieldColumnNames,
                   ],
                   printFields: ["user_first_name", "user_last_name", ...customFieldColumnNames],
@@ -703,6 +712,13 @@ export default function ProjectRegistrationsContent({
                 border: "none",
                 "& .registration-row--cancelled": {
                   color: "text.disabled",
+                },
+                "& .MuiDataGrid-cell": {
+                  display: "flex",
+                  alignItems: "center",
+                },
+                "& .MuiDataGrid-columnSeparator": {
+                  display: "none",
                 },
               }}
             />
@@ -738,6 +754,8 @@ export default function ProjectRegistrationsContent({
         onClose={() => setEmailModalOpen(false)}
         project={project}
         activeGuestCount={participants.filter((p) => p.cancelled_at === null).length}
+        lastGuestEmailSentAt={eventRegistration.last_guest_email_sent_at ?? null}
+        registrations={participants}
       />
 
       <CancelGuestRegistrationModal

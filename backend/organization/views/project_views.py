@@ -1,13 +1,17 @@
 import logging
+import re
 import traceback
+import zoneinfo
 
 from dateutil.parser import parse
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models.functions import Distance
 from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Case, Prefetch, Q, When
+from datetime import datetime
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
@@ -32,6 +36,11 @@ from climateconnect_api.tasks import calculate_project_rankings
 from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_api.utility.translation import (
     edit_translations,
+)
+from climateconnect_api.utility.html import (
+    sanitize_html,
+    PROJECT_DESCRIPTION_ALLOWED_TAGS,
+    PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
 )
 from climateconnect_main.utility.general import get_image_from_data_url
 from hubs.models.hub import Hub
@@ -417,6 +426,196 @@ class ListProjectsView(ListAPIView):
         return context
 
 
+class ListEventsView(ListAPIView):
+    """
+    Lists event-type projects chronologically for the Event Calendar feature.
+
+    Always available (no feature toggle). Supports text search, topic (sectors),
+    hub scoping, and a start_date "jump to date" filter. Paginated via
+    ProjectsPagination (default page_size=12). Orders strictly by start_date.
+    """
+
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ["name", "translation_project__name_translation"]
+    serializer_class = ProjectStubSerializer
+    pagination_class = ProjectsPagination
+
+    def get_queryset(self):
+        queryset = (
+            Project.objects.filter(
+                is_draft=False,
+                is_active=True,
+                project_type=ProjectTypesChoices.event,
+                start_date__isnull=False,
+            )
+            .select_related("loc", "language", "status", "registration_config")
+            .prefetch_related(
+                "loc__translate_location__language",
+                Prefetch(
+                    "project_sector_mapping",
+                    queryset=ProjectSectorMapping.objects.select_related("sector"),
+                ),
+            )
+        )
+
+        # --- Jump-to-date filter ---
+        start_date = self._parse_date_param(self.request.query_params.get("start_date"))
+        if start_date is not None:
+            queryset = queryset.filter(start_date__gte=start_date)
+
+        # --- Topic (sectors) filter ---
+        if "sectors" in self.request.query_params:
+            _sector_names = self.request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
+            if not err:
+                queryset = queryset.filter(
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
+                )
+
+        # --- Hub scoping ---
+        if "hub" in self.request.query_params:
+            queryset = apply_hub_filter(queryset, self.request.query_params["hub"])
+
+        # The sector filter joins project_sector_mapping, which can produce
+        # multiple rows for a single event (e.g. an event matching several
+        # selected topics, or a topic and its parent sector). Deduplicate so
+        # each event is returned exactly once.
+        return queryset.distinct().order_by("start_date")
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        _context = create_context_for_hub_specific_sector(self.request)
+        context.update({**_context})
+        return context
+
+    @staticmethod
+    def _parse_date_param(value):
+        if not value:
+            return None
+        try:
+            return parse(value)
+        except (ValueError, OverflowError):
+            return None
+
+
+class EventCalendarCountsView(APIView):
+    """
+    Returns per-day event counts for a given month so the Event Calendar
+    picker can highlight days that have events.
+
+    Always available (no feature toggle). Accepts `year` and `month`
+    (required) plus the same filters as ListEventsView (`search`, `sectors`,
+    `hub`). An optional `timezone` param (IANA name, e.g. "Europe/Berlin")
+    controls the day the counts are bucketed into — this must match the
+    viewer's timezone so the highlighted days line up with the events that
+    the frontend groups by the browser's local day. When omitted, the
+    server's timezone is used as a fallback.
+
+    Each event is counted on its start_date day only (multi-day events are
+    NOT counted on the days they span). Returns a list of
+    {"date": "YYYY-MM-DD", "count": N} objects.
+    """
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            year = int(request.query_params.get("year"))
+            month = int(request.query_params.get("month"))
+        except (TypeError, ValueError):
+            return Response(
+                {"error": "year and month query parameters are required as integers"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not (1 <= month <= 12):
+            return Response(
+                {"error": "month must be an integer between 1 and 12"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Bucket per-day counts in the viewer's timezone so the highlighted
+        # days match the browser-local day grouping used on the frontend.
+        tz = self._resolve_timezone(request.query_params.get("timezone"))
+
+        # Build the month window in the viewer's timezone, then convert to UTC
+        # for the database overlap query. This keeps the window aligned with
+        # the local month the user actually sees in the picker (not the
+        # server's timezone).
+        month_start_local = datetime(year, month, 1, tzinfo=tz)
+        month_end_local = (
+            month_start_local + relativedelta(months=1) - relativedelta(days=1)
+        ).replace(hour=23, minute=59, second=59)
+        month_start = month_start_local.astimezone(timezone.utc)
+        month_end = month_end_local.astimezone(timezone.utc)
+
+        queryset = Project.objects.filter(
+            is_draft=False,
+            is_active=True,
+            project_type=ProjectTypesChoices.event,
+            start_date__isnull=False,
+        ).filter(
+            # Count each event on its start_date day only: the calendar shows
+            # a multi-day event solely on its start date, so spanned days are
+            # not highlighted.
+            Q(start_date__gte=month_start)
+            & Q(start_date__lte=month_end)
+        )
+
+        search = request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search)
+                | Q(translation_project__name_translation__icontains=search)
+            )
+
+        if "sectors" in request.query_params:
+            _sector_names = request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
+            if not err:
+                queryset = queryset.filter(
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
+                )
+
+        if "hub" in request.query_params:
+            queryset = apply_hub_filter(queryset, request.query_params["hub"])
+
+        # Deduplicate: the sector filter joins project_sector_mapping and can
+        # yield multiple rows per event (matching several topics, or a topic
+        # and its parent sector). Without this, multi-topic events would be
+        # counted more than once on their start day.
+        queryset = queryset.distinct()
+
+        counts = {}
+        for start_date in queryset.values_list("start_date", flat=True):
+            # Bucket each event on its start_date, converted into the viewer's
+            # timezone so the highlighted day matches the frontend's local day
+            # grouping. Multi-day events are counted on the start day only.
+            key = start_date.astimezone(tz).date().isoformat()
+            counts[key] = counts.get(key, 0) + 1
+
+        result = [
+            {"date": date, "count": count} for date, count in sorted(counts.items())
+        ]
+        return Response(result, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def _resolve_timezone(timezone_name):
+        if timezone_name:
+            try:
+                return zoneinfo.ZoneInfo(timezone_name)
+            except (ValueError, zoneinfo.ZoneInfoNotFoundError):
+                pass
+        return timezone.get_current_timezone()
+
+
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -466,6 +665,7 @@ class CreateProjectView(APIView):
             "name": 1024,
             "short_description": 280,
             "description": 4800,
+            "description_html": 20000,
             "website": 256,
             "additional_loc_info": 256,
         }
@@ -476,6 +676,16 @@ class CreateProjectView(APIView):
                         "message": "Your value for this field is too long: "
                         + param
                         + ". Please make a change or contact an administrator at contact@climateconnect.earth"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        if "description_html" in request.data:
+            stripped = re.sub(r"<[^>]+>", "", request.data["description_html"])
+            if len(stripped) > 4000:
+                return Response(
+                    {
+                        "message": "Your description text is too long (max 4000 characters). Please shorten it."
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -514,6 +724,14 @@ class CreateProjectView(APIView):
                         request.data["status"]
                     )
                 }
+            )
+
+        # Sanitize description_html before saving
+        if "description_html" in request.data:
+            request.data["description_html"] = sanitize_html(
+                request.data["description_html"],
+                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
             )
 
         translations_object = None
@@ -562,6 +780,12 @@ class CreateProjectView(APIView):
                             translation.short_description_translation = texts[
                                 "short_description"
                             ]
+                        if "description_html" in texts:
+                            translation.description_html_translation = sanitize_html(
+                                texts["description_html"],
+                                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                            )
                         if "description" in texts:
                             translation.description_translation = texts["description"]
                         translation.save()
@@ -777,6 +1001,7 @@ class ProjectAPIView(APIView):
             "collaborators_welcome",
             "additional_loc_info",
             "description",
+            "description_html",
             "helpful_connections",
             "is_online",
             "short_description",
@@ -785,6 +1010,38 @@ class ProjectAPIView(APIView):
         for param in pass_through_params:
             if param in request.data:
                 setattr(project, param, request.data[param])
+
+        # Rollout compat: old frontend may send description (plain text) without
+        # description_html.  Convert on the fly so description_html is always set.
+        if "description" in request.data and "description_html" not in request.data:
+            from organization.utility.legacy_description_to_tiptap import (
+                legacy_description_to_tiptap_html,
+            )
+
+            project.description_html = legacy_description_to_tiptap_html(
+                request.data["description"]
+            )
+
+        if "description_html" in request.data:
+            raw = request.data["description_html"]
+            if len(raw) > 20000:
+                return Response(
+                    {"message": "Description HTML is too long (max 20000 characters)."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            stripped = re.sub(r"<[^>]+>", "", raw)
+            if len(stripped) > 4000:
+                return Response(
+                    {
+                        "message": "Your description text is too long (max 4000 characters). Please shorten it."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            project.description_html = sanitize_html(
+                raw,
+                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+            )
 
         if "name" in request.data and request.data["name"] != project.name:
             project.name = request.data["name"]
@@ -957,6 +1214,10 @@ class ProjectAPIView(APIView):
                 "translation_key": "short_description_translation",
             },
             {"key": "description", "translation_key": "description_translation"},
+            {
+                "key": "description_html",
+                "translation_key": "description_html_translation",
+            },
             {
                 "key": "helpful_connections",
                 "translation_key": "helpful_connections_translation",

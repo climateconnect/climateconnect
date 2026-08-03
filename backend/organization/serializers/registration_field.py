@@ -68,11 +68,28 @@ class TimeSlotSettingsSerializer(serializers.Serializer):
     )
 
 
+class TextFieldSettingsSerializer(serializers.Serializer):
+    """
+    Settings serializer for text fields.
+
+    title is the user-facing question prompt (required on publish).
+    description is optional helper text shown below the input.
+    is_multiline controls whether the input renders as a textarea.
+    """
+
+    title = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    description = serializers.CharField(
+        max_length=500, required=False, allow_blank=True, default=""
+    )
+    is_multiline = serializers.BooleanField(required=False, default=False)
+
+
 FIELD_TYPE_SETTINGS_VALIDATORS = {
     RegistrationFieldType.CHECKBOX: CheckboxSettingsSerializer,
     RegistrationFieldType.OPTION_SELECT: OptionSelectSettingsSerializer,
     RegistrationFieldType.INVENTORY: InventorySettingsSerializer,
     RegistrationFieldType.TIME_SLOT_SELECT: TimeSlotSettingsSerializer,
+    RegistrationFieldType.TEXT: TextFieldSettingsSerializer,
 }
 
 
@@ -367,6 +384,16 @@ class RegistrationFieldSerializer(serializers.ModelSerializer):
                                 }
                             }
                         )
+            elif field_type == RegistrationFieldType.TEXT:
+                title = (attrs.get("settings") or {}).get("title", "")
+                if not title or not title.strip():
+                    raise serializers.ValidationError(
+                        {"settings": {"title": "Required when publishing an event."}}
+                    )
+                if attrs.get("options"):
+                    raise serializers.ValidationError(
+                        {"options": ("Text fields do not accept options.")}
+                    )
 
         return attrs
 

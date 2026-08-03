@@ -2,9 +2,12 @@ import { Theme } from "@emotion/react";
 import { Container, Link, Tab, Tabs, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useMemo, useState } from "react";
+import { useRouter } from "next/router";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
+import { useFeatureToggles } from "../featureToggle";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { getCustomHubData } from "../../../public/data/customHubData";
@@ -42,15 +45,29 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   path: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     fontWeight: 600,
   },
   link: {
-    color: "white",
+    color: theme.palette.primary.contrastText,
     display: "inline-block",
     fontWeight: 600,
     marginRight: theme.spacing(2),
     marginLeft: theme.spacing(2),
+  },
+  activeEventLink: {
+    color: theme.palette.primary.main,
+    background: theme.palette.primary.contrastText,
+    borderRadius: 15,
+    padding: "3px 12px",
+    fontWeight: 600,
+    display: "inline-flex",
+    alignItems: "center",
+    marginRight: theme.spacing(2),
+    marginLeft: theme.spacing(2),
+    "&:hover": {
+      textDecoration: "none",
+    },
   },
   flexContainer: {
     display: "flex",
@@ -118,6 +135,10 @@ export default function HubTabsNavigation({
   const classes = useStyles();
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const router = useRouter();
+  const { isEnabled } = useFeatureToggles();
+  const isEventsEnabled = isEnabled("EVENT_CALENDAR_FEATURE");
+  const isEventsPage = router.pathname.includes("events");
 
   // Computed values
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -224,6 +245,15 @@ export default function HubTabsNavigation({
       <Container maxWidth="lg" className={classes.container}>
         <div className={classes.linksAndTabsWrapper}>
           {renderTabs()}
+          {isEventsEnabled && (
+            <Link
+              className={isEventsPage ? classes.activeEventLink : classes.link}
+              href={`${getLocalePrefix(locale)}${hubUrl ? `/hubs/${hubUrl}/events` : "/events"}`}
+              underline={isEventsPage ? "none" : "hover"}
+            >
+              {texts.event_calendar ?? "Event calendar"}
+            </Link>
+          )}
           {isEmmendingenHub && (
             <Link
               className={classes.climateMatchLink}

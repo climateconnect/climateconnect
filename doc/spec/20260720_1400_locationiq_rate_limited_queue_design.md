@@ -140,7 +140,7 @@ if created:
         _store_result(redis_conn, key, job_id, results, provider)  # shared writer, see below
         redis_conn.zrem("locationiq:pending_jobs", key)            # don't leak the backpressure slot
         if results is not None:
-            _increment_counters(provider)
+            log_autocomplete_request(provider)
         return Response(results or [], status=200)
 
 return Response({"status": "pending"}, status=202)
@@ -176,7 +176,7 @@ def fetch_autocomplete(key, job_id, q, countrycodes, accept_language):
     _store_result(redis_conn, key, job_id, results, provider)  # short TTL on failure (Gap #7)
     redis_conn.zrem("locationiq:pending_jobs", key)
     if results is not None:
-        _increment_counters(provider)
+        log_autocomplete_request(provider)
 ```
 
 `_store_result` (shown above under the view) applies `RESULT_TTL_S` to a real result but only
@@ -193,7 +193,10 @@ user-facing, time-sensitive request.
 
 ## Backend Changes
 
-- `location/tasks.py`: add `fetch_autocomplete` as above.
+- `location/tasks.py`: add `fetch_autocomplete` as above, plus
+  `log_autocomplete_request(provider)` — a single `NominatimRequestLog` INSERT per upstream call.
+  Aggregation into `NominatimPeriodStats` is left to the existing `aggregate_nominatim_stats` Beat
+  task (see "Request Tracking" below).
 - `climateconnect_main/settings.py`:
   - `CELERY_TASK_ROUTES = {"location.tasks.fetch_autocomplete": {"queue": "lookup"}}`
   - `LOCATIONIQ_PENDING_CAP = 16`
@@ -375,8 +378,35 @@ user-facing, time-sensitive request.
   matter here — likely a non-issue given no single request is held open, but unverified since no
   such config exists in this repo.
 
+## Request Tracking (added 2026-08-03)
+
+`master` refactored request tracking while this branch was in flight: `NominatimRequestLog` is now
+one row per request with a `processed` flag, and a Beat task (`aggregate_nominatim_stats`, every
+10 min) rolls those rows into `NominatimPeriodStats`. This design adopts that model rather than the
+synchronous per-request upsert the branch originally carried:
+
+- `log_autocomplete_request(provider)` writes one row per **upstream** call — so the counters track
+  actual provider quota consumption, not incoming HTTP requests (cache hits and deduped queries
+  cost nothing and are correctly invisible). `LOCATIONIQ_DAILY_BUDGET` reads the same rows, so the
+  budget is likewise measured in upstream calls.
+- `aggregate_nominatim_stats` buckets by `(period_type, period_key, provider)`, giving one
+  `NominatimPeriodStats` row per provider per period.
+- `peak_req_per_second` keeps master's meaning — the highest number of requests that arrived within
+  a single second — now counted **per provider**, which is what makes it usable for watching
+  LocationIQ's 2 req/s ceiling. (Nominatim fallback traffic in the same second must not inflate the
+  LocationIQ figure.)
+
+Known limitation, inherited from master: a second's requests that straddle two aggregation batches
+are counted in separate runs, so a peak can be under-reported in that rare case.
+
 ## Log
 
+- 2026-08-03 — Tracking rewired onto master's log+aggregate design after merging master:
+  `_increment_counters`/`_get_current_period_keys` deleted from `location_views.py`,
+  `log_autocomplete_request` added to `tasks.py`, `aggregate_nominatim_stats` made provider-aware.
+  Fixes a silent bug where the branch's float rate (`count/60.0`) was being written into master's
+  integer `peak_req_per_second` and rounding to 0. Migration `0021` rebased onto
+  `0020_refactor_nominatim_tracking` and reduced to the `provider` field only.
 - 2026-07-20 14:00 — Doc created, synthesizing the queue-design discussion from `review.md`'s
   finding #1/#3 threads (blocking vs. non-blocking delivery, Celery vs. hand-rolled worker,
   colleague's rendezvous-and-poll proposal, and the backpressure/TTL/fairness gaps identified while

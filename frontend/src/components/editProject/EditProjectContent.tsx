@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogTitle,
   Switch,
-  TextField,
   Typography,
   useMediaQuery,
   Theme,
@@ -21,7 +20,7 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import SelectField from "../general/SelectField";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
-import ProjectDescriptionHelp from "../project/ProjectDescriptionHelp";
+import ProjectDescriptionEditor from "./ProjectDescriptionEditor";
 import { Project, Role } from "../../types";
 import { EditProjectTypeSelector } from "./EditProjectTypeSelector";
 import ProjectDateSection from "../shareProject/ProjectDateSection";
@@ -323,21 +322,18 @@ export default function EditProjectContent({
           />
         </div>
         <div className={classes.block}>
-          <ProjectDescriptionHelp typeId={project.project_type.type_id} />
           <div className={classes.spacer} />
-          <TextField
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={9}
-            label={texts.project_description}
-            onChange={(event) =>
-              handleChangeProject(event.target.value.substring(0, 4000), "description")
-            }
-            helperText={texts.describe_your_project_in_detail_please_only_use_english}
-            placeholder={texts.describe_your_project_in_more_detail}
-            value={project.description ? project.description : ""}
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            {texts.project_description}
+          </Typography>
+          <ProjectDescriptionEditor
+            descriptionHtml={project.description_html ?? ""}
+            onChange={(html) => handleChangeProject(html, "description_html")}
+            error={errors?.description_html}
           />
+          <Typography variant="caption" color="textSecondary" sx={{ mt: 0.5 }}>
+            {texts.describe_your_project_in_detail_please_only_use_english}
+          </Typography>
         </div>
       </div>
       {showEditRegistrationButton && editRegistrationOpen && (

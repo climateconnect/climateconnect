@@ -88,7 +88,7 @@ class ProjectAdmin(admin.ModelAdmin):
         "project_parent__parent_user__user_profile__name",
         "project_parent__parent_organization__name",
     )
-    list_filter = ("status", "has_children", "project_type")
+    list_filter = ("status", "has_children", "project_type", "updated_at")
     list_display = (
         "name",
         "url_slug",
@@ -98,6 +98,7 @@ class ProjectAdmin(admin.ModelAdmin):
         "has_children",
         "project_type",
         "created_at",
+        "updated_at",
     )
     raw_id_fields = ("parent_project",)  # Better UX for selecting parent project
     readonly_fields = (
@@ -116,6 +117,7 @@ class ProjectAdmin(admin.ModelAdmin):
                     "project_type",
                     "short_description",
                     "description",
+                    "description_html",
                     "devlink_component",
                     "image",
                     "thumbnail_image",
@@ -373,6 +375,10 @@ class RegistrationFieldAnswerAdmin(admin.ModelAdmin):
             return obj.value_boolean
         if obj.value_option:
             return obj.value_option.title
+        if obj.value_number is not None:
+            return obj.value_number
+        if obj.value_text is not None:
+            return obj.value_text[:80]
         return "-"
 
     get_value.short_description = "Value"

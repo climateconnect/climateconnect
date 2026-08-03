@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import type { Extensions } from "@tiptap/core";
 // eslint-disable-next-line import/no-named-as-default
 import StarterKit from "@tiptap/starter-kit";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -15,11 +16,12 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { getLinkBubbleMenuLabels } from "../richText/richTextLabels";
 
 const CHARACTER_LIMIT = 500;
 
 // Defined outside component to avoid recreating extensions on each render
-const EXTENSIONS = [
+const EXTENSIONS: Extensions = [
   StarterKit.configure({
     italic: false,
     strike: false,
@@ -102,12 +104,12 @@ export default function CheckboxFieldEditor({
         content={description || ""}
         editable={!disabled}
         onCreate={({ editor }) => {
-          setCharCount(editor.storage.characterCount.characters());
+          setCharCount((editor.storage as Record<string, any>).characterCount.characters());
         }}
         onUpdate={({ editor }) => {
           const html = editor.getHTML();
           onChange(html === "<p></p>" ? "" : html);
-          setCharCount(editor.storage.characterCount.characters());
+          setCharCount((editor.storage as Record<string, any>).characterCount.characters());
         }}
         renderControls={
           disabled
@@ -115,7 +117,7 @@ export default function CheckboxFieldEditor({
             : () => (
                 <MenuControlsContainer>
                   <MenuButtonBold />
-                  <MenuButtonEditLink />
+                  <MenuButtonEditLink tooltipLabel={texts.editor_edit_link} />
                 </MenuControlsContainer>
               )
         }
@@ -141,7 +143,7 @@ export default function CheckboxFieldEditor({
         }}
       >
         {/* render prop ensures LinkBubbleMenu re-renders on every editor transaction */}
-        {() => <LinkBubbleMenu />}
+        {() => <LinkBubbleMenu labels={getLinkBubbleMenuLabels(locale)} />}
       </RichTextEditor>
     </>
   );

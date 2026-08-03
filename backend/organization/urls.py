@@ -1,10 +1,10 @@
 from django.urls import path
 
 from organization.views import (
+    event_registration_views,
     organization_views,
     project_views,
     sector_views,
-    event_registration_views,
 )
 
 app_name = "organization"
@@ -87,6 +87,14 @@ urlpatterns = [
     ),
     # Project URLs
     path("projects/", project_views.ListProjectsView.as_view(), name="list-projects"),
+    # Event Calendar (POC) - lists event-type projects chronologically
+    path("events/", project_views.ListEventsView.as_view(), name="list-events"),
+    # Event Calendar (POC) - per-day event counts for a month (picker highlight)
+    path(
+        "events/calendar/",
+        project_views.EventCalendarCountsView.as_view(),
+        name="events-calendar-counts",
+    ),
     path(
         "projects/<str:url_slug>/",
         project_views.ProjectAPIView.as_view(),
@@ -254,5 +262,10 @@ urlpatterns = [
         "projects/<str:url_slug>/registrations/<int:registration_id>/",
         event_registration_views.AdminCancelRegistrationView.as_view(),
         name="admin-cancel-guest-registration",
+    ),
+    path(
+        "event-registration-origin/<int:registration_id>/",
+        event_registration_views.EventRegistrationOriginView.as_view(),
+        name="event-registration-origin",
     ),
 ]

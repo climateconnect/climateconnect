@@ -214,7 +214,11 @@ export default function HubContent({
                             hubSupportersExists={hubSupporters ? true : false}
                           />
                           {hubSupporters?.length > 0 && (
-                            <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                            <HubSupporters
+                              supportersList={hubSupporters}
+                              hubName={hubData?.name}
+                              hubUrl={hubUrl}
+                            />
                           )}
                         </div>
                       )}
@@ -222,10 +226,18 @@ export default function HubContent({
                   ) : (
                     <>
                       {hubAmbassador && (
-                        <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
+                        <ContactAmbassadorButton
+                          hubAmbassador={hubAmbassador}
+                          mobile={false}
+                          hubUrl={hubUrl}
+                        />
                       )}
                       {hubSupporters?.length > 0 && (
-                        <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                        <HubSupporters
+                          supportersList={hubSupporters}
+                          hubName={hubData?.name}
+                          hubUrl={hubUrl}
+                        />
                       )}
                       {!(hubSupporters?.length > 0) && hubUrl === "prio1" && (
                         <PrioOneBackgroundBrowseIcon />
@@ -253,6 +265,7 @@ export default function HubContent({
               isLocationHub={isLocationHub}
               hubAmbassador={hubAmbassador}
               isNarrowScreen={isNarrowScreen}
+              hubUrl={hubUrl}
             />
           </Container>
         )}
@@ -288,6 +301,7 @@ const BottomContent = ({
   hubAmbassador,
   isLocationHub,
   isNarrowScreen,
+  hubUrl,
 }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -326,7 +340,9 @@ const BottomContent = ({
           </Button>
         </div>
       )}
-      {!isNarrowScreen && <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />}
+      {!isNarrowScreen && (
+        <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} hubUrl={hubUrl} />
+      )}
     </>
   );
 };

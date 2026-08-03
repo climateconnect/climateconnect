@@ -29,6 +29,8 @@ import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import { parseProjectStubs } from "../../public/lib/parsingOperations";
+import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
+import { getAllHubs } from "../../public/lib/hubOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -82,12 +84,13 @@ export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
   const [
     organization,
-    projects,
+    projectsData,
     members,
     organizationTypes,
     rolesOptions,
     following,
     hubThemeData,
+    hubs,
   ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale, hubUrl),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
@@ -96,16 +99,19 @@ export async function getServerSideProps(ctx) {
     getRolesOptions(auth_token, ctx.locale),
     getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
     getHubTheme(hubUrl),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       organization: organization,
-      projects: projects,
+      projects: projectsData?.projects ?? null,
+      projectsHasMore: projectsData?.hasMore ?? false,
       members: members,
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
       following: following,
       hubThemeData: hubThemeData,
+      hubs: hubs,
       hubUrl: hubUrl,
     }),
   };
@@ -114,13 +120,15 @@ export async function getServerSideProps(ctx) {
 export default function OrganizationPage({
   organization,
   projects,
+  projectsHasMore,
   members,
   rolesOptions,
   following,
   hubThemeData,
+  hubs,
   hubUrl,
 }) {
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   // l. 105-137 handles following Organizations
@@ -156,6 +164,8 @@ export default function OrganizationPage({
   });
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const defaultBackUrl = hubUrl ? "/" + locale + "/hubs/" + hubUrl : "/" + locale;
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
@@ -167,6 +177,15 @@ export default function OrganizationPage({
       }
       hubUrl={hubUrl}
       showDonationGoal={true}
+      subHeader={
+        <HubsSubHeader
+          hubs={hubs}
+          onlyShowDropDown={true}
+          isCustomHub={isCustomHub}
+          hubSlug={hubUrl}
+          defaultBackUrl={defaultBackUrl}
+        />
+      }
     >
       {organization ? (
         <OrganizationLayout
@@ -176,6 +195,7 @@ export default function OrganizationPage({
           isUserFollowing={isUserFollowing}
           organization={organization}
           projects={projects}
+          projectsHasMore={projectsHasMore}
           members={members}
           /*TODO(unused) organizationTypes={organizationTypes} */
           infoMetadata={infoMetadata}
@@ -199,6 +219,7 @@ function OrganizationLayout({
   isUserFollowing,
   organization,
   projects,
+  projectsHasMore,
   members,
   infoMetadata,
   user,
@@ -210,6 +231,11 @@ function OrganizationLayout({
   const classes = useStyles();
   const cookies = new Cookies();
   const router = useRouter();
+
+  const [allProjects, setAllProjects] = useState(projects || []);
+  const [hasMoreProjects, setHasMoreProjects] = useState(projectsHasMore);
+  const [nextPage, setNextPage] = useState(2);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const getRoleName = (permission) => {
     const permission_to_show = permission === "all" ? "read write" : permission;
@@ -246,7 +272,8 @@ function OrganizationLayout({
     const token = cookies.get("auth_token");
     const creator = members.filter((m) => m.isCreator === true)[0];
     const chat = await startPrivateChat(creator, token, locale);
-    router.push("/chat/" + chat.chat_uuid + "/");
+    const chatLink = hubUrl ? `/chat/${chat.chat_uuid}/?hub=${hubUrl}` : `/chat/${chat.chat_uuid}/`;
+    router.push(chatLink);
   };
   const canEdit =
     user &&
@@ -256,6 +283,29 @@ function OrganizationLayout({
     );
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
+
+  const handleLoadMoreProjects = async () => {
+    if (isLoadingMore || !hasMoreProjects) return;
+    setIsLoadingMore(true);
+    try {
+      const resp = await apiRequest({
+        method: "get",
+        url: `/api/organizations/${organization.url_slug}/projects/?page=${nextPage}`,
+        token: cookies.get("auth_token"),
+        locale: locale,
+      });
+      if (resp.data) {
+        const newProjects = parseProjectStubs(resp.data.results);
+        setAllProjects((prev) => [...prev, ...newProjects]);
+        setHasMoreProjects(!!resp.data.next);
+        setNextPage((prev) => prev + 1);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
@@ -316,8 +366,22 @@ function OrganizationLayout({
             </Button>
           )}
         </div>
-        {projects && projects.length ? (
-          <ProjectPreviews projects={projects} hubUrl={hubUrl} />
+        {allProjects && allProjects.length ? (
+          <>
+            <ProjectPreviews projects={allProjects} hubUrl={hubUrl} parentHandlesGridItems />
+            {hasMoreProjects && (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleLoadMoreProjects}
+                disabled={isLoadingMore}
+                fullWidth
+                sx={{ mt: 2 }}
+              >
+                {isLoadingMore ? texts.loading : texts.load_more}
+              </Button>
+            )}
+          </>
         ) : (
           <Typography className={classes.no_content_yet}>
             {texts.this_organization_has_not_listed_any_projects_yet}
@@ -399,7 +463,10 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     });
     if (!resp.data) return null;
     else {
-      return parseProjectStubs(resp.data.results);
+      return {
+        projects: parseProjectStubs(resp.data.results),
+        hasMore: !!resp.data.next,
+      };
     }
   } catch (err) {
     console.log(err);

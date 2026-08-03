@@ -4,8 +4,8 @@ from django.utils.html import format_html
 from location.models import (
     Location,
     LocationTranslation,
-    NominatimRequestLog,
     NominatimPeriodStats,
+    NominatimRequestLog,
 )
 
 # IMPORTANT: Coordinate Storage Format
@@ -165,25 +165,36 @@ admin.site.register(LocationTranslation, LocationTranslationAdmin)
 
 
 class NominatimRequestLogAdmin(admin.ModelAdmin):
-    list_display = (
-        "time_minute",
-        "provider",
-        "processed",
-    )
+    list_display = ("created_at", "provider", "processed", "requests_this_minute")
     list_filter = ("provider", "processed")
-    ordering = ("-minute_key",)
-    search_fields = ("minute_key",)
-    readonly_fields = ("minute_key", "provider", "processed", "created_at")
+    list_per_page = 50
+    ordering = ("-created_at",)
+    readonly_fields = ("created_at", "provider", "processed", "minute_key")
 
-    def time_minute(self, obj):
-        """Convert epoch minute to human-readable datetime."""
-        from datetime import datetime, timezone
+    def get_queryset(self, request):
+        from django.db.models import Count, OuterRef, Subquery
 
-        dt = datetime.fromtimestamp(obj.minute_key * 60, tz=timezone.utc)
-        return dt.strftime("%Y-%m-%d %H:%M UTC")
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(
+                _requests_this_minute=Subquery(
+                    NominatimRequestLog.objects.filter(
+                        minute_key=OuterRef("minute_key"),
+                    )
+                    .order_by()
+                    .values("minute_key")
+                    .annotate(c=Count("id"))
+                    .values("c")[:1]
+                )
+            )
+        )
 
-    time_minute.short_description = "Time (minute)"
-    time_minute.admin_order_field = "minute_key"
+    def requests_this_minute(self, obj):
+        return obj._requests_this_minute
+
+    requests_this_minute.short_description = "reqs this minute"
+    requests_this_minute.admin_order_field = "_requests_this_minute"
 
     def has_add_permission(self, request):
         return False

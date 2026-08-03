@@ -376,7 +376,13 @@ CUSTOM_USER_AGENT = "ClimateConnect/1.0 (contact@climateconnect.earth)"
 
 # LocationIQ autocomplete
 LOCATIONIQ_API_KEY = env("LOCATIONIQ_API_KEY", "")
-LOCATIONIQ_AUTOCOMPLETE_URL = "https://us1.locationiq.com/v1/autocomplete"
+# LocationIQ's /v1/search is its Nominatim-compatible geocoding endpoint: it
+# returns the same response shape master relied on (importance scores + typed
+# address keys like village/town/county, single admin-focused results rather
+# than a POI flood). The /v1/autocomplete typeahead endpoint omits importance
+# and returns POIs, which breaks the frontend's importance-based filtering and
+# name-building logic — so we use /search to preserve master's behavior exactly.
+LOCATIONIQ_AUTOCOMPLETE_URL = "https://us1.locationiq.com/v1/search"
 LOCATIONIQ_TIMEOUT = 3  # seconds
 NOMINATIM_TIMEOUT = 5  # seconds
 LOCATIONIQ_MAX_RATE = "2/s"  # Celery rate_limit for the fetch_autocomplete task

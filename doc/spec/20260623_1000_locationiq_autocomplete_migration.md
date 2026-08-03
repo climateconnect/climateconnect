@@ -151,7 +151,7 @@ LOCATIONIQ_TIMEOUT = 3  # seconds
 
 Environment variable (add to `.backend_env`):
 ```
-LOCATIONIQ_API_KEY=pk.f7dc1da2a4fd897aa8175f4ac05fd6ca
+LOCATIONIQ_API_KEY=pk.************************
 ```
 
 The empty-string default for `LOCATIONIQ_API_KEY` means the feature degrades gracefully to Nominatim-only if the key isn't configured.

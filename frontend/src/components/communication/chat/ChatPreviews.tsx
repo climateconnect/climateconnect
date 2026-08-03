@@ -2,7 +2,7 @@ import {
   Badge,
   Divider,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Theme,
   Typography,
@@ -20,6 +20,7 @@ import MiniProfilePreview from "../../profile/MiniProfilePreview";
 import ChatTitle from "./ChatTitle";
 import MobileChatPreview from "./MobileChatPreview";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -80,6 +81,8 @@ export default function ChatPreviews({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const router = useRouter();
+  const hubUrl = typeof router.query.hub === "string" ? router.query.hub : null;
 
   const loadMore = async () => {
     if (loadFunc) {
@@ -125,6 +128,7 @@ export default function ChatPreviews({
               chat={chat}
               locale={locale}
               forwardedRef={isLastElement ? lastElementRef : null}
+              hubUrl={hubUrl}
             />
           );
         })}
@@ -134,7 +138,7 @@ export default function ChatPreviews({
   );
 }
 
-const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, forwardedRef }) => {
+const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, forwardedRef, hubUrl }) => {
   const lastAction = chat.last_message ? chat.last_message.sent_at : chat.created_at;
   if (!lastAction) console.log(chat);
   const classes = useStyles();
@@ -145,11 +149,12 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, forwardedRef }
     return (
       <Fragment>
         {isFirstChat && <Divider component="li" />}
-        <ListItem
+        <ListItemButton
           ref={forwardedRef}
-          button
           component="a"
-          href={getLocalePrefix(locale) + "/chat/" + chat.chat_uuid}
+          href={
+            getLocalePrefix(locale) + "/chat/" + chat.chat_uuid + (hubUrl ? `?hub=${hubUrl}` : "")
+          }
           alignItems="center"
           className={classes.listItem}
         >
@@ -195,7 +200,7 @@ const ChatPreview = ({ chat, isNarrowScreen, isFirstChat, locale, forwardedRef }
               </>
             }
           />
-        </ListItem>
+        </ListItemButton>
         <Divider component="li" />
       </Fragment>
     );

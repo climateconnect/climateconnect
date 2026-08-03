@@ -146,16 +146,14 @@ class TestGenerateEventIcsAttachment(TestCase):
         )
 
     @tag("ics_attachment")
-    def test_vevent_description_strips_html(self):
-        """VEVENT DESCRIPTION strips HTML tags from project description."""
-        self.project.description = "<p>Join us for a <strong>great</strong> event!</p>"
+    def test_vevent_description_uses_short_description(self):
+        """VEVENT DESCRIPTION uses the short_description field."""
+        self.project.short_description = "Join us for a great event!"
         self.project.save()
         attachment = generate_event_ics_attachment(self.project, "en")
         cal = self._parse_ics(attachment)
         event = cal.walk("VEVENT")[0]
         description = str(event.get("description"))
-        self.assertNotIn("<p>", description)
-        self.assertNotIn("<strong>", description)
         self.assertIn("Join us for a great event!", description)
 
     # ── AC-2: Edge cases ──────────────────────────────────────────────────────
@@ -648,7 +646,7 @@ class TestIcsDescriptionWithFieldAnswers(TestCase):
     @tag("ics_attachment")
     def test_description_answers_before_url(self):
         """Field answers appear between event description and URL."""
-        self.project.description = "An exciting climate event."
+        self.project.short_description = "An exciting climate event."
         self.project.save()
         field = RegistrationField.objects.create(
             registration_config=self.config,

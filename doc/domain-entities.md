@@ -177,6 +177,11 @@ This document provides comprehensive documentation of the main domain entities i
 - Geographic and hub-based discovery
 - Collaborative memberships with roles
 - Engagement tracking (followers, likes)
+- Rich-text descriptions via Tiptap (HTML stored in `description_html`)
+
+**Key fields**:
+- `description` (legacy) — plain-text description, max 4800 chars. Kept for backwards compatibility; no longer written to by new code.
+- `description_html` — rich-text HTML description produced by the Tiptap editor. Supports bold, italic, lists, links, blockquotes, and YouTube embeds. Validated at 4000 stripped characters / 20000 full-HTML characters. Sanitized server-side with a dedicated allowlist (`PROJECT_DESCRIPTION_ALLOWED_TAGS`).
 
 **Relationships**:
 - **ForeignKey**: `ProjectStatus`, `Location`, `Language`
@@ -344,6 +349,7 @@ This document provides comprehensive documentation of the main domain entities i
 | `registration_end_date` | DateTimeField (TIMESTAMPTZ) | Nullable (draft allowed); must be ≤ event `end_date`; stored in UTC |
 | `status` | CharField (enum) | `open` (default) / `closed` / `full` — see status table below |
 | `notify_admins` | BooleanField | Default `True`; organiser toggle for admin notification emails on registration changes |
+| `last_guest_email_sent_at` | DateTimeField (TIMESTAMPTZ) | Nullable; timestamp of the last bulk email sent to event guests; used to filter "new guests only" recipients |
 | `created_at` | DateTimeField | Auto-set on creation |
 | `updated_at` | DateTimeField | Auto-updated on save |
 
@@ -418,6 +424,7 @@ Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row re
 | `registered_at` | DateTimeField | Auto-set on creation; read-only |
 | `cancelled_at` | DateTimeField | `NULL` = active; non-null = soft-deleted. Reset to `NULL` on re-registration |
 | `cancelled_by` | ForeignKey (nullable) | FK → `User`, SET_NULL, related_name: `cancelled_registrations`. `NULL` when active. Set to the cancelling user (member or admin) on cancellation. Reset to `NULL` on re-registration |
+| `cancellation_reason` | TextField (nullable) | Optional plain-text message provided by the guest at self-cancellation. `NULL` when no message given. **Not** reset on re-registration — persists as a record of the last cancellation reason |
 
 **Constraints & indexes**:
 | Type | Fields | Name |
@@ -434,7 +441,7 @@ Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row re
 
 **Model location**: `organization/models/event_registration.py`
 
-**Migration**: `organization/migrations/0124_add_cancelled_fields_to_eventregistration.py` — adds `cancelled_at` and `cancelled_by` columns (nullable, no backfill required)
+**Migration**: `organization/migrations/0124_add_cancelled_fields_to_eventregistration.py` — adds `cancelled_at` and `cancelled_by` columns (nullable, no backfill required). `organization/migrations/0143_eventregistration_cancellation_reason.py` — adds `cancellation_reason` (nullable, no backfill required)
 
 ---
 
@@ -442,7 +449,7 @@ Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row re
 
 **Summary**: Custom fields organisers can add to their event registration form.
 
-**Description**: Defines a custom field on an event's registration form. Up to 5 fields per event. Each field has a type, order, required flag, organiser-facing label (max 30 chars), and type-specific settings stored as JSON. The `label` is auto-generated on creation (localised field type + sequential number) and can be edited by the organiser. Field types: `checkbox` (boolean), `option_select` (single-select dropdown), `inventory` (option + quantity with capacity limits), `time_slot_select` (time slot with optional per-slot capacity).
+**Description**: Defines a custom field on an event's registration form. Up to 15 fields per event. Each field has a type, order, required flag, organiser-facing label (max 30 chars), and type-specific settings stored as JSON. The `label` is auto-generated on creation (localised field type + sequential number) and can be edited by the organiser. Field types: `checkbox` (boolean), `option_select` (single-select dropdown), `inventory` (option + quantity with capacity limits), `time_slot_select` (time slot with optional per-slot capacity).
 
 **Fields**:
 | Field | Type | Notes |
@@ -545,7 +552,16 @@ Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row re
 
 **Summary**: Individual messages in conversations.
 
-**Description**: Single message within a chat conversation. Contains message content, sender, timestamps, and optional reply-to reference. Delivered to all conversation participants via `MessageReceiver` tracking.
+**Description**: Single message within a chat conversation. Contains message content, sender, timestamps, and optional reply-to reference. Delivered to all conversation participants via `MessageReceiver` tracking. System-originated messages (e.g. event-registration cancellations) are tagged with `origin_type` / `origin_id` so clients can render context without embedding the origin entity in the `Message` response.
+
+**Fields**:
+| Field | Type | Notes |
+|---|---|---|
+| `content` | TextField | Message body (plain text) |
+| `sender` | ForeignKey → `User` | Author of the message |
+| `sent_at` | DateTimeField (nullable) | When the message was sent |
+| `origin_type` | CharField (max 32) | Context tag for system-originated messages. `""` (default) = no context; `"event_registration"` = generated by event-registration cancellation; `"project"` / `"organization"` / `"hub"` reserved for future use. Server-set only |
+| `origin_id` | PositiveIntegerField (nullable) | PK of the origin entity identified by `origin_type`. Server-set only |
 
 **Relationships**:
 - **ForeignKey**: `MessageParticipants` (conversation), `User` (sender)
@@ -1005,3 +1021,5 @@ This architecture supports a comprehensive climate action platform with social n
 - **2026-05-24**: Added `RegistrationFieldAnswer` entity (issue #2004). Stores registrant responses to custom fields. Polymorphic value columns: `value_boolean` (checkbox), `value_option` FK (option_select/inventory/time_slot_select), `value_number` (inventory quantity). Synced atomically via `sync_registration_answers()` on registration POST. `unique_together = [("registration", "field")]`. Updated ER tree. `EventRegistration` now has `field_answers` reverse relationship.
 - **2026-05-25**: Added `inventory` and `time_slot_select` field types to `RegistrationField.field_type` choices (issues #1995, #2006). `RegistrationFieldOption` extended with `available_amount`, `max_amount_per_guest` (inventory capacity) and `start_time`, `end_time` (time slot bounds). `RegistrationFieldAnswer` extended with `value_number` for inventory quantity. Updated `RegistrationField` description to document all four field types.
 - **2026-05-26**: Added `label` field to `RegistrationField` (max 30 chars, unique per config) and `notify_admins` field to `EventRegistrationConfig` (default `True`). Labels are auto-generated on creation and organiser-editable for export display. `notify_admins` controls whether team admins receive notification emails on registration changes.
+- **2026-06-10**: Added `last_guest_email_sent_at` field to `EventRegistrationConfig` (DateTimeField, nullable, indexed). Records when the last non-test bulk email was sent to event guests; used to filter "new guests only" recipients. Frontend toggle allows organisers to send emails only to guests who registered after the last bulk send.
+- **2026-07-02**: Added `description_html` field to `Project` (TextField, nullable) and `description_html_translation` to `ProjectTranslation` (TextField, nullable). Project descriptions now use rich-text HTML produced by a Tiptap editor, supporting bold, italic, lists, links, blockquotes, and YouTube embeds. The legacy `description` field is kept (read-only) for backwards compatibility. ICS calendar attachments use `short_description` (plain text) instead of the HTML description. Updated `Project` entity documentation with key fields and rich-text feature.

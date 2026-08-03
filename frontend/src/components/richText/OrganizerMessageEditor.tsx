@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import type { Extensions } from "@tiptap/core";
 // eslint-disable-next-line import/no-named-as-default
 import StarterKit from "@tiptap/starter-kit";
 import CharacterCount from "@tiptap/extension-character-count";
@@ -29,12 +30,13 @@ import {
 } from "mui-tiptap";
 
 import { emojiItems, emojiRender } from "./emojiSuggestion";
+import type { LinkBubbleMenuLabels, TableMenuControlLabels } from "./richTextLabels";
 
 const CHARACTER_LIMIT = 5000;
 
 const TABLE_HEADER_STYLE = "background-color: #f0f0f0;";
 
-const EXTENSIONS = [
+const EXTENSIONS: Extensions = [
   StarterKit.configure({
     italic: true,
     strike: false,
@@ -109,6 +111,8 @@ type Props = {
   showCharCount?: boolean;
   ariaLabel?: string;
   tooltipLabels?: TooltipLabels;
+  linkBubbleMenuLabels?: LinkBubbleMenuLabels;
+  tableMenuControlLabels?: TableMenuControlLabels;
 };
 
 const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "").trim();
@@ -121,6 +125,8 @@ export default function OrganizerMessageEditor({
   showCharCount = true,
   ariaLabel,
   tooltipLabels,
+  linkBubbleMenuLabels,
+  tableMenuControlLabels,
 }: Props) {
   const classes = useStyles();
   const rteRef = useRef<RichTextEditorRef>(null);
@@ -161,7 +167,7 @@ export default function OrganizerMessageEditor({
             <MenuDivider />
             <MenuButtonEditLink tooltipLabel={t?.editLink ?? "Edit link"} />
             <MenuButtonAddTable tooltipLabel={t?.addTable ?? "Add table"} />
-            <TableMenuControls />
+            <TableMenuControls labels={tableMenuControlLabels} />
           </MenuControlsContainer>
         )}
         RichTextFieldProps={{
@@ -177,7 +183,7 @@ export default function OrganizerMessageEditor({
           ) : undefined,
         }}
       >
-        {() => <LinkBubbleMenu />}
+        {() => <LinkBubbleMenu labels={linkBubbleMenuLabels} />}
       </RichTextEditor>
       {error && <Typography className={classes.errorText}>{error}</Typography>}
     </div>

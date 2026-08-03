@@ -3,7 +3,6 @@ import html as html_module
 import logging
 import re
 
-import bleach
 from icalendar import Calendar, Event as IcalEvent
 
 from organization.utility.project import get_project_name
@@ -654,6 +653,7 @@ def _build_field_answers_html(registration, lang_code, tz):
             answer.value_boolean is None
             and answer.value_option is None
             and answer.value_number is None
+            and answer.value_text is None
         ):
             continue
         # For checkboxes, only include checked ones
@@ -722,6 +722,16 @@ def _build_field_answers_html(registration, lang_code, tz):
                 f'<td style="{_FIELD_CELL_STYLE}">{html_module.escape(answer_text)}</td></tr>'
             )
 
+        elif field_type == RegistrationFieldType.TEXT:
+            field_title = (field.settings or {}).get("title", "")
+            value = answer.value_text or ""
+            escaped_value = html_module.escape(value).replace("\n", "<br>")
+            display_value = escaped_value if value else "\u2014"
+            rows.append(
+                f'<tr><td style="{_FIELD_CELL_STYLE}">{html_module.escape(field_title)}</td>'
+                f'<td style="{_FIELD_CELL_STYLE}">{display_value}</td></tr>'
+            )
+
     if not rows:
         return ""
 
@@ -761,6 +771,7 @@ def _build_field_answers_text(registration, lang_code, tz):
             answer.value_boolean is None
             and answer.value_option is None
             and answer.value_number is None
+            and answer.value_text is None
         ):
             continue
         if answer.field.field_type == RegistrationFieldType.CHECKBOX:
@@ -813,6 +824,11 @@ def _build_field_answers_text(registration, lang_code, tz):
                 answer_text = ""
             lines.append(f"\u2022 {field_title}: {answer_text}")
 
+        elif field_type == RegistrationFieldType.TEXT:
+            field_title = (field.settings or {}).get("title", "")
+            value = answer.value_text or "\u2014"
+            lines.append(f"\u2022 {field_title}: {value}")
+
     if len(lines) == 1:
         return ""
 
@@ -861,10 +877,8 @@ def generate_event_ics_attachment(project, lang_code, registration=None, tz=None
     )
 
     description_parts = []
-    if project.description:
-        description_parts.append(
-            bleach.clean(project.description, tags=[], strip=True).strip()
-        )
+    if project.short_description:
+        description_parts.append(project.short_description.strip())
     if registration and tz:
         field_answers_text = _build_field_answers_text(registration, lang_code, tz)
         if field_answers_text:

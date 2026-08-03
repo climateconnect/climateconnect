@@ -7,7 +7,7 @@ from typing import Optional
 
 # Django/Django REST imports
 from django.contrib.auth.models import User
-from django.db.models import QuerySet
+from django.db.models import Count, QuerySet
 from django.utils.translation import gettext as _
 
 from chat_messages.models import MessageParticipants, MessageReceiver, Participant
@@ -15,6 +15,53 @@ from climateconnect_api.models import Notification, Role, UserNotification, User
 from ideas.models.ideas import Idea
 
 logger = logging.getLogger(__name__)
+
+
+def get_or_create_private_chat(
+    initiator: User,
+    chatting_partner_user: User,
+    created_by: Optional[User] = None,
+) -> MessageParticipants:
+    """Return existing 1:1 private chat for two users, or create one.
+
+    Private chat definition matches StartPrivateChat:
+    - exactly two active participants,
+    - no group name,
+    - no related idea.
+    """
+    chats_with_creator = Participant.objects.filter(
+        user=initiator, is_active=True
+    ).values_list("chat", flat=True)
+    chats_with_both_users = Participant.objects.filter(
+        user=chatting_partner_user,
+        chat__in=chats_with_creator,
+        is_active=True,
+    ).values_list("chat", flat=True)
+
+    private_chat_with_both_users = MessageParticipants.objects.annotate(
+        num_participants=Count("participant_participants")
+    ).filter(
+        id__in=chats_with_both_users,
+        num_participants=2,
+        related_idea=None,
+        name="",
+    )
+
+    if private_chat_with_both_users.exists():
+        return private_chat_with_both_users[0]
+
+    private_chat = MessageParticipants.objects.create(
+        chat_uuid=str(uuid.uuid4()),
+        created_by=created_by or initiator,
+    )
+    basic_role = Role.objects.get(role_type=Role.READ_ONLY_TYPE)
+    Participant.objects.create(user=initiator, chat=private_chat, role=basic_role)
+    Participant.objects.create(
+        user=chatting_partner_user,
+        chat=private_chat,
+        role=basic_role,
+    )
+    return private_chat
 
 
 def set_read(messages, user, is_private_message):

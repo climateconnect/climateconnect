@@ -405,7 +405,7 @@ export default function Filters({
     if (filter.tooltipText) {
       return (
         <Tooltip arrow placement="top" title={filter.tooltipText} key={filter.key}>
-          {component}
+          <span>{component}</span>
         </Tooltip>
       );
     }

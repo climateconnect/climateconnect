@@ -6,6 +6,7 @@ import CheckboxFieldEditor from "./CheckboxFieldEditor";
 import OptionSelectFieldEditor from "./OptionSelectFieldEditor";
 import InventoryFieldEditor from "./InventoryFieldEditor";
 import TimeSlotFieldEditor from "./TimeSlotFieldEditor";
+import TextFieldEditor from "./TextFieldEditor";
 
 type Props = {
   field: RegistrationField;
@@ -108,6 +109,23 @@ export default function RegistrationFieldEditor({
           fieldOrder={field.order}
           eventStartDate={eventStartDate}
           eventEndDate={eventEndDate}
+        />
+      )}
+      {field.field_type === "text" && (
+        <TextFieldEditor
+          title={field.settings?.title ?? ""}
+          description={field.settings?.description ?? ""}
+          isMultiline={field.settings?.is_multiline ?? false}
+          onChange={({ title, description, is_multiline }) => {
+            onChange({
+              ...field,
+              settings: { ...field.settings, title, description, is_multiline },
+            });
+            onClearFieldError?.(`field:${field.order}`);
+          }}
+          titleDisabled={answersLocked}
+          isDraft={isDraft}
+          fieldError={fieldError}
         />
       )}
       {optionsError && (

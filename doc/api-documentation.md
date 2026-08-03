@@ -241,7 +241,7 @@ curl -X POST http://localhost:8000/api/projects/ \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Community Solar Project",
-    "description": "Installing solar panels in our neighborhood",
+    "description_html": "<p>Installing solar panels in our <strong>neighborhood</strong></p>",
     "location": {
       "city": "Berlin",
       "country": "Germany"
@@ -387,6 +387,21 @@ curl -X POST http://localhost:8000/api/auth/verify-token \
 | `/api/projects/{slug}/registrations/` | DELETE | Yes | Cancel own registration (member self-cancellation) |
 | `/api/projects/{slug}/registrations/{id}/` | PATCH | Yes | Cancel a specific guest's registration (organiser/admin only) |
 | `/api/projects/{slug}/registrations/email/` | POST | Yes | Send email to all active guests (organiser/admin only) |
+| `/api/event-registration-origin/{registration_id}/` | GET | Yes | Resolve event context for an event-registration-origin chat message (issue #2102) |
+
+#### Project description (`description_html`)
+
+The project description uses rich-text HTML stored in `description_html`. The legacy `description` field (plain text) is kept for backwards compatibility but is no longer written to by new code.
+
+**Accepted HTML tags** (server-sanitized): `p`, `strong`, `b`, `em`, `i`, `u`, `a`, `br`, `ul`, `ol`, `li`, `blockquote`, `div[data-youtube-video]`, `iframe` (YouTube-nocookie embeds only).
+
+**Validation**:
+- 20 000 characters on raw HTML (hard cap)
+- 4 000 characters on stripped text content (soft cap, matches the frontend character counter)
+
+**Translation**: `description_html` is auto-translated via DeepL with `tag_handling=html`. Translations are stored in `ProjectTranslation.description_html_translation` and returned in the `translations` array on the edit endpoint. The 4 000-char stripped limit is not enforced on translations (German text can exceed it).
+
+**Display**: the project detail page renders `description_html` directly via `dangerouslySetInnerHTML`. YouTube iframes are rendered natively by the browser.
 
 #### Event Registration (`registration_config`)
 
@@ -585,20 +600,47 @@ Allows the authenticated member to cancel their own registration for an upcoming
 
 **Authentication**: Required (401 if unauthenticated).
 
+**Request body** (optional): `{ "message": "<string>" }` — plain-text reason (max 1000 chars) the guest wants to share with the organiser. If provided and non-empty (after stripping), it is stored on the registration as `cancellation_reason` and dispatched as a private chat message to the event organiser (tagged `origin_type="event_registration"`, `origin_id=<registration id>`). If absent, blank, or whitespace-only, the cancellation proceeds with no message.
+
 **Success response**: 204 No Content (no body).
 
 **Error responses**:
 | Status | Condition |
 |---|---|
 | 400 Bad Request | Event `start_date` has already passed |
+| 400 Bad Request | `message` is not a string |
+| 400 Bad Request | `message` exceeds 1000 characters |
 | 401 Unauthorized | Request is not authenticated |
 | 404 Not Found | `{slug}` does not match any project |
 | 404 Not Found | Project has no `EventRegistrationConfig` record |
 | 404 Not Found | User has no active registration for this event |
 
+**Chat message dispatch**: When a non-empty `message` is supplied, the chat message is created by the Celery task `send_cancellation_chat_message`, dispatched via `transaction.on_commit`. A broker/dispatch failure is logged at ERROR but does not roll back the cancellation (already committed, returns 204). `cancellation_reason` is stored atomically with the soft-delete inside the same transaction.
+
 **OPEN recovery**: if the event was at full capacity (`status = "full"`) and this cancellation frees a seat, `EventRegistrationConfig.status` is atomically reverted to `"open"`.
 
 **Seat count**: all places that compute `available_seats` filter by `cancelled_at IS NULL` so cancelled registrations never hold capacity.
+
+#### GET `/api/event-registration-origin/{registration_id}/` — Resolve event context for a cancellation chat message (issue #2102)
+
+Resolves the event referenced by an `event_registration` chat message so the frontend can render a context banner without embedding project data in the `Message` response.
+
+**Authentication**: Required (401 if unauthenticated).
+
+**Authorization**: The requesting user must be a participant of a chat that contains a message with `origin_type = "event_registration"` and `origin_id = {registration_id}`, **or** a project admin/editor of the related event. Returns 403 otherwise.
+
+**Success response** (200 OK):
+| Field | Type | Notes |
+|---|---|---|
+| `event_name` | string | Name of the event |
+| `event_url_slug` | string | URL slug used to build `/projects/{event_url_slug}` |
+
+**Error responses**:
+| Status | Condition |
+|---|---|
+| 401 Unauthorized | Request is not authenticated |
+| 403 Forbidden | User is neither a chat participant nor a project admin for the related event |
+| 404 Not Found | `{registration_id}` does not match any `EventRegistration` |
 
 #### PATCH `/api/projects/{slug}/registration-config/` — Edit registration settings (issue #1851)
 
@@ -808,7 +850,8 @@ Sends a plain-text email authored by the organiser to all active registered gues
 {
   "subject": "Important update about the event",
   "message": "Hi everyone, we have an important update…",
-  "is_test": false
+  "is_test": false,
+  "send_to_new_guests_only": false
 }
 ```
 
@@ -817,12 +860,15 @@ Sends a plain-text email authored by the organiser to all active registered gues
 | `subject` | string | Yes | max 200 chars, non-blank |
 | `message` | string | Yes | non-blank |
 | `is_test` | boolean | No | defaults to `false` |
+| `send_to_new_guests_only` | boolean | No | defaults to `false`; when `true`, only guests who registered after `EventRegistrationConfig.last_guest_email_sent_at` receive the email. Ignored when `is_test=true` or when no prior bulk email has been sent (NULL timestamp). |
 
 **Success response** (200 OK):
 ```json
 { "sent_count": 42 }
 ```
-`sent_count` is the number of active participants at request time. For `is_test=true` it is always `1`. Bulk delivery is asynchronous (Celery task); the HTTP response returns immediately.
+`sent_count` is the number of unique recipients (active guests + team admins, deduplicated). For `is_test=true` it is always `1`. Bulk delivery is asynchronous (Celery task); the HTTP response returns immediately.
+
+After a successful non-test bulk send, `EventRegistrationConfig.last_guest_email_sent_at` is set to the current timestamp. This enables future "new guests only" sends to filter recipients correctly.
 
 When `is_test=true`, the subject is prefixed with `[TEST] ` so the organiser can identify the test email in their inbox.
 
@@ -945,5 +991,6 @@ If you encounter issues or have questions about the API:
 
 ---
 
-**Last Updated**: May 28, 2026 — Added custom registration fields documentation. `registration_config` detail response now includes `fields` array (RegistrationFieldSerializer with options, remaining_amount, has_answers). `POST /registrations/` accepts optional `answers` array for custom field responses (checkbox: value_boolean, option_select/time_slot_select: value_option, inventory: value_option + value_number). `GET /registrations/` response includes `field_answers` per registration. `PATCH /registration-config/` accepts `fields` array for full field set replacement (max 5 fields, answer-lock on text properties once answers exist) and `notify_admins` boolean. Fixed admin cancel endpoint method from DELETE to PATCH in endpoint table. Previous: April 21, 2026 — Added `POST /api/auth/verify-token` endpoint (US-4). Accepts `{ session_key, code }`. On success returns `{ token, expiry, user }` (Knox token + `PersonalProfileSerializer` user shape). Validates in order: expiry → single-use → attempt limit → constant-time hash comparison. Failed attempts incremented atomically via `F()` expression; response includes remaining attempts or locked message. Race condition guard via `UPDATE … WHERE used_at IS NULL` affected-rows check. New users (`is_profile_verified=False`) are marked verified atomically with Knox token issuance. `LoginAuditLog` written on every outcome (`verified`, `failed`, `expired`, `exhausted`). Added Auth section to Common Endpoints listing all three OTP-flow endpoints. Previous: April 21, 2026 — Added `POST /api/auth/request-token` endpoint (US-3). Accepts `{ email }`, always returns HTTP 200 with `{ session_key }` (enumeration-safe). Generates a cryptographically secure 6-digit OTP (SHA-256 hash stored only), ties it to a browser tab via a 64-char hex `session_key`, and enqueues `send_login_code_email` Celery task. Invalidates any previous active `LoginToken` for the same email before creating the new one. Resend cooldown: 429 with `Retry-After` if a token was created in the last 60 s. Rate limits: 3 req/10 min per email (`Retry-After: 600`), 30 req/h per IP (`Retry-After: 3600`). Writes a `LoginAuditLog` entry (outcome `requested` or `resent`) on every call, including when email is not found. Requires no authentication (`AllowAny`). New settings: `LOGIN_CODE_EMAIL_TEMPLATE_ID`, `LOGIN_CODE_EMAIL_TEMPLATE_ID_DE` (default blank; dev fallback logs OTP to console). Previous: April 20, 2026 — Added `POST /api/auth/check-email` endpoint (US-2b). Returns `{ user_status: "new" | "returning_password" | "returning_otp" }` based on whether the email exists and which `auth_method` the `UserProfile` has. Always HTTP 200. Rate-limited to 20 requests/hour/IP (HTTP 429 + `Retry-After: 3600` on breach). Requires no authentication (`AllowAny`). Backend lookup is case-sensitive; frontend must lowercase before calling. Previous: April 9, 2026 — Added member self-cancellation (`DELETE /api/projects/{slug}/registrations/`, issue #1850) and admin cancel guest (`DELETE /api/projects/{slug}/registrations/{id}/`, issue #1872). `EventRegistrationSerializer` now includes `id` and `cancelled_at`. `GET /registrations/` returns all rows (active + cancelled). `POST /registrations/` supports re-registration after self-cancellation (201) and blocks re-registration after admin-cancellation (403). All seat-count queries filter `cancelled_at IS NULL`. `GET /projects/{slug}/my_interactions/` now returns `has_attended` and `admin_cancelled` booleans; `is_registered` filtered by `cancelled_at IS NULL`. Bulk email endpoint now excludes cancelled registrations. New Mailjet templates: `ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID` (EN/DE). Previous: April 2, 2026 — Renamed API surface: `POST /api/projects/{slug}/register/` → `POST /api/projects/{slug}/registrations/`; `PATCH /api/projects/{slug}/registration/` → `PATCH /api/projects/{slug}/registration-config/`; JSON key `event_registration` → `registration_config` on all project endpoints. Previous: March 31, 2026 — Added fully-booked reopen guard to `PATCH /api/projects/{slug}/registration-config/`: `status = "open"` is now rejected with `400 Bad Request` when participant count ≥ effective `max_participants` after this PATCH (applies to both `closed → open` and `full → open` transitions when the event is actually at capacity). An organiser can reopen a booked-out event by including a higher `max_participants` in the same request. Three new tests added. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration-config/` updated (issue #1851): `status` is now writable (`"open"` / `"closed"`); `"full"` and `"ended"` are rejected with 400 (system-managed); reopen guard returns 400 when `effective_status == "ended"` (extend deadline first); auto-adjustment skipped when `status` is explicit. Previous: March 31, 2026 — `PATCH /api/projects/{slug}/registration-config/` now returns `available_seats` in the response body (always computed). Previous: March 31, 2026 — Added status auto-adjustment to `PATCH /api/projects/{slug}/registration-config/`. Previous: March 31, 2026 — Added computed `"ended"` status to `registration_config.status`. Previous: March 30, 2026 — Added `PATCH /api/projects/{slug}/registration-config/` endpoint (issue #1848). Previous: March 30, 2026 — Added `POST /api/projects/{slug}/registrations/` endpoint (issue #1845). Previous: March 19, 2026 — Added `status` field to `registration_config`. Previous: Added `registration_config` nested object to project endpoints (issue #43)
+**Last Updated**:  
+July 13, 2026 - Changed validation to allow up to 15 custom fields.
 

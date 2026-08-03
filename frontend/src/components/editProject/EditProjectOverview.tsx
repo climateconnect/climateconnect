@@ -6,7 +6,7 @@ import {
   List,
   Switch,
   TextField,
-  Grid,
+  Grid2,
 } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
@@ -86,7 +86,7 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
     fontSize: 12,
   },
   sectorField: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(1.25),
   },
 }));
 
@@ -460,21 +460,19 @@ const InputSectors = ({
             onDelete={() => handleSectorDelete(sector)}
           />
         ))}
-        <Grid container>
-          <Grid xs={12} sm={8} md={5} lg={5} item>
-            <SelectField
-              options={sectorOptions}
-              className={classes.sectorField}
-              multiple
-              values={project.sectors?.map((s) => s.name)}
-              label={<div className={classes.iconLabel}>{texts.project_categories}</div>}
-              size="small"
-              onChange={(event) => {
-                handleValueChange(event.target.value);
-              }}
-            />
-          </Grid>
-        </Grid>
+        <Grid2 container>
+          <SelectField
+            options={sectorOptions}
+            className={classes.sectorField}
+            multiple
+            values={project.sectors?.map((s) => s.name)}
+            label={<div className={classes.iconLabel}>{texts.project_categories}</div>}
+            size="small"
+            onChange={(event) => {
+              handleValueChange(event.target.value);
+            }}
+          />
+        </Grid2>
       </List>
     </div>
   );

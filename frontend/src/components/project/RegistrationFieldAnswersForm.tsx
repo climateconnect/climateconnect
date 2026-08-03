@@ -5,6 +5,7 @@ import RegistrationCheckboxField from "./RegistrationCheckboxField";
 import RegistrationInventoryField from "./RegistrationInventoryField";
 import RegistrationOptionSelectField from "./RegistrationOptionSelectField";
 import RegistrationTimeSlotField from "./RegistrationTimeSlotField";
+import RegistrationTextField from "./RegistrationTextField";
 
 export type RegistrationFieldAnswersFormHandle = {
   /** Validate all fields and return the answers payload if valid, or null if invalid. */
@@ -27,6 +28,8 @@ type Props = {
     quantity_exceeds_max: string;
     please_select_time_slot: string;
     seats_available: string;
+    registration_text_field_required_error: string;
+    registration_text_field_max_length_error: string;
   };
   /** Called once on the first interaction with any custom field (for analytics). */
   onFirstInteraction?: () => void;
@@ -43,6 +46,7 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
       Record<number, { optionId?: number; quantity?: number }>
     >({});
     const [timeSlotValues, setTimeSlotValues] = useState<Record<number, number>>({});
+    const [textValues, setTextValues] = useState<Record<number, string>>({});
     const [fieldErrors, setFieldErrors] = useState<Record<number, string>>({});
     const hasInteractedRef = useRef(false);
 
@@ -96,6 +100,13 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
             if (field.is_required && timeSlotValues[id] == null) {
               errors[id] = texts.please_select_time_slot;
             }
+          } else if (field.field_type === "text") {
+            const textVal = textValues[id] ?? "";
+            if (field.is_required && !textVal.trim()) {
+              errors[id] = texts.registration_text_field_required_error;
+            } else if (textVal.length > 300) {
+              errors[id] = texts.registration_text_field_max_length_error;
+            }
           }
         }
 
@@ -128,6 +139,11 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
           } else if (field.field_type === "time_slot_select") {
             if (timeSlotValues[id] != null) {
               answers.push({ fieldId: id, valueOption: timeSlotValues[id] });
+            }
+          } else if (field.field_type === "text") {
+            const textVal = textValues[id] ?? "";
+            if (textVal.trim()) {
+              answers.push({ fieldId: id, valueText: textVal });
             }
           }
         }
@@ -268,6 +284,28 @@ const RegistrationFieldAnswersForm = forwardRef<RegistrationFieldAnswersFormHand
                   please_select_time_slot: texts.please_select_time_slot,
                   seats_available: texts.seats_available,
                 }}
+              />
+            );
+          }
+
+          if (field.field_type === "text") {
+            return (
+              <RegistrationTextField
+                key={id}
+                field={field}
+                value={textValues[id] ?? ""}
+                onChange={(v) => {
+                  notifyFirstInteraction();
+                  setTextValues((prev) => ({ ...prev, [id]: v }));
+                  if (fieldErrors[id]) {
+                    setFieldErrors((prev) => {
+                      const next = { ...prev };
+                      delete next[id];
+                      return next;
+                    });
+                  }
+                }}
+                error={error}
               />
             );
           }

@@ -83,10 +83,15 @@ def _try_locationiq(q, countrycodes, accept_language):
         if resp.status_code == 200:
             data = resp.json()
             # A valid-but-empty list is a real "no matches" result, not a
-            # failure — only a non-list (or non-200) body should fall
-            # through to the Nominatim fallback.
+            # failure — only a non-list (or unexpected-status) body should
+            # fall through to the Nominatim fallback.
             if isinstance(data, list):
                 return data, "locationiq"
+        elif resp.status_code == 404:
+            # LocationIQ's /autocomplete returns 404 (not 200 + []) when a
+            # query has zero matches — also a real "no matches" result, not
+            # a provider failure worth falling back to Nominatim for.
+            return [], "locationiq"
         logger.warning(
             "LocationIQ returned status %d for query '%s'", resp.status_code, q
         )

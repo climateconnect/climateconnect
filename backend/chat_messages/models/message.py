@@ -1,6 +1,7 @@
-from climateconnect_api.models import Role
 from django.contrib.auth.models import User
 from django.db import models
+
+from climateconnect_api.models import Role
 from ideas.models.ideas import Idea
 
 
@@ -142,6 +143,24 @@ class Message(models.Model):
         verbose_name="Updated at",
         null=True,
         blank=True,
+    )
+
+    origin_type = models.CharField(
+        max_length=32,
+        blank=True,
+        default="",
+        help_text=(
+            "Context that originated this message. "
+            "Valid values: '' (no context), 'project', 'event_registration', "
+            "'organization', 'hub'. Blank means no origin context."
+        ),
+        verbose_name="Origin Type",
+    )
+    origin_id = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Primary key of the origin entity identified by origin_type.",
+        verbose_name="Origin ID",
     )
 
     class Meta:
