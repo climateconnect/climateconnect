@@ -7,11 +7,11 @@ export default function ShareCtaPreview() {
     <ProjectSubmittedPage
       user={null}
       isDraft={false}
-      url_slug="community-garden-festival-1ab2c"
+      url_slug="a-new-event-is-born"
       hasError={false}
       hubName={undefined}
       projectTypeId="event"
-      projectName="Community Garden Festival"
+      projectName="A new event is born"
     />
   );
 }

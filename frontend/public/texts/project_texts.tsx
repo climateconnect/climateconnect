@@ -1135,6 +1135,45 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       }.
       Schau's dir doch mal an: `,
     },
+    your_page_title_project: {
+      en: "Your project page",
+      de: "Deine Projektseite",
+    },
+    your_page_title_idea: {
+      en: "Your idea page",
+      de: "Deine Ideenseite",
+    },
+    your_page_title_event: {
+      en: "Your event page",
+      de: "Deine Eventseite",
+    },
+    content_is_live_headline_project: {
+      en: "Your project is live!",
+      de: "Dein Projekt ist live!",
+    },
+    content_is_live_headline_idea: {
+      en: "Your idea is live!",
+      de: "Deine Idee ist live!",
+    },
+    content_is_live_headline_event: {
+      en: "Your event is live!",
+      de: "Dein Event ist live!",
+    },
+    content_preview_caption_project: {
+      en: "This is how your project appears on ClimateConnect – click the card to view your page.",
+      de:
+        "So erscheint dein Projekt auf ClimateConnect – klicke auf die Karte, um zu deiner Seite zu gelangen.",
+    },
+    content_preview_caption_idea: {
+      en: "This is how your idea appears on ClimateConnect – click the card to view your page.",
+      de:
+        "So erscheint deine Idee auf ClimateConnect – klicke auf die Karte, um zu deiner Seite zu gelangen.",
+    },
+    content_preview_caption_event: {
+      en: "This is how your event appears on ClimateConnect – click the card to view your page.",
+      de:
+        "So erscheint dein Event auf ClimateConnect – klicke auf die Karte, um zu deiner Seite zu gelangen.",
+    },
     share_cta_headline_project: {
       en: "Spread the word about your project!",
       de: "Erzähle der Welt von deinem Projekt!",
@@ -1149,21 +1188,23 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     },
     share_cta_subtitle_project: {
       en:
-        "Your project is live – now it's time to make it known. Share it with your network and bring more people into the climate action community!",
+        "Now it's time to make it known. Share it with your network and bring more people into the climate action community!",
       de:
-        "Dein Projekt ist online – jetzt mach es bekannt! Teile es mit deinem Netzwerk und bring mehr Menschen in die Klimaschutz-Community!",
+        "Jetzt mach es bekannt! Teile es mit deinem Netzwerk und bring mehr Menschen in die Klimaschutz-Community!",
     },
     share_cta_subtitle_idea: {
       en:
-        "Your idea is live – now it's time to find supporters. Share it with your network and inspire others to join in!",
+        "Now it's time to find supporters. Share it with your network and inspire others to join in!",
       de:
-        "Deine Idee ist online – jetzt finde Unterstützer:innen! Teile sie mit deinem Netzwerk und inspiriere andere mitzumachen!",
+        "Jetzt finde Unterstützer:innen! Teile sie mit deinem Netzwerk und inspiriere andere mitzumachen!",
     },
     share_cta_subtitle_event: {
-      en:
-        "Your event is live – time to fill the room! Share the link so people can register and join you.",
-      de:
-        "Dein Event ist online – jetzt wirb dafür! Teile den Link, damit sich Menschen anmelden und dabei sein können.",
+      en: "Time to fill the room! Share the link so more people hear about it and join you.",
+      de: "Jetzt wirb dafür! Teile den Link, damit mehr Menschen davon erfahren und dabei sind.",
+    },
+    share_cta_subtitle_event_with_registration: {
+      en: "Time to fill the room! Share the link so people can register and join you.",
+      de: "Jetzt wirb dafür! Teile den Link, damit sich Menschen anmelden und dabei sein können.",
     },
     share_own_content_message_title_project: {
       en: `I just published my climate project "${project?.name}" on ClimateConnect – check it out!`,
@@ -1174,6 +1215,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: `Ich habe gerade meine Klimaidee "${project?.name}" auf ClimateConnect geteilt – schau sie dir an und mach mit!`,
     },
     share_own_content_message_title_event: {
+      en: `I'm organizing the climate event "${project?.name}" – check it out on ClimateConnect!`,
+      de: `Ich organisiere das Klima-Event "${project?.name}" – schau es dir auf ClimateConnect an!`,
+    },
+    share_own_content_message_title_event_with_registration: {
       en: `I'm organizing the climate event "${project?.name}" – check it out on ClimateConnect and register to join!`,
       de: `Ich organisiere das Klima-Event "${project?.name}" – schau es dir auf ClimateConnect an und melde dich an!`,
     },
@@ -1188,6 +1233,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     share_online_title: {
       en: "Share it online",
       de: "Online teilen",
+    },
+    share_online_description: {
+      en: "Post it where your community is – or copy the link.",
+      de: "Poste es, wo deine Community ist – oder kopiere den Link.",
     },
     qr_code_for_print_title: {
       en: "Put it on paper",
