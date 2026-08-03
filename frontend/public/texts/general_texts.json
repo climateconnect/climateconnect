@@ -211,6 +211,10 @@
     "en": "Members",
     "de": "Mitglieder"
   },
+  "events": {
+    "en": "Events",
+    "de": "Veranstaltungen"
+  },
   "hubs": {
     "en": "Hubs",
     "de": "Hubs"
@@ -258,6 +262,10 @@
   "log_in": {
     "en": "Log in",
     "de": "Einloggen"
+  },
+  "required_fields_general_notice": {
+    "en": "*Indicates a required field.",
+    "de": "*Kennzeichnet ein Pflichtfeld."
   },
   "auth_log_in": {
     "en": "Log in",
@@ -917,7 +925,7 @@
   },
   "event_calendar": {
     "en": "Event calendar",
-    "de": "Veranstaltungskalender"
+    "de": "Eventkalender"
   },
   "filters": {
     "en": "Filters",
@@ -937,10 +945,10 @@
   },
   "no_events": {
     "en": "No events found for the selected filters.",
-    "de": "Keine Veranstaltungen für die ausgewählten Filter gefunden."
+    "de": "Keine Events für die ausgewählten Filter gefunden."
   },
   "error_loading_events": {
     "en": "Failed to load events.",
-    "de": "Veranstaltungen konnten nicht geladen werden."
+    "de": "Events konnten nicht geladen werden."
   }
 }

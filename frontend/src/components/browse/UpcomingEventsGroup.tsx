@@ -1,5 +1,6 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import DateRangeRoundedIcon from "@mui/icons-material/DateRangeRounded";
 import { Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     fontWeight: 700,
-    fontSize: 22,
+    fontSize: 20,
     color: theme.palette.primary.main,
     display: "flex",
     alignItems: "center",
@@ -74,6 +75,19 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: "nowrap",
     textTransform: "none",
     alignSelf: "center",
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    "& .MuiButton-startIcon": {
+      marginRight: theme.spacing(0.5),
+    },
+    "& .MuiButton-endIcon": {
+      marginLeft: theme.spacing(0.5),
+    },
+  },
+  calendarButtonLabel: {
+    [theme.breakpoints.down(450)]: {
+      display: "none",
+    },
   },
 }));
 
@@ -102,12 +116,13 @@ export default function UpcomingEventsGroup({
             <Button
               className={classes.calendarButton}
               href={calendarHref}
+              startIcon={<DateRangeRoundedIcon />}
               endIcon={<ArrowForwardIcon />}
               variant="contained"
               color="primary"
               size="small"
             >
-              {texts.event_calendar}
+              <span className={classes.calendarButtonLabel}>{texts.event_calendar}</span>
             </Button>
           </div>
         </div>

@@ -5,8 +5,10 @@ import Cookies from "universal-cookie";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { HubContext } from "../context/HubContext";
 import { getDisplaySortTimestamp, toTimestamp } from "../../utils/eventSorting";
 import EventCardWide from "./EventCardWide";
+import NoItemsFound from "../browse/NoItemsFound";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import { Dayjs } from "dayjs";
 
@@ -137,6 +139,8 @@ export default function EventCalendarEventList({
   hubUrl?: string;
 }) {
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
+  const { hubData } = useContext(HubContext);
+  const hubName = hubData?.name;
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale });
   const theme = useTheme();
@@ -232,9 +236,7 @@ export default function EventCalendarEventList({
         </Typography>
       )}
       {!loading && !error && dayGroups.length === 0 && (
-        <Typography className={classes.emptyState}>
-          {texts.no_events ?? "No events found for the selected filters."}
-        </Typography>
+        <NoItemsFound type="events" hubName={hubName} />
       )}
       {!error &&
         dayGroups.map((group, groupIdx) => {
@@ -258,7 +260,7 @@ export default function EventCalendarEventList({
             <Box key={group.key} ref={isLastGroup ? lastElementRef : undefined}>
               <div className={classes.dayHeader}>
                 <Badge
-                  badgeContent={isToday ? "Today" : null}
+                  badgeContent={isToday ? texts.today : null}
                   color="secondary"
                   className={classes.todayBadge}
                   anchorOrigin={{ vertical: "top", horizontal: "right" }}

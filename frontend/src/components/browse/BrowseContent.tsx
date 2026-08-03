@@ -2,6 +2,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { Container, Theme, useMediaQuery } from "@mui/material";
 import _ from "lodash";
 import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
 import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
@@ -147,6 +148,7 @@ export default function BrowseContent({
   } = useContext(FilterContext);
 
   const classes = useStyles();
+  const router = useRouter();
   // Events are intentionally NOT a tab here. They are exposed as a separate
   // route (/events and /hubs/[hubUrl]/events) linked from HubTabsNavigation,
   // behind the EVENT_CALENDAR_FEATURE toggle. See eventCalendar components.
@@ -645,15 +647,28 @@ export default function BrowseContent({
             />
           </Suspense>
         )}
-        {isNarrowScreen && (
-          <MobileBottomMenu
-            tabValue={tabValue}
-            handleTabChange={handleTabChange}
-            TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-            hubAmbassador={hubAmbassador}
-            hubUrl={hubUrl}
-          />
-        )}
+        {isNarrowScreen &&
+          (() => {
+            const mobileTypes = isEventsEnabled
+              ? [...TYPES_BY_TAB_VALUE, "events"]
+              : TYPES_BY_TAB_VALUE;
+            const handleMobileTabChange = (event, newValue) => {
+              if (mobileTypes[newValue] === "events") {
+                router.push(hubUrl ? `/hubs/${hubUrl}/events` : "/events");
+                return;
+              }
+              handleTabChange(event, newValue);
+            };
+            return (
+              <MobileBottomMenu
+                tabValue={tabValue}
+                handleTabChange={handleMobileTabChange}
+                TYPES_BY_TAB_VALUE={mobileTypes}
+                hubAmbassador={hubAmbassador}
+                hubUrl={hubUrl}
+              />
+            );
+          })()}
         <Suspense fallback={<LoadingSpinner isLoading />}>
           <TabContentWrapper
             type={"projects"}

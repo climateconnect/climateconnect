@@ -14,6 +14,7 @@ beforeAll(() => {
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
+import { HubContext } from "../context/HubContext";
 import EventCalendarEventList from "./EventCalendarEventList";
 import dayjs from "dayjs";
 
@@ -75,9 +76,11 @@ function renderList(props: Partial<React.ComponentProps<typeof EventCalendarEven
   };
   return render(
     <ThemeProvider theme={theme}>
-      <UserContext.Provider value={BASE_CONTEXT as any}>
-        <EventCalendarEventList {...defaultProps} />
-      </UserContext.Provider>
+      <HubContext.Provider value={{ hubUrl: "", hubData: null, hubTheme: null, hubs: [] }}>
+        <UserContext.Provider value={BASE_CONTEXT as any}>
+          <EventCalendarEventList {...defaultProps} />
+        </UserContext.Provider>
+      </HubContext.Provider>
     </ThemeProvider>
   );
 }
@@ -131,7 +134,7 @@ describe("EventCalendarEventList", () => {
       renderList();
 
       await waitFor(() => {
-        expect(screen.getByText(/no events found/i)).toBeInTheDocument();
+        expect(screen.getByText(/could not find any events/i)).toBeInTheDocument();
       });
     });
 
@@ -191,16 +194,18 @@ describe("EventCalendarEventList", () => {
 
       rerender(
         <ThemeProvider theme={theme}>
-          <UserContext.Provider value={BASE_CONTEXT as any}>
-            <EventCalendarEventList
-              initialEvents={[]}
-              initialHasMore={false}
-              search="wind"
-              sectors={[]}
-              selectedDay={dayjs()}
-              hubUrl=""
-            />
-          </UserContext.Provider>
+          <HubContext.Provider value={{ hubUrl: "", hubData: null, hubTheme: null, hubs: [] }}>
+            <UserContext.Provider value={BASE_CONTEXT as any}>
+              <EventCalendarEventList
+                initialEvents={[]}
+                initialHasMore={false}
+                search="wind"
+                sectors={[]}
+                selectedDay={dayjs()}
+                hubUrl=""
+              />
+            </UserContext.Provider>
+          </HubContext.Provider>
         </ThemeProvider>
       );
 

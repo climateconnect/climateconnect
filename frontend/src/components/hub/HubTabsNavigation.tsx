@@ -245,7 +245,7 @@ export default function HubTabsNavigation({
       <Container maxWidth="lg" className={classes.container}>
         <div className={classes.linksAndTabsWrapper}>
           {renderTabs()}
-          {isEventsEnabled && (
+          {isEventsEnabled && !isNarrowScreen && (
             <Link
               className={isEventsPage ? classes.activeEventLink : classes.link}
               href={`${getLocalePrefix(locale)}${hubUrl ? `/hubs/${hubUrl}/events` : "/events"}`}
