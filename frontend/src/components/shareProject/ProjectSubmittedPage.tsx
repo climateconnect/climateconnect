@@ -5,12 +5,16 @@ import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import LoadingContainer from "../general/LoadingContainer";
 import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
+import ShareProjectCallToAction from "./ShareProjectCallToAction";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
     padding: theme.spacing(5),
-    marginTop: theme.spacing(10),
+    marginTop: theme.spacing(4),
+    maxWidth: theme.breakpoints.values.lg,
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   headline: {
     marginBottom: theme.spacing(3),
@@ -24,6 +28,7 @@ export default function ProjectSubmittedPage({
   hasError,
   hubName,
   projectTypeId,
+  projectName,
 }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -63,6 +68,12 @@ export default function ProjectSubmittedPage({
             {texts.we_are_really_happy_that_you_inspire_the_global_climate_action_community}
           </Typography>
           <Typography variant="h5">{projectTypeTexts.viewProject[typeId]}</Typography>
+          <ShareProjectCallToAction
+            url_slug={url_slug}
+            projectTypeId={typeId}
+            projectName={projectName}
+            hubName={hubName}
+          />
         </>
       )}
     </div>

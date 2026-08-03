@@ -1135,6 +1135,76 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       }.
       Schau's dir doch mal an: `,
     },
+    share_cta_headline_project: {
+      en: "Spread the word about your project!",
+      de: "Erzähle der Welt von deinem Projekt!",
+    },
+    share_cta_headline_idea: {
+      en: "Spread the word about your idea!",
+      de: "Erzähle der Welt von deiner Idee!",
+    },
+    share_cta_headline_event: {
+      en: "Spread the word about your event!",
+      de: "Erzähle der Welt von deinem Event!",
+    },
+    share_cta_subtitle_project: {
+      en:
+        "Your project is live – now it's time to make it known. Share it with your network and bring more people into the climate action community!",
+      de:
+        "Dein Projekt ist online – jetzt mach es bekannt! Teile es mit deinem Netzwerk und bring mehr Menschen in die Klimaschutz-Community!",
+    },
+    share_cta_subtitle_idea: {
+      en:
+        "Your idea is live – now it's time to find supporters. Share it with your network and inspire others to join in!",
+      de:
+        "Deine Idee ist online – jetzt finde Unterstützer:innen! Teile sie mit deinem Netzwerk und inspiriere andere mitzumachen!",
+    },
+    share_cta_subtitle_event: {
+      en:
+        "Your event is live – time to fill the room! Share the link so people can register and join you.",
+      de:
+        "Dein Event ist online – jetzt wirb dafür! Teile den Link, damit sich Menschen anmelden und dabei sein können.",
+    },
+    share_own_content_message_title_project: {
+      en: `I just published my climate project "${project?.name}" on ClimateConnect – check it out!`,
+      de: `Ich habe gerade mein Klimaschutzprojekt "${project?.name}" auf ClimateConnect veröffentlicht – schau es dir an!`,
+    },
+    share_own_content_message_title_idea: {
+      en: `I just shared my climate idea "${project?.name}" on ClimateConnect – have a look and get involved!`,
+      de: `Ich habe gerade meine Klimaidee "${project?.name}" auf ClimateConnect geteilt – schau sie dir an und mach mit!`,
+    },
+    share_own_content_message_title_event: {
+      en: `I'm organizing the climate event "${project?.name}" – check it out on ClimateConnect and register to join!`,
+      de: `Ich organisiere das Klima-Event "${project?.name}" – schau es dir auf ClimateConnect an und melde dich an!`,
+    },
+    share_own_content_email_body: {
+      en: `Hey,
+      I just published "${project?.name}" on ClimateConnect and would love your support.
+      Check it out and feel free to share it with others: `,
+      de: `Hey,
+      ich habe gerade "${project?.name}" auf ClimateConnect veröffentlicht und würde mich über deine Unterstützung freuen.
+      Schau es dir gerne an und teile es mit anderen: `,
+    },
+    share_online_title: {
+      en: "Share it online",
+      de: "Online teilen",
+    },
+    qr_code_for_print_title: {
+      en: "Put it on paper",
+      de: "Auf Papier bringen",
+    },
+    qr_code_for_print_description: {
+      en: "Print this QR code on flyers or posters – it links directly to your page.",
+      de: "Drucke diesen QR-Code auf Flyer oder Poster – er verlinkt direkt zu deiner Seite.",
+    },
+    download_qr_code: {
+      en: "Download QR code",
+      de: "QR-Code herunterladen",
+    },
+    qr_code_alt_text: {
+      en: "QR code linking to your page",
+      de: "QR-Code, der zu deiner Seite verlinkt",
+    },
     contact_creator_to_know_more_about_project: {
       en: `Contact ${creator?.first_name} if you want to chat about this project.`,
       de: `Kontaktiere ${creator?.first_name}, um über das Projekt zu reden.`,
