@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Dialog,
   DialogTitle,
@@ -49,11 +50,16 @@ const useStyles = makeStyles<
     marginRight: props.closeButtonRightSide ? theme.spacing(5) : theme.spacing(2),
     fontSize: 20,
     color: theme.palette.text.primary,
+    flex: 1,
   }),
-  dialogTitle: {
+  dialogTitle: (props) => ({
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: props.fullScreen ? "flex-start" : "flex-start",
+  }),
+  applyButtonArea: {
+    marginLeft: "auto",
+    flexShrink: 0,
   },
   saveIconButton: {
     background: theme.palette.primary.main,
@@ -66,6 +72,7 @@ const useStyles = makeStyles<
 }));
 
 type Props = PropsWithChildren<{
+  activeFilterCount?: number;
   applyText?: string;
   fullScreen?: boolean;
   maxWidth?: "sm" | "lg";
@@ -87,13 +94,9 @@ type Props = PropsWithChildren<{
   buttonAsLink?: string;
   PaperProps?: any;
 }>;
-/**
- * Simple base wrapper on top of the Material UI (MUI)
- * core Dialog component. This component
- * should only be used by other "*Dialog" components, like
- * "ProjectRequestersDialog".
- */
+
 export default function GenericDialog({
+  activeFilterCount,
   applyText,
   children,
   fullScreen,
@@ -127,6 +130,9 @@ export default function GenericDialog({
     onClose(false);
   };
 
+  const applyBadgeContent =
+    activeFilterCount !== undefined && activeFilterCount > 0 ? activeFilterCount : undefined;
+
   return (
     <Dialog
       className={`${classes.dialog} ${topBarFixed && classes.noScrollDialog}`}
@@ -153,22 +159,36 @@ export default function GenericDialog({
         )}
         <Typography className={`${titleTextClassName} ${classes.titleText}`}>{title}</Typography>
         {useApplyButton && applyText && !showApplyAtBottom && (
-          <>
+          <div className={classes.applyButtonArea}>
             {applyIcon && isSmallScreen ? (
-              <IconButton onClick={onApply} className={classes.saveIconButton} size="large">
-                <applyIcon.icon />
-              </IconButton>
-            ) : (
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.applyButton}
-                onClick={onApply}
+              <Badge
+                badgeContent={applyBadgeContent}
+                color="secondary"
+                max={9}
+                aria-label={applyBadgeContent ? `${applyBadgeContent} active filters` : undefined}
               >
-                {applyText}
-              </Button>
+                <IconButton onClick={onApply} className={classes.saveIconButton} size="large">
+                  <applyIcon.icon />
+                </IconButton>
+              </Badge>
+            ) : (
+              <Badge
+                badgeContent={applyBadgeContent}
+                color="secondary"
+                max={9}
+                aria-label={applyBadgeContent ? `${applyBadgeContent} active filters` : undefined}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.applyButton}
+                  onClick={onApply}
+                >
+                  {applyText}
+                </Button>
+              </Badge>
             )}
-          </>
+          </div>
         )}
         {onClose && closeButtonRightSide && (
           <IconButton

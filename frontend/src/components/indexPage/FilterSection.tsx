@@ -1,4 +1,4 @@
-import { Button, useMediaQuery, Theme } from "@mui/material";
+import { Badge, Button, useMediaQuery, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -58,6 +58,7 @@ type Props = {
   type: BrowseTab;
   customSearchBarLabels?: Record<BrowseTab, string>;
   applyBackgroundColor?: boolean;
+  activeFilterCount?: number;
 };
 
 export default function FilterSection({
@@ -67,17 +68,16 @@ export default function FilterSection({
   type,
   customSearchBarLabels,
   applyBackgroundColor = false,
+  activeFilterCount = 0,
 }: Props) {
   const { locale } = useContext(UserContext);
   const { filters } = useContext(FilterContext);
   const [value, setValue] = useState(filters.search || "");
-  // Get localized texts
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const classes = useStyles({
     applyBackgroundColor: applyBackgroundColor,
   });
-  // Default search bar labels by type
   const defaultSearchBarLabels = {
     projects: texts.search_projects,
     organizations: texts.search_organizations,
@@ -109,8 +109,6 @@ export default function FilterSection({
             className={classes.filterSearchbar}
             InputLabelClasses={InputLabelClasses}
             label={searchBarLabel}
-            // Pass submit handler through to
-            // the underlying search bar.
             onSubmit={onSubmit}
             type={type}
             value={value}
@@ -118,15 +116,22 @@ export default function FilterSection({
           />
         </div>
         {isNarrowScreen && (
-          <Button
-            variant="outlined"
-            color="grey"
-            className={classes.filterButton}
-            onClick={handleToggleFilters}
-            startIcon={<FilterIcon className={classes.icon} />}
+          <Badge
+            badgeContent={activeFilterCount > 0 ? activeFilterCount : null}
+            color="secondary"
+            max={9}
+            aria-label={activeFilterCount > 0 ? `${activeFilterCount} active filters` : undefined}
           >
-            Filter
-          </Button>
+            <Button
+              variant="outlined"
+              color="grey"
+              className={classes.filterButton}
+              onClick={handleToggleFilters}
+              startIcon={<FilterIcon className={classes.icon} />}
+            >
+              Filter
+            </Button>
+          </Badge>
         )}
       </div>
     </>

@@ -260,3 +260,28 @@ export async function applyNewFilters({
   }
   return null;
 }
+
+export function getActiveFilterCount(
+  filters: Record<string, any>,
+  possibleFiltersList: any[]
+): number {
+  let count = 0;
+  for (const pf of possibleFiltersList) {
+    if (pf.key === "search") continue;
+    const value = filters[pf.key];
+    if (pf.type === "location") {
+      if (typeof value === "object" && value !== null && Object.keys(value).length > 0) {
+        count++;
+      }
+    } else if (Array.isArray(value) && value.length > 0) {
+      count++;
+    } else if (typeof value === "string" && value.trim() !== "") {
+      count++;
+    }
+  }
+  if (filters.radius && typeof filters.radius === "string" && filters.radius.trim() !== "") {
+    const hasLocation = typeof filters.location === "object" && filters.location !== null;
+    if (!hasLocation) count++;
+  }
+  return count;
+}

@@ -5,7 +5,10 @@ import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState
 import { useRouter } from "next/router";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
-import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
+import {
+  getActiveFilterCount,
+  splitFiltersFromQueryObject,
+} from "../../../public/lib/filterOperations";
 import { getUpcomingEvents, loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
@@ -580,6 +583,13 @@ export default function BrowseContent({
     }
   };
 
+  const currentPossibleFilters = getFilters({
+    key: TYPES_BY_TAB_VALUE[tabValue],
+    filterChoices: filterChoices,
+    locale: locale,
+  });
+  const activeFilterCount = getActiveFilterCount(filters, currentPossibleFilters);
+
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
@@ -638,6 +648,7 @@ export default function BrowseContent({
         {isSmallScreen && (
           <Suspense fallback={null}>
             <FilterSection
+              activeFilterCount={activeFilterCount}
               filtersExpanded={filtersExandedOnMobile}
               onSubmit={handleSearchSubmit}
               setFiltersExpanded={isSmallScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
