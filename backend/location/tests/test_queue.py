@@ -142,6 +142,17 @@ class TestTryLocationiq(TestCase):
 
     @override_settings(LOCATIONIQ_API_KEY="test-key")
     @patch("location.queue.requests.get")
+    def test_404_is_success_not_failure(self, mock_get):
+        # LocationIQ's /autocomplete returns 404 (not 200 + []) when a query
+        # has zero matches — this is also a real "no matches" answer and
+        # must not trigger a Nominatim fallback attempt.
+        mock_get.return_value = MagicMock(status_code=404, json=lambda: {})
+        results, provider = _try_locationiq("zzzqqqnonsenseplace", "", "en")
+        self.assertEqual(results, [])
+        self.assertEqual(provider, "locationiq")
+
+    @override_settings(LOCATIONIQ_API_KEY="test-key")
+    @patch("location.queue.requests.get")
     def test_non_list_body_is_a_failure(self, mock_get):
         mock_get.return_value = MagicMock(
             status_code=200, json=lambda: {"error": "bad"}
@@ -230,11 +241,11 @@ class TestStoreResult(TestCase):
 
 
 class TestFetchAutocompleteTask(TestCase):
-    @patch("location.location_views._increment_counters")
+    @patch("location.tasks.log_autocomplete_request")
     @patch("location.tasks._fetch_results")
     @patch("location.tasks.get_redis_conn")
     def test_success_stores_result_and_clears_pending(
-        self, mock_conn, mock_fetch, mock_incr
+        self, mock_conn, mock_fetch, mock_log
     ):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
@@ -249,13 +260,13 @@ class TestFetchAutocompleteTask(TestCase):
         self.assertEqual(stored["status"], "done")
         self.assertEqual(stored["results"], [{"display_name": "Berlin"}])
         self.assertNotIn(key, mock_redis._zsets.get(LOCATIONIQ_PENDING_JOBS_KEY, {}))
-        mock_incr.assert_called_once_with("locationiq")
+        mock_log.assert_called_once_with("locationiq")
 
-    @patch("location.location_views._increment_counters")
+    @patch("location.tasks.log_autocomplete_request")
     @patch("location.tasks._fetch_results")
     @patch("location.tasks.get_redis_conn")
     def test_superseded_generation_does_not_overwrite(
-        self, mock_conn, mock_fetch, mock_incr
+        self, mock_conn, mock_fetch, mock_log
     ):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
@@ -269,13 +280,13 @@ class TestFetchAutocompleteTask(TestCase):
         self.assertEqual(
             json.loads(mock_redis._store[key]), {"status": "pending", "job_id": "job2"}
         )
-        mock_incr.assert_not_called()
+        mock_log.assert_not_called()
 
-    @patch("location.location_views._increment_counters")
+    @patch("location.tasks.log_autocomplete_request")
     @patch("location.tasks._fetch_results", side_effect=RuntimeError("boom"))
     @patch("location.tasks.get_redis_conn")
     def test_unexpected_exception_still_resolves_to_terminal_state(
-        self, mock_conn, _mock_fetch, mock_incr
+        self, mock_conn, _mock_fetch, mock_log
     ):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
@@ -287,7 +298,7 @@ class TestFetchAutocompleteTask(TestCase):
         stored = json.loads(mock_redis._store[key])
         self.assertEqual(stored["status"], "done")
         self.assertIsNone(stored["results"])
-        mock_incr.assert_not_called()
+        mock_log.assert_not_called()
 
 
 class TestLocationAutocompleteView(TestCase):

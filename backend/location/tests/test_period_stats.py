@@ -1,5 +1,7 @@
 import calendar
+import time
 from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -9,7 +11,11 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from location.models import NominatimPeriodStats, NominatimRequestLog
-from location.tasks import _get_period_keys_for_dt, aggregate_nominatim_stats
+from location.tasks import (
+    _get_period_keys_for_dt,
+    aggregate_nominatim_stats,
+    log_autocomplete_request,
+)
 
 User = get_user_model()
 
@@ -202,6 +208,148 @@ class TestAggregateNominatimStats(TestCase):
                 period_type=period_type, period_key=period_key
             )
             self.assertEqual(stats.total_requests, 5)
+
+
+class TestAggregateNominatimStatsByProvider(TestCase):
+    """
+    aggregate_nominatim_stats() must keep LocationIQ and Nominatim apart:
+    one NominatimPeriodStats row per (period, provider), with each row's
+    peak_req_per_second counting only that provider's requests — that is what
+    makes the number usable for watching LocationIQ's 2 req/s ceiling.
+    """
+
+    def setUp(self):
+        NominatimPeriodStats.objects.all().delete()
+        NominatimRequestLog.objects.all().delete()
+
+    def test_providers_get_separate_rows(self):
+        now = tz.now()
+        mk = _minute_key(now)
+        for _ in range(3):
+            NominatimRequestLog.objects.create(
+                created_at=now, minute_key=mk, provider="locationiq"
+            )
+        NominatimRequestLog.objects.create(
+            created_at=now, minute_key=mk, provider="nominatim"
+        )
+
+        aggregate_nominatim_stats()
+
+        for period_type, period_key, _ in _get_period_keys_for_dt(now):
+            self.assertEqual(
+                NominatimPeriodStats.objects.get(
+                    period_type=period_type,
+                    period_key=period_key,
+                    provider="locationiq",
+                ).total_requests,
+                3,
+            )
+            self.assertEqual(
+                NominatimPeriodStats.objects.get(
+                    period_type=period_type,
+                    period_key=period_key,
+                    provider="nominatim",
+                ).total_requests,
+                1,
+            )
+
+    def test_peak_per_second_is_counted_per_provider(self):
+        # 3 LocationIQ + 5 Nominatim requests in the *same* second. The
+        # LocationIQ peak must be 3, not 8 — otherwise Nominatim fallback
+        # traffic would look like a LocationIQ rate-limit breach.
+        second = tz.now().replace(microsecond=0)
+        mk = _minute_key(second)
+        for _ in range(3):
+            NominatimRequestLog.objects.create(
+                created_at=second, minute_key=mk, provider="locationiq"
+            )
+        for _ in range(5):
+            NominatimRequestLog.objects.create(
+                created_at=second, minute_key=mk, provider="nominatim"
+            )
+
+        aggregate_nominatim_stats()
+
+        day_key = second.strftime("%Y-%m-%d")
+        self.assertEqual(
+            NominatimPeriodStats.objects.get(
+                period_type="day", period_key=day_key, provider="locationiq"
+            ).peak_req_per_second,
+            3,
+        )
+        self.assertEqual(
+            NominatimPeriodStats.objects.get(
+                period_type="day", period_key=day_key, provider="nominatim"
+            ).peak_req_per_second,
+            5,
+        )
+
+    def test_peak_survives_across_aggregation_runs(self):
+        base = tz.now().replace(microsecond=0)
+        mk = _minute_key(base)
+        for _ in range(4):
+            NominatimRequestLog.objects.create(
+                created_at=base, minute_key=mk, provider="locationiq"
+            )
+
+        aggregate_nominatim_stats()
+
+        # A later, quieter second must not lower the recorded peak.
+        NominatimRequestLog.objects.create(
+            created_at=base + timedelta(seconds=5), minute_key=mk, provider="locationiq"
+        )
+
+        aggregate_nominatim_stats()
+
+        stats = NominatimPeriodStats.objects.get(
+            period_type="day",
+            period_key=base.strftime("%Y-%m-%d"),
+            provider="locationiq",
+        )
+        self.assertEqual(stats.total_requests, 5)
+        self.assertEqual(stats.peak_req_per_second, 4)
+
+
+class TestLogAutocompleteRequest(TestCase):
+    """Tests for the log_autocomplete_request() helper on the request path."""
+
+    def setUp(self):
+        NominatimRequestLog.objects.all().delete()
+
+    def test_writes_one_unprocessed_row_with_provider(self):
+        log_autocomplete_request("locationiq")
+
+        row = NominatimRequestLog.objects.get()
+        self.assertEqual(row.provider, "locationiq")
+        self.assertFalse(row.processed)
+        self.assertEqual(row.minute_key, int(time.time()) // 60)
+
+    def test_defaults_to_nominatim(self):
+        log_autocomplete_request()
+
+        self.assertEqual(NominatimRequestLog.objects.get().provider, "nominatim")
+
+    def test_row_is_picked_up_by_the_aggregation_task(self):
+        log_autocomplete_request("locationiq")
+
+        aggregate_nominatim_stats()
+
+        self.assertTrue(
+            NominatimPeriodStats.objects.filter(
+                period_type="day", provider="locationiq", total_requests=1
+            ).exists()
+        )
+        self.assertTrue(NominatimRequestLog.objects.get().processed)
+
+    def test_db_failure_is_swallowed(self):
+        # Tracking must never take down the request it is tracking.
+        with patch(
+            "location.models.NominatimRequestLog.objects.create",
+            side_effect=Exception("db down"),
+        ):
+            log_autocomplete_request("locationiq")
+
+        self.assertEqual(NominatimRequestLog.objects.count(), 0)
 
 
 class TestNominatimStatsView(APITestCase):
