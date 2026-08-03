@@ -99,14 +99,7 @@ export default function EditOrganizationRoot({
     return finalProfile;
   };
 
-  const isEditingInDifferentLocale = organization.language && organization.language !== locale;
-
   const saveChanges = async (editedOrg, isTranslationsStep) => {
-    if (!isTranslationsStep && isEditingInDifferentLocale) {
-      handleSetErrorMessage(texts.editing_org_in_wrong_language);
-      return;
-    }
-
     const error = verifyChanges(editedOrg, texts).error;
     //verify location is valid and notify user if it's not
     if (
@@ -246,7 +239,6 @@ export default function EditOrganizationRoot({
             allSectors={allSectors}
             type="organization"
             checkTranslationsRef={checkTranslationsButtonRef}
-            disableSaveButton={isEditingInDifferentLocale}
           />
         ) : (
           <>
