@@ -58,6 +58,10 @@ export default function getFilterAndSearchTexts({ filterType, hubName, locale })
       en: "Apply filters",
       de: "Filter anwenden",
     },
+    clear_all: {
+      en: "Clear all",
+      de: "Alle löschen",
+    },
     filters: {
       en: "Filters",
       de: "Filter",
