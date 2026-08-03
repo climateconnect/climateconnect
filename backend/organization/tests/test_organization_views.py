@@ -686,39 +686,6 @@ class TestOrganizationAPIView(APITestCase):
         self.assertEqual(data["get_involved"], "Original get involved")
 
 
-class TestCreateOrganizationTranslation(APITestCase):
-    @tag("organization", "translations")
-    def test_create_organization_translation_persists_get_involved(self):
-        # arrange
-        org = Organization.objects.create(
-            name="Source Org",
-            url_slug="source-org",
-            language=Language.objects.get(language_code="en"),
-        )
-        target_language = Language.objects.get(language_code="de")
-
-        texts = {
-            "name": "Source Org",
-            "short_description": "Short",
-            "about": "About",
-            "get_involved": "How to help",
-        }
-
-        # act
-        create_organization_translation(
-            organization=org,
-            language=target_language,
-            texts=texts,
-            is_manual_translation=False,
-        )
-        translation = OrganizationTranslation.objects.get(
-            organization=org,
-            language=target_language,
-        )
-
-        # assert
-        self.assertEqual(translation.get_involved_translation, "How to help")
-
     @tag("organiztaion", "sectors")
     def test_get_organization_by_url_slug_includes_sectors(self):
         # arrange
@@ -1064,6 +1031,40 @@ class TestCreateOrganizationTranslation(APITestCase):
             ).first()
             self.assertIsNotNone(mapping)
             self.assertEqual(mapping.order, ordering[sector.key])
+
+
+class TestCreateOrganizationTranslation(APITestCase):
+    @tag("organization", "translations")
+    def test_create_organization_translation_persists_get_involved(self):
+        # arrange
+        org = Organization.objects.create(
+            name="Source Org",
+            url_slug="source-org",
+            language=Language.objects.get(language_code="en"),
+        )
+        target_language = Language.objects.get(language_code="de")
+
+        texts = {
+            "name": "Source Org",
+            "short_description": "Short",
+            "about": "About",
+            "get_involved": "How to help",
+        }
+
+        # act
+        create_organization_translation(
+            organization=org,
+            language=target_language,
+            texts=texts,
+            is_manual_translation=False,
+        )
+        translation = OrganizationTranslation.objects.get(
+            organization=org,
+            language=target_language,
+        )
+
+        # assert
+        self.assertEqual(translation.get_involved_translation, "How to help")
 
 
 class OrganizationLocationHubFilterTest(TransactionTestCase):
