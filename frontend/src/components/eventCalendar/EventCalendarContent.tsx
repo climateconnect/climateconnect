@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Checkbox,
   Container,
@@ -10,7 +11,7 @@ import {
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import TuneIcon from "@mui/icons-material/Tune";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -190,8 +191,30 @@ export default function EventCalendarContent({
   const [viewMonth, setViewMonth] = useState<Dayjs>(initialDay.startOf("month"));
   const [dayCounts, setDayCounts] = useState<Record<string, number>>({});
 
-  // Sync filter state to URL — debounced when search changes to avoid
-  // excessive history entries and give the user time to finish typing.
+  // --- Draft state for mobile staged apply ---
+  const [draftSectors, setDraftSectors] = useState<string[]>(sectors);
+  const [draftSelectedDay, setDraftSelectedDay] = useState<Dayjs>(selectedDay);
+  const [draftViewMonth, setDraftViewMonth] = useState<Dayjs>(viewMonth);
+  const overlayOpenRef = useRef(false);
+
+  // Snapshot applied filters into draft when the dialog opens
+  useEffect(() => {
+    if (mobileFiltersOpen && !overlayOpenRef.current) {
+      setDraftSectors([...sectors]);
+      setDraftSelectedDay(selectedDay);
+      setDraftViewMonth(viewMonth);
+      overlayOpenRef.current = true;
+    }
+    if (!mobileFiltersOpen) {
+      overlayOpenRef.current = false;
+    }
+  }, [mobileFiltersOpen]);
+
+  // Active filter count: sectors + non-today date
+  const activeFilterCount =
+    (sectors.length > 0 ? 1 : 0) + (!selectedDay.isSame(dayjs(), "day") ? 1 : 0);
+
+  // Sync filter state to URL
   useEffect(() => {
     const handler = setTimeout(
       () => {
@@ -251,6 +274,41 @@ export default function EventCalendarContent({
     setSelectedDay(dayjs());
   };
 
+  // --- Mobile staged handlers ---
+  const handleToggleDraftSector = useCallback((name: string) => {
+    setDraftSectors((prev) =>
+      prev.includes(name) ? prev.filter((s) => s !== name) : [...prev, name]
+    );
+  }, []);
+
+  const handleDraftDayChange = useCallback(
+    (newValue: Dayjs | null) => {
+      const value = newValue ?? dayjs();
+      setDraftSelectedDay(value);
+      if (value.year() !== draftViewMonth.year() || value.month() !== draftViewMonth.month()) {
+        setDraftViewMonth(value.startOf("month"));
+      }
+    },
+    [draftViewMonth]
+  );
+
+  const handleDraftMonthChange = useCallback((newValue: Dayjs) => {
+    setDraftViewMonth(newValue.startOf("month"));
+  }, []);
+
+  const handleResetDraft = useCallback(() => {
+    setDraftSectors([]);
+    setDraftSelectedDay(dayjs());
+    setDraftViewMonth(dayjs().startOf("month"));
+  }, []);
+
+  const handleApplyMobileFilters = useCallback(() => {
+    setSectors(draftSectors);
+    setSelectedDay(draftSelectedDay);
+    setViewMonth(draftViewMonth);
+    setMobileFiltersOpen(false);
+  }, [draftSectors, draftSelectedDay, draftViewMonth]);
+
   const DayWithEvents = (props: any) => {
     const { day, outsideCurrentMonth, ...other } = props;
     const key = day.format("YYYY-MM-DD");
@@ -273,10 +331,6 @@ export default function EventCalendarContent({
     );
   };
 
-  const handleApplyMobileFilters = () => {
-    setMobileFiltersOpen(false);
-  };
-
   return (
     <Container maxWidth="lg" className={classes.pageContainer}>
       {isNarrowScreen && (
@@ -289,19 +343,27 @@ export default function EventCalendarContent({
             onSubmit={(_type, value) => setSearch(value)}
             type="events"
           />
-          <Button
-            className={classes.mobileFilterButton}
-            variant="outlined"
-            onClick={() => setMobileFiltersOpen(true)}
-            startIcon={<TuneIcon className={classes.mobileFilterIcon} />}
+          <Badge
+            badgeContent={activeFilterCount > 0 ? activeFilterCount : null}
+            color="secondary"
+            max={9}
+            aria-label={activeFilterCount > 0 ? `${activeFilterCount} active filters` : undefined}
           >
-            {texts.filters ?? "Filters"}
-          </Button>
+            <Button
+              className={classes.mobileFilterButton}
+              variant="outlined"
+              onClick={() => setMobileFiltersOpen(true)}
+              startIcon={<TuneIcon className={classes.mobileFilterIcon} />}
+            >
+              {texts.filters ?? "Filters"}
+            </Button>
+          </Badge>
         </div>
       )}
 
       {isNarrowScreen && (
         <GenericDialog
+          activeFilterCount={activeFilterCount}
           open={mobileFiltersOpen}
           onClose={() => setMobileFiltersOpen(false)}
           onApply={handleApplyMobileFilters}
@@ -315,15 +377,9 @@ export default function EventCalendarContent({
             <LocalizationProvider adapterLocale={locale} dateAdapter={AdapterDayjs}>
               <DateCalendar
                 className={classes.calendar}
-                value={selectedDay}
-                onChange={(newValue: Dayjs | null) => {
-                  const value = newValue ?? dayjs();
-                  setSelectedDay(value);
-                  if (value.year() !== viewMonth.year() || value.month() !== viewMonth.month()) {
-                    setViewMonth(value.startOf("month"));
-                  }
-                }}
-                onMonthChange={(newValue: Dayjs) => setViewMonth(newValue.startOf("month"))}
+                value={draftSelectedDay}
+                onChange={handleDraftDayChange}
+                onMonthChange={handleDraftMonthChange}
                 slots={{ day: DayWithEvents }}
               />
             </LocalizationProvider>
@@ -339,8 +395,8 @@ export default function EventCalendarContent({
                     control={
                       <Checkbox
                         size="small"
-                        checked={sectors.includes(s.original_name)}
-                        onChange={() => handleToggleSector(s.original_name)}
+                        checked={draftSectors.includes(s.original_name)}
+                        onChange={() => handleToggleDraftSector(s.original_name)}
                       />
                     }
                     label={
@@ -362,9 +418,9 @@ export default function EventCalendarContent({
               className={classes.resetButton}
               variant="outlined"
               color="primary"
-              onClick={handleReset}
+              onClick={handleResetDraft}
             >
-              {texts.reset ?? "Reset"}
+              {filterTexts.clear_all ?? "Clear all"}
             </Button>
           </div>
         </GenericDialog>
