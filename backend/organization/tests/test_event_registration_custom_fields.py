@@ -196,7 +196,7 @@ class TestCreateEventWithCustomFields(APITestCase):
             "translations": {},
             "project_type": self.event_project_type,
             "hubName": None,
-            "end_date": "2026-08-01T20:00:00Z",
+            "end_date": "2099-08-01T20:00:00Z",
             "start_date": "2026-07-01T10:00:00Z",
         }
 
@@ -2137,7 +2137,7 @@ class TestRegistrationFieldLabel(_CustomFieldsBase):
                 "type_id": "event",
             },
             "hubName": None,
-            "end_date": "2026-08-01T20:00:00Z",
+            "end_date": "2099-08-01T20:00:00Z",
             "start_date": "2026-07-01T10:00:00Z",
             "registration_config": {
                 "max_participants": 50,
@@ -2196,7 +2196,7 @@ class TestRegistrationFieldLabel(_CustomFieldsBase):
                 "type_id": "event",
             },
             "hubName": None,
-            "end_date": "2026-08-01T20:00:00Z",
+            "end_date": "2099-08-01T20:00:00Z",
             "start_date": "2026-07-01T10:00:00Z",
             "registration_config": {
                 "fields": [
@@ -2564,14 +2564,14 @@ class TestTimeSlotField(_CustomFieldsBase):
                         "options": [
                             {
                                 "order": 0,
-                                "start_time": "2026-08-01T10:00:00Z",
-                                "end_time": "2026-08-01T12:00:00Z",
+                                "start_time": "2099-08-01T10:00:00Z",
+                                "end_time": "2099-08-01T12:00:00Z",
                                 "available_amount": 20,
                             },
                             {
                                 "order": 1,
-                                "start_time": "2026-08-01T14:00:00Z",
-                                "end_time": "2026-08-01T16:00:00Z",
+                                "start_time": "2099-08-01T14:00:00Z",
+                                "end_time": "2099-08-01T16:00:00Z",
                             },
                         ],
                     }
@@ -2611,8 +2611,8 @@ class TestTimeSlotField(_CustomFieldsBase):
                         "options": [
                             {
                                 "order": 0,
-                                "start_time": "2026-08-01T10:00:00Z",
-                                "end_time": "2026-08-01T12:00:00Z",
+                                "start_time": "2099-08-01T10:00:00Z",
+                                "end_time": "2099-08-01T12:00:00Z",
                             }
                         ],
                     }
@@ -2663,7 +2663,7 @@ class TestTimeSlotField(_CustomFieldsBase):
                         "options": [
                             {
                                 "order": 0,
-                                "end_time": "2026-08-01T12:00:00Z",
+                                "end_time": "2099-08-01T12:00:00Z",
                             }
                         ],
                     }
@@ -2691,7 +2691,7 @@ class TestTimeSlotField(_CustomFieldsBase):
                         "options": [
                             {
                                 "order": 0,
-                                "start_time": "2026-08-01T10:00:00Z",
+                                "start_time": "2099-08-01T10:00:00Z",
                             }
                         ],
                     }
@@ -2719,8 +2719,8 @@ class TestTimeSlotField(_CustomFieldsBase):
                         "options": [
                             {
                                 "order": 0,
-                                "start_time": "2026-08-01T14:00:00Z",
-                                "end_time": "2026-08-01T12:00:00Z",
+                                "start_time": "2099-08-01T14:00:00Z",
+                                "end_time": "2099-08-01T12:00:00Z",
                             }
                         ],
                     }
@@ -2819,14 +2819,14 @@ class TestTimeSlotField(_CustomFieldsBase):
                                 "id": option.id,
                                 "title": "",
                                 "order": 0,
-                                "start_time": "2026-08-02T10:00:00Z",
-                                "end_time": "2026-08-02T12:00:00Z",
+                                "start_time": "2099-08-02T10:00:00Z",
+                                "end_time": "2099-08-02T12:00:00Z",
                                 "available_amount": 25,
                             },
                             {
                                 "order": 1,
-                                "start_time": "2026-08-02T14:00:00Z",
-                                "end_time": "2026-08-02T16:00:00Z",
+                                "start_time": "2099-08-02T14:00:00Z",
+                                "end_time": "2099-08-02T16:00:00Z",
                             },
                         ],
                     }
@@ -2879,8 +2879,8 @@ class TestTimeSlotField(_CustomFieldsBase):
                                 "id": option.id,
                                 "title": "",
                                 "order": 0,
-                                "start_time": "2026-08-01T10:00:00Z",
-                                "end_time": "2026-08-01T12:00:00Z",
+                                "start_time": "2099-08-01T10:00:00Z",
+                                "end_time": "2099-08-01T12:00:00Z",
                             }
                         ],
                     }
@@ -2931,8 +2931,8 @@ class TestTimeSlotField(_CustomFieldsBase):
                                 "id": option.id,
                                 "title": "",
                                 "order": 0,
-                                "start_time": "2026-08-15T10:00:00Z",
-                                "end_time": "2026-08-01T12:00:00Z",
+                                "start_time": "2099-08-15T10:00:00Z",
+                                "end_time": "2099-08-01T12:00:00Z",
                             }
                         ],
                     }
@@ -2983,8 +2983,8 @@ class TestTimeSlotField(_CustomFieldsBase):
                                 "id": option.id,
                                 "title": "",
                                 "order": 0,
-                                "start_time": "2026-08-01T10:00:00Z",
-                                "end_time": "2026-08-01T14:00:00Z",
+                                "start_time": "2099-08-01T10:00:00Z",
+                                "end_time": "2099-08-01T14:00:00Z",
                             }
                         ],
                     }
@@ -3152,8 +3152,8 @@ class TestTimeSlotField(_CustomFieldsBase):
                         "options": [
                             {
                                 "order": 0,
-                                "start_time": "2026-08-01T10:00:00Z",
-                                "end_time": "2026-08-01T12:00:00Z",
+                                "start_time": "2099-08-01T10:00:00Z",
+                                "end_time": "2099-08-01T12:00:00Z",
                             }
                         ],
                     }
@@ -3181,8 +3181,8 @@ class TestTimeSlotField(_CustomFieldsBase):
                         "options": [
                             {
                                 "order": 0,
-                                "start_time": "2026-08-01T10:00:00Z",
-                                "end_time": "2026-08-01T12:00:00Z",
+                                "start_time": "2099-08-01T10:00:00Z",
+                                "end_time": "2099-08-01T12:00:00Z",
                                 "available_amount": 0,
                             }
                         ],
