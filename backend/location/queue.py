@@ -123,6 +123,12 @@ def _try_locationiq(q, countrycodes, accept_language):
 
 
 def _try_nominatim(q, countrycodes, accept_language):
+    if not settings.LOCATION_SERVICE_BASE_URL:
+        logger.warning(
+            "LOCATION_SERVICE_BASE_URL is not configured, skipping Nominatim fallback"
+        )
+        return None, None
+
     url = settings.LOCATION_SERVICE_BASE_URL + "/search"
     params = {
         "q": q,

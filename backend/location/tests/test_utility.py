@@ -315,6 +315,10 @@ class TestGetLocation(TestCase):
         self.assertEqual(global_location.osm_class_type, "global")
 
 
+@override_settings(
+    LOCATION_SERVICE_BASE_URL="http://mock.location.test",
+    CUSTOM_USER_AGENT="Test-Agent",
+)
 class TestGetLocationWithStrippedGeometry(TestCase):
     """
     Autocomplete responses no longer carry polygon coordinates (they are

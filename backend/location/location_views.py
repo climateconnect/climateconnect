@@ -90,6 +90,16 @@ class GetLocationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        if not settings.LOCATION_SERVICE_BASE_URL:
+            logger.error(
+                "LOCATION_SERVICE_BASE_URL is not configured, cannot look up osm_id=%s",
+                osm_id,
+            )
+            return Response(
+                {"message": "Upstream location service is unavailable."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
         url_root = settings.LOCATION_SERVICE_BASE_URL + "/lookup?osm_ids="
         osm_id_param = osm_type_char + str(osm_id)
         params = "&format=json&addressdetails=1&polygon_geojson=1&accept-language=en-US,en;q=0.9&polygon_threshold=0.001"

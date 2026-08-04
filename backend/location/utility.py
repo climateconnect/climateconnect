@@ -225,7 +225,12 @@ def _fetch_geometry_from_provider(osm_id, osm_type):
     if not _has_non_empty_value(osm_id) or not osm_type_char:
         return None
 
-    url = settings.LOCATION_SERVICE_BASE_URL + "/lookup"
+    base_url = settings.LOCATION_SERVICE_BASE_URL
+    if not base_url:
+        logger.warning("LOCATION_SERVICE_BASE_URL is not configured, skipping lookup")
+        return None
+
+    url = base_url + "/lookup"
     params = {
         "osm_ids": f"{osm_type_char}{osm_id}",
         "format": "json",
@@ -679,7 +684,6 @@ def get_location_with_range(query_params):
     normalized_osm_type = _osm_type_char(filter_osm_type)
 
     if not location:
-        url_root = settings.LOCATION_SERVICE_BASE_URL + "/lookup?osm_ids="
         if not _has_non_empty_value(filter_osm_id) or not _has_non_empty_value(
             normalized_osm_type
         ):
@@ -692,6 +696,15 @@ def get_location_with_range(query_params):
             raise ValidationError(
                 "Missing required location lookup parameters: osm_id and osm_type are required."
             )
+
+        if not settings.LOCATION_SERVICE_BASE_URL:
+            logger.error(
+                "LOCATION_SERVICE_BASE_URL is not configured, cannot look up osm_id=%s",
+                filter_osm_id,
+            )
+            raise ValidationError("Upstream location service is unavailable.")
+
+        url_root = settings.LOCATION_SERVICE_BASE_URL + "/lookup?osm_ids="
 
         # Append osm_id to first letter of osm_type as uppercase letter
         osm_id_param = normalized_osm_type + str(filter_osm_id)
