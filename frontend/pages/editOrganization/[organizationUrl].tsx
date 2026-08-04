@@ -4,7 +4,10 @@ import getOrganizationInfoMetadata from "../../public/data/organization_info_met
 import { apiRequest, sendToLogin } from "../../public/lib/apiOperations";
 import { getSectorOptions, getOrganizationTagsOptions } from "../../public/lib/getOptions";
 
-import { parseOrganization } from "../../public/lib/organizationOperations";
+import {
+  parseOrganization,
+  getMembersByOrganization,
+} from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import UserContext from "../../src/components/context/UserContext";
@@ -23,8 +26,9 @@ export async function getServerSideProps(ctx) {
   }
   const hubUrl = ctx.query.hub;
   const url = encodeURI(ctx.query.organizationUrl);
-  const [organization, tagOptions, allSectors, hubThemeData] = await Promise.all([
+  const [organization, members, tagOptions, allSectors, hubThemeData] = await Promise.all([
     getOrganizationByUrlIfExists(url, auth_token, ctx.locale, hubUrl),
+    getMembersByOrganization(url, auth_token, ctx.locale),
     getOrganizationTagsOptions(ctx.locale),
     getSectorOptions(ctx.locale, hubUrl),
     getHubTheme(hubUrl),
@@ -33,6 +37,7 @@ export async function getServerSideProps(ctx) {
   return {
     props: nullifyUndefinedValues({
       organization: organization,
+      members: members,
       tagOptions: tagOptions,
       allSectors: getSectorOptionsForEditOrg(organization, allSectors),
       hubUrl: hubUrl,
@@ -44,18 +49,21 @@ export async function getServerSideProps(ctx) {
 //This route should only be accessible to admins of the organization
 export default function EditOrganizationPage({
   organization,
+  members,
   tagOptions,
   allSectors,
   hubUrl,
   hubThemeData,
 }: {
   organization: any;
+  members: any[];
   tagOptions: any;
   allSectors: SectorOptionType[];
   hubUrl?: string;
   hubThemeData?: any;
 }) {
-  const { locale } = useContext(UserContext);
+  const { locale, user } = useContext(UserContext);
+  const user_role = members?.find((m) => m.id === user?.id)?.role;
   const texts = getTexts({ page: "organization", locale: locale });
   const organization_info_metadata = getOrganizationInfoMetadata(locale, organization, true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -113,6 +121,7 @@ export default function EditOrganizationPage({
         organization={organization}
         tagOptions={tagOptions}
         hubUrl={hubUrl}
+        user_role={user_role}
       />
     </WideLayout>
   );
