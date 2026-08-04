@@ -1,7 +1,7 @@
-import { getIsUserFollowing } from "../../public/lib/organizationOperations";
-import { apiRequest } from "../../public/lib/apiOperations";
+import { getIsUserFollowing } from "./organizationOperations";
+import { apiRequest } from "./apiOperations";
 
-jest.mock("../../public/lib/apiOperations", () => ({
+jest.mock("./apiOperations", () => ({
   apiRequest: jest.fn(),
 }));
 
