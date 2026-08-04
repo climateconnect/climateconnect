@@ -711,6 +711,39 @@ Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row re
 **Relationships**:
 - **Referenced by**: `LocationTranslation`, `UserProfile`, `Organization`, `Project`, `Idea`, `Hub` (ManyToMany)
 
+### NominatimRequestLog
+
+**Summary**: One row per outgoing autocomplete request to a geocoding provider.
+
+**Description**: Lightweight usage log for the location autocomplete proxy. A row is written every
+time the backend actually calls an upstream provider — cached and de-duplicated queries cost no
+quota and are deliberately not logged, so these counts track **provider consumption rather than
+user traffic**. A Celery Beat task (`aggregate_nominatim_stats`, every 10 minutes) rolls unprocessed
+rows into `NominatimPeriodStats`, marks them processed, and deletes rows older than 7 days.
+
+**Key fields**:
+- `provider` — `nominatim` or `locationiq`; which upstream served the request
+- `minute_key` — epoch minutes, for grouping
+- `processed` — whether the aggregation task has consumed this row
+- `created_at` — used for both aggregation bucketing and cleanup
+
+### NominatimPeriodStats
+
+**Summary**: Aggregated autocomplete request metrics per period **and provider**.
+
+**Description**: One row per `(period_type, period_key, provider)` — so a single day has one row for
+LocationIQ and one for Nominatim. Written only by `aggregate_nominatim_stats`, read by
+`GET /api/nominatim_stats/` and by the `LOCATIONIQ_DAILY_BUDGET` guard, which uses today's
+LocationIQ total to stop calling LocationIQ once the daily allowance is spent.
+
+**Key fields**:
+- `period_type` / `period_key` — `day` (`2026-08-03`), `week` (`2026-W32`), or `month` (`2026-08`)
+- `provider` — part of the uniqueness constraint, not just a label
+- `total_requests`, `avg_req_per_second`
+- `peak_req_per_second` — the highest number of requests that arrived **within a single second**,
+  counted per provider. This is the figure to watch against LocationIQ's 2 req/s ceiling; it is
+  deliberately not a per-minute average, and Nominatim fallback traffic must not inflate it.
+
 ---
 
 ## 7. Climate Match Entities (climate_match)

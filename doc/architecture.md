@@ -833,6 +833,32 @@ Django App                Redis                Celery Workers
 - **Result Backend**: Redis (task results)
 - **Config**: `climateconnect_main/celery.py`
 
+**Queues**:
+
+Most tasks use the default queue. One task is routed to a dedicated queue via
+`CELERY_TASK_ROUTES` in `settings.py`:
+
+| Queue | Task | Why |
+|-------|------|-----|
+| default | everything else | — |
+| `lookup` | `location.tasks.fetch_autocomplete` | LocationIQ allows 2 req/s account-wide. The task carries `rate_limit=LOCATIONIQ_MAX_RATE`, and isolating it means a backlog of emails can't delay a user-facing autocomplete lookup (or vice versa). |
+
+> ⚠️ **A worker must consume the `lookup` queue, or location autocomplete silently returns nothing.**
+> `apply_async()` succeeding only means the broker accepted the message — not that anything will run
+> it. With no consumer, every autocomplete request returns `202 pending` and the frontend gives up
+> empty-handed. The backend recovers on its own after `LOCATIONIQ_STALE_PENDING_S` by fetching
+> inline (degraded but working), so watch for `"Reclaiming abandoned LocationIQ lookup"` warnings —
+> a stream of those means the `lookup` worker isn't running.
+>
+> Locally, `docker-compose.yml` defines a `celery-lookup` service (or `make celery_lookup`).
+> In production the worker is started from `start_backend.sh`, which runs Celery alongside gunicorn
+> in the same App Service container — a `lookup` consumer must be started there too, either as a
+> second `celery worker -Q lookup` process or by adding `lookup` to the existing worker's `-Q` list.
+>
+> **`fetch_autocomplete`'s rate limit is per worker process.** Two workers consuming `lookup` means
+> 2×2 req/s to LocationIQ. Do not scale that service (or the App Service instance count) without
+> replacing `rate_limit` with a distributed limiter.
+
 **Use Cases**:
 
 1. **Email Notifications**

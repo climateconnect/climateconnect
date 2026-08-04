@@ -441,6 +441,54 @@ class TestNominatimStatsView(APITestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_provider_breakdown_is_reported(self):
+        # Add a LocationIQ row alongside the existing (default: nominatim)
+        # row for the newest day.
+        NominatimPeriodStats.objects.create(
+            period_type="day",
+            period_key="2026-06-11",
+            provider="locationiq",
+            total_requests=40,
+            avg_req_per_second=0.02,
+            peak_req_per_second=2,
+        )
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.get(self.url)
+
+        day = response.data["day"]
+        # Combined totals sum across providers...
+        self.assertEqual(day["total_requests"], 140)
+        # ...but the peak is the max, not the sum: 100 nominatim and 40
+        # locationiq requests never made a 7/s burst happen.
+        self.assertEqual(day["peak_req_per_second"], 5)
+        self.assertEqual(day["providers"]["nominatim"]["total_requests"], 100)
+        self.assertEqual(day["providers"]["locationiq"]["total_requests"], 40)
+        self.assertEqual(day["providers"]["locationiq"]["peak_req_per_second"], 2)
+
+    def test_limit_counts_periods_not_rows(self):
+        # Two providers per day must still yield `limit` days, not limit/2.
+        for i in range(7):
+            NominatimPeriodStats.objects.create(
+                period_type="day",
+                period_key=f"2026-06-{11 - i:02d}",
+                provider="locationiq",
+                total_requests=10,
+                avg_req_per_second=0.001,
+                peak_req_per_second=1,
+            )
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.get(self.url, {"period_type": "day", "limit": 5})
+
+        self.assertEqual(len(response.data["periods"]), 5)
+        self.assertEqual(response.data["periods"][0]["period_key"], "2026-06-11")
+        self.assertEqual(response.data["periods"][4]["period_key"], "2026-06-07")
+        self.assertEqual(
+            sorted(response.data["periods"][0]["providers"]),
+            ["locationiq", "nominatim"],
+        )
+
     def test_invalid_period_type_returns_400(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.get(self.url, {"period_type": "year"})

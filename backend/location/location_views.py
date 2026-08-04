@@ -20,10 +20,12 @@ from location.models import (
 from location.queue import (
     LOCATIONIQ_LOOKUP_KEY_PREFIX,
     LOCATIONIQ_PENDING_JOBS_KEY,
+    LOCATIONIQ_RECLAIM_KEY_PREFIX,
     _fetch_results,
     _normalize_query,
     _store_result,
     get_redis_conn,
+    strip_geometry,
 )
 from location.serializers import LocationStubSerializer
 from location.tasks import fetch_autocomplete, log_autocomplete_request
@@ -194,6 +196,67 @@ class LocationAutocompleteView(APIView):
 
     permission_classes = [AllowAny]
 
+    def _fetch_inline(self, redis_conn, key, job_id, q, countrycodes, accept_language):
+        """
+        Do the upstream fetch in the request itself and write the terminal
+        state, exactly as the Celery task would have. Used when no task is
+        going to do it — broker unreachable at enqueue time, or an abandoned
+        sentinel being reclaimed.
+        """
+        results, provider = _fetch_results(q, countrycodes, accept_language)
+        _store_result(redis_conn, key, job_id, results, provider)
+        redis_conn.zrem(LOCATIONIQ_PENDING_JOBS_KEY, key)
+        if results is not None:
+            log_autocomplete_request(provider)
+        # Same payload shape as the cached path — geometry stripped.
+        return Response(strip_geometry(results) or [], status=status.HTTP_200_OK)
+
+    def _reclaim_if_abandoned(
+        self, redis_conn, key, normalized_q, sentinel, now, q, countrycodes, language
+    ):
+        """
+        Take over a pending sentinel that no task is going to resolve.
+
+        `apply_async` succeeding only means the message reached the broker —
+        not that anything consumed it. If the `lookup` worker is down, not
+        deployed, or the message was lost, the sentinel just sits there: every
+        poller gets a 202, the frontend gives up, and the next request for the
+        same query gets another 202 until the sentinel TTL runs out. Nothing
+        in the design notices, because from Redis' point of view the job is
+        simply still in flight.
+
+        So once a sentinel is older than the worst case a *healthy* queue can
+        produce, we assume it was abandoned and fetch inline instead. Returns
+        None when the sentinel is still plausibly in flight, or when another
+        request already holds the reclaim lock (that one is doing the work;
+        this one should keep polling).
+        """
+        created_at = sentinel.get("created_at")
+        if created_at is None:
+            # Sentinel written before this field existed — can't age it, and
+            # it will expire on its own shortly. Leave it alone.
+            return None
+        if (now - created_at) <= settings.LOCATIONIQ_STALE_PENDING_S:
+            return None
+
+        lock_key = f"{LOCATIONIQ_RECLAIM_KEY_PREFIX}{normalized_q}"
+        if not redis_conn.set(
+            lock_key, "1", nx=True, ex=settings.LOCATIONIQ_RECLAIM_LOCK_S
+        ):
+            return None
+
+        logger.warning(
+            "Reclaiming abandoned LocationIQ lookup for %r after %.1fs — no "
+            "task resolved it. Is the 'lookup' queue worker running?",
+            q,
+            now - created_at,
+        )
+        # A fresh job_id: if the original task ever does run, its
+        # compare-before-write sees a different id and won't clobber this.
+        return self._fetch_inline(
+            redis_conn, key, uuid.uuid4().hex, q, countrycodes, language
+        )
+
     def get(self, request):
         from django_ratelimit.core import is_ratelimited
 
@@ -217,8 +280,9 @@ class LocationAutocompleteView(APIView):
         accept_language = request.META.get("HTTP_ACCEPT_LANGUAGE", "en-US,en;q=0.9")
 
         redis_conn = get_redis_conn()
-        normalized_q = _normalize_query(q, countrycodes)
+        normalized_q = _normalize_query(q, countrycodes, accept_language)
         key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}{normalized_q}"
+        now = time.time()
 
         raw = redis_conn.get(key)
         if raw:
@@ -228,6 +292,19 @@ class LocationAutocompleteView(APIView):
             # Someone else's (or our own earlier poll's) lookup is already in
             # flight for this query — cheap check, doesn't count against the
             # strict per-IP limit below, and doesn't create a duplicate task.
+            # Unless nothing is actually working on it any more:
+            reclaimed = self._reclaim_if_abandoned(
+                redis_conn,
+                key,
+                normalized_q,
+                data,
+                now,
+                q,
+                countrycodes,
+                accept_language,
+            )
+            if reclaimed is not None:
+                return reclaimed
             return Response({"status": "pending"}, status=status.HTTP_202_ACCEPTED)
 
         # Strict limit — only applies to genuinely creating new, expensive work.
@@ -240,7 +317,6 @@ class LocationAutocompleteView(APIView):
         ):
             return _too_many_requests_response()
 
-        now = time.time()
         redis_conn.zremrangebyscore(
             LOCATIONIQ_PENDING_JOBS_KEY,
             "-inf",
@@ -258,7 +334,9 @@ class LocationAutocompleteView(APIView):
         job_id = uuid.uuid4().hex
         created = redis_conn.set(
             key,
-            json.dumps({"status": "pending", "job_id": job_id}),
+            # created_at is what lets a later request tell "still queued" from
+            # "nothing is coming" — see _reclaim_if_abandoned.
+            json.dumps({"status": "pending", "job_id": job_id, "created_at": now}),
             nx=True,
             ex=settings.LOCATIONIQ_SENTINEL_TTL_S,
         )
@@ -277,12 +355,9 @@ class LocationAutocompleteView(APIView):
                 "Celery broker unavailable for LocationIQ autocomplete, "
                 "falling back to direct fetch"
             )
-            results, provider = _fetch_results(q, countrycodes, accept_language)
-            _store_result(redis_conn, key, job_id, results, provider)
-            redis_conn.zrem(LOCATIONIQ_PENDING_JOBS_KEY, key)
-            if results is not None:
-                log_autocomplete_request(provider)
-            return Response(results or [], status=status.HTTP_200_OK)
+            return self._fetch_inline(
+                redis_conn, key, job_id, q, countrycodes, accept_language
+            )
 
         return Response({"status": "pending"}, status=status.HTTP_202_ACCEPTED)
 
@@ -291,12 +366,19 @@ class NominatimStatsView(APIView):
     """
     GET /api/nominatim_stats/
 
-    Returns persistent day/week/month Nominatim request stats.
+    Returns persistent day/week/month autocomplete request stats.
 
-    Without query params: returns the current day, week, and month stats.
+    Stats are stored per (period, provider), so every period reports a
+    per-provider breakdown alongside the combined totals. `total_requests`
+    and `avg_req_per_second` are summed across providers;
+    `peak_req_per_second` is the max, since it means "most requests seen in
+    one second" and summing two providers' peaks would invent a burst that
+    never happened.
 
-    With ``?period_type=<type>&limit=<N>``: returns up to N rows for the
-    given period type, ordered by period_key descending (most recent first).
+    Without query params: returns the current day, week, and month.
+
+    With ``?period_type=<type>&limit=<N>``: returns up to N *periods* (not
+    rows) for the given period type, most recent first.
 
     Requires Django staff / admin access.
     """
@@ -304,6 +386,24 @@ class NominatimStatsView(APIView):
     permission_classes = [IsAdminUser]
 
     VALID_PERIOD_TYPES = {"day", "week", "month"}
+
+    @staticmethod
+    def _serialize_period(period_key, rows):
+        """Combine one period's per-provider rows into a single entry."""
+        return {
+            "period_key": period_key,
+            "total_requests": sum(r.total_requests for r in rows),
+            "avg_req_per_second": round(sum(r.avg_req_per_second for r in rows), 5),
+            "peak_req_per_second": max(r.peak_req_per_second for r in rows),
+            "providers": {
+                r.provider: {
+                    "total_requests": r.total_requests,
+                    "avg_req_per_second": round(r.avg_req_per_second, 5),
+                    "peak_req_per_second": r.peak_req_per_second,
+                }
+                for r in rows
+            },
+        }
 
     def get(self, request):
         try:
@@ -330,20 +430,27 @@ class NominatimStatsView(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                rows = NominatimPeriodStats.objects.filter(
-                    period_type=period_type
-                ).order_by("-period_key")[:limit]
+                # `limit` counts periods, not rows — there is one row per
+                # provider per period, so slicing rows directly would return
+                # roughly half as many days as asked for.
+                period_keys = list(
+                    NominatimPeriodStats.objects.filter(period_type=period_type)
+                    .values_list("period_key", flat=True)
+                    .distinct()
+                    .order_by("-period_key")[:limit]
+                )
+                rows_by_period = {}
+                for row in NominatimPeriodStats.objects.filter(
+                    period_type=period_type, period_key__in=period_keys
+                ):
+                    rows_by_period.setdefault(row.period_key, []).append(row)
+
                 return Response(
                     {
                         "period_type": period_type,
                         "periods": [
-                            {
-                                "period_key": r.period_key,
-                                "total_requests": r.total_requests,
-                                "avg_req_per_second": round(r.avg_req_per_second, 5),
-                                "peak_req_per_second": r.peak_req_per_second,
-                            }
-                            for r in rows
+                            self._serialize_period(pk, rows_by_period[pk])
+                            for pk in period_keys
                         ],
                     }
                 )
@@ -351,18 +458,19 @@ class NominatimStatsView(APIView):
             # Default: return the latest day, week, and month.
             result = {}
             for pt in ("day", "week", "month"):
-                row = (
+                latest_key = (
                     NominatimPeriodStats.objects.filter(period_type=pt)
                     .order_by("-period_key")
+                    .values_list("period_key", flat=True)
                     .first()
                 )
-                if row:
-                    result[pt] = {
-                        "period_key": row.period_key,
-                        "total_requests": row.total_requests,
-                        "avg_req_per_second": round(row.avg_req_per_second, 5),
-                        "peak_req_per_second": row.peak_req_per_second,
-                    }
+                if latest_key:
+                    rows = list(
+                        NominatimPeriodStats.objects.filter(
+                            period_type=pt, period_key=latest_key
+                        )
+                    )
+                    result[pt] = self._serialize_period(latest_key, rows)
                 else:
                     result[pt] = None
 

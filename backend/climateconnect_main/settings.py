@@ -391,6 +391,15 @@ LOCATIONIQ_PENDING_CAP = 16  # max distinct in-flight lookups before 503 (backpr
 # LOCATIONIQ_MAX_RATE) + worst-case fetch time (LOCATIONIQ_TIMEOUT + NOMINATIM_TIMEOUT),
 # or a queued job can outlive its own sentinel — see Gap #1 in the design doc.
 LOCATIONIQ_SENTINEL_TTL_S = 20
+# How old a pending sentinel must get before a request assumes no task is
+# coming and fetches inline instead (a lost message, or no worker consuming
+# the `lookup` queue). Default is the worst case a healthy queue can produce:
+# LOCATIONIQ_PENDING_CAP / 2 per second of queue wait + LOCATIONIQ_TIMEOUT +
+# NOMINATIM_TIMEOUT. Lowering it makes a stalled lookup recover sooner but
+# risks a duplicate upstream call whenever the queue is legitimately backed
+# up; it must stay below LOCATIONIQ_SENTINEL_TTL_S to have any effect.
+LOCATIONIQ_STALE_PENDING_S = 16
+LOCATIONIQ_RECLAIM_LOCK_S = 10  # one reclaimer at a time per query
 LOCATIONIQ_RESULT_TTL_S = 300  # cache lifetime for a successful lookup
 LOCATIONIQ_NEGATIVE_TTL_S = (
     8  # cache lifetime for a failed lookup (avoid negative-caching an outage)

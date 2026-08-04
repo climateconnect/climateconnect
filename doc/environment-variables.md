@@ -356,6 +356,34 @@ Azure Blob Storage is used in production for media file storage.
 - **Example**: `"https://..."`
 - **Usage**: Geocoding addresses to coordinates, location search
 
+#### LOCATIONIQ_API_KEY
+- **Required**: ❌ No (falls back to Nominatim if unset)
+- **Type**: String
+- **Default**: `""`
+- **Description**: API key for LocationIQ, the primary provider for location autocomplete
+  (`/api/location_autocomplete/`). Kept server-side and never exposed to the browser.
+- **Example**: `"pk.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"`
+- **Usage**: An empty key makes the backend skip LocationIQ entirely and use Nominatim
+  (`LOCATION_SERVICE_BASE_URL`) for autocomplete, so the feature degrades gracefully rather than
+  breaking.
+
+#### LOCATIONIQ_DAILY_BUDGET
+- **Required**: ❌ No (no cap when unset)
+- **Type**: Integer (string)
+- **Default**: unset — **the daily cap is disabled**
+- **Description**: Maximum number of LocationIQ calls per UTC day. Once today's count crosses it,
+  the backend stops calling LocationIQ and falls through to Nominatim for the rest of the day.
+- **Example**: `"5000"`
+- **Usage**: IP-agnostic backstop that protects the shared account quota — per-IP rate limits alone
+  can't do that. Set it to your plan's daily allowance with headroom. The count comes from
+  `NominatimPeriodStats` (provider `locationiq`) and measures **upstream calls**, not HTTP requests.
+
+Related non-env settings live in `climateconnect_main/settings.py` and are tuned in code, not per
+environment: `LOCATIONIQ_MAX_RATE` (Celery `rate_limit`, 2/s), `LOCATIONIQ_PENDING_CAP`,
+`LOCATIONIQ_SENTINEL_TTL_S`, `LOCATIONIQ_STALE_PENDING_S`, `LOCATIONIQ_RESULT_TTL_S`,
+`LOCATIONIQ_NEGATIVE_TTL_S`, and the two per-IP limits. Several of them are interdependent — see
+`doc/spec/20260720_1400_locationiq_rate_limited_queue_design.md` before changing any.
+
 #### DEEPL_API_KEY
 - **Required**: ⚠️ Conditional (if using translation features)
 - **Type**: String

@@ -920,6 +920,93 @@ When `is_test=true`, the subject is prefixed with `[TEST] ` so the organiser can
 | `/api/ideas/` | POST | Yes | Create a new idea |
 | `/api/ideas/{url_slug}/` | GET | No | Get idea details |
 
+### Location
+
+| Endpoint | Method | Auth Required | Description |
+|----------|--------|---------------|-------------|
+| `/api/location_autocomplete/` | GET | No | Autocomplete search (LocationIQ, Nominatim fallback) — **polling endpoint, see below** |
+| `/api/get_location/` | POST | No | Resolve a saved location by OSM identifiers, creating it if unknown |
+| `/api/nominatim_request_count/` | POST | No | Legacy fire-and-forget request counter |
+| `/api/nominatim_stats/` | GET | Yes (staff) | Per-provider request statistics |
+
+#### `GET /api/location_autocomplete/` — asynchronous, must be polled
+
+Unlike every other endpoint here, this one **does not always return results on the first call.**
+Upstream lookups are rate-limited (LocationIQ allows 2 req/s account-wide), so a cache miss is
+queued to a Celery worker and answered later. Clients must handle `202` by re-requesting the same
+URL until it returns `200`.
+
+**Query parameters**
+
+| Param | Required | Description |
+|-------|----------|-------------|
+| `q` | yes | Search text. Outside 3–200 characters the endpoint returns `[]` without doing any work. |
+| `countrycodes` | no | ISO 3166-1 alpha-2 code(s), comma-separated, to restrict results |
+
+The `Accept-Language` header selects the language of the returned names and is part of the cache
+key, so `en` and `de` results never mix.
+
+**Responses**
+
+| Status | Body | Meaning |
+|--------|------|---------|
+| `200` | array of results (possibly empty) | Ready — either cached or fetched inline |
+| `202` | `{"status": "pending"}` | Queued; poll the same URL again |
+| `429` | `{"detail": "..."}` | Rate limited (per IP). Transient — back off and retry |
+| `503` | `{"detail": "Service busy, please retry."}` | Too many lookups in flight. Transient |
+
+`429` and `503` are **not errors to surface to users** — they mean "try again shortly". The
+reference client (`frontend/src/components/search/LocationSearchBar.tsx`) polls on `202` with a
+fast-first, backing-off schedule (250ms, 500ms, then 1s intervals) and gives up after ~6.75s.
+
+**Results carry geometry types, not geometry.** Each result's `geojson.coordinates` is `null` for
+anything that isn't a `Point` — polygons can be megabytes and autocomplete only ever displays
+names. The geometry *type* is preserved. Full geometry is restored server-side when a location is
+first saved, so the database is unaffected; clients must not rely on autocomplete for coordinates.
+
+Example:
+
+```bash
+curl "http://localhost:8000/api/location_autocomplete/?q=berlin" -H "Accept-Language: de"
+# -> 202 {"status": "pending"}
+# ...poll the same URL...
+# -> 200 [{"display_name": "Berlin, Deutschland", "geojson": {"type": "MultiPolygon", "coordinates": null}, ...}]
+```
+
+#### `GET /api/nominatim_stats/` — per-provider usage
+
+Requires Django staff access. Statistics are stored per (period, provider), so every period reports
+combined totals plus a `providers` breakdown. `total_requests` and `avg_req_per_second` are summed
+across providers; **`peak_req_per_second` is the maximum, not the sum** — it means "most requests
+seen within one second", provider specific. This per-provider `locationiq` peak is the number to watch against LocationIQ's 2 req/s
+limit.
+
+Counts track **upstream provider calls**, not incoming HTTP requests: cached and de-duplicated
+queries cost no quota and are deliberately not counted.
+
+| Param | Default | Description |
+|-------|---------|-------------|
+| `period_type` | — | `day`, `week`, or `month`. Omit to get the newest of each. |
+| `limit` | `1` | Number of **periods** to return (max 365). Only with `period_type`. |
+
+```jsonc
+// GET /api/nominatim_stats/
+{
+  "day": {
+    "period_key": "2026-08-03",
+    "total_requests": 140,
+    "avg_req_per_second": 0.0016,
+    "peak_req_per_second": 5,
+    "providers": {
+      "nominatim": { "total_requests": 100, "avg_req_per_second": 0.0011, "peak_req_per_second": 5 },
+      "locationiq": { "total_requests": 40, "avg_req_per_second": 0.0005, "peak_req_per_second": 2 }
+    }
+  },
+  "week": { "...": "..." },
+  "month": { "...": "..." }
+}
+```
+
 ---
 
 ## Troubleshooting

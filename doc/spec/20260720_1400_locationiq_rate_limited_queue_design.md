@@ -69,7 +69,25 @@ directly, not Celery's own result machinery.
 | `locationiq:lookup:<normalized_q>` | `{"status": "pending", "job_id": "<uuid>"}` then overwritten with `{"status": "done", "results": [...] \| null, "provider": "locationiq" \| "nominatim" \| null, "job_id": "<uuid>"}` | `SENTINEL_TTL_S` (≈20s) while pending; on completion refreshed to `RESULT_TTL_S` (300s) **for a real result** or `NEGATIVE_TTL_S` (≈8s) **for a failure** (`results is None`) — see Gap #7 | Single rendezvous point: cache, dedup lock, and result delivery in one key |
 | `locationiq:pending_jobs` (sorted set) | member = lookup key, score = creation timestamp | n/a (self-pruned by score on every access) | Backpressure accounting — counts distinct in-flight jobs without needing precise increment/decrement bookkeeping |
 
-`normalized_q` is unchanged from the current branch: `_normalize_query(q, countrycodes)` — lowercased, whitespace-stripped, `"{q}|{countrycodes}"`.
+`normalized_q` is `_normalize_query(q, countrycodes, accept_language)` — lowercased,
+whitespace-stripped, `"{q}|{countrycodes}|{primary_language}"`.
+
+**The language tag is load-bearing.** Provider results are localized (`display_name`,
+`address.country`), so keying without it lets the first German searcher pin German names for every
+English user for the full `RESULT_TTL_S`, and vice versa — on a bilingual site that happens
+constantly. Only the *primary* tag is used (`de-DE,de;q=0.9` -> `de`): the full header varies per
+browser and would shatter the cache into near-duplicates.
+
+**Cached results carry geometry types, not geometry.** `strip_geometry()` replaces each non-Point
+`geojson.coordinates` with `null` before the payload is stored. Autocomplete only ever displays
+names, but `polygon_geojson=1` responses can run to megabytes per country/region, and this Redis
+instance is also the Celery broker and the Channels layer — caching them is what makes the feature
+expensive. Keeping the geometry *type* preserves the frontend's Point-vs-area handling and doubles
+as the marker `location.utility.get_location()` uses: when it creates a `Location` it has never seen
+before and finds coordinates missing, it re-fetches the real polygon from the provider by
+osm_id/osm_type, so **the database still stores full-fidelity geometry**. That lookup only happens on
+first creation of a given location (existing ones resolve from the DB by OSM composite key), and a
+failed lookup degrades to a point at lat/lon rather than blocking the user's save.
 
 ## HTTP API Contract
 
@@ -108,7 +126,7 @@ q = request.query_params.get("q", "").strip()
 if not (3 <= len(q) <= 200):
     return Response([], status=200)
 
-normalized_q = _normalize_query(q, countrycodes)
+normalized_q = _normalize_query(q, countrycodes, accept_language)
 key = f"locationiq:lookup:{normalized_q}"
 redis_conn = get_redis_conn()
 
@@ -297,6 +315,19 @@ user-facing, time-sensitive request.
    full sentinel TTL.
 3. **Stale writes across sentinel generations.** The `job_id` compare-before-write in the task
    means a task from a superseded generation can't clobber a newer one's data — cheap, no locking.
+4a. **Sentinel abandoned with no task behind it.** `apply_async()` succeeding only means the broker
+   accepted the message — not that anything consumed it. If the `lookup` worker is down, never
+   deployed, or the message is lost, the sentinel sits there: every poller gets `202`, the frontend
+   gives up, and the next request for the same query gets another `202` until the sentinel TTL runs
+   out. Nothing notices, because from Redis' point of view the job is still in flight. The sentinel
+   therefore carries `created_at`, and once it is older than `LOCATIONIQ_STALE_PENDING_S` (default
+   16s — the worst case a *healthy* queue can produce: `PENDING_CAP / rate` of queue wait plus both
+   provider timeouts) a request takes it over and fetches inline under a short `SET NX` reclaim lock,
+   writing the terminal state under a **new** `job_id` so the original task's compare-before-write
+   (Gap #3) can't clobber it. This turns "autocomplete returns nothing, forever" into "the first
+   searcher waits, everyone after that gets it from cache". Lowering the threshold recovers faster
+   but risks duplicate upstream calls whenever the queue is legitimately backed up.
+
 4. **Broker unreachable at enqueue time.** `apply_async()` is wrapped in `try/except`; on failure,
    the view does `_fetch_results()` synchronously inline for that one request and writes the result
    directly, mirroring the resilience the current branch's `enqueue_request` already has for
@@ -401,6 +432,15 @@ are counted in separate runs, so a peak can be under-reported in that rare case.
 
 ## Log
 
+- 2026-08-03 — Added Gap #4a (abandoned-sentinel reclaim) so a missing/dead `lookup` consumer
+  degrades to inline fetches instead of a silent total outage; `NominatimStatsView` provider
+  breakdown; `doc/api-documentation.md`, `doc/environment-variables.md`, `doc/architecture.md` and
+  `doc/domain-entities.md` updated for the new endpoint, env vars, queue and models.
+- 2026-08-03 — Cache-key and payload fixes: `accept_language`'s primary tag added to
+  `_normalize_query` (cross-locale cache poisoning); `strip_geometry()` drops polygon coordinates
+  before caching, with `get_location()` re-fetching full geometry on first save so the DB is
+  unaffected; `NominatimStatsView` now reports a per-provider breakdown and counts `limit` in
+  periods rather than rows.
 - 2026-08-03 — Tracking rewired onto master's log+aggregate design after merging master:
   `_increment_counters`/`_get_current_period_keys` deleted from `location_views.py`,
   `log_autocomplete_request` added to `tasks.py`, `aggregate_nominatim_stats` made provider-aware.

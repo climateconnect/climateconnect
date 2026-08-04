@@ -17,22 +17,80 @@ from location.queue import (
     _store_result,
     _try_locationiq,
     get_client_ip,
+    strip_geometry,
 )
 from location.tasks import fetch_autocomplete
 
 
 class TestNormalizeQuery(TestCase):
     def test_basic(self):
-        self.assertEqual(_normalize_query("Berlin", "de"), "berlin|de")
+        self.assertEqual(_normalize_query("Berlin", "de"), "berlin|de|")
 
     def test_empty_countrycodes(self):
-        self.assertEqual(_normalize_query("Berlin", ""), "berlin|")
+        self.assertEqual(_normalize_query("Berlin", ""), "berlin||")
 
     def test_strips_whitespace(self):
-        self.assertEqual(_normalize_query("  Berlin  ", "  DE  "), "berlin|de")
+        self.assertEqual(_normalize_query("  Berlin  ", "  DE  "), "berlin|de|")
 
     def test_case_insensitive(self):
-        self.assertEqual(_normalize_query("BERLIN", "DE"), "berlin|de")
+        self.assertEqual(_normalize_query("BERLIN", "DE"), "berlin|de|")
+
+    def test_language_is_part_of_the_key(self):
+        # Provider results are localized, so an English and a German lookup
+        # for the same query must not share a cache entry.
+        self.assertNotEqual(
+            _normalize_query("Berlin", "", "en-US,en;q=0.9"),
+            _normalize_query("Berlin", "", "de-DE,de;q=0.9"),
+        )
+
+    def test_only_the_primary_language_tag_is_used(self):
+        # Otherwise every browser's slightly different Accept-Language header
+        # would get its own cache entry.
+        self.assertEqual(
+            _normalize_query("Berlin", "", "de-DE,de;q=0.9,en;q=0.8"),
+            _normalize_query("Berlin", "", "de-AT,de;q=0.7"),
+        )
+        self.assertEqual(_normalize_query("Berlin", "", "DE"), "berlin||de")
+
+
+class TestStripGeometry(TestCase):
+    def test_polygon_coordinates_are_dropped_but_type_kept(self):
+        results = [
+            {
+                "display_name": "Germany",
+                "importance": 0.9,
+                "geojson": {"type": "MultiPolygon", "coordinates": [[[[1, 2]]]]},
+            }
+        ]
+
+        stripped = strip_geometry(results)
+
+        self.assertEqual(stripped[0]["geojson"]["type"], "MultiPolygon")
+        self.assertIsNone(stripped[0]["geojson"]["coordinates"])
+        # Everything the frontend actually renders survives untouched.
+        self.assertEqual(stripped[0]["display_name"], "Germany")
+        self.assertEqual(stripped[0]["importance"], 0.9)
+
+    def test_points_are_left_alone(self):
+        # Two floats — cheap to cache, and keeping them avoids a pointless
+        # upstream geometry lookup on save for the most common case.
+        results = [{"geojson": {"type": "Point", "coordinates": [13.4, 52.5]}}]
+
+        self.assertEqual(strip_geometry(results), results)
+
+    def test_does_not_mutate_the_input(self):
+        results = [{"geojson": {"type": "Polygon", "coordinates": [[[1, 2]]]}}]
+
+        strip_geometry(results)
+
+        self.assertEqual(results[0]["geojson"]["coordinates"], [[[1, 2]]])
+
+    def test_handles_missing_and_empty_geojson(self):
+        self.assertEqual(strip_geometry([]), [])
+        self.assertIsNone(strip_geometry(None))
+        self.assertEqual(
+            strip_geometry([{"display_name": "x"}]), [{"display_name": "x"}]
+        )
 
 
 class TestGetClientIp(TestCase):
@@ -250,7 +308,7 @@ class TestFetchAutocompleteTask(TestCase):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
         mock_fetch.return_value = ([{"display_name": "Berlin"}], "locationiq")
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "job1"})
         mock_redis._zsets[LOCATIONIQ_PENDING_JOBS_KEY] = {key: time.time()}
 
@@ -271,7 +329,7 @@ class TestFetchAutocompleteTask(TestCase):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
         mock_fetch.return_value = ([{"display_name": "Stale"}], "locationiq")
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         # A newer generation already overwrote the sentinel under a different job_id.
         mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "job2"})
 
@@ -290,7 +348,7 @@ class TestFetchAutocompleteTask(TestCase):
     ):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "job1"})
 
         fetch_autocomplete.run(key, "job1", "Berlin", "", "en")
@@ -324,7 +382,7 @@ class TestLocationAutocompleteView(TestCase):
     def test_cache_hit_returns_200_with_results(self, mock_conn):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         mock_redis._store[key] = json.dumps(
             {
                 "status": "done",
@@ -342,7 +400,7 @@ class TestLocationAutocompleteView(TestCase):
     def test_cache_hit_with_empty_results_returns_200_with_empty_list(self, mock_conn):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         mock_redis._store[key] = json.dumps(
             {"status": "done", "results": [], "provider": "locationiq", "job_id": "j"}
         )
@@ -355,7 +413,7 @@ class TestLocationAutocompleteView(TestCase):
     def test_pending_sentinel_returns_202(self, mock_conn):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "j"})
         response = self.client.get(self.url, {"q": "Berlin"})
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
@@ -373,7 +431,7 @@ class TestLocationAutocompleteView(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         mock_apply_async.assert_called_once()
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         self.assertIn(key, mock_redis._store)
         self.assertEqual(json.loads(mock_redis._store[key])["status"], "pending")
         self.assertIn(key, mock_redis._zsets.get(LOCATIONIQ_PENDING_JOBS_KEY, {}))
@@ -409,17 +467,104 @@ class TestLocationAutocompleteView(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         # Terminal state written directly, and the backpressure slot released
         # rather than leaked until sentinel-TTL pruning.
         self.assertEqual(json.loads(mock_redis._store[key])["status"], "done")
         self.assertNotIn(key, mock_redis._zsets.get(LOCATIONIQ_PENDING_JOBS_KEY, {}))
 
+    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_STALE_PENDING_S=16)
+    @patch("location.location_views._fetch_results")
+    @patch("location.location_views.get_redis_conn")
+    def test_abandoned_sentinel_is_reclaimed_and_fetched_inline(
+        self, mock_conn, mock_fetch
+    ):
+        # A sentinel older than the worst case a healthy queue can produce
+        # means no task is coming (worker down / nothing consuming `lookup` /
+        # message lost). Polling it forever would strand the query.
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        mock_fetch.return_value = ([{"display_name": "Berlin"}], "locationiq")
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
+        mock_redis._store[key] = json.dumps(
+            {"status": "pending", "job_id": "lost", "created_at": time.time() - 30}
+        )
+        mock_redis._zsets[LOCATIONIQ_PENDING_JOBS_KEY] = {key: time.time() - 30}
+
+        response = self.client.get(self.url, {"q": "Berlin"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        stored = json.loads(mock_redis._store[key])
+        self.assertEqual(stored["status"], "done")
+        # New generation, so the original task can no longer clobber this.
+        self.assertNotEqual(stored["job_id"], "lost")
+        self.assertNotIn(key, mock_redis._zsets.get(LOCATIONIQ_PENDING_JOBS_KEY, {}))
+
+    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_STALE_PENDING_S=16)
+    @patch("location.location_views._fetch_results")
+    @patch("location.location_views.get_redis_conn")
+    def test_young_sentinel_is_left_alone(self, mock_conn, mock_fetch):
+        # Still plausibly queued — must keep returning 202 rather than firing
+        # a duplicate upstream call.
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
+        mock_redis._store[key] = json.dumps(
+            {"status": "pending", "job_id": "j", "created_at": time.time() - 2}
+        )
+
+        response = self.client.get(self.url, {"q": "Berlin"})
+
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        mock_fetch.assert_not_called()
+
+    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_STALE_PENDING_S=16)
+    @patch("location.location_views._fetch_results")
+    @patch("location.location_views.get_redis_conn")
+    def test_only_one_request_reclaims_a_given_query(self, mock_conn, mock_fetch):
+        # Concurrent pollers must not all fetch the same query; the loser
+        # keeps polling and picks up the winner's result.
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        mock_fetch.return_value = ([{"display_name": "Berlin"}], "locationiq")
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
+        stale = json.dumps(
+            {"status": "pending", "job_id": "lost", "created_at": time.time() - 30}
+        )
+        mock_redis._store[key] = stale
+
+        first = self.client.get(self.url, {"q": "Berlin"})
+        # Put the sentinel back to simulate a second poller that read the key
+        # before the winner finished writing.
+        mock_redis._store[key] = stale
+        second = self.client.get(self.url, {"q": "Berlin"})
+
+        self.assertEqual(first.status_code, status.HTTP_200_OK)
+        self.assertEqual(second.status_code, status.HTTP_202_ACCEPTED)
+        mock_fetch.assert_called_once()
+
+    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_STALE_PENDING_S=16)
+    @patch("location.location_views._fetch_results")
+    @patch("location.location_views.get_redis_conn")
+    def test_sentinel_without_created_at_is_not_reclaimed(self, mock_conn, mock_fetch):
+        # Written before created_at existed (mid-deploy) — can't be aged, and
+        # it expires on its own shortly.
+        mock_redis = _make_mock_redis()
+        mock_conn.return_value = mock_redis
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
+        mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "j"})
+
+        response = self.client.get(self.url, {"q": "Berlin"})
+
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        mock_fetch.assert_not_called()
+
     @patch("location.location_views.get_redis_conn")
     def test_pending_poll_does_not_consume_strict_ip_limit(self, mock_conn):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "j"})
 
         with override_settings(
@@ -453,7 +598,7 @@ class TestLocationAutocompleteView(TestCase):
     def test_loose_limit_blocks_all_traffic_including_polls(self, mock_conn):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin|"
+        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "j"})
 
         with override_settings(LOCATIONIQ_IP_RATE_LOOSE="1/s"):
