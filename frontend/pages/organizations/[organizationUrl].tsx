@@ -11,7 +11,7 @@ import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
-import { parseOrganization } from "../../public/lib/organizationOperations";
+import { getIsUserFollowing, parseOrganization } from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import AccountPage from "../../src/components/account/AccountPage";
@@ -97,7 +97,7 @@ export async function getServerSideProps(ctx) {
     getMembersByOrganization(organizationUrl, auth_token, ctx.locale),
     getOrganizationTypes(),
     getRolesOptions(auth_token, ctx.locale),
-    getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
+    auth_token ? getIsUserFollowing(organizationUrl, auth_token, ctx.locale) : null,
     getHubTheme(hubUrl),
     getAllHubs(ctx.locale),
   ]);
@@ -470,24 +470,6 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     }
   } catch (err) {
     console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
-async function getIsUserFollowing(organizationUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/organizations/" + organizationUrl + "/am_i_following/",
-      token: token,
-      locale: locale,
-    });
-    if (resp.data.length === 0) return null;
-    else {
-      return resp.data.is_following;
-    }
-  } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }

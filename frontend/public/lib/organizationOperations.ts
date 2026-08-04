@@ -58,6 +58,24 @@ export async function getUserOrganizations(token, locale) {
   }
 }
 
+export async function getIsUserFollowing(organizationUrl, token, locale) {
+  if (!token) return null;
+
+  try {
+    const resp = await apiRequest({
+      method: "get",
+      url: "/api/organizations/" + organizationUrl + "/am_i_following/",
+      token: token,
+      locale: locale,
+    });
+    if (resp.data.length === 0) return null;
+    return resp.data.is_following;
+  } catch (err: any) {
+    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
+    return null;
+  }
+}
+
 function getOrganizationInfo(organization, editMode) {
   const info = {
     location: organization.location,
