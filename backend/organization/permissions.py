@@ -1,13 +1,13 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from django.db.models import Q
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
+from climateconnect_api.models import Role
 from organization.models import (
     Organization,
     OrganizationMember,
     Project,
     ProjectMember,
 )
-from climateconnect_api.models import Role
-from django.db.models import Q
 
 
 class OrganizationProjectCreationPermission(BasePermission):
@@ -88,6 +88,9 @@ class OrganizationReadWritePermission(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True
+
+        if not request.user or not request.user.is_authenticated:
+            return False
 
         try:
             organization = Organization.objects.get(
