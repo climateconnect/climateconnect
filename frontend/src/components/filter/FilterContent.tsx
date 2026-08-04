@@ -1,8 +1,9 @@
 import { Theme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { getLocationFilterKeys } from "../../../public/data/locationFilters";
+import { getActiveFilterCount } from "../../../public/lib/filterOperations";
 import { getReducedPossibleFilters } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
 import FilterOverlay from "./FilterOverlay";
@@ -10,28 +11,17 @@ import Filters from "./Filters";
 import SelectedFilters from "./SelectedFilters";
 import { FilterContext } from "../context/FilterContext";
 
-/**
- * Util to return an array of all potential items associated with
- * a given selected filter. Traverses options, and subcategories
- * associated with that filter.
- */
 export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
-  // Immediately just return the initial filter name,
-  // if we don't need to traverse subcategories or other items to choose from.
-  // I.e. there aren't nested items to look through
   if (!currentPossibleFilter.options || currentPossibleFilter?.options?.length === 0) {
-    // Handle the case where it could be a single item
     return Array.from(selectedFiltersToCheck);
   }
 
-  // Ensure we've accurate set membership, and iterate over all items to choose from...
   const items: any[] = [];
   currentPossibleFilter.options.forEach((item) => {
     if (selectedFiltersToCheck.has(item.name)) {
       items.push(item);
     }
 
-    // Check for subcategories as well
     item?.subcategories?.forEach((subcategory) => {
       if (selectedFiltersToCheck.has(subcategory.name)) {
         items.push(subcategory);
@@ -42,25 +32,14 @@ export const findAllItems = (currentPossibleFilter, selectedFiltersToCheck) => {
   return items;
 };
 
-/**
- * For initially selected items (from the query param), we want
- * to also propagate the complete filter object through
- * to the selected items, beyond just the "name" property. The
- * possibleFilters array includes other properties and
- * metadata (like icon, iconName, title, etc.) beyond what we persist
- * in the query params.
- */
 export const reduceFilters = (currentFilters, possibleFilters) => {
   const reduced = possibleFilters.reduce((accumulator, currentPossibleFilter) => {
     if (currentPossibleFilter.type === "openMultiSelectDialogButton") {
       if (
         currentFilters &&
         currentFilters[currentPossibleFilter.key] &&
-        // Handle "Skills" case where items need to be selected
         currentFilters[currentPossibleFilter.key]?.length > 0
       ) {
-        // Ensure the membership collection is built with an array if it's a single string
-        // like "energy" under the Category filter, or "crafts" under the Skills filter
         let filtersToCheck;
         if (Array.isArray(currentFilters[currentPossibleFilter.key])) {
           filtersToCheck = new Set(currentFilters[currentPossibleFilter.key]);
@@ -68,9 +47,6 @@ export const reduceFilters = (currentFilters, possibleFilters) => {
           filtersToCheck = new Set([currentFilters[currentPossibleFilter.key]]);
         }
 
-        // If we currently have a filter set (e.g. category), then
-        // make sure we search through the possible sub items associated
-        // with that filter (e.g. options, and subcategories)
         const potentialItems = findAllItems(currentPossibleFilter, filtersToCheck);
         accumulator[currentPossibleFilter.key] = potentialItems;
       } else {
@@ -104,11 +80,6 @@ export default function FilterContent({
 
   const reducedPossibleFilters = getReducedPossibleFilters(possibleFilters);
 
-  // Update possible filters from current filters
-  // that are present in the query param in the URL.  Some
-  // types are arrays and expected as such
-  // downstream; need to handle appropriately both on initiailization
-  // and when merging in parameters from query param
   const router = useRouter();
   Object.entries(router.query).forEach(([key, value]) => {
     const locationQueryParams = getLocationFilterKeys();
@@ -117,8 +88,6 @@ export default function FilterContent({
         reducedPossibleFilters.location = initialLocationFilter;
       }
     } else if (Array.isArray(reducedPossibleFilters[key])) {
-      // If the query value is concat'd -
-      // split into multiple items
       const splitItems = (value as string).split(",");
       reducedPossibleFilters[key] = [...splitItems];
     } else {
@@ -134,7 +103,6 @@ export default function FilterContent({
 
   const [selectedItems, setSelectedItems] = useState(reduced);
 
-  //once the filters are initialized, initialize selectedItems
   useEffect(
     function () {
       if (!initialized) {
@@ -147,6 +115,27 @@ export default function FilterContent({
     [reduced]
   );
 
+  // --- Draft state for mobile staged apply ---
+  const [draftFilters, setDraftFilters] = useState(filters);
+  const [draftSelectedItems, setDraftSelectedItems] = useState(selectedItems);
+  const overlayOpenRef = useRef(false);
+
+  // Snapshot applied filters into draft when the overlay opens
+  useEffect(() => {
+    if (filtersExpanded && isSmallScreen && !overlayOpenRef.current) {
+      setDraftFilters({ ...filters });
+      setDraftSelectedItems({ ...selectedItems });
+      overlayOpenRef.current = true;
+    }
+    if (!filtersExpanded) {
+      overlayOpenRef.current = false;
+    }
+  }, [filtersExpanded, isSmallScreen]);
+
+  const activeFilterCount = getActiveFilterCount(filters, possibleFilters);
+
+  // --- Handlers ---
+
   const handleClickDialogOpen = (prop) => {
     if (!open.prop) {
       setOpen({ ...open, [prop]: true });
@@ -155,11 +144,7 @@ export default function FilterContent({
     }
   };
 
-  /**
-   * The logic filtering and update logic
-   * when we click "Apply" or "Save" in a
-   * multi-level select dialog.
-   */
+  // Desktop: immediate apply (unchanged)
   const handleClickDialogSave = (prop, results) => {
     if (results) {
       const updatedFilters = { ...filters, [prop]: results.map((x) => x.name) };
@@ -175,14 +160,11 @@ export default function FilterContent({
     setOpen({ ...open, [prop]: false });
   };
 
-  /**
-   * Handler when dismissing or closing (clicking the "X")
-   * a dialog or modal.
-   */
   const handleClickDialogClose = (prop) => {
     setOpen({ ...open, [prop]: false });
   };
 
+  // Desktop: immediate value change (unchanged)
   const handleValueChange = (key, newValue) => {
     const updatedFilters = { ...filters, [key]: newValue };
     applyFilters({
@@ -194,20 +176,11 @@ export default function FilterContent({
     handleUpdateFilters(updatedFilters);
   };
 
-  const handleApplyFilters = () => {
-    applyFilters({
-      type: type,
-      newFilters: filters,
-      closeFilters: isSmallScreen,
-      nonFilterParams: nonFilterParams,
-    });
-  };
-
-  const getUpdatedFiltersAfterUnselect = (filterName, filterKey) => {
-    //location is the only filter that can be unselected and is not supposed to be an array
+  const getUpdatedFiltersAfterUnselect = (filterName, filterKey, baseFilters?) => {
+    const src = baseFilters || filters;
     if (filterKey === "location") {
       const newFilters = {
-        ...filters,
+        ...src,
         [filterKey]: "",
       };
       const locationFilterKeys = getLocationFilterKeys();
@@ -216,28 +189,20 @@ export default function FilterContent({
       }
       return newFilters;
     }
-    // Ensure that the filtered value is an array, e.g.
-    // we can't filter on a raw string like "Energy".
-    if (!Array.isArray(filters[filterKey])) {
-      filters[filterKey] = [filters[filterKey]];
+    const srcCopy = { ...src };
+    if (!Array.isArray(srcCopy[filterKey])) {
+      srcCopy[filterKey] = [srcCopy[filterKey]];
     }
-    const prunedFilters = filters[filterKey].filter((f) => f !== filterName);
+    const prunedFilters = srcCopy[filterKey].filter((f) => f !== filterName);
     return {
-      ...filters,
+      ...srcCopy,
       [filterKey]: prunedFilters,
     };
   };
 
-  /**
-   * Reapplies filters based on two given strings: the
-   * name of the filter (e.g. "Energy") and its
-   * key (e.g. "category").
-   */
+  // Desktop: unselect filter (unchanged)
   const handleUnselectFilter = (filterName, filterKey) => {
     const updatedFilters = getUpdatedFiltersAfterUnselect(filterName, filterKey);
-    // When dismissing a selected filter chip, we also want to update the
-    // window state to reflect the currently active filters, and fetch
-    // the updated data from the server
     applyFilters({
       type: type,
       newFilters: updatedFilters,
@@ -246,7 +211,6 @@ export default function FilterContent({
     });
     handleUpdateFilters(updatedFilters);
 
-    // Also re-select items
     if (selectedItems[filterKey]) {
       setSelectedItems({
         ...selectedItems,
@@ -254,29 +218,89 @@ export default function FilterContent({
       });
     }
   };
+
+  // --- Mobile staged handlers ---
+
+  const handleStagedValueChange = useCallback((key, newValue) => {
+    setDraftFilters((prev) => ({ ...prev, [key]: newValue }));
+  }, []);
+
+  const handleStagedDialogSave = useCallback((prop, results) => {
+    if (results) {
+      setDraftFilters((prev) => ({ ...prev, [prop]: results.map((x) => x.name) }));
+    }
+    setOpen((prev) => ({ ...prev, [prop]: false }));
+  }, []);
+
+  const handleStagedUnselectFilter = useCallback((filterName, filterKey) => {
+    setDraftFilters((prev) => {
+      const updated = getUpdatedFiltersAfterUnselect(filterName, filterKey, prev);
+      return updated;
+    });
+    setDraftSelectedItems((prev) => {
+      if (prev[filterKey]) {
+        return {
+          ...prev,
+          [filterKey]: prev[filterKey].filter((i) => i.name !== filterName),
+        };
+      }
+      return prev;
+    });
+  }, []);
+
+  const handleStagedApply = useCallback(() => {
+    handleUpdateFilters(draftFilters);
+    setSelectedItems(draftSelectedItems);
+    applyFilters({
+      type: type,
+      newFilters: draftFilters,
+      closeFilters: true,
+      nonFilterParams: nonFilterParams,
+    });
+  }, [draftFilters, draftSelectedItems, type, nonFilterParams]);
+
+  const handleResetDraftFilters = useCallback(() => {
+    const resetFilters: Record<string, any> = {};
+    for (const pf of possibleFilters) {
+      if (pf.type === "location") {
+        resetFilters[pf.key] = "";
+        for (const lk of getLocationFilterKeys()) {
+          resetFilters[lk] = "";
+        }
+      } else if (pf.type === "openMultiSelectDialogButton" || pf.type === "multiselect") {
+        resetFilters[pf.key] = [];
+      } else if (pf.type === "select" || pf.type === "text") {
+        resetFilters[pf.key] = "";
+      }
+    }
+    setDraftFilters((prev) => ({ ...prev, ...resetFilters }));
+    setDraftSelectedItems({});
+  }, [possibleFilters]);
+
   return (
     <div className={className}>
       {isSmallScreen ? (
-        <>
-          <FilterOverlay
-            handleApplyFilters={handleApplyFilters}
-            errorMessage={errorMessage}
-            filtersExpanded={filtersExpanded}
-            handleClickDialogSave={handleClickDialogSave}
-            handleClickDialogClose={handleClickDialogClose}
-            handleClickDialogOpen={handleClickDialogOpen}
-            handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
-            handleUnselectFilter={handleUnselectFilter}
-            handleValueChange={handleValueChange}
-            locationInputRef={locationInputRef}
-            locationOptionsOpen={locationOptionsOpen}
-            open={open}
-            possibleFilters={possibleFilters}
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
-            unexpandFilters={unexpandFilters}
-          />
-        </>
+        <FilterOverlay
+          activeFilterCount={activeFilterCount}
+          draftFilters={draftFilters}
+          draftSelectedItems={draftSelectedItems}
+          errorMessage={errorMessage}
+          filtersExpanded={filtersExpanded}
+          handleClickDialogClose={handleClickDialogClose}
+          handleClickDialogOpen={handleClickDialogOpen}
+          handleResetDraftFilters={handleResetDraftFilters}
+          handleSetLocationOptionsOpen={handleSetLocationOptionsOpen}
+          handleStagedApply={handleStagedApply}
+          handleStagedDialogSave={handleStagedDialogSave}
+          handleStagedUnselectFilter={handleStagedUnselectFilter}
+          handleStagedValueChange={handleStagedValueChange}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          open={open}
+          possibleFilters={possibleFilters}
+          setDraftSelectedItems={setDraftSelectedItems}
+          unexpandFilters={unexpandFilters}
+        />
       ) : (
         <Filters
           errorMessage={errorMessage}
@@ -292,8 +316,6 @@ export default function FilterContent({
           possibleFilters={possibleFilters}
           selectedItems={selectedItems}
           setSelectedItems={setSelectedItems}
-          //moved Search Filter inside Filters component for desktop
-          //Search Filter props
           searchType={type}
           searchSubmit={searchSubmit}
         />
