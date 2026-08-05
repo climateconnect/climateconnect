@@ -131,6 +131,7 @@ export default function EventsPage({
         className=""
         allHubs={hubs}
         fromPage="browse"
+        subHubSegment={undefined}
       />
       <EventCalendarContent
         initialEvents={initialEvents}

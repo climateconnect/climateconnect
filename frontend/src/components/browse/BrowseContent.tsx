@@ -98,6 +98,7 @@ type BrowseContentProps = {
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
   fromPage?: "hub";
+  subHubSegment?: string;
 };
 
 export default function BrowseContent({
@@ -119,6 +120,7 @@ export default function BrowseContent({
   isLocationHub,
   linkedHubs,
   fromPage,
+  subHubSegment,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -273,8 +275,10 @@ export default function BrowseContent({
 
   const eventsContent = useMemo(() => {
     if (!shouldRenderUpcomingBand) return undefined;
-    return <UpcomingEventsGroup events={visibleEvents} hubUrl={hubUrl} />;
-  }, [shouldRenderUpcomingBand, visibleEvents, hubUrl]);
+    return (
+      <UpcomingEventsGroup events={visibleEvents} hubUrl={hubUrl} subHubSegment={subHubSegment} />
+    );
+  }, [shouldRenderUpcomingBand, visibleEvents, hubUrl, subHubSegment]);
 
   const locationInputRefs = {
     projects: useRef(null),
@@ -629,6 +633,7 @@ export default function BrowseContent({
         className={classes.hubsTabNavigation}
         allHubs={allHubs}
         fromPage={fromPage}
+        subHubSegment={subHubSegment}
       />
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         {isNarrowScreen && hubSupporters && hubName && (
@@ -685,12 +690,14 @@ export default function BrowseContent({
             type={"projects"}
             {...tabContentWrapperProps}
             eventsContent={eventsContent}
+            subHubInfoText={
+              hubData?.parent_hub ? (
+                <div className={classes.subHubInfoText}>
+                  {texts.you_are_seeing_projects_related_to}
+                </div>
+              ) : undefined
+            }
           >
-            {hubData?.parent_hub && (
-              <div className={classes.subHubInfoText}>
-                {texts.you_are_seeing_projects_related_to}
-              </div>
-            )}
             <Suspense fallback={null}>
               <ProjectPreviews
                 hasMore={state.hasMore.projects}
@@ -704,12 +711,17 @@ export default function BrowseContent({
               />
             </Suspense>
           </TabContentWrapper>
-          <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
-            {hubData?.parent_hub && (
-              <div className={classes.subHubInfoText}>
-                {texts.you_are_seeing_organizations_related_to}
-              </div>
-            )}
+          <TabContentWrapper
+            type={"organizations"}
+            {...tabContentWrapperProps}
+            subHubInfoText={
+              hubData?.parent_hub ? (
+                <div className={classes.subHubInfoText}>
+                  {texts.you_are_seeing_organizations_related_to}
+                </div>
+              ) : undefined
+            }
+          >
             <Suspense fallback={null}>
               <OrganizationPreviews
                 hasMore={state.hasMore.organizations}
@@ -721,12 +733,17 @@ export default function BrowseContent({
             </Suspense>
           </TabContentWrapper>
           {!hideMembers && (
-            <TabContentWrapper type={"members"} {...tabContentWrapperProps}>
-              {hubData?.parent_hub && (
-                <div className={classes.subHubInfoText}>
-                  {texts.you_are_seeing_members_related_to}
-                </div>
-              )}
+            <TabContentWrapper
+              type={"members"}
+              {...tabContentWrapperProps}
+              subHubInfoText={
+                hubData?.parent_hub ? (
+                  <div className={classes.subHubInfoText}>
+                    {texts.you_are_seeing_members_related_to}
+                  </div>
+                ) : undefined
+              }
+            >
               <Suspense fallback={null}>
                 <ProfilePreviews
                   hasMore={state.hasMore.members}
