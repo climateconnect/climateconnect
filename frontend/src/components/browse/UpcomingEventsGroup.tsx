@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 700,
     fontSize: 20,
-    color: theme.palette.primary.main,
+    color: theme.palette.secondary.main,
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(1),
