@@ -1,4 +1,4 @@
-import { AppBar, Container, Toolbar } from "@mui/material";
+import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import ContactCreatorButton from "./ContactCreatorButton";
@@ -66,6 +66,16 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
+  seatsInfoRow: {
+    textAlign: "center",
+    paddingBottom: theme.spacing(0.5),
+    fontWeight: 500,
+    fontSize: 15,
+    lineHeight: 1.3,
+  },
+  seatsNumber: {
+    fontWeight: 700,
+  },
 }));
 
 export default function ProjectInteractionButtons({
@@ -110,17 +120,20 @@ export default function ProjectInteractionButtons({
     adminCancelled
   );
 
-  if (screenSize.belowSmall)
+  if (screenSize.belowSmall) {
+    const hasRegistration = registrationState !== "hidden";
+    const registrationData = eventRegistration ?? project.registration_config;
+    const availableSeats = registrationData?.available_seats ?? null;
+    const maxParticipants = registrationData?.max_participants ?? null;
+    const showSeatsInfo =
+      hasRegistration &&
+      registrationState === "register" &&
+      availableSeats !== null &&
+      maxParticipants !== null;
+
     return (
       <AppBar className={classes.actionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
-          {!hasAdminPermissions && (
-            <ContactCreatorButton
-              creator={projectAdmin}
-              handleClickContact={handleClickContact}
-              withIcons={!screenSize.belowTiny}
-            />
-          )}
           {registrationState !== "hidden" ? (
             <RegistrationActionButton
               registrationState={registrationState}
@@ -130,7 +143,7 @@ export default function ProjectInteractionButtons({
               handleRegisterClick={handleRegisterClick}
               onModifyRegistrationClick={onModifyRegistrationClick}
               className={classes.registerButton}
-              showSeatsCount={true}
+              showSeatsCount={false}
               eventRegistration={eventRegistration}
               analyticsSurface="event_page"
             />
@@ -151,6 +164,18 @@ export default function ProjectInteractionButtons({
               isLoggedIn={user}
             />
           )}
+          {!hasAdminPermissions &&
+            (screenSize.belowTiny ? (
+              <Button variant="contained" color="primary" onClick={handleClickContact}>
+                {texts.contact_short}
+              </Button>
+            ) : (
+              <ContactCreatorButton
+                creator={projectAdmin}
+                handleClickContact={handleClickContact}
+                withIcons={true}
+              />
+            ))}
           <LikeButton
             texts={texts}
             screenSize={screenSize}
@@ -161,8 +186,17 @@ export default function ProjectInteractionButtons({
             bindLike={bindLike}
           />
         </Toolbar>
+        {showSeatsInfo && (
+          <Typography className={classes.seatsInfoRow} color="text.primary">
+            <span className={classes.seatsNumber}>
+              {availableSeats} / {maxParticipants}{" "}
+            </span>
+            {texts.seats_available}
+          </Typography>
+        )}
       </AppBar>
     );
+  }
 
   return (
     <Container>

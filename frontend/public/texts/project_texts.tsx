@@ -310,6 +310,10 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: "Contact",
       de: "Kontaktieren",
     },
+    contact_short: {
+      en: "Contact",
+      de: "Kontakt",
+    },
     followers: {
       en: "Followers",
       de: "Followers",
