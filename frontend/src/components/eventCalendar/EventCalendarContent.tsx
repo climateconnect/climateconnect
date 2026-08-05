@@ -170,6 +170,7 @@ export default function EventCalendarContent({
   initialSelectedDay,
   filterChoices,
   hubUrl,
+  subHubName,
 }: any) {
   const { locale } = useContext(UserContext);
   const classes = useStyles();
@@ -502,6 +503,7 @@ export default function EventCalendarContent({
             sectors={sectors}
             selectedDay={selectedDay}
             hubUrl={hubUrl}
+            subHubName={subHubName}
           />
         </div>
       </div>
