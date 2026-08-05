@@ -140,7 +140,7 @@ module.exports = withBundleAnalyzer({
         source: "/:path*",
         has: [
           { type: "host", value: `${hubSlug}.climateconnect.earth` },
-          { type: "header", key: "Accept-Language", value: "^de" },
+          { type: "header", key: "Accept-Language", value: "de.*" },
         ],
         destination: `https://climatehub.org/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
         permanent: false,
@@ -157,7 +157,7 @@ module.exports = withBundleAnalyzer({
         source: "/:path*",
         has: [
           { type: "host", value: `${hubSlug}.climatehub.org` },
-          { type: "header", key: "Accept-Language", value: "^de" },
+          { type: "header", key: "Accept-Language", value: "de.*" },
         ],
         destination: `https://climatehub.org/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
         permanent: false,
@@ -174,7 +174,7 @@ module.exports = withBundleAnalyzer({
         source: "/:path*",
         has: [
           { type: "host", value: "wue.climateconnect.earth" },
-          { type: "header", key: "Accept-Language", value: "^de" },
+          { type: "header", key: "Accept-Language", value: "de.*" },
         ],
         destination: `https://climatehub.org/de/hubs/wuerzburg?utm_source=subdomain&utm_medium=redirect&utm_campaign=wue`,
         permanent: false,
@@ -189,7 +189,7 @@ module.exports = withBundleAnalyzer({
         source: "/:path*",
         has: [
           { type: "host", value: "wue.climatehub.org" },
-          { type: "header", key: "Accept-Language", value: "^de" },
+          { type: "header", key: "Accept-Language", value: "de.*" },
         ],
         destination: `https://climatehub.org/de/hubs/wuerzburg?utm_source=subdomain&utm_medium=redirect&utm_campaign=wue`,
         permanent: false,
