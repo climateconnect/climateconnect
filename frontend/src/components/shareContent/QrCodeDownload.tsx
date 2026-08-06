@@ -9,6 +9,9 @@ const useStyles = makeStyles(() => ({
     display: "block",
     width: 160,
     height: 160,
+    //scale: 1 gives 1 pixel per QR module; nearest-neighbor upscale keeps every
+    //module edge perfectly sharp on any display density
+    imageRendering: "pixelated",
   },
 }));
 
@@ -28,23 +31,30 @@ export default function QrCodeDownload({
   altText,
 }: QrCodeDownloadProps) {
   const classes = useStyles();
-  const [dataUrl, setDataUrl] = useState("");
+  const [displayUrl, setDisplayUrl] = useState("");
+  const [downloadUrl, setDownloadUrl] = useState("");
 
   useEffect(() => {
+    //scale: 1 = 1 pixel per QR module; upscaled with image-rendering: pixelated
+    //for perfectly sharp edges on screen at any display density
+    toDataURL(url, { scale: 1, margin: 1 })
+      .then(setDisplayUrl)
+      .catch((error) => console.error(error));
+    //high-resolution version for print/download (flyers, posters)
     toDataURL(url, { width: 1024, margin: 1 })
-      .then((result) => setDataUrl(result))
+      .then(setDownloadUrl)
       .catch((error) => console.error(error));
   }, [url]);
 
-  if (!dataUrl) return null;
+  if (!displayUrl) return null;
 
   return (
     <>
-      <img src={dataUrl} className={classes.qrImage} alt={altText} />
+      <img src={displayUrl} className={classes.qrImage} alt={altText} />
       <Button
         variant="contained"
         color="primary"
-        href={dataUrl}
+        href={downloadUrl}
         download={fileName}
         startIcon={<DownloadIcon />}
       >

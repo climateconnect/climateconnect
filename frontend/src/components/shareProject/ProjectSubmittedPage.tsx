@@ -11,7 +11,10 @@ import ShareProjectCallToAction from "./ShareProjectCallToAction";
 const useStyles = makeStyles((theme) => ({
   root: {
     textAlign: "center",
-    padding: theme.spacing(5),
+    padding: theme.spacing(3),
+    [theme.breakpoints.up("sm")]: {
+      padding: theme.spacing(5),
+    },
     marginTop: theme.spacing(4),
     maxWidth: theme.breakpoints.values.lg,
     marginLeft: "auto",

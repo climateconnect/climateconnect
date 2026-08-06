@@ -22,7 +22,10 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     marginTop: theme.spacing(2),
-    padding: theme.spacing(4),
+    padding: theme.spacing(2),
+    [theme.breakpoints.up("sm")]: {
+      padding: theme.spacing(4),
+    },
     //tint derives from the active theme's primary color so it works on custom hubs
     backgroundColor: alpha(theme.palette.primary.main, 0.05),
     border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,

@@ -21,11 +21,9 @@ const useStyles = makeStyles((theme) => ({
   shareButtonsContainer: {
     paddingBottom: theme.spacing(2),
     display: "flex",
-    justifyContent: "space-between",
-    [theme.breakpoints.down("sm")]: {
-      justifyContent: "flex-start",
-      flexWrap: "wrap",
-    },
+    gap: "5px",
+    justifyContent: "center",
+    flexWrap: "wrap",
   },
   copyButton: {
     color: theme.palette.background.default_contrastText,
@@ -44,6 +42,7 @@ export default function SocialMediaShareOptions({
   texts,
 }) {
   const classes = useStyles();
+  const iconSize = tinyScreen ? 40 : 50;
 
   const facebookHashtag = "#BelieveInTogether";
   const twitterHastags = ["BelieveInTogether"];
@@ -62,14 +61,14 @@ export default function SocialMediaShareOptions({
           subject={messageTitle}
           body={mailBody}
         >
-          <EmailIcon size={50} round={true} />
+          <EmailIcon size={iconSize} round={true} />
         </EmailShareButton>
         <FacebookShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.facebook)}
           url={contentLink}
           hashtag={facebookHashtag}
         >
-          <FacebookIcon size={50} round={true} />
+          <FacebookIcon size={iconSize} round={true} />
         </FacebookShareButton>
         <TwitterShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.twitter)}
@@ -77,28 +76,28 @@ export default function SocialMediaShareOptions({
           title={messageTitle}
           hashtags={twitterHastags}
         >
-          <TwitterIcon size={50} round={true} />
+          <TwitterIcon size={iconSize} round={true} />
         </TwitterShareButton>
         <WhatsappShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)}
           url={contentLink}
           title={messageTitle}
         >
-          <WhatsappIcon size={50} round={true} />
+          <WhatsappIcon size={iconSize} round={true} />
         </WhatsappShareButton>
         <RedditShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.reddit)}
           url={contentLink}
           title={messageTitle}
         >
-          <RedditIcon size={50} round={true} />
+          <RedditIcon size={iconSize} round={true} />
         </RedditShareButton>
         <TelegramShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.telegram)}
           url={contentLink}
           title={messageTitle}
         >
-          <TelegramIcon size={50} round={true} />
+          <TelegramIcon size={iconSize} round={true} />
         </TelegramShareButton>
       </div>
       <TextField
