@@ -60,14 +60,21 @@ const useStyles = makeStyles((theme) => ({
   }),
   containerButtonsActionBar: {
     display: "flex",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
   },
-  registerButton: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
+  leftActions: {
+    display: "flex",
+    alignItems: "center",
+  },
+  rightActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(1),
   },
   seatsInfoRow: {
-    textAlign: "center",
+    textAlign: "left",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(1),
     paddingBottom: theme.spacing(0.5),
     fontWeight: 500,
     fontSize: 15,
@@ -134,57 +141,54 @@ export default function ProjectInteractionButtons({
     return (
       <AppBar className={classes.actionBar} position="fixed" elevation={0}>
         <Toolbar className={classes.containerButtonsActionBar} variant="dense">
-          {registrationState !== "hidden" ? (
-            <RegistrationActionButton
-              registrationState={registrationState}
-              project={project}
-              texts={texts}
-              isUserRegistered={isUserRegistered}
-              handleRegisterClick={handleRegisterClick}
-              onModifyRegistrationClick={onModifyRegistrationClick}
-              className={classes.registerButton}
-              showSeatsCount={false}
-              eventRegistration={eventRegistration}
-              analyticsSurface="event_page"
-            />
-          ) : (
-            <FollowButton
-              isUserFollowing={isUserFollowing}
-              handleToggleFollow={handleToggleFollowProject}
-              project={project}
-              hasAdminPermissions={hasAdminPermissions}
-              toggleShowFollowers={toggleShowFollowers}
-              followingChangePending={followingChangePending}
+          <div className={classes.leftActions}>
+            {registrationState !== "hidden" ? (
+              <RegistrationActionButton
+                registrationState={registrationState}
+                project={project}
+                texts={texts}
+                isUserRegistered={isUserRegistered}
+                handleRegisterClick={handleRegisterClick}
+                onModifyRegistrationClick={onModifyRegistrationClick}
+                showSeatsCount={false}
+                eventRegistration={eventRegistration}
+                analyticsSurface="event_page"
+              />
+            ) : (
+              <FollowButton
+                isUserFollowing={isUserFollowing}
+                handleToggleFollow={handleToggleFollowProject}
+                project={project}
+                hasAdminPermissions={hasAdminPermissions}
+                toggleShowFollowers={toggleShowFollowers}
+                followingChangePending={followingChangePending}
+                texts={texts}
+                screenSize={screenSize}
+                numberOfFollowers={numberOfFollowers}
+                bindFollow={bindFollow}
+                showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
+                showNumberInText={screenSize.belowSmall}
+                isLoggedIn={user}
+              />
+            )}
+          </div>
+          <div className={classes.rightActions}>
+            {!hasAdminPermissions && (
+              <Button variant="contained" color="primary" onClick={handleClickContact}>
+                {screenSize.belowTiny ? texts.contact_short : texts.contact}
+              </Button>
+            )}
+            <LikeButton
               texts={texts}
               screenSize={screenSize}
-              numberOfFollowers={numberOfFollowers}
-              bindFollow={bindFollow}
-              showStartIcon={screenSize.belowSmall && !screenSize.belowTiny}
-              showNumberInText={screenSize.belowSmall}
-              isLoggedIn={user}
+              isUserLiking={isUserLiking}
+              handleToggleLikeProject={handleToggleLikeProject}
+              likingChangePending={likingChangePending}
+              numberOfLikes={numberOfLikes}
+              bindLike={bindLike}
+              outlined
             />
-          )}
-          {!hasAdminPermissions &&
-            (screenSize.belowTiny ? (
-              <Button variant="contained" color="primary" onClick={handleClickContact}>
-                {texts.contact_short}
-              </Button>
-            ) : (
-              <ContactCreatorButton
-                creator={projectAdmin}
-                handleClickContact={handleClickContact}
-                withIcons={true}
-              />
-            ))}
-          <LikeButton
-            texts={texts}
-            screenSize={screenSize}
-            isUserLiking={isUserLiking}
-            handleToggleLikeProject={handleToggleLikeProject}
-            likingChangePending={likingChangePending}
-            numberOfLikes={numberOfLikes}
-            bindLike={bindLike}
-          />
+          </div>
         </Toolbar>
         {showSeatsInfo && (
           <Typography className={classes.seatsInfoRow} color="text.primary">
