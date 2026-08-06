@@ -130,6 +130,7 @@ export default function HubTabsNavigation({
   className,
   allHubs,
   fromPage,
+  subHubSegment,
 }) {
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
@@ -248,7 +249,11 @@ export default function HubTabsNavigation({
           {isEventsEnabled && !isNarrowScreen && (
             <Link
               className={isEventsPage ? classes.activeEventLink : classes.link}
-              href={`${getLocalePrefix(locale)}${hubUrl ? `/hubs/${hubUrl}/events` : "/events"}`}
+              href={`${getLocalePrefix(locale)}${
+                hubUrl
+                  ? `/hubs/${hubUrl}${subHubSegment ? `/${subHubSegment}` : ""}/events`
+                  : "/events"
+              }`}
               underline={isEventsPage ? "none" : "hover"}
             >
               {texts.event_calendar ?? "Event calendar"}

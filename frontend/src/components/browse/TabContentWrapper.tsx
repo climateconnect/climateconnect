@@ -58,6 +58,7 @@ type TabContentWrapperProps = {
   linkedHubs: LinkedHub[];
   children: ReactNode;
   eventsContent?: ReactNode;
+  subHubInfoText?: ReactNode;
 
   // Search handler
   handleSearchSubmit: any;
@@ -87,6 +88,7 @@ export default function TabContentWrapper({
   linkedHubs,
   children,
   eventsContent,
+  subHubInfoText,
   handleSearchSubmit,
 }: TabContentWrapperProps) {
   const is600to718breakpoint = useMediaQuery("(min-width:600px) and (max-width:718px)");
@@ -146,6 +148,7 @@ export default function TabContentWrapper({
         </div>
       )}
 
+      {subHubInfoText}
       {eventsContent}
       {isFiltering && !childrenRenderedRef.current && <LoadingSpinner isLoading />}
       <div style={{ opacity: isFiltering && showChildren ? 0.5 : 1, transition: "opacity 150ms" }}>

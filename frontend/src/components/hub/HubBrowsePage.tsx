@@ -52,6 +52,7 @@ export interface HubBrowsePageProps {
   headline: string;
   hubUrl: string;
   subHubUrl: string;
+  subHubSegment: string;
   image_attribution: string;
   image: string;
   isLocationHub: boolean;
@@ -76,6 +77,9 @@ export interface HubBrowsePageProps {
 export async function getHubBrowseServerSideProps(ctx: GetServerSidePropsContext) {
   const locale = ctx.locale as LocaleType;
   let hubUrl = Array.isArray(ctx.query.hubUrl) ? ctx.query.hubUrl[0] : ctx.query.hubUrl ?? "";
+  const subHubSegment = Array.isArray(ctx.query.subHub)
+    ? ctx.query.subHub[0]
+    : ctx.query.subHub ?? null;
   const { subHub } = extractHubUrlsFromContext(ctx);
 
   if (subHub) {
@@ -110,6 +114,7 @@ export async function getHubBrowseServerSideProps(ctx: GetServerSidePropsContext
     props: {
       hubUrl: ctx.query.hubUrl,
       subHubUrl: subHub || null,
+      subHubSegment: subHubSegment || null,
       isLocationHub: isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub),
       hubData: hubData,
       name: hubData?.name ?? null,
@@ -143,6 +148,7 @@ export default function HubBrowsePage({
   headline,
   hubUrl,
   subHubUrl,
+  subHubSegment,
   image_attribution,
   image,
   isLocationHub,
@@ -315,6 +321,7 @@ export default function HubBrowsePage({
                 linkedHubs={linkedHubs}
                 isLocationHub={isLocationHub}
                 fromPage="hub"
+                subHubSegment={subHubSegment}
               />
             </FilterProvider>
           </BrowseContext.Provider>
