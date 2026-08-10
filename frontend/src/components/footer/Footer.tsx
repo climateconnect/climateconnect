@@ -134,7 +134,7 @@ const SmallFooter = ({
       isFooterIcon: true,
     },
     {
-      href: "https://www.instagram.com/climate_connect.earth/",
+      href: "https://www.instagram.com/climatehub_netzwerk/",
       icon: InstagramIcon,
       altText: "Instagram",
       isFooterIcon: true,
