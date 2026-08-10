@@ -936,6 +936,19 @@ Upstream lookups are rate-limited (LocationIQ allows 2 req/s account-wide), so a
 queued to a Celery worker and answered later. Clients must handle `202` by re-requesting the same
 URL until it returns `200`.
 
+**Gated by the `LOCATIONIQ_AUTOCOMPLETE` feature toggle.** When it is off, the reference client
+does not call this endpoint at all — it calls `nominatim.openstreetmap.org` directly from the
+browser and reports the request to `/api/nominatim_request_count/`, exactly as it did before the
+LocationIQ migration. The endpoint itself keeps working while the toggle is off (clients running a
+cached JS bundle still reach it) but never calls LocationIQ; it serves the Nominatim fallback
+instead. See `doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md`.
+
+**Caching.** Successful results are cached in Redis for 24 hours on a sliding TTL — every hit
+resets the 24 hours, capped at 48 hours from the first fetch, after which the entry is re-fetched.
+The cache holds at most `LOCATIONIQ_CACHE_MAX_ENTRIES` queries (default 1000), evicting the least
+recently read. Failed lookups are cached for seconds only, so a provider outage self-corrects
+rather than being served as an empty result all day.
+
 **Query parameters**
 
 | Param | Required | Description |
@@ -984,6 +997,23 @@ limit.
 Counts track **upstream provider calls**, not incoming HTTP requests: cached and de-duplicated
 queries cost no quota and are deliberately not counted.
 
+Because of that, the no-parameter response also carries a `cache` array with the last 7 days of
+autocomplete cache hits and misses. Without it a working result cache and a drop in traffic look
+identical here, since only upstream calls reach `NominatimPeriodStats`.
+
+- **`misses`** — lookups that had to go upstream. Counted once per lookup that actually spends an
+  upstream call, never once per poll: at enqueue time for the normal queued path, or inside the
+  inline fetch used when the broker is down or an abandoned lookup is reclaimed. A reclaimed lookup
+  legitimately counts a second miss, because it really is a second upstream call for that query.
+- **`hits`** — answers served from cache with no upstream call. The `202`-poll that *collects* a
+  freshly computed result is **not** counted: it is the tail of the lookup that produced it, not a
+  saved call. (Without that exclusion every cold query would add one artificial hit and `hit_rate`
+  could never fall below ~0.5.)
+- Negative-cached failures count as neither.
+
+`hit_rate` is `null` on a day with no autocomplete traffic at all. The array is `null` if Redis
+can't be reached — the rest of the response comes from Postgres and is still served.
+
 | Param | Default | Description |
 |-------|---------|-------------|
 | `period_type` | — | `day`, `week`, or `month`. Omit to get the newest of each. |
@@ -992,6 +1022,11 @@ queries cost no quota and are deliberately not counted.
 ```jsonc
 // GET /api/nominatim_stats/
 {
+  "cache": [
+    { "day": "2026-08-04", "hits": 812, "misses": 96, "hit_rate": 0.8943 },
+    { "day": "2026-08-03", "hits": 640, "misses": 88, "hit_rate": 0.8791 }
+    // ...7 days total, newest first
+  ],
   "day": {
     "period_key": "2026-08-03",
     "total_requests": 140,

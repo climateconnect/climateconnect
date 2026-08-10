@@ -24,8 +24,13 @@ from location.queue import (
     _fetch_results,
     _normalize_query,
     _store_result,
+    get_cache_stats,
     get_redis_conn,
+    record_cache_hit,
+    record_cache_miss,
+    refresh_cache_entry,
     strip_geometry,
+    was_undelivered,
 )
 from location.serializers import LocationStubSerializer
 from location.tasks import fetch_autocomplete, log_autocomplete_request
@@ -213,13 +218,50 @@ class LocationAutocompleteView(APIView):
         going to do it — broker unreachable at enqueue time, or an abandoned
         sentinel being reclaimed.
         """
+        # A miss is "one lookup that had to go upstream", so it is counted at
+        # whichever point actually spends the call. Reclaiming an abandoned
+        # sentinel fetches a second time for a query whose first claim was
+        # already counted, and both calls are real — the count should say two.
+        record_cache_miss(redis_conn)
         results, provider = _fetch_results(q, countrycodes, accept_language)
-        _store_result(redis_conn, key, job_id, results, provider)
+        # delivered=True: unlike the Celery path, this request returns the
+        # result itself, so there is no later poll to consume the marker.
+        _store_result(redis_conn, key, job_id, results, provider, delivered=True)
         redis_conn.zrem(LOCATIONIQ_PENDING_JOBS_KEY, key)
         if results is not None:
             log_autocomplete_request(provider)
         # Same payload shape as the cached path — geometry stripped.
         return Response(strip_geometry(results) or [], status=status.HTTP_200_OK)
+
+    def _serve_cached(self, redis_conn, key, data, now):
+        """
+        Turn a terminal cache entry into a response, applying the sliding TTL.
+
+        Returns None when the entry has aged past LOCATIONIQ_MAX_CACHE_AGE_S
+        and was dropped — the caller then falls through to the normal
+        cache-miss path and re-fetches.
+        """
+        results = data.get("results")
+        if results is None:
+            # Negative-cached failure (seconds-long TTL, not in the LRU index).
+            # Serve empty as before, but don't slide its TTL and don't count it
+            # as a hit — nothing useful was cached.
+            return Response([], status=status.HTTP_200_OK)
+
+        # Must be read before refresh_cache_entry, which consumes the marker.
+        delivering = was_undelivered(data)
+
+        if not refresh_cache_entry(redis_conn, key, data, now):
+            return None
+
+        if not delivering:
+            record_cache_hit(redis_conn)
+        # Otherwise this is the poll collecting the result its own lookup just
+        # produced — the tail of the miss already counted when the sentinel was
+        # claimed, not a saved upstream call. Counting it would put a floor of
+        # ~50% under hit_rate even for a cache that never serves a repeat query.
+
+        return Response(results, status=status.HTTP_200_OK)
 
     def _reclaim_if_abandoned(
         self, redis_conn, key, normalized_q, sentinel, now, q, countrycodes, language
@@ -298,24 +340,29 @@ class LocationAutocompleteView(APIView):
         if raw:
             data = json.loads(raw)
             if data["status"] == "done":
-                return Response(data["results"] or [], status=status.HTTP_200_OK)
-            # Someone else's (or our own earlier poll's) lookup is already in
-            # flight for this query — cheap check, doesn't count against the
-            # strict per-IP limit below, and doesn't create a duplicate task.
-            # Unless nothing is actually working on it any more:
-            reclaimed = self._reclaim_if_abandoned(
-                redis_conn,
-                key,
-                normalized_q,
-                data,
-                now,
-                q,
-                countrycodes,
-                accept_language,
-            )
-            if reclaimed is not None:
-                return reclaimed
-            return Response({"status": "pending"}, status=status.HTTP_202_ACCEPTED)
+                cached = self._serve_cached(redis_conn, key, data, now)
+                if cached is not None:
+                    return cached
+                # Aged past the 48h ceiling and dropped — fall through and
+                # re-fetch it as if it had never been cached.
+            else:
+                # Someone else's (or our own earlier poll's) lookup is already
+                # in flight for this query — cheap check, doesn't count against
+                # the strict per-IP limit below, and doesn't create a duplicate
+                # task. Unless nothing is actually working on it any more:
+                reclaimed = self._reclaim_if_abandoned(
+                    redis_conn,
+                    key,
+                    normalized_q,
+                    data,
+                    now,
+                    q,
+                    countrycodes,
+                    accept_language,
+                )
+                if reclaimed is not None:
+                    return reclaimed
+                return Response({"status": "pending"}, status=status.HTTP_202_ACCEPTED)
 
         # Strict limit — only applies to genuinely creating new, expensive work.
         if is_ratelimited(
@@ -365,10 +412,15 @@ class LocationAutocompleteView(APIView):
                 "Celery broker unavailable for LocationIQ autocomplete, "
                 "falling back to direct fetch"
             )
+            # _fetch_inline counts its own miss — don't count one here too, the
+            # broker-down path still only spends a single upstream call.
             return self._fetch_inline(
                 redis_conn, key, job_id, q, countrycodes, accept_language
             )
 
+        # The task is queued, so an upstream call is going to happen. Counted
+        # here, once, rather than on every poll that follows.
+        record_cache_miss(redis_conn)
         return Response({"status": "pending"}, status=status.HTTP_202_ACCEPTED)
 
 
@@ -414,6 +466,18 @@ class NominatimStatsView(APIView):
                 for r in rows
             },
         }
+
+    @staticmethod
+    def _cache_stats():
+        """
+        Redis-backed cache counters, best effort — a Redis hiccup must not take
+        down the whole stats page, which is otherwise served from Postgres.
+        """
+        try:
+            return get_cache_stats()
+        except Exception as exc:
+            logger.warning("Could not read autocomplete cache stats: %s", exc)
+            return None
 
     def get(self, request):
         try:
@@ -465,8 +529,11 @@ class NominatimStatsView(APIView):
                     }
                 )
 
-            # Default: return the latest day, week, and month.
-            result = {}
+            # Default: return the latest day, week, and month, plus the
+            # autocomplete cache's own hit/miss counters. Without those, a
+            # working result cache and a drop in traffic look identical here,
+            # since only upstream calls reach NominatimPeriodStats.
+            result = {"cache": self._cache_stats()}
             for pt in ("day", "week", "month"):
                 latest_key = (
                     NominatimPeriodStats.objects.filter(period_type=pt)

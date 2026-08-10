@@ -1,6 +1,7 @@
 import { TextField, TextFieldProps } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import makeStyles from "@mui/styles/makeStyles";
+import axios from "axios";
 import { debounce } from "lodash";
 import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -11,6 +12,8 @@ import {
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { useFeatureToggles } from "../featureToggle";
+import { getLocaleHeader } from "../../utils/locationUtils";
 
 // Fast-first, then backing-off poll schedule (ms) for GET /api/location_autocomplete/
 // while it's returning 202 (pending). Keeps the common, uncontended case snappy
@@ -78,6 +81,12 @@ export default function LocationSearchBar({
   color,
 }: Props) {
   const { locale, hubUrl } = useContext(UserContext);
+  const { isEnabled, isLoading: togglesLoading } = useFeatureToggles();
+  // Fallback false: the backend proxy path (Redis cache + Celery lookup queue +
+  // LocationIQ) is opt-in. If the toggle can't be read we use the direct
+  // Nominatim call that ran on master for years.
+  // See doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md.
+  const useAutocompleteProxy = isEnabled("LOCATIONIQ_AUTOCOMPLETE", false);
   const classes = useStyles({ hideHelperText: hideHelperText });
   const texts = getTexts({ page: "filter_and_search", locale: locale });
   const getValue = (newValue, inputValue) => {
@@ -224,17 +233,58 @@ export default function LocationSearchBar({
       setLoading(false);
     };
 
-    const fetchWithPolling = async () => {
-      if (!searchValue) {
-        setOptions([]);
-        return;
-      }
-      const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
+    // Both provider paths resolve the same search term, so the alias lookup and
+    // the hub country restriction live here rather than being duplicated.
+    const getSearchParam = () =>
+      ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
         ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
         : searchValue;
-      let url = `/api/location_autocomplete/?q=${encodeURIComponent(searchParam)}`;
-      if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
-        url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
+
+    const getCountryRestriction = () =>
+      Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)
+        ? HUB_COUNTRY_RESTRICTIONS[hubUrl]
+        : undefined;
+
+    /**
+     * LOCATIONIQ_AUTOCOMPLETE off: call Nominatim straight from the browser,
+     * exactly as master does. Requests come from each user's own IP rather than
+     * being funnelled through one server address, which is what OSM's usage
+     * policy expects.
+     */
+    const fetchDirectFromNominatim = async () => {
+      let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+        getSearchParam()
+      )}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001`;
+      const countrycodes = getCountryRestriction();
+      if (countrycodes) {
+        url += "&countrycodes=" + countrycodes;
+      }
+      try {
+        const response = await axios.get(url, { headers: getLocaleHeader(locale) });
+        // Fire-and-forget: count this Nominatim request for rate monitoring.
+        // Placed after the call so we only track successful API usage, and
+        // deliberately *before* the `active` check: a fast typist supersedes
+        // several in-flight requests per word, and every one of them really
+        // did hit Nominatim. Skipping those would under-report the upstream
+        // volume this whole migration is being judged on.
+        apiRequest({ method: "post", url: "/api/nominatim_request_count/" }).catch(() => {});
+        // processResponseData checks `active` itself before touching state.
+        processResponseData(response.data);
+      } catch {
+        if (active) setLoading(false);
+      }
+    };
+
+    /**
+     * LOCATIONIQ_AUTOCOMPLETE on: go through the backend proxy, which answers
+     * from its Redis cache or queues a rate-limited LocationIQ lookup and
+     * replies 202 until the result is ready.
+     */
+    const fetchViaProxy = async () => {
+      let url = `/api/location_autocomplete/?q=${encodeURIComponent(getSearchParam())}`;
+      const countrycodes = getCountryRestriction();
+      if (countrycodes) {
+        url += "&countrycodes=" + countrycodes;
       }
 
       let attempt = 0;
@@ -270,13 +320,25 @@ export default function LocationSearchBar({
       }
     };
 
-    fetchWithPolling();
+    // While the toggles are still loading we fire nothing and keep the spinner:
+    // they resolve at app mount and the input is debounced by 400ms, so this is
+    // near-unreachable, but sending the very first query to the wrong provider
+    // would be worse than waiting one more render.
+    if (!searchValue) {
+      setOptions([]);
+    } else if (!togglesLoading) {
+      if (useAutocompleteProxy) {
+        fetchViaProxy();
+      } else {
+        fetchDirectFromNominatim();
+      }
+    }
 
     return () => {
       active = false;
       if (pollTimeoutId) clearTimeout(pollTimeoutId);
     };
-  }, [searchValue, locale, hubUrl]);
+  }, [searchValue, locale, hubUrl, useAutocompleteProxy, togglesLoading]);
 
   const getOptionsWithoutRedundancies = (options) => {
     //For the classes_without_hierarchy we simply return the first element if there is a redundancy

@@ -378,11 +378,69 @@ Azure Blob Storage is used in production for media file storage.
   can't do that. Set it to your plan's daily allowance with headroom. The count comes from
   `NominatimPeriodStats` (provider `locationiq`) and measures **upstream calls**, not HTTP requests.
 
+#### LOCATIONIQ_RESULT_TTL_S
+- **Required**: ❌ No
+- **Type**: Integer (string)
+- **Default**: `86400` (24 hours)
+- **Description**: How long a successful autocomplete result stays cached in Redis. The TTL is
+  *sliding*: every cache hit resets it back to this value, but never beyond
+  `LOCATIONIQ_MAX_CACHE_AGE_S` from when the entry was first fetched.
+- **Usage**: Raise it to spend less LocationIQ quota, lower it to pick up upstream data changes
+  sooner. Failed lookups are unaffected — they use the much shorter `LOCATIONIQ_NEGATIVE_TTL_S`.
+
+#### LOCATIONIQ_MAX_CACHE_AGE_S
+- **Required**: ❌ No
+- **Type**: Integer (string)
+- **Default**: `172800` (48 hours)
+- **Description**: Absolute ceiling on a cached result's age. Once an entry is this old it is
+  discarded and re-fetched no matter how often it has been read.
+- **Usage**: The guarantee that a renamed place or a corrected boundary self-heals without anyone
+  clearing the cache by hand. Must be ≥ `LOCATIONIQ_RESULT_TTL_S` to have any effect — settings
+  load emits a `RuntimeWarning` if it isn't, because the combination silently makes the sliding
+  result TTL unreachable rather than failing outright.
+
+#### LOCATIONIQ_CACHE_MAX_ENTRIES
+- **Required**: ❌ No
+- **Type**: Integer (string)
+- **Default**: `1000` (~7 MB — cached entries are ~7 KB once polygons are stripped)
+- **Description**: Hard cap on how many autocomplete queries are cached. Enforced by an explicit
+  LRU index (`locationiq:lru`), evicting the least recently *read* entry.
+- **Usage**: Redis is shared with the Celery broker and the Channels layer, so this bounds the
+  cache's footprint there. Raising it lowers LocationIQ spend (more prefix queries stay cached);
+  lower it if the Redis tier is tight. `0` disables the cap entirely — not recommended.
+
+All three of the cache settings above are read with the `int_env()` helper in `settings.py`, so
+declaring one with an empty value (`LOCATIONIQ_RESULT_TTL_S=`) falls back to its default instead of
+raising `ValueError` at import and refusing to boot.
+
 Related non-env settings live in `climateconnect_main/settings.py` and are tuned in code, not per
-environment: `LOCATIONIQ_MAX_RATE` (Celery `rate_limit`, 2/s), `LOCATIONIQ_PENDING_CAP`,
-`LOCATIONIQ_SENTINEL_TTL_S`, `LOCATIONIQ_STALE_PENDING_S`, `LOCATIONIQ_RESULT_TTL_S`,
-`LOCATIONIQ_NEGATIVE_TTL_S`, and the two per-IP limits. Several of them are interdependent — see
+environment: `LOCATIONIQ_MAX_RATE` (Celery `rate_limit`, 2/s — should be `1/s` while the
+`LOCATIONIQ_AUTOCOMPLETE` toggle is off in production, since the Nominatim fallback then carries
+all proxy traffic from a single server IP; note `LOCATIONIQ_SENTINEL_TTL_S` and
+`LOCATIONIQ_STALE_PENDING_S` are derived from it), `LOCATIONIQ_PENDING_CAP`,
+`LOCATIONIQ_SENTINEL_TTL_S`, `LOCATIONIQ_STALE_PENDING_S`, `LOCATIONIQ_NEGATIVE_TTL_S`,
+`LOCATIONIQ_STATS_TTL_S`, and the two per-IP limits. Several of them are interdependent — see
 `doc/spec/20260720_1400_locationiq_rate_limited_queue_design.md` before changing any.
+
+Whether the backend calls LocationIQ at all is controlled by the `LOCATIONIQ_AUTOCOMPLETE` feature
+toggle rather than by an environment variable — see `FEATURE_TOGGLE_ENVIRONMENT` below and
+`doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md`.
+
+#### FEATURE_TOGGLE_ENVIRONMENT
+- **Required**: ❌ No
+- **Type**: String
+- **Values**: `"development"` | `"staging"` | `"production"`
+- **Default**: falls back to `ENVIRONMENT` (with `"test"` mapped to `"development"`)
+- **Description**: Which column of the `FeatureToggle` table **backend** code reads. Frontend
+  toggle reads are unaffected — those detect the environment from the request host.
+- **Usage**: Set it explicitly to `"staging"` on the staging slot. That slot runs the same
+  artifact, and therefore the same `ENVIRONMENT` value, as production, so without this override a
+  backend toggle read on staging resolves against the *production* column. Kept separate from
+  `ENVIRONMENT` so that changing it does not also flip the Celery SSL configuration, which keys off
+  `ENVIRONMENT == "production"`.
+- **Note**: a value outside the three listed emits a `RuntimeWarning` at settings load. Without it
+  the failure is near-silent — every backend toggle read falls back to its default, which looks
+  exactly like the toggles being switched off.
 
 #### DEEPL_API_KEY
 - **Required**: ⚠️ Conditional (if using translation features)

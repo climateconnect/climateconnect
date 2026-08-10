@@ -1029,6 +1029,21 @@ def send_notification_email(user_id, notification_id):
 - **Purpose**: Alternative location data source
 - **Usage**: Location enrichment, OSM IDs
 
+### Location autocomplete (LocationIQ / Nominatim)
+- **Purpose**: Type-ahead location search
+- **Routing**: Gated by the `LOCATIONIQ_AUTOCOMPLETE` feature toggle. On, the frontend calls
+  `/api/location_autocomplete/`, which serves from a Redis result cache or queues a rate-limited
+  LocationIQ lookup on the `lookup` Celery queue (Nominatim fallback). Off, the browser calls
+  Nominatim directly, as it did before the migration — that off-state keeps request volume
+  distributed across user IPs rather than concentrated on one server address, which is what OSM's
+  usage policy requires.
+- **Caching**: 24h sliding TTL capped at 48h absolute, LRU-bounded to
+  `LOCATIONIQ_CACHE_MAX_ENTRIES` (default 1000). Polygon coordinates are stripped before caching —
+  they are 85–99% of a payload and autocomplete only renders names; full geometry is re-fetched
+  server-side when a `Location` is first saved.
+- **Specs**: `doc/spec/20260720_1400_locationiq_rate_limited_queue_design.md` (queue),
+  `doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md` (toggle + cache)
+
 ### Email Service
 - **Purpose**: Transactional emails (notifications, password reset)
 - **Implementation**: Django email backend (SMTP or service like SendGrid)

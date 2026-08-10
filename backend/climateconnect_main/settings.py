@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import ssl
 import sys
+import warnings
 from datetime import timedelta
 
 import django.conf
@@ -29,6 +30,20 @@ load_dotenv(find_dotenv(".backend_env"))
 
 
 env = os.environ.get
+
+
+def int_env(name, default):
+    """
+    Read an integer setting from the environment.
+
+    Unlike `int(env(name, default))`, this tolerates a *declared but empty*
+    variable (`FOO=` in a deploy config or .backend_env, which is a routine way
+    to leave a key unset). `int("")` raises, and at import time that takes the
+    whole process down rather than falling back to the default.
+    """
+    raw = env(name, "")
+    return int(raw) if str(raw).strip() else default
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -330,6 +345,36 @@ ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID_DE = env(
 
 FRONTEND_URL = env("FRONTEND_URL", "")
 LOCATION_SERVICE_BASE_URL = env("LOCATION_SERVICE_BASE_URL")
+
+# Which column of the FeatureToggle table backend code reads (see
+# feature_toggles.utility.is_feature_enabled_for_current_environment).
+#
+# Deliberately separate from ENVIRONMENT, for two reasons:
+#   - ENVIRONMENT is "development" | "test" | "production", while toggles are
+#     stored per "development" | "staging" | "production";
+#   - the staging slot runs the same artifact (and the same ENVIRONMENT value)
+#     as production, so without an explicit override a backend toggle read on
+#     staging would resolve to the production column. Set
+#     FEATURE_TOGGLE_ENVIRONMENT=staging on the staging slot.
+_raw_toggle_environment = env("FEATURE_TOGGLE_ENVIRONMENT") or env(
+    "ENVIRONMENT", "development"
+)
+FEATURE_TOGGLE_ENVIRONMENT = (
+    "development" if _raw_toggle_environment == "test" else _raw_toggle_environment
+)
+if FEATURE_TOGGLE_ENVIRONMENT not in ("development", "staging", "production"):
+    # is_feature_enabled() rejects an unknown environment by returning the
+    # caller's default — and it does so *before* its cache, so a typo costs a
+    # log line on every single toggle read and never memoizes. Worse, the
+    # symptom (every toggle reads as its default) is indistinguishable from
+    # "the toggle is simply off", which is a legitimate state, so nobody goes
+    # looking for a misspelled env var. One loud line at boot instead.
+    warnings.warn(
+        f"FEATURE_TOGGLE_ENVIRONMENT={FEATURE_TOGGLE_ENVIRONMENT!r} is not one of "
+        "'development' | 'staging' | 'production'. Every backend feature-toggle "
+        "read will fall back to its default value.",
+        RuntimeWarning,
+    )
 DEEPL_API_KEY = env("DEEPL_API_KEY")
 
 ASGI_APPLICATION = "climateconnect_main.routing.application"
@@ -385,7 +430,18 @@ LOCATIONIQ_API_KEY = env("LOCATIONIQ_API_KEY", "")
 LOCATIONIQ_AUTOCOMPLETE_URL = "https://us1.locationiq.com/v1/search"
 LOCATIONIQ_TIMEOUT = 3  # seconds
 NOMINATIM_TIMEOUT = 5  # seconds
-LOCATIONIQ_MAX_RATE = "2/s"  # Celery rate_limit for the fetch_autocomplete task
+# Celery rate_limit for the fetch_autocomplete task. This bounds *all* upstream
+# autocomplete traffic leaving this server, including the Nominatim fallback —
+# and the fallback is what runs whenever LocationIQ is skipped, which includes
+# the case where the LOCATIONIQ_AUTOCOMPLETE toggle can't be read at all (a DB
+# blip degrades to default=False). OSM's usage policy allows 1 req/s per
+# application from one IP, so while the toggle is off in production this should
+# be "1/s" — see the risk table in
+# doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md.
+# Lowering it is NOT a one-line change: LOCATIONIQ_SENTINEL_TTL_S and
+# LOCATIONIQ_STALE_PENDING_S below are both derived from this rate and have to
+# be re-derived with it.
+LOCATIONIQ_MAX_RATE = "2/s"
 LOCATIONIQ_PENDING_CAP = 16  # max distinct in-flight lookups before 503 (backpressure)
 # Pending-sentinel lifetime. Keep >= (LOCATIONIQ_PENDING_CAP / rate implied by
 # LOCATIONIQ_MAX_RATE) + worst-case fetch time (LOCATIONIQ_TIMEOUT + NOMINATIM_TIMEOUT),
@@ -400,7 +456,6 @@ LOCATIONIQ_SENTINEL_TTL_S = 20
 # up; it must stay below LOCATIONIQ_SENTINEL_TTL_S to have any effect.
 LOCATIONIQ_STALE_PENDING_S = 16
 LOCATIONIQ_RECLAIM_LOCK_S = 10  # one reclaimer at a time per query
-LOCATIONIQ_RESULT_TTL_S = 300  # cache lifetime for a successful lookup
 LOCATIONIQ_NEGATIVE_TTL_S = (
     8  # cache lifetime for a failed lookup (avoid negative-caching an outage)
 )
@@ -408,6 +463,33 @@ LOCATIONIQ_IP_RATE_STRICT = "1/s"  # per-IP limit for creating a new lookup
 LOCATIONIQ_IP_RATE_LOOSE = (
     "10/s"  # per-IP limit for all autocomplete traffic, incl. polling
 )
+# --- Result cache (see doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md)
+# Sliding TTL: a cache hit resets the key back to RESULT_TTL_S, but never past
+# first_fetched_at + MAX_CACHE_AGE_S. Hot query prefixes ("ber", "berl", ...)
+# therefore stay cached and cost nothing, while no answer is ever served more
+# than MAX_CACHE_AGE_S after it was fetched, so renamed places self-heal
+# without anyone clearing the cache by hand.
+LOCATIONIQ_RESULT_TTL_S = int_env("LOCATIONIQ_RESULT_TTL_S", 24 * 3600)
+LOCATIONIQ_MAX_CACHE_AGE_S = int_env("LOCATIONIQ_MAX_CACHE_AGE_S", 48 * 3600)
+if LOCATIONIQ_MAX_CACHE_AGE_S < LOCATIONIQ_RESULT_TTL_S:
+    # Not fatal, but it silently makes RESULT_TTL_S dead: every hit's TTL is
+    # capped by the remaining age budget, so entries would live MAX_CACHE_AGE_S
+    # and the configured sliding TTL would never be reached. Easy to do by
+    # setting only one of the two in a deploy config.
+    warnings.warn(
+        f"LOCATIONIQ_MAX_CACHE_AGE_S ({LOCATIONIQ_MAX_CACHE_AGE_S}s) is below "
+        f"LOCATIONIQ_RESULT_TTL_S ({LOCATIONIQ_RESULT_TTL_S}s). The sliding "
+        "result TTL is capped by the absolute age ceiling, so it will never "
+        "take effect — raise the ceiling or lower the TTL.",
+        RuntimeWarning,
+    )
+# Hard cap on cached queries, enforced by an explicit LRU index (see
+# location.queue._index_and_trim) rather than redis maxmemory-policy, which is
+# instance-global and would happily evict Celery messages and chat channel data
+# from the same Redis. ~7 KB per stripped entry, so 1000 entries is ~7 MB.
+LOCATIONIQ_CACHE_MAX_ENTRIES = int_env("LOCATIONIQ_CACHE_MAX_ENTRIES", 1000)
+# Retention for the per-day cache hit/miss counters.
+LOCATIONIQ_STATS_TTL_S = 7 * 24 * 3600
 _locationiq_daily_budget_raw = env("LOCATIONIQ_DAILY_BUDGET", "")
 LOCATIONIQ_DAILY_BUDGET = (
     int(_locationiq_daily_budget_raw) if _locationiq_daily_budget_raw else None
@@ -556,5 +638,8 @@ if "test" in sys.argv or env("ENVIRONMENT") == "test":
     }
     # Never call the real Nominatim API from tests.
     NOMINATIM_LOOKUP_URL = "http://testserver/nominatim/lookup"
+    # Pin the toggle column tests read, so a developer whose .backend_env says
+    # ENVIRONMENT=production doesn't get a different toggle state than CI.
+    FEATURE_TOGGLE_ENVIRONMENT = "development"
 
 # --- END GLOBAL TEST SETTINGS ---
