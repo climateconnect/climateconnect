@@ -11,8 +11,8 @@ import {
   RedditShareButton,
   TelegramIcon,
   TelegramShareButton,
-  TwitterIcon,
-  TwitterShareButton,
+  XIcon,
+  XShareButton,
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
@@ -70,14 +70,14 @@ export default function SocialMediaShareOptions({
         >
           <FacebookIcon size={iconSize} round={true} />
         </FacebookShareButton>
-        <TwitterShareButton
+        <XShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.twitter)}
           url={contentLink}
           title={messageTitle}
           hashtags={twitterHastags}
         >
-          <TwitterIcon size={iconSize} round={true} />
-        </TwitterShareButton>
+          <XIcon size={iconSize} round={true} />
+        </XShareButton>
         <WhatsappShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)}
           url={contentLink}
