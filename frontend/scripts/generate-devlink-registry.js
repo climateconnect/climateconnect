@@ -17,6 +17,13 @@ const path = require("path");
 
 const devlinkDir = path.join(__dirname, "..", "devlink");
 
+if (!fs.existsSync(devlinkDir)) {
+  console.warn(
+    "generate-devlink-registry: devlink/ directory not found — skipping (export may have failed)"
+  );
+  process.exit(0);
+}
+
 // Generate devlink/componentRegistry.ts.
 // Scans all .tsx component files in devlink/ (recursively, excluding
 // webflow_modules/ and css/ and infrastructure files), extracts exported
