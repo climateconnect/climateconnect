@@ -18,7 +18,13 @@ import { FeatureToggles } from "../src/hooks/types/featureToggle";
 import type { CcEnvironment } from "../public/lib/environmentOperations";
 import theme from "../src/themes/theme";
 import { CcLocale, DonationGoal, HubListItem } from "../src/types";
-import "../devlink/css/global.css";
+import "../devlink/css/fonts.css";
+import "../devlink/css/normalize.css";
+import "../devlink/css/defaults.css";
+import "../devlink/css/variables.css";
+import "../devlink/css/tags.css";
+import "../devlink/css/classes.css";
+import "../devlink-patches.css";
 
 declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line no-unused-vars

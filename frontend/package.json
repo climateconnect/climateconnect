@@ -6,7 +6,7 @@
   "scripts": {
     "analyze-bundle": "ANALYZE=true yarn build",
     "build": "next build",
-    "devlink-sync": "npx webflow devlink sync --no-input && node scripts/fix-devlink.js",
+    "devlink-sync": "npx webflow devlink export && node scripts/generate-devlink-registry.js",
     "dev": "next dev",
     "fix-lint": "eslint . --fix",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,md}'",
@@ -99,7 +99,7 @@
     "@types/react-linkify": "^1.0.1",
     "@types/react-mentions": "^4.1.8",
     "@types/react-timeago": "^4.1.3",
-    "@webflow/webflow-cli": "^1.18.0",
+    "@webflow/webflow-cli": "^2.3.0",
     "babel-loader": "^8.2.2",
     "eslint": "^8.0.0",
     "eslint-import-resolver-typescript": "^4.4.4",
