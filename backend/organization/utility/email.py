@@ -71,12 +71,8 @@ def send_project_comment_email(
 ):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Somebody left a comment on your project {}".format(
-            project.name
-        ),
-        "de": "Jemand hat dein Projekt {} kommentiert".format(
-            project.name
-        ),
+        "en": "Somebody left a comment on your project {}".format(project.name),
+        "de": "Jemand hat dein Projekt {} kommentiert".format(project.name),
     }
     base_url = settings.FRONTEND_URL
     hub_query = ("?hub=" + hub_url) if hub_url else ""
@@ -102,9 +98,7 @@ def send_project_comment_email(
 def send_idea_comment_email(user, idea, comment, sender, notification, hub_url=None):
     lang_code = get_user_lang_code(user)
     subjects_by_language = {
-        "en": "Somebody left a comment on your idea '{}'".format(
-            idea.name
-        ),
+        "en": "Somebody left a comment on your idea '{}'".format(idea.name),
         "de": "Jemand hat einen Kommentar zu deiner Idee '{}' auf hinterlassen.".format(
             idea.name
         ),
@@ -257,12 +251,8 @@ def send_organization_follower_email(
     )
 
     subjects_by_language = {
-        "en": "{} now follows {}".format(
-            following_user_full_name, organization_name
-        ),
-        "de": "{} folgt jetzt {}".format(
-            following_user_full_name, organization_name
-        ),
+        "en": "{} now follows {}".format(following_user_full_name, organization_name),
+        "de": "{} folgt jetzt {}".format(following_user_full_name, organization_name),
     }
 
     base_url = settings.FRONTEND_URL
@@ -364,12 +354,8 @@ def send_join_project_request_email(user, request, requester, notification, hub_
     lang_code = get_user_lang_code(user)
     requester_name = requester.first_name + " " + requester.last_name
     subjects_by_language = {
-        "en": "{} requested to join your project".format(
-            requester_name
-        ),
-        "de": "{} möchte bei deinem Project mitmachen".format(
-            requester_name
-        ),
+        "en": "{} requested to join your project".format(requester_name),
+        "de": "{} möchte bei deinem Project mitmachen".format(requester_name),
     }
 
     base_url = settings.FRONTEND_URL
@@ -962,9 +948,7 @@ def generate_timeslot_ics_attachments(project, lang_code, registration):
         cal.add("method", "PUBLISH")
 
         ical_event = IcalEvent()
-        ical_event.add(
-            "uid", f"{registration.id}_{answer.field.id}@climatehub.org"
-        )
+        ical_event.add("uid", f"{registration.id}_{answer.field.id}@climatehub.org")
         ical_event.add("summary", f"{summary_prefix} {event_name}")
         ical_event.add("dtstart", option.start_time)
         ical_event.add("dtend", option.end_time)

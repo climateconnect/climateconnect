@@ -2,7 +2,7 @@
 export const SHARE_OPTIONS = {
   facebook: 0,
   fb_messenger: 1,
-  twitter: 2,
+  bluesky: 10,
   whatsapp: 3,
   linkedin: 4,
   reddit: 5,
