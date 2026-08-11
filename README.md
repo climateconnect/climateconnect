@@ -78,6 +78,8 @@ Run `./install_deps.sh` to install the JavaScript dependencies and the Python de
 
 #### First Time Setup
 
+> For full backend development guidance (venv-per-Django pattern, devcontainer, manual system deps, broken-venv recovery), see [`doc/backend-development.md`](doc/backend-development.md).
+
 1.  Go to backend directory: `cd backend`
 1. Make sure `pdm` is installed: https://pdm.fming.dev/latest/#recommended-installation-method
 1.  Run `make install` to install all backend libraries.

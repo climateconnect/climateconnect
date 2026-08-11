@@ -195,150 +195,93 @@ Every Django-adjacent dep checked on PyPI. The full list lives in the AI insight
 
 ## Local environment & devcontainer
 
-The devcontainer and any local venvs are NOT rebuilt automatically by this PR. After merge, every developer must do one of the following before running tests. This is the single most likely source of "works on CI, fails on my machine" reports.
+The full backend development workflow (venv-per-Django pattern, devcontainer setup, manual system dependencies, broken-venv recovery, common gotchas) lives in [`doc/backend-development.md`](../../doc/backend-development.md). This section captures only the 5.2-upgrade-specific deltas on top of that document.
 
 ### Critical: activate the right venv before running tests
 
-**Agents (and humans) running backend tests MUST be inside the venv that matches the branch's Django version.** `pdm.lock` on the 4.2 branch resolves Django 4.2; `pdm.lock` on the 5.2 branch resolves Django 5.2. If you are on the `update-django-5-2` branch but your active venv is the old `django4` venv, every `pdm run python manage.py test` will silently run against Django 4.2 and pass on a deprecated codebase. The classic symptom: "the CI was green, why is my local check red?" - the answer is almost always "you're on the wrong venv."
-
-**Before running any backend command on the 5.2 branch, confirm:**
+The 5.2 upgrade adds a second venv (`django5`) alongside the existing 4.2 venv (`django4`). The classic symptom of being on the wrong venv: "CI was green, my local check is red, or vice-versa." **Before any backend command on this branch, confirm:**
 
 ```bash
 cd backend
 pdm run python -c "import django; print(django.get_version())"   # MUST print 5.2.x
 ```
 
-If it prints `4.2.x`, you are on the wrong venv. Switch with `pdm use -p /path/to/.venv52` (or activate the right venv directly: `source .venv52/bin/activate` on Linux/macOS, `.venv52\Scripts\activate` on Windows).
+If it prints `4.2.x`, switch with `pdm use -p .venv-django5` (or `pdm venv activate django5`). Full workflow in `doc/backend-development.md`.
 
-The convention in this repo's agent docs (`AGENTS.md`) is `pdm venv activate django4` for the 4.2 venv. We extend that to `pdm venv activate django5` for the new 5.2 venv.
+### 5.2-upgrade-specific actions for the implementer
 
-### Pattern: one venv per Django major version
+In addition to the existing workflow:
 
-We **strongly recommend** keeping separate venvs per Django major (one for `4.2.x`, one for `5.2.x`) rather than upgrading in place. The user has been using this pattern since the 3.x → 4.x upgrade; it lets you switch branches and run the matching test suite without rebuilding the venv. With this PR we go from one venv to two.
+- Create the new venv: `pdm venv create --name django5 -p 3.12` (or `python3.12 -m venv backend/.venv-django5` for non-PDM-managed setups).
+- After `pdm install`, verify the resolver tree: `pdm why pytz` (expected resolvers: `twisted`, `autobahn`) and `pdm why sentry-sdk` (expected: 2.x).
+- Run the test suite with `-Wa`: `pdm run python -Wa manage.py test --keepdb`.
+- The devcontainer does not need code changes for the upgrade (Python 3.12, GDAL, libgdal-dev, libproj-dev are already correct in the Dockerfile). Just rebuild the container and create the new venv inside it.
+- `start_backend.sh` is the production startup script (per README "Deploy") and is **unchanged by this PR**. If you want to bump GDAL on a branch, do it in a separate PR.
 
-Concretely:
+### Manual system dependencies that PDM does not handle
 
-- `backend/.venv` is whatever your current `4.2.x` venv is. **Leave it alone.** Old branches still work.
-- `backend/.venv52` (or whatever name you pick) is the new `5.2.x` venv. Branch `update-django-5-2` uses it.
+The full table of system packages PDM doesn't manage lives in `doc/backend-development.md`. Watch for `ImportError` or `OSError: [Errno 2] No such file or directory` on a fresh venv that is not a known Django 5.2 issue. If you hit one, add the missing dep to the table in `doc/backend-development.md` (if it's permanent) or to a comment in this spec (if it's 5.2-upgrade-specific).
 
-PDM will resolve into the active venv, so the workflow is:
+### Broken venv recovery
 
-```bash
-# On the 5.2 branch:
-cd backend
-pdm venv create --name venv52 -p 3.12   # or: pdm venv create -p 3.12 (auto-named)
-pdm use -p 3.12                          # bind pyproject.toml to Python 3.12
-pdm install                              # populate venv from pdm.lock
-pdm run python -c "import django; print(django.get_version())"  # confirm 5.2.x
-pdm run python manage.py test --keepdb
-```
+If a `pdm install` fails on an existing venv, the nuclear option is `rm -rf .venv .venv-django*; pdm venv create -p 3.12; pdm install`. **Do not do this on a shared CI machine** - always preserve `pdm.lock`.
 
-To switch back to the 4.2 branch:
+## Documentation & agent-file updates (in scope, part of Definition of Done)
 
-```bash
-cd backend
-pdm use .venv                  # or: pdm use -p 3.12 in the 4.2 branch's venv
-pdm run python -c "import django; print(django.get_version())"  # confirm 4.2.x
-```
+The agent files (`backend/agent.md`, `AGENTS.md`, `.github/agents/BackendDeveloper.agent.md`, `.github/COPILOT_SETUP_GUIDE.md`, `.github/COPILOT_SUMMARY.md`) currently say **Django 4.2** and `pdm venv activate django4`. They **must be updated as part of this PR** because the project's Definition of Done includes complete and consistent documentation — an upgrade that ships code without telling the next agent (or the next human) about it is incomplete.
 
-The `pdm.lock` is checked in and authoritative for the venv that the current branch expects. **Do not** delete `pdm.lock` to "rebuild it" — it must be regenerated by `pdm lock` (or `pdm update`), not deleted.
+### Why this is safe despite the timing concern
 
-### Devcontainer
+A natural worry is: "if the agent files say Django 5.2 but the code is still 4.2, the implementation agent will get confused." This is solved by the fact that **the doc edits and the code edits land in the same PR**:
 
-The devcontainer is defined in `.devcontainer/Dockerfile` and `.devcontainer/docker-compose.yml`. It does **not** need code changes for the Django 5.2 upgrade — the Python version is already 3.12 (set in `devcontainer.json` line 26: `"version": "3.12"`), and the system packages installed in the Dockerfile (`postgresql-client`, `gdal-bin`, `libgdal-dev`, `libproj-dev`) are at distro versions that already meet Django 5.2's GDAL ≥ 3.1 / GEOS ≥ 3.10 floor.
+- If the PR is open for review, the implementation agent working on it sees the *current* spec (which says 5.2) and the *current* agent files (which the implementation agent itself is editing to 5.2). Both are consistent with the branch's intent.
+- If the PR is merged, code and docs land together on master. There is no intermediate state on master.
+- If the PR is reverted, code and docs revert together.
 
-What the devcontainer does need:
+So the atomic-PR property gives us the consistency we need. The "deferred to a follow-up PR" pattern would actually be *worse* here: it would leave master in a state where code is 5.2 but agent files still say 4.2, which is the inconsistency we're trying to avoid.
 
-1. **Rebuild the container** after the branch is checked out: VS Code → Command Palette → "Dev Containers: Rebuild Container". This re-runs `Dockerfile` and re-mounts the workspace, but the `backend/.venv` (if any) is a bind mount and survives the rebuild. **If your venv was created before this PR, it still has Django 4.2 and will fail on the 5.2 branch.**
-2. **Recreate the venv inside the container**: open a terminal in the devcontainer and run the venv-per-Django-version workflow above. The recommended location for the new venv is `backend/.venv52` (next to the existing one).
-3. **Run the Sentry smoke** (acceptance criterion in Tests): in the dev container, `pdm run python -c "from sentry_sdk import capture_message; capture_message('dev container django 5.2 smoke test')"` and confirm the message is captured (or visible in the dev Sentry dashboard if `SENTRY_DSN` is set).
+### Files to update in this PR
 
-### Local dev machine (macOS or Linux, not devcontainer)
+| File | Change |
+|---|---|
+| `backend/agent.md` | "Django 4.2 + DRF" → "Django 5.2 + DRF" in the tech stack; "Language: Python 3.11" → "Python 3.12" (was already inconsistent with prod and devcontainer) |
+| `AGENTS.md` | "Django 4.2 + DRF" → "Django 5.2 + DRF"; `pdm venv activate django4` → `pdm venv activate django5` (with note that both venvs coexist during the upgrade window) |
+| `.github/agents/BackendDeveloper.agent.md` | "Django 4.2 + Django REST Framework" → "Django 5.2 + Django REST Framework" |
+| `.github/COPILOT_SETUP_GUIDE.md` | "Always use Django 4.2 patterns" → "Always use Django 5.2 patterns"; bump `docs.djangoproject.com/en/3.2/` links to `en/5.2/` where present |
+| `.github/COPILOT_SUMMARY.md` | "Django 4.2" → "Django 5.2" in the tech stack; bump `en/3.2/` links to `en/5.2/` |
+| `README.md` | **No change.** The README does not mention a Django version number. (It does link to `docs.djangoproject.com/en/3.1/` in two places, which is already stale on master; that's a separate doc-cleanup PR.) |
 
-Same workflow as devcontainer, but the venv is at `backend/.venv` and the user is responsible for creating the second venv at e.g. `backend/.venv52`.
+### Files intentionally NOT updated
 
-```bash
-cd backend
-# Optional: pin Python 3.12 via pyenv or asdf if not system default
-python3.12 -m venv .venv52
-source .venv52/bin/activate
-pip install -U pdm
-pdm install
-pdm run python -c "import django; print(django.get_version())"   # 5.2.x
-```
-
-Add `backend/.venv52/` to your global gitignore (`~/.gitignore_global` or similar) so you don't accidentally commit a path that should be local.
-
-### Local dev machine: the `start_backend.sh` path
-
-The repo's `start_backend.sh` is also the production startup script (per README "Deploy" section). The `apt-get install gdal-bin` line in it is **unchanged by this PR** and continues to work on the 5.2 branch. No edits to `start_backend.sh` are required for the upgrade; if you want to bump GDAL on a branch, do it in a separate PR.
-
-### Manual steps PDM does not handle
-
-PDM handles everything in `pyproject.toml` / `pdm.lock` automatically. The following are **not** handled by PDM and require manual action by each developer after pulling this branch:
-
-- [ ] Rebuild / restart the devcontainer (VS Code → "Dev Containers: Rebuild Container").
-- [ ] Create the new venv (`pdm venv create` or `python3.12 -m venv .venv52`).
-- [ ] Run `pdm install` (or `pip install -e .` in a manual venv).
-- [ ] Confirm `pdm run python -c "import django; print(django.get_version())"` prints `5.2.x`.
-- [ ] Run the full test suite: `pdm run python -Wa manage.py test --keepdb`.
-- [ ] If you use the existing `backend/.venv` for other branches, leave it alone. Use a separate venv for the 5.2 branch.
-
-### What to do if you have a broken local venv
-
-If a `pdm install` fails on an existing venv (e.g. because the old venv was created with `pdm<2.10` and lockfile format changed), the nuclear option is:
-
-```bash
-cd backend
-rm -rf .venv .venv52
-pdm venv create -p 3.12
-pdm install
-```
-
-This destroys both venvs and recreates the active one. **Do not do this on a shared CI machine or in the devcontainer** unless you know what you're doing.
-
----
-
-## Documentation & agent-file updates
-
-Beyond code and `pyproject.toml`, this PR touches documentation and agent config. The agent files in particular are read by automated tools (and other agents) on every future task, so leaving them stale will cause the next Django-related task to be done wrong.
-
-### Files that must be updated in this PR
-
-| File | Change | Reason |
-|---|---|---|
-| `backend/agent.md` | "Django 4.2 + DRF" -> "Django 5.2 + DRF" in the tech stack | Tech stack line is read by every backend agent invocation |
-| `AGENTS.md` | "Django 4.2 + DRF" -> "Django 5.2 + DRF" in the Backend Developer section; add `pdm venv activate django5` note | Same; also encodes the venv-per-Django convention for future agents |
-| `.github/agents/BackendDeveloper.agent.md` | "Django 4.2 + Django REST Framework" -> "Django 5.2 + Django REST Framework" in the tech stack | Read by GitHub Copilot |
-| `.github/COPILOT_SETUP_GUIDE.md` | "Always use Django 4.2 patterns" -> "Always use Django 5.2 patterns"; bump doc links from `en/3.2/` to `en/5.2/` where present | Avoids Copilot suggesting 3.2/4.2-era APIs |
-| `.github/COPILOT_SUMMARY.md` | "Django 4.2" -> "Django 5.2" in the tech stack summary; bump doc links from `en/3.2/` to `en/5.2/` | Same |
-| `README.md` | **No changes required.** The README does not mention a Django version number. (It does link to Django 3.1 docs in two places, which is already stale on master; fixing those is **out of scope** for this PR.) | - |
-
-### Files that are intentionally NOT updated
-
-- **`README.md` docs links pointing to `docs.djangoproject.com/en/3.1/`**: already stale on master (predates this PR), and are minor (Step 1 install instructions, secret key generator). Fixing is a separate doc-cleanup PR. Do not bundle into this upgrade.
-- **`doc/spec/20260708_1302_rich_text_image_support.md` and any other older specs** that mention "Django 4.2" in their problem-statement context. They are historical records of decisions made under Django 4.2; do not retroactively rewrite them.
+- **`README.md` 3.1 doc links**: pre-existing on master, separate doc-cleanup PR.
+- **Older specs** in `doc/spec/` that mention "Django 4.2" in their problem-statement context (e.g. `20260708_1302_rich_text_image_support.md`): historical records of decisions made under Django 4.2; do not retroactively rewrite them.
 - **`backend/local-env-setup.md`**: already version-agnostic.
-- **`.devcontainer/devcontainer.json` and `.devcontainer/Dockerfile`**: already specify Python 3.12, which is what Django 5.2 needs. No edit required.
+- **`.devcontainer/devcontainer.json` and `.devcontainer/Dockerfile`**: already specify Python 3.12, which is what Django 5.2 needs.
 
 ### Manual deps the user remembers installing
 
-The user noted that during the 3.x -> 4.x setup, there were some dependencies they had to install manually (beyond what `pdm install` handles, beyond what `start_backend.sh` does for prod). We do **not** know which ones in advance. The spec defers this to the IMPLEMENTATION phase:
+The user noted that during the 3.x → 4.x setup, there were some dependencies they had to install manually (beyond what `pdm install` handles, beyond what `start_backend.sh` does for prod). We do **not** know which ones in advance. The spec defers this to the IMPLEMENTATION phase:
 
 - During IMPLEMENTATION, on a fresh venv, watch for any `ImportError` or `OSError: [Errno 2] No such file or directory` that is not a known Django 5.2 issue.
 - If something is missing and it's a system-level tool (e.g. `libxml2-dev`, `libxslt-dev`, `build-essential`, `pkg-config`), document it in a new "Manual system dependencies" sub-section of the Local environment section of this spec, **or** in `backend/local-env-setup.md` if it's truly environment-setup rather than Django-version-specific.
 - If it's a Python package that should have been in `pyproject.toml`, add it to the in-scope dep list and run `pdm add`.
 
-### Acceptance criteria for the docs updates
+### `doc/backend-development.md` (in scope)
 
-- [ ] `backend/agent.md` line 6: "Django 4.2" -> "Django 5.2".
-- [ ] `AGENTS.md` line 14: "Django 4.2" -> "Django 5.2"; line 14 also gains the `pdm venv activate django5` note.
-- [ ] `.github/agents/BackendDeveloper.agent.md` line 35: "Django 4.2" -> "Django 5.2".
+The venv-per-Django pattern and full backend development workflow live in a new file, [`doc/backend-development.md`](../../doc/backend-development.md). It is created as part of this PR because the pattern is permanent (it will be needed for the next Django upgrade, which will be Django 6.2 LTS) and we do not want it to live only in a time-bounded spec.
+
+The README's Backend / First Time Setup section is updated to point at this new file.
+
+### Acceptance criteria for the docs updates (part of Definition of Done)
+
+- [ ] `backend/agent.md` line 6: "Django 4.2" → "Django 5.2".
+- [ ] `AGENTS.md` line 14: "Django 4.2" → "Django 5.2"; the line also gains the `pdm venv activate django5` note.
+- [ ] `.github/agents/BackendDeveloper.agent.md` line 35: "Django 4.2" → "Django 5.2".
 - [ ] `.github/COPILOT_SETUP_GUIDE.md`: no remaining "Django 4.2" references in the runtime-instruction sections; doc links bumped from `/en/3.2/` to `/en/5.2/`.
 - [ ] `.github/COPILOT_SUMMARY.md`: no remaining "Django 4.2" references; doc links bumped.
 - [ ] `git grep "Django 4\\.2" backend/agent.md AGENTS.md .github/agents/BackendDeveloper.agent.md .github/COPILOT_SETUP_GUIDE.md .github/COPILOT_SUMMARY.md` returns no matches in the runtime/tech-stack sections. (Historical references in other spec files are OK.)
-
----
+- [ ] `doc/backend-development.md` exists and contains the venv-per-Django pattern (the `pdm venv activate django4` / `pdm venv activate django5` naming, the wrong-venv smoke test, and the broken-venv recovery procedure).
+- [ ] `README.md` Backend / First Time Setup section contains a pointer to `doc/backend-development.md`.
 
 ## Open Questions
 
