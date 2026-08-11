@@ -726,7 +726,6 @@ class OrganizationAPIView(APIView):
                 organization.parent_organization = parent_organization
 
         items_to_translate = [
-            {"key": "name", "translation_key": "name_translation"},
             {
                 "key": "short_description",
                 "translation_key": "short_description_translation",
