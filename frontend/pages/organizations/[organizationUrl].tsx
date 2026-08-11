@@ -12,6 +12,7 @@ import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/a
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
 import {
+  getIsUserFollowing,
   parseOrganization,
   getMembersByOrganization,
 } from "../../public/lib/organizationOperations";
@@ -473,24 +474,6 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     }
   } catch (err) {
     console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
-async function getIsUserFollowing(organizationUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/organizations/" + organizationUrl + "/am_i_following/",
-      token: token,
-      locale: locale,
-    });
-    if (resp.data.length === 0) return null;
-    else {
-      return resp.data.is_following;
-    }
-  } catch (err) {
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }

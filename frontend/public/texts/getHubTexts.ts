@@ -159,6 +159,10 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       en: `You are seeing people interested in the topic "${hubName}"`,
       de: `Du siehst Menschen, die sich für das Thema "${hubName}" interessieren`,
     },
+    you_are_seeing_events_related_to: {
+      en: `You are seeing events related to the topic "${hubName}"`,
+      de: `Du siehst Events zum Thema "${hubName}"`,
+    },
     upcoming_events: {
       en: "Upcoming events",
       de: "Kommende Events",

@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 700,
     fontSize: 20,
-    color: theme.palette.primary.main,
+    color: theme.palette.secondary.main,
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(1),
@@ -94,15 +94,19 @@ const useStyles = makeStyles((theme) => ({
 export default function UpcomingEventsGroup({
   events,
   hubUrl,
+  subHubSegment,
 }: {
   events: any[];
   hubUrl?: string;
+  subHubSegment?: string;
 }) {
   const { locale } = useContext(UserContext);
   const classes = useStyles();
   const texts = getTexts({ page: "hub", locale: locale });
 
-  const calendarHref = `${getLocalePrefix(locale)}${hubUrl ? `/hubs/${hubUrl}/events` : "/events"}`;
+  const calendarHref = `${getLocalePrefix(locale)}${
+    hubUrl ? `/hubs/${hubUrl}${subHubSegment ? `/${subHubSegment}` : ""}/events` : "/events"
+  }`;
 
   return (
     <section className={classes.group} aria-label={texts.upcoming_events}>

@@ -135,67 +135,70 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       // 2. Cross-domain subdomain redirects (German first, then English fallback)
+      // Must be permanent: false (302) — 301s are cached by browsers, breaking language switching.
       ...LOCATION_HUBS.map((hubSlug) => ({
         source: "/:path*",
         has: [
           { type: "host", value: `${hubSlug}.climateconnect.earth` },
-          { type: "header", key: "Accept-Language", value: "^de" },
+          { type: "header", key: "Accept-Language", value: "de.*" },
         ],
         destination: `https://climatehub.org/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
-        permanent: true,
+        permanent: false,
       })),
       ...LOCATION_HUBS.map((hubSlug) => ({
         source: "/:path*",
         has: [{ type: "host", value: `${hubSlug}.climateconnect.earth` }],
         destination: `https://climatehub.org/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
-        permanent: true,
+        permanent: false,
       })),
       // 3. New-domain subdomain redirects (potsdam.climatehub.org → climatehub.org/hubs/potsdam)
+      // Must be permanent: false (302) — 301s are cached by browsers, breaking language switching.
       ...LOCATION_HUBS.map((hubSlug) => ({
         source: "/:path*",
         has: [
           { type: "host", value: `${hubSlug}.climatehub.org` },
-          { type: "header", key: "Accept-Language", value: "^de" },
+          { type: "header", key: "Accept-Language", value: "de.*" },
         ],
         destination: `https://climatehub.org/de/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
-        permanent: true,
+        permanent: false,
       })),
       ...LOCATION_HUBS.map((hubSlug) => ({
         source: "/:path*",
         has: [{ type: "host", value: `${hubSlug}.climatehub.org` }],
         destination: `https://climatehub.org/hubs/${hubSlug}?utm_source=subdomain&utm_medium=redirect&utm_campaign=${hubSlug}`,
-        permanent: true,
+        permanent: false,
       })),
       // 4. Subdomain aliases (e.g. wue → wuerzburg)
+      // Must be permanent: false (302) — 301s are cached by browsers, breaking language switching.
       {
         source: "/:path*",
         has: [
           { type: "host", value: "wue.climateconnect.earth" },
-          { type: "header", key: "Accept-Language", value: "^de" },
+          { type: "header", key: "Accept-Language", value: "de.*" },
         ],
         destination: `https://climatehub.org/de/hubs/wuerzburg?utm_source=subdomain&utm_medium=redirect&utm_campaign=wue`,
-        permanent: true,
+        permanent: false,
       },
       {
         source: "/:path*",
         has: [{ type: "host", value: "wue.climateconnect.earth" }],
         destination: `https://climatehub.org/hubs/wuerzburg?utm_source=subdomain&utm_medium=redirect&utm_campaign=wue`,
-        permanent: true,
+        permanent: false,
       },
       {
         source: "/:path*",
         has: [
           { type: "host", value: "wue.climatehub.org" },
-          { type: "header", key: "Accept-Language", value: "^de" },
+          { type: "header", key: "Accept-Language", value: "de.*" },
         ],
         destination: `https://climatehub.org/de/hubs/wuerzburg?utm_source=subdomain&utm_medium=redirect&utm_campaign=wue`,
-        permanent: true,
+        permanent: false,
       },
       {
         source: "/:path*",
         has: [{ type: "host", value: "wue.climatehub.org" }],
         destination: `https://climatehub.org/hubs/wuerzburg?utm_source=subdomain&utm_medium=redirect&utm_campaign=wue`,
-        permanent: true,
+        permanent: false,
       },
       // 5. Main domain catch-all (locale: false to preserve /de prefix in external redirect)
       {
@@ -220,13 +223,6 @@ module.exports = withBundleAnalyzer({
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
-    // Suppress conflicting star export warnings from Webflow DevLink's auto-generated barrel
-    // (devlink/index.js re-exports Boolean and Number value modules that share the same export names).
-    // This is a known issue in the Webflow DevLink code generator and cannot be fixed on our side.
-    config.ignoreWarnings = [
-      ...(config.ignoreWarnings || []),
-      { message: /conflicting star exports/ },
-    ];
     return config;
   },
 });

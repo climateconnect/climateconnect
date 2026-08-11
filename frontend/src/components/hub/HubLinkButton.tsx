@@ -82,14 +82,21 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
   };
 });
 
-export default function HubLinkButton({ hub }: { hub: LinkedHub }) {
+export default function HubLinkButton({
+  hub,
+  pageContext = "browse",
+}: {
+  hub: LinkedHub;
+  pageContext?: "browse" | "events";
+}) {
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const backgroundColor = hub.backgroundColor || "lightblue";
 
   const classes = useStyles({ backgroundColor, iconUrl: hub.icon, isNarrowScreen });
   const getLinkUrl = () => {
-    const baseUrl = hub.hubUrl;
-    const hash = window.location.hash;
+    const baseUrl =
+      pageContext === "events" ? hub.hubUrl.replace(/\/browse$/, "/events") : hub.hubUrl;
+    const hash = pageContext === "browse" ? window.location.hash : "";
     return `${baseUrl}${hash}`;
   };
   const linkUrl = getLinkUrl();
