@@ -66,8 +66,10 @@ directly, not Celery's own result machinery.
 
 | Key | Shape | TTL | Purpose |
 |---|---|---|---|
-| `locationiq:lookup:<normalized_q>` | `{"status": "pending", "job_id": "<uuid>"}` then overwritten with `{"status": "done", "results": [...] \| null, "provider": "locationiq" \| "nominatim" \| null, "job_id": "<uuid>"}` | `SENTINEL_TTL_S` (≈20s) while pending; on completion refreshed to `RESULT_TTL_S` (300s) **for a real result** or `NEGATIVE_TTL_S` (≈8s) **for a failure** (`results is None`) — see Gap #7 | Single rendezvous point: cache, dedup lock, and result delivery in one key |
+| `locationiq:lookup:<normalized_q>` | `{"status": "pending", "job_id": "<uuid>"}` then overwritten with `{"status": "done", "results": [...] \| null, "provider": "locationiq" \| "nominatim" \| null, "job_id": "<uuid>", "first_fetched_at": <unix ts, real results only>}` | `SENTINEL_TTL_S` (≈20s) while pending; on completion refreshed to `RESULT_TTL_S` (24h, **sliding** — reset on every hit, capped at `first_fetched_at + MAX_CACHE_AGE_S`) **for a real result** or `NEGATIVE_TTL_S` (≈8s) **for a failure** (`results is None`) — see Gap #7 | Single rendezvous point: cache, dedup lock, and result delivery in one key |
 | `locationiq:pending_jobs` (sorted set) | member = lookup key, score = creation timestamp | n/a (self-pruned by score on every access) | Backpressure accounting — counts distinct in-flight jobs without needing precise increment/decrement bookkeeping |
+| `locationiq:lru` (sorted set) | member = lookup key, score = **last access** timestamp | n/a (bounded by trim on every store) | Size cap — evicts the least recently read entry once the index exceeds `LOCATIONIQ_CACHE_MAX_ENTRIES`. Successful results only |
+| `locationiq:stats:{hits,misses}:<YYYY-MM-DD>` | integer counter | 7 days | Cache effectiveness, surfaced by `NominatimStatsView`. `NominatimPeriodStats` counts only upstream calls, so without these a working cache is indistinguishable from a traffic drop |
 
 `normalized_q` is `_normalize_query(q, countrycodes, accept_language)` — lowercased,
 whitespace-stripped, `"{q}|{countrycodes}|{primary_language}"`.
@@ -432,6 +434,12 @@ are counted in separate runs, so a peak can be under-reported in that rare case.
 
 ## Log
 
+- 2026-08-04 — Result caching reworked and the whole path put behind a feature toggle, in
+  `doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md`. Changes that land in
+  *this* doc's contract: `RESULT_TTL_S` raised from 300s to 24h and made sliding with a 48h
+  ceiling (`first_fetched_at` added to the payload), plus two new keys — `locationiq:lru` for the
+  LRU size cap and the per-day `locationiq:stats:*` hit/miss counters. The 300s TTL was sized as a
+  dedup window for this design, not as the cost-control cache LocationIQ's paid quota needs.
 - 2026-08-03 — Added Gap #4a (abandoned-sentinel reclaim) so a missing/dead `lookup` consumer
   degrades to inline fetches instead of a silent total outage; `NominatimStatsView` provider
   breakdown; `doc/api-documentation.md`, `doc/environment-variables.md`, `doc/architecture.md` and
