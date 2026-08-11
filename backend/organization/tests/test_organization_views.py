@@ -685,7 +685,6 @@ class TestOrganizationAPIView(APITestCase):
         self.assertEqual(data["about"], "Original about")
         self.assertEqual(data["get_involved"], "Original get involved")
 
-
     @tag("organiztaion", "sectors")
     def test_get_organization_by_url_slug_includes_sectors(self):
         # arrange
