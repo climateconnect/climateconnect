@@ -7719,7 +7719,7 @@ __metadata:
     "@types/react-mentions": "npm:^4.1.8"
     "@types/react-timeago": "npm:^4.1.3"
     "@webflow/webflow-cli": "npm:^2.3.0"
-    axios: "npm:^1.18.0"
+    axios: "npm:^1.19.0"
     babel-loader: "npm:^8.2.2"
     babel-plugin-lodash: "npm:^3.3.4"
     cheerio: "npm:^1.0.0-rc.10"
