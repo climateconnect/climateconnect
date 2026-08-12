@@ -260,11 +260,11 @@ class Example(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     user = models.ForeignKey(User, related_name="examples", on_delete=models.CASCADE)
-    
+
     class Meta:
         ordering = ["-created_at"]
         indexes = [models.Index(fields=["name", "created_at"])]
-    
+
     def __str__(self):
         return self.name
 ```
@@ -275,7 +275,7 @@ from rest_framework import serializers
 
 class ExampleSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source="user.username", read_only=True)
-    
+
     class Meta:
         model = Example
         fields = ["id", "name", "created_at", "user", "user_name"]
@@ -290,7 +290,7 @@ from rest_framework.permissions import IsAuthenticated
 class ExampleViewSet(viewsets.ModelViewSet):
     serializer_class = ExampleSerializer
     permission_classes = [IsAuthenticated]
-    
+
     def get_queryset(self):
         return Example.objects.select_related("user").filter(user=self.request.user)
 ```
