@@ -521,9 +521,9 @@ class TestCreateProjectsViews(APITestCase):
         # arrange
         self.client.login(username="testuser", password="testpassword")
 
-        self.default_project_data["sectors"] = (
-            f"{self.sectors[0].key},{self.sectors[1].key}"
-        )
+        self.default_project_data[
+            "sectors"
+        ] = f"{self.sectors[0].key},{self.sectors[1].key}"
 
         # act
         response = self.client.post(self.url, self.default_project_data, format="json")
@@ -544,9 +544,9 @@ class TestCreateProjectsViews(APITestCase):
         # arrange
         self.client.login(username="testuser", password="testpassword")
 
-        self.default_project_data["sectors"] = (
-            f"{self.sectors[0].key},{self.sectors[0].key}"
-        )
+        self.default_project_data[
+            "sectors"
+        ] = f"{self.sectors[0].key},{self.sectors[0].key}"
 
         # act
         response = self.client.post(self.url, self.default_project_data, format="json")
@@ -586,7 +586,6 @@ class TestCreateProjectsViews(APITestCase):
 
 
 class TestProjectApi(APITestCase):
-
     def setUp(self):
         self.url_slug = "test-project"
         self.url = reverse(
