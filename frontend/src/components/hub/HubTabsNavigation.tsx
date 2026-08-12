@@ -7,7 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import { useFeatureToggles } from "../featureToggle";
-import { appHref } from "../../../public/lib/appLink";
+import AppLink from "../general/AppLink";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { getCustomHubData } from "../../../public/data/customHubData";
@@ -253,13 +253,13 @@ export default function HubTabsNavigation({
                 ? `/hubs/${hubUrl}${subHubSegment ? `/${subHubSegment}` : ""}/events`
                 : "/events";
               return (
-                <Link
+                <AppLink
                   className={isEventsPage ? classes.activeEventLink : classes.link}
-                  href={appHref(eventsPath, { locale })}
+                  href={eventsPath}
                   underline={isEventsPage ? "none" : "hover"}
                 >
                   {texts.event_calendar ?? "Event calendar"}
-                </Link>
+                </AppLink>
               );
             })()}
           {isEmmendingenHub && (

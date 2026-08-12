@@ -63,7 +63,6 @@ export default function MobileBottomMenu({
   handleTabChange,
   TYPES_BY_TAB_VALUE,
   hubAmbassador,
-  hubUrl,
 }) {
   const { locale } = useContext(UserContext);
   const texts = useMemo(() => getTexts({ page: "hub", locale: locale }), [locale]);
@@ -80,7 +79,7 @@ export default function MobileBottomMenu({
         borderTop: `1px solid ${theme.palette.divider}`,
       })}
     >
-      <ContactAmbassadorButton mobile hubAmbassador={hubAmbassador} hubUrl={hubUrl} />
+      <ContactAmbassadorButton mobile hubAmbassador={hubAmbassador} />
       <BottomNavigation
         value={tabValue}
         onChange={handleTabChange}

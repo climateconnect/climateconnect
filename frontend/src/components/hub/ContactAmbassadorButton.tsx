@@ -3,6 +3,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { redirect } from "../../../public/lib/apiOperations";
 import { appHref } from "../../../public/lib/appLink";
+import { HubContext } from "../context/HubContext";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import { useRouter } from "next/router";
 import UserContext from "../context/UserContext";
@@ -42,14 +43,13 @@ const useStyles = makeStyles(() => ({
 export default function ContactAmbassadorButton({
   hubAmbassador,
   mobile,
-  hubUrl,
 }: {
   hubAmbassador: any;
   mobile: boolean;
-  hubUrl?: string;
 }) {
   const classes = useStyles();
   const { locale, user } = useContext(UserContext);
+  const { hubUrl } = useContext(HubContext);
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const texts = getTexts({ page: "hub", hubAmbassador: hubAmbassador, locale: locale });

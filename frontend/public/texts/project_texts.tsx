@@ -1,6 +1,6 @@
 import { Link } from "@mui/material";
 import React from "react";
-import { getLocalePrefix } from "../lib/apiOperations";
+import { appHref } from "../lib/appLink";
 
 export default function getProjectTexts({ project, user, url_slug, locale, creator, hubName }) {
   // Helper function to generate draft text for different project types
@@ -27,9 +27,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     };
 
     const config = typeConfig[type];
-    const profileUrl = `${getLocalePrefix(locale)}/profiles/${user?.url_slug}${
-      hubName ? `?hub=${hubName}` : ""
-    }#projects`;
+    const profileUrl = appHref(`/profiles/${user?.url_slug}#projects`, { hubUrl: hubName, locale });
 
     return {
       en: (
@@ -66,8 +64,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
     };
 
     const config = typeConfig[type];
-    const viewUrl =
-      getLocalePrefix(locale) + "/projects/" + url_slug + (hubName ? "?hub=" + hubName : "");
+    const viewUrl = appHref("/projects/" + url_slug, { hubUrl: hubName, locale });
 
     return {
       en: (
@@ -178,7 +175,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       en: (
         <>
           Go to{" "}
-          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug} underline="hover">
+          <Link href={appHref("/projects/" + project?.url_slug, { locale })} underline="hover">
             the project page
           </Link>{" "}
           and click join to join it.
@@ -187,7 +184,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
       de: (
         <>
           Gehe auf{" "}
-          <Link href={getLocalePrefix(locale) + "/projects/" + project?.url_slug} underline="hover">
+          <Link href={appHref("/projects/" + project?.url_slug, { locale })} underline="hover">
             die Projektseite
           </Link>{" "}
           und klicke auf {"Mitmachen"}.
@@ -1007,9 +1004,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         <>
           If your organisation does not exist yet{" "}
           <Link
-            href={`${getLocalePrefix(locale)}/createorganization${
-              hubName ? `?hub=${hubName}` : ""
-            }`}
+            href={appHref("/createorganization", { hubUrl: hubName, locale })}
             underline="always"
           >
             click here
@@ -1021,9 +1016,7 @@ export default function getProjectTexts({ project, user, url_slug, locale, creat
         <>
           Wenn das Profil deiner Organisation noch nicht existiert,{" "}
           <Link
-            href={`${getLocalePrefix(locale)}/createorganization${
-              hubName ? `?hub=${hubName}` : ""
-            }`}
+            href={appHref("/createorganization", { hubUrl: hubName, locale })}
             underline="always"
           >
             klicke hier

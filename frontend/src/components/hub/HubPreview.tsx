@@ -1,10 +1,10 @@
-import { Card, CardMedia, Link, Theme, Typography } from "@mui/material";
+import { Card, CardMedia, Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { appHref } from "../../../public/lib/appLink";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import AppLink from "../general/AppLink";
 
 const useStyles = makeStyles<Theme, { disableBoxShadow?: boolean }>((theme) => ({
   root: (props) => ({
@@ -40,8 +40,8 @@ export default function HubPreview({ hub, disableBoxShadow = false }) {
   const texts = getTexts({ page: "hub", locale: locale });
 
   return (
-    <Link
-      href={appHref(`/hubs/${hub.url_slug}/browse`, { locale })}
+    <AppLink
+      href={`/hubs/${hub.url_slug}/browse`}
       className={classes.noUnderline}
       underline="hover"
     >
@@ -61,6 +61,6 @@ export default function HubPreview({ hub, disableBoxShadow = false }) {
           <Typography className={classes.title}>{hub.name}</Typography>
         </div>
       </Card>
-    </Link>
+    </AppLink>
   );
 }

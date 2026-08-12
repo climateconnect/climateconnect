@@ -10,6 +10,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { appHref } from "../../../public/lib/appLink";
 import { useRouter } from "next/router";
+import { HubContext } from "../context/HubContext";
 
 type MakeStylesProps = {
   isLocationHub: boolean;
@@ -122,8 +123,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function LoggedOutLocationHubBox({ headline, isLocationHub, location, hubUrl }) {
+export default function LoggedOutLocationHubBox({ headline, isLocationHub, location }) {
   const { locale } = useContext(UserContext);
+  const { hubUrl } = useContext(HubContext);
   const texts = getTexts({
     page: "dashboard",
     locale: locale,

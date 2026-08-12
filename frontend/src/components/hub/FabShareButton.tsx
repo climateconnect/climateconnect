@@ -3,6 +3,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
 import { appHref } from "../../../public/lib/appLink";
 import AddIcon from "@mui/icons-material/Add";
+import React, { useContext } from "react";
+import { HubContext } from "../context/HubContext";
 
 type ShareProjectMakeStyleProps = {
   isCustomHub: boolean;
@@ -24,15 +26,10 @@ interface FabShareButtonProps {
   locale: string;
   hubAmbassador?: any;
   isCustomHub: boolean;
-  hubUrl?: string;
 }
 
-export const FabShareButton = ({
-  locale,
-  hubAmbassador,
-  isCustomHub,
-  hubUrl,
-}: FabShareButtonProps) => {
+export const FabShareButton = ({ locale, hubAmbassador, isCustomHub }: FabShareButtonProps) => {
+  const { hubUrl } = useContext(HubContext);
   const fabClass = shareProjectFabStyle({ isCustomHub: isCustomHub });
   return (
     <Fab

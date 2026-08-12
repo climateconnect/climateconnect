@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import Carousel from "react-multi-carousel";
-import { Theme, useMediaQuery, Link, Typography, Button } from "@mui/material";
+import { Theme, useMediaQuery, Typography, Button } from "@mui/material";
 import UserContext from "../context/UserContext";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import { appHref } from "../../../public/lib/appLink";
+import AppLink from "../general/AppLink";
 import HubSupportersDialog from "../dialogs/HubSupportersDialog";
 import { Supporter } from "../../types";
 
@@ -155,8 +155,6 @@ const HubSupporters = ({
           texts={texts}
           containerClass={containerClass}
           supportersList={supportersList}
-          locale={locale}
-          hubUrl={hubUrl}
         />
       ) : (
         <>
@@ -182,11 +180,8 @@ const HubSupporters = ({
 
 export default HubSupporters;
 
-const CarouselItem = ({ supporter, classes, locale, hubUrl }) => {
-  const organizationUrl = appHref(`/organizations/${supporter?.organization_url_slug}`, {
-    hubUrl,
-    locale,
-  });
+const CarouselItem = ({ supporter, classes }) => {
+  const organizationHref = `/organizations/${supporter?.organization_url_slug}`;
   return (
     <div className={classes.carouselEntry} key={supporter.name}>
       {supporter?.standalone_image ? (
@@ -209,9 +204,9 @@ const CarouselItem = ({ supporter, classes, locale, hubUrl }) => {
           <div>
             <p className={classes.supporterName}>
               {supporter?.organization_url_slug ? (
-                <Link href={organizationUrl} underline="none" className={classes.supporterName}>
+                <AppLink href={organizationHref} underline="none" className={classes.supporterName}>
                   {supporter?.name}
-                </Link>
+                </AppLink>
               ) : (
                 supporter?.name
               )}
@@ -224,14 +219,7 @@ const CarouselItem = ({ supporter, classes, locale, hubUrl }) => {
   );
 };
 
-const HubSupportersSlider = ({
-  classes,
-  texts,
-  containerClass,
-  supportersList,
-  locale,
-  hubUrl,
-}) => {
+const HubSupportersSlider = ({ classes, texts, containerClass, supportersList }) => {
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
@@ -258,8 +246,6 @@ const HubSupportersSlider = ({
                 key={supporter?.organization_url_slug}
                 supporter={supporter}
                 classes={classes}
-                locale={locale}
-                hubUrl={hubUrl}
               />
             ))}
         </Carousel>

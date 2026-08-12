@@ -1,10 +1,10 @@
-import { Container, Link, Theme, Typography, useMediaQuery } from "@mui/material";
+import { Container, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { appHref } from "../../../public/lib/appLink";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
+import AppLink from "../general/AppLink";
 import HubLinks from "../indexPage/hubsSubHeader/HubLinks";
 
 const useStyles = makeStyles((theme) => ({
@@ -48,21 +48,13 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
         <Typography className={classes.path} component="div">
           {!isNarrowScreen && !(isLocationHub && isSmallMediumScreen) && (
             <>
-              <Link
-                className={classes.link}
-                href={appHref("/browse", { leaveHub: true, locale })}
-                underline="hover"
-              >
+              <AppLink className={classes.link} href="/browse" leaveHub underline="hover">
                 {texts.browse}
-              </Link>
+              </AppLink>
               {" / "}
-              <Link
-                className={classes.link}
-                href={appHref("/hubs", { leaveHub: true, locale })}
-                underline="hover"
-              >
+              <AppLink className={classes.link} href="/hubs" leaveHub underline="hover">
                 {texts.hubs}
-              </Link>
+              </AppLink>
 
               {hubName && (
                 <>
