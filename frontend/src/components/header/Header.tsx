@@ -28,6 +28,7 @@ import noop from "lodash/noop";
 import React, { Fragment, useContext, useRef, useState } from "react";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 import { getImageUrl, getLogoSrc } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import Notification from "../communication/notifications/Notification";
@@ -600,7 +601,6 @@ const LoggedInNormalScreen = ({
     src: getImageUrl(loggedInUser.image),
     alt: loggedInUser.name,
   };
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
   return (
     <ClickAwayListener onClickAway={handleCloseMenu}>
       <Box className={classes.loggedInRoot}>
@@ -629,7 +629,7 @@ const LoggedInNormalScreen = ({
         >
           <Paper>
             <MenuList>
-              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString })
+              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, hubUrl })
                 .filter((link) => !link.showOnMobileOnly)
                 .map((link, index) => {
                   const menuItemProps: any = {
@@ -690,7 +690,6 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
   return (
     <>
@@ -843,7 +842,7 @@ function NarrowScreenLinks({
               })}
               {loggedInUser &&
                 loggedInUser.url_slug &&
-                getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString }).map(
+                getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, hubUrl }).map(
                   (link, index) => {
                     const Icon: any = link.iconForDrawer;
                     const avatarProps = {
@@ -855,7 +854,7 @@ function NarrowScreenLinks({
                       return (
                         <div className={classes.mobileAvatarContainer} key={index}>
                           <Link
-                            href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
+                            href={appHref("/profiles/" + loggedInUser.url_slug, { hubUrl, locale })}
                             underline="hover"
                           >
                             {loggedInUser?.badges?.length > 0 ? (
