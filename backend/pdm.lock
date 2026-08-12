@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:9521c18db6862817ef692c5f8e606b3b2fd250ed04b3b1f4eac78439062bc91c"
+content_hash = "sha256:9cb90edf513ee0c7eee8792f97d891e1bf42c29883033459214200487aa3bc1d"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -2675,6 +2675,17 @@ groups = ["default"]
 files = [
     {file = "starkbank_ecdsa-2.3.1-py3-none-any.whl", hash = "sha256:c6dcb0caeb5d7d181c3ef0a6b0185df700d4fa5d5e5669b40bc6d20816aa25a8"},
     {file = "starkbank_ecdsa-2.3.1.tar.gz", hash = "sha256:712315c87ba7966a963f6f939a773f7a7a15cdc056ece097a30c0a9d393ee513"},
+]
+
+[[package]]
+name = "tblib"
+version = "3.2.2"
+requires_python = ">=3.9"
+summary = "Traceback serialization library."
+groups = ["dev"]
+files = [
+    {file = "tblib-3.2.2-py3-none-any.whl", hash = "sha256:26bdccf339bcce6a88b2b5432c988b266ebbe63a4e593f6b578b1d2e723d2b76"},
+    {file = "tblib-3.2.2.tar.gz", hash = "sha256:e9a652692d91bf4f743d4a15bc174c0b76afc750fe8c7b6d195cc1c1d6d2ccec"},
 ]
 
 [[package]]

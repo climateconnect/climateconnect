@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
-from django.test import TransactionTestCase, tag
+from django.test import TestCase, tag
 from django.urls import reverse
 from PIL import Image
 from rest_framework import status
@@ -1066,12 +1066,11 @@ class TestCreateOrganizationTranslation(APITestCase):
         self.assertEqual(translation.get_involved_translation, "How to help")
 
 
-class OrganizationLocationHubFilterTest(TransactionTestCase):
+class OrganizationLocationHubFilterTest(TestCase):
     """
     Test case for filtering organizations by location hubs.
     Tests the code in organization_views.py that handles filtering organizations
     by location hubs with aggregated geometry.
-    Uses TransactionTestCase to ensure complete database isolation and cleanup.
     """
 
     def setUp(self):
@@ -1300,16 +1299,6 @@ class OrganizationLocationHubFilterTest(TransactionTestCase):
             url_slug="paris-address-org",
             location=self.location_paris_address,
         )
-
-    def tearDown(self):
-        """
-        Clean up after each test.
-        TransactionTestCase automatically clears the database, but
-        we explicitly clear for clarity.
-        """
-        Organization.objects.all().delete()
-        Hub.objects.all().delete()
-        Location.objects.all().delete()
 
     @tag("location_hub", "organizations")
     def test_filter_organizations_by_multi_location_hub(self):

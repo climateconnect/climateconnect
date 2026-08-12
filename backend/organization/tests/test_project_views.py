@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
-from django.test import TransactionTestCase, tag
+from django.test import TestCase, tag
 from django.urls import reverse
 from PIL import Image
 from rest_framework import status
@@ -1176,12 +1176,11 @@ class TestProjectApi(APITestCase):
         self.assertIn("is_online", res)
 
 
-class ProjectLocationHubFilterTest(TransactionTestCase):
+class ProjectLocationHubFilterTest(TestCase):
     """
     Test case for filtering projects by location hubs.
     Tests the code in project_views.py that handles filtering projects by location hubs
     with aggregated geometry.
-    Uses TransactionTestCase to ensure complete database isolation and cleanup.
     """
 
     def setUp(self):
@@ -1202,7 +1201,7 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
         self.url = reverse("organization:list-projects")
 
         # Create language (required for projects)
-        self.language = Language.objects.create(language_code="en", name="English")
+        self.language = Language.objects.get(language_code="en")
 
         # Create project status (required for projects)
         self.project_status = ProjectStatus.objects.create(
@@ -1514,18 +1513,6 @@ class ProjectLocationHubFilterTest(TransactionTestCase):
             language=self.language,
             loc=self.location_paris_address,
         )
-
-    def tearDown(self):
-        """
-        Clean up after each test.
-        TransactionTestCase automatically clears the database, but
-        we explicitly clear for clarity.
-        """
-        Project.objects.all().delete()
-        Hub.objects.all().delete()
-        Location.objects.all().delete()
-        ProjectStatus.objects.all().delete()
-        Language.objects.all().delete()
 
     @tag("location_hub", "projects")
     def test_filter_projects_by_multi_location_hub(self):
