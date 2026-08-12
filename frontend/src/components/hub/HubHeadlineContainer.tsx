@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import theme from "../../themes/theme";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub }) {
+export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
   const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale, user } = useContext(UserContext);
 
@@ -102,7 +102,7 @@ export default function HubHeadlineContainer({ subHeadline, headline, isLocation
             {isNarrowScreen && !user && (
               <div className={classes.signUpContainer}>
                 <Button
-                  href={getLocalePrefix(locale) + "/signup"}
+                  href={appHref("/signup", { hubUrl, locale })}
                   variant="contained"
                   color="primary"
                 >

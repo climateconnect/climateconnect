@@ -1,7 +1,7 @@
 import { Fab } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme } from "@mui/material/styles";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 import AddIcon from "@mui/icons-material/Add";
 
 type ShareProjectMakeStyleProps = {
@@ -34,13 +34,12 @@ export const FabShareButton = ({
   hubUrl,
 }: FabShareButtonProps) => {
   const fabClass = shareProjectFabStyle({ isCustomHub: isCustomHub });
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
   return (
     <Fab
       className={fabClass.fabShareProject}
       size="medium"
       color="primary"
-      href={`${getLocalePrefix(locale)}/share${queryString}`}
+      href={appHref("/share", { hubUrl, locale })}
       sx={{ bottom: (theme) => (hubAmbassador ? theme.spacing(11.5) : theme.spacing(5)) }}
     >
       <AddIcon />

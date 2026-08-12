@@ -6,7 +6,7 @@ import UserContext from "../context/UserContext";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 import HubSupportersDialog from "../dialogs/HubSupportersDialog";
 import { Supporter } from "../../types";
 
@@ -183,8 +183,10 @@ const HubSupporters = ({
 export default HubSupporters;
 
 const CarouselItem = ({ supporter, classes, locale, hubUrl }) => {
-  const baseUrl = `${getLocalePrefix(locale)}/organizations/${supporter?.organization_url_slug}`;
-  const organizationUrl = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
+  const organizationUrl = appHref(`/organizations/${supporter?.organization_url_slug}`, {
+    hubUrl,
+    locale,
+  });
   return (
     <div className={classes.carouselEntry} key={supporter.name}>
       {supporter?.standalone_image ? (

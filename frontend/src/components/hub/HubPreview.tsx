@@ -1,7 +1,7 @@
 import { Card, CardMedia, Link, Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -41,7 +41,7 @@ export default function HubPreview({ hub, disableBoxShadow = false }) {
 
   return (
     <Link
-      href={getLocalePrefix(locale) + `/hubs/${hub.url_slug}/browse`}
+      href={appHref(`/hubs/${hub.url_slug}/browse`, { locale })}
       className={classes.noUnderline}
       underline="hover"
     >

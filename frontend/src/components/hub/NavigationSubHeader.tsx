@@ -1,7 +1,7 @@
 import { Container, Link, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
@@ -50,7 +50,7 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
             <>
               <Link
                 className={classes.link}
-                href={getLocalePrefix(locale) + "/browse"}
+                href={appHref("/browse", { leaveHub: true, locale })}
                 underline="hover"
               >
                 {texts.browse}
@@ -58,7 +58,7 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
               {" / "}
               <Link
                 className={classes.link}
-                href={getLocalePrefix(locale) + "/hubs"}
+                href={appHref("/hubs", { leaveHub: true, locale })}
                 underline="hover"
               >
                 {texts.hubs}
