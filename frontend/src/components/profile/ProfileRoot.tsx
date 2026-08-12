@@ -4,7 +4,8 @@ import { Theme, useTheme } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
-import { apiRequest, getLocalePrefix } from "../../../public/lib/apiOperations";
+import { apiRequest } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
 import {
   parseDirectProjectStubs,
@@ -207,7 +208,6 @@ export default function ProfileRoot({
       scrollDownSmooth(ideasRef);
     }
   }, []);
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
   // Fetch registered events only for own account on client-side
   useEffect(() => {
@@ -236,7 +236,7 @@ export default function ProfileRoot({
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={`${getLocalePrefix(locale)}/editprofile${queryString}`}
+      editHref={appHref("/editprofile", { hubUrl, locale })}
       isOwnAccount={isOwnAccount}
       isOrganization={false}
       infoMetadata={infoMetadata}
@@ -271,7 +271,7 @@ export default function ProfileRoot({
             {isOwnAccount ? texts.your_projects : texts.this_users_projects}
           </h2>
           {isTinyScreen ? (
-            <IconButton href={`${getLocalePrefix(locale)}/share${queryString}`} size="large">
+            <IconButton href={appHref("/share", { hubUrl, locale })} size="large">
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"
@@ -282,7 +282,7 @@ export default function ProfileRoot({
             <Button
               variant="contained"
               color="primary"
-              href={`${getLocalePrefix(locale)}/share${queryString}`}
+              href={appHref("/share", { hubUrl, locale })}
             >
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.share_a_project}
@@ -319,10 +319,7 @@ export default function ProfileRoot({
             {isOwnAccount ? texts.your_organizations : texts.this_users_organizations}
           </h2>
           {isTinyScreen ? (
-            <IconButton
-              href={`${getLocalePrefix(locale)}/createorganization${queryString}`}
-              size="large"
-            >
+            <IconButton href={appHref("/createorganization", { hubUrl, locale })} size="large">
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"
@@ -333,7 +330,7 @@ export default function ProfileRoot({
             <Button
               variant="contained"
               color="primary"
-              href={`${getLocalePrefix(locale)}/createorganization${queryString}`}
+              href={appHref("/createorganization", { hubUrl, locale })}
             >
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.create_an_organization}

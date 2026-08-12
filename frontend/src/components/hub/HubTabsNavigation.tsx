@@ -7,7 +7,7 @@ import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
 import { useFeatureToggles } from "../featureToggle";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import AppLink from "../general/AppLink";
 import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { getCustomHubData } from "../../../public/data/customHubData";
@@ -246,19 +246,22 @@ export default function HubTabsNavigation({
       <Container maxWidth="lg" className={classes.container}>
         <div className={classes.linksAndTabsWrapper}>
           {renderTabs()}
-          {isEventsEnabled && !isNarrowScreen && (
-            <Link
-              className={isEventsPage ? classes.activeEventLink : classes.link}
-              href={`${getLocalePrefix(locale)}${
-                hubUrl
-                  ? `/hubs/${hubUrl}${subHubSegment ? `/${subHubSegment}` : ""}/events`
-                  : "/events"
-              }`}
-              underline={isEventsPage ? "none" : "hover"}
-            >
-              {texts.event_calendar ?? "Event calendar"}
-            </Link>
-          )}
+          {isEventsEnabled &&
+            !isNarrowScreen &&
+            (() => {
+              const eventsPath = hubUrl
+                ? `/hubs/${hubUrl}${subHubSegment ? `/${subHubSegment}` : ""}/events`
+                : "/events";
+              return (
+                <AppLink
+                  className={isEventsPage ? classes.activeEventLink : classes.link}
+                  href={eventsPath}
+                  underline={isEventsPage ? "none" : "hover"}
+                >
+                  {texts.event_calendar ?? "Event calendar"}
+                </AppLink>
+              );
+            })()}
           {isEmmendingenHub && (
             <Link
               className={classes.climateMatchLink}
