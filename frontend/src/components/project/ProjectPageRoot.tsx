@@ -537,6 +537,7 @@ export default function ProjectPageRoot({
   };
 
   const handleReadNotifications = async (notificationType) => {
+    if (!notifications || notifications.length === 0) return;
     const notification_to_set_read = notifications.filter(
       (n) => n.notification_type === notificationType && n.project.url_slug === project.url_slug
     );
