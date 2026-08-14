@@ -131,7 +131,7 @@ function AppContent({
   };
 
   const hideNotification = (notificationId) => {
-    const notifications = state.notifications;
+    const notifications = state.notifications ?? [];
     setState({
       ...state,
       notifications: notifications.filter((n) => n.id !== notificationId),
