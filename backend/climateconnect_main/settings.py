@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import random
 import ssl
 import sys
 from datetime import timedelta
@@ -472,10 +473,38 @@ def _sentry_before_send(event, hint):
     return event
 
 
+def _sentry_before_send_transaction(event, hint):
+    """Always send transaction traces for 500+ errors; sample 20% for the rest.
+
+    traces_sample_rate is set to 1.0 so every request starts a trace, but
+    this function drops ~80% of non-error traces before they leave the
+    process.  500+ responses are never dropped — they always reach Sentry
+    with the full span tree so the root cause (slow query, serializer crash,
+    etc.) is visible.
+    """
+    response_status = None
+    # DjangoIntegration puts the HTTP status in event tags
+    tags = event.get("tags") or {}
+    response_status = tags.get("http.status_code")
+    # Also check the response context (SDK 2.x)
+    if response_status is None:
+        ctx_resp = (event.get("contexts") or {}).get("response") or {}
+        response_status = ctx_resp.get("status_code")
+    if response_status is not None and int(response_status) >= 500:
+        return event  # Always send server errors
+    # For non-error traces, drop ~80% (matching the old 20% sample rate)
+    if random.random() > 0.2:
+        return None  # Drop this trace
+    return event
+
+
 sentry_sdk.init(
     dsn=SENTRY_DSN,
     integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
-    traces_sample_rate=0.2,
+    # Set to 1.0 so every request starts a trace.  The actual send/drop
+    # decision is made in _sentry_before_send_transaction: 500+ always
+    # sent, everything else sampled at 20%.
+    traces_sample_rate=1.0,
     # GDPR data minimisation — do not send PII to Sentry.
     # Disables automatic collection of IP, user agent, headers, cookies, user info.
     send_default_pii=False,
@@ -484,6 +513,7 @@ sentry_sdk.init(
     event_scrubber=EventScrubber(pii_denylist=_PII_DENYLIST),
     # GDPR — strip PII fields from request bodies, keep rest for debugging.
     before_send=_sentry_before_send,
+    before_send_transaction=_sentry_before_send_transaction,
     environment=SENTRY_ENVIRONMENT,
 )
 
