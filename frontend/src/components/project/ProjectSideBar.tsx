@@ -80,7 +80,7 @@ export default function ProjectSideBar({
   const classes = useStyles({
     isSmallScreen: isSmallScreen,
   });
-  const link = getLocalePrefix(locale) + "/browse";
+  const link = getLocalePrefix(locale) + "/projects";
   const shouldDisplayOneProjectInRow = !isSmallScreen;
 
   // Determine what to show: siblings or similar projects

@@ -60,7 +60,7 @@ export async function getServerSideProps(ctx: any) {
   if (!hubData?.landing_page_component) {
     return {
       redirect: {
-        destination: appHref(`/hubs/${hubUrl}/browse`, { locale }),
+        destination: appHref(`/hubs/${hubUrl}/projects`, { locale }),
         // redirect is based on current hub data, and that might change in the future so permanent: false,
         permanent: false,
       },
@@ -96,7 +96,7 @@ const LandingPage: FC<LandingPageProps> = ({ hubData, hubUrl }) => {
       headerBackground={theme.palette.primary.main}
       showDonationGoal={true}
     >
-      <NotFoundPage texts={texts} link={`/hubs/${hubUrl}/browse`} />
+      <NotFoundPage texts={texts} link={`/hubs/${hubUrl}/projects`} />
     </DevlinkPage>
   );
 };

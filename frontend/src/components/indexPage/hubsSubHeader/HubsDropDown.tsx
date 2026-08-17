@@ -54,15 +54,15 @@ export default function HubsDropDown({
     }
   };
 
-  const currentHash = typeof window !== "undefined" ? window.location.hash : "";
   const dropDownHubItems = hubs.map((h) => ({
     href: isEventsPage
       ? `/hubs/${h.url_slug}/events`
-      : (!user && h.landing_page_component ? `/hubs/${h.url_slug}` : `/hubs/${h.url_slug}/browse`) +
-        currentHash,
+      : !user && h.landing_page_component
+      ? `/hubs/${h.url_slug}`
+      : `/hubs/${h.url_slug}/projects`,
     text: h.name,
   }));
-  const allLocationsHref = isEventsPage ? "/events" : `/browse${currentHash}`;
+  const allLocationsHref = isEventsPage ? "/events" : "/projects";
 
   const dropDownItems = addLocationHubExplainerLink
     ? [

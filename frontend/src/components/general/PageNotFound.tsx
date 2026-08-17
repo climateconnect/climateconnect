@@ -32,7 +32,9 @@ export default function PageNotFound({
       <p>
         <Link
           href={
-            returnLink ? getLocalePrefix(locale) + returnLink : getLocalePrefix(locale) + "/browse"
+            returnLink
+              ? getLocalePrefix(locale) + returnLink
+              : getLocalePrefix(locale) + "/projects"
           }
           underline="hover"
         >

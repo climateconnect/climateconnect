@@ -62,11 +62,11 @@ export default function ResetPassword({ hubUrl, hubThemeData }) {
           locale: locale,
         });
         if (hubUrl) {
-          redirect(`/hubs/${hubUrl}/browse`, {
+          redirect(`/hubs/${hubUrl}/projects`, {
             message: response.data.message,
           });
         } else {
-          redirect("/browse", {
+          redirect("/projects", {
             message: response.data.message,
           });
         }

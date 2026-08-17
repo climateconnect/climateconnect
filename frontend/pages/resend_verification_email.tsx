@@ -56,11 +56,11 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
 
   const onSuccess = (resp) => {
     if (hubUrl) {
-      redirect(`/hubs/${hubUrl}/browse`, {
+      redirect(`/hubs/${hubUrl}/projects`, {
         message: resp.data.message,
       });
     } else {
-      redirect("/browse", {
+      redirect("/projects", {
         message: resp.data.message,
       });
     }

@@ -71,7 +71,7 @@ export default function HubLinks({
       {!isMediumScreen && !onlyShowDropDown && showAllProjectsButton && (
         <Link
           className={linkClassName}
-          href={getLocalePrefix(locale) + "/browse"}
+          href={getLocalePrefix(locale) + "/projects"}
           underline="hover"
         >
           {texts.all_projects}

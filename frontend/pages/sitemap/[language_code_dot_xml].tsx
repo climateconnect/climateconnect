@@ -29,7 +29,7 @@ const STATIC_PAGE_PROPS = {
     priority: 0.9,
     changefreq: "daily",
   },
-  "/browse": {
+  "/projects": {
     priority: 1,
     changefreq: "hourly",
   },

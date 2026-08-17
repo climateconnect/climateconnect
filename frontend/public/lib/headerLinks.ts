@@ -70,7 +70,7 @@ const shouldShowStaticLinksForBrowse = ({ isLocationHub, hasHubLandingPage, isOn
 };
 
 const buildBrowseLink = ({ texts, isLocationHub, isOnLandingPage, hasHubLandingPage }) => ({
-  href: "/browse",
+  href: "/projects",
   text: getBrowseLinkText({ texts, isLocationHub, isOnLandingPage, hasHubLandingPage }),
   iconForDrawer: HomeIcon,
   showJustIconUnderSm: HomeIcon,
@@ -83,7 +83,7 @@ const buildBrowseLink = ({ texts, isLocationHub, isOnLandingPage, hasHubLandingP
 
 const getAboutLinkHref = ({ isOnLandingPage, hasHubLandingPage, hubUrl }) => {
   if (isOnLandingPage && hubUrl) {
-    return `/hubs/${hubUrl}/browse`;
+    return `/hubs/${hubUrl}/projects`;
   }
   if (hasHubLandingPage && hubUrl) {
     return `/hubs/${hubUrl}/`;

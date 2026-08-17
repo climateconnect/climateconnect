@@ -48,7 +48,7 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
         <Typography className={classes.path} component="div">
           {!isNarrowScreen && !(isLocationHub && isSmallMediumScreen) && (
             <>
-              <AppLink className={classes.link} href="/browse" leaveHub underline="hover">
+              <AppLink className={classes.link} href="/projects" leaveHub underline="hover">
                 {texts.browse}
               </AppLink>
               {" / "}

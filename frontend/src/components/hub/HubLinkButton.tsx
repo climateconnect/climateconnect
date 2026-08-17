@@ -95,7 +95,7 @@ export default function HubLinkButton({
   const classes = useStyles({ backgroundColor, iconUrl: hub.icon, isNarrowScreen });
   const getLinkUrl = () => {
     const baseUrl =
-      pageContext === "events" ? hub.hubUrl.replace(/\/browse$/, "/events") : hub.hubUrl;
+      pageContext === "events" ? hub.hubUrl.replace(/\/projects$/, "/events") : hub.hubUrl;
     const hash = pageContext === "browse" ? window.location.hash : "";
     return `${baseUrl}${hash}`;
   };

@@ -52,7 +52,7 @@ export default function ProjectsSharedBox({ projects, className, isLoading }) {
       </Typography>
       <FixedPreviewCards isLoading={isLoading} elements={projects} type="project" />
       <div className={classes.showProjectsButtonContainer}>
-        <Button color="inherit" href={getLocalePrefix(locale) + "/browse"}>
+        <Button color="inherit" href={getLocalePrefix(locale) + "/projects"}>
           <span className={classes.showProjectsText}>{texts.show_all_projects}</span>
           <KeyboardArrowRightIcon className={classes.showProjectsArrow} />
         </Button>

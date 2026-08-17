@@ -41,7 +41,7 @@ export default function HubPreview({ hub, disableBoxShadow = false }) {
 
   return (
     <AppLink
-      href={`/hubs/${hub.url_slug}/browse`}
+      href={`/hubs/${hub.url_slug}/projects`}
       className={classes.noUnderline}
       underline="hover"
     >

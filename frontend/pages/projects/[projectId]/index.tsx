@@ -19,8 +19,6 @@ import { transformThemeData } from "../../../src/themes/transformThemeData";
 import getHubTheme from "../../../src/themes/fetchHubTheme";
 import theme from "../../../src/themes/theme";
 import { NOTIFICATION_TYPES } from "../../../src/components/communication/notifications/Notification";
-import { getProjectTypeOptions } from "../../../public/lib/getOptions";
-import BrowseContext from "../../../src/components/context/BrowseContext";
 import { HubContext } from "../../../src/components/context/HubContext";
 import { parseData } from "../../../public/lib/parsingOperations";
 import {
@@ -174,23 +172,10 @@ export default function ProjectPage({
   const { hubs } = useContext(HubContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showSimilarProjects, setShowSimilarProjects] = useState(true);
-  const [projectTypes, setProjectTypes] = useState([]);
   // Get registered event slugs from user profile for showing "Registered ✓" status
   const registeredEventSlugs = useMemo(() => {
     return new Set(user?.registered_event_slugs || []);
   }, [user?.registered_event_slugs]);
-
-  const retrieveAndSetProjectTypes = async () => {
-    const projectTypeOptions = await getProjectTypeOptions(locale);
-    setProjectTypes(projectTypeOptions);
-  };
-  useEffect(function () {
-    retrieveAndSetProjectTypes();
-  }, []);
-
-  const contextValues = {
-    projectTypes: projectTypes,
-  };
 
   const classes = useStyles({
     showSimilarProjects: showSimilarProjects,
@@ -300,66 +285,64 @@ export default function ProjectPage({
       }
       image={project ? getImageUrl(project.image) : undefined}
     >
-      <BrowseContext.Provider value={contextValues}>
-        {project ? (
-          <div className={classes.contentWrapper}>
-            <div className={classes.mainContent}>
-              <ProjectPageRoot
-                project={{
-                  ...project,
-                  team: currentMembers,
-                  timeline_posts: posts,
-                  comments: curComments,
-                }}
-                setMessage={setMessage}
-                isUserFollowing={isUserFollowing}
-                setCurComments={setCurComments}
-                followingChangePending={followingChangePending}
-                likingChangePending={likingChangePending}
-                projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
-                isUserLiking={isUserLiking}
-                numberOfLikes={numberOfLikes}
-                numberOfFollowers={numberOfFollowers}
-                handleFollow={handleFollow}
-                handleLike={handleLike}
+      {project ? (
+        <div className={classes.contentWrapper}>
+          <div className={classes.mainContent}>
+            <ProjectPageRoot
+              project={{
+                ...project,
+                team: currentMembers,
+                timeline_posts: posts,
+                comments: curComments,
+              }}
+              setMessage={setMessage}
+              isUserFollowing={isUserFollowing}
+              setCurComments={setCurComments}
+              followingChangePending={followingChangePending}
+              likingChangePending={likingChangePending}
+              projectAdmin={members?.find((m) => m.permission === ROLE_TYPES.all_type)}
+              isUserLiking={isUserLiking}
+              numberOfLikes={numberOfLikes}
+              numberOfFollowers={numberOfFollowers}
+              handleFollow={handleFollow}
+              handleLike={handleLike}
+              similarProjects={similarProjects}
+              handleHideContent={handleHideContent}
+              showSimilarProjects={showSimilarProjects}
+              requestedToJoinProject={requestedToJoinProject}
+              handleJoinRequest={handleJoinRequest}
+              onMembersRefreshed={refreshMembers}
+              hubSupporters={hubSupporters}
+              hubPage={hubUrl}
+              siblingProjects={siblingProjects}
+              isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+              isRegistered={isRegistered}
+              hasAttended={hasAttended}
+              adminCancelled={adminCancelled}
+            />
+          </div>
+          <div className={classes.secondaryContent}>
+            {!smallScreenSize && (
+              <ProjectSideBar
                 similarProjects={similarProjects}
-                handleHideContent={handleHideContent}
-                showSimilarProjects={showSimilarProjects}
-                requestedToJoinProject={requestedToJoinProject}
-                handleJoinRequest={handleJoinRequest}
-                onMembersRefreshed={refreshMembers}
-                hubSupporters={hubSupporters}
-                hubPage={hubUrl}
                 siblingProjects={siblingProjects}
                 isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
-                isRegistered={isRegistered}
-                hasAttended={hasAttended}
-                adminCancelled={adminCancelled}
+                handleHideContent={handleHideContent}
+                showSimilarProjects={showSimilarProjects}
+                locale={locale}
+                texts={texts}
+                hubSupporters={hubSupporters}
+                hubName={hubUrl}
+                isSmallScreen={false}
+                registeredEventSlugs={registeredEventSlugs}
+                hubUrl={hubUrl}
               />
-            </div>
-            <div className={classes.secondaryContent}>
-              {!smallScreenSize && (
-                <ProjectSideBar
-                  similarProjects={similarProjects}
-                  siblingProjects={siblingProjects}
-                  isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
-                  handleHideContent={handleHideContent}
-                  showSimilarProjects={showSimilarProjects}
-                  locale={locale}
-                  texts={texts}
-                  hubSupporters={hubSupporters}
-                  hubName={hubUrl}
-                  isSmallScreen={false}
-                  registeredEventSlugs={registeredEventSlugs}
-                  hubUrl={hubUrl}
-                />
-              )}
-            </div>
+            )}
           </div>
-        ) : (
-          <PageNotFound itemName={texts.project} />
-        )}
-      </BrowseContext.Provider>
+        </div>
+      ) : (
+        <PageNotFound itemName={texts.project} />
+      )}
     </WideLayout>
   );
 }

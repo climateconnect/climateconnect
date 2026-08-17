@@ -9,8 +9,6 @@ import getTexts from "../../../../public/texts/texts";
 import { getFragmentsWithMentions } from "../../../utils/mentions_markdown";
 import UserContext from "../../context/UserContext";
 import {
-  IdeaCommentNotification,
-  IdeaCommentReplyNotification,
   ProjectCommentNotification,
   ProjectCommentReplyNotification,
 } from "./CommentNotifications";
@@ -112,12 +110,12 @@ export default function Notification({
         hubUrl={hubUrl}
       />
     );
-  } else if (type === "idea_comment") {
-    return <IdeaCommentNotification notification={notification} />;
-  } else if (type === "reply_to_idea_comment") {
-    return <IdeaCommentReplyNotification notification={notification} />;
-  } else if (type === "person_joined_idea") {
-    return <PersonJoinedIdeaNotification notification={notification} hubUrl={hubUrl} />;
+  } else if (
+    type === "idea_comment" ||
+    type === "reply_to_idea_comment" ||
+    type === "person_joined_idea"
+  ) {
+    return <></>;
   } else if (type === "project_like") {
     return <ProjectLikeNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "organization_follower") {
@@ -161,29 +159,6 @@ const JoinProjectRequestApprovedNotification = ({ notification, hubUrl }) => {
         icon: GroupIcon,
       }}
       primaryText={texts.project_accepted_you_as_a_member}
-      notification={notification}
-    />
-  );
-};
-
-const PersonJoinedIdeaNotification = ({ notification, hubUrl }) => {
-  const supporter = notification.idea_supporter;
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "notification", locale: locale, idea: notification.idea });
-  const baseUrl = `/chat/${notification.idea_supporter_chat}`;
-  const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
-  //TODO: Link to group chat
-  return (
-    <GenericNotification
-      link={notifLink}
-      avatar={{
-        alt: supporter?.first_name + " " + supporter?.last_name,
-        image: supporter?.thumbnail_image,
-      }}
-      primaryText={
-        supporter?.first_name + " " + supporter?.last_name + " " + texts.joined_your_idea
-      }
-      secondaryText={texts.send_a_Message_to_welcome_them_in_the_group_chat}
       notification={notification}
     />
   );
@@ -252,25 +227,22 @@ const PlaceholderNotification = ({ hubUrl }) => {
 };
 
 const MentionNotification = ({ notification, texts, locale, hubUrl }) => {
-  const entityType = notification.project_comment ? "project" : "idea";
-  const commentProp = `${entityType}_comment`;
-
-  // TODO: need to refactor this to suport the correct
-  // notifications when a user has requested to join a project. See
-  // https://github.com/climateconnect/climateconnect/issues/898
-  const sender = notification[commentProp] ? notification[commentProp].author_user : "Anonymous";
+  const sender = notification.project_comment
+    ? notification.project_comment.author_user
+    : "Anonymous";
 
   let urlEnding;
-  if (!notification.idea && !notification.project) {
-    urlEnding = null;
+  if (notification.project) {
+    urlEnding = `/projects/${notification.project.url_slug}/#comments`;
   } else {
-    urlEnding =
-      entityType === "project"
-        ? `/projects/${notification.project.url_slug}/#comments`
-        : `/hubs/${notification.idea.hub_url_slug}/browse?idea=${notification.idea.url_slug}#ideas`;
+    urlEnding = null;
   }
 
-  const previewText = getFragmentsWithMentions(notification[commentProp]?.content, false, locale);
+  const previewText = getFragmentsWithMentions(
+    notification.project_comment?.content,
+    false,
+    locale
+  );
 
   let notifLink = urlEnding && getLocalePrefix(locale) + urlEnding;
   if (notifLink && hubUrl) {

@@ -189,7 +189,6 @@ export default function ProfileRoot({
   };
   const projectsRef = useRef(null);
   const organizationsRef = useRef(null);
-  const ideasRef = useRef(null);
   const scrollDownSmooth = (ref) => {
     ref.current.scrollIntoView({ behavior: "smooth" });
   };
@@ -203,9 +202,6 @@ export default function ProfileRoot({
     }
     if (URL.slice(-14) == "#organizations") {
       scrollDownSmooth(organizationsRef);
-    }
-    if (URL.slice(-6) == "#ideas") {
-      scrollDownSmooth(ideasRef);
     }
   }, []);
 

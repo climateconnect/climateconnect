@@ -1,0 +1,146 @@
+import React, { Suspense, lazy, useContext, useEffect, useRef, useState } from "react";
+import { Theme, useMediaQuery } from "@mui/material";
+import getFilters from "../../../public/data/possibleFilters";
+import { getActiveFilterCount } from "../../../public/lib/filterOperations";
+import { FilterContext } from "../context/FilterContext";
+import FeedbackContext from "../context/FeedbackContext";
+import UserContext from "../context/UserContext";
+import { HubContext } from "../context/HubContext";
+import LoadingSpinner from "../general/LoadingSpinner";
+import NoItemsFound from "./NoItemsFound";
+import FilterContent from "../filter/FilterContent";
+import { useBrowseData } from "../../hooks/useBrowseData";
+import { useBrowseUrlSync } from "../../hooks/useBrowseUrlSync";
+
+const FilterSection = lazy(() => import("../indexPage/FilterSection"));
+const OrganizationPreviews = lazy(() => import("../organization/OrganizationPreviews"));
+
+type Props = {
+  filterChoices: any;
+  initialLocationFilter?: any;
+  customSearchBarLabels?: any;
+};
+
+export default function BrowseOrganisationsContent({
+  filterChoices,
+  initialLocationFilter,
+  customSearchBarLabels,
+}: Props) {
+  const { locale } = useContext(UserContext);
+  const { hubUrl } = useContext(HubContext);
+  const { showFeedbackMessage } = useContext(FeedbackContext);
+  const { handleUpdateFilterValues } = useContext(FilterContext);
+  const {
+    items,
+    hasMore,
+    isFiltering,
+    isFetchingMoreData,
+    filters,
+    nonFilterParams,
+    locationInputRef,
+    locationOptionsOpen,
+    setLocationOptionsOpen,
+    handleApplyNewFilters,
+    handleSearchSubmit,
+    handleLoadMoreData,
+    setNonFilterParams,
+  } = useBrowseData("organizations");
+
+  const { initializeFromUrl } = useBrowseUrlSync(filterChoices, locale);
+
+  const [filtersExpanded, setFiltersExpanded] = useState(true);
+  const [filtersExpandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+  const childrenRenderedRef = useRef(false);
+
+  const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+
+  useEffect(() => {
+    if (!initialized) {
+      const result = initializeFromUrl("organizations", initialLocationFilter, showFeedbackMessage);
+      if (result) {
+        setNonFilterParams(result.nonFilterParams);
+        handleApplyNewFilters({
+          newFilters: result.newFilters,
+          closeFilters: false,
+          filterChoices,
+          hubUrl,
+          initialLocationFilter,
+        });
+      }
+      setInitialized(true);
+    }
+  }, [initialized]);
+
+  const possibleFilters = getFilters({ key: "organizations", filterChoices, locale });
+  const activeFilterCount = getActiveFilterCount(filters, possibleFilters);
+
+  const hasItems = items.length > 0;
+  if (hasItems) childrenRenderedRef.current = true;
+  const showChildren = hasItems || (isFiltering && childrenRenderedRef.current);
+  const shouldShowNoItems = !isFiltering && !hasItems;
+
+  const unexpandFilters = () => setFiltersExpanded(false);
+  const unexpandFiltersOnMobile = () => setFiltersExpandedOnMobile(false);
+
+  return (
+    <>
+      {isSmallScreen && (
+        <Suspense fallback={null}>
+          <FilterSection
+            activeFilterCount={activeFilterCount}
+            filtersExpanded={filtersExpandedOnMobile}
+            onSubmit={(type, value) =>
+              handleSearchSubmit({ searchValue: value, filterChoices, hubUrl })
+            }
+            setFiltersExpanded={isSmallScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+            type="organizations"
+            customSearchBarLabels={customSearchBarLabels}
+          />
+        </Suspense>
+      )}
+      {filtersExpanded && (
+        <FilterContent
+          type="organizations"
+          applyFilters={({ type: _type, newFilters, closeFilters, nonFilterParams: _nfp }) =>
+            handleApplyNewFilters({
+              newFilters,
+              closeFilters,
+              filterChoices,
+              hubUrl,
+              initialLocationFilter,
+            })
+          }
+          handleUpdateFilters={handleUpdateFilterValues}
+          errorMessage=""
+          filtersExpanded={isSmallScreen ? filtersExpandedOnMobile : filtersExpanded}
+          handleSetLocationOptionsOpen={setLocationOptionsOpen}
+          locationInputRef={locationInputRef}
+          locationOptionsOpen={locationOptionsOpen}
+          possibleFilters={possibleFilters}
+          unexpandFilters={isSmallScreen ? unexpandFiltersOnMobile : unexpandFilters}
+          initialLocationFilter={initialLocationFilter}
+          nonFilterParams={nonFilterParams}
+          searchSubmit={(type, value) =>
+            handleSearchSubmit({ searchValue: value, filterChoices, hubUrl })
+          }
+        />
+      )}
+      {isFiltering && !childrenRenderedRef.current && <LoadingSpinner isLoading />}
+      <div style={{ opacity: isFiltering && showChildren ? 0.5 : 1, transition: "opacity 150ms" }}>
+        {showChildren && (
+          <Suspense fallback={null}>
+            <OrganizationPreviews
+              hasMore={hasMore}
+              loadFunc={() => handleLoadMoreData(hubUrl)}
+              organizations={items}
+              parentHandlesGridItems
+              isLoading={isFetchingMoreData}
+            />
+          </Suspense>
+        )}
+      </div>
+      {shouldShowNoItems && <NoItemsFound type="organizations" hubName="" />}
+    </>
+  );
+}

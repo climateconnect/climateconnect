@@ -63,7 +63,7 @@ export default function Login({ hubThemeData, hubSlug }: LoginProps) {
       return decodedRedirect.startsWith("/") ? prefix + decodedRedirect : decodedRedirect;
     }
     if (hubSlug) {
-      return getLocalePrefix(locale || "en") + "/hubs/" + hubSlug + "/browse";
+      return getLocalePrefix(locale || "en") + "/hubs/" + hubSlug + "/projects";
     }
     return undefined;
   })();

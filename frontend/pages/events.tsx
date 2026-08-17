@@ -109,11 +109,18 @@ export default function EventsPage({
     members: texts.members,
   };
 
+  const TAB_TO_PATH: Record<string, string> = {
+    projects: "projects",
+    organizations: "organisations",
+    members: "members",
+  };
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     const tab = TYPES_BY_TAB_VALUE[newValue];
     if (tab === "events") return;
-    const base = hubUrl ? `/hubs/${hubUrl}` : "/browse";
-    router.push(`${base}#${tab}`);
+    const segment = TAB_TO_PATH[tab] || tab;
+    const path = hubUrl ? `/hubs/${hubUrl}/${segment}` : `/${segment}`;
+    router.push(path);
   };
 
   return (
@@ -123,8 +130,9 @@ export default function EventsPage({
         tabValue={-1}
         handleTabChange={(e, v) => {
           const tab = ["projects", "organizations", "members"][v];
-          const base = hubUrl ? `/hubs/${hubUrl}` : "/browse";
-          router.push(`${base}#${tab}`);
+          const segment = TAB_TO_PATH[tab] || tab;
+          const path = hubUrl ? `/hubs/${hubUrl}/${segment}` : `/${segment}`;
+          router.push(path);
         }}
         type_names={type_names}
         hubUrl={hubUrl}

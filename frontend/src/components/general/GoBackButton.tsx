@@ -77,10 +77,10 @@ export default function GoBackButton({
 
     // If hub parameter exists, go to hub browse page
     if (hubPage) {
-      return "/" + locale + "/hubs/" + hubPage + "/browse";
+      return "/" + locale + "/hubs/" + hubPage + "/projects";
     }
     // Default to general browse page
-    return "/" + locale + "/browse";
+    return "/" + locale + "/projects";
   };
 
   const isInternalReferrer = (referrer: string): boolean => {

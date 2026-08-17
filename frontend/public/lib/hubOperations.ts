@@ -16,7 +16,7 @@ export function createHubLandingPageServerSideProps(hubUrl: string) {
       const localePrefix = getLocalePrefix(locale ?? "en");
       return {
         redirect: {
-          destination: `${localePrefix}/hubs/${hubUrl}/browse`,
+          destination: `${localePrefix}/hubs/${hubUrl}/projects`,
           permanent: false,
         },
       };

@@ -33,12 +33,12 @@ describe("getLinks", () => {
     const links = getLinks(`/hubs/${hubSlug}`, texts, true, false, true, hubSlug);
 
     expect(links[0]).toMatchObject({
-      href: "/browse",
+      href: "/projects",
       text: texts.climate_connect,
       showStaticLinksInDropdown: true,
     });
     expect(links[1]).toMatchObject({
-      href: `/hubs/${hubSlug}/browse`,
+      href: `/hubs/${hubSlug}/projects`,
       text: texts.return_to_climatehub_projects,
       showStaticLinksInDropdown: false,
       hideOnStaticPages: true,
@@ -48,7 +48,7 @@ describe("getLinks", () => {
   it("falls back to the hub About link when not on the landing route", () => {
     const texts = buildTexts();
     const hubSlug = "erlangen";
-    const links = getLinks(`/hubs/${hubSlug}/browse`, texts, true, false, true, hubSlug);
+    const links = getLinks(`/hubs/${hubSlug}/projects`, texts, true, false, true, hubSlug);
 
     expect(links[0]).toMatchObject({ text: texts.climate_connect });
     expect(links[1]).toMatchObject({
@@ -106,12 +106,12 @@ describe("getLinks", () => {
   it("returns login link with hub param for location hubs", () => {
     const texts = buildTexts();
     const hubSlug = "erlangen";
-    const links = getLinks(`/hubs/${hubSlug}/browse`, texts, true, false, true, hubSlug);
+    const links = getLinks(`/hubs/${hubSlug}/projects`, texts, true, false, true, hubSlug);
 
     const authLinks = links.filter((link) => link.onlyShowLoggedOut);
     expect(authLinks).toHaveLength(1);
     expect(authLinks[0]).toMatchObject({
-      href: `/login?redirect=%2Fhubs%2Ferlangen%2Fbrowse&hub=erlangen`,
+      href: `/login?redirect=%2Fhubs%2Ferlangen%2Fprojects&hub=erlangen`,
       text: texts.auth_log_in,
     });
   });
