@@ -25,7 +25,7 @@ export async function startPrivateChat(profile, token, locale) {
     });
     return resp.data;
   } catch (e) {
-    throw e;
+    console.error(e);
   }
 }
 

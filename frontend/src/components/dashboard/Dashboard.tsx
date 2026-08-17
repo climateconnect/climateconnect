@@ -13,7 +13,6 @@ import makeStyles from "@mui/styles/makeStyles";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Cookies from "universal-cookie";
@@ -197,7 +196,7 @@ const DropDownList = ({ buttonRef, handleOpen, handleClose, items, open }) => {
 type Props = {
   hubUrl?: string;
   className?: any;
-  location?: any;
+  hubName?: string;
   welcomeMessageLoggedIn?: string;
   welcomeMessageLoggedOut?: string;
 };
@@ -205,7 +204,7 @@ type Props = {
 export default function Dashboard({
   hubUrl,
   className,
-  location,
+  hubName,
   welcomeMessageLoggedIn,
   welcomeMessageLoggedOut,
 }: Props) {
@@ -215,7 +214,7 @@ export default function Dashboard({
     page: "dashboard",
     locale: locale,
     user: user || undefined,
-    location: location,
+    hubName: hubName,
   });
   const [userOrganizations, setUserOrganizations] = useState(null);
   const token = new Cookies().get("auth_token");
@@ -230,7 +229,6 @@ export default function Dashboard({
   }, []);
 
   const parseWelcomeMessage = (m) => {
-    const message = m.replaceAll("${user.first_name}", user?.first_name);
     return m.replaceAll("${user.first_name}", user?.first_name);
   };
 

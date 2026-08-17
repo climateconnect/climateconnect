@@ -107,9 +107,7 @@ const getLinkedHubsData = async (url_slug: string) => {
     }
 
     // filter out the null values
-    const ret: LinkedHub[] = arr.filter((hub) => {
-      return !!hub;
-    });
+    const ret: LinkedHub[] = arr.filter((hub): hub is LinkedHub => hub !== null);
     return ret;
   } catch (err: any) {
     if (err.response && err.response.data) {

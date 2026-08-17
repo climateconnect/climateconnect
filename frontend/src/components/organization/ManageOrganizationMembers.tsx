@@ -1,6 +1,6 @@
 import { Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import ROLE_TYPES from "../../../public/data/role_types";
 import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import { getAllChangedMembers, hasGreaterRole } from "../../../public/lib/manageMembers";
@@ -44,7 +44,7 @@ export default function ManageOrganizationMembers({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
-  const [user_role, setUserRole] = React.useState(members.find((m) => m.id === user.id).role);
+  const [user_role, setUserRole] = useState(members.find((m) => m.id === user.id).role);
   if (!user_role) setUserRole(members.find((m) => m.id === user.id).role);
 
   const canEdit = (member) => {

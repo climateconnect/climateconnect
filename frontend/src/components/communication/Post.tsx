@@ -2,8 +2,7 @@ import { Avatar, Button, CircularProgress, Link, Theme, Tooltip, Typography } fr
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import React, { useContext, useState } from "react";
-import Truncate from "react-truncate";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
@@ -69,6 +68,12 @@ const useStyles = makeStyles<Theme, { preview?: boolean }>((theme) => ({
   deleteButton: {
     color: theme.palette.background.default_contrastText,
   },
+  truncatedContent: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+  },
 }));
 
 export default function Post({
@@ -103,19 +108,41 @@ export default function Post({
   };
 
   const [isTextExpanded, setIsTextExpanded] = useState(false);
-  const [isTextTruncated, setisTextTruncated] = useState(false);
+  const [isTextTruncated, setIsTextTruncated] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Don't measure in preview mode or when the user has already expanded the text.
+    // When expanded there is no clamp, so scrollHeight === clientHeight and the
+    // measurement would incorrectly clear the truncated flag.
+    if (type === "preview" || isTextExpanded || !contentRef.current) return;
+
+    const element = contentRef.current;
+
+    const checkTruncation = () => {
+      // clientHeight is 0 when the element is inside a hidden tab panel –
+      // skip the measurement and wait for the ResizeObserver to fire once
+      // the panel becomes visible.
+      if (element.clientHeight > 0) {
+        setIsTextTruncated(element.scrollHeight > element.clientHeight);
+      }
+    };
+
+    // Check immediately for the case where the element is already visible.
+    checkTruncation();
+
+    // Re-check whenever the element's size changes:
+    //   • the tab panel transitions from hidden → visible (clientHeight: 0 → N)
+    //   • web fonts finish loading and reflow the text
+    //   • the viewport is resized
+    const observer = new ResizeObserver(checkTruncation);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [post.content, type, isTextExpanded]);
 
   const handleExpandText = () => {
     setIsTextExpanded(!isTextExpanded);
-  };
-
-  const handleTruncate = (truncated) => {
-    if (isTextTruncated === true) {
-      // keeps the button for comments that had originally been truncated.
-      //Pressing show more will cause
-      return; // a rerender and unmarks them as untruncated
-    }
-    setisTextTruncated(truncated);
   };
 
   const toggleDeleteDialogOpen = () => setOpen(!open);
@@ -190,21 +217,20 @@ export default function Post({
               </Typography>
             </div>
             {type === "preview" ? (
-              <Typography>
-                <Truncate lines={truncate} ellipsis={"..."}>
-                  <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
-                </Truncate>
+              <Typography
+                className={classes.truncatedContent}
+                style={{ WebkitLineClamp: truncate }}
+              >
+                <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
               </Typography>
             ) : (
               <div>
-                <Typography>
-                  <Truncate
-                    lines={!isTextExpanded && 3}
-                    ellipsis={"..."}
-                    onTruncate={handleTruncate}
-                  >
-                    <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
-                  </Truncate>
+                <Typography
+                  ref={contentRef}
+                  className={!isTextExpanded ? classes.truncatedContent : undefined}
+                  style={!isTextExpanded ? { WebkitLineClamp: 3 } : undefined}
+                >
+                  <MessageContent content={post.content} /*TODO(unused) maxLines={maxLines} */ />
                 </Typography>
 
                 {isTextTruncated && (

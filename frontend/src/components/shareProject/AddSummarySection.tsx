@@ -1,6 +1,6 @@
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -43,7 +43,7 @@ export default function AddSummarySection({
   ToolTipIcon,
 }) {
   const classes = useStyles(projectData);
-  const shortDescriptionRef = React.useRef(null);
+  const shortDescriptionRef = useRef(null);
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const theme = useTheme();
@@ -53,7 +53,7 @@ export default function AddSummarySection({
     <div className={className}>
       <Typography component="h2" variant="subtitle2" color="primary" className={subHeaderClassname}>
         {texts["summarize_your_" + projectData.project_type.type_id]}*
-        <Tooltip title={helpTexts.short_description} className={toolTipClassName}>
+        <Tooltip title={helpTexts.shortDescription} className={toolTipClassName}>
           <IconButton size="large">
             <ToolTipIcon />
           </IconButton>

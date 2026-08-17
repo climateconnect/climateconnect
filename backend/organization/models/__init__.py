@@ -19,6 +19,10 @@ from organization.models.members import (
 
 from organization.models.organization_project_published import OrgProjectPublished
 
+# Project status is no longer exposed through the API, but the model is kept so
+# the (nullable) Project.status FK stays resolvable and the table is preserved.
+from organization.models.status import ProjectStatus
+
 from organization.models.followers import ProjectFollower, OrganizationFollower
 
 
@@ -36,4 +40,17 @@ from organization.models.sector import (
     ProjectSectorMapping,
     OrganizationSectorMapping,
     UserProfileSectorMapping,
+)
+
+from organization.models.event_registration import (
+    EventRegistration,
+    RegistrationFieldAnswer,
+    EventRegistrationConfig,
+    RegistrationStatus,
+)
+
+from organization.models.registration_field import (
+    RegistrationField,
+    RegistrationFieldOption,
+    RegistrationFieldType,
 )

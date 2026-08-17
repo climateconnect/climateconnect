@@ -8,6 +8,14 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'doc/**'
+      - '.github/agents/**'
+      - '*.md'
+      - 'CONTRIBUTING.md'
+      - 'README.md'
+      - 'GLOSSARY.md'
+      - 'AGENTS.md'
   workflow_dispatch:
 
 jobs:
@@ -17,10 +25,10 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up Python version
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -28,17 +36,20 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-      
+
       #- name: Install dependencies
       #  run: pip install -r requirements.txt
-        
+
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+
+      - name: Write build info
+        run: echo '{"sha":"${{ github.sha }}","ref":"${{ github.ref_name }}","built_at":"${{ github.event.head_commit.timestamp }}"}' > backend/build_info.json
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment jobs
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: python-app
           path: |
@@ -57,16 +68,16 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: python-app
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      
+
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_133C8292DDC0414CB6E553F785F6B07D }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E2678D2F6F234573A28809CEDF101351 }}
@@ -78,4 +89,5 @@ jobs:
         with:
           app-name: 'climate-backend-appservice'
           slot-name: 'slot2'
-          
+          package: .
+          clean: true

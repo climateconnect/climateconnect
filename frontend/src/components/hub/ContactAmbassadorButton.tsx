@@ -3,7 +3,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import { redirect } from "../../../public/lib/apiOperations";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import UserContext from "../context/UserContext";
 import getTexts from "../../../public/texts/texts";
 import Cookies from "universal-cookie";
@@ -44,20 +44,20 @@ export default function ContactAmbassadorButton({ hubAmbassador, mobile, hubUrl 
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const texts = getTexts({ page: "hub", hubAmbassador: hubAmbassador, locale: locale });
-
+  const router = useRouter();
   const handleClickContact = async (e) => {
     e.preventDefault();
     const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
     if (!user) {
-      let queryString: any = {
+      const queryString: any = {
         errorMessage: texts.please_create_an_account_or_log_in_to_contact_the_ambassador,
       };
       return redirect("/signup", queryString);
     }
 
     const chat = await startPrivateChat(hubAmbassador?.user, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/" + queryString);
+    router.push("/chat/" + chat.chat_uuid + "/" + queryString);
   };
   if (mobile) {
     return (

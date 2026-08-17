@@ -1,6 +1,11 @@
 from django.urls import path
 
-from organization.views import organization_views, project_views, sector_views
+from organization.views import (
+    event_registration_views,
+    organization_views,
+    project_views,
+    sector_views,
+)
 
 app_name = "organization"
 urlpatterns = [
@@ -82,6 +87,20 @@ urlpatterns = [
     ),
     # Project URLs
     path("projects/", project_views.ListProjectsView.as_view(), name="list-projects"),
+    # Event Calendar (POC) - lists event-type projects chronologically
+    path("events/", project_views.ListEventsView.as_view(), name="list-events"),
+    # Event Calendar (POC) - per-day event counts for a month (picker highlight)
+    path(
+        "events/calendar/",
+        project_views.EventCalendarCountsView.as_view(),
+        name="events-calendar-counts",
+    ),
+    # Upcoming events for Browse page highlights (max 4, parallel load)
+    path(
+        "events/upcoming/",
+        project_views.ListUpcomingEventsView.as_view(),
+        name="events-upcoming",
+    ),
     path(
         "projects/<str:url_slug>/",
         project_views.ProjectAPIView.as_view(),
@@ -224,5 +243,30 @@ urlpatterns = [
         "projects/<str:url_slug>/similar/",
         project_views.SimilarProjects.as_view(),
         name="similar-projects",
+    ),
+    path(
+        "projects/<str:url_slug>/registrations/",
+        event_registration_views.EventRegistrationsView.as_view(),
+        name="event-registrations",
+    ),
+    path(
+        "projects/<str:url_slug>/registration-config/",
+        event_registration_views.EditRegistrationConfigView.as_view(),
+        name="edit-registration-config",
+    ),
+    path(
+        "projects/<str:url_slug>/registrations/email/",
+        event_registration_views.SendOrganizerEmailView.as_view(),
+        name="send-organizer-email-to-guests",
+    ),
+    path(
+        "projects/<str:url_slug>/registrations/<int:registration_id>/",
+        event_registration_views.AdminCancelRegistrationView.as_view(),
+        name="admin-cancel-guest-registration",
+    ),
+    path(
+        "event-registration-origin/<int:registration_id>/",
+        event_registration_views.EventRegistrationOriginView.as_view(),
+        name="event-registration-origin",
     ),
 ]

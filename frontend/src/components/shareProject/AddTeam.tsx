@@ -106,9 +106,9 @@ export default function AddTeam({
     });
   };
 
-  const renderSearchOption = (props, option) => {
+  const renderSearchOption = ({ key, ...props }, option) => {
     return (
-      <li {...props}>
+      <li key={key} {...props}>
         <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>
@@ -155,20 +155,21 @@ export default function AddTeam({
         />
         {isLastStep ? (
           <NavigationButtons
-            className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="publish"
             saveAsDraft={saveAsDraft}
             loadingSubmit={loadingSubmit}
             loadingSubmitDraft={loadingSubmitDraft}
-            position="bottom"
+            sticky
           />
         ) : (
           <NavigationButtons
-            className={classes.block}
             onClickPreviousStep={onClickPreviousStep}
             nextStepButtonType="submit"
-            position="bottom"
+            saveAsDraft={projectData.name ? saveAsDraft : undefined}
+            loadingSubmit={loadingSubmit}
+            loadingSubmitDraft={loadingSubmitDraft}
+            sticky
           />
         )}
       </form>

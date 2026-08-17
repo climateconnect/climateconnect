@@ -1,6 +1,54 @@
 import { getLocationFilterKeys } from "../data/locationFilters";
 import possibleFilters from "../data/possibleFilters";
 
+/**
+ * Dummy origin used to parse relative hrefs through the platform `URL` API so
+ * that pathname / search / hash are split correctly even when no real origin
+ * is available (e.g. in unit tests or server-side code).
+ */
+const ABSOLUTE_BASE = "http://localhost.invalid";
+
+const isAbsoluteUrl = (href: string): boolean => /^(https?:)?\/\//i.test(href);
+
+/**
+ * Serialize a parsed `URL` back to a string, dropping the dummy origin for
+ * relative hrefs while keeping absolute URLs intact.
+ */
+const serializeUrl = (href: string, url: URL): string => {
+  if (isAbsoluteUrl(href)) {
+    return url.toString();
+  }
+  return url.pathname + url.search + url.hash;
+};
+
+/**
+ * Append a single query parameter to an href, returning a well-formed URL.
+ *
+ * Built on the platform `URL` / `URLSearchParams` APIs so the result is always
+ * well-formed: an existing query string is joined with `&` (never a second
+ * `?`), a fragment (`#anchor`) is preserved and placed *after* the query, and
+ * the value is URL-encoded in exactly one place.
+ *
+ * Works for both relative paths (`/browse?x=1#top`) and absolute URLs.
+ */
+export const appendQueryParam = (href: string, key: string, value: string): string => {
+  const url = new URL(href, ABSOLUTE_BASE);
+  url.searchParams.append(key, value);
+  return serializeUrl(href, url);
+};
+
+/**
+ * Append several query parameters at once (in insertion order). See
+ * `appendQueryParam` for the well-formedness guarantees.
+ */
+export const withQuery = (href: string, params: Record<string, string>): string => {
+  const url = new URL(href, ABSOLUTE_BASE);
+  Object.keys(params).forEach((key) => {
+    url.searchParams.append(key, params[key]);
+  });
+  return serializeUrl(href, url);
+};
+
 const encodeObjectToQueryParams = (obj) => {
   if (!obj) {
     return "";
@@ -120,7 +168,12 @@ const encodeQueryParamsFromFilters = ({ filters, infoMetadata, filterChoices, lo
 
       if (type === "location") {
         if (typeof filters[filterKey] === "object") {
-          const encodedFragment = `place=${filters[filterKey].place_id}&osm=${filters[filterKey].osm_id}&loc_type=${filters[filterKey].osm_type}&`;
+          const locationFilter = filters[filterKey];
+          const placeValue = locationFilter.place_id ?? "";
+          const osmValue = locationFilter.osm_id ?? "";
+          const osmTypeValue = locationFilter.osm_type ?? "";
+          const osmClassValue = locationFilter.osm_class ?? "";
+          const encodedFragment = `place_id=${placeValue}&osm_id=${osmValue}&osm_type=${osmTypeValue}&osm_class=${osmClassValue}&`;
           queryParamFragment += encodedFragment;
         }
       } else if (

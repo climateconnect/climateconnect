@@ -1,7 +1,7 @@
 import { Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 const PRIO1_SLUG = "prio1";
 const PERTH_SLUG = "perth";
@@ -31,6 +31,14 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => {
       left: "70vw",
       width: "11rem",
       height: "11rem",
+
+      // Hide the decorative icon on narrow viewports (<= 915px) where it
+      // would otherwise overlap the auth split-view text. No MUI breakpoint
+      // is defined at 915px in the project theme (defaults are sm:600,
+      // md:900, lg:1200, xl:1536), so a raw media query is used here.
+      "@media (max-width: 915px)": {
+        display: "none",
+      },
 
       [theme.breakpoints.up("xl")]: {
         top: "40vh",
@@ -83,6 +91,7 @@ const isAuthPath = (pathname: string): boolean => {
   return (
     pathname.endsWith("/signup") ||
     pathname.endsWith("/signin") ||
+    pathname.endsWith("/login") ||
     pathname.endsWith("/accountcreated")
   );
 };
@@ -120,8 +129,10 @@ const BackgroundSplitSection = ({ classes }) => {
 };
 
 function PrioOneBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponentProps) {
+  // On mobile we still render the colored background but skip the
+  // decorative split-triangle and group icon so the auth card stays clean.
   if (mobileScreenSize) {
-    return <></>;
+    return <div className={`${classes.background} ${classes.defaultBackground}`} />;
   }
 
   return (
@@ -132,14 +143,17 @@ function PrioOneBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponen
           className={classes.prioOneAuthIcon}
           src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
           layout="fill"
-        ></Image>
+          alt="prio one group"
+        />
       </div>
     </div>
   );
 }
 function PerthBackgroundAuth({ mobileScreenSize, classes }: BackgroundComponentProps) {
+  // On mobile we still render the colored background but skip the
+  // decorative split-triangle so the auth card stays clean.
   if (mobileScreenSize) {
-    return <></>;
+    return <div className={`${classes.background} ${classes.defaultBackground}`} />;
   }
   return (
     <div className={`${classes.background} ${classes.defaultBackground}`}>
@@ -177,7 +191,11 @@ export function PrioOneBackgroundBrowse({ isLoggedInUser }: { isLoggedInUser: bo
             height: "11rem",
           }}
         >
-          <Image src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"} layout="fill"></Image>
+          <Image
+            src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
+            layout="fill"
+            alt="prio one group"
+          />
         </div>
       )}
     </div>
@@ -199,6 +217,7 @@ export function PrioOneBackgroundBrowseIcon() {
       src={"/images/custom_hubs/" + PRIO1_SLUG + "_group.svg"}
       width={width}
       height={height}
-    ></Image>
+      alt="prio one group"
+    />
   );
 }

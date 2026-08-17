@@ -4,3 +4,6 @@
 /out/
 /build/
 /devlink/
+
+# Documentation files
+agent.md

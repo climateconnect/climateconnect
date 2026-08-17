@@ -1,7 +1,11 @@
 const prio1_texts = {
+  welcome_to_climate_connect_subtitle: {
+    en: "Join the PRIO1 Hub or log in with your existing account:",
+    de: "Dem PRIO1 Hub beitreten oder mit bestehendem Account einloggen:",
+  },
   here_you_can_create_your_personal_account: {
-    en: "Create your personal Climate Connect account here to join the PRIO1 Hub.",
-    de: "Erstelle hier deinen persönlichen Climate Connect Account, um dem PRIO1 Hub beizuteten.",
+    en: "Create your personal ClimateHub Network account here to join the PRIO1 Hub.",
+    de: "Erstelle hier deinen persönlichen ClimateHub Netzwerk, um dem PRIO1 Hub beizuteten.",
   },
   // overwrite/delete the default text
   you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up: {
@@ -10,17 +14,21 @@ const prio1_texts = {
   },
   auth_image_subtitle: {
     en:
-      "PRIO1 Hub is integrated into the Germany-wide Climate Connect platform. To become part of the PRIO1 Hub, simply register here and you're in!",
+      "PRIO1 Hub is integrated into the Germany-wide ClimateHub Network platform. To become part of the PRIO1 Hub, simply register here and you're in!",
     de:
-      "PRIO1 Hub ist integriert in die deutschlandweite Climate Connect Plattform. Um Teil des PRIO1 Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
+      "PRIO1 Hub ist integriert in die deutschlandweite ClimateHub Netzwerk Plattform. Um Teil des PRIO1 Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
   },
 };
 // TODO: make generic these texts, because they are the same for PRIO1 and Perth
 const perth_texts = {
+  welcome_to_climate_connect_subtitle: {
+    en: "Join the Perth and Kinross Hub or log in with your existing account:",
+    de: "Dem Perth und Kinross Hub beitreten oder mit bestehendem Account einloggen:",
+  },
   here_you_can_create_your_personal_account: {
-    en: "Create your personal Climate Connect account here to join the Perth and Kinross Hub.",
+    en: "Create your personal ClimateHub Network account here to join the Perth and Kinross Hub.",
     de:
-      "Erstelle hier deinen persönlichen Climate Connect Account, um dem Perth und Kinross Hub beizuteten.",
+      "Erstelle hier deinen persönlichen ClimateHub Netzwerk Account, um dem Perth und Kinross Hub beizuteten.",
   },
   // overwrite/delete the default text
   you_will_have_an_opportunity_to_create_or_add_an_organization_once_signed_up: {
@@ -29,9 +37,9 @@ const perth_texts = {
   },
   auth_image_subtitle: {
     en:
-      "Perth and Kinross Hub is integrated into the global Climate Connect platform. To become part of the Perth and Kinross Hub, simply register here and you're in!",
+      "Perth and Kinross Hub is integrated into the global ClimateHub Network. To become part of the Perth and Kinross Hub, simply register here and you're in!",
     de:
-      "Der Perth und Kinross Hub ist integriert in die global Climate Connect Plattform. Um Teil des Perth and Kinross Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
+      "Der Perth und Kinross Hub ist integriert in das globale ClimateHub Netzwerk. Um Teil des Perth and Kinross Hubs zu werden, melde dich einfach hier an und schon bist du dabei!",
   },
   // hubUrl
   perth_welcometext: {
@@ -40,24 +48,24 @@ const perth_texts = {
   },
   //subHub
   nature_welcometext: {
-    en:
-      "Supported by Perth and Kinross Countryside Trust, the Nature Connections partnership was established in 2021. This broad network reaches right across the region, connecting communities caring for and restoring nature.",
-    de:
-      "Unterstützt vom Perth und Kinross Countryside Trust wurde die Nature Connections Partnerschaft im Jahr 2021 gegründet. Dieses breite Netzwerk erstreckt sich über die gesamte Region und verbindet Gemeinschaften, die sich um die Natur kümmern und sie wiederherstellen.",
+    en: `Supported by Perth and Kinross Countryside Trust, the Nature Connections partnership was established in 2021. This broad network reaches right across the region, connecting communities caring for and restoring nature.
+      Thanks to Nature Connections Partnership Perth & Kinross for leading community connections on nature, across Perthshire since 2021 and now Kinross-shire too.`,
+    de: `Unterstützt vom Perth und Kinross Countryside Trust wurde die Nature Connections Partnerschaft im Jahr 2021 gegründet. Dieses breite Netzwerk erstreckt sich über die gesamte Region und verbindet Gemeinschaften, die sich um die Natur kümmern und sie wiederherstellen.
+      Danke an die Nature Connections Partnership Perth & Kinross für die Leitung der Gemeinschaftsverbindungen zur Natur in Perthshire seit 2021 und jetzt auch in Kinross-shire.`,
   },
   //subHub
   climatecafe_welcometext: {
-    en:
-      "Supported by the global Climate Café® Network team, the Perth & Kinross network has been growing since 2015 with community led Climate Café® spaces to 'drink, chat and act' across the region.",
-    de:
-      "Unterstützt vom globalen Climate Café® Network Team wächst das Perth & Kinross Netzwerk seit 2015 mit gemeinschaftsgeführten Climate Café®-Räumen, um in der Region 'zu trinken, zu plaudern und zu handeln'.",
+    en: `Climate Café®: Supported by the global Climate Café® Network team, the Perth & Kinross network has been growing since 2015 with community led Climate Café® spaces to ‘drink, chat and act’ across the region.
+      Climate Café® connects the Climate Café® Network across Perth & Kinross.`,
+    de: `Unterstützt vom globalen Climate Café® Network Team wächst das Perth & Kinross Netzwerk seit 2015 mit gemeinschaftsgeführten Climate Café®-Räumen, um in der Region 'zu trinken, zu plaudern und zu handeln'.
+      Climate Café® verbindet das Climate Café® Network in Perth & Kinross.`,
   },
   //subHub
   zerowaste_welcometext: {
-    en:
-      "Supported by Remake Scotland, the zero waste network connects those who are involved in repair, reuse, recycling and sharing projects across Perth & Kinross communities, in collaboration with Perth & Kinross Council.",
-    de:
-      "Unterstützt von Remake Scotland verbindet das Zero-Waste-Netzwerk diejenigen, die an Reparatur-, Wiederverwendungs-, Recycling- und Sharing-Projekten in den Gemeinden von Perth & Kinross beteiligt sind, in Zusammenarbeit mit dem Perth & Kinross Council.",
+    en: `Supported by Remake Scotland, the zero waste network connects those who are involved in repair, reuse, recycling and sharing projects across Perth & Kinross communities, in collaboration with Perth & Kinross Council.
+      Thanks to Remake Scotland for coordinating this network.`,
+    de: `Unterstützt von Remake Scotland verbindet das Zero-Waste-Netzwerk diejenigen, die an Reparatur-, Wiederverwendungs-, Recycling- und Sharing-Projekten in den Gemeinden von Perth & Kinross beteiligt sind, in Zusammenarbeit mit dem Perth & Kinross Council.
+      Danke an Remake Scotland für die Koordination dieses Netzwerks.`,
   },
   //subHub
   transport_welcometext: {
@@ -68,17 +76,17 @@ const perth_texts = {
   },
   //subHub
   energy_welcometext: {
-    en:
-      "Supported by The HEAT Project Scotland, this network – Our Energy Community – connects those involved in energy efficiency, renewables and community energy projects across the region.",
-    de:
-      "Unterstützt von The HEAT Project Scotland verbindet dieses Netzwerk – Our Energy Community – diejenigen, die an Energieeffizienz-, erneuerbaren Energie- und Gemeinschaftsenergieprojekten in der Region beteiligt sind.",
+    en: `Supported by The HEAT Project Scotland, this network – Our Energy Community – connects those involved in energy efficiency, renewables and community energy projects across the region.
+        Thanks to The Heat Project Scotland for coordinating across this network.`,
+    de: `Unterstützt von The HEAT Project Scotland verbindet dieses Netzwerk – Our Energy Community – diejenigen, die an Energieeffizienz-, erneuerbaren Energie- und Gemeinschaftsenergieprojekten in der Region beteiligt sind.
+        Danke an The Heat Project Scotland für die Koordination dieses Netzwerks.`,
   },
   //subHub
   food_welcometext: {
-    en:
-      "Supported by Giraffe, this network builds on years of collaboration for a good food nation. It brings together a wide spectrum of those involved in producing, processing, delivering, cooking, sharing food and reducing food waste.",
-    de:
-      "Unterstützt von Giraffe baut dieses Netzwerk auf jahrelanger Zusammenarbeit für eine gute Lebensmittelversorgung auf. Es bringt ein breites Spektrum von Menschen zusammen, die an der Produktion, Verarbeitung, Lieferung, Zubereitung, dem Teilen von Lebensmitteln und der Reduzierung von Lebensmittelverschwendung beteiligt sind.",
+    en: `Supported by Giraffe, this network builds on years of collaboration for a good food nation. It brings together a wide spectrum of those involved in producing, processing, delivering, cooking, sharing food and reducing food waste.
+      To get involved and join the network updates, contact: food@climateconnect.scot`,
+    de: `Unterstützt von Giraffe baut dieses Netzwerk auf jahrelanger Zusammenarbeit für eine gute Lebensmittelversorgung auf. Es bringt ein breites Spektrum von Menschen zusammen, die an der Produktion, Verarbeitung, Lieferung, Zubereitung, dem Teilen von Lebensmitteln und der Reduzierung von Lebensmittelverschwendung beteiligt sind.
+      Um dich zu beteiligen und Updates zum Netzwerk zu erhalten, kontaktiere food@climateconnect.scot`,
   },
 };
 

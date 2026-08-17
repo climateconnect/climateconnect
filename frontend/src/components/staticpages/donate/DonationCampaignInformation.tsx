@@ -1,7 +1,7 @@
 import { Button, IconButton, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { getCookieProps } from "../../../../public/lib/cookieOperations";
 import getTexts from "../../../../public/texts/texts";
@@ -88,20 +88,28 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-around",
     alignItems: "center",
+    marginRight: "40px",
+    marginLeft: "40px",
   },
   white: {
     color: "white",
   },
 }));
 
+type Props = {
+  hubUrl?: string;
+};
+
 //If we want to reuse this, this has to be translated!
-export default function DonationCampaignInformation() {
+export default function DonationCampaignInformation({ hubUrl }: Props) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const [open, setOpen] = React.useState(!cookies.get("hideDonationCampaign"));
-  const [expanded, setExpanded] = React.useState(false);
-  const { donationGoal, locale } = useContext(UserContext);
+  const [open, setOpen] = useState(!cookies.get("hideDonationCampaign"));
+  const { CUSTOM_HUB_URLS, donationGoals, locale } = useContext(UserContext);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
   const texts = getTexts({ page: "donate", locale: locale, classes: classes });
+  const donationGoal =
+    donationGoals?.find((goal) => goal.hub === hubUrl) || donationGoals?.find((goal) => !goal.hub);
 
   const handleClose = () => {
     const expiry = daysInFuture(3);
@@ -110,10 +118,7 @@ export default function DonationCampaignInformation() {
     setOpen(false);
   };
 
-  const handleToggleExpanded = () => {
-    setExpanded(!expanded);
-  };
-  if (!donationGoal?.goal_amount) return <></>;
+  if ((isCustomHub && !donationGoal?.hub) || !donationGoal?.goal_amount) return <></>;
   return (
     <>
       {open && (
@@ -123,7 +128,7 @@ export default function DonationCampaignInformation() {
           </IconButton>
           <div>
             <div className={classes.textAndBarContainer}>
-              {!expanded && donationGoal && (
+              {donationGoal && (
                 <DonationGoal
                   current={donationGoal?.current_amount}
                   goal={donationGoal?.goal_amount}
@@ -133,14 +138,15 @@ export default function DonationCampaignInformation() {
                 />
               )}
               <Typography className={classes.text}>{donationGoal?.call_to_action_text}</Typography>
-              <Button
-                variant="contained"
-                target="_blank"
-                href={donationGoal?.call_to_action_link}
-                className={classes.donateButton}
-              >
-                {texts.donate_now}
-              </Button>
+              {donationGoal?.call_to_action_link && (
+                <Button
+                  variant="contained"
+                  href={donationGoal.call_to_action_link}
+                  className={classes.donateButton}
+                >
+                  {texts.donate_now}
+                </Button>
+              )}
             </div>
           </div>
         </div>

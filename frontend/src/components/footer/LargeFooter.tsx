@@ -5,7 +5,6 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import TwitterIcon from "@mui/icons-material/Twitter";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import React, { useContext } from "react";
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
@@ -174,11 +173,7 @@ const SocialLinks = () => {
   const classes = useStyles();
   return (
     <div className={classes.socialIconsContainer}>
-      <Link
-        target="_blank"
-        href="https://www.instagram.com/climate_connect.earth/"
-        underline="hover"
-      >
+      <Link target="_blank" href="https://www.instagram.com/climatehub_netzwerk/" underline="hover">
         <InstagramIcon color="primary" className={classes.socialIcon} titleAccess="Instagram" />
       </Link>
       <Link
@@ -187,9 +182,6 @@ const SocialLinks = () => {
         underline="hover"
       >
         <GitHubIcon className={classes.socialIcon} titleAccess="GitHub" />
-      </Link>
-      <Link target="_blank" href="https://twitter.com/ConnectClimate" underline="hover">
-        <TwitterIcon color="primary" className={classes.socialIcon} titleAccess="Twitter" />
       </Link>
       <Link
         target="_blank"
@@ -244,9 +236,7 @@ const SiteLinks = ({ texts, locale }) => {
           {texts.contact}
         </Typography>
         <div className={classes.links}>
-          <FooterLink href="mailto:contact@climateconnect.earth">
-            contact@climateconnect.earth
-          </FooterLink>
+          <FooterLink href="mailto:contact@climatehub.org">contact@climatehub.org</FooterLink>
           <FooterLink href="tel:+4915730101056">+4915730101056</FooterLink>
           <FeedbackButton justLink>
             <Typography className={classes.li}>{texts.leave_feedback}</Typography>

@@ -1,5 +1,6 @@
-import React from "react";
-import { Grid, Theme, useMediaQuery } from "@mui/material";
+import React, { FC, ReactNode } from "react";
+import { Theme, useMediaQuery } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles((theme) => ({
@@ -13,8 +14,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface ContentImageSplitViewProps {
-  content: React.ReactNode;
-  image: React.ReactNode;
+  content: ReactNode;
+  image: ReactNode;
   leftGridSizes?: {
     xs?: "auto" | number;
     md?: "auto" | number;
@@ -29,7 +30,7 @@ interface ContentImageSplitViewProps {
   direction?: "row" | "row-reverse" | "column" | "column-reverse";
 }
 
-const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
+const ContentImageSplitView: FC<ContentImageSplitViewProps> = ({
   content,
   image,
   leftGridSizes,
@@ -55,9 +56,7 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
     >
       {/* content pane */}
       <Grid
-        item
-        xs={12}
-        md={7}
+        size={{ xs: 12, md: 7 }}
         {...leftGridSizes}
         className={`${classes.centerItems} ${!rightPaneHidden && classes.rightPadding}`}
       >
@@ -66,7 +65,7 @@ const ContentImageSplitView: React.FC<ContentImageSplitViewProps> = ({
 
       {/* image pane */}
       {!rightPaneHidden && (
-        <Grid item md={5} {...rightGridSizes} style={{ display: "flex" }}>
+        <Grid size={{ md: 5 }} {...rightGridSizes} style={{ display: "flex" }}>
           {image}
         </Grid>
       )}

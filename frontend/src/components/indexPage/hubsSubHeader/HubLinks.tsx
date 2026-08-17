@@ -26,12 +26,10 @@ export default function HubLinks({
   isNarrowScreen,
   showAllProjectsButton,
   onlyShowDropDown,
-  isLocationHub,
 }: any) {
   const classes = useStyles();
-  const [open, setOpen] = useState({ sectorHubs: false, climateHubs: false });
+  const [open, setOpen] = useState({ climateHubs: false });
   const texts = getTexts({ page: "navigation", locale: locale });
-  const sectorHubs = hubs?.filter((h) => h.hub_type === "sector hub");
   const locationHubs = hubs?.filter((h) => isLocationHubLikeHub(h.hub_type));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
@@ -70,38 +68,14 @@ export default function HubLinks({
   };
   return (
     <div className={`${isNarrowScreen && classes.spaceAround} ${classes.wrapper}`}>
-      {!isMediumScreen &&
-        !onlyShowDropDown &&
-        (showAllProjectsButton ? (
-          <Link
-            className={linkClassName}
-            href={getLocalePrefix(locale) + "/browse"}
-            underline="hover"
-          >
-            {texts.all_projects}
-          </Link>
-        ) : (
-          sectorHubs.slice(0, 3).map((hub) => (
-            <Link
-              className={linkClassName}
-              key={hub.url_slug}
-              href={`${getLocalePrefix(locale)}/hubs/${hub.url_slug}/browse`}
-              underline="hover"
-            >
-              {hub.name}
-            </Link>
-          ))
-        ))}
-      {!(isLocationHub && isNarrowScreen) && sectorHubs?.length > (onlyShowDropDown ? 0 : 3) && (
-        <HubsDropDown
-          hubs={sectorHubs}
-          label="SectorHubs"
-          isNarrowScreen={isNarrowScreen}
-          onToggleOpen={(e) => handleToggleOpen(e, "sectorHubs")}
-          open={open["sectorHubs"]}
-          onOpen={(e) => handleOpen(e, "sectorHubs")}
-          onClose={() => handleClose("sectorHubs")}
-        />
+      {!isMediumScreen && !onlyShowDropDown && showAllProjectsButton && (
+        <Link
+          className={linkClassName}
+          href={getLocalePrefix(locale) + "/browse"}
+          underline="hover"
+        >
+          {texts.all_projects}
+        </Link>
       )}
       {locationHubs?.length > 0 && (
         <HubsDropDown

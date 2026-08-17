@@ -32,6 +32,20 @@ class Feedback(models.Model):
         default=False,
     )
 
+    user_agent = models.TextField(
+        help_text="The user agent of the browser when feedback was submitted",
+        verbose_name="User Agent",
+        null=True,
+        blank=True,
+    )
+
+    path = models.TextField(
+        help_text="The URL path (including query string) where feedback was submitted",
+        verbose_name="Path",
+        null=True,
+        blank=True,
+    )
+
     created_at = models.DateTimeField(
         help_text="Time when feedback was created",
         verbose_name="Created At",

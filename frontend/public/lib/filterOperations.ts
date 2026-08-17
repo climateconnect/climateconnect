@@ -7,9 +7,11 @@ import { getInfoMetadataByType, getReducedPossibleFilters } from "./parsingOpera
 import { encodeQueryParamsFromFilters } from "./urlOperations";
 
 const getLocationFilterUrl = (location) => {
-  /*Pass place id. If the place id is found in our db we can use it's polygon,
+  /*Pass osm_id, osm_type and osm_class. If they are found in our db we can use their polygon,
   otherwise make a request to the location API with the backend */
-  return `place=${location.place_id}&osm=${location.osm_id}&loc_type=${location.osm_type}&`;
+  const osmType = location.osm_type;
+  const osmClass = location.osm_class;
+  return `place_id=${location.place_id}&osm_id=${location.osm_id}&osm_type=${osmType}&osm_class=${osmClass}&`;
 };
 
 export function buildUrlEndingFromFilters(filters) {
@@ -217,12 +219,21 @@ export async function applyNewFilters({
   handleSetErrorMessage(null);
 
   try {
+    // Only treat a location as "active" when it is a non-empty object or a
+    // non-empty string. An empty string (e.g. after clearing the location
+    // filter) must be treated as "no location" so the request falls back to
+    // GET instead of a POST with an empty body.
+    const rawLocation = newFilters.location;
+    const hasLocation =
+      !!rawLocation &&
+      (typeof rawLocation !== "string" || rawLocation.trim() !== "") &&
+      (typeof rawLocation !== "object" || Object.keys(rawLocation).length > 0);
     const payload: any = {
       type: type,
       page: 1,
       token: token,
       urlEnding: newUrlEnding,
-      location: newFilters.location ?? undefined,
+      location: hasLocation ? rawLocation : undefined,
       locale: locale,
     };
 
@@ -248,4 +259,29 @@ export async function applyNewFilters({
     // throw e;
   }
   return null;
+}
+
+export function getActiveFilterCount(
+  filters: Record<string, any>,
+  possibleFiltersList: any[]
+): number {
+  let count = 0;
+  for (const pf of possibleFiltersList) {
+    if (pf.key === "search") continue;
+    const value = filters[pf.key];
+    if (pf.type === "location") {
+      if (typeof value === "object" && value !== null && Object.keys(value).length > 0) {
+        count++;
+      }
+    } else if (Array.isArray(value) && value.length > 0) {
+      count++;
+    } else if (typeof value === "string" && value.trim() !== "") {
+      count++;
+    }
+  }
+  if (filters.radius && typeof filters.radius === "string" && filters.radius.trim() !== "") {
+    const hasLocation = typeof filters.location === "object" && filters.location !== null;
+    if (!hasLocation) count++;
+  }
+  return count;
 }

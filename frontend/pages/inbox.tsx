@@ -53,6 +53,8 @@ const useStyles = makeStyles((theme) => {
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
+  const hubUrl = ctx?.query?.hub ?? null;
+
   if (ctx.req && !auth_token) {
     const texts = getTexts({ page: "chat", locale: ctx.locale });
     const message = texts.you_have_to_log_in_to_see_your_inbox;
@@ -63,11 +65,12 @@ export async function getServerSideProps(ctx) {
     props: {
       chatData: chatData?.chats || null,
       initialNextPage: chatData?.nextPage || null,
+      hubUrl,
     },
   };
 }
 
-export default function Inbox({ chatData, initialNextPage }) {
+export default function Inbox({ chatData, initialNextPage, hubUrl }) {
   const token = new Cookies().get("auth_token");
   const classes = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -90,6 +93,7 @@ export default function Inbox({ chatData, initialNextPage }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchingOpen, setSearchingOpen] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const applyFilterToChats = async (filter) => {
     try {
@@ -130,6 +134,7 @@ export default function Inbox({ chatData, initialNextPage }) {
 
       const parsedChatData = parseChatData(response.data.results);
       const parsedChats = parseChats(parsedChatData, texts);
+
       setSearchedChatsState({
         ...searchedChatsState,
         nextPage: response.data.next ? searchedChatsState.nextPage! + 1 : null,
@@ -169,13 +174,22 @@ export default function Inbox({ chatData, initialNextPage }) {
   };
 
   const loadMoreChats = async () => {
-    const newChatData: any = await getChatsOfLoggedInUser(token, chatsState.nextPage, locale);
-    const newChats = newChatData.chats;
-    setChatsState({
-      ...chatsState,
-      nextPage: newChatData.nextPage,
-      chats: [...chatsState.chats, ...parseChats(newChats, texts)],
-    });
+    if (isFetchingMore) return; // Prevent multiple simultaneous requests
+
+    try {
+      setIsFetchingMore(true);
+      const newChatData: any = await getChatsOfLoggedInUser(token, chatsState.nextPage, locale);
+      const newChats = newChatData.chats;
+      setChatsState({
+        ...chatsState,
+        nextPage: newChatData.nextPage,
+        chats: [...chatsState.chats, ...parseChats(newChats, texts)],
+      });
+    } catch (error) {
+      console.error("Error loading more chats:", error);
+    } finally {
+      setIsFetchingMore(false);
+    }
   };
 
   useEffect(() => {
@@ -194,6 +208,7 @@ export default function Inbox({ chatData, initialNextPage }) {
         messageType="error"
         message={errorMessage}
         resetAlertMessage={resetAlertMessage}
+        hubUrl={hubUrl}
       >
         <Container maxWidth="md" className={classes.root}>
           <Typography component="h1" variant="h4" className={classes.headline}>
@@ -212,8 +227,8 @@ export default function Inbox({ chatData, initialNextPage }) {
                       chatSearchEnabled={chatSearchEnabled}
                       loadFunc={loadMoreChats}
                       chats={chatsState.chats}
-                      // TODO(unused) user={user}
                       hasMore={!!chatsState.nextPage}
+                      isLoading={isFetchingMore}
                     />
                   </span>
                 );
@@ -231,8 +246,8 @@ export default function Inbox({ chatData, initialNextPage }) {
                         chatSearchEnabled={chatSearchEnabled}
                         loadFunc={loadMoreChats}
                         chats={chatsState.chats}
-                        // TODO(unused) user={user}
                         hasMore={!!chatsState.nextPage}
+                        isLoading={isFetchingMore}
                       />
                     ) : (
                       [
@@ -241,8 +256,8 @@ export default function Inbox({ chatData, initialNextPage }) {
                             chatSearchEnabled={chatSearchEnabled}
                             loadFunc={loadMoreFilteredChats}
                             chats={searchedChatsState.chats}
-                            // TODO(unused) user={user}
                             hasMore={!!searchedChatsState.nextPage}
+                            isLoading={isFetchingMore}
                           />
                         ) : (
                           <LoadingSpinner isLoading />
@@ -276,8 +291,8 @@ export default function Inbox({ chatData, initialNextPage }) {
                       chatSearchEnabled={chatSearchEnabled}
                       loadFunc={loadMoreChats}
                       chats={chatsState.chats}
-                      //TODO(unused) user={user}
                       hasMore={!!chatsState.nextPage}
+                      isLoading={isFetchingMore}
                     />
                   </span>
                 );

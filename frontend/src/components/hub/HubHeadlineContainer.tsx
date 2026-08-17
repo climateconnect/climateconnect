@@ -57,13 +57,6 @@ const useStyles = makeStyles((theme) => ({
   highlighted: {
     color: theme.palette.yellow.main,
   },
-  climateMatchButtonContainer: {
-    display: "flex",
-    justifyContent: "right",
-    height: 38,
-    marginTop: theme.spacing(1),
-  },
-
   subHeadLineText: {
     fontWeight: 600,
   },
@@ -84,11 +77,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub, hubUrl }) {
+export default function HubHeadlineContainer({ subHeadline, headline, isLocationHub }) {
   const classes = useStyles({ isLocationHub: isLocationHub });
   const { locale, user } = useContext(UserContext);
 
-  const texts = getTexts({ page: "climatematch", locale: locale });
+  const texts = getTexts({ page: "general", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
 
   return (

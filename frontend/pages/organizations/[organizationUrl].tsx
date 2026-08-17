@@ -4,14 +4,18 @@ import makeStyles from "@mui/styles/makeStyles";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import NextCookies from "next-cookies";
-import Router from "next/router";
-import React, { useContext } from "react";
+import { useRouter } from "next/router";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import ROLE_TYPES from "../../public/data/role_types";
 import { apiRequest, getLocalePrefix, getRolesOptions } from "../../public/lib/apiOperations";
 import { getImageUrl } from "../../public/lib/imageOperations";
 import { startPrivateChat } from "../../public/lib/messagingOperations";
-import { parseOrganization } from "../../public/lib/organizationOperations";
+import {
+  getIsUserFollowing,
+  parseOrganization,
+  getMembersByOrganization,
+} from "../../public/lib/organizationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
 import getTexts from "../../public/texts/texts";
 import AccountPage from "../../src/components/account/AccountPage";
@@ -29,6 +33,8 @@ import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import { parseProjectStubs } from "../../public/lib/parsingOperations";
+import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
+import { getAllHubs } from "../../public/lib/hubOperations";
 
 const DEFAULT_BACKGROUND_IMAGE = "/images/default_background_org.jpg";
 
@@ -82,12 +88,13 @@ export async function getServerSideProps(ctx) {
   const hubUrl = ctx.query.hub;
   const [
     organization,
-    projects,
+    projectsData,
     members,
     organizationTypes,
     rolesOptions,
     following,
     hubThemeData,
+    hubs,
   ] = await Promise.all([
     getOrganizationByUrlIfExists(organizationUrl, auth_token, ctx.locale, hubUrl),
     getProjectsByOrganization(organizationUrl, auth_token, ctx.locale),
@@ -96,16 +103,19 @@ export async function getServerSideProps(ctx) {
     getRolesOptions(auth_token, ctx.locale),
     getIsUserFollowing(organizationUrl, auth_token, ctx.locale),
     getHubTheme(hubUrl),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       organization: organization,
-      projects: projects,
+      projects: projectsData?.projects ?? null,
+      projectsHasMore: projectsData?.hasMore ?? false,
       members: members,
       organizationTypes: organizationTypes,
       rolesOptions: rolesOptions,
       following: following,
       hubThemeData: hubThemeData,
+      hubs: hubs,
       hubUrl: hubUrl,
     }),
   };
@@ -114,21 +124,21 @@ export async function getServerSideProps(ctx) {
 export default function OrganizationPage({
   organization,
   projects,
+  projectsHasMore,
   members,
   rolesOptions,
   following,
   hubThemeData,
+  hubs,
   hubUrl,
 }) {
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const infoMetadata = getOrganizationInfoMetadata(locale, organization, false);
   const texts = getTexts({ page: "organization", locale: locale, organization: organization });
   // l. 105-137 handles following Organizations
-  const [numberOfFollowers, setNumberOfFollowers] = React.useState(
-    organization?.number_of_followers
-  );
-  const [isUserFollowing, setIsUserFollowing] = React.useState(following);
-  const [followingChangePending, setFollowingChangePending] = React.useState(false);
+  const [numberOfFollowers, setNumberOfFollowers] = useState(organization?.number_of_followers);
+  const [isUserFollowing, setIsUserFollowing] = useState(following);
+  const [followingChangePending, setFollowingChangePending] = useState(false);
 
   const handleWindowClose = (e) => {
     if (followingChangePending) {
@@ -149,7 +159,7 @@ export default function OrganizationPage({
     setFollowingChangePending(pending);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener("beforeunload", handleWindowClose);
 
     return () => {
@@ -158,6 +168,8 @@ export default function OrganizationPage({
   });
 
   const customTheme = hubThemeData ? transformThemeData(hubThemeData) : undefined;
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const defaultBackUrl = hubUrl ? "/" + locale + "/hubs/" + hubUrl : "/" + locale;
   return (
     <WideLayout
       title={organization ? organization.name : texts.not_found_error}
@@ -168,6 +180,16 @@ export default function OrganizationPage({
         customTheme ? customTheme?.palette?.header.background : theme.palette.background.default
       }
       hubUrl={hubUrl}
+      showDonationGoal={true}
+      subHeader={
+        <HubsSubHeader
+          hubs={hubs}
+          onlyShowDropDown={true}
+          isCustomHub={isCustomHub}
+          hubSlug={hubUrl}
+          defaultBackUrl={defaultBackUrl}
+        />
+      }
     >
       {organization ? (
         <OrganizationLayout
@@ -177,6 +199,7 @@ export default function OrganizationPage({
           isUserFollowing={isUserFollowing}
           organization={organization}
           projects={projects}
+          projectsHasMore={projectsHasMore}
           members={members}
           /*TODO(unused) organizationTypes={organizationTypes} */
           infoMetadata={infoMetadata}
@@ -200,6 +223,7 @@ function OrganizationLayout({
   isUserFollowing,
   organization,
   projects,
+  projectsHasMore,
   members,
   infoMetadata,
   user,
@@ -210,6 +234,12 @@ function OrganizationLayout({
 }) {
   const classes = useStyles();
   const cookies = new Cookies();
+  const router = useRouter();
+
+  const [allProjects, setAllProjects] = useState(projects || []);
+  const [hasMoreProjects, setHasMoreProjects] = useState(projectsHasMore);
+  const [nextPage, setNextPage] = useState(2);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const getRoleName = (permission) => {
     const permission_to_show = permission === "all" ? "read write" : permission;
@@ -246,7 +276,8 @@ function OrganizationLayout({
     const token = cookies.get("auth_token");
     const creator = members.filter((m) => m.isCreator === true)[0];
     const chat = await startPrivateChat(creator, token, locale);
-    Router.push("/chat/" + chat.chat_uuid + "/");
+    const chatLink = hubUrl ? `/chat/${chat.chat_uuid}/?hub=${hubUrl}` : `/chat/${chat.chat_uuid}/`;
+    router.push(chatLink);
   };
   const canEdit =
     user &&
@@ -256,6 +287,29 @@ function OrganizationLayout({
     );
 
   const membersWithAdditionalInfo = getMembersWithAdditionalInfo(members);
+
+  const handleLoadMoreProjects = async () => {
+    if (isLoadingMore || !hasMoreProjects) return;
+    setIsLoadingMore(true);
+    try {
+      const resp = await apiRequest({
+        method: "get",
+        url: `/api/organizations/${organization.url_slug}/projects/?page=${nextPage}`,
+        token: cookies.get("auth_token"),
+        locale: locale,
+      });
+      if (resp.data) {
+        const newProjects = parseProjectStubs(resp.data.results);
+        setAllProjects((prev) => [...prev, ...newProjects]);
+        setHasMoreProjects(!!resp.data.next);
+        setNextPage((prev) => prev + 1);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
@@ -316,8 +370,22 @@ function OrganizationLayout({
             </Button>
           )}
         </div>
-        {projects && projects.length ? (
-          <ProjectPreviews projects={projects} hubUrl={hubUrl} />
+        {allProjects && allProjects.length ? (
+          <>
+            <ProjectPreviews projects={allProjects} hubUrl={hubUrl} parentHandlesGridItems />
+            {hasMoreProjects && (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleLoadMoreProjects}
+                disabled={isLoadingMore}
+                fullWidth
+                sx={{ mt: 2 }}
+              >
+                {isLoadingMore ? texts.loading : texts.load_more}
+              </Button>
+            )}
+          </>
         ) : (
           <Typography className={classes.no_content_yet}>
             {texts.this_organization_has_not_listed_any_projects_yet}
@@ -399,44 +467,10 @@ async function getProjectsByOrganization(organizationUrl, token, locale) {
     });
     if (!resp.data) return null;
     else {
-      return parseProjectStubs(resp.data.results);
-    }
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
-async function getIsUserFollowing(organizationUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/organizations/" + organizationUrl + "/am_i_following/",
-      token: token,
-      locale: locale,
-    });
-    if (resp.data.length === 0) return null;
-    else {
-      return resp.data.is_following;
-    }
-  } catch (err) {
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
-async function getMembersByOrganization(organizationUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/organizations/" + organizationUrl + "/members/?page=1&page_size=24",
-      token: token,
-      locale: locale,
-    });
-    if (!resp.data) return null;
-    else {
-      return parseOrganizationMembers(resp.data.results);
+      return {
+        projects: parseProjectStubs(resp.data.results),
+        hasMore: !!resp.data.next,
+      };
     }
   } catch (err) {
     console.log(err);
@@ -447,19 +481,4 @@ async function getMembersByOrganization(organizationUrl, token, locale) {
 
 async function getOrganizationTypes() {
   return [];
-}
-
-function parseOrganizationMembers(members) {
-  return members.map((m) => {
-    const member = m.user;
-    return {
-      ...member,
-      name: member.first_name + " " + member.last_name,
-      permission: m.permission.role_type,
-      isCreator: m.permission.role_type === ROLE_TYPES.all_type,
-      time_per_week: m.time_per_week,
-      role_in_organization: m.role_in_organization,
-      location: member.location,
-    };
-  });
 }

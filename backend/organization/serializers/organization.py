@@ -1,29 +1,32 @@
-from organization.utility.sector import (
-    get_sectors_based_on_hub,
-)
+from django.utils.translation import get_language
+from rest_framework import serializers
+
 from climateconnect_api.models.role import Role
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
-from django.conf import settings
-from django.utils.translation import get_language
-from rest_framework import serializers
-
+from location.utility import (
+    get_language_code_from_context,
+    get_translated_location_name,
+)
 from organization.models import (
     Organization,
+    OrganizationFollower,
     OrganizationMember,
     OrganizationTranslation,
-    OrganizationFollower,
 )
-from organization.models.project import ProjectParents
 from organization.serializers.sector import OrganizationSectorMappingSerializer
 from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.serializers.translation import OrganizationTranslationSerializer
 from organization.utility.organization import (
     get_organization_about_section,
+    get_organization_get_involved,
     get_organization_name,
     get_organization_short_description,
-    get_organization_get_involved,
+    get_visible_organization_projects_queryset,
+)
+from organization.utility.sector import (
+    get_sectors_based_on_hub,
 )
 
 
@@ -41,13 +44,16 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(
+            obj.location, get_language_code_from_context(self.context)
+        )
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
     sectors = serializers.SerializerMethodField()
     types = serializers.SerializerMethodField()
     parent_organization = serializers.SerializerMethodField()
+    child_organizations = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
@@ -55,6 +61,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
+    projects_count = serializers.SerializerMethodField()
     get_involved = serializers.SerializerMethodField()
 
     class Meta:
@@ -68,6 +75,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "image",
             "background_image",
             "parent_organization",
+            "child_organizations",
             "location",
             "short_description",
             "organ",
@@ -79,6 +87,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "hubs",
             "creator",
             "number_of_followers",
+            "projects_count",
             "get_involved",
         )
 
@@ -103,13 +112,25 @@ class OrganizationSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_parent_organization(self, obj):
-        serializer = OrganizationStubSerializer(obj.parent_organization)
+        serializer = OrganizationStubSerializer(
+            obj.parent_organization, context=self.context
+        )
+        return serializer.data
+
+    def get_child_organizations(self, obj):
+        """Get all child organizations (organizations that have this org as parent)"""
+        child_orgs = obj.organization_parent.all().order_by("name")
+        serializer = OrganizationStubSerializer(
+            child_orgs, many=True, context=self.context
+        )
         return serializer.data
 
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(
+            obj.location, get_language_code_from_context(self.context)
+        )
 
     def get_language(self, obj):
         if obj.language:
@@ -136,6 +157,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_number_of_followers(self, obj):
         return obj.organization_following.count()
 
+    def get_projects_count(self, obj):
+        return get_visible_organization_projects_queryset(obj).count()
+
 
 class OrganizationFollowerSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()
@@ -160,12 +184,11 @@ class EditOrganizationSerializer(OrganizationSerializer):
     name = serializers.SerializerMethodField()
 
     def get_location(self, obj):
-        if settings.ENABLE_LEGACY_LOCATION_FORMAT == "True":
-            return {"city": obj.location.city, "country": obj.location.country}
-        else:
-            if obj.location is None:
-                return None
-            return obj.location.name
+        if obj.location is None:
+            return None
+        return get_translated_location_name(
+            obj.location, get_language_code_from_context(self.context)
+        )
 
     def get_translations(self, obj):
         translations = OrganizationTranslation.objects.filter(organization=obj)
@@ -231,7 +254,9 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
         if obj.location is None:
             return None
-        return obj.location.name
+        return get_translated_location_name(
+            obj.location, get_language_code_from_context(self.context)
+        )
 
     def get_short_description(self, obj):
         return get_organization_short_description(obj, get_language())
@@ -254,9 +279,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         return OrganizationMember.objects.filter(organization=obj.id).count()
 
     def get_projects_count(self, obj):
-        return ProjectParents.objects.filter(
-            parent_organization__id=obj.id, project__is_draft=False
-        ).count()
+        return get_visible_organization_projects_queryset(obj).count()
 
 
 class OrganizationMemberSerializer(serializers.ModelSerializer):
@@ -304,7 +327,7 @@ class OrganizationsFromOrganizationMember(serializers.ModelSerializer):
         fields = ("organization",)
 
     def get_organization(self, obj):
-        return OrganizationCardSerializer(obj.organization).data
+        return OrganizationCardSerializer(obj.organization, context=self.context).data
 
 
 class OrganizationSitemapEntrySerializer(serializers.ModelSerializer):

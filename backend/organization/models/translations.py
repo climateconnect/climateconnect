@@ -46,6 +46,13 @@ class ProjectTranslation(models.Model):
         blank=True,
     )
 
+    description_html_translation = models.TextField(
+        help_text="Translation of project's HTML description",
+        verbose_name="Description HTML translation",
+        null=True,
+        blank=True,
+    )
+
     helpful_connections_translation = ArrayField(
         models.CharField(max_length=528, blank=True),
         help_text="Translation of project's connections",

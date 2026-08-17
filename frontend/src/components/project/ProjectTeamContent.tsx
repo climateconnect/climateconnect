@@ -65,9 +65,16 @@ export default function TeamContent({ project, handleReadNotifications, hubUrl }
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
-
-  useEffect(async () => {
-    await handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_join_request_approved"));
+  useEffect(() => {
+    const readNotifications = async () => {
+      try {
+        await handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_join_request_approved"));
+      } catch (error) {
+        console.error("Error reading notifications:", error);
+      }
+    };
+    void readNotifications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Not logged in
@@ -104,6 +111,7 @@ export default function TeamContent({ project, handleReadNotifications, hubUrl }
           allowMessage
           showAdditionalInfo={true}
           hubUrl={hubUrl}
+          parentHandlesGridItems={true}
         />
       </>
     );

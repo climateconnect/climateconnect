@@ -2,7 +2,7 @@ import { Button, Collapse, Container, Theme, useMediaQuery } from "@mui/material
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import MessageContent from "../communication/MessageContent";
 import UserContext from "../context/UserContext";
@@ -85,13 +85,13 @@ const useStyles = makeStyles((theme) => ({
   marginTop: {
     marginTop: theme.spacing(4),
   },
-  dashboardAndStatboxWrapper: (props: MakeStylesProps) => ({
+  dashboardAndStatboxWrapper: {
     display: "flex",
     justifyContent: "space-between",
     margin: "16px auto",
     gap: "1rem",
     alignItems: "end",
-  }),
+  },
   infoBoxContainer: {
     marginTop: theme.spacing(0),
     marginLeft: theme.spacing(2),
@@ -142,7 +142,6 @@ export default function HubContent({
   isLocationHub,
   hubAmbassador,
   hubSupporters,
-  location,
   hubData,
   hubUrl,
   image,
@@ -151,7 +150,7 @@ export default function HubContent({
   const classes = useStyles({ isLocationHub: isLocationHub, loggedOut: !user, image: image });
   const texts = getTexts({ page: "hub", locale: locale });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleClickExpand = () => {
     if (expanded === false) {
@@ -159,8 +158,8 @@ export default function HubContent({
     }
     setExpanded(!expanded);
   };
-  const [fixed, setFixed] = React.useState(false);
-  const [showMoreEl, setShowMoreEl] = React.useState(null);
+  const [fixed, setFixed] = useState(false);
+  const [showMoreEl, setShowMoreEl] = useState(null);
   const showMoreVisible = ElementOnScreen({ el: showMoreEl, triggerIfUnderScreen: true });
   if (!fixed && !showMoreVisible) {
     setFixed(true);
@@ -188,7 +187,7 @@ export default function HubContent({
                     {!isNarrowScreen && (
                       <Dashboard
                         hubUrl={hubUrl}
-                        location={location}
+                        hubName={hubData?.name}
                         welcomeMessageLoggedIn={welcomeMessageLoggedIn}
                         welcomeMessageLoggedOut={welcomeMessageLoggedOut}
                       />
@@ -215,7 +214,11 @@ export default function HubContent({
                             hubSupportersExists={hubSupporters ? true : false}
                           />
                           {hubSupporters?.length > 0 && (
-                            <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                            <HubSupporters
+                              supportersList={hubSupporters}
+                              hubName={hubData?.name}
+                              hubUrl={hubUrl}
+                            />
                           )}
                         </div>
                       )}
@@ -223,10 +226,18 @@ export default function HubContent({
                   ) : (
                     <>
                       {hubAmbassador && (
-                        <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />
+                        <ContactAmbassadorButton
+                          hubAmbassador={hubAmbassador}
+                          mobile={false}
+                          hubUrl={hubUrl}
+                        />
                       )}
                       {hubSupporters?.length > 0 && (
-                        <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} />
+                        <HubSupporters
+                          supportersList={hubSupporters}
+                          hubName={hubData?.name}
+                          hubUrl={hubUrl}
+                        />
                       )}
                       {!(hubSupporters?.length > 0) && hubUrl === "prio1" && (
                         <PrioOneBackgroundBrowseIcon />
@@ -254,6 +265,7 @@ export default function HubContent({
               isLocationHub={isLocationHub}
               hubAmbassador={hubAmbassador}
               isNarrowScreen={isNarrowScreen}
+              hubUrl={hubUrl}
             />
           </Container>
         )}
@@ -289,6 +301,7 @@ const BottomContent = ({
   hubAmbassador,
   isLocationHub,
   isNarrowScreen,
+  hubUrl,
 }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -327,7 +340,9 @@ const BottomContent = ({
           </Button>
         </div>
       )}
-      {!isNarrowScreen && <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} />}
+      {!isNarrowScreen && (
+        <ContactAmbassadorButton hubAmbassador={hubAmbassador} mobile={false} hubUrl={hubUrl} />
+      )}
     </>
   );
 };

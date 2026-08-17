@@ -1,26 +1,23 @@
-import { Button, Typography, useTheme } from "@mui/material";
+import { Button, Link, Typography, useTheme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import humanizeDuration from "humanize-duration";
-import React, { useState, useContext } from "react";
-import TimeAgo from "react-timeago";
-import youtubeRegex from "youtube-regex";
+import React, { useState, useContext, useRef, useLayoutEffect } from "react";
 import { Theme } from "@mui/material/styles";
 
 // Relative imports
-import { germanYearAndDayFormatter, yearAndDayFormatter } from "../../utils/formatting";
 import DateDisplay from "./../general/DateDisplay";
+import LocalizedTimeAgo from "./../general/LocalizedTimeAgo";
 import DiscussionPreview from "./DiscussionPreview";
 import getTexts from "../../../public/texts/texts";
-import MessageContent from "../communication/MessageContent";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import Posts from "./../communication/Posts";
 import UserContext from "../context/UserContext";
 import ProjectContentSideButtons from "./Buttons/ProjectContentSideButtons";
-
-const MAX_DISPLAYED_DESCRIPTION_LENGTH = 500;
+import { getDevlinkComponent } from "../../utils/getDevlinkComponent";
+import { getEditorStyles } from "mui-tiptap";
 
 const useStyles = makeStyles((theme: Theme) => ({
   createdBy: {
@@ -45,6 +42,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.grey[800],
     cursor: "pointer",
     breakWord: "break-word",
+  },
+  parentProjectName: {
+    display: "inline-block",
+    color: theme.palette.grey[800],
+    fontWeight: 600,
+    cursor: "pointer",
+    wordBreak: "break-word",
   },
   creatorImage: {
     height: 24,
@@ -123,6 +127,34 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   projectDescription: {
     wordBreak: "break-word",
+    // Reuse the tiptap editor's own styles (margin:0 on p/headings/lists, link &
+    // list styling) so the rendered description is WYSIWYG with the editor.
+    ...getEditorStyles(theme),
+    // The tiptap editor renders an empty paragraph (<p></p>, e.g. a blank line
+    // the author created) as a visible empty line — ProseMirror injects a <br>
+    // into empty blocks in the editable view. In the read-only display that <br>
+    // is absent, so an empty <p> collapses to zero height. Give it one line of
+    // height (via a hidden non-breaking space) so blank lines created in the
+    // editor stay visible. This matches the editor without changing global CSS.
+    "& p:empty::before": {
+      content: '"\\00a0"',
+      visibility: "hidden",
+    },
+    "& ul, & ol": {
+      paddingLeft: "1.5em",
+    },
+    "& iframe": {
+      maxWidth: 640,
+      width: "100%",
+      height: "auto",
+      aspectRatio: "16 / 9",
+    },
+  },
+  descriptionClamped: {
+    display: "-webkit-box",
+    "-webkit-line-clamp": 6,
+    "-webkit-box-orient": "vertical",
+    overflow: "hidden",
   },
   projectParentContainer: {
     display: "flex",
@@ -149,32 +181,45 @@ export default function ProjectContent({
   handleSendProjectJoinRequest,
   requestedToJoinProject,
   hubUrl,
+  eventRegistration,
+  onEventRegistrationUpdated,
+  onMembersRefreshed,
 }) {
   const classes = useStyles({ isPersonalProject: project.isPersonalProject });
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const descRef = useRef<HTMLDivElement>(null);
   const handleToggleFullDescriptionClick = () => setShowFullDescription(!showFullDescription);
 
-  const calculateMaxDisplayedDescriptionLength = (description) => {
-    const words = description.split(" ");
-    const youtubeLink = words.find((el) => youtubeRegex().test(el));
-    if (youtubeLink) {
-      const firstIndex = description.indexOf(youtubeLink);
-      const lastIndex = firstIndex + youtubeLink.length - 1;
-      const maxLength =
-        firstIndex <= MAX_DISPLAYED_DESCRIPTION_LENGTH &&
-        lastIndex > MAX_DISPLAYED_DESCRIPTION_LENGTH
-          ? lastIndex
-          : MAX_DISPLAYED_DESCRIPTION_LENGTH;
-      return maxLength;
-    } else {
-      return MAX_DISPLAYED_DESCRIPTION_LENGTH;
-    }
-  };
-  const maxDisplayedDescriptionLength = project.description
-    ? calculateMaxDisplayedDescriptionLength(project.description)
-    : 0;
+  useLayoutEffect(() => {
+    // When expanded there is no clamp, so scrollHeight === clientHeight and the
+    // measurement would incorrectly clear the overflow flag.
+    if (showFullDescription || !descRef.current) return;
+
+    const element = descRef.current;
+
+    const checkOverflow = () => {
+      // clientHeight is 0 when the element is inside a hidden tab panel –
+      // skip the measurement and wait for the ResizeObserver to fire once
+      // the panel becomes visible.
+      if (element.clientHeight > 0) {
+        setIsOverflowing(element.scrollHeight > element.clientHeight);
+      }
+    };
+
+    checkOverflow();
+
+    // Re-check whenever the element's size changes:
+    //   • the tab panel transitions from hidden → visible (clientHeight: 0 → N)
+    //   • web fonts finish loading and reflow the text
+    //   • the viewport is resized
+    const observer = new ResizeObserver(checkOverflow);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [project.description_html, showFullDescription]);
 
   //return the right static text depending on the project type
   const getProjectDescriptionHeadline = () => {
@@ -203,6 +248,9 @@ export default function ProjectContent({
             requestedToJoinProject={requestedToJoinProject}
             leaveProject={leaveProject}
             hubUrl={hubUrl}
+            eventRegistration={eventRegistration}
+            onEventRegistrationUpdated={onEventRegistrationUpdated}
+            onMembersRefreshed={onMembersRefreshed}
           />
           {/* Note: created date is not the same as the start date, for projects */}
           <Typography>
@@ -216,11 +264,7 @@ export default function ProjectContent({
                 ) : (
                   <>
                     {texts.started + " "}
-                    <TimeAgo
-                      date={new Date(project.start_date)}
-                      formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
-                    />{" "}
-                    {texts.by}
+                    <LocalizedTimeAgo date={new Date(project.start_date)} /> {texts.by}
                   </>
                 )}
                 {project.isPersonalProject ? (
@@ -244,10 +288,7 @@ export default function ProjectContent({
             {project.project_type.type_id === "project" && project.end_date && (
               <Typography>
                 {texts.finished + " "}
-                <TimeAgo
-                  date={new Date(project.end_date)}
-                  formatter={locale === "de" ? germanYearAndDayFormatter : yearAndDayFormatter}
-                />{" "}
+                <LocalizedTimeAgo date={new Date(project.end_date)} />{" "}
               </Typography>
             )}
 
@@ -266,11 +307,29 @@ export default function ProjectContent({
                 ))}
               </div>
             )}
+            {project.parent_project_id &&
+              project.parent_project_name &&
+              project.parent_project_slug && (
+                <div>
+                  {(() => {
+                    const type = project.project_type?.type_id;
+                    if (type === "event") return texts.this_event_is_part_of;
+                    if (type === "idea") return texts.this_idea_is_part_of;
+                    return texts.this_project_is_part_of;
+                  })()}{" "}
+                  <Link href={`/projects/${project.parent_project_slug}`}>
+                    {" "}
+                    <Typography className={classes.parentProjectName}>
+                      {project.parent_project_name}
+                    </Typography>
+                  </Link>
+                </div>
+              )}
           </div>
           {project.end_date && (
             <Typography>
-              {texts.finished} <TimeAgo date={new Date(project.end_date)} />. {texts.total_duration}
-              :{" "}
+              {texts.finished} <LocalizedTimeAgo date={new Date(project.end_date)} />.{" "}
+              {texts.total_duration}:{" "}
               {humanizeDuration(new Date(project.end_date) - new Date(project.start_date), {
                 largest: 1,
                 language: locale,
@@ -280,41 +339,50 @@ export default function ProjectContent({
         </div>
       </div>
       <div className={classes.contentBlock}>
-        <Typography
-          component="h2"
-          variant="h6"
-          color={theme.palette.background.default_contrastText}
-          className={classes.subHeader}
-        >
-          {getProjectDescriptionHeadline()}
-        </Typography>
-        <Typography className={classes.projectDescription} component="div">
-          {project.description ? (
-            showFullDescription || project.description.length <= maxDisplayedDescriptionLength ? (
-              <MessageContent content={project.description} renderYoutubeVideos={true} />
-            ) : (
-              <MessageContent
-                content={project.description.substr(0, maxDisplayedDescriptionLength) + "..."}
-                renderYoutubeVideos={true}
-              />
-            )
-          ) : (
-            <Typography variant="body2">{getNoProjectDescriptionText()}</Typography>
-          )}
-        </Typography>
-        {project.description && project.description.length > maxDisplayedDescriptionLength && (
-          <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
-            {showFullDescription ? (
-              <div>
-                <ExpandLessIcon className={classes.icon} /> {texts.show_less}
-              </div>
-            ) : (
-              <div>
-                <ExpandMoreIcon className={classes.icon} /> {texts.show_more}
-              </div>
-            )}
-          </Button>
-        )}
+        {(() => {
+          const DevlinkComponent = getDevlinkComponent(project.devlink_component, locale);
+          if (DevlinkComponent) {
+            return <DevlinkComponent />;
+          }
+          return (
+            <>
+              <Typography
+                component="h2"
+                variant="h6"
+                color={theme.palette.background.default_contrastText}
+                className={classes.subHeader}
+              >
+                {getProjectDescriptionHeadline()}
+              </Typography>
+              <Typography className={classes.projectDescription} component="div">
+                {project.description_html ? (
+                  <div
+                    ref={descRef}
+                    className={`${classes.projectDescription} ${
+                      showFullDescription ? "" : classes.descriptionClamped
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: project.description_html }}
+                  />
+                ) : (
+                  <Typography variant="body2">{getNoProjectDescriptionText()}</Typography>
+                )}
+              </Typography>
+              {project.description_html && (showFullDescription || isOverflowing) && (
+                <Button className={classes.expandButton} onClick={handleToggleFullDescriptionClick}>
+                  {showFullDescription ? (
+                    <div>
+                      <ExpandLessIcon className={classes.icon} /> {texts.show_less}
+                    </div>
+                  ) : (
+                    <div>
+                      <ExpandMoreIcon className={classes.icon} /> {texts.show_more}
+                    </div>
+                  )}
+                </Button>
+              )}
+            </>
+          );
+        })()}
       </div>
       {latestParentComment[0] && (
         <DiscussionPreview
@@ -328,23 +396,25 @@ export default function ProjectContent({
           hubUrl={hubUrl}
         />
       )}
-      <div className={classes.contentBlock}>
-        <Typography
-          component="h2"
-          variant="h6"
-          color={theme.palette.background.default_contrastText}
-          className={classes.subHeader}
-        >
-          {texts.collaboration}
-        </Typography>
-        {project.collaborators_welcome ? (
-          <CollaborateContent project={project} texts={texts} />
-        ) : (
-          <Typography className={classes.openToCollabBool}>
-            {texts.this_project_is_not_looking_for_collaborators_right_now}
+      {false && (
+        <div className={classes.contentBlock}>
+          <Typography
+            component="h2"
+            variant="h6"
+            color={theme.palette.background.default_contrastText}
+            className={classes.subHeader}
+          >
+            {texts.collaboration}
           </Typography>
-        )}
-      </div>
+          {project.collaborators_welcome ? (
+            <CollaborateContent project={project} texts={texts} />
+          ) : (
+            <Typography className={classes.openToCollabBool}>
+              {texts.this_project_is_not_looking_for_collaborators_right_now}
+            </Typography>
+          )}
+        </div>
+      )}
       <div className={classes.contentBlock}>
         <Typography
           component="h2"
@@ -371,7 +441,7 @@ export default function ProjectContent({
   );
 }
 
-function CollaborateContent({ project, texts }) {
+function CollaborateContent({ texts }) {
   const classes = useStyles();
   return (
     <>
@@ -381,33 +451,6 @@ function CollaborateContent({ project, texts }) {
       <Typography className={classes.openToCollabBool}>
         {texts.this_project_is_open_to_collaborators}
       </Typography>
-      <div className={classes.collabSectionContainer}>
-        {project.helpful_skills && project.helpful_skills.length > 0 && (
-          <div className={classes.collabSection}>
-            <Typography component="h3" color="primary" className={classes.subSubHeader}>
-              {texts.helpful_skills_for_collaborating}:
-            </Typography>
-            <ul className={classes.collabList}>
-              {project.helpful_skills.length > 0 &&
-                project.helpful_skills.map((skill) => {
-                  return <li key={skill.id}>{skill.name}</li>;
-                })}
-            </ul>
-          </div>
-        )}
-        {project.helpful_connections && project.helpful_connections.length > 0 && (
-          <div className={classes.collabSection}>
-            <Typography component="h3" color="primary" className={classes.subSubHeader}>
-              {texts.connections_to_these_organizations_could_help_the_project}:
-            </Typography>
-            <ul className={classes.collabList}>
-              {project.helpful_connections.map((connection, index) => {
-                return <li key={index}>{connection}</li>;
-              })}
-            </ul>
-          </div>
-        )}
-      </div>
     </>
   );
 }

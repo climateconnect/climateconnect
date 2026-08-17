@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { redirect, resendEmail } from "../public/lib/apiOperations";
 import getTexts from "../public/texts/texts";
 import UserContext from "../src/components/context/UserContext";
@@ -33,7 +33,7 @@ export async function getServerSideProps(ctx) {
 }
 
 export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
-  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { locale } = useContext(UserContext);
   const classes = useStyles();
   const texts = getTexts({ page: "settings", locale: locale });

@@ -10,12 +10,14 @@ import {
 import makeStyles from "@mui/styles/makeStyles";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Link from "next/link";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, getLocalePrefix, redirect } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import { removeUnnecesaryCookies } from "./../../../public/lib/cookieOperations";
+import Switcher from "../general/Switcher";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 
 const useStyles = makeStyles((theme) => ({
   blockElement: {
@@ -39,6 +41,13 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
+  authMethodToggle: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1),
+  },
+  authMethodHint: {
+    marginTop: theme.spacing(1),
+  },
   deleteMessage: {
     display: "flex",
     alignItems: "center",
@@ -52,13 +61,18 @@ const useStyles = makeStyles((theme) => ({
   textColor: {
     color: theme.palette.background.default_contrastText,
   },
+  requiredFieldsNotice: {
+    display: "block",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+  },
 }));
 
-export default function SettingsPage({ settings, setSettings, token, setMessage, hubUrl }) {
+export default function SettingsPage({ settings, setSettings, token, setMessage }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "settings", locale: locale });
-  const emailLink = "contact@climateconnect.earth";
+  const emailLink = "contact@climatehub.org";
   const possibleEmailPreferences = [
     {
       key: "send_newsletter",
@@ -120,7 +134,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
       text: texts.accepted_statistics_text,
     },
   ];
-  const [errors, setErrors] = React.useState({
+  const [errors, setErrors] = useState({
     passworderror: "",
     newemailerror: "",
     /*profileurlerror: "",*/
@@ -128,28 +142,28 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
     cookiepreferencesserror: "",
   });
 
-  const [passwordInputs, setPasswordInputs] = React.useState({
+  const [passwordInputs, setPasswordInputs] = useState({
     oldpassword: "",
     newpassword: "",
     confirmnewpassword: "",
     /*profileurlerror: ""*/
   });
-  const [newEmail, setNewEmail] = React.useState("");
+  const [newEmail, setNewEmail] = useState("");
   const cookies = new Cookies();
-  const [cookiePreferences, setCookiePreferences] = React.useState(
+  const [cookiePreferences, setCookiePreferences] = useState(
     possibleCookiePreferences.reduce((obj, p) => {
       obj[p.key] = !!cookies.get(p.key);
       return obj;
     }, {})
   );
 
-  const [emailPreferences, setEmailPreferences] = React.useState(
+  const [emailPreferences, setEmailPreferences] = useState(
     possibleEmailPreferences.reduce((obj, p) => {
       obj[p.key] = settings[p.key];
       return obj;
     }, {})
   );
-  /*const [newProfileUrl, setNewProfileUrl] = React.useState("");*/
+  /*const [newProfileUrl, setNewProfileUrl] = useState("");*/
 
   const handleNewEmailChange = (event) => {
     setNewEmail(event.target.value);
@@ -157,6 +171,32 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
 
   const handlePasswordInputsChange = (event, key) => {
     setPasswordInputs({ ...passwordInputs, [key]: event.target.value });
+  };
+
+  const handleAuthMethodChange = async () => {
+    // The Switcher component passes event.target.value which is always "on" for a Switch.
+    // We toggle based on the current auth_method instead.
+    const newAuthMethod = settings.auth_method === "password" ? "otp" : "password";
+    if (newAuthMethod === "password" && !settings.has_password) return;
+    try {
+      const response = await apiRequest({
+        method: "post",
+        url: "/api/account_settings/",
+        payload: { auth_method: newAuthMethod },
+        token: token,
+        locale: locale,
+      });
+      setMessage(response.data.message);
+      setSettings({ ...settings, auth_method: newAuthMethod });
+      window.scrollTo(0, 0);
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        setMessage(error.response.data.message || texts.error + "!");
+      } else {
+        setMessage(texts.error + "!");
+      }
+      console.log(error);
+    }
   };
 
   const handlePreferenceChange = (event, key) => {
@@ -184,14 +224,17 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
       setPasswordInputs({ ...passwordInputs, newpassword: "", confirmnewpassword: "" });
     } else {
       setErrors({ ...errors, passworderror: "" });
+      const payload: any = {
+        password: passwordInputs.newpassword,
+        confirm_password: passwordInputs.confirmnewpassword,
+      };
+      if (settings.has_password) {
+        payload.old_password = passwordInputs.oldpassword;
+      }
       apiRequest({
         method: "post",
         url: "/api/account_settings/",
-        payload: {
-          password: passwordInputs.newpassword,
-          confirm_password: passwordInputs.confirmnewpassword,
-          old_password: passwordInputs.oldpassword,
-        },
+        payload: payload,
         token: token,
         locale: locale,
       })
@@ -205,8 +248,10 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
             oldpassword: "",
             newpassword: "",
             confirmnewpassword: "",
-            /* profileurlerror: "", */
           });
+          if (!settings.has_password) {
+            setSettings({ ...settings, has_password: true });
+          }
           window.scrollTo(0, 0);
         })
         .catch(function (error) {
@@ -253,7 +298,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
         });
     }
   };
-  const [emailPreferencesLoading, setEmailPreferencesLoading] = React.useState(false);
+  const [emailPreferencesLoading, setEmailPreferencesLoading] = useState(false);
   const changeEmailPreferences = async () => {
     if (
       hasChanges(
@@ -336,8 +381,27 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
 
   return (
     <>
+      <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
       <Typography variant="h5" component="h2" className={classes.textColor}>
-        {texts.change_password}
+        {texts.login_method}
+      </Typography>
+      <Divider />
+      <div className={classes.authMethodToggle}>
+        <Switcher
+          falseLabel={texts.login_method_otp}
+          trueLabel={texts.login_method_password}
+          value={settings.auth_method === "password"}
+          handleChangeValue={handleAuthMethodChange}
+          disabled={!settings.has_password}
+        />
+      </div>
+      {!settings.has_password && (
+        <Typography variant="body2" className={classes.authMethodHint}>
+          {texts.password_option_disabled_hint}
+        </Typography>
+      )}
+      <Typography variant="h5" component="h2" className={classes.textColor}>
+        {texts.password}
       </Typography>
       <Divider />
       <form onSubmit={changePassword}>
@@ -346,48 +410,65 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
             {errors.passworderror}
           </Typography>
         )}
-        <TextField
-          variant="outlined"
-          className={classes.blockElement}
-          type="password"
-          label={texts.old_password}
-          value={passwordInputs.oldpassword}
-          onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
-          required
-        />
-        <TextField
-          variant="outlined"
-          className={classes.blockElement}
-          type="password"
-          label={texts.new_password}
-          value={passwordInputs.newpassword}
-          onChange={(event) => handlePasswordInputsChange(event, "newpassword")}
-          required
-        />
-        <TextField
-          variant="outlined"
-          className={classes.blockElement}
-          type="password"
-          label={texts.confirm_new_password}
-          value={passwordInputs.confirmnewpassword}
-          onChange={(event) => handlePasswordInputsChange(event, "confirmnewpassword")}
-          required
-        />
+        {!settings.has_password && (
+          <Typography className={classes.blockElement} variant="body2">
+            {texts.set_password_description}
+          </Typography>
+        )}
+        {settings.has_password && (
+          <>
+            <div className={classes.blockElement}>
+              <TextField
+                variant="outlined"
+                style={{ minWidth: 360 }}
+                type="password"
+                label={texts.old_password}
+                value={passwordInputs.oldpassword}
+                onChange={(event) => handlePasswordInputsChange(event, "oldpassword")}
+                required
+              />
+            </div>
+          </>
+        )}
+        <div className={classes.blockElement}>
+          <TextField
+            variant="outlined"
+            style={{ minWidth: 360 }}
+            type="password"
+            label={texts.new_password}
+            value={passwordInputs.newpassword}
+            onChange={(event) => handlePasswordInputsChange(event, "newpassword")}
+            required
+          />
+        </div>
+        <div className={classes.blockElement}>
+          <TextField
+            variant="outlined"
+            style={{ minWidth: 360 }}
+            type="password"
+            label={texts.confirm_new_password}
+            value={passwordInputs.confirmnewpassword}
+            onChange={(event) => handlePasswordInputsChange(event, "confirmnewpassword")}
+            required
+          />
+        </div>
         <div className={classes.blockElement}>
           <Typography variant="body2" className={classes.marginBottom}>
             {texts.make_sure_it_is_at_least_8_characters_including_a_number_and_an_uppercase_letter}
           </Typography>
           <Button variant="contained" color="primary" type="submit">
-            {texts.change_password}
+            {settings.has_password ? texts.change_password : texts.set_new_password}
           </Button>
-          <Link href={getLocalePrefix(locale) + "/resetpassword"}>
-            <a className={`${classes.forgotPasswordLink} ${classes.textColor}`}>
+          {settings.has_password && (
+            <Link
+              href={getLocalePrefix(locale) + "/resetpassword"}
+              className={`${classes.forgotPasswordLink} ${classes.textColor}`}
+            >
               {texts.i_forgot_my_password}
-            </a>
-          </Link>
+            </Link>
+          )}
         </div>
       </form>
-
       <Typography
         className={`${classes.lowerHeaders} ${classes.textColor}`}
         variant="h5"
@@ -519,8 +600,8 @@ export default function SettingsPage({ settings, setSettings, token, setMessage,
         <InfoOutlinedIcon />
         {texts.if_you_wish_to_delete_this_account}
         <div className={classes.spaceStrings} />
-        <Link href="mailto:contact@climateconnect.earth">
-          <a className={classes.textColor}>{emailLink}</a>
+        <Link href="mailto:contact@climatehub.org" className={classes.textColor}>
+          {emailLink}
         </Link>
       </Typography>
     </>

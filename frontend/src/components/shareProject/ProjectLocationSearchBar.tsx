@@ -1,6 +1,4 @@
-import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import { Project } from "../../types";
 import UserContext from "../context/UserContext";
@@ -11,6 +9,8 @@ type Args = {
   handleSetProjectData: Function;
   className?: any;
   hideHelperText?: boolean;
+  helperText?: string;
+  error?: boolean;
   locationInputRef?: any;
   locationOptionsOpen?: boolean;
   handleSetLocationOptionsOpen?: Function;
@@ -22,6 +22,8 @@ export default function ProjectLocationSearchBar({
   handleSetProjectData,
   className,
   hideHelperText,
+  helperText,
+  error,
   locationInputRef,
   locationOptionsOpen,
   handleSetLocationOptionsOpen,
@@ -58,15 +60,12 @@ export default function ProjectLocationSearchBar({
 
   const propsByProjectType = {
     event: {
-      label: texts.event_location,
       helperText: texts.event_location_helper_text,
     },
     idea: {
-      label: texts.location,
       helperText: "",
     },
     project: {
-      label: texts.location,
       helperText: "",
     },
   };
@@ -82,10 +81,13 @@ export default function ProjectLocationSearchBar({
   return (
     <LocationSearchBar
       className={className}
-      label={propsByProjectType[projectData.project_type.type_id]?.label}
+      label={texts.location}
       helperText={
-        hideHelperText ? null : propsByProjectType[projectData.project_type.type_id]?.helperText
+        hideHelperText
+          ? null
+          : helperText ?? propsByProjectType[projectData.project_type.type_id]?.helperText
       }
+      error={!!error}
       enableExactLocation
       value={projectData.loc}
       onChange={handleChangeLocationString}

@@ -1,6 +1,7 @@
-from climateconnect_api.models import Role
 from django.contrib.auth.models import User
 from django.db import models
+
+from climateconnect_api.models import Role
 from ideas.models.ideas import Idea
 
 
@@ -144,15 +145,38 @@ class Message(models.Model):
         blank=True,
     )
 
+    origin_type = models.CharField(
+        max_length=32,
+        blank=True,
+        default="",
+        help_text=(
+            "Context that originated this message. "
+            "Valid values: '' (no context), 'project', 'event_registration', "
+            "'organization', 'hub'. Blank means no origin context."
+        ),
+        verbose_name="Origin Type",
+    )
+    origin_id = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Primary key of the origin entity identified by origin_type.",
+        verbose_name="Origin ID",
+    )
+
     class Meta:
         verbose_name = "Message"
         verbose_name_plural = "Messages"
         ordering = ["-id"]
 
     def __str__(self):
+        sender_name = (
+            self.sender.first_name + " " + self.sender.last_name
+            if self.sender
+            else "deleted user"
+        )
         return "Message %s from %s in chat %s" % (
             self.id,
-            self.sender.first_name + " " + self.sender.last_name,
+            sender_name,
             self.message_participant_id,
         )
 

@@ -14,29 +14,56 @@ import UserContext from "./../../src/components/context/UserContext";
 import getHubTheme from "../../src/themes/fetchHubTheme";
 import { transformThemeData } from "../../src/themes/transformThemeData";
 import theme from "../../src/themes/theme";
-import { parseProjectStubs } from "../../public/lib/parsingOperations";
+import { parseOrganizationStubs, parseProjectStubs } from "../../public/lib/parsingOperations";
+import HubsSubHeader from "../../src/components/indexPage/hubsSubHeader/HubsSubHeader";
+import { getAllHubs } from "../../public/lib/hubOperations";
 
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
+  // Prevent API calls with undefined slug
+  // see https://github.com/climateconnect/climateconnect/issues/1796
+  if (profileUrl === "undefined") {
+    return {
+      props: nullifyUndefinedValues({
+        profile: null,
+        organizations: null,
+        organizationsHasMore: false,
+        projects: null,
+        projectsHasMore: false,
+        projectTypes: null,
+        hubUrl: ctx.query.hub,
+        hubThemeData: null,
+      }),
+    };
+  }
   const hubUrl = ctx.query.hub;
-  const [profile, organizations, projects, ideas, projectTypes, hubThemeData] = await Promise.all([
+  const [
+    profile,
+    organizationsData,
+    projectsData,
+    projectTypes,
+    hubThemeData,
+    hubs,
+  ] = await Promise.all([
     getProfileByUrlIfExists(profileUrl, auth_token, ctx.locale),
     getOrganizationsByUser(profileUrl, auth_token, ctx.locale),
     getProjectsByUser(profileUrl, auth_token, ctx.locale),
-    getIdeasByUser(profileUrl, auth_token, ctx.locale),
     getProjectTypeOptions(ctx.locale),
     getHubTheme(hubUrl),
+    getAllHubs(ctx.locale),
   ]);
   return {
     props: nullifyUndefinedValues({
       profile: profile,
-      organizations: organizations,
-      projects: projects,
-      ideas: ideas,
+      organizations: organizationsData?.organizations ?? null,
+      organizationsHasMore: organizationsData?.hasMore ?? false,
+      projects: projectsData?.projects ?? null,
+      projectsHasMore: projectsData?.hasMore ?? false,
       projectTypes: projectTypes,
       hubUrl: hubUrl,
       hubThemeData: hubThemeData,
+      hubs: hubs,
     }),
   };
 }
@@ -44,16 +71,22 @@ export async function getServerSideProps(ctx) {
 export default function ProfilePage({
   profile,
   projects,
+  projectsHasMore,
   organizations,
-  ideas,
+  organizationsHasMore,
   projectTypes,
   hubUrl,
   hubThemeData,
+  hubs,
 }) {
   const token = new Cookies().get("auth_token");
-  const { user, locale } = useContext(UserContext);
+  const { user, locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const infoMetadata = getProfileInfoMetadata(locale);
   const texts = getTexts({ page: "profile", locale: locale, profile: profile });
+
+  const isOwnProfile = !!(user && profile && user.url_slug === profile.url_slug);
+  const isCustomHub = CUSTOM_HUB_URLS.includes(hubUrl);
+  const defaultBackUrl = hubUrl ? "/" + locale + "/hubs/" + hubUrl : "/" + locale;
 
   const contextValues = {
     projectTypes: projectTypes,
@@ -70,9 +103,23 @@ export default function ProfilePage({
         (profile.info.bio ? " | " + profile.info.bio : "")
       }
       hubUrl={hubUrl}
+      showDonationGoal={true}
       customTheme={customTheme}
       headerBackground={
         customTheme ? customTheme.palette.header.background : theme.palette.background.default
+      }
+      subHeader={
+        profile && !isOwnProfile ? (
+          <HubsSubHeader
+            hubs={hubs}
+            onlyShowDropDown={true}
+            isCustomHub={isCustomHub}
+            hubSlug={hubUrl}
+            defaultBackUrl={defaultBackUrl}
+          />
+        ) : (
+          <></>
+        )
       }
     >
       {profile ? (
@@ -80,13 +127,14 @@ export default function ProfilePage({
           <ProfileRoot
             profile={profile}
             projects={projects}
+            projectsHasMore={projectsHasMore}
             organizations={organizations}
+            organizationsHasMore={organizationsHasMore}
             infoMetadata={infoMetadata}
             user={user}
             token={token}
             texts={texts}
             locale={locale}
-            ideas={ideas}
             hubUrl={hubUrl}
           />
         </BrowseContext.Provider>
@@ -115,25 +163,6 @@ async function getProfileByUrlIfExists(profileUrl, token, locale) {
   }
 }
 
-async function getIdeasByUser(profileUrl, token, locale) {
-  try {
-    const resp = await apiRequest({
-      method: "get",
-      url: "/api/member/" + profileUrl + "/ideas/",
-      token: token,
-      locale: locale,
-    });
-    if (!resp.data) return null;
-    else {
-      return resp.data.results.map((r) => r.idea);
-    }
-  } catch (err) {
-    console.log(err);
-    if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
-    return null;
-  }
-}
-
 async function getProjectsByUser(profileUrl, token, locale) {
   try {
     const resp = await apiRequest({
@@ -144,7 +173,10 @@ async function getProjectsByUser(profileUrl, token, locale) {
     });
     if (!resp.data) return null;
     else {
-      return parseProjectStubs(resp.data.results);
+      return {
+        projects: parseProjectStubs(resp.data.results),
+        hasMore: !!resp.data.next,
+      };
     }
   } catch (err) {
     console.log(err);
@@ -163,22 +195,14 @@ async function getOrganizationsByUser(profileUrl, token, locale) {
     });
     if (!resp.data) return null;
     else {
-      return parseOrganizationStubs(resp.data.results);
+      return {
+        organizations: parseOrganizationStubs(resp.data.results),
+        hasMore: !!resp.data.next,
+      };
     }
   } catch (err) {
     console.log(err);
     if (err.response && err.response.data) console.log("Error: " + err.response.data.detail);
     return null;
   }
-}
-
-function parseOrganizationStubs(organizations) {
-  return organizations.map((o) => ({
-    ...o.organization,
-    types: o.organization.types.map((type) => type.organization_tag),
-    info: {
-      location: o.organization.location,
-      short_description: o.organization?.short_description,
-    },
-  }));
 }

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:0-18
+FROM mcr.microsoft.com/devcontainers/javascript-node:1-22
 
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
@@ -11,4 +11,5 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # install pdm
 USER node
 RUN curl -sSL https://raw.githubusercontent.com/pdm-project/pdm/main/install-pdm.py | python3 -
+ENV PATH="/home/node/.local/bin:$PATH"
 RUN echo "\x auto" > ~/.psqlrc

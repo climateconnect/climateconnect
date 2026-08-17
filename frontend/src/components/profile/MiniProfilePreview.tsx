@@ -53,7 +53,6 @@ export default function MiniProfilePreview({
   onDelete,
   hubUrl,
 }: Props) {
-  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const queryString = hubUrl ? "?hub=" + hubUrl : "";
 
@@ -114,7 +113,7 @@ function Content({ profile, avatarClassName, size }) {
         }`}
         variant="h6"
       >
-        {profile.first_name + " " + profile.last_name}
+        {[profile.first_name, profile.last_name].filter(Boolean).join(" ")}
       </Typography>
     </span>
   );

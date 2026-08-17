@@ -15,7 +15,11 @@ export default function IdeaHubIcon({ idea, className }: any) {
   const classes = useStyles();
   return (
     <Tooltip title={idea.hub.name}>
-      <img src={getImageUrl(idea.hub.icon)} className={`${classes.hubIcon} ${className}`} />
+      <img
+        src={getImageUrl(idea.hub.icon)}
+        className={`${classes.hubIcon} ${className}`}
+        alt="idea hub icon"
+      />
     </Tooltip>
   );
 }

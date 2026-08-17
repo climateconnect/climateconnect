@@ -30,7 +30,6 @@ export default function DetailledDescriptionInput({ title, helpText, value, onCh
       </Typography>
       <TextField
         variant="outlined"
-        color="contrast"
         fullWidth
         multiline
         rows={9}

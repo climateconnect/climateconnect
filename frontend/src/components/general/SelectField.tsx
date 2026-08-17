@@ -1,7 +1,6 @@
 import { Checkbox, ListItemText, MenuItem, TextField } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import { string } from "prop-types";
 import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
@@ -31,6 +30,7 @@ type Props = {
   size?: "small" | "medium";
   values?;
   color?;
+  sx?: any;
 };
 export default function SelectField({
   className,
@@ -48,6 +48,7 @@ export default function SelectField({
   size,
   values,
   color = "primary",
+  sx,
 }: Props) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -61,7 +62,7 @@ export default function SelectField({
   // based on a persisted query param URL, then
   // we update the value and values here...
   const [value, setValue] = useState<{ name: string; key?: string }>({
-    name: defaultValue.name,
+    name: defaultValue.name ?? "",
     key: defaultValue.key,
   });
 
@@ -89,7 +90,6 @@ export default function SelectField({
     }
   };
 
-  //TODO: possibly address warnings, that are produced by this component
   return (
     <TextField
       className={className}
@@ -100,22 +100,21 @@ export default function SelectField({
       onChange={handleChange}
       required={required}
       select
-      // Handle values differently depending on if this is being used
-      // within a Multiselect or controlled context
-      value={multiple ? values : controlled ? controlledValue && controlledValue.name : value.name}
+      value={multiple ? values : controlled ? controlledValue?.name ?? "" : value.name}
       variant="outlined"
       SelectProps={{
         native: !multiple,
         multiple: multiple,
         renderValue: (!multiple ? null : () => texts.select_more) as any,
         MenuProps: MenuProps as any,
+        ...(sx && { sx }),
       }}
       size={size}
       color={color}
     >
-      {!controlledValue && (!defaultValue || defaultValue === "") && !multiple && (
-        <option value="" />
-      )}
+      {(!controlledValue || controlledValue.name === "") &&
+        (!defaultValue || defaultValue === "") &&
+        !multiple && <option value="" />}
 
       {options &&
         options.map((value, index) => {

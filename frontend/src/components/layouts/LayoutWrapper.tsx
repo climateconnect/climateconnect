@@ -3,7 +3,7 @@ import { Snackbar, SnackbarContent, Theme, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { ThemeProvider } from "@mui/material/styles";
 import Head from "next/head";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import FeedbackContext from "../context/FeedbackContext";
@@ -16,16 +16,22 @@ import LogInAction from "../snackbarActions/LogInAction";
 import { DevLinkProvider } from "../../../devlink/DevLinkProvider";
 
 declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line no-unused-vars
   interface DefaultTheme extends Theme {}
 }
 
 const useStyles = makeStyles<Theme>((theme) => ({
-  leaveSpaceForFooter: {
+  pageWrapper: {
+    // Always establish a positioned containing block that is at least the
+    // viewport height so absolutely-positioned page backgrounds (e.g. the
+    // hub `CustomBackground`) cover the whole visible area — even on
+    // scrollable tablet layouts where the content grows past 100vh.
     position: "relative",
+    minHeight: "100vh",
+  },
+  leaveSpaceForFooter: {
     //height of footer + spacing(1)
     paddingBottom: theme.spacing(12),
-    minHeight: "100vh",
   },
   spinnerContainer: {
     display: "flex",
@@ -63,7 +69,6 @@ export default function LayoutWrapper({
   noSpaceForFooter,
   description,
   image,
-  useFloodStdFont,
 }: any) {
   const [snackbarProps, setSnackbarProps] = useState({
     open: false,
@@ -74,13 +79,13 @@ export default function LayoutWrapper({
     success: undefined as any,
   });
   const classes = useStyles();
-  const [initialized, setInitialized] = React.useState(false);
+  const [initialized, setInitialized] = useState(false);
   const isSmallerThanMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("lg"));
-  const [loading, setLoading] = React.useState(true);
-  const [bannerOpen, setBannerOpen] = React.useState(true);
+  const [loading, setLoading] = useState(true);
+  const [bannerOpen, setBannerOpen] = useState(true);
   const { acceptedNecessary, locale, isLoading } = useContext(UserContext);
+  const router = useRouter();
   const texts = getTexts({ page: "general", locale: locale });
-
   const handleUpdateHash = (newHash) => {
     setSnackbarProps({ ...snackbarProps, hash: newHash });
   };
@@ -93,15 +98,23 @@ export default function LayoutWrapper({
   };
 
   const closeBanner = () => setBannerOpen(false);
-  Router.events.on("routeChangeStart", () => {
-    setLoading(true);
-  });
-  Router.events.on("routeChangeComplete", () => {
-    setLoading(false);
-  });
-  Router.events.on("routeChangeError", () => {
-    setLoading(false);
-  });
+
+  useEffect(() => {
+    const handleRouteChangeStart = () => setLoading(true);
+    const handleRouteChangeComplete = () => setLoading(false);
+    const handleRouteChangeError = () => setLoading(false);
+
+    router.events.on("routeChangeStart", handleRouteChangeStart);
+    router.events.on("routeChangeComplete", handleRouteChangeComplete);
+    router.events.on("routeChangeError", handleRouteChangeError);
+
+    // Clean up the listeners when component unmounts
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChangeStart);
+      router.events.off("routeChangeComplete", handleRouteChangeComplete);
+      router.events.off("routeChangeError", handleRouteChangeError);
+    };
+  }, [router.events]);
 
   useEffect(function () {
     if (!initialized) setInitialized(true);
@@ -137,10 +150,24 @@ export default function LayoutWrapper({
     handleUpdateHash: handleUpdateHash,
   };
 
+  const shouldShowCookieBanner = () => {
+    if (acceptedNecessary || !bannerOpen || !initialized) {
+      return false;
+    }
+
+    const excludedPaths = ["/privacy", "/terms", "/imprint"];
+    return !excludedPaths.some((path) => router.pathname.includes(path));
+  };
+
   return (
     <>
       <Head>
-        <title>{title ? title + " | Climate Connect" : "Climate Connect"}</title>
+        <title>
+          {title
+            ? title + ` | ClimateHub ${locale === "de" ? "Netzwerk" : "Network"}`
+            : `ClimateHub ${locale === "de" ? "Netzwerk" : "Network"}`}
+        </title>
+        {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link href="/fonts/openSans.css" rel="stylesheet" />
         <meta
           name="viewport"
@@ -148,7 +175,7 @@ export default function LayoutWrapper({
         />
         <meta
           property="og:image"
-          content={image ? image : "https://climateconnect.earth/images/landing_image_small.jpg"}
+          content={image ? image : "https://climatehub.org/images/landing_image_small.jpg"}
         />
         <meta property="og:title" content={title ? title : texts.default_title} />
         <meta property="og:type" content="website" />
@@ -165,12 +192,12 @@ export default function LayoutWrapper({
           ) : (
             <FeedbackContext.Provider value={contextValues}>
               <div
-                className={`${!fixedHeight && !noSpaceForFooter && classes.leaveSpaceForFooter}`}
+                className={`${classes.pageWrapper} ${
+                  !fixedHeight && !noSpaceForFooter ? classes.leaveSpaceForFooter : ""
+                }`}
               >
                 {children}
-                {!acceptedNecessary && bannerOpen && initialized && (
-                  <CookieBanner closeBanner={closeBanner} />
-                )}
+                {shouldShowCookieBanner() && <CookieBanner closeBanner={closeBanner} />}
                 {!noFeedbackButton && !isSmallerThanMediumScreen && <FeedbackButton />}
                 <Snackbar
                   anchorOrigin={{

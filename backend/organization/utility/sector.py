@@ -1,3 +1,5 @@
+from typing import Any, List, Optional, Tuple, Union
+
 from hubs.models.hub import Hub
 from organization.models.sector import (
     OrganizationSectorMapping,
@@ -5,7 +7,6 @@ from organization.models.sector import (
     Sector,
     UserProfileSectorMapping,
 )
-from typing import Any, List, Tuple, Optional, Union
 
 
 def get_sector_name(sector: Sector, language_code: str) -> str:
@@ -70,7 +71,9 @@ def sanitize_sector_inputs(inputs: Any) -> Tuple[Any, Optional[Exception]]:
 
 
 def __substitute_sector_in_mapping(
-    mapping: Union[ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping],
+    mapping: Union[
+        ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping
+    ],
 ) -> Union[ProjectSectorMapping, OrganizationSectorMapping, UserProfileSectorMapping]:
     """
     Substitute the sector mapping with the related sector if it exists
@@ -155,8 +158,18 @@ def create_context_for_hub_specific_sector(
     request: Any,
 ) -> Optional[dict[str, Any]]:
     """
-    Create a context for the hub specific sector.
+    Build a serializer context dict for hub-specific sector resolution.
+
+    The returned dict always contains ``{"request": request}`` so that
+    locale-aware serializers (e.g. location name translation) can access
+    ``request.LANGUAGE_CODE``.  An optional ``"hub"`` key is added when
+    the ``hub`` query parameter is present and resolves to an existing Hub.
+
+    Note: callers that use ``get_serializer_context()`` (DRF ViewSets)
+    already receive ``request`` from the DRF default — the ``update()``
+    call in those cases is a harmless no-op.
     """
+    ctx: dict[str, Any] = {"request": request}
     if "hub" in request.query_params:
         hub = (
             Hub.objects.filter(url_slug=request.query_params["hub"])
@@ -164,8 +177,6 @@ def create_context_for_hub_specific_sector(
             .first()
         )
         if not hub:
-            return {}
-        return {
-            "hub": hub,
-        }
-    return {}
+            return ctx
+        ctx["hub"] = hub
+    return ctx

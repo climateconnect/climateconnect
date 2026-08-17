@@ -7,5 +7,6 @@ yarn install
 popd
 
 pushd backend
+pdm use python3.12
 pdm install
 popd

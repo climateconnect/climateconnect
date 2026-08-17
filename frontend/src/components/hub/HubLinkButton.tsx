@@ -26,6 +26,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
         transform: "scale(1.05)",
       },
       flexShrink: 0,
+      flex: 1,
     },
     title: {
       fontSize: "1.2rem",
@@ -37,7 +38,6 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       backgroundColor: "#EFF5F2",
       paddingTop: theme.spacing(3),
       paddingBottom: theme.spacing(1),
-      paddingInline: theme.spacing(3),
       borderRadius: theme.shape.borderRadius,
     },
     iconContainer: {
@@ -82,31 +82,36 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
   };
 });
 
-export default function HubLinkButton({ hub }: { hub: LinkedHub }) {
+export default function HubLinkButton({
+  hub,
+  pageContext = "browse",
+}: {
+  hub: LinkedHub;
+  pageContext?: "browse" | "events";
+}) {
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const backgroundColor = hub.backgroundColor || "lightblue";
 
   const classes = useStyles({ backgroundColor, iconUrl: hub.icon, isNarrowScreen });
   const getLinkUrl = () => {
-    const baseUrl = hub.hubUrl;
-    const hash = window.location.hash;
+    const baseUrl =
+      pageContext === "events" ? hub.hubUrl.replace(/\/browse$/, "/events") : hub.hubUrl;
+    const hash = pageContext === "browse" ? window.location.hash : "";
     return `${baseUrl}${hash}`;
   };
   const linkUrl = getLinkUrl();
   return (
-    <Link href={linkUrl}>
-      <div className={`btn btn-primary ${classes.linkedHubsContainer}`}>
-        <div className={classes.iconContainer}>
-          <img className={classes.icon} src={hub.icon} />
-        </div>
-        <h3
-          className={
-            isNarrowScreen ? `${classes.title} ${classes.titleOnNarrowScreen}` : classes.title
-          }
-        >
-          {hub.hubName}
-        </h3>
+    <Link href={linkUrl} className={classes.linkedHubsContainer}>
+      <div className={classes.iconContainer}>
+        <img className={classes.icon} src={hub.icon} alt="hub icon" />
       </div>
+      <h3
+        className={
+          isNarrowScreen ? `${classes.title} ${classes.titleOnNarrowScreen}` : classes.title
+        }
+      >
+        {hub.hubName}
+      </h3>
     </Link>
   );
 }

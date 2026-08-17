@@ -1,43 +1,48 @@
 import logging
+import re
 import traceback
-from django.db.models import Case, When, Prefetch
+import zoneinfo
 
-from organization.utility.sector import (
-    create_context_for_hub_specific_sector,
-    sanitize_sector_inputs,
+from dateutil.parser import parse
+from dateutil.relativedelta import relativedelta
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.gis.db.models.functions import Distance
+from django.core.cache import cache
+from django.db import transaction
+from django.db.models import Case, Prefetch, Q, When
+from datetime import datetime
+from django.utils import timezone
+from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
+from rest_framework import status
+from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import (
+    ListAPIView,
+    RetrieveUpdateAPIView,
+    RetrieveUpdateDestroyAPIView,
 )
-from organization.utility.cache import generate_project_ranking_cache_key
-from organization.utility.follow import (
-    get_list_of_project_followers,
-    set_user_following_project,
-)
-from organization.serializers.project import ProjectRequesterSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from climateconnect_api.models import (
     Availability,
     Role,
-    Skill,
     UserProfile,
 )
 from climateconnect_api.models.language import Language
+from climateconnect_api.tasks import calculate_project_rankings
+from climateconnect_api.utility.content_shares import save_content_shared
 from climateconnect_api.utility.translation import (
     edit_translations,
 )
-from climateconnect_api.utility.content_shares import save_content_shared
+from climateconnect_api.utility.html import (
+    sanitize_html,
+    PROJECT_DESCRIPTION_ALLOWED_TAGS,
+    PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+)
 from climateconnect_main.utility.general import get_image_from_data_url
-
-from dateutil.parser import parse
-
-from django.conf import settings
-
-from django.core.cache import cache
-
-from django.contrib.auth.models import User
-from django.contrib.gis.db.models.functions import Distance
-from django.db import transaction
-from django.db.models import Q
-from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
-
 from hubs.models.hub import Hub
 from location.models import Location
 from location.utility import get_location, get_location_with_range
@@ -45,6 +50,7 @@ from location.utility import get_location, get_location_with_range
 # Organization models
 from organization.models import (
     Organization,
+    OrganizationFollower,
     OrganizationTagging,
     OrganizationTags,
     Post,
@@ -52,22 +58,21 @@ from organization.models import (
     ProjectCollaborators,
     ProjectComment,
     ProjectFollower,
+    ProjectLike,
     ProjectMember,
     ProjectParents,
+    ProjectSectorMapping,
     ProjectTagging,
     ProjectTags,
-    ProjectLike,
-    OrganizationFollower,
     Sector,
-    ProjectSectorMapping,
 )
-
-from organization.models.type import PROJECT_TYPES
-from organization.serializers.project_types import ProjectTypesSerializer
-
+from organization.models.event_registration import (
+    EventRegistration,
+    EventRegistrationConfig,
+)
 from organization.models.members import MembershipRequests
 from organization.models.translations import ProjectTranslation
-
+from organization.models.type import PROJECT_TYPES, ProjectTypesChoices
 from organization.pagination import (
     MembersPagination,
     ProjectPostPagination,
@@ -82,17 +87,28 @@ from organization.permissions import (
     ReadWriteSensibleProjectDataPermission,
 )
 from organization.serializers.content import PostSerializer, ProjectCommentSerializer
+from organization.serializers.event_registration import (
+    EventRegistrationConfigSerializer,
+)
 from organization.serializers.project import (
     EditProjectSerializer,
     InsertProjectMemberSerializer,
     ProjectFollowerSerializer,
+    ProjectLikeSerializer,
     ProjectMemberSerializer,
+    ProjectRequesterSerializer,
     ProjectSerializer,
     ProjectSitemapEntrySerializer,
     ProjectStubSerializer,
-    ProjectLikeSerializer,
 )
+from organization.serializers.project_types import ProjectTypesSerializer
 from organization.serializers.tags import ProjectTagsSerializer
+from organization.utility import MembershipTarget
+from organization.utility.cache import generate_project_ranking_cache_key
+from organization.utility.follow import (
+    get_list_of_project_followers,
+    set_user_following_project,
+)
 from organization.utility.notification import (
     create_comment_mention_notification,
     create_organization_project_published_notification,
@@ -103,30 +119,19 @@ from organization.utility.notification import (
     create_project_like_notification,
     get_mentions,
 )
-
 from organization.utility.organization import check_organization
 from organization.utility.project import (
+    apply_hub_filter,
     create_new_project,
-    get_project_translations,
     get_project_admin_creators,
+    get_project_translations,
     get_similar_projects,
 )
-from rest_framework import status
-from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.filters import SearchFilter
-from rest_framework.generics import (
-    ListAPIView,
-    RetrieveUpdateAPIView,
-    RetrieveUpdateDestroyAPIView,
-)
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from organization.utility.requests import MembershipRequestsManager
-from organization.utility import MembershipTarget
-from organization.models.type import ProjectTypesChoices
-from climateconnect_api.tasks import calculate_project_rankings
+from organization.utility.sector import (
+    create_context_for_hub_specific_sector,
+    sanitize_sector_inputs,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -140,6 +145,18 @@ class ProjectsOrderingFilter(OrderingFilter):
             elif ordering == "oldest":
                 queryset = queryset.order_by("id")
         return queryset
+
+    def get_schema_operation_parameters(self, view):
+        """Return schema parameters for OpenAPI documentation."""
+        return [
+            {
+                "name": "sort_by",
+                "required": False,
+                "in": "query",
+                "description": "Sort projects by newest or oldest",
+                "schema": {"type": "string", "enum": ["newest", "oldest"]},
+            }
+        ]
 
 
 class ListProjectsView(ListAPIView):
@@ -178,9 +195,9 @@ class ListProjectsView(ListAPIView):
         # Get project ranking
         projects = (
             Project.objects.filter(is_draft=False, is_active=True)
-            .select_related("loc", "language")
+            .select_related("loc", "language", "registration_config")
             .prefetch_related(
-                "skills",
+                "loc__translate_location__language",
                 "tag_project",  # TODO: remove after updating frontend to use sectors
                 Prefetch(
                     "project_comment",
@@ -202,6 +219,19 @@ class ListProjectsView(ListAPIView):
                 ),
             )
         )
+
+        # Conditionally select_related parent_project for detail views or when filtering by parent
+        # This avoids unnecessary JOINs in list views
+        # Check if self.action exists (ViewSets) or if we're filtering by parent (APIViews)
+        if (
+            (
+                hasattr(self, "action") and self.action == "retrieve"
+            )  # Detail view in ViewSet
+            or "parent_project" in self.request.query_params
+            or "parent_project_slug" in self.request.query_params
+        ):
+            projects = projects.select_related("parent_project")
+
         # maybe use .annotate() to calculate ranking/counts of coments etc.
 
         if "sectors" in self.request.query_params:
@@ -224,40 +254,7 @@ class ListProjectsView(ListAPIView):
                 )
 
         if "hub" in self.request.query_params:
-            # retrieve hub and its parents
-            hub = Hub.objects.filter(url_slug=self.request.query_params["hub"]).first()
-            if not hub:
-                return projects.none()
-
-            hubs = [hub]
-            if hub.parent_hub:
-                hubs.append(hub.parent_hub)
-
-            for current_hub in hubs:
-                if current_hub.hub_type == Hub.SECTOR_HUB_TYPE:
-                    sectors = current_hub.sectors.all()
-                    sector_ids = [x.id for x in sectors]
-
-                    projects = projects.filter(
-                        project_sector_mapping__sector_id__in=sector_ids
-                    ).distinct()
-
-                elif current_hub.hub_type == Hub.LOCATION_HUB_TYPE:
-                    location = current_hub.location.all()[0]
-                    location_multipolygon = location.multi_polygon
-                    projects = projects.filter(Q(loc__country=location.country))
-                    if location_multipolygon:
-                        projects = projects.filter(
-                            Q(loc__multi_polygon__coveredby=(location_multipolygon))
-                            | Q(loc__centre_point__coveredby=(location_multipolygon))
-                        ).annotate(
-                            distance=Distance(
-                                "loc__centre_point", location_multipolygon
-                            )
-                        )
-
-                elif current_hub.hub_type == Hub.CUSTOM_HUB_TYPE:
-                    projects = projects.filter(related_hubs=current_hub)
+            projects = apply_hub_filter(projects, self.request.query_params["hub"])
 
         if "collaboration" in self.request.query_params:
             collaborators_welcome = self.request.query_params.get("collaboration")
@@ -276,14 +273,6 @@ class ListProjectsView(ListAPIView):
                 tag_project__project_tag__in=project_tags, is_active=True
             ).distinct()
 
-        if "skills" in self.request.query_params:
-            skill_names = self.request.query_params.get("skills").split(",")
-            skills = Skill.objects.filter(name__in=skill_names)
-            # Use .distinct to dedupe selected rows.
-            # https://docs.djangoproject.com/en/dev/ref/models/querysets/#django.db.models.query.QuerySet.distinct
-            # We then sort by rating, to show most relevant results
-            projects = projects.filter(skills__in=skills).distinct()
-
         if "organization_type" in self.request.query_params:
             organization_type_names = self.request.query_params.get(
                 "organization_type"
@@ -299,7 +288,32 @@ class ListProjectsView(ListAPIView):
             )
             projects = projects.filter(project_parent__in=project_parents)
 
-        if "place" in self.request.query_params and "osm" in self.request.query_params:
+        # Filter by parent project ID
+        if "parent_project" in self.request.query_params:
+            parent_id = self.request.query_params.get("parent_project")
+            try:
+                projects = projects.filter(parent_project_id=int(parent_id))
+            except (ValueError, TypeError):
+                # Invalid parent_project ID, return empty queryset
+                return projects.none()
+
+        # Filter by parent project slug (preferred Climate Connect pattern)
+        if "parent_project_slug" in self.request.query_params:
+            parent_slug = self.request.query_params.get("parent_project_slug")
+            projects = projects.filter(parent_project__url_slug=parent_slug)
+
+        # Filter by has_children flag (find all parent events)
+        if "has_children" in self.request.query_params:
+            has_children_param = self.request.query_params.get("has_children").lower()
+            if has_children_param == "true":
+                projects = projects.filter(has_children=True)
+            elif has_children_param == "false":
+                projects = projects.filter(has_children=False)
+
+        if (
+            "osm_id" in self.request.query_params
+            and "osm_type" in self.request.query_params
+        ) or "place_id" in self.request.query_params:
             location_data = get_location_with_range(self.request.query_params)
             projects = (
                 projects.filter(
@@ -404,33 +418,332 @@ class ListProjectsView(ListAPIView):
         return context
 
 
+class ListEventsView(ListAPIView):
+    """
+    Lists event-type projects chronologically for the Event Calendar feature.
+
+    Always available (no feature toggle). Supports text search, topic (sectors),
+    hub scoping, and a start_date "jump to date" filter. Paginated via
+    ProjectsPagination (default page_size=12). Orders strictly by start_date.
+    """
+
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ["name", "translation_project__name_translation"]
+    serializer_class = ProjectStubSerializer
+    pagination_class = ProjectsPagination
+
+    def get_queryset(self):
+        queryset = (
+            Project.objects.filter(
+                is_draft=False,
+                is_active=True,
+                project_type=ProjectTypesChoices.event,
+                start_date__isnull=False,
+            )
+            .select_related("loc", "language", "status", "registration_config")
+            .prefetch_related(
+                "loc__translate_location__language",
+                Prefetch(
+                    "project_sector_mapping",
+                    queryset=ProjectSectorMapping.objects.select_related("sector"),
+                ),
+            )
+        )
+
+        # --- Jump-to-date filter ---
+        start_date = self._parse_date_param(self.request.query_params.get("start_date"))
+        if start_date is not None:
+            queryset = queryset.filter(start_date__gte=start_date)
+
+        # --- Topic (sectors) filter ---
+        if "sectors" in self.request.query_params:
+            _sector_names = self.request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
+            if not err:
+                queryset = queryset.filter(
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
+                )
+
+        # --- Hub scoping ---
+        if "hub" in self.request.query_params:
+            queryset = apply_hub_filter(queryset, self.request.query_params["hub"])
+
+        # The sector filter joins project_sector_mapping, which can produce
+        # multiple rows for a single event (e.g. an event matching several
+        # selected topics, or a topic and its parent sector). Deduplicate so
+        # each event is returned exactly once.
+        return queryset.distinct().order_by("start_date")
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        _context = create_context_for_hub_specific_sector(self.request)
+        context.update({**_context})
+        return context
+
+    @staticmethod
+    def _parse_date_param(value):
+        if not value:
+            return None
+        try:
+            return parse(value)
+        except (ValueError, OverflowError):
+            return None
+
+
+class EventCalendarCountsView(APIView):
+    """
+    Returns per-day event counts for a given month so the Event Calendar
+    picker can highlight days that have events.
+
+    Always available (no feature toggle). Accepts `year` and `month`
+    (required) plus the same filters as ListEventsView (`search`, `sectors`,
+    `hub`). An optional `timezone` param (IANA name, e.g. "Europe/Berlin")
+    controls the day the counts are bucketed into — this must match the
+    viewer's timezone so the highlighted days line up with the events that
+    the frontend groups by the browser's local day. When omitted, the
+    server's timezone is used as a fallback.
+
+    Each event is counted on its start_date day only (multi-day events are
+    NOT counted on the days they span). Returns a list of
+    {"date": "YYYY-MM-DD", "count": N} objects.
+    """
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            year = int(request.query_params.get("year"))
+            month = int(request.query_params.get("month"))
+        except (TypeError, ValueError):
+            return Response(
+                {"error": "year and month query parameters are required as integers"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not (1 <= month <= 12):
+            return Response(
+                {"error": "month must be an integer between 1 and 12"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Bucket per-day counts in the viewer's timezone so the highlighted
+        # days match the browser-local day grouping used on the frontend.
+        tz = self._resolve_timezone(request.query_params.get("timezone"))
+
+        # Build the month window in the viewer's timezone, then convert to UTC
+        # for the database overlap query. This keeps the window aligned with
+        # the local month the user actually sees in the picker (not the
+        # server's timezone).
+        month_start_local = datetime(year, month, 1, tzinfo=tz)
+        month_end_local = (
+            month_start_local + relativedelta(months=1) - relativedelta(days=1)
+        ).replace(hour=23, minute=59, second=59)
+        month_start = month_start_local.astimezone(timezone.utc)
+        month_end = month_end_local.astimezone(timezone.utc)
+
+        queryset = Project.objects.filter(
+            is_draft=False,
+            is_active=True,
+            project_type=ProjectTypesChoices.event,
+            start_date__isnull=False,
+        ).filter(
+            # Count each event on its start_date day only: the calendar shows
+            # a multi-day event solely on its start date, so spanned days are
+            # not highlighted.
+            Q(start_date__gte=month_start)
+            & Q(start_date__lte=month_end)
+        )
+
+        search = request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search)
+                | Q(translation_project__name_translation__icontains=search)
+            )
+
+        if "sectors" in request.query_params:
+            _sector_names = request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
+            if not err:
+                queryset = queryset.filter(
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
+                )
+
+        if "hub" in request.query_params:
+            queryset = apply_hub_filter(queryset, request.query_params["hub"])
+
+        # Deduplicate: the sector filter joins project_sector_mapping and can
+        # yield multiple rows per event (matching several topics, or a topic
+        # and its parent sector). Without this, multi-topic events would be
+        # counted more than once on their start day.
+        queryset = queryset.distinct()
+
+        counts = {}
+        for start_date in queryset.values_list("start_date", flat=True):
+            # Bucket each event on its start_date, converted into the viewer's
+            # timezone so the highlighted day matches the frontend's local day
+            # grouping. Multi-day events are counted on the start day only.
+            key = start_date.astimezone(tz).date().isoformat()
+            counts[key] = counts.get(key, 0) + 1
+
+        result = [
+            {"date": date, "count": count} for date, count in sorted(counts.items())
+        ]
+        return Response(result, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def _resolve_timezone(timezone_name):
+        if timezone_name:
+            try:
+                return zoneinfo.ZoneInfo(timezone_name)
+            except (ValueError, zoneinfo.ZoneInfoNotFoundError):
+                pass
+        return timezone.get_current_timezone()
+
+
+class ListUpcomingEventsView(APIView):
+    """
+    Returns up to 4 upcoming event-type projects for the Browse page highlights.
+
+    Always available (no feature toggle). Accepts the same filters as ListProjectsView
+    (search, hub, sectors, location) with start_date being the "current time" baseline.
+    The frontend sends the browser's local midnight timestamp so that "upcoming"
+    aligns with the user's local day.
+
+    Returns a plain list (no pagination) of ProjectStubSerializer results,
+    ordered by start_date ascending. Events returned are removed from the
+    main projects grid to avoid duplication.
+    """
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return self._list_events(request)
+
+    def post(self, request):
+        location = request.data
+        query_params = request.query_params.copy()
+        if "place_id" in location and "geojson" in location:
+            query_params["location"] = location
+        request._request.GET = query_params
+        return self._list_events(request)
+
+    def _list_events(self, request):
+        queryset = (
+            Project.objects.filter(
+                is_draft=False,
+                is_active=True,
+                project_type=ProjectTypesChoices.event,
+                start_date__isnull=False,
+            )
+            .select_related("loc", "language", "status", "registration_config")
+            .prefetch_related(
+                "loc__translate_location__language",
+                Prefetch(
+                    "project_sector_mapping",
+                    queryset=ProjectSectorMapping.objects.select_related("sector"),
+                ),
+            )
+        )
+
+        start_date = self._parse_date_param(request.query_params.get("start_date"))
+        if start_date is not None:
+            queryset = queryset.filter(start_date__gte=start_date)
+        else:
+            queryset = queryset.filter(start_date__gte=timezone.now())
+
+        if "sectors" in request.query_params:
+            _sector_names = request.query_params.get("sectors")
+            sector_names, err = sanitize_sector_inputs(_sector_names)
+            if not err:
+                queryset = queryset.filter(
+                    Q(project_sector_mapping__sector__name__in=sector_names)
+                    | Q(
+                        project_sector_mapping__sector__relates_to_sector__name__in=sector_names
+                    )
+                )
+
+        if "hub" in request.query_params:
+            queryset = apply_hub_filter(queryset, request.query_params["hub"])
+
+        search = request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search)
+                | Q(translation_project__name_translation__icontains=search)
+            )
+
+        if (
+            "osm_id" in request.query_params and "osm_type" in request.query_params
+        ) or "place_id" in request.query_params:
+            location_data = get_location_with_range(request.query_params)
+            queryset = queryset.filter(
+                Q(loc__country=location_data["country"])
+                & (
+                    Q(
+                        loc__multi_polygon__distance_lte=(
+                            location_data["location"],
+                            location_data["radius"],
+                        )
+                    )
+                    | Q(
+                        loc__centre_point__distance_lte=(
+                            location_data["location"],
+                            location_data["radius"],
+                        )
+                    )
+                )
+            )
+
+        queryset = queryset.distinct().order_by("start_date")[:4]
+
+        context = create_context_for_hub_specific_sector(request)
+        serializer = ProjectStubSerializer(queryset, many=True, context=context)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def _parse_date_param(value):
+        if not value:
+            return None
+        try:
+            return parse(value)
+        except (ValueError, OverflowError):
+            return None
+
+
 class CreateProjectView(APIView):
     permission_classes = [IsAuthenticated]
 
     @transaction.atomic()
     def post(self, request):
-        # Temporary fix: there is no project status anymore within the frontend
-        # therefore we "overwrite" the status to published until project status
-        # is fully removed from the backend, too.
-        request.data["status"] = 2  # ProjectStatus.DEFAULT_TYPE
-
         if "parent_organization" in request.data:
             organization = check_organization(int(request.data["parent_organization"]))
         else:
             organization = None
 
-        required_params = [
-            "name",
-            "short_description",
-            "collaborators_welcome",
-            "team_members",
-            "loc",
-            "sectors",
-            "image",
-            "source_language",
-            "translations",
-            "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
-        ]
+        is_draft = request.data.get("is_draft", False) in (True, "true", "True", "1", 1)
+
+        required_params = ["name"]
+        # If 'is_draft' is not set or is set to a falsy value then run the code in this if block
+        if not is_draft:
+            required_params += [
+                "short_description",
+                "collaborators_welcome",
+                "team_members",
+                "loc",
+                "image",
+                "source_language",
+                "translations",
+                "sectors",
+                "hubName",  # TODO: fix this behavior: 'hubName' has to be set, but can be None
+            ]
         for param in required_params:
             if param not in request.data:
                 logger.error(
@@ -448,6 +761,7 @@ class CreateProjectView(APIView):
             "name": 1024,
             "short_description": 280,
             "description": 4800,
+            "description_html": 20000,
             "website": 256,
             "additional_loc_info": 256,
         }
@@ -457,21 +771,62 @@ class CreateProjectView(APIView):
                     {
                         "message": "Your value for this field is too long: "
                         + param
-                        + ". Please make a change or contact an administrator at contact@climateconnect.earth"
+                        + ". Please make a change or contact an administrator at contact@climatehub.org"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        translations_failed = False
+
+        if "description_html" in request.data:
+            stripped = re.sub(r"<[^>]+>", "", request.data["description_html"])
+            if len(stripped) > 4000:
+                return Response(
+                    {
+                        "message": "Your description text is too long (max 4000 characters). Please shorten it."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        # --- registration_config pre-creation validation ---
+        # Run before the status check so invalid data is rejected early.
+        # Type coercion (str→int, str→datetime) and business rules are handled
+        # by EventRegistrationConfigSerializer — no manual int()/parse() needed.
+        er_data = request.data.get("registration_config")
+        er_serializer = None
+        if er_data is not None:
+            project_type_id = (request.data.get("project_type") or {}).get(
+                "type_id", ""
+            )
+            end_date_raw = request.data.get("end_date")
+            er_serializer = EventRegistrationConfigSerializer(
+                data=er_data,
+                context={
+                    "is_event_type": project_type_id == "event",
+                    "is_draft": is_draft,
+                    "event_end_date": parse(end_date_raw) if end_date_raw else None,
+                },
+            )
+            if not er_serializer.is_valid():
+                return Response(
+                    er_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                )
+        # --- end registration_config validation ---
+
+        # Sanitize description_html before saving
+        if "description_html" in request.data:
+            request.data["description_html"] = sanitize_html(
+                request.data["description_html"],
+                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+            )
 
         translations_object = None
-        try:
-            translations_object = get_project_translations(request.data)
-        except ValueError:
-            translations_failed = True
-
-        # If we still don't have a translations object, then skip this
-        if not translations_object:
-            translations_failed = True
+        # Only process translations if both source_language and translations are provided
+        if "source_language" in request.data and "translations" in request.data:
+            try:
+                translations_object = get_project_translations(request.data)
+            except ValueError:
+                # Translation parsing failed, but continue without translations
+                logger.warning("Failed to parse translations for project creation")
 
         source_language = None
         translations = None
@@ -483,7 +838,19 @@ class CreateProjectView(APIView):
 
         project = create_new_project(request.data, source_language)
 
-        if not translations_failed:
+        # Create EventRegistrationConfig (and any nested custom fields) atomically.
+        # Using serializer.save() so the serializer's create() handles nested fields.
+        if er_serializer is not None:
+            er_serializer.save(
+                project=project, is_draft=is_draft, registration_enabled=True
+            )
+            logger.info(
+                "EventRegistrationConfig created for project %s (is_draft=%s)",
+                project.url_slug,
+                is_draft,
+            )
+
+        if translations_object and translations and source_language:
             for language in translations:
                 if not language == source_language.language_code:
                     texts = translations[language]
@@ -493,14 +860,19 @@ class CreateProjectView(APIView):
                             project=project,
                             language=language_object,
                             name_translation=texts["name"],
-                            short_description_translation=texts["short_description"],
                         )
+                        if "short_description" in texts:
+                            translation.short_description_translation = texts[
+                                "short_description"
+                            ]
+                        if "description_html" in texts:
+                            translation.description_html_translation = sanitize_html(
+                                texts["description_html"],
+                                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                            )
                         if "description" in texts:
                             translation.description_translation = texts["description"]
-                        if "helpful_connections" in texts:
-                            translation.helpful_connections_translation = texts[
-                                "helpful_connections"
-                            ]
                         translation.save()
                     except Language.DoesNotExist:
                         logger.error(
@@ -536,7 +908,7 @@ class CreateProjectView(APIView):
 
         # There are only certain roles user can have. So get all the roles first.
         roles = Role.objects.all()
-        team_members = request.data["team_members"]
+        team_members = request.data.get("team_members", [])
 
         if "sectors" in request.data:
             _sector_keys = request.data["sectors"]
@@ -659,7 +1031,31 @@ class ProjectAPIView(APIView):
 
     def get(self, request, url_slug, format=None):
         try:
-            project = Project.objects.get(url_slug=str(url_slug))
+            prefetches = ["loc__translate_location__language"]
+            if request.user.is_authenticated:
+                # Prefetch only the requesting user's active registration (and its
+                # custom field answers) so get_my_event_registration on the
+                # serializer can use it without an extra DB round-trip.
+                prefetches.append(
+                    Prefetch(
+                        "registration_config__registrations",
+                        queryset=EventRegistration.objects.filter(
+                            user=request.user,
+                            cancelled_at__isnull=True,
+                        )
+                        .select_related("user__user_profile")
+                        .prefetch_related(
+                            "field_answers__field",
+                            "field_answers__value_option",
+                        ),
+                        to_attr="_my_registrations",
+                    )
+                )
+            project = (
+                Project.objects.select_related("loc", "registration_config")
+                .prefetch_related(*prefetches)
+                .get(url_slug=str(url_slug))
+            )
         except Project.DoesNotExist:
             return Response(
                 {"message": "Project not found: {}".format(url_slug)},
@@ -690,7 +1086,9 @@ class ProjectAPIView(APIView):
             "collaborators_welcome",
             "additional_loc_info",
             "description",
+            "description_html",
             "helpful_connections",
+            "is_online",
             "short_description",
             "website",
         ]
@@ -698,23 +1096,43 @@ class ProjectAPIView(APIView):
             if param in request.data:
                 setattr(project, param, request.data[param])
 
+        # Rollout compat: old frontend may send description (plain text) without
+        # description_html.  Convert on the fly so description_html is always set.
+        if "description" in request.data and "description_html" not in request.data:
+            from organization.utility.legacy_description_to_tiptap import (
+                legacy_description_to_tiptap_html,
+            )
+
+            project.description_html = legacy_description_to_tiptap_html(
+                request.data["description"]
+            )
+
+        if "description_html" in request.data:
+            raw = request.data["description_html"]
+            if len(raw) > 20000:
+                return Response(
+                    {"message": "Description HTML is too long (max 20000 characters)."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            stripped = re.sub(r"<[^>]+>", "", raw)
+            if len(stripped) > 4000:
+                return Response(
+                    {
+                        "message": "Your description text is too long (max 4000 characters). Please shorten it."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            project.description_html = sanitize_html(
+                raw,
+                allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+            )
+
         if "name" in request.data and request.data["name"] != project.name:
             project.name = request.data["name"]
 
         if "project_type" in request.data:
             project.project_type = ProjectTypesChoices[request.data["project_type"]]
-
-        if "skills" in request.data:
-            for skill in project.skills.all():
-                if skill.id not in request.data["skills"]:
-                    logger.error("this skill needs to be deleted: " + skill.name)
-                    project.skills.remove(skill)
-            for skill_id in request.data["skills"]:
-                try:
-                    skill = Skill.objects.get(id=skill_id)
-                    project.skills.add(skill)
-                except Skill.DoesNotExist:
-                    logger.error("Passed skill id {} does not exists")
 
         # TODO: remove the project_taggings
         old_project_taggings = ProjectTagging.objects.filter(project=project)
@@ -821,7 +1239,31 @@ class ProjectAPIView(APIView):
             location = get_location(request.data["loc"])
             project.loc = location
         if "is_draft" in request.data:
+            # One way transition: draft → published, never back
             project.is_draft = False
+            # Date collision check: if the project has a published registration
+            # config, validate registration_end_date <= new end_date.
+            if hasattr(project, "registration_config"):
+                rc = project.registration_config
+                if not rc.is_draft and rc.registration_end_date:
+                    effective_end = (
+                        parse(request.data["end_date"])
+                        if "end_date" in request.data
+                        else project.end_date
+                    )
+                    if effective_end and rc.registration_end_date > effective_end:
+                        return Response(
+                            {
+                                "registration_config": {
+                                    "registration_end_date": (
+                                        "Registration end date must be on or before "
+                                        "the event end date. Update the registration "
+                                        "settings before publishing."
+                                    )
+                                }
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
         if "is_personal_project" in request.data:
             if request.data["is_personal_project"] is True:
                 project_parents = ProjectParents.objects.get(project=project)
@@ -839,6 +1281,7 @@ class ProjectAPIView(APIView):
 
             project_parents.parent_organization = organization
             project_parents.save()
+
         project.save()
 
         items_to_translate = [
@@ -848,6 +1291,10 @@ class ProjectAPIView(APIView):
                 "translation_key": "short_description_translation",
             },
             {"key": "description", "translation_key": "description_translation"},
+            {
+                "key": "description_html",
+                "translation_key": "description_html_translation",
+            },
             {
                 "key": "helpful_connections",
                 "translation_key": "helpful_connections_translation",
@@ -1192,11 +1639,41 @@ class GetUserInteractionsWithProjectView(APIView):
             user=self.request.user,
         ).exists()
 
+        is_registered = False
+        has_attended = False
+        admin_cancelled = False
+        if hasattr(project, "registration_config"):
+            try:
+                rc = project.registration_config
+                user_reg = EventRegistration.objects.filter(
+                    user=request.user, registration_config=rc
+                ).first()
+                if user_reg is not None:
+                    if user_reg.cancelled_at is None:
+                        # Active registration.
+                        is_registered = True
+                        # has_attended: event has started AND registration is active.
+                        if project.start_date and project.start_date <= timezone.now():
+                            has_attended = True
+                    else:
+                        # Cancelled registration.
+                        # admin_cancelled: cancelled by someone other than the member.
+                        if (
+                            user_reg.cancelled_by_id is not None
+                            and user_reg.cancelled_by_id != request.user.id
+                        ):
+                            admin_cancelled = True
+            except EventRegistrationConfig.DoesNotExist:
+                pass
+
         return Response(
             {
                 "liking": is_liking,
                 "following": is_following,
                 "has_requested_to_join": has_open_membership_request,
+                "is_registered": is_registered,
+                "has_attended": has_attended,
+                "admin_cancelled": admin_cancelled,
             },
             status=status.HTTP_200_OK,
         )
@@ -1287,9 +1764,9 @@ class ListFeaturedProjects(ListAPIView):
     serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
-        return Project.objects.filter(rating__lte=99, is_draft=False, is_active=True)[
-            0:4
-        ]
+        return Project.objects.filter(
+            rating__gte=0, rating__lte=99, is_draft=False, is_active=True
+        ).prefetch_related("loc__translate_location__language")[0:4]
 
 
 class ListProjectsForSitemap(ListAPIView):
@@ -1372,7 +1849,7 @@ class LeaveProject(RetrieveUpdateAPIView):
                 project=project, is_active=True
             ).count()
 
-            if project_member_record.role.name == "Creator":
+            if project_member_record.role.name == "Super-Admin":
                 if active_members_in_project > 1:
                     return Response(
                         data={"message": f"A new creator needs to be assigned first"},
@@ -1583,15 +2060,32 @@ class SimilarProjects(ListAPIView):
     serializer_class = ProjectStubSerializer
 
     def get_queryset(self):
-        similar_projects_url_slugs = get_similar_projects(
-            url_slug=self.kwargs["url_slug"]
+        source_slug = self.kwargs["url_slug"]
+
+        candidates = Project.objects.filter(
+            is_draft=False, rating__gte=49, is_active=True
         )
+
+        hub_slug = self.request.query_params.get("hub")
+        if hub_slug and Hub.objects.filter(url_slug=hub_slug).exists():
+            candidates = apply_hub_filter(candidates, hub_slug)
+
+        candidates = (
+            candidates.distinct()
+            | Project.objects.filter(url_slug=source_slug).distinct()
+        )
+
+        similar_projects_url_slugs = get_similar_projects(
+            url_slug=source_slug,
+            target_projects=candidates,
+        )
+
         return Project.objects.filter(
             url_slug__in=similar_projects_url_slugs,
             is_draft=False,
             rating__gte=49,
             is_active=True,
-        )
+        ).prefetch_related("loc__translate_location__language")
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

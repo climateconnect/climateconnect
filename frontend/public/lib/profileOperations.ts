@@ -1,4 +1,4 @@
-import Router from "next/router";
+import router from "next/router";
 import getTexts from "../texts/texts";
 import { getImageUrl } from "./imageOperations";
 
@@ -50,24 +50,22 @@ const convertUndefinedToNull = (inputObject) => {
   return outputObject;
 };
 
-export function redirectOnLogin(user, redirectUrl, locale) {
+export function redirectOnLogin(user, redirectUrl, locale, hubUrl = null) {
   const texts = getTexts({ page: "profile", locale: locale });
   const SIGN_UP_MESSAGE = texts.sign_up_message;
-  const urlParams = new URLSearchParams(window.location.search);
-  const hub = urlParams.get("hub");
 
   if (user.has_logged_in < 2) {
-    Router.push({
+    router.push({
       pathname: "/editprofile",
       query: {
         message: SIGN_UP_MESSAGE,
-        hub: hub,
+        ...(hubUrl ? { hub: hubUrl } : {}),
       },
     });
   } else if (redirectUrl) {
     if (redirectUrl[0] === "/") redirectUrl = redirectUrl.substring(1, redirectUrl.length);
     window.location.replace(window.location.origin + "/" + redirectUrl);
-  } else Router.push("/browse");
+  } else router.push("/browse");
 }
 
 export function nullifyUndefinedValues(obj) {

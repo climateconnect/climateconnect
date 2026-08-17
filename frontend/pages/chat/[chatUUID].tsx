@@ -1,5 +1,5 @@
 import NextCookies from "next-cookies";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { apiRequest, redirect, sendToLogin, getRedirectUrl } from "../../public/lib/apiOperations";
 import { getMessageFromServer } from "../../public/lib/messagingOperations";
@@ -59,15 +59,15 @@ export default function Chat({
 }) {
   const token = new Cookies().get("auth_token");
   const { chatSocket, user, socketConnectionState, locale } = useContext(UserContext);
-  const [participants, setParticipants] = React.useState(chatParticipants);
-  const [state, setState] = React.useState({
+  const [participants, setParticipants] = useState(chatParticipants);
+  const [state, setState] = useState({
     nextPage: 2,
     messages: messages ? [...messages] : [],
     nextLink: nextLink,
     hasMore: hasMore,
   });
-  const [errorMessage, setErrorMessage] = React.useState("");
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
   const texts = getTexts({ page: "chat", locale: locale });
   const handleChatWindowClose = (e) => {
     if (state.messages.filter((m) => m.unconfirmed).length > 0) {

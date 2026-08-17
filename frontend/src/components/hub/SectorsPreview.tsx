@@ -1,8 +1,7 @@
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import React from "react";
 import MiniSectorPreview from "./MiniSectorPreview";
-import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 
 const useStyles = makeStyles((theme) => ({
   reset: {
@@ -61,10 +60,7 @@ function GridItem({
   return (
     <Grid
       key={sector ? sector.url_slug : "create"}
-      xs={12}
-      sm={editMode ? 6 : 12}
-      md={8}
-      lg={6}
+      size={{ xs: 12, sm: editMode ? 6 : 12, md: 8, lg: 6 }}
       component="li"
     >
       <MiniSectorPreview

@@ -1,11 +1,15 @@
 import makeStyles from "@mui/styles/makeStyles";
-import { Container, Divider, Tab, Tabs, Theme, useMediaQuery } from "@mui/material";
+import { Container, Theme, useMediaQuery } from "@mui/material";
 import _ from "lodash";
-import React, { Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
-import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
-import { loadMoreData } from "../../../public/lib/getDataOperations";
+import {
+  getActiveFilterCount,
+  splitFiltersFromQueryObject,
+} from "../../../public/lib/filterOperations";
+import { getUpcomingEvents, loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import {
@@ -29,12 +33,14 @@ import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { BrowseTab, LinkedHub } from "../../types";
 import { FilterContext } from "../context/FilterContext";
 import HubLinkButton from "../hub/HubLinkButton";
-const FilterSection = React.lazy(() => import("../indexPage/FilterSection"));
-const OrganizationPreviews = React.lazy(() => import("../organization/OrganizationPreviews"));
-const ProfilePreviews = React.lazy(() => import("../profile/ProfilePreviews"));
-const ProjectPreviews = React.lazy(() => import("../project/ProjectPreviews"));
-const TabContentWrapper = React.lazy(() => import("./TabContentWrapper"));
-
+import { useFeatureToggles } from "../featureToggle";
+import { useUpcomingEventsDisplayCount } from "../../hooks/useUpcomingEventsDisplayCount";
+import UpcomingEventsGroup from "./UpcomingEventsGroup";
+const OrganizationPreviews = lazy(() => import("../organization/OrganizationPreviews"));
+const ProfilePreviews = lazy(() => import("../profile/ProfilePreviews"));
+const ProjectPreviews = lazy(() => import("../project/ProjectPreviews"));
+const TabContentWrapper = lazy(() => import("./TabContentWrapper"));
+const FilterSection = lazy(() => import("../indexPage/FilterSection"));
 const useStyles = makeStyles((theme) => {
   return {
     contentRefContainer: {
@@ -47,11 +53,6 @@ const useStyles = makeStyles((theme) => {
     contentRef: {
       position: "absolute",
       top: -90,
-    },
-    tab: {
-      width: 200,
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
     },
     mainContentDivider: {
       marginBottom: theme.spacing(3),
@@ -96,6 +97,8 @@ type BrowseContentProps = {
   hubSupporters?: any;
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
+  fromPage?: "hub";
+  subHubSegment?: string;
 };
 
 export default function BrowseContent({
@@ -116,6 +119,8 @@ export default function BrowseContent({
   hubSupporters,
   isLocationHub,
   linkedHubs,
+  fromPage,
+  subHubSegment,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -147,20 +152,32 @@ export default function BrowseContent({
     handleApplyNewFilters: applyNewFilters,
   } = useContext(FilterContext);
 
-  const legacyModeEnabled = process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true";
   const classes = useStyles();
+  const router = useRouter();
+  // Events are intentionally NOT a tab here. They are exposed as a separate
+  // route (/events and /hubs/[hubUrl]/events) linked from HubTabsNavigation,
+  // behind the EVENT_CALENDAR_FEATURE toggle. See eventCalendar components.
   const TYPES_BY_TAB_VALUE: BrowseTab[] = hideMembers
-    ? ["projects", "organizations"] // TODO: add "events" here, after implementing event calendar
-    : ["projects", "organizations", "members"]; // TODO: add "events" here, after implementing event calendar
+    ? ["projects", "organizations"]
+    : ["projects", "organizations", "members"];
   const { locale } = useContext(UserContext);
+  const { isEnabled } = useFeatureToggles();
   const texts = useMemo(() => getTexts({ page: "hub", locale: locale, hubName: hubData?.name }), [
     locale,
   ]);
 
-  const [hash, setHash] = useState<BrowseTab | null>(null);
-  const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
+  const [tabValue, setTabValue] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    const h = window.location.hash.replace("#", "");
+    return (TYPES_BY_TAB_VALUE as string[]).indexOf(h) >= 0
+      ? (TYPES_BY_TAB_VALUE as string[]).indexOf(h)
+      : 0;
+  });
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
+  const eventsDisplayCount = useUpcomingEventsDisplayCount();
+
   const type_names = {
     projects: texts.projects,
     organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -171,13 +188,104 @@ export default function BrowseContent({
   // On mobile filters take up the whole screen, so they aren't expanded by default
   const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
   const [state, setState] = useState(initialState);
+
+  // Upcoming events state - fetched in parallel with projects when feature enabled
+  const isEventsEnabled = isEnabled("EVENT_CALENDAR_FEATURE");
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+
+  // Build start_date filter for "today" at local midnight (browser timezone)
+  // This ensures "upcoming" aligns with the user's local day
+  const startDateFilter = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // Include timezone offset for accurate server-side filtering
+    return today.toISOString();
+  }, []);
+
+  // Stabilize location: only treat it as changed when a valid location object
+  // is selected from the autocomplete. During typing, filters.location is a
+  // string (changes on every keystroke) which would trigger unnecessary refetches.
+  const stableLocation = useMemo(
+    () => (isLocationValid(filters.location) ? filters.location : undefined),
+    [filters.location]
+  );
+
+  // Fetch upcoming events in parallel with projects
+  useEffect(() => {
+    if (!isEventsEnabled) {
+      setUpcomingEvents([]);
+      return;
+    }
+
+    const fetchUpcoming = async () => {
+      const events = await getUpcomingEvents({
+        token,
+        locale,
+        hubUrl: hubData?.url_slug,
+        filters: {
+          search: filters.search,
+          sectors: filters.sectors,
+          start_date: startDateFilter,
+        },
+        location: stableLocation,
+      });
+      setUpcomingEvents(events || []);
+    };
+
+    fetchUpcoming();
+  }, [
+    isEventsEnabled,
+    filters.search,
+    filters.sectors,
+    startDateFilter,
+    stableLocation,
+    token,
+    locale,
+    hubData?.url_slug,
+  ]);
+
+  // Upcoming events: split into "band" (shown in dedicated UpcomingEventsGroup
+  // when there are enough to fill a row) and "featured" (prepended to the
+  // project grid). The grid handles its own dedup against the regular projects,
+  // which makes the merge/separate transition robust on resize.
+  const visibleEvents = useMemo(() => upcomingEvents.slice(0, eventsDisplayCount), [
+    upcomingEvents,
+    eventsDisplayCount,
+  ]);
+  const shouldRenderUpcomingBand = isEventsEnabled && upcomingEvents.length >= eventsDisplayCount;
+  // Events not shown in the band are prepended to the grid. When the band is
+  // hidden, all events are prepended.
+  const featuredProjects = useMemo(() => {
+    if (!isEventsEnabled || upcomingEvents.length === 0) return [];
+    return shouldRenderUpcomingBand ? upcomingEvents.slice(eventsDisplayCount) : upcomingEvents;
+  }, [isEventsEnabled, upcomingEvents, shouldRenderUpcomingBand, eventsDisplayCount]);
+  // Slugs of events already shown in the band — removed from the regular
+  // projects list so they are not duplicated in the grid below.
+  const bandEventSlugs = useMemo(
+    () => (shouldRenderUpcomingBand ? new Set(visibleEvents.map((e) => e.url_slug)) : new Set()),
+    [shouldRenderUpcomingBand, visibleEvents]
+  );
+  const projectsForGrid = useMemo(
+    () =>
+      bandEventSlugs.size > 0
+        ? state.items.projects.filter((p) => !bandEventSlugs.has(p.url_slug))
+        : state.items.projects,
+    [state.items.projects, bandEventSlugs]
+  );
+
+  const eventsContent = useMemo(() => {
+    if (!shouldRenderUpcomingBand) return undefined;
+    return (
+      <UpcomingEventsGroup events={visibleEvents} hubUrl={hubUrl} subHubSegment={subHubSegment} />
+    );
+  }, [shouldRenderUpcomingBand, visibleEvents, hubUrl, subHubSegment]);
+
   const locationInputRefs = {
     projects: useRef(null),
     organizations: useRef(null),
     members: useRef(null),
     ideas: useRef(null),
   };
-
   const [locationOptionsOpen, setLocationOptionsOpen] = useState(false);
   const handleSetLocationOptionsOpen = (bool) => {
     setLocationOptionsOpen(bool);
@@ -205,10 +313,8 @@ export default function BrowseContent({
     const newHash = window?.location?.hash.replace("#", "") as BrowseTab;
 
     if (window.location.hash && TYPES_BY_TAB_VALUE.includes(newHash)) {
-      setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
     } else {
-      setHash(TYPES_BY_TAB_VALUE[0]);
       setTabValue(0);
     }
 
@@ -283,31 +389,27 @@ export default function BrowseContent({
     //persist the old location filter when switching tabs
     const tabKey = TYPES_BY_TAB_VALUE[newValue];
 
-    if (tabKey === "events") {
-      // TODO: add event calendar here!
-    } else {
-      const possibleFilters = getFilters({
-        key: tabKey,
-        filterChoices: filterChoices,
-        locale: locale,
-      });
-      const locationFilter: any = possibleFilters.find((f) => f.type === "location");
-      queryObject[locationFilter.key] = filters[locationFilter.key];
-      const splitQueryObject = splitFiltersFromQueryObject(
-        /*TODO(undefined) newFilters*/ queryObject,
-        possibleFilters
-      );
+    const possibleFilters = getFilters({
+      key: tabKey,
+      filterChoices: filterChoices,
+      locale: locale,
+    });
+    const locationFilter: any = possibleFilters.find((f) => f.type === "location");
+    queryObject[locationFilter.key] = filters[locationFilter.key];
+    const splitQueryObject = splitFiltersFromQueryObject(
+      /*TODO(undefined) newFilters*/ queryObject,
+      possibleFilters
+    );
 
-      const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
-      const tabValue = TYPES_BY_TAB_VALUE[newValue];
-      // Apply new filters with the query object immediately:
-      handleApplyNewFilters({
-        type: tabValue,
-        newFilters: newFilters,
-        closeFilters: false,
-        nonFilterParams: splitQueryObject.nonFilters,
-      });
-    }
+    const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
+    const tabValue = TYPES_BY_TAB_VALUE[newValue];
+    // Apply new filters with the query object immediately:
+    handleApplyNewFilters({
+      type: tabValue,
+      newFilters: newFilters,
+      closeFilters: false,
+      nonFilterParams: splitQueryObject.nonFilters,
+    });
 
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);
@@ -358,6 +460,8 @@ export default function BrowseContent({
   };
 
   const handleLoadMoreData = async (type) => {
+    if (isFetchingMoreData) return; // Prevent multiple simultaneous requests
+
     try {
       setIsFetchingMoreData(true);
       const res = await loadMoreData({
@@ -369,29 +473,29 @@ export default function BrowseContent({
         hubUrl: hubData?.url_slug,
       });
 
-      // TODO: these setState and hooks calls should likely be memoized and combined
-      setIsFetchingMoreData(false);
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         nextPages: {
-          ...state.nextPages,
-          [type]: state.nextPages[type] + 1,
+          ...prevState.nextPages,
+          [type]: prevState.nextPages[type] + 1,
         },
         hasMore: {
-          ...state.hasMore,
+          ...prevState.hasMore,
           [type]: res.hasMore,
         },
         items: {
-          ...state.items,
-          [type]: [...state.items[type], ...res.newData],
+          ...prevState.items,
+          [type]: [...prevState.items[type], ...res.newData],
         },
-      });
+      }));
       return [...res.newData];
     } catch (e) {
-      setState({
-        ...state,
-        hasMore: { ...state.hasMore, [type]: false },
-      });
+      setState((prevState) => ({
+        ...prevState,
+        hasMore: { ...prevState.hasMore, [type]: false },
+      }));
+    } finally {
+      setIsFetchingMoreData(false);
     }
   };
 
@@ -414,7 +518,7 @@ export default function BrowseContent({
     // Only push state if there's a URL change. Be sure to account for the
     // hash link / fragment on the end of the URL (e.g. #skills).
 
-    if (!legacyModeEnabled && newFilters.location && !isLocationValid(newFilters.location)) {
+    if (newFilters.location && !isLocationValid(newFilters.location)) {
       indicateWrongLocation(
         locationInputRefs[type],
         setLocationOptionsOpen,
@@ -435,15 +539,14 @@ export default function BrowseContent({
       if (isNarrowScreen) setFiltersExpandedOnMobile(false);
       else setFiltersExpanded(false);
     }
-
     if (res?.filteredItemsObject) {
-      setState({
-        ...state,
-        items: { ...state.items, [type]: res.filteredItemsObject[type] },
-        hasMore: { ...state.hasMore, [type]: res.filteredItemsObject.hasMore },
+      setState((prevState) => ({
+        ...prevState,
+        items: { ...prevState.items, [type]: res.filteredItemsObject[type] },
+        hasMore: { ...prevState.hasMore, [type]: res.filteredItemsObject.hasMore },
         urlEnding: res.newUrlEnding,
-        nextPages: { ...state.nextPages, [type]: 2 },
-      });
+        nextPages: { ...prevState.nextPages, [type]: 2 },
+      }));
     }
     setIsFiltering(false);
   };
@@ -462,6 +565,7 @@ export default function BrowseContent({
       locale: locale,
       nonFilterParams: nonFilterParams,
     });
+
     const res = await applyNewFilters({
       type: type,
       newFilters: newFilters,
@@ -473,20 +577,27 @@ export default function BrowseContent({
     }
 
     if (res?.filteredItemsObject) {
-      setState({
-        ...state,
-        items: { ...state.items, [type]: res.filteredItemsObject[type] },
-        hasMore: { ...state.hasMore, [type]: res.filteredItemsObject.hasMore },
+      setState((prevState) => ({
+        ...prevState,
+        items: { ...prevState.items, [type]: res.filteredItemsObject[type] },
+        hasMore: { ...prevState.hasMore, [type]: res.filteredItemsObject.hasMore },
         urlEnding: res.newUrlEnding,
-        nextPages: { ...state.nextPages, [type]: 2 },
-      });
+        nextPages: { ...prevState.nextPages, [type]: 2 },
+      }));
     }
   };
+
+  const currentPossibleFilters = getFilters({
+    key: TYPES_BY_TAB_VALUE[tabValue],
+    filterChoices: filterChoices,
+    locale: locale,
+  });
+  const activeFilterCount = getActiveFilterCount(filters, currentPossibleFilters);
 
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
-    filtersExpanded: isNarrowScreen ? filtersExandedOnMobile : filtersExpanded,
+    filtersExpanded: isSmallScreen ? filtersExandedOnMobile : filtersExpanded,
     handleApplyNewFilters: handleApplyNewFilters,
     handleUpdateFilterValues: handleUpdateFilterValues,
     errorMessage: errorMessage,
@@ -504,6 +615,8 @@ export default function BrowseContent({
     hubName: hubName || "",
     nonFilterParams: nonFilterParams,
     linkedHubs: linkedHubs || [],
+    isFetchingMoreData: isFetchingMoreData,
+    handleSearchSubmit: handleSearchSubmit,
   };
   return (
     <LoadingContext.Provider
@@ -511,20 +624,20 @@ export default function BrowseContent({
         spinning: isFetchingMoreData || isFiltering,
       }}
     >
-      {isLocationHubFlag && (
-        <HubTabsNavigation
-          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-          tabValue={tabValue}
-          handleTabChange={handleTabChange}
-          type_names={type_names}
-          hubUrl={hubUrl}
-          className={classes.hubsTabNavigation}
-          allHubs={allHubs}
-        />
-      )}
+      <HubTabsNavigation
+        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+        tabValue={tabValue}
+        handleTabChange={handleTabChange}
+        type_names={type_names}
+        hubUrl={hubUrl}
+        className={classes.hubsTabNavigation}
+        allHubs={allHubs}
+        fromPage={fromPage}
+        subHubSegment={subHubSegment}
+      />
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         {isNarrowScreen && hubSupporters && hubName && (
-          <HubSupporters supportersList={hubSupporters} hubName={hubName} />
+          <HubSupporters supportersList={hubSupporters} hubName={hubName} hubUrl={hubUrl} />
         )}
         <div ref={contentRef} className={classes.contentRef} />
         {isNarrowScreen && linkedHubs && linkedHubs?.length > 0 && (
@@ -534,94 +647,114 @@ export default function BrowseContent({
             ))}
           </div>
         )}
-        <Suspense fallback={null}>
-          <FilterSection
-            filtersExpanded={isNarrowScreen ? filtersExandedOnMobile : filtersExpanded}
-            onSubmit={handleSearchSubmit}
-            setFiltersExpanded={isNarrowScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
-            type={TYPES_BY_TAB_VALUE[tabValue]}
-            customSearchBarLabels={customSearchBarLabels}
-            hideFilterButton={false}
-            applyBackgroundColor={isLocationHubFlag}
-          />
-        </Suspense>
 
         {/* Desktop screens: show tabs under the search bar */}
         {/* Mobile screens: show tabs fixed to the bottom of the screen */}
-        {!isNarrowScreen && !isLocationHubFlag && (
-          <Tabs
-            variant={isNarrowScreen ? "fullWidth" : "standard"}
-            value={tabValue}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-            centered={true}
-          >
-            {TYPES_BY_TAB_VALUE.map((t, index) => {
-              const tabProps: any = {
-                label: type_names[t],
-                className: classes.tab,
-              };
-              return <Tab {...tabProps} key={index} />;
-            })}
-          </Tabs>
+        {isSmallScreen && (
+          <Suspense fallback={null}>
+            <FilterSection
+              activeFilterCount={activeFilterCount}
+              filtersExpanded={filtersExandedOnMobile}
+              onSubmit={handleSearchSubmit}
+              setFiltersExpanded={isSmallScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
+              type={TYPES_BY_TAB_VALUE[tabValue]}
+              customSearchBarLabels={customSearchBarLabels}
+              applyBackgroundColor={isLocationHubFlag}
+            />
+          </Suspense>
         )}
-        {isNarrowScreen && (
-          <MobileBottomMenu
-            tabValue={tabValue}
-            handleTabChange={handleTabChange}
-            TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-            //TODO(unused) type_names={type_names}
-            hubAmbassador={hubAmbassador}
-            hubUrl={hubUrl}
-          />
-        )}
-        {!isLocationHubFlag && <Divider className={classes.mainContentDivider} />}
+        {isNarrowScreen &&
+          (() => {
+            const mobileTypes = isEventsEnabled
+              ? [...TYPES_BY_TAB_VALUE, "events"]
+              : TYPES_BY_TAB_VALUE;
+            const handleMobileTabChange = (event, newValue) => {
+              if (mobileTypes[newValue] === "events") {
+                router.push(hubUrl ? `/hubs/${hubUrl}/events` : "/events");
+                return;
+              }
+              handleTabChange(event, newValue);
+            };
+            return (
+              <MobileBottomMenu
+                tabValue={tabValue}
+                handleTabChange={handleMobileTabChange}
+                TYPES_BY_TAB_VALUE={mobileTypes}
+                hubAmbassador={hubAmbassador}
+                hubUrl={hubUrl}
+              />
+            );
+          })()}
         <Suspense fallback={<LoadingSpinner isLoading />}>
-          <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
-            {hubData?.parent_hub && (
-              <div className={classes.subHubInfoText}>
-                {texts.you_are_seeing_projects_related_to}
-              </div>
-            )}
-            <ProjectPreviews
-              //TODO(unused) className={classes.itemsContainer}
-              hasMore={state.hasMore.projects}
-              loadFunc={() => handleLoadMoreData("projects")}
-              parentHandlesGridItems
-              projects={state.items.projects}
-              hubUrl={hubUrl}
-            />
+          <TabContentWrapper
+            type={"projects"}
+            {...tabContentWrapperProps}
+            eventsContent={eventsContent}
+            subHubInfoText={
+              hubData?.parent_hub ? (
+                <div className={classes.subHubInfoText}>
+                  {texts.you_are_seeing_projects_related_to}
+                </div>
+              ) : undefined
+            }
+          >
+            <Suspense fallback={null}>
+              <ProjectPreviews
+                hasMore={state.hasMore.projects}
+                loadFunc={() => handleLoadMoreData("projects")}
+                parentHandlesGridItems
+                projects={projectsForGrid}
+                featuredProjects={featuredProjects}
+                hubUrl={hubUrl}
+                isLoading={isFetchingMoreData}
+                analyticsSurface="browse_card"
+              />
+            </Suspense>
           </TabContentWrapper>
-          <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
-            {hubData?.parent_hub && (
-              <div className={classes.subHubInfoText}>
-                {texts.you_are_seeing_organizations_related_to}
-              </div>
-            )}
-            <OrganizationPreviews
-              hasMore={state.hasMore.organizations}
-              loadFunc={() => handleLoadMoreData("organizations")}
-              organizations={state.items.organizations}
-              hubUrl={hubUrl}
-              parentHandlesGridItems
-            />
+          <TabContentWrapper
+            type={"organizations"}
+            {...tabContentWrapperProps}
+            subHubInfoText={
+              hubData?.parent_hub ? (
+                <div className={classes.subHubInfoText}>
+                  {texts.you_are_seeing_organizations_related_to}
+                </div>
+              ) : undefined
+            }
+          >
+            <Suspense fallback={null}>
+              <OrganizationPreviews
+                hasMore={state.hasMore.organizations}
+                loadFunc={() => handleLoadMoreData("organizations")}
+                organizations={state.items.organizations}
+                parentHandlesGridItems
+                isLoading={isFetchingMoreData}
+              />
+            </Suspense>
           </TabContentWrapper>
           {!hideMembers && (
-            <TabContentWrapper type={"members"} {...tabContentWrapperProps}>
-              {hubData?.parent_hub && (
-                <div className={classes.subHubInfoText}>
-                  {texts.you_are_seeing_members_related_to}
-                </div>
-              )}
-              <ProfilePreviews
-                hasMore={state.hasMore.members}
-                loadFunc={() => handleLoadMoreData("members")}
-                parentHandlesGridItems
-                profiles={state.items.members}
-                hubUrl={hubUrl}
-                showAdditionalInfo
-              />
+            <TabContentWrapper
+              type={"members"}
+              {...tabContentWrapperProps}
+              subHubInfoText={
+                hubData?.parent_hub ? (
+                  <div className={classes.subHubInfoText}>
+                    {texts.you_are_seeing_members_related_to}
+                  </div>
+                ) : undefined
+              }
+            >
+              <Suspense fallback={null}>
+                <ProfilePreviews
+                  hasMore={state.hasMore.members}
+                  loadFunc={() => handleLoadMoreData("members")}
+                  parentHandlesGridItems
+                  profiles={state.items.members}
+                  hubUrl={hubUrl}
+                  showAdditionalInfo
+                  isLoading={isFetchingMoreData}
+                />
+              </Suspense>
             </TabContentWrapper>
           )}
         </Suspense>
