@@ -21,9 +21,9 @@ import { getAllHubs } from "../../public/lib/hubOperations";
 export async function getServerSideProps(ctx) {
   const { auth_token } = NextCookies(ctx);
   const profileUrl = encodeURI(ctx.query.profileUrl);
-  // Prevent API calls with undefined slug
+  // Prevent API calls with undefined or literal route-pattern slugs
   // see https://github.com/climateconnect/climateconnect/issues/1796
-  if (profileUrl === "undefined") {
+  if (profileUrl === "undefined" || profileUrl === "[profileUrl]") {
     return {
       props: nullifyUndefinedValues({
         profile: null,
@@ -97,10 +97,12 @@ export default function ProfilePage({
     <WideLayout
       title={profile ? texts.persons_profile : texts.not_found}
       description={
-        profile.name +
-        " | " +
-        profile.info.location +
-        (profile.info.bio ? " | " + profile.info.bio : "")
+        profile
+          ? profile.name +
+            " | " +
+            profile.info.location +
+            (profile.info.bio ? " | " + profile.info.bio : "")
+          : texts.not_found
       }
       hubUrl={hubUrl}
       showDonationGoal={true}

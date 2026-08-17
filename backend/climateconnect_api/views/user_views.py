@@ -471,7 +471,12 @@ class ListMemberProjectsView(ListAPIView):
     serializer_class = ProjectFromProjectMemberSerializer
 
     def get_queryset(self):
-        searched_user = UserProfile.objects.get(url_slug=self.kwargs["url_slug"]).user
+        try:
+            searched_user = UserProfile.objects.get(
+                url_slug=self.kwargs["url_slug"]
+            ).user
+        except UserProfile.DoesNotExist:
+            return ProjectMember.objects.none()
         if self.request.user == searched_user:
             return ProjectMember.objects.filter(
                 user=searched_user, is_active=True
@@ -490,7 +495,12 @@ class ListMemberIdeasView(ListAPIView):
     serializer_class = IdeaFromIdeaSupporterSerializer
 
     def get_queryset(self):
-        searched_user = UserProfile.objects.get(url_slug=self.kwargs["url_slug"]).user
+        try:
+            searched_user = UserProfile.objects.get(
+                url_slug=self.kwargs["url_slug"]
+            ).user
+        except UserProfile.DoesNotExist:
+            return IdeaSupporter.objects.none()
         return IdeaSupporter.objects.filter(user=searched_user).order_by("-id")
 
 
@@ -507,8 +517,12 @@ class ListMemberOrganizationsView(ListAPIView):
         return context
 
     def get_queryset(self):
+        try:
+            user = UserProfile.objects.get(url_slug=self.kwargs["url_slug"]).user
+        except UserProfile.DoesNotExist:
+            return OrganizationMember.objects.none()
         return OrganizationMember.objects.filter(
-            user=UserProfile.objects.get(url_slug=self.kwargs["url_slug"]).user,
+            user=user,
         ).order_by("id")
 
 
