@@ -100,7 +100,7 @@ module.exports = withBundleAnalyzer({
       },
       {
         source: "/balkonien-ks",
-        destination: "/de/projects/balkonien-262201?hub=kassel",
+        destination: "/de/projects/balkonien-26-in-kassel?hub=kassel",
         permanent: true,
       },
       {
