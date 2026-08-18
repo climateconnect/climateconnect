@@ -14,7 +14,8 @@ def sort_user_resource_preferences(
     else:
         personalized_filter = "token = '{}'".format(climatematch_token)
     with connection.cursor() as cursor:
-        cursor.execute(f"""
+        cursor.execute(
+            f"""
 WITH hub_location_ids AS (
     SELECT location_id
     FROM hubs_hub_location
@@ -124,7 +125,7 @@ get_user_resource_preference AS (
             from ideas ii
             join hubs_hub hh on hh.id = ii.hub_id
         )
-    ) as reference_table 
+    ) as reference_table
     left join get_user_hub_preference as guhp on reference_table.hub_id = guhp.reference_id
     group by 1, 2
 ), get_user_reference_relevancy_score as (
@@ -160,7 +161,8 @@ get_user_resource_preference AS (
 )
 
 select * from get_user_reference_relevancy_score;
-        """)
+        """
+        )
 
         columns = [col[0] for col in cursor.description]
         user_resource_preferences = [

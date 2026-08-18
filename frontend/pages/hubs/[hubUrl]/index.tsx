@@ -8,7 +8,7 @@ import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import theme from "../../../src/themes/theme";
 import { HubData } from "../../../src/types";
 import { getHubData } from "../../../public/lib/getHubData";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 
 interface TextsType {
   [key: string]: string;
@@ -58,10 +58,9 @@ export async function getServerSideProps(ctx: any) {
 
   const hubData = await getHubData(hubUrl, locale);
   if (!hubData?.landing_page_component) {
-    const localePrefix = getLocalePrefix(locale);
     return {
       redirect: {
-        destination: `${localePrefix}/hubs/${hubUrl}/browse`,
+        destination: appHref(`/hubs/${hubUrl}/browse`, { locale }),
         // redirect is based on current hub data, and that might change in the future so permanent: false,
         permanent: false,
       },

@@ -316,7 +316,6 @@ export default function HubEventsPage({
           handleTabChange={handleTabChange}
           TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
           hubAmbassador={hubAmbassador}
-          hubUrl={hubUrl}
         />
       )}
     </WideLayout>

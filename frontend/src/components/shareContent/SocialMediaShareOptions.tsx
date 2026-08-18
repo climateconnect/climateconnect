@@ -3,6 +3,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import LinkIcon from "@mui/icons-material/Link";
 import React from "react";
 import {
+  BlueskyIcon,
+  BlueskyShareButton,
   EmailIcon,
   EmailShareButton,
   FacebookIcon,
@@ -11,8 +13,6 @@ import {
   RedditShareButton,
   TelegramIcon,
   TelegramShareButton,
-  XIcon,
-  XShareButton,
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
@@ -45,7 +45,6 @@ export default function SocialMediaShareOptions({
   const iconSize = tinyScreen ? 40 : 50;
 
   const facebookHashtag = "#BelieveInTogether";
-  const twitterHastags = ["BelieveInTogether"];
 
   const handleClick = (sharedVia) => {
     createShareRecord(sharedVia);
@@ -70,14 +69,13 @@ export default function SocialMediaShareOptions({
         >
           <FacebookIcon size={iconSize} round={true} />
         </FacebookShareButton>
-        <XShareButton
-          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.twitter)}
+        <BlueskyShareButton
+          beforeOnClick={() => createShareRecord(SHARE_OPTIONS.bluesky)}
           url={contentLink}
           title={messageTitle}
-          hashtags={twitterHastags}
         >
-          <XIcon size={iconSize} round={true} />
-        </XShareButton>
+          <BlueskyIcon size={iconSize} round={true} />
+        </BlueskyShareButton>
         <WhatsappShareButton
           beforeOnClick={() => createShareRecord(SHARE_OPTIONS.whatsapp)}
           url={contentLink}

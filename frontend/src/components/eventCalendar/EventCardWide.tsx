@@ -7,7 +7,8 @@ import { useRouter } from "next/router";
 
 import { getDateAndTime, getTime } from "../../../public/lib/dateOperations";
 import { getImageUrl } from "../../../public/lib/imageOperations";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
+import { HubContext } from "../context/HubContext";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import ProjectSectorsDisplay from "../project/ProjectSectorsDisplay";
@@ -171,14 +172,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EventCardWide({ project, hubUrl }: any) {
+export default function EventCardWide({ project }: any) {
   const { locale, user } = useContext(UserContext);
+  const { hubUrl } = useContext(HubContext);
   const router = useRouter();
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
 
-  const queryString = hubUrl ? "?hub=" + hubUrl : "";
-  const projectUrl = `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`;
+  const projectUrl = appHref(`/projects/${project.url_slug}`, { hubUrl, locale });
 
   const handleCardClick = () => {
     router.push(projectUrl);
@@ -307,7 +308,7 @@ export default function EventCardWide({ project, hubUrl }: any) {
                   href={
                     buttonConfig.disabled
                       ? undefined
-                      : `${getLocalePrefix(locale)}/projects/${project.url_slug}/register`
+                      : appHref(`/projects/${project.url_slug}/register`, { hubUrl, locale })
                   }
                 >
                   {buttonConfig.label}

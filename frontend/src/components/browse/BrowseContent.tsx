@@ -681,7 +681,6 @@ export default function BrowseContent({
                 handleTabChange={handleMobileTabChange}
                 TYPES_BY_TAB_VALUE={mobileTypes}
                 hubAmbassador={hubAmbassador}
-                hubUrl={hubUrl}
               />
             );
           })()}
@@ -750,7 +749,6 @@ export default function BrowseContent({
                   loadFunc={() => handleLoadMoreData("members")}
                   parentHandlesGridItems
                   profiles={state.items.members}
-                  hubUrl={hubUrl}
                   showAdditionalInfo
                   isLoading={isFetchingMoreData}
                 />

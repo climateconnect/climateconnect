@@ -284,11 +284,7 @@ export default function EventCalendarEventList({
               </div>
               <div className={classes.dayGroup}>
                 {group.occurrences.map((occurrence) => (
-                  <EventCardWide
-                    key={occurrence.project.url_slug}
-                    project={occurrence.project}
-                    hubUrl={hubUrl}
-                  />
+                  <EventCardWide key={occurrence.project.url_slug} project={occurrence.project} />
                 ))}
               </div>
             </Box>
