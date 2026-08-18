@@ -85,19 +85,26 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
 export default function HubLinkButton({
   hub,
   pageContext = "browse",
+  activeTab,
 }: {
   hub: LinkedHub;
   pageContext?: "browse" | "events";
+  activeTab?: string;
 }) {
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const backgroundColor = hub.backgroundColor || "lightblue";
 
   const classes = useStyles({ backgroundColor, iconUrl: hub.icon, isNarrowScreen });
   const getLinkUrl = () => {
-    const baseUrl =
-      pageContext === "events" ? hub.hubUrl.replace(/\/projects$/, "/events") : hub.hubUrl;
-    const hash = pageContext === "browse" ? window.location.hash : "";
-    return `${baseUrl}${hash}`;
+    if (pageContext === "events") {
+      return hub.hubUrl.replace(/\/projects$/, "/events");
+    }
+    if (activeTab && hub.hubUrl.endsWith("/projects")) {
+      const tabPath = activeTab === "organizations" ? "organisations" : activeTab;
+      return hub.hubUrl.replace(/\/projects$/, `/${tabPath}`);
+    }
+    const hash = window.location.hash;
+    return `${hub.hubUrl}${hash}`;
   };
   const linkUrl = getLinkUrl();
   return (

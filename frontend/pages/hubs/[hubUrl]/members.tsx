@@ -15,7 +15,6 @@ const TYPES = ["projects", "organizations", "members"];
 
 export default function HubMembersPage({
   hubUrl,
-  subHubUrl,
   subHubSegment,
   filterChoices,
   initialLocationFilter,
@@ -29,7 +28,6 @@ export default function HubMembersPage({
   const token = cookies.get("auth_token");
   const { locale } = useContext(UserContext);
   const router = useRouter();
-  const effectiveHubUrl = subHubUrl || hubUrl;
   const browsePath = subHubSegment ? `/hubs/${hubUrl}/${subHubSegment}` : `/hubs/${hubUrl}`;
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -49,7 +47,7 @@ export default function HubMembersPage({
       activeTab={2}
       TYPES_BY_TAB_VALUE={TYPES}
       handleTabChange={handleTabChange}
-      hubUrl={effectiveHubUrl}
+      hubUrl={hubUrl}
       subHubSegment={subHubSegment}
       linkedHubs={linkedHubs}
       hubData={hubData}
@@ -62,6 +60,7 @@ export default function HubMembersPage({
         initialLocationFilter={initialLocationFilter}
         locale={locale}
         token={token}
+        hubUrl={hubUrl}
       >
         <BrowseMembersContent
           filterChoices={filterChoices}

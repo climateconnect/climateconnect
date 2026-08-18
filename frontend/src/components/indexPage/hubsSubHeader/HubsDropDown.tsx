@@ -40,7 +40,11 @@ export default function HubsDropDown({
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "hub", locale: locale });
   const router = useRouter();
-  const isEventsPage = router.pathname.includes("events");
+
+  const knownBrowseTypes = ["projects", "organisations", "members", "events"];
+  const currentBrowseType =
+    router.pathname.split("/").find((seg) => knownBrowseTypes.includes(seg)) || "projects";
+  const isEventsPage = currentBrowseType === "events";
 
   const toggleButtonProps: ButtonProps = {};
   if (!isNarrowScreen) {
@@ -59,10 +63,10 @@ export default function HubsDropDown({
       ? `/hubs/${h.url_slug}/events`
       : !user && h.landing_page_component
       ? `/hubs/${h.url_slug}`
-      : `/hubs/${h.url_slug}/projects`,
+      : `/hubs/${h.url_slug}/${currentBrowseType}`,
     text: h.name,
   }));
-  const allLocationsHref = isEventsPage ? "/events" : "/projects";
+  const allLocationsHref = isEventsPage ? "/events" : `/${currentBrowseType}`;
 
   const dropDownItems = addLocationHubExplainerLink
     ? [

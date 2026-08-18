@@ -6,32 +6,6 @@ import { membersWithAdditionalInfo } from "./getOptions";
 import { getInfoMetadataByType, getReducedPossibleFilters } from "./parsingOperations";
 import { encodeQueryParamsFromFilters } from "./urlOperations";
 
-const getLocationFilterUrl = (location) => {
-  /*Pass osm_id, osm_type and osm_class. If they are found in our db we can use their polygon,
-  otherwise make a request to the location API with the backend */
-  const osmType = location.osm_type;
-  const osmClass = location.osm_class;
-  return `place_id=${location.place_id}&osm_id=${location.osm_id}&osm_type=${osmType}&osm_class=${osmClass}&`;
-};
-
-export function buildUrlEndingFromFilters(filters) {
-  let url = "&";
-  Object.keys(filters).map((filterKey) => {
-    if (
-      filters[filterKey] &&
-      (filters[filterKey].length > 0 || Object.keys(filters[filterKey]).length > 0)
-    ) {
-      //only use location filter if we have selected a location
-      if (filterKey === "location" && typeof filters[filterKey] === "object") {
-        url += getLocationFilterUrl(filters[filterKey]);
-      } else if (Array.isArray(filters[filterKey]))
-        url += encodeURI(filterKey + "=" + filters[filterKey].join()) + "&";
-      else url += encodeURI(filterKey + "=" + filters[filterKey] + "&");
-    }
-  });
-  return url;
-}
-
 export function getKeysOfDifferingValues({ obj, newObj, type, filterChoices, locale }) {
   const possibleFilterKeys = possibleFilters({
     key: type,

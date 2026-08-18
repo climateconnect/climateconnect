@@ -101,7 +101,7 @@ export default function BrowseMembersContent({
   const unexpandFiltersOnMobile = () => setFiltersExpandedOnMobile(false);
 
   return (
-    <Container maxWidth="lg" className={classes.contentContainer}>
+    <Container maxWidth="lg" disableGutters className={classes.contentContainer}>
       {isSmallScreen && (
         <Suspense fallback={null}>
           <FilterSection

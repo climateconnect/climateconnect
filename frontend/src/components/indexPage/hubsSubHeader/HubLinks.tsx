@@ -6,6 +6,7 @@ import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import HubsDropDown from "./HubsDropDown";
 import isLocationHubLikeHub from "../../../../public/lib/isLocationHubLikeHub";
+import { useRouter } from "next/router";
 
 const useStyles = makeStyles(() => ({
   spaceAround: {
@@ -32,6 +33,11 @@ export default function HubLinks({
   const texts = getTexts({ page: "navigation", locale: locale });
   const locationHubs = hubs?.filter((h) => isLocationHubLikeHub(h.hub_type));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
+  const router = useRouter();
+
+  const knownBrowseTypes = ["projects", "organisations", "members"];
+  const currentBrowseType =
+    router.pathname.split("/").find((seg) => knownBrowseTypes.includes(seg)) || "projects";
 
   const handleOpen = (e, type) => {
     e.preventDefault();
@@ -71,7 +77,7 @@ export default function HubLinks({
       {!isMediumScreen && !onlyShowDropDown && showAllProjectsButton && (
         <Link
           className={linkClassName}
-          href={getLocalePrefix(locale) + "/projects"}
+          href={getLocalePrefix(locale) + `/${currentBrowseType}`}
           underline="hover"
         >
           {texts.all_projects}

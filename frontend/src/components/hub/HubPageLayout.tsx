@@ -88,6 +88,8 @@ export default function HubPageLayout({
   const [hubSupporters, setHubSupporters] = useState(initialSupporters || null);
 
   const browseTabTypes = TYPES_BY_TAB_VALUE.filter((t) => t !== "events");
+  const activeTabType =
+    activeTab >= 0 && activeTab < browseTabTypes.length ? browseTabTypes[activeTab] : undefined;
 
   useEffect(() => {
     if (initialAmbassador !== undefined) return;
@@ -170,14 +172,14 @@ export default function HubPageLayout({
           {isNarrowScreen && linkedHubs && linkedHubs.length > 0 && (
             <div className={classes.linkedHubsContainerMobile}>
               {linkedHubs.map((linkedHub: any) => (
-                <HubLinkButton key={linkedHub.hubUrl} hub={linkedHub} />
+                <HubLinkButton key={linkedHub.hubUrl} hub={linkedHub} activeTab={activeTabType} />
               ))}
             </div>
           )}
           {!isNarrowScreen && linkedHubs && linkedHubs.length > 0 && (
             <div className={classes.linkedHubsContainer}>
               {linkedHubs.map((linkedHub: any) => (
-                <HubLinkButton key={linkedHub.hubUrl} hub={linkedHub} />
+                <HubLinkButton key={linkedHub.hubUrl} hub={linkedHub} activeTab={activeTabType} />
               ))}
             </div>
           )}

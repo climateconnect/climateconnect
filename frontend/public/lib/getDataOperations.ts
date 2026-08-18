@@ -23,8 +23,7 @@ export async function getDataFromServer({
 
   // Handle query params as well
   if (urlEnding) {
-    // &category=Lowering%20food%20waste&
-    url += urlEnding;
+    url += `&${urlEnding}`;
   }
 
   try {
