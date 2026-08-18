@@ -57,6 +57,7 @@ export default function HubOrganisationsPage({
         hubUrl={hubUrl}
       >
         <BrowseOrganisationsContent
+          key={router.asPath}
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
         />

@@ -57,6 +57,7 @@ export default function HubProjectsPage({
         hubUrl={hubUrl}
       >
         <BrowseProjectsContent
+          key={router.asPath}
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
         />

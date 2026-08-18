@@ -57,6 +57,7 @@ export default function HubMembersPage({
         hubUrl={hubUrl}
       >
         <BrowseMembersContent
+          key={router.asPath}
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
         />
