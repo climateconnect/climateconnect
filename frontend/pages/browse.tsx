@@ -14,6 +14,7 @@ import { BrowseTab } from "../src/types";
 import { useRouter } from "next/router";
 import { useMediaQuery, Theme } from "@mui/material";
 import getTexts from "../public/texts/texts";
+import { getBrowsePathForType } from "../public/lib/urlOperations";
 
 export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
@@ -62,8 +63,7 @@ export default function BrowsePage({ filterChoices, initialLocationFilter }: any
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     const tab = TYPES_BY_TAB_VALUE[newValue];
-    const targetPath =
-      tab === "projects" ? "/browse" : tab === "organizations" ? "/organizations" : "/members";
+    const targetPath = getBrowsePathForType(tab);
     const params = new URLSearchParams(window.location.search);
     router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);
   };

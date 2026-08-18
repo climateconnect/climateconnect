@@ -13,6 +13,7 @@ import WideLayout from "../src/components/layouts/WideLayout";
 import HubTabsNavigation from "../src/components/hub/HubTabsNavigation";
 import EventCalendarContent from "../src/components/eventCalendar/EventCalendarContent";
 import MobileBottomMenu from "../src/components/browse/MobileBottomMenu";
+import { getBrowsePathForType, getHubBrowsePathForType } from "../public/lib/urlOperations";
 
 const toOffsetIso = (d: Date): string => {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -109,17 +110,10 @@ export default function EventsPage({
     members: texts.members,
   };
 
-  const TAB_TO_PATH: Record<string, string> = {
-    projects: "projects",
-    organizations: "organisations",
-    members: "members",
-  };
-
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     const tab = TYPES_BY_TAB_VALUE[newValue];
     if (tab === "events") return;
-    const segment = TAB_TO_PATH[tab] || tab;
-    const path = hubUrl ? `/hubs/${hubUrl}/${segment}` : `/${segment}`;
+    const path = hubUrl ? getHubBrowsePathForType(tab, hubUrl) : getBrowsePathForType(tab);
     router.push(path);
   };
 
@@ -130,8 +124,7 @@ export default function EventsPage({
         tabValue={-1}
         handleTabChange={(e, v) => {
           const tab = ["projects", "organizations", "members"][v];
-          const segment = TAB_TO_PATH[tab] || tab;
-          const path = hubUrl ? `/hubs/${hubUrl}/${segment}` : `/${segment}`;
+          const path = hubUrl ? getHubBrowsePathForType(tab, hubUrl) : getBrowsePathForType(tab);
           router.push(path);
         }}
         type_names={type_names}

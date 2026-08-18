@@ -33,12 +33,12 @@ describe("getLinks", () => {
     const links = getLinks(`/hubs/${hubSlug}`, texts, true, false, true, hubSlug);
 
     expect(links[0]).toMatchObject({
-      href: "/projects",
+      href: "/browse",
       text: texts.climate_connect,
       showStaticLinksInDropdown: true,
     });
     expect(links[1]).toMatchObject({
-      href: `/hubs/${hubSlug}/projects`,
+      href: `/hubs/${hubSlug}/browse`,
       text: texts.return_to_climatehub_projects,
       showStaticLinksInDropdown: false,
       hideOnStaticPages: true,
@@ -48,7 +48,7 @@ describe("getLinks", () => {
   it("falls back to the hub About link when not on the landing route", () => {
     const texts = buildTexts();
     const hubSlug = "erlangen";
-    const links = getLinks(`/hubs/${hubSlug}/projects`, texts, true, false, true, hubSlug);
+    const links = getLinks(`/hubs/${hubSlug}/browse`, texts, true, false, true, hubSlug);
 
     expect(links[0]).toMatchObject({ text: texts.climate_connect });
     expect(links[1]).toMatchObject({
@@ -60,7 +60,7 @@ describe("getLinks", () => {
 
   it("uses global About/Browse labels for non-hub pages", () => {
     const texts = buildTexts();
-    const links = getLinks("/projects", texts, false, false, false, undefined);
+    const links = getLinks("/browse", texts, false, false, false, undefined);
 
     expect(links[0]).toMatchObject({ text: texts.browse, showStaticLinksInDropdown: false });
     expect(links[1]).toMatchObject({ text: texts.about, showStaticLinksInDropdown: true });
@@ -93,12 +93,12 @@ describe("getLinks", () => {
 
   it("returns only login link in auth links", () => {
     const texts = buildTexts();
-    const links = getLinks("/projects", texts, false, false, false, undefined);
+    const links = getLinks("/browse", texts, false, false, false, undefined);
 
     const authLinks = links.filter((link) => link.onlyShowLoggedOut);
     expect(authLinks).toHaveLength(1);
     expect(authLinks[0]).toMatchObject({
-      href: "/login?redirect=%2Fprojects",
+      href: "/login?redirect=%2Fbrowse",
       text: texts.auth_log_in,
     });
   });
@@ -106,12 +106,12 @@ describe("getLinks", () => {
   it("returns login link with hub param for location hubs", () => {
     const texts = buildTexts();
     const hubSlug = "erlangen";
-    const links = getLinks(`/hubs/${hubSlug}/projects`, texts, true, false, true, hubSlug);
+    const links = getLinks(`/hubs/${hubSlug}/browse`, texts, true, false, true, hubSlug);
 
     const authLinks = links.filter((link) => link.onlyShowLoggedOut);
     expect(authLinks).toHaveLength(1);
     expect(authLinks[0]).toMatchObject({
-      href: `/login?redirect=%2Fhubs%2Ferlangen%2Fprojects&hub=erlangen`,
+      href: `/login?redirect=%2Fhubs%2Ferlangen%2Fbrowse&hub=erlangen`,
       text: texts.auth_log_in,
     });
   });

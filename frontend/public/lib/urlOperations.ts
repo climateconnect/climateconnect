@@ -211,4 +211,40 @@ const getSearchParams = (searchString) => {
   return params;
 };
 
-export { getFilterUrl, encodeQueryParamsFromFilters, getSearchParams, findOptionByNameDeep };
+/**
+ * Maps a browse tab type to its URL path segment.
+ *
+ * `projects` maps to `browse` (not `projects`) because the projects page also
+ * includes ideas and events, and `browse` is the more intuitive name for users.
+ * Use this everywhere instead of hardcoding `tab === "projects" ? "/browse" : ...`.
+ */
+const BROWSE_TYPE_TO_PATH: Record<string, string> = {
+  projects: "browse",
+  organizations: "organizations",
+  members: "members",
+};
+
+/**
+ * Returns the global browse path for a given tab type
+ * (e.g. "projects" → "/browse", "organizations" → "/organizations").
+ */
+const getBrowsePathForType = (type: string): string => `/${BROWSE_TYPE_TO_PATH[type] ?? type}`;
+
+/**
+ * Returns the hub-scoped browse path for a given tab type and hub context.
+ * e.g. ("projects", "kassel") → "/hubs/kassel/browse",
+ *      ("projects", "kassel", "zerowaste") → "/hubs/kassel/zerowaste/browse"
+ */
+const getHubBrowsePathForType = (type: string, hubUrl: string, subHubSegment?: string): string => {
+  const browsePath = subHubSegment ? `/hubs/${hubUrl}/${subHubSegment}` : `/hubs/${hubUrl}`;
+  return `${browsePath}/${BROWSE_TYPE_TO_PATH[type] ?? type}`;
+};
+
+export {
+  getFilterUrl,
+  encodeQueryParamsFromFilters,
+  getSearchParams,
+  findOptionByNameDeep,
+  getBrowsePathForType,
+  getHubBrowsePathForType,
+};

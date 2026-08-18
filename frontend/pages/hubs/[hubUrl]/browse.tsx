@@ -7,6 +7,7 @@ import BrowseProjectsContent from "../../../src/components/browse/BrowseProjects
 import { FilterProvider } from "../../../src/components/provider/FilterProvider";
 import UserContext from "../../../src/components/context/UserContext";
 import Cookies from "universal-cookie";
+import { getHubBrowsePathForType } from "../../../public/lib/urlOperations";
 
 export const getServerSideProps: GetServerSideProps = (ctx) =>
   getHubBrowseTypeServerSideProps(ctx, "projects");
@@ -28,16 +29,9 @@ export default function HubProjectsPage({
   const token = cookies.get("auth_token");
   const { locale } = useContext(UserContext);
   const router = useRouter();
-  const browsePath = subHubSegment ? `/hubs/${hubUrl}/${subHubSegment}` : `/hubs/${hubUrl}`;
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    const tab = TYPES[newValue];
-    const targetPath =
-      tab === "projects"
-        ? `${browsePath}/browse`
-        : tab === "organizations"
-        ? `${browsePath}/organizations`
-        : `${browsePath}/members`;
+    const targetPath = getHubBrowsePathForType(TYPES[newValue], hubUrl, subHubSegment);
     const params = new URLSearchParams(window.location.search);
     router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);
   };
