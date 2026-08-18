@@ -99,6 +99,11 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       {
+        source: "/balkonien-ks",
+        destination: "/de/projects/balkonien-26-in-kassel?hub=kassel",
+        permanent: true,
+      },
+      {
         source: "/hubs/prio1",
         destination: "/hubs/prio1/browse",
         permanent: false,
