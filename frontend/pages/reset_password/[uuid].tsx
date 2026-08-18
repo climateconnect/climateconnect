@@ -109,7 +109,7 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
       locale: locale,
     });
     if (hubUrl) {
-      redirect(`/hubs/${hubUrl}/projects`, {
+      redirect(`/hubs/${hubUrl}/browse`, {
         message: response.data.message,
       });
     } else {

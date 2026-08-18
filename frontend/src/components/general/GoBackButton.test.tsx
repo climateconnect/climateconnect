@@ -68,14 +68,14 @@ describe("GoBackButton", () => {
     renderButton({ locale: "en" });
     fireEvent.click(screen.getByText("Go back"));
     expect(mockBack).not.toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith("/en/projects");
+    expect(mockPush).toHaveBeenCalledWith("/en/browse");
   });
 
   it("falls back to the hub browse page when a hub parameter is present", () => {
     setLocationSearch("?hub=em");
     renderButton({ locale: "en" });
     fireEvent.click(screen.getByText("Go back"));
-    expect(mockPush).toHaveBeenCalledWith("/en/hubs/em/projects");
+    expect(mockPush).toHaveBeenCalledWith("/en/hubs/em/browse");
   });
 
   it("uses the provided defaultBackUrl when there is no referrer", () => {
@@ -130,11 +130,11 @@ describe("GoBackButton", () => {
   });
 
   it("falls back to the browse page when referrer is on a different host", () => {
-    setReferrer("http://example.com/en/projects");
+    setReferrer("http://example.com/en/browse");
     renderButton({ locale: "en" });
     fireEvent.click(screen.getByText("Go back"));
     expect(mockBack).not.toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith("/en/projects");
+    expect(mockPush).toHaveBeenCalledWith("/en/browse");
   });
 
   it("falls back to the hub browse page when referrer is external and a hub param is present", () => {
@@ -143,6 +143,6 @@ describe("GoBackButton", () => {
     renderButton({ locale: "en" });
     fireEvent.click(screen.getByText("Go back"));
     expect(mockBack).not.toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith("/en/hubs/em/projects");
+    expect(mockPush).toHaveBeenCalledWith("/en/hubs/em/browse");
   });
 });

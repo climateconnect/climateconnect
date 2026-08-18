@@ -96,7 +96,7 @@ const LandingPage: FC<LandingPageProps> = ({ hubData, hubUrl }) => {
       headerBackground={theme.palette.primary.main}
       showDonationGoal={true}
     >
-      <NotFoundPage texts={texts} link={`/hubs/${hubUrl}/projects`} />
+      <NotFoundPage texts={texts} link={`/hubs/${hubUrl}/browse`} />
     </DevlinkPage>
   );
 };
