@@ -169,7 +169,7 @@ export default function HubTabsNavigation({
     return (
       <Tabs
         variant="standard"
-        value={tabValue}
+        value={tabValue >= 0 ? tabValue : false}
         onChange={handleTabChange}
         indicatorColor="primary"
         textColor="primary"

@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useContext, useEffect, useRef, useState } from "react";
-import { Theme, useMediaQuery } from "@mui/material";
+import { Container, Theme, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import getFilters from "../../../public/data/possibleFilters";
 import { getActiveFilterCount } from "../../../public/lib/filterOperations";
 import { FilterContext } from "../context/FilterContext";
@@ -17,6 +18,21 @@ const FilterSection = lazy(() => import("../indexPage/FilterSection"));
 const ProjectPreviews = lazy(() => import("../project/ProjectPreviews"));
 const UpcomingEventsGroup = lazy(() => import("./UpcomingEventsGroup"));
 
+const useStyles = makeStyles((theme) => ({
+  contentContainer: {
+    paddingTop: theme.spacing(4),
+    position: "relative",
+    [theme.breakpoints.down("md")]: {
+      paddingTop: theme.spacing(2),
+    },
+  },
+  tabContent: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
+  },
+}));
+
 type Props = {
   filterChoices: any;
   initialLocationFilter?: any;
@@ -28,6 +44,7 @@ export default function BrowseProjectsContent({
   initialLocationFilter,
   customSearchBarLabels,
 }: Props) {
+  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const { hubUrl } = useContext(HubContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
@@ -93,7 +110,7 @@ export default function BrowseProjectsContent({
   const unexpandFiltersOnMobile = () => setFiltersExpandedOnMobile(false);
 
   return (
-    <>
+    <Container maxWidth="lg" className={classes.contentContainer}>
       {isSmallScreen && (
         <Suspense fallback={null}>
           <FilterSection
@@ -110,6 +127,7 @@ export default function BrowseProjectsContent({
       )}
       {filtersExpanded && (
         <FilterContent
+          className={classes.tabContent}
           type="projects"
           applyFilters={({ type: _type, newFilters, closeFilters, nonFilterParams: _nfp }) =>
             handleApplyNewFilters({
@@ -135,12 +153,12 @@ export default function BrowseProjectsContent({
           }
         />
       )}
-      {isFiltering && !childrenRenderedRef.current && <LoadingSpinner isLoading />}
       {shouldRenderUpcomingBand && (
         <Suspense fallback={null}>
           <UpcomingEventsGroup events={visibleEvents} hubUrl={hubUrl} />
         </Suspense>
       )}
+      {isFiltering && !childrenRenderedRef.current && <LoadingSpinner isLoading />}
       <div style={{ opacity: isFiltering && showChildren ? 0.5 : 1, transition: "opacity 150ms" }}>
         {showChildren && (
           <Suspense fallback={null}>
@@ -158,6 +176,6 @@ export default function BrowseProjectsContent({
         )}
       </div>
       {shouldShowNoItems && <NoItemsFound type="projects" hubName="" />}
-    </>
+    </Container>
   );
 }

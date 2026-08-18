@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useContext, useEffect, useRef, useState } from "react";
-import { Theme, useMediaQuery } from "@mui/material";
+import { Container, Theme, useMediaQuery } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import getFilters from "../../../public/data/possibleFilters";
 import { getActiveFilterCount } from "../../../public/lib/filterOperations";
 import { FilterContext } from "../context/FilterContext";
@@ -15,6 +16,21 @@ import { useBrowseUrlSync } from "../../hooks/useBrowseUrlSync";
 const FilterSection = lazy(() => import("../indexPage/FilterSection"));
 const OrganizationPreviews = lazy(() => import("../organization/OrganizationPreviews"));
 
+const useStyles = makeStyles((theme) => ({
+  contentContainer: {
+    paddingTop: theme.spacing(4),
+    position: "relative",
+    [theme.breakpoints.down("md")]: {
+      paddingTop: theme.spacing(2),
+    },
+  },
+  tabContent: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
+  },
+}));
+
 type Props = {
   filterChoices: any;
   initialLocationFilter?: any;
@@ -26,6 +42,7 @@ export default function BrowseOrganisationsContent({
   initialLocationFilter,
   customSearchBarLabels,
 }: Props) {
+  const classes = useStyles();
   const { locale } = useContext(UserContext);
   const { hubUrl } = useContext(HubContext);
   const { showFeedbackMessage } = useContext(FeedbackContext);
@@ -84,7 +101,7 @@ export default function BrowseOrganisationsContent({
   const unexpandFiltersOnMobile = () => setFiltersExpandedOnMobile(false);
 
   return (
-    <>
+    <Container maxWidth="lg" className={classes.contentContainer}>
       {isSmallScreen && (
         <Suspense fallback={null}>
           <FilterSection
@@ -101,6 +118,7 @@ export default function BrowseOrganisationsContent({
       )}
       {filtersExpanded && (
         <FilterContent
+          className={classes.tabContent}
           type="organizations"
           applyFilters={({ type: _type, newFilters, closeFilters, nonFilterParams: _nfp }) =>
             handleApplyNewFilters({
@@ -141,6 +159,6 @@ export default function BrowseOrganisationsContent({
         )}
       </div>
       {shouldShowNoItems && <NoItemsFound type="organizations" hubName="" />}
-    </>
+    </Container>
   );
 }
