@@ -60,7 +60,7 @@ export async function getServerSideProps(ctx: any) {
   if (!hubData?.landing_page_component) {
     return {
       redirect: {
-        destination: appHref(`/hubs/${hubUrl}/projects`, { locale }),
+        destination: appHref(`/hubs/${hubUrl}/browse`, { locale }),
         // redirect is based on current hub data, and that might change in the future so permanent: false,
         permanent: false,
       },

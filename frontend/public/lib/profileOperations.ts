@@ -65,7 +65,7 @@ export function redirectOnLogin(user, redirectUrl, locale, hubUrl = null) {
   } else if (redirectUrl) {
     if (redirectUrl[0] === "/") redirectUrl = redirectUrl.substring(1, redirectUrl.length);
     window.location.replace(window.location.origin + "/" + redirectUrl);
-  } else router.push("/projects");
+  } else router.push("/browse");
 }
 
 export function nullifyUndefinedValues(obj) {

@@ -359,7 +359,7 @@ export default function Header({
   const logo = getLogo();
   const getLogoLink = () => {
     if (hubUrl) {
-      return `${localePrefix}/hubs/${hubUrl}/projects`;
+      return `${localePrefix}/hubs/${hubUrl}/browse`;
     }
     return `${localePrefix}/`;
   };

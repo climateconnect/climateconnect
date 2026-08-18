@@ -1,38 +1,110 @@
+import NextCookies from "next-cookies";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
+import Cookies from "universal-cookie";
+import { getLocationFilteredBy } from "../public/lib/locationOperations";
+import { nullifyUndefinedValues } from "../public/lib/profileOperations";
+import BrowseProjectsContent from "../src/components/browse/BrowseProjectsContent";
+import UserContext from "../src/components/context/UserContext";
+import { HubContext } from "../src/components/context/HubContext";
+import WideLayout from "../src/components/layouts/WideLayout";
+import HubTabsNavigation from "../src/components/hub/HubTabsNavigation";
+import MobileBottomMenu from "../src/components/browse/MobileBottomMenu";
+import { FilterProvider } from "../src/components/provider/FilterProvider";
+import { BrowseTab } from "../src/types";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef } from "react";
-import Head from "next/head";
-import LoadingContainer from "../src/components/general/LoadingContainer";
+import { useMediaQuery, Theme } from "@mui/material";
+import getTexts from "../public/texts/texts";
 
-export async function getServerSideProps() {
-  return { props: {} };
+export async function getServerSideProps(ctx) {
+  const { hideInfo } = NextCookies(ctx);
+  const locale = ctx.locale ?? "en";
+  const [organization_types, location_filtered_by, sectorOptions, skills] = await Promise.all([
+    (await import("../public/lib/getOptions")).getOrganizationTagsOptions(locale),
+    getLocationFilteredBy(ctx.query, locale),
+    (await import("../public/lib/getOptions")).getSectorOptions(locale),
+    (await import("../public/lib/getOptions")).getSkillsOptions(locale),
+  ]);
+  return {
+    props: nullifyUndefinedValues({
+      filterChoices: { organization_types, sectors: sectorOptions, skills },
+      hideInfo: hideInfo === "true",
+      initialLocationFilter: location_filtered_by,
+    }),
+  };
 }
 
-export default function BrowseRedirect() {
+const TYPES_BY_TAB_VALUE: BrowseTab[] = ["projects", "organizations", "members"];
+
+export default function BrowsePage({ filterChoices, initialLocationFilter }: any) {
+  const cookies = new Cookies();
+  const token = cookies.get("auth_token");
+  const { locale, refreshUser } = useContext(UserContext);
+  const { hubs } = useContext(HubContext);
   const router = useRouter();
-  const redirectedRef = useRef(false);
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const texts = useMemo(() => getTexts({ page: "hub", locale }), [locale]);
+  const hashRedirectedRef = useRef(false);
 
   useEffect(() => {
-    if (redirectedRef.current) return;
-    const localePrefix = router.locale && router.locale !== "en" ? `/${router.locale}` : "";
+    if (hashRedirectedRef.current) return;
     const hash = window.location.hash.replace("#", "");
-    let target = "/projects";
-    if (hash === "organizations") target = "/organisations";
-    else if (hash === "members") target = "/members";
-    const search = window.location.search;
-    redirectedRef.current = true;
-    // Use window.location.replace instead of router.replace so the browser cancels
-    // any pending meta-refresh timer (router.replace is SPA navigation, which leaves the timer active)
-    window.location.replace(`${localePrefix}${target}${search}`);
+    if (hash === "organizations" || hash === "members") {
+      hashRedirectedRef.current = true;
+      const localePrefix = router.locale && router.locale !== "en" ? `/${router.locale}` : "";
+      const target = hash === "organizations" ? "/organizations" : "/members";
+      window.location.replace(`${localePrefix}${target}${window.location.search}`);
+    }
   }, [router]);
 
-  const localePrefix = router.locale && router.locale !== "en" ? `/${router.locale}` : "";
+  useEffect(() => {
+    if (refreshUser && token) refreshUser();
+  }, []);
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    const tab = TYPES_BY_TAB_VALUE[newValue];
+    const targetPath =
+      tab === "projects" ? "/browse" : tab === "organizations" ? "/organizations" : "/members";
+    const params = new URLSearchParams(window.location.search);
+    router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);
+  };
 
   return (
-    <>
-      <Head>
-        <meta httpEquiv="refresh" content={`1;url=${localePrefix}/projects`} />
-      </Head>
-      <LoadingContainer headerHeight={113} footerHeight={80} />
-    </>
+    <WideLayout>
+      <HubTabsNavigation
+        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+        tabValue={0}
+        handleTabChange={handleTabChange}
+        type_names={{
+          projects: texts.projects,
+          organizations: isNarrowScreen ? texts.orgs : texts.organizations,
+          members: texts.members,
+        }}
+        hubUrl=""
+        className=""
+        allHubs={hubs}
+        fromPage={undefined}
+        subHubSegment={undefined}
+      />
+      <FilterProvider
+        filterChoices={filterChoices}
+        initialLocationFilter={initialLocationFilter}
+        locale={locale}
+        token={token}
+      >
+        <BrowseProjectsContent
+          key={router.asPath}
+          filterChoices={filterChoices}
+          initialLocationFilter={initialLocationFilter}
+        />
+      </FilterProvider>
+      {isNarrowScreen && (
+        <MobileBottomMenu
+          tabValue={0}
+          handleTabChange={handleTabChange}
+          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+          hubAmbassador={null}
+        />
+      )}
+    </WideLayout>
   );
 }

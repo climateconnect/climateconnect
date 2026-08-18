@@ -1,9 +1,14 @@
 import NextCookies from "next-cookies";
 import React, { useContext, useEffect, useMemo } from "react";
 import Cookies from "universal-cookie";
+import {
+  getOrganizationTagsOptions,
+  getSectorOptions,
+  getSkillsOptions,
+} from "../../public/lib/getOptions";
 import { getLocationFilteredBy } from "../../public/lib/locationOperations";
 import { nullifyUndefinedValues } from "../../public/lib/profileOperations";
-import BrowseProjectsContent from "../../src/components/browse/BrowseProjectsContent";
+import BrowseOrganisationsContent from "../../src/components/browse/BrowseOrganisationsContent";
 import UserContext from "../../src/components/context/UserContext";
 import { HubContext } from "../../src/components/context/HubContext";
 import WideLayout from "../../src/components/layouts/WideLayout";
@@ -19,10 +24,10 @@ export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
   const locale = ctx.locale ?? "en";
   const [organization_types, location_filtered_by, sectorOptions, skills] = await Promise.all([
-    (await import("../../public/lib/getOptions")).getOrganizationTagsOptions(locale),
+    getOrganizationTagsOptions(locale),
     getLocationFilteredBy(ctx.query, locale),
-    (await import("../../public/lib/getOptions")).getSectorOptions(locale),
-    (await import("../../public/lib/getOptions")).getSkillsOptions(locale),
+    getSectorOptions(locale),
+    getSkillsOptions(locale),
   ]);
   return {
     props: nullifyUndefinedValues({
@@ -35,7 +40,7 @@ export async function getServerSideProps(ctx) {
 
 const TYPES_BY_TAB_VALUE: BrowseTab[] = ["projects", "organizations", "members"];
 
-export default function ProjectsPage({ filterChoices, initialLocationFilter }: any) {
+export default function OrganisationsPage({ filterChoices, initialLocationFilter }: any) {
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
   const { locale, refreshUser } = useContext(UserContext);
@@ -51,7 +56,7 @@ export default function ProjectsPage({ filterChoices, initialLocationFilter }: a
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     const tab = TYPES_BY_TAB_VALUE[newValue];
     const targetPath =
-      tab === "projects" ? "/projects" : tab === "organizations" ? "/organisations" : "/members";
+      tab === "projects" ? "/browse" : tab === "organizations" ? "/organizations" : "/members";
     const params = new URLSearchParams(window.location.search);
     router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);
   };
@@ -60,7 +65,7 @@ export default function ProjectsPage({ filterChoices, initialLocationFilter }: a
     <WideLayout>
       <HubTabsNavigation
         TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-        tabValue={0}
+        tabValue={1}
         handleTabChange={handleTabChange}
         type_names={{
           projects: texts.projects,
@@ -79,7 +84,7 @@ export default function ProjectsPage({ filterChoices, initialLocationFilter }: a
         locale={locale}
         token={token}
       >
-        <BrowseProjectsContent
+        <BrowseOrganisationsContent
           key={router.asPath}
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
@@ -87,7 +92,7 @@ export default function ProjectsPage({ filterChoices, initialLocationFilter }: a
       </FilterProvider>
       {isNarrowScreen && (
         <MobileBottomMenu
-          tabValue={0}
+          tabValue={1}
           handleTabChange={handleTabChange}
           TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
           hubAmbassador={null}

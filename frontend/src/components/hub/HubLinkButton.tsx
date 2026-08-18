@@ -97,11 +97,11 @@ export default function HubLinkButton({
   const classes = useStyles({ backgroundColor, iconUrl: hub.icon, isNarrowScreen });
   const getLinkUrl = () => {
     if (pageContext === "events") {
-      return hub.hubUrl.replace(/\/projects$/, "/events");
+      return hub.hubUrl.replace(/\/(browse|projects)$/, "/events");
     }
-    if (activeTab && hub.hubUrl.endsWith("/projects")) {
-      const tabPath = activeTab === "organizations" ? "organisations" : activeTab;
-      return hub.hubUrl.replace(/\/projects$/, `/${tabPath}`);
+    if (activeTab && /\/(browse|projects)$/.test(hub.hubUrl)) {
+      const tabPath = activeTab === "projects" ? "browse" : activeTab;
+      return hub.hubUrl.replace(/\/(browse|projects)$/, `/${tabPath}`);
     }
     const hash = window.location.hash;
     return `${hub.hubUrl}${hash}`;

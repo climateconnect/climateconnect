@@ -34,21 +34,21 @@ async function newEmailVerification(uuid, token, locale) {
       token: token,
       locale: locale,
     });
-    redirect("/projects", {
+    redirect("/browse", {
       message: response.data.message,
     });
   } catch (error: any) {
     const errortexts = getTexts({ page: "general", locale: locale });
     if (error.response && error.response.data) {
       if (error.response.data.detail)
-        redirect("/projects", { errorMessage: error.response.data.detail });
-      else redirect("/projects", { errorMessage: error.response.data.message });
+        redirect("/browse", { errorMessage: error.response.data.detail });
+      else redirect("/browse", { errorMessage: error.response.data.message });
     } else if (error.request) {
-      redirect("/projects", {
+      redirect("/browse", {
         errorMessage: errortexts.something_went_wrong,
       });
     } else {
-      redirect("/projects", {
+      redirect("/browse", {
         errorMessage: errortexts.something_went_wrong,
       });
     }

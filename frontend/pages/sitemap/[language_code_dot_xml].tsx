@@ -7,7 +7,6 @@ import { getAllBlogPosts } from "../../public/lib/webflowOperations";
 const NOT_LISTED = [
   "/_app",
   "/_document",
-  "/browse",
   "/inbox",
   "/accountcreated",
   "/editprofile",
@@ -30,11 +29,11 @@ const STATIC_PAGE_PROPS = {
     priority: 0.9,
     changefreq: "daily",
   },
-  "/projects": {
+  "/browse": {
     priority: 1,
     changefreq: "hourly",
   },
-  "/organisations": {
+  "/organizations": {
     priority: 0.9,
     changefreq: "daily",
   },
@@ -124,7 +123,7 @@ async function createSitemap(
 
 const expandHubBrowseEntries = (hubEntries, language_code) => {
   const langPrefix = language_code ? `/${language_code}` : "";
-  const browseTypes = ["projects", "organisations", "members"];
+  const browseTypes = ["browse", "organizations", "members"];
   return hubEntries.flatMap((hub) => {
     const hubUrlSlug = hub.url_slug.split("/").filter(Boolean).pop();
     if (!hubUrlSlug) return [];

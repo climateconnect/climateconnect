@@ -56,7 +56,7 @@ module.exports = withBundleAnalyzer({
     const existingRedirects = [
       {
         source: "/",
-        destination: "/projects",
+        destination: "/browse",
         has: [
           {
             type: "cookie",
@@ -100,7 +100,7 @@ module.exports = withBundleAnalyzer({
       },
       {
         source: "/hubs/prio1",
-        destination: "/hubs/prio1/projects",
+        destination: "/hubs/prio1/browse",
         permanent: false,
       },
     ];

@@ -284,7 +284,7 @@ export default function SettingsPage({ settings, setSettings, token, setMessage 
         locale: locale,
       })
         .then(function () {
-          redirect("/projects", {
+          redirect("/browse", {
             message:
               texts.an_e_mail_to_confirm_this_e_mail_address_change_has_been_sent_to_your_old_e_mail_address,
           });

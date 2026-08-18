@@ -113,7 +113,7 @@ async function requestSetPassword(uuid, new_password, setErrorMessage, texts, lo
         message: response.data.message,
       });
     } else {
-      redirect("/projects", {
+      redirect("/browse", {
         message: response.data.message,
       });
     }

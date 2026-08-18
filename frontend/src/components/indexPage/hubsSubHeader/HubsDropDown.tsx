@@ -41,9 +41,9 @@ export default function HubsDropDown({
   const texts = getTexts({ page: "hub", locale: locale });
   const router = useRouter();
 
-  const knownBrowseTypes = ["projects", "organisations", "members", "events"];
+  const knownBrowseTypes = ["browse", "organizations", "members", "events"];
   const currentBrowseType =
-    router.pathname.split("/").find((seg) => knownBrowseTypes.includes(seg)) || "projects";
+    router.pathname.split("/").find((seg) => knownBrowseTypes.includes(seg)) || "browse";
   const isEventsPage = currentBrowseType === "events";
 
   const toggleButtonProps: ButtonProps = {};

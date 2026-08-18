@@ -66,7 +66,7 @@ export default function ResetPassword({ hubUrl, hubThemeData }) {
             message: response.data.message,
           });
         } else {
-          redirect("/projects", {
+          redirect("/browse", {
             message: response.data.message,
           });
         }

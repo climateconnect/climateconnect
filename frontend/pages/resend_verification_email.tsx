@@ -60,7 +60,7 @@ export default function ResendVerificationEmail({ hubUrl, hubThemeData }) {
         message: resp.data.message,
       });
     } else {
-      redirect("/projects", {
+      redirect("/browse", {
         message: resp.data.message,
       });
     }

@@ -34,9 +34,9 @@ export default function HubMembersPage({
     const tab = TYPES[newValue];
     const targetPath =
       tab === "projects"
-        ? `${browsePath}/projects`
+        ? `${browsePath}/browse`
         : tab === "organizations"
-        ? `${browsePath}/organisations`
+        ? `${browsePath}/organizations`
         : `${browsePath}/members`;
     const params = new URLSearchParams(window.location.search);
     router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);

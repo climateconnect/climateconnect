@@ -61,9 +61,9 @@ function parseLinkedHubData(data: any): LinkedHub | null {
   const url_segments = data.url_slug.split("_");
   let hubUrl;
   if (url_segments.length == 1) {
-    hubUrl = `/hubs/${url_segments[0]}/projects`;
+    hubUrl = `/hubs/${url_segments[0]}/browse`;
   } else {
-    hubUrl = `/hubs/${url_segments[0]}/${url_segments[1]}/projects`;
+    hubUrl = `/hubs/${url_segments[0]}/${url_segments[1]}/browse`;
   }
 
   return {

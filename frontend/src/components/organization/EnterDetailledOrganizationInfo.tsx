@@ -56,7 +56,7 @@ export default function EnterDetailledOrganizationInfo({
   const classes = useStyles();
   const router = useRouter();
   const handleCancel = () => {
-    router.push("/projects");
+    router.push("/organizations");
   };
   return (
     <div>

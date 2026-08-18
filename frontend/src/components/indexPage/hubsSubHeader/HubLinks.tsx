@@ -35,9 +35,9 @@ export default function HubLinks({
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const router = useRouter();
 
-  const knownBrowseTypes = ["projects", "organisations", "members"];
+  const knownBrowseTypes = ["browse", "organizations", "members"];
   const currentBrowseType =
-    router.pathname.split("/").find((seg) => knownBrowseTypes.includes(seg)) || "projects";
+    router.pathname.split("/").find((seg) => knownBrowseTypes.includes(seg)) || "browse";
 
   const handleOpen = (e, type) => {
     e.preventDefault();

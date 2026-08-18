@@ -51,7 +51,7 @@ export default function MembersPage({ filterChoices, initialLocationFilter }: an
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     const tab = TYPES_BY_TAB_VALUE[newValue];
     const targetPath =
-      tab === "projects" ? "/projects" : tab === "organizations" ? "/organisations" : "/members";
+      tab === "projects" ? "/browse" : tab === "organizations" ? "/organizations" : "/members";
     const params = new URLSearchParams(window.location.search);
     router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);
   };

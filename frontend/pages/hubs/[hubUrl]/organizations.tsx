@@ -3,17 +3,17 @@ import React, { useContext } from "react";
 import { useRouter } from "next/router";
 import { getHubBrowseTypeServerSideProps } from "../../../src/components/hub/getHubBrowseTypeServerSideProps";
 import HubPageLayout from "../../../src/components/hub/HubPageLayout";
-import BrowseProjectsContent from "../../../src/components/browse/BrowseProjectsContent";
+import BrowseOrganisationsContent from "../../../src/components/browse/BrowseOrganisationsContent";
 import { FilterProvider } from "../../../src/components/provider/FilterProvider";
 import UserContext from "../../../src/components/context/UserContext";
 import Cookies from "universal-cookie";
 
 export const getServerSideProps: GetServerSideProps = (ctx) =>
-  getHubBrowseTypeServerSideProps(ctx, "projects");
+  getHubBrowseTypeServerSideProps(ctx, "organizations");
 
 const TYPES = ["projects", "organizations", "members"];
 
-export default function HubProjectsPage({
+export default function HubOrganisationsPage({
   hubUrl,
   subHubSegment,
   filterChoices,
@@ -34,9 +34,9 @@ export default function HubProjectsPage({
     const tab = TYPES[newValue];
     const targetPath =
       tab === "projects"
-        ? `${browsePath}/projects`
+        ? `${browsePath}/browse`
         : tab === "organizations"
-        ? `${browsePath}/organisations`
+        ? `${browsePath}/organizations`
         : `${browsePath}/members`;
     const params = new URLSearchParams(window.location.search);
     router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);
@@ -44,7 +44,7 @@ export default function HubProjectsPage({
 
   return (
     <HubPageLayout
-      activeTab={0}
+      activeTab={1}
       TYPES_BY_TAB_VALUE={TYPES}
       handleTabChange={handleTabChange}
       hubUrl={hubUrl}
@@ -62,7 +62,7 @@ export default function HubProjectsPage({
         token={token}
         hubUrl={hubUrl}
       >
-        <BrowseProjectsContent
+        <BrowseOrganisationsContent
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
         />

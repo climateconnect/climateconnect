@@ -255,10 +255,10 @@ const SiteLinks = ({ texts, locale }) => {
           {texts.browse}
         </Typography>
         <div className={classes.links}>
-          <AppLink href="/projects" leaveHub underline="none" className={classes.footerLink}>
+          <AppLink href="/browse" leaveHub underline="none" className={classes.footerLink}>
             <Typography className={classes.li}>{texts.projects}</Typography>
           </AppLink>
-          <AppLink href="/organisations" leaveHub underline="none" className={classes.footerLink}>
+          <AppLink href="/organizations" leaveHub underline="none" className={classes.footerLink}>
             <Typography className={classes.li}>{texts.organizations}</Typography>
           </AppLink>
           <AppLink href="/members" leaveHub underline="none" className={classes.footerLink}>
