@@ -33,7 +33,7 @@ export default function BrowseProjectsContent(props: Props) {
       filterChoices={props.filterChoices}
       initialLocationFilter={props.initialLocationFilter}
       customSearchBarLabels={props.customSearchBarLabels}
-      topContent={
+      belowFilterContent={
         shouldRenderUpcomingBand ? (
           <Suspense fallback={null}>
             <UpcomingEventsGroup events={visibleEvents} hubUrl={hubUrl} />

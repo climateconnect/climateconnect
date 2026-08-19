@@ -17,7 +17,16 @@ import { BrowseEntity } from "../../types";
 const FilterSection = lazy(() => import("../indexPage/FilterSection"));
 
 const useStyles = makeStyles((theme) => ({
+  // The container provides 24px horizontal padding on each side and a
+  // sensible max-width (1200px on `lg`). When nested inside another
+  // width-constrained Container (e.g. `HubPageLayout`), MUI's Container
+  // still applies its own padding — so the parent Container must not
+  // also add horizontal padding, or we'd get double padding. See
+  // `HubPageLayout` for the matching `disableGutters` on its outer
+  // Container.
   contentContainer: {
+    paddingLeft: 24,
+    paddingRight: 24,
     paddingTop: theme.spacing(4),
     position: "relative",
     [theme.breakpoints.down("md")]: {
@@ -37,12 +46,13 @@ type Props = {
   initialLocationFilter?: any;
   customSearchBarLabels?: any;
   /**
-   * Optional content rendered above the filter (e.g. the upcoming-events
-   * band on the projects page). The caller is responsible for any state
-   * updates this content needs (e.g. recomputing on filter changes);
-   * `BrowseContentBase` simply renders whatever React node is passed in.
+   * Optional content rendered between the filter and the preview grid
+   * (e.g. the upcoming-events band on the projects page). The caller
+   * is responsible for any state updates this content needs (e.g.
+   * recomputing on filter changes); `BrowseContentBase` simply renders
+   * whatever React node is passed in.
    */
-  topContent?: ReactNode;
+  belowFilterContent?: ReactNode;
   /**
    * Renders the entity-specific preview grid once data is available.
    * Receives the current items, filters, pagination handlers, and the
@@ -70,7 +80,7 @@ export default function BrowseContentBase({
   filterChoices,
   initialLocationFilter,
   customSearchBarLabels,
-  topContent,
+  belowFilterContent,
   renderItems,
 }: Props) {
   const classes = useStyles();
@@ -132,8 +142,7 @@ export default function BrowseContentBase({
   const unexpandFiltersOnMobile = () => setFiltersExpandedOnMobile(false);
 
   return (
-    <Container maxWidth="lg" disableGutters className={classes.contentContainer}>
-      {topContent}
+    <Container maxWidth="lg" className={classes.contentContainer}>
       {isSmallScreen && (
         <Suspense fallback={null}>
           <FilterSection
@@ -152,15 +161,31 @@ export default function BrowseContentBase({
         <FilterContent
           className={classes.tabContent}
           type={type}
-          applyFilters={({ type: _type, newFilters, closeFilters, nonFilterParams: _nfp }) =>
-            handleApplyNewFilters({
+          applyFilters={async ({
+            type: _type,
+            newFilters,
+            closeFilters,
+            nonFilterParams: _nfp,
+          }) => {
+            // The data hook owns the network round-trip; this layer owns the
+            // UI state (whether the filter overlay is open). `closeFilters:
+            // true` means the caller wants the overlay closed on success —
+            // we used to do this in the old `BrowseContent` based on
+            // `res?.closeFilters`. Without this the mobile filter stays
+            // open after the user clicks Apply.
+            const res = await handleApplyNewFilters({
               newFilters,
               closeFilters,
               filterChoices,
               hubUrl,
               initialLocationFilter,
-            })
-          }
+            });
+            if (res?.closeFilters) {
+              if (isSmallScreen) unexpandFiltersOnMobile();
+              else unexpandFilters();
+            }
+            return res;
+          }}
           handleUpdateFilters={handleUpdateFilterValues}
           errorMessage=""
           filtersExpanded={isSmallScreen ? filtersExpandedOnMobile : filtersExpanded}
@@ -176,6 +201,7 @@ export default function BrowseContentBase({
           }
         />
       )}
+      {belowFilterContent}
       {isFiltering && !childrenRenderedRef.current && <LoadingSpinner isLoading />}
       <div style={{ opacity: isFiltering && showChildren ? 0.5 : 1, transition: "opacity 150ms" }}>
         {showChildren && (
