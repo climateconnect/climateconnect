@@ -86,11 +86,15 @@ export default function HubsDropDown({
     if (isEventsPage) {
       return `/hubs/${urlSlug}/events`;
     }
-    if (activeEntry) {
-      return getHubBrowsePathForType(activeEntry, urlSlug);
-    }
+    // Logged-out users on hubs that have a curated landing page should be
+    // routed there. This takes priority over the active-entry preservation:
+    // a logged-out user on `/browse` who clicks a hub link should see the
+    // hub's landing page (curated content), not the project list.
     if (!user && hubs.find((h) => h.url_slug === urlSlug)?.landing_page_component) {
       return `/hubs/${urlSlug}`;
+    }
+    if (activeEntry) {
+      return getHubBrowsePathForType(activeEntry, urlSlug);
     }
     return `/hubs/${urlSlug}/browse`;
   };

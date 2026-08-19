@@ -61,7 +61,7 @@ function setPathname(pathname: string) {
 function renderDropdown(props: any) {
   return render(
     <ThemeProvider theme={testTheme}>
-      <UserContext.Provider value={userContextValue}>
+      <UserContext.Provider value={props.userContextValue ?? userContextValue}>
         <HubsDropDown
           open
           hubs={hubs}
@@ -87,30 +87,58 @@ describe("HubsDropDown href rewriting", () => {
     setPathname("/browse");
   });
 
-  it("links to /hubs/<hub>/browse on the projects page", () => {
+  it("links to /hubs/<hub>/browse on the projects page (or landing page for hubs that have one)", () => {
     setPathname("/browse");
     renderDropdown({ activeEntry: "projects" });
     const hrefs = getHrefs();
+    // kassel has no landing_page_component, so it preserves the active
+    // entry.
     expect(hrefs).toContain("/hubs/kassel/browse");
-    expect(hrefs).toContain("/hubs/prio1/browse");
+    // prio1 has a landing_page_component, so the dropdown routes logged-out
+    // users to the landing page even when activeEntry is set.
+    expect(hrefs).toContain("/hubs/prio1");
     // No "/events" entries
     expect(hrefs.some((h) => h.endsWith("/events"))).toBe(false);
   });
 
-  it("links to /hubs/<hub>/organizations on the organizations page", () => {
-    setPathname("/hubs/kassel/organizations");
-    renderDropdown({ activeEntry: "organizations" });
+  it("routes logged-out users to the hub landing page when present, even if activeEntry is set", () => {
+    // The pre-refactor dropdown routed logged-out users on hubs with a
+    // landing_page_component to `/hubs/<slug>` (the landing page). A
+    // regression in the activeEntry-aware dropdown had the activeEntry
+    // check run before the landing-page check, so logged-out users were
+    // sent to `/browse` instead. This test pins the correct behavior.
+    setPathname("/browse");
+    renderDropdown({ activeEntry: "projects" });
     const hrefs = getHrefs();
-    expect(hrefs).toContain("/hubs/kassel/organizations");
-    expect(hrefs).toContain("/hubs/prio1/organizations");
+    // In the test hubs, prio1 has a landing_page_component.
+    expect(hrefs).toContain("/hubs/prio1");
+    // kassel does not, so it should still go to /browse.
+    expect(hrefs).toContain("/hubs/kassel/browse");
   });
 
-  it("links to /hubs/<hub>/members on the members page", () => {
+  it("routes logged-in users on active entries to the entity-browser page, not the landing page", () => {
+    setPathname("/browse");
+    renderDropdown({
+      activeEntry: "projects",
+      userContextValue: { locale: "en", user: { id: 1, email: "test@example.com" } },
+    });
+    const hrefs = getHrefs();
+    // Logged-in users preserve the active entry even on hubs with a
+    // landing page.
+    expect(hrefs).toContain("/hubs/kassel/browse");
+    expect(hrefs).toContain("/hubs/prio1/browse");
+    expect(hrefs).not.toContain("/hubs/kassel");
+  });
+
+  it("links to /hubs/<hub>/members on the members page (or landing page if present)", () => {
     setPathname("/hubs/kassel/members");
     renderDropdown({ activeEntry: "members" });
     const hrefs = getHrefs();
+    // In the test hubs above, kassel has no landing_page_component so it
+    // preserves the active entry; prio1 has one so the dropdown routes to
+    // its landing page.
     expect(hrefs).toContain("/hubs/kassel/members");
-    expect(hrefs).toContain("/hubs/prio1/members");
+    expect(hrefs).toContain("/hubs/prio1");
   });
 
   it("links to /hubs/<hub>/events on the events page (any pathname ending in /events)", () => {
