@@ -57,7 +57,7 @@ describe("GoBackButton", () => {
   });
 
   it("navigates back in history when the referrer is internal", () => {
-    setReferrer("http://localhost/en/projects");
+    setReferrer("http://localhost/en/browse");
     renderButton();
     fireEvent.click(screen.getByText("Go back"));
     expect(mockBack).toHaveBeenCalledTimes(1);
@@ -106,7 +106,7 @@ describe("GoBackButton", () => {
   });
 
   it("navigates back from the tiny screen button", () => {
-    setReferrer("http://localhost/en/projects");
+    setReferrer("http://localhost/en/browse");
     renderButton({ tinyScreen: true });
     fireEvent.click(screen.getByRole("button"));
     expect(mockBack).toHaveBeenCalledTimes(1);

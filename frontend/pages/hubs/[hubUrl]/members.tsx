@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import React, { useContext } from "react";
 import { useRouter } from "next/router";
-import { getHubBrowseTypeServerSideProps } from "../../../src/components/hub/getHubBrowseTypeServerSideProps";
+import { getHubBrowseTypeServerSideProps } from "../../../public/lib/getHubBrowseTypeServerSideProps";
 import HubPageLayout from "../../../src/components/hub/HubPageLayout";
 import BrowseMembersContent from "../../../src/components/browse/BrowseMembersContent";
 import { FilterProvider } from "../../../src/components/provider/FilterProvider";
@@ -46,7 +46,7 @@ export default function HubMembersPage({
         hubUrl={hubUrl}
       >
         <BrowseMembersContent
-          key={router.asPath}
+          key={router.pathname}
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
         />

@@ -184,7 +184,7 @@ All internal links updated to use the central `getBrowsePathForType` / `getHubBr
 
 `ProjectMetaData.tsx` and `ProjectPreview.tsx` consume `useContext(BrowseContext)` to get `projectTypes` — they render on project detail pages and browse pages. Deleting `BrowseContext` breaks them.
 
-**Fix**: Move `BrowseContext.Provider` to `_app.tsx` (global). Fetch `projectTypes` once at the app level. Remove providers from individual pages.
+**Fix (final)**: `BrowseContext` was deleted entirely. The consumers (`ProjectMetaData`, `ProjectPreview`) now call `getProjectTypes(locale)` directly — a pure synchronous lookup that doesn't need a context provider. This is simpler than the proposed `_app.tsx` provider approach.
 
 ### 2. Hub theme: `parentHubUrl` vs `hubUrl`
 
@@ -201,7 +201,7 @@ All internal links updated to use the central `getBrowsePathForType` / `getHubBr
 ## Log
 
 - 2026-04-29 — Task created
-- 2026-08-17 — Implementation plan added. Key decisions: top-level URLs (no `/browse` prefix), UK spelling in URLs, client-side data fetch, per-type page files, `HubPageLayout` for shared hub chrome, `HubContext` for props drilling, `BrowseContext` moved to `_app.tsx`
+  - 2026-08-17 — Implementation plan added. Key decisions: top-level URLs (no `/browse` prefix), UK spelling in URLs, client-side data fetch, per-type page files, `HubPageLayout` for shared hub chrome, `HubContext` for props drilling, `BrowseContext` to be moved to `_app.tsx`
 - 2026-08-18 — Implementation completed. Major changes from spec:
   - **URL restructure**: `/browse` (not `/projects`) is the projects list URL, preserving backward compat. `/organizations` (US spelling) replaces `/organisations`.
   - **Centralized path mapping**: `getBrowsePathForType` / `getHubBrowsePathForType` in `urlOperations.ts` replaces scattered `tab === "projects" ? ...` logic across 8+ files.

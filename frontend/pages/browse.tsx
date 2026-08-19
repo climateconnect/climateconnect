@@ -42,6 +42,11 @@ export default function BrowsePage({ filterChoices, initialLocationFilter }: any
   const texts = useMemo(() => getTexts({ page: "hub", locale }), [locale]);
   const hashRedirectedRef = useRef(false);
 
+  // Mount-only: handle the legacy `/browse#members` / `/browse#organizations`
+  // hash redirects exactly once. The redirect is destructive (replaces the
+  // current URL) so it doesn't make sense to re-run on subsequent
+  // navigations; the `hashRedirectedRef` guard is a safety net in case the
+  // effect ever does re-run.
   useEffect(() => {
     if (hashRedirectedRef.current) return;
     const hash = window.location.hash.replace("#", "");
@@ -51,7 +56,8 @@ export default function BrowsePage({ filterChoices, initialLocationFilter }: any
       const target = hash === "organizations" ? "/organizations" : "/members";
       window.location.replace(`${localePrefix}${target}${window.location.search}`);
     }
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (refreshUser && token) refreshUser();
@@ -79,7 +85,7 @@ export default function BrowsePage({ filterChoices, initialLocationFilter }: any
         token={token}
       >
         <BrowseProjectsContent
-          key={router.asPath}
+          key={router.pathname}
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
         />

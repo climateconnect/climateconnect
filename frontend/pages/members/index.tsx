@@ -67,7 +67,7 @@ export default function MembersPage({ filterChoices, initialLocationFilter }: an
         token={token}
       >
         <BrowseMembersContent
-          key={router.asPath}
+          key={router.pathname}
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
         />

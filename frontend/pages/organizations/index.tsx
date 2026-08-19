@@ -72,7 +72,7 @@ export default function OrganisationsPage({ filterChoices, initialLocationFilter
         token={token}
       >
         <BrowseOrganisationsContent
-          key={router.asPath}
+          key={router.pathname}
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
         />

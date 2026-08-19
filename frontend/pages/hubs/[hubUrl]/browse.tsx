@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import React, { useContext, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import { getHubBrowseTypeServerSideProps } from "../../../src/components/hub/getHubBrowseTypeServerSideProps";
+import { getHubBrowseTypeServerSideProps } from "../../../public/lib/getHubBrowseTypeServerSideProps";
 import HubPageLayout from "../../../src/components/hub/HubPageLayout";
 import BrowseProjectsContent from "../../../src/components/browse/BrowseProjectsContent";
 import { FilterProvider } from "../../../src/components/provider/FilterProvider";
@@ -30,6 +30,8 @@ export default function HubProjectsPage({
   const router = useRouter();
   const hashRedirectedRef = useRef(false);
 
+  // Mount-only: handle the legacy `/hubs/.../browse#members` / `#organizations`
+  // hash redirects exactly once. See `pages/browse.tsx` for the rationale.
   useEffect(() => {
     if (hashRedirectedRef.current) return;
     const hash = window.location.hash.replace("#", "");
@@ -39,7 +41,8 @@ export default function HubProjectsPage({
       const localizedPath = appHref(targetPath, { locale: router.locale });
       window.location.replace(`${localizedPath}${window.location.search}`);
     }
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <HubPageLayout
@@ -60,7 +63,7 @@ export default function HubProjectsPage({
         hubUrl={hubUrl}
       >
         <BrowseProjectsContent
-          key={router.asPath}
+          key={router.pathname}
           filterChoices={filterChoices}
           initialLocationFilter={initialLocationFilter}
         />

@@ -115,6 +115,29 @@ export default function Notification({
     type === "reply_to_idea_comment" ||
     type === "person_joined_idea"
   ) {
+    // Ideas used to have their own hub browse URL with an `?idea=...#ideas`
+    // anchor. The browse refactor dropped that anchor system, so we fall
+    // back to the related project's page instead of rendering an empty
+    // notification. The notification payload may carry `notification.project`
+    // (the parent project) or `notification.idea` (the idea itself, which
+    // is a project of type "idea" in our model).
+    const relatedProject = notification.project || notification.idea;
+    if (relatedProject?.url_slug) {
+      const baseUrl = `/projects/${relatedProject.url_slug}`;
+      const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
+      // For the "person joined" variant we have a dedicated text entry;
+      // for the comment variants we use a generic message because no
+      // dedicated text entry exists and adding one is out of scope here.
+      const primaryText =
+        type === "person_joined_idea" ? texts.joined_your_idea : "commented on your idea";
+      return (
+        <GenericNotification
+          link={notifLink}
+          primaryText={primaryText}
+          notification={notification}
+        />
+      );
+    }
     return <></>;
   } else if (type === "project_like") {
     return <ProjectLikeNotification notification={notification} hubUrl={hubUrl} />;

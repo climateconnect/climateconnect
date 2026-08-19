@@ -209,7 +209,15 @@ export default function HubPageLayout({
             </div>
           )}
           {hubData?.parent_hub && (
-            <div className={classes.subHubInfoText}>{texts.you_are_seeing_projects_related_to}</div>
+            <div className={classes.subHubInfoText}>
+              {isEventsPage
+                ? texts.you_are_seeing_events_related_to
+                : activeEntry === "organizations"
+                ? texts.you_are_seeing_organizations_related_to
+                : activeEntry === "members"
+                ? texts.you_are_seeing_members_related_to
+                : texts.you_are_seeing_projects_related_to}
+            </div>
           )}
           {children}
         </Container>

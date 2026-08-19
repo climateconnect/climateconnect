@@ -28,7 +28,10 @@ jest.mock("../../public/data/possibleFilters", () => ({
         {
           key: "sectors",
           type: "multiselect",
-          options: [{ name: "Energy", original_name: "Energy" }],
+          options: [
+            { name: "Energy", original_name: "Energy" },
+            { name: "Transport", original_name: "Transport" },
+          ],
         },
       ],
       organizations: [
@@ -55,7 +58,10 @@ jest.mock("../../public/data/possibleFilters", () => ({
         {
           key: "sectors",
           type: "multiselect",
-          options: [{ name: "Energy", original_name: "Energy" }],
+          options: [
+            { name: "Energy", original_name: "Energy" },
+            { name: "Transport", original_name: "Transport" },
+          ],
         },
         {
           key: "organization_type",
@@ -75,7 +81,10 @@ jest.mock("../../public/data/possibleFilters", () => ({
 
 describe("useBrowseUrlSync", () => {
   const filterChoices = {
-    sectors: [{ name: "Energy", original_name: "Energy" }],
+    sectors: [
+      { name: "Energy", original_name: "Energy" },
+      { name: "Transport", original_name: "Transport" },
+    ],
     organization_types: [{ name: "NGO", original_name: "NGO" }],
     skills: [{ name: "Python", original_name: "Python" }],
   };
@@ -126,11 +135,11 @@ describe("useBrowseUrlSync", () => {
   });
 
   it("splits comma-separated multiselect values", () => {
-    mockGetSearchParams.mockReturnValue({ sectors: "Energy" });
+    mockGetSearchParams.mockReturnValue({ sectors: "Energy,Transport" });
     const { result } = renderHook(() => useBrowseUrlSync(filterChoices, "en"));
     const init = result.current.initializeFromUrl("projects");
     expect(init).not.toBeNull();
-    expect(init!.newFilters.sectors).toEqual(["Energy"]);
+    expect(init!.newFilters.sectors).toEqual(["Energy", "Transport"]);
   });
 
   it("calls showFeedbackMessage when message param present", () => {
