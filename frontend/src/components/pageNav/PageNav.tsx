@@ -86,6 +86,12 @@ const useStyles = makeStyles((theme) => ({
   linksAndTabsWrapper: {
     display: "flex",
     alignItems: "center",
+    // Match the MUI <Tabs> default height that the old nav used; without this
+    // the row collapses to the height of its tallest entry on pages that
+    // don't render a hub dropdown or hub links on the right (e.g. the events
+    // page, custom hubs like prio1, or sub-hub pages that have no linked
+    // hubs).
+    minHeight: 48,
     [theme.breakpoints.down("md")]: {
       justifyContent: "space-between",
     },
