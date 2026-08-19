@@ -1,5 +1,5 @@
 import { Theme } from "@emotion/react";
-import { Container, Link, Tab, Tabs, useMediaQuery } from "@mui/material";
+import { Container, Link, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useMemo, useState } from "react";
 import { useRouter } from "next/router";
@@ -12,37 +12,12 @@ import HubsDropDown from "../indexPage/hubsSubHeader/HubsDropDown";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
 import { getCustomHubData } from "../../../public/data/customHubData";
 import HubLinks from "../indexPage/hubsSubHeader/HubLinks";
+import { usePageNavEntries } from "../../hooks/usePageNavEntries";
+import { BrowseEntity } from "../../types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     background: theme.palette.primary.main,
-  },
-  tabs: {
-    "& .MuiTabs-indicator": {
-      background: "transparent",
-    },
-  },
-  tab: {
-    textTransform: "none",
-    color: theme.palette.primary.contrastText,
-    fontSize: 16,
-    "&.Mui-selected": {
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1),
-      "& .tabLabel": {
-        color: theme.palette.primary.main,
-        background: theme.palette.primary.contrastText,
-        borderRadius: 15,
-        paddingTop: 3,
-        paddingBottom: 3,
-        padding: theme.spacing(1.5),
-        display: "flex",
-        alignItems: "center",
-      },
-    },
-    "&:hover": {
-      textDecoration: "underline",
-    },
   },
   path: {
     color: theme.palette.primary.contrastText,
@@ -55,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
     marginLeft: theme.spacing(2),
   },
-  activeEventLink: {
+  activeLink: {
     color: theme.palette.primary.main,
     background: theme.palette.primary.contrastText,
     borderRadius: 15,
@@ -121,16 +96,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function HubTabsNavigation({
-  TYPES_BY_TAB_VALUE,
-  tabValue,
-  handleTabChange,
+/**
+ * The main page nav shown at the top of the browse pages and the events
+ * calendar. Renders the three entity-browser links and the events-calendar
+ * link, plus a hub dropdown / hub links on hub pages.
+ *
+ * The page that renders the nav is the source of truth for which entry is
+ * currently active — pass `activeEntry` to highlight the matching link. Pass
+ * `null` when the user is on a page that doesn't have an entry in this nav
+ * (e.g. the hub landing page).
+ */
+export default function PageNav({
+  activeEntry = null,
   type_names,
-  hubUrl,
+  hubUrl = "",
   className,
   allHubs,
   fromPage,
   subHubSegment,
+}: {
+  activeEntry?: BrowseEntity | null;
+  type_names: Record<string, string>;
+  hubUrl?: string;
+  className?: string;
+  allHubs?: any[];
+  fromPage?: string;
+  subHubSegment?: string;
 }) {
   const { locale, CUSTOM_HUB_URLS } = useContext(UserContext);
   const classes = useStyles();
@@ -139,7 +130,10 @@ export default function HubTabsNavigation({
   const router = useRouter();
   const { isEnabled } = useFeatureToggles();
   const isEventsEnabled = isEnabled("EVENT_CALENDAR_FEATURE");
-  const isEventsPage = router.pathname.includes("events");
+  const { browseEntries, getHref, isActive } = usePageNavEntries({
+    hubUrl,
+    subHubSegment,
+  });
 
   // Computed values
   const texts = getTexts({ page: "navigation", locale: locale });
@@ -162,30 +156,37 @@ export default function HubTabsNavigation({
   const handleClose = () => setDropdownOpen(false);
   const handleToggleOpen = () => setDropdownOpen(!dropdownOpen);
 
-  // Render helpers
-  const renderTabs = () => {
+  const renderBrowseLinks = () => {
     if (isNarrowScreen) return null;
 
     return (
-      <Tabs
-        variant="standard"
-        value={tabValue >= 0 ? tabValue : false}
-        onChange={handleTabChange}
-        indicatorColor="primary"
-        textColor="primary"
-        className={classes.tabs}
-      >
-        {TYPES_BY_TAB_VALUE.map((type, index) => (
-          <Tab
-            key={index}
-            disableRipple
-            classes={{
-              root: classes.tab,
-            }}
-            label={<div className="tabLabel">{type_names[type]}</div>}
-          />
-        ))}
-      </Tabs>
+      <>
+        {browseEntries.map((entry) => {
+          const path = getHref(entry);
+          const active = isActive(entry, activeEntry);
+          return (
+            <AppLink
+              key={entry}
+              className={active ? classes.activeLink : classes.link}
+              href={path}
+              underline={active ? "none" : "hover"}
+              onClick={(e: React.MouseEvent) => {
+                // Preserve the current filter query string when switching
+                // between entries via SPA navigation. For modifier-clicks
+                // (cmd/ctrl/shift/middle) we let the browser open the link
+                // in a new tab with the bare href.
+                if (active) return;
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                e.preventDefault();
+                const params = new URLSearchParams(window.location.search);
+                router.push(`${path}${params.toString() ? `?${params}` : ""}`);
+              }}
+            >
+              {type_names[entry]}
+            </AppLink>
+          );
+        })}
+      </>
     );
   };
 
@@ -242,26 +243,19 @@ export default function HubTabsNavigation({
   };
 
   return (
-    <div className={`${className} ${classes.root}`}>
+    <div className={`${className ?? ""} ${classes.root}`}>
       <Container maxWidth="lg" className={classes.container}>
         <div className={classes.linksAndTabsWrapper}>
-          {renderTabs()}
-          {isEventsEnabled &&
-            !isNarrowScreen &&
-            (() => {
-              const eventsPath = hubUrl
-                ? `/hubs/${hubUrl}${subHubSegment ? `/${subHubSegment}` : ""}/events`
-                : "/events";
-              return (
-                <AppLink
-                  className={isEventsPage ? classes.activeEventLink : classes.link}
-                  href={eventsPath}
-                  underline={isEventsPage ? "none" : "hover"}
-                >
-                  {texts.event_calendar ?? "Event calendar"}
-                </AppLink>
-              );
-            })()}
+          {renderBrowseLinks()}
+          {isEventsEnabled && !isNarrowScreen && (
+            <AppLink
+              className={isActive("events", activeEntry) ? classes.activeLink : classes.link}
+              href={getHref("events")}
+              underline={isActive("events", activeEntry) ? "none" : "hover"}
+            >
+              {texts.event_calendar ?? "Event calendar"}
+            </AppLink>
+          )}
           {isEmmendingenHub && (
             <Link
               className={classes.climateMatchLink}

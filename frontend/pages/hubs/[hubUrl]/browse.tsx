@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { getHubBrowseTypeServerSideProps } from "../../../src/components/hub/getHubBrowseTypeServerSideProps";
 import HubPageLayout from "../../../src/components/hub/HubPageLayout";
@@ -8,11 +8,10 @@ import { FilterProvider } from "../../../src/components/provider/FilterProvider"
 import UserContext from "../../../src/components/context/UserContext";
 import Cookies from "universal-cookie";
 import { getHubBrowsePathForType } from "../../../public/lib/urlOperations";
+import { appHref } from "../../../public/lib/appLink";
 
 export const getServerSideProps: GetServerSideProps = (ctx) =>
   getHubBrowseTypeServerSideProps(ctx, "projects");
-
-const TYPES = ["projects", "organizations", "members"];
 
 export default function HubProjectsPage({
   hubUrl,
@@ -29,18 +28,22 @@ export default function HubProjectsPage({
   const token = cookies.get("auth_token");
   const { locale } = useContext(UserContext);
   const router = useRouter();
+  const hashRedirectedRef = useRef(false);
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    const targetPath = getHubBrowsePathForType(TYPES[newValue], hubUrl, subHubSegment);
-    const params = new URLSearchParams(window.location.search);
-    router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);
-  };
+  useEffect(() => {
+    if (hashRedirectedRef.current) return;
+    const hash = window.location.hash.replace("#", "");
+    if (hash === "organizations" || hash === "members") {
+      hashRedirectedRef.current = true;
+      const targetPath = getHubBrowsePathForType(hash, hubUrl, subHubSegment);
+      const localizedPath = appHref(targetPath, { locale: router.locale });
+      window.location.replace(`${localizedPath}${window.location.search}`);
+    }
+  }, [router]);
 
   return (
     <HubPageLayout
-      activeTab={0}
-      TYPES_BY_TAB_VALUE={TYPES}
-      handleTabChange={handleTabChange}
+      activeEntry="projects"
       hubUrl={hubUrl}
       subHubSegment={subHubSegment}
       linkedHubs={linkedHubs}

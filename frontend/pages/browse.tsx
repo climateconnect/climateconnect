@@ -7,14 +7,12 @@ import BrowseProjectsContent from "../src/components/browse/BrowseProjectsConten
 import UserContext from "../src/components/context/UserContext";
 import { HubContext } from "../src/components/context/HubContext";
 import WideLayout from "../src/components/layouts/WideLayout";
-import HubTabsNavigation from "../src/components/hub/HubTabsNavigation";
-import MobileBottomMenu from "../src/components/browse/MobileBottomMenu";
+import PageNav from "../src/components/pageNav/PageNav";
+import MobilePageNav from "../src/components/pageNav/MobilePageNav";
 import { FilterProvider } from "../src/components/provider/FilterProvider";
-import { BrowseTab } from "../src/types";
 import { useRouter } from "next/router";
 import { useMediaQuery, Theme } from "@mui/material";
 import getTexts from "../public/texts/texts";
-import { getBrowsePathForType } from "../public/lib/urlOperations";
 
 export async function getServerSideProps(ctx) {
   const { hideInfo } = NextCookies(ctx);
@@ -33,8 +31,6 @@ export async function getServerSideProps(ctx) {
     }),
   };
 }
-
-const TYPES_BY_TAB_VALUE: BrowseTab[] = ["projects", "organizations", "members"];
 
 export default function BrowsePage({ filterChoices, initialLocationFilter }: any) {
   const cookies = new Cookies();
@@ -61,19 +57,10 @@ export default function BrowsePage({ filterChoices, initialLocationFilter }: any
     if (refreshUser && token) refreshUser();
   }, []);
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    const tab = TYPES_BY_TAB_VALUE[newValue];
-    const targetPath = getBrowsePathForType(tab);
-    const params = new URLSearchParams(window.location.search);
-    router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);
-  };
-
   return (
     <WideLayout>
-      <HubTabsNavigation
-        TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-        tabValue={0}
-        handleTabChange={handleTabChange}
+      <PageNav
+        activeEntry="projects"
         type_names={{
           projects: texts.projects,
           organizations: isNarrowScreen ? texts.orgs : texts.organizations,
@@ -97,14 +84,7 @@ export default function BrowsePage({ filterChoices, initialLocationFilter }: any
           initialLocationFilter={initialLocationFilter}
         />
       </FilterProvider>
-      {isNarrowScreen && (
-        <MobileBottomMenu
-          tabValue={0}
-          handleTabChange={handleTabChange}
-          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-          hubAmbassador={null}
-        />
-      )}
+      {isNarrowScreen && <MobilePageNav activeEntry="projects" hubAmbassador={null} />}
     </WideLayout>
   );
 }

@@ -118,7 +118,7 @@ describe("GoBackButton", () => {
     renderButton({ locale: "en" });
     fireEvent.click(screen.getByText("Go back"));
     expect(mockBack).not.toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith("/en/projects");
+    expect(mockPush).toHaveBeenCalledWith("/en/browse");
   });
 
   it("falls back to the browse page when referrer is empty (e.g. external link opened in new tab)", () => {
@@ -126,7 +126,7 @@ describe("GoBackButton", () => {
     renderButton({ locale: "en" });
     fireEvent.click(screen.getByText("Go back"));
     expect(mockBack).not.toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith("/en/projects");
+    expect(mockPush).toHaveBeenCalledWith("/en/browse");
   });
 
   it("falls back to the browse page when referrer is on a different host", () => {

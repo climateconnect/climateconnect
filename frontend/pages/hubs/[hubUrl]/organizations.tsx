@@ -7,12 +7,9 @@ import BrowseOrganisationsContent from "../../../src/components/browse/BrowseOrg
 import { FilterProvider } from "../../../src/components/provider/FilterProvider";
 import UserContext from "../../../src/components/context/UserContext";
 import Cookies from "universal-cookie";
-import { getHubBrowsePathForType } from "../../../public/lib/urlOperations";
 
 export const getServerSideProps: GetServerSideProps = (ctx) =>
   getHubBrowseTypeServerSideProps(ctx, "organizations");
-
-const TYPES = ["projects", "organizations", "members"];
 
 export default function HubOrganisationsPage({
   hubUrl,
@@ -30,17 +27,9 @@ export default function HubOrganisationsPage({
   const { locale } = useContext(UserContext);
   const router = useRouter();
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    const targetPath = getHubBrowsePathForType(TYPES[newValue], hubUrl, subHubSegment);
-    const params = new URLSearchParams(window.location.search);
-    router.push(`${targetPath}${params.toString() ? `?${params}` : ""}`);
-  };
-
   return (
     <HubPageLayout
-      activeTab={1}
-      TYPES_BY_TAB_VALUE={TYPES}
-      handleTabChange={handleTabChange}
+      activeEntry="organizations"
       hubUrl={hubUrl}
       subHubSegment={subHubSegment}
       linkedHubs={linkedHubs}

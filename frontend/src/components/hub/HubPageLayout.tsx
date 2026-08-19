@@ -4,12 +4,12 @@ import makeStyles from "@mui/styles/makeStyles";
 import WideLayout from "../layouts/WideLayout";
 import HubHeaderImage from "./HubHeaderImage";
 import HubContent from "./HubContent";
-import HubTabsNavigation from "./HubTabsNavigation";
+import PageNav from "../pageNav/PageNav";
 import HubSupporters from "./HubSupporters";
 import HubLinkButton from "./HubLinkButton";
 import DonationCampaignInformation from "../staticpages/donate/DonationCampaignInformation";
 import { FabShareButton } from "./FabShareButton";
-import MobileBottomMenu from "../browse/MobileBottomMenu";
+import MobilePageNav from "../pageNav/MobilePageNav";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import { getHubAmbassadorData, getHubSupportersData } from "../../../public/lib/getHubData";
 import isLocationHubLikeHub from "../../../public/lib/isLocationHubLikeHub";
@@ -17,6 +17,7 @@ import { transformThemeData } from "../../themes/transformThemeData";
 import hubTheme from "../../themes/hubTheme";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { BrowseEntity } from "../../types";
 
 const useStyles = makeStyles((theme) => ({
   linkedHubsContainer: {
@@ -45,9 +46,13 @@ const useStyles = makeStyles((theme) => ({
 
 type HubPageLayoutProps = {
   children: React.ReactNode;
-  activeTab: number;
-  TYPES_BY_TAB_VALUE: string[];
-  handleTabChange: (_event: React.SyntheticEvent, _newValue: number) => void;
+  /**
+   * The page-nav entry that is currently active on this page. `null` means
+   * no entry in the main page nav is active (e.g. the hub landing page).
+   * The page that renders the layout is the source of truth —
+   * `HubPageLayout` is not responsible for figuring out which page it's on.
+   */
+  activeEntry: BrowseEntity | null;
   hubUrl: string;
   subHubSegment?: string;
   linkedHubs?: any[];
@@ -61,9 +66,7 @@ type HubPageLayoutProps = {
 
 export default function HubPageLayout({
   children,
-  activeTab,
-  TYPES_BY_TAB_VALUE,
-  handleTabChange,
+  activeEntry,
   hubUrl,
   subHubSegment,
   linkedHubs,
@@ -87,9 +90,10 @@ export default function HubPageLayout({
   const [hubAmbassador, setHubAmbassador] = useState(initialAmbassador || null);
   const [hubSupporters, setHubSupporters] = useState(initialSupporters || null);
 
-  const browseTabTypes = TYPES_BY_TAB_VALUE.filter((t) => t !== "events");
-  const activeTabType =
-    activeTab >= 0 && activeTab < browseTabTypes.length ? browseTabTypes[activeTab] : undefined;
+  // The linked-hub button receives the active browse type as a string (or
+  // undefined) so it can build URLs that preserve the current entry when the
+  // user navigates to a linked hub.
+  const activeTabType = activeEntry ?? undefined;
 
   useEffect(() => {
     if (initialAmbassador !== undefined) return;
@@ -153,10 +157,8 @@ export default function HubPageLayout({
         hubUrl={hubUrl}
         image={hubData?.image ? getImageUrl(hubData.image) : undefined}
       />
-      <HubTabsNavigation
-        TYPES_BY_TAB_VALUE={browseTabTypes}
-        tabValue={activeTab}
-        handleTabChange={handleTabChange}
+      <PageNav
+        activeEntry={activeEntry}
         type_names={type_names}
         hubUrl={hubUrl}
         className=""
@@ -190,10 +192,10 @@ export default function HubPageLayout({
         </Container>
       </div>
       {isNarrowScreen && (
-        <MobileBottomMenu
-          tabValue={activeTab}
-          handleTabChange={handleTabChange}
-          TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
+        <MobilePageNav
+          activeEntry={activeEntry}
+          hubUrl={hubUrl}
+          subHubSegment={subHubSegment}
           hubAmbassador={hubAmbassador}
         />
       )}

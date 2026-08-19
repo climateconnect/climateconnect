@@ -1,7 +1,6 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import NextCookies from "next-cookies";
 import React from "react";
-import { useRouter } from "next/router";
 import { extractHubUrlsFromContext, getAllHubs } from "../../../public/lib/hubOperations";
 import { getSectorOptions } from "../../../public/lib/getOptions";
 import { apiRequest } from "../../../public/lib/apiOperations";
@@ -10,7 +9,6 @@ import HubPageLayout from "../../../src/components/hub/HubPageLayout";
 import EventCalendarContent from "../../../src/components/eventCalendar/EventCalendarContent";
 import { getHubData, getLinkedHubsData } from "../../../public/lib/getHubData";
 import getHubTheme from "../../../src/themes/fetchHubTheme";
-import { getHubBrowsePathForType } from "../../../public/lib/urlOperations";
 
 const toOffsetIso = (d: Date): string => {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -132,22 +130,11 @@ export default function HubEventsPage({
   hubThemeData,
   linkedHubs,
 }: any) {
-  const router = useRouter();
-
   const effectiveHubUrl = subHubUrl || hubUrl;
-
-  const TYPES_BY_TAB_VALUE = ["projects", "organizations", "members"];
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    const tab = TYPES_BY_TAB_VALUE[newValue];
-    router.push(getHubBrowsePathForType(tab, hubUrl, subHubSegment));
-  };
 
   return (
     <HubPageLayout
-      activeTab={-1}
-      TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-      handleTabChange={handleTabChange}
+      activeEntry={null}
       hubUrl={hubUrl}
       subHubSegment={subHubSegment}
       linkedHubs={linkedHubs}
