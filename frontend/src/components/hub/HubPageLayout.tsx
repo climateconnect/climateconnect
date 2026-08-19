@@ -20,10 +20,16 @@ import UserContext from "../context/UserContext";
 import { BrowseEntity } from "../../types";
 
 const useStyles = makeStyles((theme) => ({
+  // The outer Container uses `disableGutters` (no horizontal padding) so the
+  // inner `BrowseContentBase` Container provides the 24px padding. These
+  // elements live outside the inner Container, so they need their own
+  // padding to align with the content area.
   linkedHubsContainer: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
+    paddingLeft: 24,
+    paddingRight: 24,
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
     gap: theme.spacing(1),
@@ -40,6 +46,8 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: "italic",
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
+    paddingLeft: 24,
+    paddingRight: 24,
     textAlign: "left" as const,
   },
 }));
@@ -180,7 +188,7 @@ export default function HubPageLayout({
         subHubSegment={subHubSegment}
       />
       <div ref={contentRef}>
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" disableGutters>
           {isNarrowScreen && hubSupporters && (
             <HubSupporters supportersList={hubSupporters} hubName={hubData?.name} hubUrl={hubUrl} />
           )}
