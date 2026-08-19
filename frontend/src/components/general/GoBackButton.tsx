@@ -79,7 +79,6 @@ export default function GoBackButton({
     if (hubPage) {
       return "/" + locale + "/hubs/" + hubPage + "/browse";
     }
-    // Default to general browse page
     return "/" + locale + "/browse";
   };
 

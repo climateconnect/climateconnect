@@ -60,7 +60,7 @@ describe("getLinks", () => {
 
   it("uses global About/Browse labels for non-hub pages", () => {
     const texts = buildTexts();
-    const links = getLinks("/projects", texts, false, false, false, undefined);
+    const links = getLinks("/browse", texts, false, false, false, undefined);
 
     expect(links[0]).toMatchObject({ text: texts.browse, showStaticLinksInDropdown: false });
     expect(links[1]).toMatchObject({ text: texts.about, showStaticLinksInDropdown: true });
@@ -93,12 +93,12 @@ describe("getLinks", () => {
 
   it("returns only login link in auth links", () => {
     const texts = buildTexts();
-    const links = getLinks("/projects", texts, false, false, false, undefined);
+    const links = getLinks("/browse", texts, false, false, false, undefined);
 
     const authLinks = links.filter((link) => link.onlyShowLoggedOut);
     expect(authLinks).toHaveLength(1);
     expect(authLinks[0]).toMatchObject({
-      href: "/login?redirect=%2Fprojects",
+      href: "/login?redirect=%2Fbrowse",
       text: texts.auth_log_in,
     });
   });
