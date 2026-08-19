@@ -152,10 +152,16 @@ export default function PageNav({
     [allHubs]
   );
 
-  const hubTabLink = useMemo(() => getCustomHubData({ hubUrl, texts })?.hubTabLinkNarrowScreen, [
-    hubUrl,
-    texts,
-  ]);
+  // Only look up custom-hub data for known custom hubs. The keys of
+  // `CustomHubConfig` are restricted to the custom-hub slugs, so calling
+  // `getCustomHubData` with any other `hubUrl` would be a type error.
+  const hubTabLink = useMemo(
+    () =>
+      hubUrl && (hubUrl === "prio1" || hubUrl === "perth")
+        ? getCustomHubData({ hubUrl: hubUrl as "prio1" | "perth", texts })?.hubTabLinkNarrowScreen
+        : undefined,
+    [hubUrl, texts]
+  );
 
   // Dropdown handlers
   const handleOpen = () => setDropdownOpen(true);

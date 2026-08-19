@@ -63,7 +63,7 @@ export default function HubsDropDown({
   addLocationHubExplainerLink?: boolean;
   height?: number;
 }) {
-  const classes = useStyles({ height: height });
+  const classes = useStyles({ height: height ?? 54 });
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const popperRef = useRef<HTMLAnchorElement | null>(null);
   const { locale, user } = useContext(UserContext);
