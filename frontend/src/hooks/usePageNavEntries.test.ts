@@ -6,7 +6,7 @@ jest.mock("next/router", () => ({
   useRouter: () => mockRouter,
 }));
 
-import { usePageNavEntries } from "./usePageNavEntries";
+import { useIsEventsPage, usePageNavEntries } from "./usePageNavEntries";
 
 function setPathname(pathname: string) {
   mockRouter.pathname = pathname;
@@ -150,5 +150,56 @@ describe("usePageNavEntries.isActive", () => {
     expect(result.current.isActive("organizations", null)).toBe(false);
     expect(result.current.isActive("members", null)).toBe(false);
     expect(result.current.isActive("events", null)).toBe(false);
+  });
+
+  it("exposes isEventsPage derived from the URL", () => {
+    setPathname("/events");
+    const { result, rerender } = renderHook(() => usePageNavEntries({}));
+    expect(result.current.isEventsPage).toBe(true);
+    setPathname("/hubs/kassel/events");
+    rerender();
+    expect(result.current.isEventsPage).toBe(true);
+    setPathname("/browse");
+    rerender();
+    expect(result.current.isEventsPage).toBe(false);
+    setPathname("/hubs/erlangen/zerowaste/organizations");
+    rerender();
+    expect(result.current.isEventsPage).toBe(false);
+  });
+});
+
+describe("useIsEventsPage", () => {
+  beforeEach(() => {
+    setPathname("/browse");
+  });
+
+  it("returns true on /events", () => {
+    setPathname("/events");
+    const { result } = renderHook(() => useIsEventsPage());
+    expect(result.current).toBe(true);
+  });
+
+  it("returns true on /hubs/<hub>/events", () => {
+    setPathname("/hubs/kassel/events");
+    const { result } = renderHook(() => useIsEventsPage());
+    expect(result.current).toBe(true);
+  });
+
+  it("returns true on sub-hub events pages", () => {
+    setPathname("/hubs/erlangen/zerowaste/events");
+    const { result } = renderHook(() => useIsEventsPage());
+    expect(result.current).toBe(true);
+  });
+
+  it("returns false on /browse and other entity-browser pages", () => {
+    setPathname("/browse");
+    const { result, rerender } = renderHook(() => useIsEventsPage());
+    expect(result.current).toBe(false);
+    setPathname("/hubs/kassel/organizations");
+    rerender();
+    expect(result.current).toBe(false);
+    setPathname("/hubs/erlangen/zerowaste/members");
+    rerender();
+    expect(result.current).toBe(false);
   });
 });

@@ -220,6 +220,7 @@ export default function PageNav({
     if (!isCustomHub && isHubPage) {
       return (
         <HubsDropDown
+          activeEntry={activeEntry}
           hubs={locationHubs}
           label={texts.all_hubs}
           isNarrowScreen={isNarrowScreen}
