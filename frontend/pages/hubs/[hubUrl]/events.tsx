@@ -135,6 +135,7 @@ export default function HubEventsPage({
   return (
     <HubPageLayout
       activeEntry={null}
+      isEventsPage
       hubUrl={hubUrl}
       subHubSegment={subHubSegment}
       linkedHubs={linkedHubs}

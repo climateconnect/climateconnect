@@ -48,11 +48,20 @@ type HubPageLayoutProps = {
   children: React.ReactNode;
   /**
    * The page-nav entry that is currently active on this page. `null` means
-   * no entry in the main page nav is active (e.g. the hub landing page).
-   * The page that renders the layout is the source of truth —
-   * `HubPageLayout` is not responsible for figuring out which page it's on.
+   * no entry in the main page nav is active (e.g. the hub landing page or
+   * the events page). The page that renders the layout is the source of
+   * truth — `HubPageLayout` is not responsible for figuring out which page
+   * it's on.
    */
   activeEntry: BrowseEntity | null;
+  /**
+   * Whether the page being rendered is the events calendar. The events page
+   * has no `BrowseEntity` entry to highlight, so we need a separate signal
+   * to know how to rewrite the linked-hub URLs: when the user is on the
+   * events page and clicks a linked hub, they should land on that linked
+   * hub's events page (not its browse page).
+   */
+  isEventsPage?: boolean;
   hubUrl: string;
   subHubSegment?: string;
   linkedHubs?: any[];
@@ -67,6 +76,7 @@ type HubPageLayoutProps = {
 export default function HubPageLayout({
   children,
   activeEntry,
+  isEventsPage = false,
   hubUrl,
   subHubSegment,
   linkedHubs,
@@ -92,8 +102,11 @@ export default function HubPageLayout({
 
   // The linked-hub button receives the active browse type as a string (or
   // undefined) so it can build URLs that preserve the current entry when the
-  // user navigates to a linked hub.
+  // user navigates to a linked hub. On the events page (`isEventsPage`),
+  // pass `pageContext="events"` so the linked-hub URLs are rewritten to
+  // `/events` instead of the default `/browse`.
   const activeTabType = activeEntry ?? undefined;
+  const linkedHubPageContext = isEventsPage ? "events" : "browse";
 
   useEffect(() => {
     if (initialAmbassador !== undefined) return;
@@ -174,14 +187,24 @@ export default function HubPageLayout({
           {isNarrowScreen && linkedHubs && linkedHubs.length > 0 && (
             <div className={classes.linkedHubsContainerMobile}>
               {linkedHubs.map((linkedHub: any) => (
-                <HubLinkButton key={linkedHub.hubUrl} hub={linkedHub} activeTab={activeTabType} />
+                <HubLinkButton
+                  key={linkedHub.hubUrl}
+                  hub={linkedHub}
+                  activeTab={activeTabType}
+                  pageContext={linkedHubPageContext}
+                />
               ))}
             </div>
           )}
           {!isNarrowScreen && linkedHubs && linkedHubs.length > 0 && (
             <div className={classes.linkedHubsContainer}>
               {linkedHubs.map((linkedHub: any) => (
-                <HubLinkButton key={linkedHub.hubUrl} hub={linkedHub} activeTab={activeTabType} />
+                <HubLinkButton
+                  key={linkedHub.hubUrl}
+                  hub={linkedHub}
+                  activeTab={activeTabType}
+                  pageContext={linkedHubPageContext}
+                />
               ))}
             </div>
           )}
