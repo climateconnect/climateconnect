@@ -161,15 +161,31 @@ export default function BrowseContentBase({
         <FilterContent
           className={classes.tabContent}
           type={type}
-          applyFilters={({ type: _type, newFilters, closeFilters, nonFilterParams: _nfp }) =>
-            handleApplyNewFilters({
+          applyFilters={async ({
+            type: _type,
+            newFilters,
+            closeFilters,
+            nonFilterParams: _nfp,
+          }) => {
+            // The data hook owns the network round-trip; this layer owns the
+            // UI state (whether the filter overlay is open). `closeFilters:
+            // true` means the caller wants the overlay closed on success —
+            // we used to do this in the old `BrowseContent` based on
+            // `res?.closeFilters`. Without this the mobile filter stays
+            // open after the user clicks Apply.
+            const res = await handleApplyNewFilters({
               newFilters,
               closeFilters,
               filterChoices,
               hubUrl,
               initialLocationFilter,
-            })
-          }
+            });
+            if (res?.closeFilters) {
+              if (isSmallScreen) unexpandFiltersOnMobile();
+              else unexpandFilters();
+            }
+            return res;
+          }}
           handleUpdateFilters={handleUpdateFilterValues}
           errorMessage=""
           filtersExpanded={isSmallScreen ? filtersExpandedOnMobile : filtersExpanded}
