@@ -30,7 +30,7 @@ describe("getLinks", () => {
   it("returns landing-page variants for location hubs on their root path", () => {
     const texts = buildTexts();
     const hubSlug = "erlangen";
-    const links = getLinks(`/hubs/${hubSlug}`, texts, true, false, true, hubSlug);
+    const links = getLinks(`/hubs/${hubSlug}`, texts, true, false, true, hubSlug, true);
 
     expect(links[0]).toMatchObject({
       href: "/browse",

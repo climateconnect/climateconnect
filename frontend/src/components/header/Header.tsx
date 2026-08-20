@@ -305,7 +305,15 @@ export default function Header({
   const isCustomHub = customHubUrls.includes(hubUrl);
   const isLocationHub = LOCATION_HUBS.includes(hubUrl);
 
-  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl);
+  const LINKS = getLinks(
+    pathName,
+    texts,
+    isLocationHub,
+    isCustomHub,
+    hasHubLandingPage,
+    hubUrl,
+    isLandingPage
+  );
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
