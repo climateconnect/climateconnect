@@ -945,7 +945,7 @@ instead. See `doc/spec/20260804_1202_locationiq_feature_toggle_and_result_cachin
 
 **Caching.** Successful results are cached in Redis for 24 hours on a sliding TTL — every hit
 resets the 24 hours, capped at 48 hours from the first fetch, after which the entry is re-fetched.
-The cache holds at most `LOCATIONIQ_CACHE_MAX_ENTRIES` queries (default 1000), evicting the least
+The cache holds at most `LOCATION_PROXY_CACHE_MAX_ENTRIES` queries (default 1000), evicting the least
 recently read. Failed lookups are cached for seconds only, so a provider outage self-corrects
 rather than being served as an empty result all day.
 

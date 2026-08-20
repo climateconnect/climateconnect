@@ -419,7 +419,10 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
 NOMINATIM_LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
 CUSTOM_USER_AGENT = "ClimateConnect/1.0 (contact@climateconnect.earth)"
 
-# LocationIQ autocomplete
+# --- Geocoding provider: LocationIQ ------------------------------------------
+# Only settings that would change if we swapped LocationIQ for another provider
+# belong here. Everything about the proxy itself (queueing, cache, per-IP
+# limits) is prefixed LOCATION_PROXY_ further below.
 LOCATIONIQ_API_KEY = env("LOCATIONIQ_API_KEY", "")
 # LocationIQ's /v1/search is its Nominatim-compatible geocoding endpoint: it
 # returns the same response shape master relied on (importance scores + typed
@@ -438,29 +441,44 @@ NOMINATIM_TIMEOUT = 5  # seconds
 # application from one IP, so while the toggle is off in production this should
 # be "1/s" — see the risk table in
 # doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md.
-# Lowering it is NOT a one-line change: LOCATIONIQ_SENTINEL_TTL_S and
-# LOCATIONIQ_STALE_PENDING_S below are both derived from this rate and have to
-# be re-derived with it.
+# Lowering it is NOT a one-line change: LOCATION_PROXY_SENTINEL_TTL_S and
+# LOCATION_PROXY_STALE_PENDING_S below are both derived from this rate and have
+# to be re-derived with it.
 LOCATIONIQ_MAX_RATE = "2/s"
-LOCATIONIQ_PENDING_CAP = 16  # max distinct in-flight lookups before 503 (backpressure)
-# Pending-sentinel lifetime. Keep >= (LOCATIONIQ_PENDING_CAP / rate implied by
-# LOCATIONIQ_MAX_RATE) + worst-case fetch time (LOCATIONIQ_TIMEOUT + NOMINATIM_TIMEOUT),
-# or a queued job can outlive its own sentinel — see Gap #1 in the design doc.
-LOCATIONIQ_SENTINEL_TTL_S = 20
+_locationiq_daily_budget_raw = env("LOCATIONIQ_DAILY_BUDGET", "")
+LOCATIONIQ_DAILY_BUDGET = (
+    int(_locationiq_daily_budget_raw) if _locationiq_daily_budget_raw else None
+)
+
+# --- Autocomplete proxy infrastructure ---------------------------------------
+# The rendezvous queue, the pending-sentinel lifecycle, the result cache and the
+# per-IP limits are properties of *our* proxy layer, not of LocationIQ: they
+# would be unchanged if the upstream geocoder were swapped out, and several of
+# them are what the Nominatim fallback path runs on. Hence LOCATION_PROXY_, not
+# LOCATIONIQ_. (LOCATIONIQ_MAX_RATE and LOCATIONIQ_TIMEOUT are still referenced
+# below, because some of these values are derived from them.)
+LOCATION_PROXY_PENDING_CAP = (
+    16  # max distinct in-flight lookups before 503 (backpressure)
+)
+# Pending-sentinel lifetime. Keep >= (LOCATION_PROXY_PENDING_CAP / rate implied
+# by LOCATIONIQ_MAX_RATE) + worst-case fetch time (LOCATIONIQ_TIMEOUT +
+# NOMINATIM_TIMEOUT), or a queued job can outlive its own sentinel — see Gap #1
+# in the design doc.
+LOCATION_PROXY_SENTINEL_TTL_S = 20
 # How old a pending sentinel must get before a request assumes no task is
 # coming and fetches inline instead (a lost message, or no worker consuming
 # the `lookup` queue). Default is the worst case a healthy queue can produce:
-# LOCATIONIQ_PENDING_CAP / 2 per second of queue wait + LOCATIONIQ_TIMEOUT +
-# NOMINATIM_TIMEOUT. Lowering it makes a stalled lookup recover sooner but
+# LOCATION_PROXY_PENDING_CAP / 2 per second of queue wait + LOCATIONIQ_TIMEOUT
+# + NOMINATIM_TIMEOUT. Lowering it makes a stalled lookup recover sooner but
 # risks a duplicate upstream call whenever the queue is legitimately backed
-# up; it must stay below LOCATIONIQ_SENTINEL_TTL_S to have any effect.
-LOCATIONIQ_STALE_PENDING_S = 16
-LOCATIONIQ_RECLAIM_LOCK_S = 10  # one reclaimer at a time per query
-LOCATIONIQ_NEGATIVE_TTL_S = (
+# up; it must stay below LOCATION_PROXY_SENTINEL_TTL_S to have any effect.
+LOCATION_PROXY_STALE_PENDING_S = 16
+LOCATION_PROXY_RECLAIM_LOCK_S = 10  # one reclaimer at a time per query
+LOCATION_PROXY_NEGATIVE_TTL_S = (
     8  # cache lifetime for a failed lookup (avoid negative-caching an outage)
 )
-LOCATIONIQ_IP_RATE_STRICT = "1/s"  # per-IP limit for creating a new lookup
-LOCATIONIQ_IP_RATE_LOOSE = (
+LOCATION_PROXY_IP_RATE_STRICT = "1/s"  # per-IP limit for creating a new lookup
+LOCATION_PROXY_IP_RATE_LOOSE = (
     "10/s"  # per-IP limit for all autocomplete traffic, incl. polling
 )
 # --- Result cache (see doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md)
@@ -469,16 +487,16 @@ LOCATIONIQ_IP_RATE_LOOSE = (
 # therefore stay cached and cost nothing, while no answer is ever served more
 # than MAX_CACHE_AGE_S after it was fetched, so renamed places self-heal
 # without anyone clearing the cache by hand.
-LOCATIONIQ_RESULT_TTL_S = int_env("LOCATIONIQ_RESULT_TTL_S", 24 * 3600)
-LOCATIONIQ_MAX_CACHE_AGE_S = int_env("LOCATIONIQ_MAX_CACHE_AGE_S", 48 * 3600)
-if LOCATIONIQ_MAX_CACHE_AGE_S < LOCATIONIQ_RESULT_TTL_S:
+LOCATION_PROXY_RESULT_TTL_S = int_env("LOCATION_PROXY_RESULT_TTL_S", 24 * 3600)
+LOCATION_PROXY_MAX_CACHE_AGE_S = int_env("LOCATION_PROXY_MAX_CACHE_AGE_S", 48 * 3600)
+if LOCATION_PROXY_MAX_CACHE_AGE_S < LOCATION_PROXY_RESULT_TTL_S:
     # Not fatal, but it silently makes RESULT_TTL_S dead: every hit's TTL is
     # capped by the remaining age budget, so entries would live MAX_CACHE_AGE_S
     # and the configured sliding TTL would never be reached. Easy to do by
     # setting only one of the two in a deploy config.
     warnings.warn(
-        f"LOCATIONIQ_MAX_CACHE_AGE_S ({LOCATIONIQ_MAX_CACHE_AGE_S}s) is below "
-        f"LOCATIONIQ_RESULT_TTL_S ({LOCATIONIQ_RESULT_TTL_S}s). The sliding "
+        f"LOCATION_PROXY_MAX_CACHE_AGE_S ({LOCATION_PROXY_MAX_CACHE_AGE_S}s) is below "
+        f"LOCATION_PROXY_RESULT_TTL_S ({LOCATION_PROXY_RESULT_TTL_S}s). The sliding "
         "result TTL is capped by the absolute age ceiling, so it will never "
         "take effect — raise the ceiling or lower the TTL.",
         RuntimeWarning,
@@ -487,13 +505,9 @@ if LOCATIONIQ_MAX_CACHE_AGE_S < LOCATIONIQ_RESULT_TTL_S:
 # location.queue._index_and_trim) rather than redis maxmemory-policy, which is
 # instance-global and would happily evict Celery messages and chat channel data
 # from the same Redis. ~7 KB per stripped entry, so 1000 entries is ~7 MB.
-LOCATIONIQ_CACHE_MAX_ENTRIES = int_env("LOCATIONIQ_CACHE_MAX_ENTRIES", 1000)
+LOCATION_PROXY_CACHE_MAX_ENTRIES = int_env("LOCATION_PROXY_CACHE_MAX_ENTRIES", 1000)
 # Retention for the per-day cache hit/miss counters.
-LOCATIONIQ_STATS_TTL_S = 7 * 24 * 3600
-_locationiq_daily_budget_raw = env("LOCATIONIQ_DAILY_BUDGET", "")
-LOCATIONIQ_DAILY_BUDGET = (
-    int(_locationiq_daily_budget_raw) if _locationiq_daily_budget_raw else None
-)
+LOCATION_PROXY_STATS_TTL_S = 7 * 24 * 3600
 
 LOCALE_PATHS = [
     BASE_DIR + "/translations",

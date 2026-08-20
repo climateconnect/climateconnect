@@ -49,7 +49,7 @@ def locationiq_autocomplete_enabled():
     **Flipping this toggle requires clearing the result cache.** Cache entries
     are provider-agnostic — `_serve_cached` returns any stored result whatever
     produced it — so entries fetched from Nominatim while the toggle was off go
-    on being served for up to LOCATIONIQ_MAX_CACHE_AGE_S after it is turned on.
+    on being served for up to LOCATION_PROXY_MAX_CACHE_AGE_S after it is turned on.
     The hottest query prefixes are the most likely to be cached, so those are
     exactly the ones that would *not* reach LocationIQ, and both the provider
     mix in NominatimStatsView and the new hit-rate counters would misreport the
@@ -259,7 +259,7 @@ def _decode(value):
 def _index_and_trim(redis_conn, key, now):
     """
     Record `key` as the most recently used cache entry and evict the oldest
-    ones once the index exceeds LOCATIONIQ_CACHE_MAX_ENTRIES.
+    ones once the index exceeds LOCATION_PROXY_CACHE_MAX_ENTRIES.
 
     The trim is not atomic with the write above it. A race there can at worst
     evict an entry a moment early, which costs one extra upstream fetch — not
@@ -284,7 +284,7 @@ def _index_and_trim(redis_conn, key, now):
     """
     redis_conn.zadd(LOCATIONIQ_LRU_KEY, {key: now})
 
-    max_entries = settings.LOCATIONIQ_CACHE_MAX_ENTRIES
+    max_entries = settings.LOCATION_PROXY_CACHE_MAX_ENTRIES
     if not max_entries:
         return
 
@@ -321,10 +321,10 @@ def _holds_pending_sentinel(redis_conn, key):
 def refresh_cache_entry(redis_conn, key, data, now):
     """
     Apply the sliding TTL on a cache hit. Returns False when the entry has
-    outlived LOCATIONIQ_MAX_CACHE_AGE_S and must be re-fetched.
+    outlived LOCATION_PROXY_MAX_CACHE_AGE_S and must be re-fetched.
 
     The refreshed TTL is capped by the entry's remaining age budget, so the key
-    expires on its own exactly LOCATIONIQ_MAX_CACHE_AGE_S after it was first
+    expires on its own exactly LOCATION_PROXY_MAX_CACHE_AGE_S after it was first
     fetched. The explicit age check below is a safety net for clock skew.
 
     Also consumes the `delivered` marker: the first read of a freshly stored
@@ -355,7 +355,7 @@ def refresh_cache_entry(redis_conn, key, data, now):
     first_fetched_at = data.get("first_fetched_at")
     too_old = (
         first_fetched_at is not None
-        and (now - first_fetched_at) >= settings.LOCATIONIQ_MAX_CACHE_AGE_S
+        and (now - first_fetched_at) >= settings.LOCATION_PROXY_MAX_CACHE_AGE_S
     )
     # Both of these change the stored value, so they need a rewrite rather
     # than a bare EXPIRE.
@@ -373,13 +373,15 @@ def refresh_cache_entry(redis_conn, key, data, now):
             # birth and persist that, so later hits age from a stable point
             # rather than resetting the 48h budget on every request.
             data["first_fetched_at"] = now
-            redis_conn.setex(key, settings.LOCATIONIQ_RESULT_TTL_S, json.dumps(data))
+            redis_conn.setex(
+                key, settings.LOCATION_PROXY_RESULT_TTL_S, json.dumps(data)
+            )
             _index_and_trim(redis_conn, key, now)
         else:
             new_ttl = int(
                 min(
-                    settings.LOCATIONIQ_RESULT_TTL_S,
-                    settings.LOCATIONIQ_MAX_CACHE_AGE_S - (now - first_fetched_at),
+                    settings.LOCATION_PROXY_RESULT_TTL_S,
+                    settings.LOCATION_PROXY_MAX_CACHE_AGE_S - (now - first_fetched_at),
                 )
             )
             pipe = redis_conn.pipeline()
@@ -444,7 +446,7 @@ def _incr_stat(redis_conn, prefix):
     key = _day_key(prefix)
     try:
         if redis_conn.incr(key) == 1:
-            redis_conn.expire(key, settings.LOCATIONIQ_STATS_TTL_S)
+            redis_conn.expire(key, settings.LOCATION_PROXY_STATS_TTL_S)
     except Exception as exc:
         logger.warning(
             "Failed to increment autocomplete cache counter %s: %s", key, exc
@@ -499,9 +501,9 @@ def _store_result(redis_conn, key, job_id, results, provider, delivered=False):
     Write the terminal state for a LocationIQ lookup key.
 
     A real result (including a legitimately empty list) is cached for
-    LOCATIONIQ_RESULT_TTL_S and enters the LRU index. A failure (results is
+    LOCATION_PROXY_RESULT_TTL_S and enters the LRU index. A failure (results is
     None — both providers down, or a task that crashed) only gets
-    LOCATIONIQ_NEGATIVE_TTL_S and is deliberately left out of the index, so a
+    LOCATION_PROXY_NEGATIVE_TTL_S and is deliberately left out of the index, so a
     transient outage self-corrects within seconds instead of being served as
     an empty answer for the full positive-cache lifetime and occupying a cache
     slot while it does. See Gap #7 in the design doc.
@@ -513,9 +515,9 @@ def _store_result(redis_conn, key, job_id, results, provider, delivered=False):
     """
     is_real_result = results is not None
     ttl = (
-        settings.LOCATIONIQ_RESULT_TTL_S
+        settings.LOCATION_PROXY_RESULT_TTL_S
         if is_real_result
-        else settings.LOCATIONIQ_NEGATIVE_TTL_S
+        else settings.LOCATION_PROXY_NEGATIVE_TTL_S
     )
     now = time.time()
     payload = {

@@ -237,7 +237,7 @@ class LocationAutocompleteView(APIView):
         """
         Turn a terminal cache entry into a response, applying the sliding TTL.
 
-        Returns None when the entry has aged past LOCATIONIQ_MAX_CACHE_AGE_S
+        Returns None when the entry has aged past LOCATION_PROXY_MAX_CACHE_AGE_S
         and was dropped — the caller then falls through to the normal
         cache-miss path and re-fetches.
         """
@@ -288,12 +288,12 @@ class LocationAutocompleteView(APIView):
             # Sentinel written before this field existed — can't age it, and
             # it will expire on its own shortly. Leave it alone.
             return None
-        if (now - created_at) <= settings.LOCATIONIQ_STALE_PENDING_S:
+        if (now - created_at) <= settings.LOCATION_PROXY_STALE_PENDING_S:
             return None
 
         lock_key = f"{LOCATIONIQ_RECLAIM_KEY_PREFIX}{normalized_q}"
         if not redis_conn.set(
-            lock_key, "1", nx=True, ex=settings.LOCATIONIQ_RECLAIM_LOCK_S
+            lock_key, "1", nx=True, ex=settings.LOCATION_PROXY_RECLAIM_LOCK_S
         ):
             return None
 
@@ -319,7 +319,7 @@ class LocationAutocompleteView(APIView):
             request,
             group="location-autocomplete-any",
             key="ip",
-            rate=settings.LOCATIONIQ_IP_RATE_LOOSE,
+            rate=settings.LOCATION_PROXY_IP_RATE_LOOSE,
             increment=True,
         ):
             return _too_many_requests_response()
@@ -369,7 +369,7 @@ class LocationAutocompleteView(APIView):
             request,
             group="location-autocomplete-new",
             key="ip",
-            rate=settings.LOCATIONIQ_IP_RATE_STRICT,
+            rate=settings.LOCATION_PROXY_IP_RATE_STRICT,
             increment=True,
         ):
             return _too_many_requests_response()
@@ -377,11 +377,11 @@ class LocationAutocompleteView(APIView):
         redis_conn.zremrangebyscore(
             LOCATIONIQ_PENDING_JOBS_KEY,
             "-inf",
-            now - settings.LOCATIONIQ_SENTINEL_TTL_S,
+            now - settings.LOCATION_PROXY_SENTINEL_TTL_S,
         )
         if (
             redis_conn.zcard(LOCATIONIQ_PENDING_JOBS_KEY)
-            >= settings.LOCATIONIQ_PENDING_CAP
+            >= settings.LOCATION_PROXY_PENDING_CAP
         ):
             return Response(
                 {"detail": "Service busy, please retry."},
@@ -395,7 +395,7 @@ class LocationAutocompleteView(APIView):
             # "nothing is coming" — see _reclaim_if_abandoned.
             json.dumps({"status": "pending", "job_id": job_id, "created_at": now}),
             nx=True,
-            ex=settings.LOCATIONIQ_SENTINEL_TTL_S,
+            ex=settings.LOCATION_PROXY_SENTINEL_TTL_S,
         )
         if not created:
             # Lost the race to a concurrent identical request — fall into

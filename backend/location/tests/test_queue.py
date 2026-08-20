@@ -335,7 +335,7 @@ class TestLocationiqDailyBudget(TestCase):
 
 
 class TestStoreResult(TestCase):
-    @override_settings(LOCATIONIQ_RESULT_TTL_S=300, LOCATIONIQ_NEGATIVE_TTL_S=8)
+    @override_settings(LOCATION_PROXY_RESULT_TTL_S=300, LOCATION_PROXY_NEGATIVE_TTL_S=8)
     def test_success_uses_positive_ttl(self):
         mock_redis = _make_mock_redis()
         _store_result(mock_redis, "key1", "job1", [{"a": 1}], "locationiq")
@@ -350,7 +350,7 @@ class TestStoreResult(TestCase):
         # Anchors the absolute cache-age ceiling.
         self.assertAlmostEqual(stored["first_fetched_at"], time.time(), delta=5)
 
-    @override_settings(LOCATIONIQ_RESULT_TTL_S=300, LOCATIONIQ_NEGATIVE_TTL_S=8)
+    @override_settings(LOCATION_PROXY_RESULT_TTL_S=300, LOCATION_PROXY_NEGATIVE_TTL_S=8)
     def test_empty_but_real_result_uses_positive_ttl(self):
         # Distinguishes a legitimate "no matches" ([]) from a failure (None).
         mock_redis = _make_mock_redis()
@@ -358,7 +358,7 @@ class TestStoreResult(TestCase):
         _, ttl, _ = mock_redis.setex.call_args[0]
         self.assertEqual(ttl, 300)
 
-    @override_settings(LOCATIONIQ_RESULT_TTL_S=300, LOCATIONIQ_NEGATIVE_TTL_S=8)
+    @override_settings(LOCATION_PROXY_RESULT_TTL_S=300, LOCATION_PROXY_NEGATIVE_TTL_S=8)
     def test_failure_uses_negative_ttl(self):
         mock_redis = _make_mock_redis()
         _store_result(mock_redis, "key1", "job1", None, None)
@@ -366,7 +366,7 @@ class TestStoreResult(TestCase):
         self.assertEqual(ttl, 8)
         self.assertIsNone(json.loads(payload)["results"])
 
-    @override_settings(LOCATIONIQ_RESULT_TTL_S=300, LOCATIONIQ_NEGATIVE_TTL_S=8)
+    @override_settings(LOCATION_PROXY_RESULT_TTL_S=300, LOCATION_PROXY_NEGATIVE_TTL_S=8)
     def test_failure_is_not_indexed_and_has_no_age_anchor(self):
         # A negative-cached failure must not occupy one of the capped cache
         # slots, and must not be eligible for the sliding TTL.
@@ -403,7 +403,7 @@ class TestStoreResult(TestCase):
 
 
 class TestCacheSizeCap(TestCase):
-    @override_settings(LOCATIONIQ_CACHE_MAX_ENTRIES=3)
+    @override_settings(LOCATION_PROXY_CACHE_MAX_ENTRIES=3)
     def test_oldest_entry_is_evicted_once_the_cap_is_exceeded(self):
         mock_redis = _make_mock_redis()
         for i in range(4):
@@ -416,7 +416,7 @@ class TestCacheSizeCap(TestCase):
         self.assertIn("key3", mock_redis._store)
 
     @override_settings(
-        LOCATIONIQ_CACHE_MAX_ENTRIES=3, LOCATIONIQ_MAX_CACHE_AGE_S=48 * 3600
+        LOCATION_PROXY_CACHE_MAX_ENTRIES=3, LOCATION_PROXY_MAX_CACHE_AGE_S=48 * 3600
     )
     def test_eviction_uses_last_access_not_last_write(self):
         # The whole point of refreshing recency on a hit: a query that is read
@@ -435,14 +435,14 @@ class TestCacheSizeCap(TestCase):
         self.assertIn("key0", mock_redis._store)
         self.assertNotIn("key1", mock_redis._store)
 
-    @override_settings(LOCATIONIQ_CACHE_MAX_ENTRIES=5)
+    @override_settings(LOCATION_PROXY_CACHE_MAX_ENTRIES=5)
     def test_index_never_exceeds_the_cap(self):
         mock_redis = _make_mock_redis()
         for i in range(20):
             _store_result(mock_redis, f"key{i}", "job", [{"i": i}], "locationiq")
             self.assertLessEqual(mock_redis.zcard(LOCATIONIQ_LRU_KEY), 5)
 
-    @override_settings(LOCATIONIQ_CACHE_MAX_ENTRIES=2)
+    @override_settings(LOCATION_PROXY_CACHE_MAX_ENTRIES=2)
     def test_eviction_never_deletes_a_live_pending_sentinel(self):
         """
         A lookup key holds a sentinel first and a result later, but only
@@ -470,7 +470,7 @@ class TestCacheSizeCap(TestCase):
         self.assertIn(stale_key, mock_redis._store)
         self.assertEqual(json.loads(mock_redis._store[stale_key])["status"], "pending")
 
-    @override_settings(LOCATIONIQ_CACHE_MAX_ENTRIES=2)
+    @override_settings(LOCATION_PROXY_CACHE_MAX_ENTRIES=2)
     def test_eviction_still_deletes_a_cached_result(self):
         # The guard above must not make eviction a no-op for real entries.
         mock_redis = _make_mock_redis()
@@ -483,7 +483,7 @@ class TestCacheSizeCap(TestCase):
 
 
 @override_settings(
-    LOCATIONIQ_RESULT_TTL_S=24 * 3600, LOCATIONIQ_MAX_CACHE_AGE_S=48 * 3600
+    LOCATION_PROXY_RESULT_TTL_S=24 * 3600, LOCATION_PROXY_MAX_CACHE_AGE_S=48 * 3600
 )
 class TestRefreshCacheEntry(TestCase):
     def _entry(self, first_fetched_at):
@@ -833,8 +833,8 @@ class TestLocationAutocompleteView(TestCase):
 
     @override_settings(
         RATELIMIT_ENABLE=False,
-        LOCATIONIQ_RESULT_TTL_S=24 * 3600,
-        LOCATIONIQ_MAX_CACHE_AGE_S=48 * 3600,
+        LOCATION_PROXY_RESULT_TTL_S=24 * 3600,
+        LOCATION_PROXY_MAX_CACHE_AGE_S=48 * 3600,
     )
     @patch("location.location_views.get_redis_conn")
     def test_cache_hit_slides_the_ttl_and_counts_a_hit(self, mock_conn):
@@ -862,8 +862,8 @@ class TestLocationAutocompleteView(TestCase):
 
     @override_settings(
         RATELIMIT_ENABLE=False,
-        LOCATIONIQ_RESULT_TTL_S=24 * 3600,
-        LOCATIONIQ_MAX_CACHE_AGE_S=48 * 3600,
+        LOCATION_PROXY_RESULT_TTL_S=24 * 3600,
+        LOCATION_PROXY_MAX_CACHE_AGE_S=48 * 3600,
     )
     @patch("location.location_views.get_redis_conn")
     def test_cache_hit_survives_a_read_only_redis(self, mock_conn):
@@ -894,7 +894,7 @@ class TestLocationAutocompleteView(TestCase):
 
     @override_settings(
         RATELIMIT_ENABLE=False,
-        LOCATIONIQ_MAX_CACHE_AGE_S=48 * 3600,
+        LOCATION_PROXY_MAX_CACHE_AGE_S=48 * 3600,
     )
     @patch("location.location_views.fetch_autocomplete.apply_async")
     @patch("location.location_views.get_redis_conn")
@@ -936,7 +936,7 @@ class TestLocationAutocompleteView(TestCase):
             int(mock_redis._store[f"{LOCATIONIQ_STATS_MISSES_KEY_PREFIX}{today}"]), 1
         )
 
-    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_MAX_CACHE_AGE_S=48 * 3600)
+    @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_MAX_CACHE_AGE_S=48 * 3600)
     @patch("location.location_views.fetch_autocomplete.apply_async")
     @patch("location.location_views.get_redis_conn")
     def test_cold_lookup_counts_one_miss_and_no_hit(self, mock_conn, _mock_apply):
@@ -1032,7 +1032,7 @@ class TestLocationAutocompleteView(TestCase):
         self.assertEqual(json.loads(mock_redis._store[key])["status"], "pending")
         self.assertIn(key, mock_redis._zsets.get(LOCATIONIQ_PENDING_JOBS_KEY, {}))
 
-    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_PENDING_CAP=1)
+    @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_PENDING_CAP=1)
     @patch("location.location_views.fetch_autocomplete.apply_async")
     @patch("location.location_views.get_redis_conn")
     def test_backpressure_cap_returns_503(self, mock_conn, mock_apply_async):
@@ -1075,7 +1075,7 @@ class TestLocationAutocompleteView(TestCase):
             int(mock_redis._store[f"{LOCATIONIQ_STATS_MISSES_KEY_PREFIX}{today}"]), 1
         )
 
-    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_STALE_PENDING_S=16)
+    @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_STALE_PENDING_S=16)
     @patch("location.location_views._fetch_results")
     @patch("location.location_views.get_redis_conn")
     def test_abandoned_sentinel_is_reclaimed_and_fetched_inline(
@@ -1110,7 +1110,7 @@ class TestLocationAutocompleteView(TestCase):
             int(mock_redis._store[f"{LOCATIONIQ_STATS_MISSES_KEY_PREFIX}{today}"]), 1
         )
 
-    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_STALE_PENDING_S=16)
+    @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_STALE_PENDING_S=16)
     @patch("location.location_views._fetch_results")
     @patch("location.location_views.get_redis_conn")
     def test_young_sentinel_is_left_alone(self, mock_conn, mock_fetch):
@@ -1128,7 +1128,7 @@ class TestLocationAutocompleteView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
         mock_fetch.assert_not_called()
 
-    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_STALE_PENDING_S=16)
+    @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_STALE_PENDING_S=16)
     @patch("location.location_views._fetch_results")
     @patch("location.location_views.get_redis_conn")
     def test_only_one_request_reclaims_a_given_query(self, mock_conn, mock_fetch):
@@ -1153,7 +1153,7 @@ class TestLocationAutocompleteView(TestCase):
         self.assertEqual(second.status_code, status.HTTP_202_ACCEPTED)
         mock_fetch.assert_called_once()
 
-    @override_settings(RATELIMIT_ENABLE=False, LOCATIONIQ_STALE_PENDING_S=16)
+    @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_STALE_PENDING_S=16)
     @patch("location.location_views._fetch_results")
     @patch("location.location_views.get_redis_conn")
     def test_sentinel_without_created_at_is_not_reclaimed(self, mock_conn, mock_fetch):
@@ -1177,7 +1177,7 @@ class TestLocationAutocompleteView(TestCase):
         mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "j"})
 
         with override_settings(
-            LOCATIONIQ_IP_RATE_STRICT="1/s", LOCATIONIQ_IP_RATE_LOOSE="1000/s"
+            LOCATION_PROXY_IP_RATE_STRICT="1/s", LOCATION_PROXY_IP_RATE_LOOSE="1000/s"
         ):
             for _ in range(5):
                 response = self.client.get(self.url, {"q": "Berlin"})
@@ -1192,7 +1192,7 @@ class TestLocationAutocompleteView(TestCase):
         mock_conn.return_value = mock_redis
 
         with override_settings(
-            LOCATIONIQ_IP_RATE_STRICT="1/s", LOCATIONIQ_IP_RATE_LOOSE="1000/s"
+            LOCATION_PROXY_IP_RATE_STRICT="1/s", LOCATION_PROXY_IP_RATE_LOOSE="1000/s"
         ):
             first = self.client.get(self.url, {"q": "Berlin"})
             second = self.client.get(
@@ -1210,7 +1210,7 @@ class TestLocationAutocompleteView(TestCase):
         key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}berlin||en"
         mock_redis._store[key] = json.dumps({"status": "pending", "job_id": "j"})
 
-        with override_settings(LOCATIONIQ_IP_RATE_LOOSE="1/s"):
+        with override_settings(LOCATION_PROXY_IP_RATE_LOOSE="1/s"):
             first = self.client.get(self.url, {"q": "Berlin"})
             second = self.client.get(self.url, {"q": "Berlin"})
 

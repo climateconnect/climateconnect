@@ -14,6 +14,15 @@ branch and replaces its short-lived result cache with a bounded, LRU-evicted 24h
 
 ---
 
+
+> **Naming note (2026-08-18)**: settings that are properties of the proxy layer rather than of
+> LocationIQ were renamed from `LOCATIONIQ_*` to `LOCATION_PROXY_*` after PR review —
+> `PENDING_CAP`, `SENTINEL_TTL_S`, `STALE_PENDING_S`, `RECLAIM_LOCK_S`, `RESULT_TTL_S`,
+> `MAX_CACHE_AGE_S`, `NEGATIVE_TTL_S`, `CACHE_MAX_ENTRIES`, `STATS_TTL_S`, `IP_RATE_STRICT`,
+> `IP_RATE_LOOSE`. This document keeps the original names as written. Provider-specific settings
+> (`LOCATIONIQ_API_KEY`, `_AUTOCOMPLETE_URL`, `_TIMEOUT`, `_MAX_RATE`, `_DAILY_BUDGET`) and the
+> Redis key constants in `location/queue.py` are unchanged.
+
 ## Problem Statement
 
 Two gaps remain on `poc-locationIQ_for_autocomplete` before it can be merged to `master`:
