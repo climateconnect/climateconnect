@@ -13,6 +13,7 @@ export const getServerSideProps: GetServerSideProps = (ctx) =>
 
 export default function HubOrganisationsPage({
   hubUrl,
+  browseHubSlug,
   subHubSegment,
   filterChoices,
   initialLocationFilter,
@@ -43,7 +44,7 @@ export default function HubOrganisationsPage({
         initialLocationFilter={initialLocationFilter}
         locale={locale}
         token={token}
-        hubUrl={hubUrl}
+        hubUrl={browseHubSlug ?? hubUrl}
       >
         <BrowseOrganisationsContent
           key={router.pathname}

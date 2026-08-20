@@ -53,6 +53,7 @@ export async function getHubBrowseTypeServerSideProps(
   return {
     props: {
       hubUrl: ctx.query.hubUrl,
+      browseHubSlug: hubUrl,
       subHubSegment: subHubSegment || null,
       isLocationHub: isLocationHubLikeHub(hubData?.hub_type, hubData?.parent_hub),
       hubData,
