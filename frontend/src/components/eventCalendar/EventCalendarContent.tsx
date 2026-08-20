@@ -121,7 +121,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    width: "100%",
+    flex: "1 1 0",
+    minWidth: 0,
+    overflow: "hidden",
   },
   eventDot: {
     width: 5,
