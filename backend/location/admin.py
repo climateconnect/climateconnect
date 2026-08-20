@@ -4,8 +4,8 @@ from django.utils.html import format_html
 from location.models import (
     Location,
     LocationTranslation,
-    NominatimRequestLog,
     NominatimPeriodStats,
+    NominatimRequestLog,
 )
 
 # IMPORTANT: Coordinate Storage Format
@@ -164,11 +164,11 @@ admin.site.register(LocationTranslation, LocationTranslationAdmin)
 
 
 class NominatimRequestLogAdmin(admin.ModelAdmin):
-    list_display = ("created_at", "processed", "requests_this_minute")
-    list_filter = ("processed",)
+    list_display = ("created_at", "provider", "processed", "requests_this_minute")
+    list_filter = ("provider", "processed")
     list_per_page = 50
     ordering = ("-created_at",)
-    readonly_fields = ("created_at", "processed", "minute_key")
+    readonly_fields = ("created_at", "provider", "processed", "minute_key")
 
     def get_queryset(self, request):
         from django.db.models import Count, OuterRef, Subquery
@@ -209,15 +209,17 @@ class NominatimPeriodStatsAdmin(admin.ModelAdmin):
     list_display = (
         "period_type",
         "period_key",
+        "provider",
         "total_requests",
         "avg_req_per_second",
         "peak_req_per_second",
     )
-    list_filter = ("period_type",)
+    list_filter = ("period_type", "provider")
     search_fields = ("period_key",)
     readonly_fields = (
         "period_type",
         "period_key",
+        "provider",
         "total_requests",
         "avg_req_per_second",
         "peak_req_per_second",

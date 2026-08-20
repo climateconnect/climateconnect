@@ -8,6 +8,12 @@ urlpatterns = [
     path(
         "get_location/", location_views.GetLocationView.as_view(), name="get-location"
     ),
+    # LocationIQ-backed autocomplete with Nominatim fallback
+    path(
+        "location_autocomplete/",
+        location_views.LocationAutocompleteView.as_view(),
+        name="location-autocomplete",
+    ),
     # Nominatim autocomplete request tracking
     path(
         "nominatim_request_count/",

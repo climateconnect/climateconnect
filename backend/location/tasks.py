@@ -1,4 +1,6 @@
+import json
 import logging
+import time
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
@@ -9,9 +11,71 @@ from django.db import IntegrityError, transaction
 from django.utils import timezone as tz
 
 from climateconnect_api.models.language import Language
+from location.queue import (
+    LOCATIONIQ_PENDING_JOBS_KEY,
+    _fetch_results,
+    _store_result,
+    get_redis_conn,
+)
 from location.utility import format_location_name
 
 logger = logging.getLogger(__name__)
+
+
+def log_autocomplete_request(provider="nominatim") -> None:
+    """
+    Record that one autocomplete request went out to `provider`.
+
+    One row per request, nothing else — aggregate_nominatim_stats() rolls
+    these up into NominatimPeriodStats every 10 minutes. Deliberately kept to
+    a single INSERT so nothing expensive (counting, cleanup, upserts) sits on
+    the request path.
+
+    Tracking failures are logged and swallowed: never fail a user-facing
+    request because a metrics row couldn't be written.
+    """
+    from location.models import NominatimRequestLog
+
+    try:
+        NominatimRequestLog.objects.create(
+            minute_key=int(time.time()) // 60,
+            provider=provider,
+        )
+    except Exception as exc:
+        logger.warning("Failed to log %s autocomplete request: %s", provider, exc)
+
+
+@shared_task(rate_limit=settings.LOCATIONIQ_MAX_RATE)
+def fetch_autocomplete(key, job_id, q, countrycodes, accept_language):
+    """
+    Fetch LocationIQ (with Nominatim fallback) results for one autocomplete
+    lookup and write them back into the shared Redis rendezvous key that
+    LocationAutocompleteView polls. Rate-limited to LOCATIONIQ_MAX_RATE and
+    routed to its own queue/worker (see CELERY_TASK_ROUTES in settings) so
+    this is the only thing calling LocationIQ, at the intended global rate.
+
+    No retries: _fetch_results already exhausts both providers internally,
+    so a Celery-level retry would just repeat that same double-provider
+    attempt at extra quota cost for no benefit on a time-sensitive request.
+    """
+    redis_conn = get_redis_conn()
+    try:
+        results, provider = _fetch_results(q, countrycodes, accept_language)
+    except Exception:
+        logger.exception("fetch_autocomplete failed unexpectedly for %r", q)
+        results, provider = None, None
+
+    current = redis_conn.get(key)
+    if current and json.loads(current).get("job_id") != job_id:
+        # A newer sentinel generation already superseded this one (its TTL
+        # expired mid-flight and a fresh lookup was started) — don't clobber
+        # the newer job's data with this stale result.
+        return
+
+    _store_result(redis_conn, key, job_id, results, provider)
+    redis_conn.zrem(LOCATIONIQ_PENDING_JOBS_KEY, key)
+    if results is not None:
+        log_autocomplete_request(provider)
 
 
 @shared_task(bind=True, max_retries=5, rate_limit="1/s")
@@ -131,8 +195,12 @@ def _get_period_keys_for_dt(dt):
 def aggregate_nominatim_stats():
     """
     Read unprocessed NominatimRequestLog rows, compute day/week/month
-    aggregates, upsert into NominatimPeriodStats, and mark rows as processed.
-    Rows older than 7 days are cleaned up.
+    aggregates **per provider**, upsert into NominatimPeriodStats, and mark
+    rows as processed. Rows older than 7 days are cleaned up.
+
+    peak_req_per_second is the highest number of requests that arrived within
+    a single second — per provider, which is what makes it usable for
+    watching LocationIQ's 2 req/s ceiling.
 
     Scheduled to run every 10 minutes via Celery Beat.
     """
@@ -166,12 +234,12 @@ def aggregate_nominatim_stats():
         second_key = log_dt.replace(microsecond=0)
 
         for period_type, period_key, period_start in _get_period_keys_for_dt(log_dt):
-            bucket = period_buckets[(period_type, period_key)]
+            bucket = period_buckets[(period_type, period_key, log.provider)]
             bucket["count"] += 1
             bucket["second_counts"][second_key] += 1
             bucket["period_start"] = period_start
 
-    for (period_type, period_key), bucket in period_buckets.items():
+    for (period_type, period_key, provider), bucket in period_buckets.items():
         total = bucket["count"]
         if total == 0:
             continue
@@ -187,6 +255,7 @@ def aggregate_nominatim_stats():
         obj, created = NominatimPeriodStats.objects.get_or_create(
             period_type=period_type,
             period_key=period_key,
+            provider=provider,
             defaults={
                 "total_requests": total,
                 "avg_req_per_second": avg_rate,
