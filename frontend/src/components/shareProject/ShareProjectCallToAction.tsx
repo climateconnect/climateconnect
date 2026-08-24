@@ -4,7 +4,7 @@ import { alpha } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
 import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import { Project } from "../../types";
@@ -148,9 +148,9 @@ export default function ShareProjectCallToAction({
     ? texts.share_own_content_message_title_event_with_registration
     : projectTypeTexts.shareMessageTitle[typeId];
 
-  const queryString = hubName ? `?hub=${hubName}` : "";
+  const relativePath = appHref(`/projects/${url_slug}`, { hubUrl: hubName, locale });
   const BASE_URL = process.env.BASE_URL ? process.env.BASE_URL : `https://climateconnect.earth`;
-  const contentLink = `${BASE_URL}${getLocalePrefix(locale)}/projects/${url_slug}${queryString}`;
+  const contentLink = `${BASE_URL}${relativePath}`;
 
   const createShareRecord = useCreateShareRecord(`/api/projects/${url_slug}/set_shared_project/`);
 

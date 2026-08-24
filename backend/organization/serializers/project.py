@@ -32,12 +32,9 @@ from organization.serializers.event_registration import (
     EventRegistrationSerializer,
 )
 from organization.serializers.organization import OrganizationStubSerializer
+from organization.serializers.project_types import ProjectTypesSerializer
 from organization.serializers.sector import (
     ProjectSectorMappingSerializer,
-)
-from organization.serializers.status import (
-    ProjectStatusSerializer,
-    ProjectTypesSerializer,
 )
 from organization.serializers.tags import ProjectTaggingSerializer
 from organization.serializers.translation import ProjectTranslationSerializer
@@ -81,7 +78,6 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
 
     # TODO (Karol): Remove this field once the frontend is updated to use the new tags serializer
     tags = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
     collaborating_organizations = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
     number_of_likes = serializers.SerializerMethodField()
@@ -109,7 +105,6 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
             "name",
             "url_slug",
             "image",
-            "status",
             "start_date",
             "end_date",
             "short_description",
@@ -193,10 +188,6 @@ class ProjectSerializer(_LocationNameMixin, serializers.ModelSerializer):
         if obj.loc is None:
             return None
         return self._get_location_name(obj.loc)
-
-    def get_status(self, obj):
-        serializer = ProjectStatusSerializer(obj.status, many=False)
-        return serializer.data["name"]
 
     def get_language(self, obj):
         return obj.language.language_code
@@ -377,7 +368,6 @@ class ProjectParentsSerializer(serializers.ModelSerializer):
 
 class ProjectMinimalSerializer(_LocationNameMixin, serializers.ModelSerializer):
     project_parents = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
 
@@ -387,7 +377,6 @@ class ProjectMinimalSerializer(_LocationNameMixin, serializers.ModelSerializer):
             "name",
             "url_slug",
             "image",
-            "status",
             "location",
             "project_parents",
             "is_draft",
@@ -407,10 +396,6 @@ class ProjectMinimalSerializer(_LocationNameMixin, serializers.ModelSerializer):
         if obj.loc is None:
             return None
         return self._get_location_name(obj.loc)
-
-    def get_status(self, obj):
-        serializer = ProjectStatusSerializer(obj.status, many=False)
-        return serializer.data["name"]
 
 
 class ProjectStubSerializer(_LocationNameMixin, serializers.ModelSerializer):
