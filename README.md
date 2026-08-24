@@ -81,6 +81,7 @@ Run `./install_deps.sh` to install the JavaScript dependencies and the Python de
 1.  Go to backend directory: `cd backend`
 1. Make sure `pdm` is installed: https://pdm.fming.dev/latest/#recommended-installation-method
 1.  Run `make install` to install all backend libraries.
+    - _This also installs `pre-commit`, which runs Black and Ruff on staged backend files before each commit. See [Testing and Code Health](#testing-and-code-health)._
 1.  Create `.backend_env` to set environment variables.
     - You can use the script [./initial_dev_setup.sh](./initial_dev_setup.sh) as inspiration.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
@@ -176,6 +177,18 @@ make format directory
 ```
 
 More configuration for Black can be found in the `pyproject.toml` file.
+
+#### Pre-commit Hooks
+
+Backend linting (ruff) and formatting (Black) are enforced at commit time via [pre-commit](https://pre-commit.com). The hook is configured in `.pre-commit-config.yaml` and runs automatically on staged `backend/` files — frontend-only commits are not affected.
+
+To run the hooks manually on all backend files:
+
+```sh
+cd backend && pdm run pre-commit run --all-files
+```
+
+CI remains the source of truth for merge eligibility.
 
 ### Frontend
 

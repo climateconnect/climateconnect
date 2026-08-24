@@ -17,8 +17,15 @@ import { FeatureToggleProvider } from "../src/components/featureToggle";
 import { FeatureToggles } from "../src/hooks/types/featureToggle";
 import type { CcEnvironment } from "../public/lib/environmentOperations";
 import theme from "../src/themes/theme";
+import * as Sentry from "@sentry/nextjs";
 import { CcLocale, DonationGoal, HubListItem } from "../src/types";
-import "../devlink/css/global.css";
+import "../devlink/css/fonts.css";
+import "../devlink/css/normalize.css";
+import "../devlink/css/defaults.css";
+import "../devlink/css/variables.css";
+import "../devlink/css/tags.css";
+import "../devlink/css/classes.css";
+import "../devlink-patches.css";
 
 declare module "@mui/styles/defaultTheme" {
   // eslint-disable-next-line no-unused-vars
@@ -124,7 +131,7 @@ function AppContent({
   };
 
   const hideNotification = (notificationId) => {
-    const notifications = state.notifications;
+    const notifications = state.notifications ?? [];
     setState({
       ...state,
       notifications: notifications.filter((n) => n.id !== notificationId),
@@ -206,7 +213,9 @@ function AppContent({
       setState({
         ...state,
         user: state.user,
-        notifications: state.notifications?.filter((n) => !notificationsToSetRead.includes(n)),
+        notifications: (state.notifications ?? []).filter(
+          (n) => !notificationsToSetRead.includes(n)
+        ),
       });
 
       setWebSocketClient(client);
@@ -361,6 +370,7 @@ MyApp.getInitialProps = async (appContext: any) => {
 };
 
 const getNotificationsToSetRead = (notifications, pageProps) => {
+  if (!notifications || notifications.length === 0) return [];
   let notifications_to_set_unread: any[] = [];
   if (pageProps.comments) {
     const comment_ids = pageProps.comments.map((p) => p.id);
@@ -453,7 +463,8 @@ async function getNotifications(token, locale) {
         console.log("Error in getNotifications: " + err.response.data.detail);
       if (err.response && err.response.data.detail === "Invalid token")
         console.log("invalid token! token:" + token);
-      return null;
+      Sentry.captureException(err, { tags: { feature: "notifications" } });
+      return [];
     }
   } else {
     return [];

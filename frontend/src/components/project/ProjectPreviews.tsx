@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import Grid from "@mui/material/Grid2";
 import makeStyles from "@mui/styles/makeStyles";
 import getTexts from "../../../public/texts/texts";
@@ -22,6 +22,7 @@ const useStyles = makeStyles({
 // This component is to display projects with the option to infinitely scroll to get more projects
 export default function ProjectPreviews({
   projects,
+  featuredProjects,
   loadFunc,
   hasMore,
   hubUrl,
@@ -34,6 +35,17 @@ export default function ProjectPreviews({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
+
+  // Combine featured (e.g. upcoming events merged into the grid) with regular
+  // projects, deduplicating by url_slug so the same project is never shown
+  // twice. Featured items always appear first.
+  const combinedProjects = useMemo(() => {
+    const featured = featuredProjects || [];
+    if (featured.length === 0) return projects || [];
+    const featuredSlugs = new Set(featured.map((p) => p.url_slug));
+    const dedupedProjects = (projects || []).filter((p) => !featuredSlugs.has(p.url_slug));
+    return [...featured, ...dedupedProjects];
+  }, [projects, featuredProjects]);
 
   const toProjectPreviews = (projects) =>
     (projects || []).map((p) => (
@@ -63,7 +75,7 @@ export default function ProjectPreviews({
     onLoadMore: loadMore,
   });
 
-  const displayedProjects = parentHandlesGridItems ? projects : gridItems;
+  const displayedProjects = parentHandlesGridItems ? combinedProjects : gridItems;
 
   if (!displayedProjects || displayedProjects.length === 0) {
     return <div>{texts.no_projects_found}</div>;

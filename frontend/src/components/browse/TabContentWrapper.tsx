@@ -1,11 +1,11 @@
 import makeStyles from "@mui/styles/makeStyles";
-import React, { ReactNode, useContext } from "react";
+import React, { ReactNode, useContext, useRef } from "react";
 import { Theme, useMediaQuery } from "@mui/material";
 import getFilters from "../../../public/data/possibleFilters";
 import UserContext from "../context/UserContext";
 import FilterContent from "../filter/FilterContent";
-import LoadingSpinner from "../general/LoadingSpinner";
 import NoItemsFound from "./NoItemsFound";
+import LoadingSpinner from "../general/LoadingSpinner";
 import HubLinkButton from "../hub/HubLinkButton";
 import { LinkedHub } from "../../types";
 
@@ -57,6 +57,8 @@ type TabContentWrapperProps = {
   hubName: string;
   linkedHubs: LinkedHub[];
   children: ReactNode;
+  eventsContent?: ReactNode;
+  subHubInfoText?: ReactNode;
 
   // Search handler
   handleSearchSubmit: any;
@@ -85,6 +87,8 @@ export default function TabContentWrapper({
   hubName,
   linkedHubs,
   children,
+  eventsContent,
+  subHubInfoText,
   handleSearchSubmit,
 }: TabContentWrapperProps) {
   const is600to718breakpoint = useMediaQuery("(min-width:600px) and (max-width:718px)");
@@ -103,9 +107,14 @@ export default function TabContentWrapper({
 
   // Check if content should be displayed
   const hasItems = state?.items?.[type]?.length > 0 || type === "ideas";
-  const shouldShowContent = !isFiltering && hasItems;
-  const shouldShowNoItems = !isFiltering && !hasItems;
   const shouldShowLinkedHubs = !isNarrowScreen && linkedHubs?.length > 0;
+
+  // Keep children mounted once they've been rendered to avoid mount/unmount
+  // flicker during re-filtering. Use opacity to indicate loading state.
+  const childrenRenderedRef = useRef(false);
+  if (hasItems) childrenRenderedRef.current = true;
+  const showChildren = hasItems || (isFiltering && childrenRenderedRef.current);
+  const shouldShowNoItems = !isFiltering && !hasItems;
 
   return (
     <TabContent value={tabValue} index={currentTabIndex}>
@@ -139,8 +148,12 @@ export default function TabContentWrapper({
         </div>
       )}
 
-      {isFiltering && <LoadingSpinner />}
-      {shouldShowContent && children}
+      {subHubInfoText}
+      {eventsContent}
+      {isFiltering && !childrenRenderedRef.current && <LoadingSpinner isLoading />}
+      <div style={{ opacity: isFiltering && showChildren ? 0.5 : 1, transition: "opacity 150ms" }}>
+        {showChildren && children}
+      </div>
       {shouldShowNoItems && <NoItemsFound type={type} hubName={hubName} />}
     </TabContent>
   );

@@ -1,14 +1,15 @@
 from typing import Dict
 
-from climateconnect_api.models.language import Language
+from django.utils.translation import gettext as _
 
+from climateconnect_api.models.language import Language
 from organization.models import (
     Organization,
+    ProjectParents,
     OrganizationTranslation,
     OrganizationMember,
 )
 from organization.models.tags import OrganizationTags
-from django.utils.translation import gettext as _
 
 
 def check_organization(organization_id: str) -> Organization:
@@ -119,6 +120,8 @@ def create_organization_translation(
         org_translation.short_description_translation = texts["short_description"]
     if "about" in texts:
         org_translation.about_translation = texts["about"]
+    if "get_involved" in texts:
+        org_translation.get_involved_translation = texts["get_involved"]
 
     org_translation.save()
 
@@ -178,5 +181,13 @@ def check_existing_name_translation(name):
 
 def get_existing_name_message(name):
     return _(
-        "Someone has already created the organization {}. Please join the organization or use a different name. If you're having problems please contact support@climateconnect.earth"
+        "Someone has already created the organization {}. Please join the organization or use a different name. If you're having problems please contact support@climatehub.org"
     ).format(name)
+
+
+def get_visible_organization_projects_queryset(organization: Organization):
+    return ProjectParents.objects.filter(
+        parent_organization=organization,
+        project__is_draft=False,
+        project__is_active=True,
+    )

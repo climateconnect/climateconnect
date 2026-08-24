@@ -28,7 +28,8 @@ import noop from "lodash/noop";
 import React, { Fragment, useContext, useRef, useState } from "react";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import { getImageUrl } from "../../../public/lib/imageOperations";
+import { appHref } from "../../../public/lib/appLink";
+import { getImageUrl, getLogoSrc } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
@@ -337,19 +338,22 @@ export default function Header({
       }.svg`;
     }
 
-    return loadDefaultLogo(transparentHeader, isMediumScreen);
+    return loadDefaultLogo(transparentHeader, isMediumScreen, locale);
   };
 
   const loadFallbackLogo = (
     ev // TODO: implementing better with re-rendering after screen size change
-  ) => (ev.target.src = loadDefaultLogo(transparentHeader, isMediumScreen));
+  ) => (ev.target.src = loadDefaultLogo(transparentHeader, isMediumScreen, locale));
 
-  const loadDefaultLogo = (transparentHeader?: boolean, isMediumScreen?: boolean): string => {
+  const loadDefaultLogo = (
+    transparentHeader?: boolean,
+    isMediumScreen?: boolean,
+    locale?: string
+  ): string => {
     if (isMediumScreen) {
       return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg";
-    } else {
-      return transparentHeader ? "/images/logo_white.png" : "/images/logo.svg";
     }
+    return getLogoSrc(transparentHeader ? "white" : "normal", locale);
   };
 
   const logo = getLogo();
@@ -361,11 +365,10 @@ export default function Header({
   };
   const logoLink = getLogoLink();
   const poweredByLogoMap: Record<string, string> = {
-    prio1: "/images/logo_white.png",
-    perth: "/images/logo.svg",
+    prio1: getLogoSrc("white", locale),
+    perth: getLogoSrc("normal", locale),
   };
-  const poweredByLogoSrc =
-    poweredByLogoMap[hubUrl?.toLowerCase() ?? ""] || "/images/logo_white.png";
+  const poweredByLogoSrc = poweredByLogoMap[hubUrl?.toLowerCase() ?? ""] || getLogoSrc("white");
 
   return (
     <Box
@@ -598,7 +601,6 @@ const LoggedInNormalScreen = ({
     src: getImageUrl(loggedInUser.image),
     alt: loggedInUser.name,
   };
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
   return (
     <ClickAwayListener onClickAway={handleCloseMenu}>
       <Box className={classes.loggedInRoot}>
@@ -627,7 +629,7 @@ const LoggedInNormalScreen = ({
         >
           <Paper>
             <MenuList>
-              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString })
+              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, hubUrl })
                 .filter((link) => !link.showOnMobileOnly)
                 .map((link, index) => {
                   const menuItemProps: any = {
@@ -688,7 +690,6 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
   return (
     <>
@@ -841,7 +842,7 @@ function NarrowScreenLinks({
               })}
               {loggedInUser &&
                 loggedInUser.url_slug &&
-                getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString }).map(
+                getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, hubUrl }).map(
                   (link, index) => {
                     const Icon: any = link.iconForDrawer;
                     const avatarProps = {
@@ -853,7 +854,7 @@ function NarrowScreenLinks({
                       return (
                         <div className={classes.mobileAvatarContainer} key={index}>
                           <Link
-                            href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
+                            href={appHref("/profiles/" + loggedInUser.url_slug, { hubUrl, locale })}
                             underline="hover"
                           >
                             {loggedInUser?.badges?.length > 0 ? (

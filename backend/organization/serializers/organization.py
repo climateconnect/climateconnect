@@ -15,7 +15,6 @@ from organization.models import (
     OrganizationMember,
     OrganizationTranslation,
 )
-from organization.models.project import ProjectParents
 from organization.serializers.sector import OrganizationSectorMappingSerializer
 from organization.serializers.tags import OrganizationTaggingSerializer
 from organization.serializers.translation import OrganizationTranslationSerializer
@@ -24,6 +23,7 @@ from organization.utility.organization import (
     get_organization_get_involved,
     get_organization_name,
     get_organization_short_description,
+    get_visible_organization_projects_queryset,
 )
 from organization.utility.sector import (
     get_sectors_based_on_hub,
@@ -61,6 +61,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     language = serializers.SerializerMethodField()
     creator = serializers.SerializerMethodField()
     number_of_followers = serializers.SerializerMethodField()
+    projects_count = serializers.SerializerMethodField()
     get_involved = serializers.SerializerMethodField()
 
     class Meta:
@@ -86,6 +87,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "hubs",
             "creator",
             "number_of_followers",
+            "projects_count",
             "get_involved",
         )
 
@@ -155,6 +157,9 @@ class OrganizationSerializer(serializers.ModelSerializer):
     def get_number_of_followers(self, obj):
         return obj.organization_following.count()
 
+    def get_projects_count(self, obj):
+        return get_visible_organization_projects_queryset(obj).count()
+
 
 class OrganizationFollowerSerializer(serializers.ModelSerializer):
     user_profile = serializers.SerializerMethodField()
@@ -194,10 +199,13 @@ class EditOrganizationSerializer(OrganizationSerializer):
             return {}
 
     def get_short_description(self, obj):
-        return get_organization_short_description(obj, get_language())
+        return obj.short_description
 
     def get_about(self, obj):
-        return get_organization_about_section(obj, get_language())
+        return obj.about
+
+    def get_get_involved(self, obj):
+        return obj.get_involved
 
     def get_organ(self, obj):
         return obj.organ
@@ -206,7 +214,7 @@ class EditOrganizationSerializer(OrganizationSerializer):
         return obj.school
 
     def get_name(self, obj):
-        return get_organization_name(obj, get_language())
+        return obj.name
 
     # Override the get_sectors method to use the hub-specific sectors
     def get_sectors(self, obj):
@@ -274,9 +282,7 @@ class OrganizationCardSerializer(serializers.ModelSerializer):
         return OrganizationMember.objects.filter(organization=obj.id).count()
 
     def get_projects_count(self, obj):
-        return ProjectParents.objects.filter(
-            parent_organization__id=obj.id, project__is_draft=False
-        ).count()
+        return get_visible_organization_projects_queryset(obj).count()
 
 
 class OrganizationMemberSerializer(serializers.ModelSerializer):

@@ -30,6 +30,27 @@ export function parseProjectStubs(projects) {
 }
 
 /**
+ * Parses organization stubs as returned by GET /api/member/<slug>/organizations/,
+ * where each item is wrapped as `{ organization: {...} }`. The `key` field is
+ * added to each type so that OrganizationPreviewHeader can render stable Chip
+ * keys (see `parseOrganization` in organizationOperations.ts for the same
+ * pattern).
+ */
+export function parseOrganizationStubs(organizations) {
+  return organizations.map((o) => ({
+    ...o.organization,
+    types: o.organization.types.map((t) => ({
+      ...t.organization_tag,
+      key: t.organization_tag.id,
+    })),
+    info: {
+      location: o.organization.location,
+      short_description: o.organization?.short_description,
+    },
+  }));
+}
+
+/**
  * Parses a flat array of project stub objects (as returned by e.g.
  * GET /api/members/me/registered-events/ which uses ProjectStubSerializer directly,
  * without a wrapping `.project` key).

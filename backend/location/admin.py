@@ -25,7 +25,6 @@ from location.models import (
 
 
 class LocationAdmin(admin.ModelAdmin):
-
     search_fields = (
         "name",
         "osm_id",

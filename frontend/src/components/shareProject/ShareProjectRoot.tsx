@@ -470,6 +470,7 @@ export default function ShareProjectRoot({
             hubName={hubName}
             hasError={project.error}
             projectTypeId={project.project_type?.type_id}
+            projectName={project.name}
           />
         </>
       )}

@@ -83,6 +83,15 @@ export default function GoBackButton({
     return "/" + locale + "/browse";
   };
 
+  const isInternalReferrer = (referrer: string): boolean => {
+    if (!referrer) return false;
+    try {
+      return new URL(referrer).host === window.location.host;
+    } catch {
+      return false;
+    }
+  };
+
   const goBack = () => {
     // Priority 1: If user came from a special event page, go back there
     if (specialEventPagePath) {
@@ -91,9 +100,13 @@ export default function GoBackButton({
     }
 
     // Priority 2: Go back to the page the user actually came from, acting like
-    // the browser back button. Only fall back to a hard-coded url when there is
-    // no previous history (e.g. the user opened the page directly).
-    if (typeof window !== "undefined" && window.history.length > 1) {
+    // the browser back button. Only do so when the referrer indicates an
+    // internal page. If the user came from an external site, opened the page
+    // via "open in new tab" on an external link, or typed the URL directly,
+    // the referrer will be empty or on a different host — in those cases
+    // history.back() would either do nothing (new tab) or take the user back
+    // to the external site, so we fall back to a hard-coded internal URL.
+    if (typeof document !== "undefined" && isInternalReferrer(document.referrer)) {
       router.back();
     } else {
       router.push(getDefaultBackUrl());

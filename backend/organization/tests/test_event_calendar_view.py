@@ -531,3 +531,131 @@ class TestEventCalendarCountsView(APITestCase):
         # a valid (empty or populated) list.
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsInstance(response.json(), list)
+
+
+class TestListUpcomingEventsView(APITestCase):
+    """
+    Tests for the upcoming events endpoint for Browse highlights.
+    """
+
+    def setUp(self):
+        self.url = reverse("organization:events-upcoming")
+
+        self.project_status, _ = ProjectStatus.objects.update_or_create(
+            id=2,
+            defaults={
+                "name": "active",
+                "name_de_translation": "aktiv",
+                "has_end_date": True,
+                "has_start_date": True,
+            },
+        )
+        self.language, _ = Language.objects.get_or_create(
+            language_code="en",
+            defaults={"name": "English", "native_name": "English"},
+        )
+
+        now = timezone.now()
+        self.now = now
+        # 5 future events - should get 4 back
+        for i in range(5):
+            Project.objects.create(
+                name=f"Future Event {i}",
+                url_slug=f"future-event-{i}",
+                is_active=True,
+                is_draft=False,
+                status=self.project_status,
+                language=self.language,
+                project_type="EV",
+                start_date=now + timedelta(days=10 + i),
+                end_date=now + timedelta(days=10 + i, hours=2),
+            )
+        # Past event - excluded
+        Project.objects.create(
+            name="Past Event",
+            url_slug="past-event",
+            is_active=True,
+            is_draft=False,
+            status=self.project_status,
+            language=self.language,
+            project_type="EV",
+            start_date=now - timedelta(days=2),
+            end_date=now - timedelta(hours=2),
+        )
+        # Draft event - excluded
+        Project.objects.create(
+            name="Draft Event",
+            url_slug="draft-event",
+            is_active=True,
+            is_draft=True,
+            status=self.project_status,
+            language=self.language,
+            project_type="EV",
+            start_date=now + timedelta(days=15),
+        )
+
+    def test_url_resolves(self):
+        self.assertEqual(self.url, "/api/events/upcoming/")
+
+    def test_returns_max_4_events(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        results = response.json()
+        self.assertEqual(len(results), 4)
+
+    def test_only_returns_future_events(self):
+        response = self.client.get(self.url)
+        results = response.json()
+        slugs = [item["url_slug"] for item in results]
+        self.assertNotIn("past-event", slugs)
+        self.assertNotIn("draft-event", slugs)
+
+    def test_orders_by_start_date_ascending(self):
+        response = self.client.get(self.url)
+        results = response.json()
+        slugs = [item["url_slug"] for item in results]
+        # Should be event-0, 1, 2, 3 (first 4 chronologically)
+        self.assertEqual(
+            slugs[:4],
+            ["future-event-0", "future-event-1", "future-event-2", "future-event-3"],
+        )
+
+    def test_start_date_filter_respected(self):
+        # Request events starting from day 12 onwards (event-2 onwards)
+        start = (self.now + timedelta(days=12)).isoformat()
+        response = self.client.get(self.url, {"start_date": start})
+        results = response.json()
+        slugs = [item["url_slug"] for item in results]
+        # Should start from event-2 (days 12, 13, 14, 15)
+        self.assertEqual(len(results), 3)  # Only 3 events remain after day 12
+        self.assertNotIn("future-event-0", slugs)
+        self.assertNotIn("future-event-1", slugs)
+
+    def test_sectors_filter(self):
+        sector = Sector.objects.create(
+            name="Future Sector", name_de_translation="Zukunft", key="future"
+        )
+        # Only attach sector to event-0
+        Project.objects.get(url_slug="future-event-0").project_sector_mapping.create(
+            sector=sector
+        )
+        response = self.client.get(self.url, {"sectors": sector.name})
+        results = response.json()
+        slugs = [item["url_slug"] for item in results]
+        self.assertEqual(len(results), 1)
+        self.assertIn("future-event-0", slugs)
+
+    def test_search_filter(self):
+        response = self.client.get(self.url, {"search": "Future Event 3"})
+        results = response.json()
+        slugs = [item["url_slug"] for item in results]
+        self.assertEqual(len(results), 1)
+        self.assertIn("future-event-3", slugs)
+
+    def test_returns_plain_list_not_paginated(self):
+        response = self.client.get(self.url)
+        results = response.json()
+        self.assertIsInstance(results, list)
+        # Not a paginated response with count/next/previous
+        self.assertNotIn("count", results)
+        self.assertNotIn("next", results)

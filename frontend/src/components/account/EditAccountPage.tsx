@@ -33,6 +33,7 @@ import SelectDialog from "./../dialogs/SelectDialog";
 import UploadImageDialog from "./../dialogs/UploadImageDialog";
 import DetailledDescriptionInput from "./DetailledDescriptionInput";
 import SelectField from "../general/SelectField";
+import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 import { AvatarImage, UserAvatar } from "./UserAvatar";
 import CloseIcon from "@mui/icons-material/Close";
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
@@ -178,6 +179,11 @@ const useStyles = makeStyles<Theme, { background_image?: string }>((theme) => ({
   },
   detailledDescriptionContainer: {
     marginTop: theme.spacing(5),
+  },
+  requiredFieldsNotice: {
+    display: "block",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(3),
   },
 }));
 
@@ -803,6 +809,7 @@ export default function EditAccountPage({
           </Container>
           <Container className={classes.accountInfo}>
             {/*Contains all the possible info a user can put about their account e.g. website, location, summary, bio, ...*/}
+            <RequiredFieldsNotice className={classes.requiredFieldsNotice} />
             {displayAccountInfo(editedAccount.info)}
             <div className={classes.checkTranslationsButtonAndManageMembersButtonContainer}>
               {onClickCheckTranslations && (
@@ -927,8 +934,8 @@ const editErrorMessage = (
           {existingName}
         </Link>
         {secondSentenceText}
-        <Link href="mailto:support@climateconnect.earth" target="_blank" underline="hover">
-          support@climateconnect.earth
+        <Link href="mailto:support@climatehub.org" target="_blank" underline="hover">
+          support@climatehub.org
         </Link>
       </>
     );

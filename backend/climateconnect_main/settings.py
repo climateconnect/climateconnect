@@ -152,8 +152,10 @@ CORS_ORIGIN_WHITELIST = [
     "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
     "https://alpha.climateconnect.earth",
     "https://climateconnect.earth",
+    "https://climatehub.org",
     "https://test3425.climateconnect.earth",
     "https://www.climateconnect.earth",
+    "https://www.climatehub.org",
     "https://www.cc-test-domain.com",
     "https://cc-test-domain.com",
     "http://cc-test-domain.com",
@@ -170,9 +172,11 @@ CSRF_TRUSTED_ORIGINS = [
     "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
     "https://alpha.climateconnect.earth",
     "https://climateconnect.earth",
+    "https://climatehub.org",
     "https://test3425.climateconnect.earth",
     "https://www.climateconnect.earth",
     "https://api.climateconnect.earth",
+    "https://api.climatehub.org",
     "https://www.cc-test-domain.com",
     "https://cc-test-domain.com",
     "http://cc-test-domain.com",
@@ -647,7 +651,7 @@ sentry_sdk.init(
 )
 
 CLIMATE_CONNECT_CONTACT_EMAIL = env(
-    "CLIMATE_CONNECT_CONTACT_EMAIL", "contact@climateconnect.earth"
+    "CLIMATE_CONNECT_CONTACT_EMAIL", "contact@climatehub.org"
 )
 # --- GLOBAL TEST SETTINGS ---
 # This ensures that tests don't require a running Redis/RabbitMQ broker

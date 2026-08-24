@@ -22,8 +22,8 @@ def send_login_code_email_to_user(user, code: str) -> None:
         return
 
     subjects_by_language = {
-        "en": "Your Climate Connect login code",
-        "de": "Dein Climate Connect Anmeldecode",
+        "en": "Your login code",
+        "de": "Dein Anmeldecode",
     }
     variables = {
         "FirstName": user.first_name,

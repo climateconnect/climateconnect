@@ -35,12 +35,11 @@ const COMMON_LINKS = {
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
   }),
-  AUTH_LINKS: (path_to_redirect, texts, queryString) => {
+  AUTH_LINKS: (path_to_redirect, texts, hubUrl?: string) => {
+    const loginPath = `/login?redirect=${encodeURIComponent(path_to_redirect)}`;
     return [
       {
-        href: `/login?redirect=${encodeURIComponent(path_to_redirect)}${
-          queryString ? `&${queryString}` : ""
-        }`,
+        href: appHref(loginPath, { hubUrl }),
         text: texts.auth_log_in,
         iconForDrawer: AccountCircleIcon,
         isOutlinedInHeader: true,
@@ -143,7 +142,6 @@ const buildDonateLink = ({ texts, hubUrl }) => ({
 });
 
 const getWasseraktionswochenLinks = ({ path_to_redirect, texts, hubUrl, hasHubLandingPage }) => {
-  const queryString = hubUrl ? `hub=${hubUrl}` : "";
   return [
     buildAboutLink({
       texts,
@@ -166,13 +164,13 @@ const getWasseraktionswochenLinks = ({ path_to_redirect, texts, hubUrl, hasHubLa
       ...COMMON_LINKS.NOTIFICATIONS,
       text: texts.inbox,
     },
-    ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, queryString),
+    ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, hubUrl),
   ];
 };
 
 const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPage, hubUrl) => {
   const isOnLandingPage = isLandingPagePath(path_to_redirect, hubUrl);
-  const queryString = isLocationHub && hubUrl ? `hub=${hubUrl}` : "";
+  const authHubUrl = isLocationHub ? hubUrl : undefined;
   {
     return [
       buildBrowseLink({ texts, isLocationHub, isOnLandingPage, hasHubLandingPage }),
@@ -190,7 +188,7 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPa
         ...COMMON_LINKS.NOTIFICATIONS,
         text: texts.inbox,
       },
-      ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, queryString),
+      ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, authHubUrl),
     ];
   }
 };
@@ -217,36 +215,44 @@ const getLinks = (
     : getDefaultLinks(path_to_redirect, texts, effectiveIsLocationHub, hasHubLandingPage, hubUrl);
 };
 
-const getLoggedInLinks = ({ loggedInUser, texts, queryString }) => {
+const getLoggedInLinks = ({
+  loggedInUser,
+  texts,
+  hubUrl,
+}: {
+  loggedInUser: any;
+  texts: any;
+  hubUrl?: string;
+}) => {
   return [
     {
-      href: "/profiles/" + loggedInUser.url_slug + queryString,
+      href: appHref("/profiles/" + loggedInUser.url_slug, { hubUrl }),
       text: texts.my_profile,
       iconForDrawer: AccountCircleIcon,
     },
     {
-      href: "/inbox" + queryString,
+      href: appHref("/inbox", { hubUrl }),
       text: texts.inbox,
       iconForDrawer: MailOutlineIcon,
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug + (queryString || "/") + "#projects",
+      href: appHref(`/profiles/${loggedInUser.url_slug}#projects`, { hubUrl }),
       text: texts.my_projects,
       iconForDrawer: GroupWorkIcon,
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug + (queryString || "/") + "#organizations",
+      href: appHref(`/profiles/${loggedInUser.url_slug}#organizations`, { hubUrl }),
       text: texts.my_organizations,
       iconForDrawer: GroupWorkIcon,
     },
     {
-      href: "/settings" + queryString,
+      href: appHref("/settings", { hubUrl }),
       text: texts.settings,
       iconForDrawer: SettingsIcon,
     },
     {
       avatar: true,
-      href: "/profiles/" + loggedInUser.url_slug + queryString,
+      href: appHref("/profiles/" + loggedInUser.url_slug, { hubUrl }),
       src: loggedInUser.image,
       alt: texts.profile_image_of + " " + loggedInUser.name,
       showOnMobileOnly: true,

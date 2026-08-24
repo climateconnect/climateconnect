@@ -1,7 +1,9 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import { makeStyles } from "@mui/styles";
 import Image from "next/legacy/image";
 import { Theme } from "@mui/material/styles";
+import { getLogoSrc } from "../../../public/lib/imageOperations";
+import UserContext from "../context/UserContext";
 
 type Props = { hubUrl: string | undefined; texts: any | null; authStep?: string };
 
@@ -14,11 +16,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     lineHeight: isNumber(theme.typography.h5.lineHeight)
       ? (theme.typography.h5.lineHeight as number) - 0.2
       : 0.8,
+    maxWidth: "100%",
+    overflow: "hidden",
   },
   prio1_X: {
     fontSize: "8rem",
     fontWeight: "bold",
     fontStyle: "italic",
+    flexShrink: 0,
     [theme.breakpoints.down("xl")]: {
       fontSize: "5rem",
     },
@@ -28,12 +33,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   prio1_imageContainer: {
     height: "8rem",
+    maxWidth: "100%",
     display: "flex",
     flexDirection: "row",
     gap: "1rem",
-    justifyContent: "left",
+    justifyContent: "flex-start",
     alignItems: "center",
-    marginTop: theme.spacing(6),
+    minWidth: 0,
+    marginTop: theme.spacing(-1),
     [theme.breakpoints.down("xl")]: {
       height: "6rem",
     },
@@ -42,12 +49,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   prio1_image: {
-    height: "100%",
+    maxHeight: "100%",
+    maxWidth: "100%",
+    height: "auto",
+    width: "auto",
+    objectFit: "contain",
+    flex: "0 1 auto",
+    minWidth: 0,
   },
   prio1_text: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(0.5),
+    maxWidth: "100%",
+    overflowWrap: "break-word",
     [theme.breakpoints.up("xl")]: {
-      marginRight: "clamp(2rem,15rem - 2vw, 15rem)",
+      marginRight: "clamp(2rem, calc(15rem - 2vw), 15rem)",
     },
   },
 }));
@@ -57,13 +72,15 @@ function isNumber(value: any): boolean {
 }
 
 export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): ReactElement | null {
+  const { locale } = useContext(UserContext);
+
   if (!hubUrl) {
     return <DefaultAuthImage authStep={authStep} />;
   }
 
   switch (hubUrl.toLowerCase()) {
     case PRIO1_SLUG: {
-      return <AuthImage texts={texts} hubSlug={PRIO1_SLUG} logoSrc="/images/logo_white.png" />;
+      return <AuthImage texts={texts} hubSlug={PRIO1_SLUG} logoSrc={getLogoSrc("white", locale)} />;
     }
     case PERTH_SLUG: {
       return (
@@ -71,7 +88,7 @@ export default function CustomAuthImage({ hubUrl, texts, authStep }: Props): Rea
           texts={texts}
           hubSlug={PERTH_SLUG}
           authStep={authStep}
-          logoSrc="/images/logo.svg"
+          logoSrc={getLogoSrc("normal", locale)}
         />
       );
     }

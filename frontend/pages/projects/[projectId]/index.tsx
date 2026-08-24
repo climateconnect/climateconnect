@@ -89,7 +89,6 @@ export async function getServerSideProps(ctx) {
     posts,
     comments,
     userInteractions,
-    similarProjects,
     hubSupporters,
     hubThemeData,
   ] = await Promise.all([
@@ -98,10 +97,12 @@ export async function getServerSideProps(ctx) {
     getPostsByProject(projectUrl, auth_token, ctx.locale),
     getCommentsByProject(projectUrl, auth_token, ctx.locale),
     auth_token ? getUsersInteractionWithProject(projectUrl, auth_token, ctx.locale) : false,
-    getSimilarProjects(projectUrl, ctx.locale, hubUrl),
     hubUrl ? getHubSupporters(hubUrl, ctx.locale) : null,
     hubUrl ? getHubTheme(hubUrl) : null,
   ]);
+
+  const similarProjects =
+    project && !project.is_draft ? await getSimilarProjects(projectUrl, ctx.locale, hubUrl) : null;
 
   // Fetch sibling events if this is a Wasseraktionswochen event
   let siblingProjects = null;
@@ -203,6 +204,7 @@ export default function ProjectPage({
   // Handle remove bell icon notification
   const { notifications, setNotificationsRead, refreshNotifications } = useContext(UserContext);
   const handleReadNotifications = async (notificationType) => {
+    if (!notifications || notifications.length === 0) return;
     const notification_to_set_read = notifications.filter(
       (n) => n.notification_type === notificationType && n.project.url_slug === project.url_slug
     );
@@ -211,11 +213,10 @@ export default function ProjectPage({
   };
 
   useEffect(() => {
-    handleReadNotifications(NOTIFICATION_TYPES.indexOf("org_project_published"));
-  }, [
-    notifications.length !== 0,
-  ]); /* end of removing bell icon notification
-  TODO: need a better way of getting rid of the  bell notification */
+    if (notifications && notifications.length !== 0) {
+      handleReadNotifications(NOTIFICATION_TYPES.indexOf("org_project_published"));
+    }
+  }, [notifications?.length]);
 
   const handleFollow = (userFollows, updateCount, pending) => {
     setIsUserFollowing(userFollows);

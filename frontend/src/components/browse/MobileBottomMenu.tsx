@@ -1,72 +1,108 @@
-import React from "react";
-import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
-import { Tab, Tabs } from "@mui/material";
-import makeStyles from "@mui/styles/makeStyles";
+import React, { useContext, useMemo } from "react";
+import { BottomNavigation, BottomNavigationAction, Box, styled } from "@mui/material";
 import ContactAmbassadorButton from "../hub/ContactAmbassadorButton";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import GroupIcon from "@mui/icons-material/Group";
+import Groups2Icon from "@mui/icons-material/Groups2";
 import DateRangeRoundedIcon from "@mui/icons-material/DateRangeRounded";
-import { Theme } from "@mui/material/styles";
+import getTexts from "../../../public/texts/texts";
+import UserContext from "../context/UserContext";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: "fixed",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 20,
-    background: "#f0f2f5",
-  },
-  tabs: {
-    "& .MuiTabs-indicator": {
-      backgroundColor: theme.palette.background.default_contrastText,
+const StyledNavAction = styled(BottomNavigationAction)(({ theme }) => ({
+  minWidth: 0,
+  padding: "6px 4px 8px",
+  gap: 2,
+  "& .MuiBottomNavigationAction-label": {
+    fontSize: "0.6rem",
+    lineHeight: 1.2,
+    marginTop: 1,
+    opacity: 1,
+    whiteSpace: "nowrap",
+    color: theme.palette.text.secondary,
+    "&.Mui-selected": {
+      fontSize: "0.6rem",
+      color: theme.palette.getContrastText(
+        theme.palette.background.default_contrastText || theme.palette.primary.main
+      ),
     },
   },
-  tab: {
-    color: theme.palette.background.default_contrastText,
+  "& .MuiSvgIcon-root": {
+    color: theme.palette.text.secondary,
+    fontSize: "1.4rem",
+  },
+  "&.Mui-selected": {
+    backgroundColor: theme.palette.background.default_contrastText || theme.palette.primary.main,
+    borderRadius: 16,
+    margin: "4px 6px",
+    paddingTop: 6,
+    paddingBottom: 8,
+    "& .MuiSvgIcon-root": {
+      color: theme.palette.getContrastText(
+        theme.palette.background.default_contrastText || theme.palette.primary.main
+      ),
+    },
   },
 }));
+
+const type_icons: Record<string, React.ElementType> = {
+  projects: AssignmentIcon,
+  organizations: Groups2Icon,
+  events: DateRangeRoundedIcon,
+  members: AccountCircleIcon,
+};
+
+const TYPE_TEXT_KEYS: Record<string, string> = {
+  projects: "projects",
+  organizations: "organizations",
+  members: "members",
+  events: "event_calendar",
+};
 
 export default function MobileBottomMenu({
   tabValue,
   handleTabChange,
   TYPES_BY_TAB_VALUE,
   hubAmbassador,
-  hubUrl,
 }) {
-  const type_icons = {
-    projects: AssignmentIcon,
-    organizations: GroupIcon,
-    events: DateRangeRoundedIcon, // TODO: after updating material-icon to v5+, replace with "CalendarMonthRoundedIcon"
-    members: AccountCircleIcon,
-    ideas: EmojiObjectsIcon,
-  };
-  const classes = useStyles();
+  const { locale } = useContext(UserContext);
+  const texts = useMemo(() => getTexts({ page: "hub", locale: locale }), [locale]);
+
   return (
-    <div className={classes.root}>
-      <ContactAmbassadorButton mobile hubAmbassador={hubAmbassador} hubUrl={hubUrl} />
-      <>
-        <Tabs
-          variant="fullWidth"
-          value={tabValue}
-          onChange={handleTabChange}
-          className={classes.tabs}
-          centered={true}
-        >
-          {TYPES_BY_TAB_VALUE.map((t, index) => {
-            const tabProps: any = {
-              //TODO(unused)  className: classes.tab,
-            };
-            const typeIcon = {
-              icon: type_icons[t],
-            };
-            return (
-              <Tab label={<typeIcon.icon className={classes.tab} />} {...tabProps} key={index} />
-            );
-          })}
-        </Tabs>
-      </>
-    </div>
+    <Box
+      sx={(theme) => ({
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 20,
+        backgroundColor: theme.palette.background.paper,
+        borderTop: `1px solid ${theme.palette.divider}`,
+      })}
+    >
+      <ContactAmbassadorButton mobile hubAmbassador={hubAmbassador} />
+      <BottomNavigation
+        value={tabValue}
+        onChange={handleTabChange}
+        showLabels
+        sx={{
+          backgroundColor: "transparent",
+          height: "auto",
+          px: 0.5,
+        }}
+      >
+        {TYPES_BY_TAB_VALUE.map((type: string, index: number) => {
+          const Icon = type_icons[type];
+          const label = texts[TYPE_TEXT_KEYS[type]] || type;
+          return (
+            <StyledNavAction
+              key={index}
+              label={label}
+              icon={Icon ? <Icon /> : null}
+              value={index}
+            />
+          );
+        })}
+      </BottomNavigation>
+    </Box>
   );
 }

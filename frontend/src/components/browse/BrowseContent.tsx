@@ -2,10 +2,14 @@ import makeStyles from "@mui/styles/makeStyles";
 import { Container, Theme, useMediaQuery } from "@mui/material";
 import _ from "lodash";
 import React, { Suspense, lazy, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import Cookies from "universal-cookie";
 import getFilters from "../../../public/data/possibleFilters";
-import { splitFiltersFromQueryObject } from "../../../public/lib/filterOperations";
-import { loadMoreData } from "../../../public/lib/getDataOperations";
+import {
+  getActiveFilterCount,
+  splitFiltersFromQueryObject,
+} from "../../../public/lib/filterOperations";
+import { getUpcomingEvents, loadMoreData } from "../../../public/lib/getDataOperations";
 import { membersWithAdditionalInfo } from "../../../public/lib/getOptions";
 import { indicateWrongLocation, isLocationValid } from "../../../public/lib/locationOperations";
 import {
@@ -30,7 +34,8 @@ import { BrowseTab, LinkedHub } from "../../types";
 import { FilterContext } from "../context/FilterContext";
 import HubLinkButton from "../hub/HubLinkButton";
 import { useFeatureToggles } from "../featureToggle";
-import UpcomingEventsGroup, { getUpcomingEventHighlights } from "./UpcomingEventsGroup";
+import { useUpcomingEventsDisplayCount } from "../../hooks/useUpcomingEventsDisplayCount";
+import UpcomingEventsGroup from "./UpcomingEventsGroup";
 const OrganizationPreviews = lazy(() => import("../organization/OrganizationPreviews"));
 const ProfilePreviews = lazy(() => import("../profile/ProfilePreviews"));
 const ProjectPreviews = lazy(() => import("../project/ProjectPreviews"));
@@ -93,6 +98,7 @@ type BrowseContentProps = {
   isLocationHub?: boolean;
   linkedHubs?: LinkedHub[];
   fromPage?: "hub";
+  subHubSegment?: string;
 };
 
 export default function BrowseContent({
@@ -114,6 +120,7 @@ export default function BrowseContent({
   isLocationHub,
   linkedHubs,
   fromPage,
+  subHubSegment,
 }: BrowseContentProps) {
   const initialState = {
     items: {
@@ -146,6 +153,7 @@ export default function BrowseContent({
   } = useContext(FilterContext);
 
   const classes = useStyles();
+  const router = useRouter();
   // Events are intentionally NOT a tab here. They are exposed as a separate
   // route (/events and /hubs/[hubUrl]/events) linked from HubTabsNavigation,
   // behind the EVENT_CALENDAR_FEATURE toggle. See eventCalendar components.
@@ -158,12 +166,17 @@ export default function BrowseContent({
     locale,
   ]);
 
-  const [hash, setHash] = useState<BrowseTab | null>(null);
-  const [tabValue, setTabValue] = useState(hash ? TYPES_BY_TAB_VALUE.indexOf(hash) : 0);
+  const [tabValue, setTabValue] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    const h = window.location.hash.replace("#", "");
+    return (TYPES_BY_TAB_VALUE as string[]).indexOf(h) >= 0
+      ? (TYPES_BY_TAB_VALUE as string[]).indexOf(h)
+      : 0;
+  });
 
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
   const isSmallScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
-  const isLargeScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.up("lg"));
+  const eventsDisplayCount = useUpcomingEventsDisplayCount();
 
   const type_names = {
     projects: texts.projects,
@@ -176,19 +189,96 @@ export default function BrowseContent({
   const [filtersExandedOnMobile, setFiltersExpandedOnMobile] = useState(false);
   const [state, setState] = useState(initialState);
 
-  // Curate upcoming events from the existing ranked grid (no separate API
-  // call). They are rendered as a highlighted "Upcoming events" group at the
-  // top; the rest of the grid excludes them so they are not shown twice.
-  // Limit to a single row per breakpoint, matching the main project grid's
-  // column count so the group never wraps into a broken, partly-empty second
-  // row: lg+ = 4 columns, md = 3, sm = 2 (horizontal), and on very narrow
-  // screens (xs) 2 events render as two stacked rows at one column.
-  const upcomingEventLimit = isLargeScreen ? 4 : isNarrowScreen ? 2 : 3;
+  // Upcoming events state - fetched in parallel with projects when feature enabled
   const isEventsEnabled = isEnabled("EVENT_CALENDAR_FEATURE");
-  const { highlights, remaining } = useMemo(
-    () => getUpcomingEventHighlights(state.items.projects, upcomingEventLimit),
-    [state.items.projects, upcomingEventLimit]
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+
+  // Build start_date filter for "today" at local midnight (browser timezone)
+  // This ensures "upcoming" aligns with the user's local day
+  const startDateFilter = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // Include timezone offset for accurate server-side filtering
+    return today.toISOString();
+  }, []);
+
+  // Stabilize location: only treat it as changed when a valid location object
+  // is selected from the autocomplete. During typing, filters.location is a
+  // string (changes on every keystroke) which would trigger unnecessary refetches.
+  const stableLocation = useMemo(
+    () => (isLocationValid(filters.location) ? filters.location : undefined),
+    [filters.location]
   );
+
+  // Fetch upcoming events in parallel with projects
+  useEffect(() => {
+    if (!isEventsEnabled) {
+      setUpcomingEvents([]);
+      return;
+    }
+
+    const fetchUpcoming = async () => {
+      const events = await getUpcomingEvents({
+        token,
+        locale,
+        hubUrl: hubData?.url_slug,
+        filters: {
+          search: filters.search,
+          sectors: filters.sectors,
+          start_date: startDateFilter,
+        },
+        location: stableLocation,
+      });
+      setUpcomingEvents(events || []);
+    };
+
+    fetchUpcoming();
+  }, [
+    isEventsEnabled,
+    filters.search,
+    filters.sectors,
+    startDateFilter,
+    stableLocation,
+    token,
+    locale,
+    hubData?.url_slug,
+  ]);
+
+  // Upcoming events: split into "band" (shown in dedicated UpcomingEventsGroup
+  // when there are enough to fill a row) and "featured" (prepended to the
+  // project grid). The grid handles its own dedup against the regular projects,
+  // which makes the merge/separate transition robust on resize.
+  const visibleEvents = useMemo(() => upcomingEvents.slice(0, eventsDisplayCount), [
+    upcomingEvents,
+    eventsDisplayCount,
+  ]);
+  const shouldRenderUpcomingBand = isEventsEnabled && upcomingEvents.length >= eventsDisplayCount;
+  // Events not shown in the band are prepended to the grid. When the band is
+  // hidden, all events are prepended.
+  const featuredProjects = useMemo(() => {
+    if (!isEventsEnabled || upcomingEvents.length === 0) return [];
+    return shouldRenderUpcomingBand ? upcomingEvents.slice(eventsDisplayCount) : upcomingEvents;
+  }, [isEventsEnabled, upcomingEvents, shouldRenderUpcomingBand, eventsDisplayCount]);
+  // Slugs of events already shown in the band — removed from the regular
+  // projects list so they are not duplicated in the grid below.
+  const bandEventSlugs = useMemo(
+    () => (shouldRenderUpcomingBand ? new Set(visibleEvents.map((e) => e.url_slug)) : new Set()),
+    [shouldRenderUpcomingBand, visibleEvents]
+  );
+  const projectsForGrid = useMemo(
+    () =>
+      bandEventSlugs.size > 0
+        ? state.items.projects.filter((p) => !bandEventSlugs.has(p.url_slug))
+        : state.items.projects,
+    [state.items.projects, bandEventSlugs]
+  );
+
+  const eventsContent = useMemo(() => {
+    if (!shouldRenderUpcomingBand) return undefined;
+    return (
+      <UpcomingEventsGroup events={visibleEvents} hubUrl={hubUrl} subHubSegment={subHubSegment} />
+    );
+  }, [shouldRenderUpcomingBand, visibleEvents, hubUrl, subHubSegment]);
 
   const locationInputRefs = {
     projects: useRef(null),
@@ -223,10 +313,8 @@ export default function BrowseContent({
     const newHash = window?.location?.hash.replace("#", "") as BrowseTab;
 
     if (window.location.hash && TYPES_BY_TAB_VALUE.includes(newHash)) {
-      setHash(newHash);
       setTabValue(TYPES_BY_TAB_VALUE.indexOf(newHash));
     } else {
-      setHash(TYPES_BY_TAB_VALUE[0]);
       setTabValue(0);
     }
 
@@ -301,31 +389,27 @@ export default function BrowseContent({
     //persist the old location filter when switching tabs
     const tabKey = TYPES_BY_TAB_VALUE[newValue];
 
-    if (tabKey === "events") {
-      // TODO: add event calendar here!
-    } else {
-      const possibleFilters = getFilters({
-        key: tabKey,
-        filterChoices: filterChoices,
-        locale: locale,
-      });
-      const locationFilter: any = possibleFilters.find((f) => f.type === "location");
-      queryObject[locationFilter.key] = filters[locationFilter.key];
-      const splitQueryObject = splitFiltersFromQueryObject(
-        /*TODO(undefined) newFilters*/ queryObject,
-        possibleFilters
-      );
+    const possibleFilters = getFilters({
+      key: tabKey,
+      filterChoices: filterChoices,
+      locale: locale,
+    });
+    const locationFilter: any = possibleFilters.find((f) => f.type === "location");
+    queryObject[locationFilter.key] = filters[locationFilter.key];
+    const splitQueryObject = splitFiltersFromQueryObject(
+      /*TODO(undefined) newFilters*/ queryObject,
+      possibleFilters
+    );
 
-      const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
-      const tabValue = TYPES_BY_TAB_VALUE[newValue];
-      // Apply new filters with the query object immediately:
-      handleApplyNewFilters({
-        type: tabValue,
-        newFilters: newFilters,
-        closeFilters: false,
-        nonFilterParams: splitQueryObject.nonFilters,
-      });
-    }
+    const newFilters = { ...emptyFilters, ...splitQueryObject.filters };
+    const tabValue = TYPES_BY_TAB_VALUE[newValue];
+    // Apply new filters with the query object immediately:
+    handleApplyNewFilters({
+      type: tabValue,
+      newFilters: newFilters,
+      closeFilters: false,
+      nonFilterParams: splitQueryObject.nonFilters,
+    });
 
     window.location.hash = TYPES_BY_TAB_VALUE[newValue];
     setTabValue(newValue);
@@ -503,6 +587,13 @@ export default function BrowseContent({
     }
   };
 
+  const currentPossibleFilters = getFilters({
+    key: TYPES_BY_TAB_VALUE[tabValue],
+    filterChoices: filterChoices,
+    locale: locale,
+  });
+  const activeFilterCount = getActiveFilterCount(filters, currentPossibleFilters);
+
   const tabContentWrapperProps = {
     tabValue: tabValue,
     TYPES_BY_TAB_VALUE: TYPES_BY_TAB_VALUE,
@@ -542,6 +633,7 @@ export default function BrowseContent({
         className={classes.hubsTabNavigation}
         allHubs={allHubs}
         fromPage={fromPage}
+        subHubSegment={subHubSegment}
       />
       <Container maxWidth="lg" className={classes.contentRefContainer}>
         {isNarrowScreen && hubSupporters && hubName && (
@@ -561,6 +653,7 @@ export default function BrowseContent({
         {isSmallScreen && (
           <Suspense fallback={null}>
             <FilterSection
+              activeFilterCount={activeFilterCount}
               filtersExpanded={filtersExandedOnMobile}
               onSubmit={handleSearchSubmit}
               setFiltersExpanded={isSmallScreen ? setFiltersExpandedOnMobile : setFiltersExpanded}
@@ -570,65 +663,96 @@ export default function BrowseContent({
             />
           </Suspense>
         )}
-        {isNarrowScreen && (
-          <MobileBottomMenu
-            tabValue={tabValue}
-            handleTabChange={handleTabChange}
-            TYPES_BY_TAB_VALUE={TYPES_BY_TAB_VALUE}
-            hubAmbassador={hubAmbassador}
-            hubUrl={hubUrl}
-          />
-        )}
+        {isNarrowScreen &&
+          (() => {
+            const mobileTypes = isEventsEnabled
+              ? [...TYPES_BY_TAB_VALUE, "events"]
+              : TYPES_BY_TAB_VALUE;
+            const handleMobileTabChange = (event, newValue) => {
+              if (mobileTypes[newValue] === "events") {
+                router.push(hubUrl ? `/hubs/${hubUrl}/events` : "/events");
+                return;
+              }
+              handleTabChange(event, newValue);
+            };
+            return (
+              <MobileBottomMenu
+                tabValue={tabValue}
+                handleTabChange={handleMobileTabChange}
+                TYPES_BY_TAB_VALUE={mobileTypes}
+                hubAmbassador={hubAmbassador}
+              />
+            );
+          })()}
         <Suspense fallback={<LoadingSpinner isLoading />}>
-          <TabContentWrapper type={"projects"} {...tabContentWrapperProps}>
-            {hubData?.parent_hub && (
-              <div className={classes.subHubInfoText}>
-                {texts.you_are_seeing_projects_related_to}
-              </div>
-            )}
-            {isEventsEnabled && highlights.length > 0 && (
-              <UpcomingEventsGroup events={highlights} hubUrl={hubUrl} />
-            )}
-            <ProjectPreviews
-              hasMore={state.hasMore.projects}
-              loadFunc={() => handleLoadMoreData("projects")}
-              parentHandlesGridItems
-              projects={isEventsEnabled ? remaining : state.items.projects}
-              hubUrl={hubUrl}
-              isLoading={isFetchingMoreData}
-              analyticsSurface="browse_card"
-            />
-          </TabContentWrapper>
-          <TabContentWrapper type={"organizations"} {...tabContentWrapperProps}>
-            {hubData?.parent_hub && (
-              <div className={classes.subHubInfoText}>
-                {texts.you_are_seeing_organizations_related_to}
-              </div>
-            )}
-            <OrganizationPreviews
-              hasMore={state.hasMore.organizations}
-              loadFunc={() => handleLoadMoreData("organizations")}
-              organizations={state.items.organizations}
-              parentHandlesGridItems
-              isLoading={isFetchingMoreData}
-            />
-          </TabContentWrapper>
-          {!hideMembers && (
-            <TabContentWrapper type={"members"} {...tabContentWrapperProps}>
-              {hubData?.parent_hub && (
+          <TabContentWrapper
+            type={"projects"}
+            {...tabContentWrapperProps}
+            eventsContent={eventsContent}
+            subHubInfoText={
+              hubData?.parent_hub ? (
                 <div className={classes.subHubInfoText}>
-                  {texts.you_are_seeing_members_related_to}
+                  {texts.you_are_seeing_projects_related_to}
                 </div>
-              )}
-              <ProfilePreviews
-                hasMore={state.hasMore.members}
-                loadFunc={() => handleLoadMoreData("members")}
+              ) : undefined
+            }
+          >
+            <Suspense fallback={null}>
+              <ProjectPreviews
+                hasMore={state.hasMore.projects}
+                loadFunc={() => handleLoadMoreData("projects")}
                 parentHandlesGridItems
-                profiles={state.items.members}
+                projects={projectsForGrid}
+                featuredProjects={featuredProjects}
                 hubUrl={hubUrl}
-                showAdditionalInfo
+                isLoading={isFetchingMoreData}
+                analyticsSurface="browse_card"
+              />
+            </Suspense>
+          </TabContentWrapper>
+          <TabContentWrapper
+            type={"organizations"}
+            {...tabContentWrapperProps}
+            subHubInfoText={
+              hubData?.parent_hub ? (
+                <div className={classes.subHubInfoText}>
+                  {texts.you_are_seeing_organizations_related_to}
+                </div>
+              ) : undefined
+            }
+          >
+            <Suspense fallback={null}>
+              <OrganizationPreviews
+                hasMore={state.hasMore.organizations}
+                loadFunc={() => handleLoadMoreData("organizations")}
+                organizations={state.items.organizations}
+                parentHandlesGridItems
                 isLoading={isFetchingMoreData}
               />
+            </Suspense>
+          </TabContentWrapper>
+          {!hideMembers && (
+            <TabContentWrapper
+              type={"members"}
+              {...tabContentWrapperProps}
+              subHubInfoText={
+                hubData?.parent_hub ? (
+                  <div className={classes.subHubInfoText}>
+                    {texts.you_are_seeing_members_related_to}
+                  </div>
+                ) : undefined
+              }
+            >
+              <Suspense fallback={null}>
+                <ProfilePreviews
+                  hasMore={state.hasMore.members}
+                  loadFunc={() => handleLoadMoreData("members")}
+                  parentHandlesGridItems
+                  profiles={state.items.members}
+                  showAdditionalInfo
+                  isLoading={isFetchingMoreData}
+                />
+              </Suspense>
             </TabContentWrapper>
           )}
         </Suspense>

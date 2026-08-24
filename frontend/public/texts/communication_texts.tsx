@@ -86,9 +86,9 @@ export default function getCommunicationTexts() {
     },
     send_us_your_feedback_about_climate_connect: {
       en:
-        "Send us your feedback about Climate Connect. You can send us ideas, bug reports, criticism or anything else.",
+        "Send us your feedback about the ClimateHub Network. You can send us ideas, bug reports, criticism or anything else.",
       de:
-        "Sende uns dein Feedback zu Climate Connect. Du kannst uns Ideen, Fehlerberichte, Kritik oder alles andere schicken.",
+        "Sende uns dein Feedback zum ClimateHub Netzwerk. Du kannst uns Ideen, Fehlerberichte, Kritik oder alles andere schicken.",
     },
     please_send_me_a_response_to_my_feedback: {
       en: "Please send me a response to my feedback",

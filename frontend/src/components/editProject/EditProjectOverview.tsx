@@ -87,6 +87,7 @@ const useStyles = makeStyles<Theme, { image?: string }>((theme) => ({
   },
   sectorField: {
     marginTop: theme.spacing(1.25),
+    minWidth: "100px",
   },
 }));
 

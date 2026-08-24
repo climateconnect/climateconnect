@@ -16,6 +16,7 @@ import React, { Fragment, ReactElement, useState } from "react";
 // Relative imports
 import AutoCompleteSearchBar from "../search/AutoCompleteSearchBar";
 import LocationSearchBar from "../search/LocationSearchBar";
+import RequiredFieldsNotice from "./RequiredFieldsNotice";
 import SelectField from "./SelectField";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
     height: 56,
     margin: "0 auto",
     marginTop: theme.spacing(2),
+  },
+  requiredFieldsNotice: {
+    height: "auto",
+    marginBottom: theme.spacing(1),
+    marginTop: 0,
   },
   checkbox: {
     display: "block",
@@ -151,6 +157,7 @@ export default function Form({
   autocomplete,
 }: Props) {
   const classes = useStyles();
+  const hasRequiredFields = fields.some((field) => !!field.required);
   const [curPercentage, setCurPercentage] = useState(percentage);
   const [values, setValues] = useState(
     fields.reduce((obj, field) => {
@@ -238,6 +245,11 @@ export default function Form({
           <Typography component="div" color="error">
             {errorMessage}
           </Typography>
+        )}
+        {hasRequiredFields && (
+          <RequiredFieldsNotice
+            className={`${classes.blockElement} ${classes.requiredFieldsNotice}`}
+          />
         )}
         {fields.map((field) => {
           if (
