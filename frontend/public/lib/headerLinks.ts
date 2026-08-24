@@ -49,9 +49,6 @@ const COMMON_LINKS = {
   },
 };
 
-const isLandingPagePath = (pathToRedirect, hubUrl) =>
-  !!hubUrl && pathToRedirect === `/hubs/${hubUrl}`;
-
 const isWasseraktionswochenPage = (pathToRedirect) =>
   typeof pathToRedirect === "string" && pathToRedirect.startsWith(WASSERAKTIONSWOCHEN_PATH);
 
@@ -168,8 +165,14 @@ const getWasseraktionswochenLinks = ({ path_to_redirect, texts, hubUrl, hasHubLa
   ];
 };
 
-const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPage, hubUrl) => {
-  const isOnLandingPage = isLandingPagePath(path_to_redirect, hubUrl);
+const getDefaultLinks = (
+  path_to_redirect,
+  texts,
+  isLocationHub,
+  hasHubLandingPage,
+  hubUrl,
+  isOnLandingPage
+) => {
   const authHubUrl = isLocationHub ? hubUrl : undefined;
   {
     return [
@@ -199,7 +202,8 @@ const getLinks = (
   isLocationHub: boolean | undefined,
   isCustomHub: boolean | undefined,
   hasHubLandingPage: boolean | undefined,
-  hubUrl?: any
+  hubUrl?: any,
+  isLandingPage?: boolean
 ) => {
   if (isWasseraktionswochenPage(path_to_redirect)) {
     return getWasseraktionswochenLinks({
@@ -212,7 +216,14 @@ const getLinks = (
   const effectiveIsLocationHub = isLocationHub || isCustomHub;
   return isCustomHub
     ? getCustomHubData({ hubUrl, texts, path_to_redirect })?.headerLinks
-    : getDefaultLinks(path_to_redirect, texts, effectiveIsLocationHub, hasHubLandingPage, hubUrl);
+    : getDefaultLinks(
+        path_to_redirect,
+        texts,
+        effectiveIsLocationHub,
+        hasHubLandingPage,
+        hubUrl,
+        !!isLandingPage
+      );
 };
 
 const getLoggedInLinks = ({

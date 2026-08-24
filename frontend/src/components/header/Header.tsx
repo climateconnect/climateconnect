@@ -25,7 +25,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import MenuIcon from "@mui/icons-material/Menu";
 import noop from "lodash/noop";
-import React, { Fragment, useContext, useRef, useState } from "react";
+import React, { Fragment, useEffect, useContext, useRef, useState } from "react";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import { appHref } from "../../../public/lib/appLink";
@@ -305,7 +305,15 @@ export default function Header({
   const isCustomHub = customHubUrls.includes(hubUrl);
   const isLocationHub = LOCATION_HUBS.includes(hubUrl);
 
-  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl);
+  const LINKS = getLinks(
+    pathName,
+    texts,
+    isLocationHub,
+    isCustomHub,
+    hasHubLandingPage,
+    hubUrl,
+    isLandingPage
+  );
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
@@ -325,6 +333,14 @@ export default function Header({
   const localePrefix = getLocalePrefix(locale);
 
   const onNotificationsClose = () => setAnchorEl(null);
+
+  useEffect(() => {
+    if (!anchorEl) return;
+    const handleScroll = () => setAnchorEl(null);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [anchorEl]);
+
   const getLogo = () => {
     const imageUrl = "/images";
     if (isCustomHub) {
