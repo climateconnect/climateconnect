@@ -104,6 +104,11 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       {
+        source: "/hitzefrei",
+        destination: "/de/projects/wurzburg-entsiegeln?hub=wuerzburg",
+        permanent: true,
+      },
+      {
         source: "/hubs/prio1",
         destination: "/hubs/prio1/browse",
         permanent: false,
