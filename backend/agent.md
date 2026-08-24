@@ -3,8 +3,8 @@
 > **Mission**: Build robust Django APIs and services that power the climate action platform.
 
 ## Backend Tech Stack
-- **Framework**: Django 4.2 + Django REST Framework
-- **Language**: Python 3.11
+- **Framework**: Django 5.2 + Django REST Framework
+- **Language**: Python 3.12
 - **Database**: PostgreSQL with PostGIS extension (geospatial data)
 - **Caching/Message Broker**: Redis
 - **Real-time**: Django Channels (WebSocket support via ASGI)
@@ -47,7 +47,7 @@ app_name/
   - Run `make format` (or `black .`) before committing
   - Use `make start` to start the development server
   - Use `python manage.py <command>` for Django management commands
-  - **Important**: Always activate the PDM virtual environment first with `pdm venv activate django4` before running any Python commands
+   - **Important**: Always activate the PDM virtual environment first with `pdm venv activate django5` before running any Python commands
 
 ### Models
 - Use explicit `related_name` for relationships
@@ -87,7 +87,7 @@ app_name/
 - `python manage.py makemigrations` - Create migrations
 - `python manage.py migrate` - Apply migrations
 - `python manage.py createsuperuser` - Create admin user
-- Run tests by activating the PDM virtual environment first: `pdm venv activate django4`, then run `python manage.py test`
+- Run tests by activating the PDM virtual environment first: `pdm venv activate django5`, then run `python manage.py test`
 
 ### Running Tests
 
@@ -412,7 +412,7 @@ A task is **not complete** until all of the following are done:
 - `SENTRY_DSN` - Sentry error tracking DSN
 
 ## Key Dependencies to Remember
-- Django 3.2, DRF, Channels, Celery, Knox, PostGIS, Redis, Azure Storage
+- Django 5.2, DRF, Channels, Celery, Knox, PostGIS, Redis, Azure Storage
 
 ## Resources
 - **Main Site**: https://climateconnect.earth

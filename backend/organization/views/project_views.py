@@ -11,7 +11,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Case, Prefetch, Q, When
-from datetime import datetime
+from datetime import datetime, timezone as dt_timezone
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
@@ -542,8 +542,8 @@ class EventCalendarCountsView(APIView):
         month_end_local = (
             month_start_local + relativedelta(months=1) - relativedelta(days=1)
         ).replace(hour=23, minute=59, second=59)
-        month_start = month_start_local.astimezone(timezone.utc)
-        month_end = month_end_local.astimezone(timezone.utc)
+        month_start = month_start_local.astimezone(dt_timezone.utc)
+        month_end = month_end_local.astimezone(dt_timezone.utc)
 
         queryset = Project.objects.filter(
             is_draft=False,
