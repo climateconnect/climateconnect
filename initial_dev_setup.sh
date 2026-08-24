@@ -37,7 +37,7 @@ LOCATION_SERVICE_BASE_URL=https://nominatim.openstreetmap.org
 CELERY_BROKER_URL=redis://redis
 
 # LocationIQ autocomplete
-LOCATIONIQ_API_KEY = env("LOCATIONIQ_API_KEY", "")
+LOCATIONIQ_API_KEY=
 
 CACHE_BACHED_RANK_REQUEST=true
 

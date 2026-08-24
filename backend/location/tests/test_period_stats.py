@@ -359,13 +359,13 @@ class TestLogAutocompleteRequest(TestCase):
 
 
 class TestAutocompleteStatsView(APITestCase):
-    """Tests for GET /api/nominatim_stats/."""
+    """Tests for GET /api/autocomplete_stats/."""
 
     def setUp(self):
         AutocompletePeriodStats.objects.all().delete()
         AutocompleteRequestLog.objects.all().delete()
 
-        self.url = reverse("location:nominatim-stats")
+        self.url = reverse("location:autocomplete-stats")
         self.admin = User.objects.create_user(
             username="stats_admin", password="testpass", is_staff=True
         )
@@ -511,20 +511,50 @@ class TestAutocompleteStatsView(APITestCase):
 
 
 class TestTrackAutocompleteRequestView(APITestCase):
-    """Tests for POST /api/nominatim_request_count/."""
+    """Tests for POST /api/autocomplete_request_count/."""
 
     def setUp(self):
         AutocompletePeriodStats.objects.all().delete()
         AutocompleteRequestLog.objects.all().delete()
 
     def test_post_returns_204(self):
-        url = reverse("location:track-nominatim-request")
+        url = reverse("location:track-autocomplete-request")
         response = self.client.post(url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_post_creates_log_row(self):
-        url = reverse("location:track-nominatim-request")
+        url = reverse("location:track-autocomplete-request")
         self.client.post(url)
 
         self.assertEqual(AutocompleteRequestLog.objects.count(), 1)
+
+
+class TestDeprecatedNominatimAliases(APITestCase):
+    """
+    The pre-rename paths must keep working while stale JS bundles are still in
+    circulation — see the comment on the alias routes in location/urls.py. The
+    tracking one carries real production traffic today and is fire-and-forget,
+    so a 404 there would silently under-report rather than surface as an error.
+    """
+
+    def setUp(self):
+        AutocompletePeriodStats.objects.all().delete()
+        AutocompleteRequestLog.objects.all().delete()
+
+    def test_deprecated_request_count_alias_still_logs(self):
+        response = self.client.post(reverse("location:track-nominatim-request"))
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(AutocompleteRequestLog.objects.count(), 1)
+
+    def test_deprecated_stats_alias_still_serves_staff(self):
+        admin = User.objects.create_user(
+            username="alias_admin", password="testpass", is_staff=True
+        )
+        self.client.force_authenticate(user=admin)
+
+        response = self.client.get(reverse("location:nominatim-stats"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("day", response.data)
