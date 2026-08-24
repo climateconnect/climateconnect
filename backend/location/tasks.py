@@ -11,12 +11,9 @@ from django.db import IntegrityError, transaction
 from django.utils import timezone as tz
 
 from climateconnect_api.models.language import Language
-from location.queue import (
-    LOCATIONIQ_PENDING_JOBS_KEY,
-    _fetch_results,
-    _store_result,
-    get_redis_conn,
-)
+from location.cache import store_result
+from location.providers import fetch_results
+from location.queue import LOCATIONIQ_PENDING_JOBS_KEY, get_redis_conn
 from location.utility import format_location_name
 
 logger = logging.getLogger(__name__)
@@ -26,18 +23,18 @@ def log_autocomplete_request(provider="nominatim") -> None:
     """
     Record that one autocomplete request went out to `provider`.
 
-    One row per request, nothing else — aggregate_nominatim_stats() rolls
-    these up into NominatimPeriodStats every 10 minutes. Deliberately kept to
+    One row per request, nothing else — aggregate_autocomplete_stats() rolls
+    these up into AutocompletePeriodStats every 10 minutes. Deliberately kept to
     a single INSERT so nothing expensive (counting, cleanup, upserts) sits on
     the request path.
 
     Tracking failures are logged and swallowed: never fail a user-facing
     request because a metrics row couldn't be written.
     """
-    from location.models import NominatimRequestLog
+    from location.models import AutocompleteRequestLog
 
     try:
-        NominatimRequestLog.objects.create(
+        AutocompleteRequestLog.objects.create(
             minute_key=int(time.time()) // 60,
             provider=provider,
         )
@@ -54,13 +51,13 @@ def fetch_autocomplete(key, job_id, q, countrycodes, accept_language):
     routed to its own queue/worker (see CELERY_TASK_ROUTES in settings) so
     this is the only thing calling LocationIQ, at the intended global rate.
 
-    No retries: _fetch_results already exhausts both providers internally,
+    No retries: fetch_results already exhausts both providers internally,
     so a Celery-level retry would just repeat that same double-provider
     attempt at extra quota cost for no benefit on a time-sensitive request.
     """
     redis_conn = get_redis_conn()
     try:
-        results, provider = _fetch_results(q, countrycodes, accept_language)
+        results, provider = fetch_results(q, countrycodes, accept_language)
     except Exception:
         logger.exception("fetch_autocomplete failed unexpectedly for %r", q)
         results, provider = None, None
@@ -72,7 +69,7 @@ def fetch_autocomplete(key, job_id, q, countrycodes, accept_language):
         # the newer job's data with this stale result.
         return
 
-    _store_result(redis_conn, key, job_id, results, provider)
+    store_result(redis_conn, key, job_id, results, provider)
     redis_conn.zrem(LOCATIONIQ_PENDING_JOBS_KEY, key)
     if results is not None:
         log_autocomplete_request(provider)
@@ -192,10 +189,10 @@ def _get_period_keys_for_dt(dt):
 
 
 @shared_task
-def aggregate_nominatim_stats():
+def aggregate_autocomplete_stats():
     """
-    Read unprocessed NominatimRequestLog rows, compute day/week/month
-    aggregates **per provider**, upsert into NominatimPeriodStats, and mark
+    Read unprocessed AutocompleteRequestLog rows, compute day/week/month
+    aggregates **per provider**, upsert into AutocompletePeriodStats, and mark
     rows as processed. Rows older than 7 days are cleaned up.
 
     peak_req_per_second is the highest number of requests that arrived within
@@ -204,16 +201,16 @@ def aggregate_nominatim_stats():
 
     Scheduled to run every 10 minutes via Celery Beat.
     """
-    from location.models import NominatimPeriodStats, NominatimRequestLog
+    from location.models import AutocompletePeriodStats, AutocompleteRequestLog
 
     with transaction.atomic():
         logs = list(
-            NominatimRequestLog.objects.select_for_update(skip_locked=True)
+            AutocompleteRequestLog.objects.select_for_update(skip_locked=True)
             .filter(processed=False)
             .order_by("id")
         )
         if not logs:
-            NominatimRequestLog.objects.filter(
+            AutocompleteRequestLog.objects.filter(
                 created_at__lt=tz.now() - timedelta(days=7)
             ).delete()
             return
@@ -252,7 +249,7 @@ def aggregate_nominatim_stats():
         elapsed = max((now - period_start_dt).total_seconds(), 1.0)
         avg_rate = total / elapsed
 
-        obj, created = NominatimPeriodStats.objects.get_or_create(
+        obj, created = AutocompletePeriodStats.objects.get_or_create(
             period_type=period_type,
             period_key=period_key,
             provider=provider,
@@ -268,15 +265,15 @@ def aggregate_nominatim_stats():
             obj.avg_req_per_second = obj.total_requests / elapsed
             obj.save()
 
-    NominatimRequestLog.objects.filter(id__lte=max_id, processed=False).update(
+    AutocompleteRequestLog.objects.filter(id__lte=max_id, processed=False).update(
         processed=True
     )
 
-    deleted_count, _ = NominatimRequestLog.objects.filter(
+    deleted_count, _ = AutocompleteRequestLog.objects.filter(
         created_at__lt=now - timedelta(days=7)
     ).delete()
     logger.info(
-        "Aggregated %d Nominatim log rows into %d period stats, cleaned up %d old rows.",
+        "Aggregated %d autocomplete log rows into %d period stats, cleaned up %d old rows.",
         len(logs),
         len(period_buckets),
         deleted_count,

@@ -5,32 +5,34 @@ import uuid
 
 import requests
 from django.conf import settings
+from django_ratelimit.core import is_ratelimited
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
-from location.models import (
-    Location as LocationModel,
-)
-from location.models import (
-    NominatimPeriodStats,
-)
-from location.queue import (
-    LOCATIONIQ_LOOKUP_KEY_PREFIX,
-    LOCATIONIQ_PENDING_JOBS_KEY,
-    LOCATIONIQ_RECLAIM_KEY_PREFIX,
-    _fetch_results,
-    _normalize_query,
-    _store_result,
+from location.cache import (
     get_cache_stats,
-    get_redis_conn,
+    lookup_key,
+    normalize_query,
     record_cache_hit,
     record_cache_miss,
     refresh_cache_entry,
-    strip_geometry,
+    store_result,
     was_undelivered,
+)
+from location.models import (
+    AutocompletePeriodStats,
+)
+from location.models import (
+    Location as LocationModel,
+)
+from location.providers import fetch_results, strip_geometry
+from location.queue import (
+    LOCATIONIQ_PENDING_JOBS_KEY,
+    LOCATIONIQ_RECLAIM_KEY_PREFIX,
+    get_redis_conn,
 )
 from location.serializers import LocationStubSerializer
 from location.tasks import fetch_autocomplete, log_autocomplete_request
@@ -46,7 +48,7 @@ from location.utility import (
 logger = logging.getLogger("django")
 
 
-class NominatimTrackThrottle(AnonRateThrottle):
+class AutocompleteTrackThrottle(AnonRateThrottle):
     rate = "60/min"
 
 
@@ -166,21 +168,26 @@ class GetLocationView(APIView):
 
 
 # ---------------------------------------------------------------------------
-# Nominatim autocomplete request tracking (log + Celery aggregation)
+# Autocomplete request tracking (log + Celery aggregation)
 # ---------------------------------------------------------------------------
 
 
-class TrackNominatimRequestView(APIView):
+class TrackAutocompleteRequestView(APIView):
     """
-    POST /api/nominatim_request_count/
+    POST /api/autocomplete_request_count/
 
     Called fire-and-forget by the frontend every time it fires a Nominatim
-    autocomplete request.  Simply logs the request — aggregation into
-    NominatimPeriodStats is handled by a periodic Celery task.
+    autocomplete request *from the browser* — i.e. while the
+    LOCATIONIQ_AUTOCOMPLETE toggle is off. Requests the backend makes itself
+    are logged where they happen, so this endpoint only ever records
+    "nominatim".
+
+    Simply logs the request — aggregation into AutocompletePeriodStats is
+    handled by a periodic Celery task.
     """
 
     permission_classes = [AllowAny]
-    throttle_classes = [NominatimTrackThrottle]
+    throttle_classes = [AutocompleteTrackThrottle]
 
     def post(self, request):
         log_autocomplete_request("nominatim")
@@ -191,6 +198,23 @@ def _too_many_requests_response():
     response = Response(
         {"detail": "Too many requests. Please try again later."},
         status=status.HTTP_429_TOO_MANY_REQUESTS,
+    )
+    response["Retry-After"] = "1"
+    return response
+
+
+def _service_busy_response():
+    """
+    Backpressure: too many distinct lookups are already in flight.
+
+    Carries Retry-After for the same reason the 429 above does — a 503 without
+    one leaves a non-browser client to invent its own backoff, and the honest
+    answer here is "very soon". The cap drains as in-flight lookups resolve,
+    which takes about a second at LOCATIONIQ_MAX_RATE, so 1 is not optimistic.
+    """
+    response = Response(
+        {"detail": "Service busy, please retry."},
+        status=status.HTTP_503_SERVICE_UNAVAILABLE,
     )
     response["Retry-After"] = "1"
     return response
@@ -223,10 +247,10 @@ class LocationAutocompleteView(APIView):
         # sentinel fetches a second time for a query whose first claim was
         # already counted, and both calls are real — the count should say two.
         record_cache_miss(redis_conn)
-        results, provider = _fetch_results(q, countrycodes, accept_language)
+        results, provider = fetch_results(q, countrycodes, accept_language)
         # delivered=True: unlike the Celery path, this request returns the
         # result itself, so there is no later poll to consume the marker.
-        _store_result(redis_conn, key, job_id, results, provider, delivered=True)
+        store_result(redis_conn, key, job_id, results, provider, delivered=True)
         redis_conn.zrem(LOCATIONIQ_PENDING_JOBS_KEY, key)
         if results is not None:
             log_autocomplete_request(provider)
@@ -310,8 +334,6 @@ class LocationAutocompleteView(APIView):
         )
 
     def get(self, request):
-        from django_ratelimit.core import is_ratelimited
-
         # Loose blanket limit on all traffic (including cheap status polls)
         # — a backstop against a buggy/runaway polling client, not the real
         # quota protection.
@@ -332,8 +354,8 @@ class LocationAutocompleteView(APIView):
         accept_language = request.META.get("HTTP_ACCEPT_LANGUAGE", "en-US,en;q=0.9")
 
         redis_conn = get_redis_conn()
-        normalized_q = _normalize_query(q, countrycodes, accept_language)
-        key = f"{LOCATIONIQ_LOOKUP_KEY_PREFIX}{normalized_q}"
+        normalized_q = normalize_query(q, countrycodes, accept_language)
+        key = lookup_key(normalized_q)
         now = time.time()
 
         raw = redis_conn.get(key)
@@ -383,10 +405,7 @@ class LocationAutocompleteView(APIView):
             redis_conn.zcard(LOCATIONIQ_PENDING_JOBS_KEY)
             >= settings.LOCATION_PROXY_PENDING_CAP
         ):
-            return Response(
-                {"detail": "Service busy, please retry."},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
-            )
+            return _service_busy_response()
 
         job_id = uuid.uuid4().hex
         created = redis_conn.set(
@@ -424,9 +443,9 @@ class LocationAutocompleteView(APIView):
         return Response({"status": "pending"}, status=status.HTTP_202_ACCEPTED)
 
 
-class NominatimStatsView(APIView):
+class AutocompleteStatsView(APIView):
     """
-    GET /api/nominatim_stats/
+    GET /api/autocomplete_stats/
 
     Returns persistent day/week/month autocomplete request stats.
 
@@ -508,13 +527,13 @@ class NominatimStatsView(APIView):
                 # provider per period, so slicing rows directly would return
                 # roughly half as many days as asked for.
                 period_keys = list(
-                    NominatimPeriodStats.objects.filter(period_type=period_type)
+                    AutocompletePeriodStats.objects.filter(period_type=period_type)
                     .values_list("period_key", flat=True)
                     .distinct()
                     .order_by("-period_key")[:limit]
                 )
                 rows_by_period = {}
-                for row in NominatimPeriodStats.objects.filter(
+                for row in AutocompletePeriodStats.objects.filter(
                     period_type=period_type, period_key__in=period_keys
                 ):
                     rows_by_period.setdefault(row.period_key, []).append(row)
@@ -532,18 +551,18 @@ class NominatimStatsView(APIView):
             # Default: return the latest day, week, and month, plus the
             # autocomplete cache's own hit/miss counters. Without those, a
             # working result cache and a drop in traffic look identical here,
-            # since only upstream calls reach NominatimPeriodStats.
+            # since only upstream calls reach AutocompletePeriodStats.
             result = {"cache": self._cache_stats()}
             for pt in ("day", "week", "month"):
                 latest_key = (
-                    NominatimPeriodStats.objects.filter(period_type=pt)
+                    AutocompletePeriodStats.objects.filter(period_type=pt)
                     .order_by("-period_key")
                     .values_list("period_key", flat=True)
                     .first()
                 )
                 if latest_key:
                     rows = list(
-                        NominatimPeriodStats.objects.filter(
+                        AutocompletePeriodStats.objects.filter(
                             period_type=pt, period_key=latest_key
                         )
                     )
@@ -555,7 +574,7 @@ class NominatimStatsView(APIView):
 
         except Exception as exc:
             logger.error(
-                "Failed to retrieve Nominatim stats from database: %s",
+                "Failed to retrieve autocomplete stats from database: %s",
                 exc,
                 exc_info=True,
             )

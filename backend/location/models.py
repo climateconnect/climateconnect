@@ -201,12 +201,12 @@ class LocationTranslation(models.Model):
         )
 
 
-class NominatimRequestLog(models.Model):
+class AutocompleteRequestLog(models.Model):
     """
     Lightweight log of individual autocomplete requests, tagged by provider.
 
     One row per request. A periodic Celery task reads unprocessed rows,
-    computes day/week/month aggregates into NominatimPeriodStats, and
+    computes day/week/month aggregates into AutocompletePeriodStats, and
     marks them as processed. Rows older than 7 days are cleaned up.
     """
 
@@ -229,8 +229,8 @@ class NominatimRequestLog(models.Model):
 
     class Meta:
         app_label = "location"
-        verbose_name = "nominatim request log"
-        verbose_name_plural = "nominatim request logs"
+        verbose_name = "autocomplete request log"
+        verbose_name_plural = "autocomplete request logs"
 
     def __str__(self):
         return (
@@ -238,13 +238,13 @@ class NominatimRequestLog(models.Model):
         )
 
 
-class NominatimPeriodStats(models.Model):
+class AutocompletePeriodStats(models.Model):
     """
     Persistent per-period (day / ISO-week / calendar-month) aggregation of
     autocomplete request metrics, broken down by provider.
 
     One row per (period_type, period_key, provider) combination.  Updated by a periodic
-    Celery task that reads and aggregates raw NominatimRequestLog rows.
+    Celery task that reads and aggregates raw AutocompleteRequestLog rows.
     """
 
     PROVIDER_CHOICES = [
@@ -281,8 +281,8 @@ class NominatimPeriodStats(models.Model):
 
     class Meta:
         app_label = "location"
-        verbose_name = "nominatim period stats"
-        verbose_name_plural = "nominatim period stats"
+        verbose_name = "autocomplete period stats"
+        verbose_name_plural = "autocomplete period stats"
         unique_together = [("period_type", "period_key", "provider")]
         indexes = [
             models.Index(fields=["period_type", "period_key", "provider"]),

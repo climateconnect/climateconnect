@@ -26,7 +26,7 @@ jest.mock("../../../public/lib/apiOperations");
 jest.mock("../featureToggle");
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-const mockedApiRequest = apiRequest as jest.MockedFunction<any>;
+const mockedApiRequest = apiRequest as jest.MockedFunction<typeof apiRequest>;
 const mockedUseFeatureToggles = useFeatureToggles as jest.MockedFunction<any>;
 
 const NOMINATIM_HOST = "nominatim.openstreetmap.org";
@@ -42,11 +42,11 @@ const setToggle = ({ enabled, isLoading = false }: { enabled: boolean; isLoading
   });
 };
 
-/**
- * Enter a search term and let the 400ms input debounce elapse, which is what
- * actually triggers the request.
- */
-const search = async (query: string) => {
+// Must match LocationSearchBar's PROXY_DEBOUNCE_MS / DIRECT_NOMINATIM_DEBOUNCE_MS.
+const PROXY_DEBOUNCE_MS = 400;
+const DIRECT_NOMINATIM_DEBOUNCE_MS = 1000;
+
+const renderSearchBar = () => {
   const { container } = render(
     <ThemeProvider theme={theme}>
       {/* The component reads locale and hubUrl from UserContext, whose default is null. */}
@@ -55,19 +55,39 @@ const search = async (query: string) => {
       </UserContext.Provider>
     </ThemeProvider>
   );
-  const input = container.querySelector("input") as HTMLInputElement;
-  fireEvent.change(input, { target: { value: query } });
+  return container.querySelector("input") as HTMLInputElement;
+};
+
+const advance = async (ms: number) => {
   await act(async () => {
-    jest.advanceTimersByTime(500);
+    jest.advanceTimersByTime(ms);
   });
+};
+
+/**
+ * Enter a search term and let the input debounce elapse, which is what actually
+ * triggers the request. Defaults to the longer of the two debounces so a test
+ * that doesn't care about timing fires on either provider path.
+ */
+const search = async (query: string, waitMs = DIRECT_NOMINATIM_DEBOUNCE_MS + 100) => {
+  const input = renderSearchBar();
+  fireEvent.change(input, { target: { value: query } });
+  await advance(waitMs);
 };
 
 describe("LocationSearchBar provider routing", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers({ advanceTimers: true });
+    // Deliberately NOT `{ advanceTimers: true }`. That option advances the fake
+    // clock by 20ms for every 20ms of *real* time, so a timer can fire without
+    // anyone calling advanceTimersByTime — which makes "has not fired yet"
+    // assertions depend on how fast the machine is. The debounce tests below
+    // assert exactly that, so the clock has to move only when we move it.
+    // waitFor drives fake timers itself (RTL 16 / dom-testing-library 10), so
+    // nothing here needs the real clock.
+    jest.useFakeTimers();
     mockedAxios.get.mockResolvedValue({ data: [] });
-    mockedApiRequest.mockResolvedValue({ status: 200, data: [] });
+    mockedApiRequest.mockResolvedValue({ status: 200, data: [] } as any);
   });
 
   afterEach(() => {
@@ -95,7 +115,9 @@ describe("LocationSearchBar provider routing", () => {
 
     await waitFor(() =>
       expect(
-        mockedApiRequest.mock.calls.some((call) => call[0]?.url === "/api/nominatim_request_count/")
+        mockedApiRequest.mock.calls.some(
+          (call) => call[0]?.url === "/api/autocomplete_request_count/"
+        )
       ).toBe(true)
     );
   });
@@ -113,6 +135,40 @@ describe("LocationSearchBar provider routing", () => {
       ).toBe(true)
     );
     expect(mockedAxios.get).not.toHaveBeenCalled();
+  });
+
+  it("waits a full second before calling Nominatim directly", async () => {
+    // Regression guard. The proxy path was sped up to a 400ms debounce, which
+    // is safe only because the backend caches, coalesces and rate-limits. Every
+    // debounced keystroke on *this* path is a real request to OSM, whose usage
+    // policy is 1 req/s, so it must keep master's 1000ms.
+    setToggle({ enabled: false });
+
+    const input = renderSearchBar();
+    fireEvent.change(input, { target: { value: "Berlin" } });
+
+    await advance(PROXY_DEBOUNCE_MS + 100);
+    expect(mockedAxios.get).not.toHaveBeenCalled();
+
+    await advance(DIRECT_NOMINATIM_DEBOUNCE_MS - PROXY_DEBOUNCE_MS);
+    await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(1));
+  });
+
+  it("hits the proxy after 400ms, without waiting the full second", async () => {
+    setToggle({ enabled: true });
+
+    const input = renderSearchBar();
+    fireEvent.change(input, { target: { value: "Berlin" } });
+
+    await advance(PROXY_DEBOUNCE_MS + 100);
+
+    await waitFor(() =>
+      expect(
+        mockedApiRequest.mock.calls.some((call) =>
+          call[0]?.url?.includes("/api/location_autocomplete/")
+        )
+      ).toBe(true)
+    );
   });
 
   it("fires nothing while the toggles are still loading", async () => {

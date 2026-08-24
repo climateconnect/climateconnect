@@ -22,6 +22,20 @@ import { getLocaleHeader } from "../../utils/locationUtils";
 // doc/spec/20260720_1400_locationiq_rate_limited_queue_design.md.
 const AUTOCOMPLETE_POLL_SCHEDULE_MS = [250, 500, 1000, 1000, 1000, 1000, 1000, 1000];
 
+// Input debounce, per provider path. The two are deliberately different.
+//
+// Through the backend proxy, a keystroke is cheap: hot prefixes are answered
+// from the Redis cache, identical in-flight queries are coalesced onto one
+// sentinel, and whatever is left is rate-limited before it reaches an upstream
+// API. 400ms is what makes the suggestions feel live.
+//
+// Calling Nominatim directly from the browser has none of that — every
+// debounced keystroke is a real request to OSM, whose usage policy is 1 req/s.
+// So the toggle-off path keeps master's 1000ms rather than inheriting a value
+// that was only safe because of infrastructure it doesn't go through.
+const PROXY_DEBOUNCE_MS = 400;
+const DIRECT_NOMINATIM_DEBOUNCE_MS = 1000;
+
 const useStyles = makeStyles((theme) => ({
   additionalInfos: {
     width: "100%",
@@ -119,10 +133,16 @@ export default function LocationSearchBar({
     [value]
   );
   const [loading, setLoading] = useState(false);
+  const debounceMs = useAutocompleteProxy ? PROXY_DEBOUNCE_MS : DIRECT_NOMINATIM_DEBOUNCE_MS;
   const setSearchValueDebounced = useMemo(
-    () => debounce((value: string) => setSearchValue(value), 400),
-    []
+    () => debounce((value: string) => setSearchValue(value), debounceMs),
+    [debounceMs]
   );
+  // Cancel the outgoing debounced call when the wait changes (the toggle
+  // resolved) and on unmount, so a pending timer can't fire against a stale
+  // interval or after the component is gone. In practice the toggle resolves at
+  // app mount, before anyone has typed three characters.
+  useEffect(() => () => setSearchValueDebounced.cancel(), [setSearchValueDebounced]);
   const HUB_COUNTRY_RESTRICTIONS = {
     perth: "gb",
   };
@@ -267,7 +287,7 @@ export default function LocationSearchBar({
         // several in-flight requests per word, and every one of them really
         // did hit Nominatim. Skipping those would under-report the upstream
         // volume this whole migration is being judged on.
-        apiRequest({ method: "post", url: "/api/nominatim_request_count/" }).catch(() => {});
+        apiRequest({ method: "post", url: "/api/autocomplete_request_count/" }).catch(() => {});
         // processResponseData checks `active` itself before touching state.
         processResponseData(response.data);
       } catch {
@@ -321,7 +341,7 @@ export default function LocationSearchBar({
     };
 
     // While the toggles are still loading we fire nothing and keep the spinner:
-    // they resolve at app mount and the input is debounced by 400ms, so this is
+    // they resolve at app mount and the input is debounced, so this is
     // near-unreachable, but sending the very first query to the wrong provider
     // would be worse than waiting one more render.
     if (!searchValue) {

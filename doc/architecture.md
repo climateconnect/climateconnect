@@ -1043,6 +1043,20 @@ def send_notification_email(user_id, notification_id):
   `LOCATION_PROXY_CACHE_MAX_ENTRIES` (default 1000). Polygon coordinates are stripped before caching —
   they are 85–99% of a payload and autocomplete only renders names; full geometry is re-fetched
   server-side when a `Location` is first saved.
+- **Modules** (in `backend/location/`, one concern each):
+  | Module | Owns |
+  |--------|------|
+  | `queue.py` | The Redis rendezvous key contract shared by the view, the Celery task and the cache — key names and `get_redis_conn()`, nothing else |
+  | `providers.py` | Which upstream is called and how its response is read: `fetch_results()`, the LocationIQ/Nominatim calls, the toggle and daily-budget guards, `strip_geometry()` |
+  | `cache.py` | Everything about a *stored* result: cache key, sliding TTL and age ceiling, LRU index, delivery marker, hit/miss counters |
+  | `location_views.py` | HTTP contract: 200/202 polling, per-IP limits, backpressure, sentinel reclaim |
+  | `tasks.py` | The rate-limited `fetch_autocomplete` job and the stats aggregation beat task |
+
+  Dependencies run one way — `cache` → `providers` → `queue` — so there are no cycles and the view
+  and the task can each import exactly what they use.
+- **Usage tracking**: `AutocompleteRequestLog` (one row per real upstream call) is rolled up every
+  10 minutes by `aggregate_autocomplete_stats` into `AutocompletePeriodStats`, one row per
+  (period, provider); both are exposed at `GET /api/autocomplete_stats/`.
 - **Specs**: `doc/spec/20260720_1400_locationiq_rate_limited_queue_design.md` (queue),
   `doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md` (toggle + cache)
 

@@ -378,7 +378,7 @@ Azure Blob Storage is used in production for media file storage.
 - **Example**: `"5000"`
 - **Usage**: IP-agnostic backstop that protects the shared account quota — per-IP rate limits alone
   can't do that. Set it to your plan's daily allowance with headroom. The count comes from
-  `NominatimPeriodStats` (provider `locationiq`) and measures **upstream calls**, not HTTP requests.
+  `AutocompletePeriodStats` (provider `locationiq`) and measures **upstream calls**, not HTTP requests.
 
 > **Naming**: `LOCATIONIQ_*` settings are provider-specific (credential, endpoint, timeout, the
 > account rate limit, the quota backstop) — swapping geocoders would change them. `LOCATION_PROXY_*`

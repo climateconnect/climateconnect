@@ -10,10 +10,10 @@ from django.utils import timezone as tz
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from location.models import NominatimPeriodStats, NominatimRequestLog
+from location.models import AutocompletePeriodStats, AutocompleteRequestLog
 from location.tasks import (
     _get_period_keys_for_dt,
-    aggregate_nominatim_stats,
+    aggregate_autocomplete_stats,
     log_autocomplete_request,
 )
 
@@ -53,22 +53,22 @@ class TestGetPeriodKeysForDt(TestCase):
 
 
 class TestAggregateNominatimStats(TestCase):
-    """Tests for the aggregate_nominatim_stats Celery task."""
+    """Tests for the aggregate_autocomplete_stats Celery task."""
 
     def setUp(self):
-        NominatimPeriodStats.objects.all().delete()
-        NominatimRequestLog.objects.all().delete()
+        AutocompletePeriodStats.objects.all().delete()
+        AutocompleteRequestLog.objects.all().delete()
 
     def test_single_request_creates_all_period_rows(self):
-        NominatimRequestLog.objects.create(minute_key=_minute_key(tz.now()))
+        AutocompleteRequestLog.objects.create(minute_key=_minute_key(tz.now()))
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         now = tz.now()
         periods = _get_period_keys_for_dt(now)
 
         for period_type, period_key, _ in periods:
-            stats = NominatimPeriodStats.objects.get(
+            stats = AutocompletePeriodStats.objects.get(
                 period_type=period_type, period_key=period_key
             )
             self.assertEqual(stats.total_requests, 1)
@@ -79,14 +79,14 @@ class TestAggregateNominatimStats(TestCase):
         now = tz.now()
         mk = _minute_key(now)
         for _ in range(60):
-            NominatimRequestLog.objects.create(created_at=now, minute_key=mk)
+            AutocompleteRequestLog.objects.create(created_at=now, minute_key=mk)
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         periods = _get_period_keys_for_dt(now)
 
         for period_type, period_key, _ in periods:
-            stats = NominatimPeriodStats.objects.get(
+            stats = AutocompletePeriodStats.objects.get(
                 period_type=period_type, period_key=period_key
             )
             self.assertEqual(stats.total_requests, 60)
@@ -99,15 +99,15 @@ class TestAggregateNominatimStats(TestCase):
         mk = _minute_key(base)
 
         for _ in range(30):
-            NominatimRequestLog.objects.create(created_at=second1, minute_key=mk)
+            AutocompleteRequestLog.objects.create(created_at=second1, minute_key=mk)
         for _ in range(10):
-            NominatimRequestLog.objects.create(created_at=second2, minute_key=mk)
+            AutocompleteRequestLog.objects.create(created_at=second2, minute_key=mk)
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         periods = _get_period_keys_for_dt(base)
         for period_type, period_key, _ in periods:
-            stats = NominatimPeriodStats.objects.get(
+            stats = AutocompletePeriodStats.objects.get(
                 period_type=period_type, period_key=period_key
             )
             self.assertEqual(stats.total_requests, 40)
@@ -116,29 +116,31 @@ class TestAggregateNominatimStats(TestCase):
     def test_log_rows_marked_processed_after_aggregation(self):
         now = tz.now()
         mk = _minute_key(now)
-        NominatimRequestLog.objects.create(minute_key=mk)
-        NominatimRequestLog.objects.create(minute_key=mk)
+        AutocompleteRequestLog.objects.create(minute_key=mk)
+        AutocompleteRequestLog.objects.create(minute_key=mk)
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
-        self.assertEqual(NominatimRequestLog.objects.count(), 2)
-        self.assertEqual(NominatimRequestLog.objects.filter(processed=True).count(), 2)
+        self.assertEqual(AutocompleteRequestLog.objects.count(), 2)
+        self.assertEqual(
+            AutocompleteRequestLog.objects.filter(processed=True).count(), 2
+        )
 
     def test_only_unprocessed_rows_aggregated(self):
         now = tz.now()
         mk = _minute_key(now)
-        NominatimRequestLog.objects.create(
+        AutocompleteRequestLog.objects.create(
             created_at=now, processed=True, minute_key=mk
         )
-        NominatimRequestLog.objects.create(
+        AutocompleteRequestLog.objects.create(
             created_at=now, processed=False, minute_key=mk
         )
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         periods = _get_period_keys_for_dt(now)
         for period_type, period_key, _ in periods:
-            stats = NominatimPeriodStats.objects.get(
+            stats = AutocompletePeriodStats.objects.get(
                 period_type=period_type, period_key=period_key
             )
             self.assertEqual(stats.total_requests, 1)
@@ -146,45 +148,49 @@ class TestAggregateNominatimStats(TestCase):
     def test_old_rows_cleaned_up_after_7_days(self):
         now = tz.now()
         old_dt = now - timedelta(days=8)
-        NominatimRequestLog.objects.create(
+        AutocompleteRequestLog.objects.create(
             created_at=old_dt, processed=True, minute_key=_minute_key(old_dt)
         )
-        NominatimRequestLog.objects.create(created_at=now, minute_key=_minute_key(now))
+        AutocompleteRequestLog.objects.create(
+            created_at=now, minute_key=_minute_key(now)
+        )
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
-        self.assertEqual(NominatimRequestLog.objects.count(), 1)
+        self.assertEqual(AutocompleteRequestLog.objects.count(), 1)
         self.assertTrue(
-            NominatimRequestLog.objects.filter(created_at=now, processed=True).exists()
+            AutocompleteRequestLog.objects.filter(
+                created_at=now, processed=True
+            ).exists()
         )
 
     def test_empty_log_does_nothing(self):
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
-        self.assertEqual(NominatimPeriodStats.objects.count(), 0)
+        self.assertEqual(AutocompletePeriodStats.objects.count(), 0)
 
     def test_new_iso_week_creates_new_row(self):
         fixed_dt = datetime(2026, 6, 15, 12, 0, 0, tzinfo=timezone.utc)
-        NominatimRequestLog.objects.create(
+        AutocompleteRequestLog.objects.create(
             created_at=fixed_dt, minute_key=_minute_key(fixed_dt)
         )
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
-        stats = NominatimPeriodStats.objects.get(
+        stats = AutocompletePeriodStats.objects.get(
             period_type="week", period_key="2026-W25"
         )
         self.assertEqual(stats.total_requests, 1)
 
     def test_first_of_month_creates_new_row(self):
         fixed_dt = datetime(2026, 7, 1, 12, 0, 0, tzinfo=timezone.utc)
-        NominatimRequestLog.objects.create(
+        AutocompleteRequestLog.objects.create(
             created_at=fixed_dt, minute_key=_minute_key(fixed_dt)
         )
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
-        stats = NominatimPeriodStats.objects.get(
+        stats = AutocompletePeriodStats.objects.get(
             period_type="month", period_key="2026-07"
         )
         self.assertEqual(stats.total_requests, 1)
@@ -193,18 +199,18 @@ class TestAggregateNominatimStats(TestCase):
         now = tz.now()
         mk = _minute_key(now)
         for _ in range(3):
-            NominatimRequestLog.objects.create(created_at=now, minute_key=mk)
+            AutocompleteRequestLog.objects.create(created_at=now, minute_key=mk)
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         for _ in range(2):
-            NominatimRequestLog.objects.create(created_at=now, minute_key=mk)
+            AutocompleteRequestLog.objects.create(created_at=now, minute_key=mk)
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         periods = _get_period_keys_for_dt(now)
         for period_type, period_key, _ in periods:
-            stats = NominatimPeriodStats.objects.get(
+            stats = AutocompletePeriodStats.objects.get(
                 period_type=period_type, period_key=period_key
             )
             self.assertEqual(stats.total_requests, 5)
@@ -212,32 +218,32 @@ class TestAggregateNominatimStats(TestCase):
 
 class TestAggregateNominatimStatsByProvider(TestCase):
     """
-    aggregate_nominatim_stats() must keep LocationIQ and Nominatim apart:
-    one NominatimPeriodStats row per (period, provider), with each row's
+    aggregate_autocomplete_stats() must keep LocationIQ and Nominatim apart:
+    one AutocompletePeriodStats row per (period, provider), with each row's
     peak_req_per_second counting only that provider's requests — that is what
     makes the number usable for watching LocationIQ's 2 req/s ceiling.
     """
 
     def setUp(self):
-        NominatimPeriodStats.objects.all().delete()
-        NominatimRequestLog.objects.all().delete()
+        AutocompletePeriodStats.objects.all().delete()
+        AutocompleteRequestLog.objects.all().delete()
 
     def test_providers_get_separate_rows(self):
         now = tz.now()
         mk = _minute_key(now)
         for _ in range(3):
-            NominatimRequestLog.objects.create(
+            AutocompleteRequestLog.objects.create(
                 created_at=now, minute_key=mk, provider="locationiq"
             )
-        NominatimRequestLog.objects.create(
+        AutocompleteRequestLog.objects.create(
             created_at=now, minute_key=mk, provider="nominatim"
         )
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         for period_type, period_key, _ in _get_period_keys_for_dt(now):
             self.assertEqual(
-                NominatimPeriodStats.objects.get(
+                AutocompletePeriodStats.objects.get(
                     period_type=period_type,
                     period_key=period_key,
                     provider="locationiq",
@@ -245,7 +251,7 @@ class TestAggregateNominatimStatsByProvider(TestCase):
                 3,
             )
             self.assertEqual(
-                NominatimPeriodStats.objects.get(
+                AutocompletePeriodStats.objects.get(
                     period_type=period_type,
                     period_key=period_key,
                     provider="nominatim",
@@ -260,25 +266,25 @@ class TestAggregateNominatimStatsByProvider(TestCase):
         second = tz.now().replace(microsecond=0)
         mk = _minute_key(second)
         for _ in range(3):
-            NominatimRequestLog.objects.create(
+            AutocompleteRequestLog.objects.create(
                 created_at=second, minute_key=mk, provider="locationiq"
             )
         for _ in range(5):
-            NominatimRequestLog.objects.create(
+            AutocompleteRequestLog.objects.create(
                 created_at=second, minute_key=mk, provider="nominatim"
             )
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         day_key = second.strftime("%Y-%m-%d")
         self.assertEqual(
-            NominatimPeriodStats.objects.get(
+            AutocompletePeriodStats.objects.get(
                 period_type="day", period_key=day_key, provider="locationiq"
             ).peak_req_per_second,
             3,
         )
         self.assertEqual(
-            NominatimPeriodStats.objects.get(
+            AutocompletePeriodStats.objects.get(
                 period_type="day", period_key=day_key, provider="nominatim"
             ).peak_req_per_second,
             5,
@@ -288,20 +294,20 @@ class TestAggregateNominatimStatsByProvider(TestCase):
         base = tz.now().replace(microsecond=0)
         mk = _minute_key(base)
         for _ in range(4):
-            NominatimRequestLog.objects.create(
+            AutocompleteRequestLog.objects.create(
                 created_at=base, minute_key=mk, provider="locationiq"
             )
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         # A later, quieter second must not lower the recorded peak.
-        NominatimRequestLog.objects.create(
+        AutocompleteRequestLog.objects.create(
             created_at=base + timedelta(seconds=5), minute_key=mk, provider="locationiq"
         )
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
-        stats = NominatimPeriodStats.objects.get(
+        stats = AutocompletePeriodStats.objects.get(
             period_type="day",
             period_key=base.strftime("%Y-%m-%d"),
             provider="locationiq",
@@ -314,12 +320,12 @@ class TestLogAutocompleteRequest(TestCase):
     """Tests for the log_autocomplete_request() helper on the request path."""
 
     def setUp(self):
-        NominatimRequestLog.objects.all().delete()
+        AutocompleteRequestLog.objects.all().delete()
 
     def test_writes_one_unprocessed_row_with_provider(self):
         log_autocomplete_request("locationiq")
 
-        row = NominatimRequestLog.objects.get()
+        row = AutocompleteRequestLog.objects.get()
         self.assertEqual(row.provider, "locationiq")
         self.assertFalse(row.processed)
         self.assertEqual(row.minute_key, int(time.time()) // 60)
@@ -327,37 +333,37 @@ class TestLogAutocompleteRequest(TestCase):
     def test_defaults_to_nominatim(self):
         log_autocomplete_request()
 
-        self.assertEqual(NominatimRequestLog.objects.get().provider, "nominatim")
+        self.assertEqual(AutocompleteRequestLog.objects.get().provider, "nominatim")
 
     def test_row_is_picked_up_by_the_aggregation_task(self):
         log_autocomplete_request("locationiq")
 
-        aggregate_nominatim_stats()
+        aggregate_autocomplete_stats()
 
         self.assertTrue(
-            NominatimPeriodStats.objects.filter(
+            AutocompletePeriodStats.objects.filter(
                 period_type="day", provider="locationiq", total_requests=1
             ).exists()
         )
-        self.assertTrue(NominatimRequestLog.objects.get().processed)
+        self.assertTrue(AutocompleteRequestLog.objects.get().processed)
 
     def test_db_failure_is_swallowed(self):
         # Tracking must never take down the request it is tracking.
         with patch(
-            "location.models.NominatimRequestLog.objects.create",
+            "location.models.AutocompleteRequestLog.objects.create",
             side_effect=Exception("db down"),
         ):
             log_autocomplete_request("locationiq")
 
-        self.assertEqual(NominatimRequestLog.objects.count(), 0)
+        self.assertEqual(AutocompleteRequestLog.objects.count(), 0)
 
 
-class TestNominatimStatsView(APITestCase):
+class TestAutocompleteStatsView(APITestCase):
     """Tests for GET /api/nominatim_stats/."""
 
     def setUp(self):
-        NominatimPeriodStats.objects.all().delete()
-        NominatimRequestLog.objects.all().delete()
+        AutocompletePeriodStats.objects.all().delete()
+        AutocompleteRequestLog.objects.all().delete()
 
         self.url = reverse("location:nominatim-stats")
         self.admin = User.objects.create_user(
@@ -369,7 +375,7 @@ class TestNominatimStatsView(APITestCase):
 
         for i in range(7):
             key = f"2026-06-{11 - i:02d}"
-            NominatimPeriodStats.objects.create(
+            AutocompletePeriodStats.objects.create(
                 period_type="day",
                 period_key=key,
                 total_requests=100 + i,
@@ -377,14 +383,14 @@ class TestNominatimStatsView(APITestCase):
                 peak_req_per_second=5 + i,
             )
         for i in range(4):
-            NominatimPeriodStats.objects.create(
+            AutocompletePeriodStats.objects.create(
                 period_type="week",
                 period_key=f"2026-W{24 - i:02d}",
                 total_requests=700 + i,
                 avg_req_per_second=0.008 + i * 0.001,
                 peak_req_per_second=10 + i,
             )
-        NominatimPeriodStats.objects.create(
+        AutocompletePeriodStats.objects.create(
             period_type="month",
             period_key="2026-06",
             total_requests=5000,
@@ -444,7 +450,7 @@ class TestNominatimStatsView(APITestCase):
     def test_provider_breakdown_is_reported(self):
         # Add a LocationIQ row alongside the existing (default: nominatim)
         # row for the newest day.
-        NominatimPeriodStats.objects.create(
+        AutocompletePeriodStats.objects.create(
             period_type="day",
             period_key="2026-06-11",
             provider="locationiq",
@@ -469,7 +475,7 @@ class TestNominatimStatsView(APITestCase):
     def test_limit_counts_periods_not_rows(self):
         # Two providers per day must still yield `limit` days, not limit/2.
         for i in range(7):
-            NominatimPeriodStats.objects.create(
+            AutocompletePeriodStats.objects.create(
                 period_type="day",
                 period_key=f"2026-06-{11 - i:02d}",
                 provider="locationiq",
@@ -504,12 +510,12 @@ class TestNominatimStatsView(APITestCase):
         self.assertIn("Invalid", response.data["detail"])
 
 
-class TestTrackNominatimRequestView(APITestCase):
+class TestTrackAutocompleteRequestView(APITestCase):
     """Tests for POST /api/nominatim_request_count/."""
 
     def setUp(self):
-        NominatimPeriodStats.objects.all().delete()
-        NominatimRequestLog.objects.all().delete()
+        AutocompletePeriodStats.objects.all().delete()
+        AutocompleteRequestLog.objects.all().delete()
 
     def test_post_returns_204(self):
         url = reverse("location:track-nominatim-request")
@@ -521,4 +527,4 @@ class TestTrackNominatimRequestView(APITestCase):
         url = reverse("location:track-nominatim-request")
         self.client.post(url)
 
-        self.assertEqual(NominatimRequestLog.objects.count(), 1)
+        self.assertEqual(AutocompleteRequestLog.objects.count(), 1)

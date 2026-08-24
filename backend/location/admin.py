@@ -4,8 +4,8 @@ from django.utils.html import format_html
 from location.models import (
     Location,
     LocationTranslation,
-    NominatimPeriodStats,
-    NominatimRequestLog,
+    AutocompletePeriodStats,
+    AutocompleteRequestLog,
 )
 
 # IMPORTANT: Coordinate Storage Format
@@ -164,7 +164,7 @@ class LocationTranslationAdmin(admin.ModelAdmin):
 admin.site.register(LocationTranslation, LocationTranslationAdmin)
 
 
-class NominatimRequestLogAdmin(admin.ModelAdmin):
+class AutocompleteRequestLogAdmin(admin.ModelAdmin):
     list_display = ("created_at", "provider", "processed", "requests_this_minute")
     list_filter = ("provider", "processed")
     list_per_page = 50
@@ -179,7 +179,7 @@ class NominatimRequestLogAdmin(admin.ModelAdmin):
             .get_queryset(request)
             .annotate(
                 _requests_this_minute=Subquery(
-                    NominatimRequestLog.objects.filter(
+                    AutocompleteRequestLog.objects.filter(
                         minute_key=OuterRef("minute_key"),
                     )
                     .order_by()
@@ -203,10 +203,10 @@ class NominatimRequestLogAdmin(admin.ModelAdmin):
         return False
 
 
-admin.site.register(NominatimRequestLog, NominatimRequestLogAdmin)
+admin.site.register(AutocompleteRequestLog, AutocompleteRequestLogAdmin)
 
 
-class NominatimPeriodStatsAdmin(admin.ModelAdmin):
+class AutocompletePeriodStatsAdmin(admin.ModelAdmin):
     list_display = (
         "period_type",
         "period_key",
@@ -236,4 +236,4 @@ class NominatimPeriodStatsAdmin(admin.ModelAdmin):
         return False
 
 
-admin.site.register(NominatimPeriodStats, NominatimPeriodStatsAdmin)
+admin.site.register(AutocompletePeriodStats, AutocompletePeriodStatsAdmin)

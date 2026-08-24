@@ -18,6 +18,7 @@ from datetime import timedelta
 
 import django.conf
 import sentry_sdk
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import find_dotenv, load_dotenv
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -40,9 +41,23 @@ def int_env(name, default):
     variable (`FOO=` in a deploy config or .backend_env, which is a routine way
     to leave a key unset). `int("")` raises, and at import time that takes the
     whole process down rather than falling back to the default.
+
+    A *non-empty* non-numeric value is still fatal — silently falling back to
+    the default would hide a typo'd deploy config behind behaviour that looks
+    correct. But it fails with the variable's name in the message instead of a
+    bare `ValueError: invalid literal for int() with base 10: 'abc'`, which
+    says nothing about which of the several int settings is wrong.
     """
     raw = env(name, "")
-    return int(raw) if str(raw).strip() else default
+    if not str(raw).strip():
+        return default
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        raise ImproperlyConfigured(
+            f"{name}={raw!r} is not a valid integer. Set it to a whole number, "
+            f"or leave it unset/empty to use the default ({default})."
+        )
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -265,7 +280,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 200,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_THROTTLE_RATES": {},
 }
 
 SPECTACULAR_SETTINGS = {
@@ -502,7 +516,7 @@ if LOCATION_PROXY_MAX_CACHE_AGE_S < LOCATION_PROXY_RESULT_TTL_S:
         RuntimeWarning,
     )
 # Hard cap on cached queries, enforced by an explicit LRU index (see
-# location.queue._index_and_trim) rather than redis maxmemory-policy, which is
+# location.cache._index_and_trim) rather than redis maxmemory-policy, which is
 # instance-global and would happily evict Celery messages and chat channel data
 # from the same Redis. ~7 KB per stripped entry, so 1000 entries is ~7 MB.
 LOCATION_PROXY_CACHE_MAX_ENTRIES = int_env("LOCATION_PROXY_CACHE_MAX_ENTRIES", 1000)

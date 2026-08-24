@@ -203,7 +203,7 @@ def _geometry_was_stripped(location_object):
     """
     True if this payload carries a geometry *type* but no coordinates.
 
-    That is the marker left by location.queue.strip_geometry(), which drops
+    That is the marker left by location.providers.strip_geometry(), which drops
     bulky polygons from autocomplete responses so they don't get cached in
     Redis. It means "the real geometry has to be fetched before saving", and
     is deliberately distinct from geojson being absent entirely — an absent
@@ -362,7 +362,7 @@ def get_location(location_object):
         location_object[attr] = location_object.get(attr, "")
 
     # Autocomplete responses ship geometry types without coordinates (see
-    # location.queue.strip_geometry) — this is the one place that needs the
+    # location.providers.strip_geometry) — this is the one place that needs the
     # real thing, and only when creating a Location we've never seen before.
     if _geometry_was_stripped(location_object):
         geojson = _fetch_geometry_from_provider(

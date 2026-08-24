@@ -11,58 +11,61 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from feature_toggles.models import FeatureToggle
+from location.cache import (
+    get_cache_stats,
+    normalize_query,
+    record_cache_hit,
+    record_cache_miss,
+    refresh_cache_entry,
+    store_result,
+    was_undelivered,
+)
+from location.providers import (
+    _locationiq_daily_budget_exceeded,
+    _try_locationiq,
+    fetch_results,
+    locationiq_autocomplete_enabled,
+    strip_geometry,
+)
 from location.queue import (
     LOCATIONIQ_LOOKUP_KEY_PREFIX,
     LOCATIONIQ_LRU_KEY,
     LOCATIONIQ_PENDING_JOBS_KEY,
     LOCATIONIQ_STATS_HITS_KEY_PREFIX,
     LOCATIONIQ_STATS_MISSES_KEY_PREFIX,
-    _fetch_results,
-    _locationiq_daily_budget_exceeded,
-    _normalize_query,
-    _store_result,
-    _try_locationiq,
-    get_cache_stats,
-    get_client_ip,
-    locationiq_autocomplete_enabled,
-    record_cache_hit,
-    record_cache_miss,
-    refresh_cache_entry,
-    strip_geometry,
-    was_undelivered,
 )
 from location.tasks import fetch_autocomplete
 
 
 class TestNormalizeQuery(TestCase):
     def test_basic(self):
-        self.assertEqual(_normalize_query("Berlin", "de"), "berlin|de|")
+        self.assertEqual(normalize_query("Berlin", "de"), "berlin|de|")
 
     def test_empty_countrycodes(self):
-        self.assertEqual(_normalize_query("Berlin", ""), "berlin||")
+        self.assertEqual(normalize_query("Berlin", ""), "berlin||")
 
     def test_strips_whitespace(self):
-        self.assertEqual(_normalize_query("  Berlin  ", "  DE  "), "berlin|de|")
+        self.assertEqual(normalize_query("  Berlin  ", "  DE  "), "berlin|de|")
 
     def test_case_insensitive(self):
-        self.assertEqual(_normalize_query("BERLIN", "DE"), "berlin|de|")
+        self.assertEqual(normalize_query("BERLIN", "DE"), "berlin|de|")
 
     def test_language_is_part_of_the_key(self):
         # Provider results are localized, so an English and a German lookup
         # for the same query must not share a cache entry.
         self.assertNotEqual(
-            _normalize_query("Berlin", "", "en-US,en;q=0.9"),
-            _normalize_query("Berlin", "", "de-DE,de;q=0.9"),
+            normalize_query("Berlin", "", "en-US,en;q=0.9"),
+            normalize_query("Berlin", "", "de-DE,de;q=0.9"),
         )
 
     def test_only_the_primary_language_tag_is_used(self):
         # Otherwise every browser's slightly different Accept-Language header
         # would get its own cache entry.
         self.assertEqual(
-            _normalize_query("Berlin", "", "de-DE,de;q=0.9,en;q=0.8"),
-            _normalize_query("Berlin", "", "de-AT,de;q=0.7"),
+            normalize_query("Berlin", "", "de-DE,de;q=0.9,en;q=0.8"),
+            normalize_query("Berlin", "", "de-AT,de;q=0.7"),
         )
-        self.assertEqual(_normalize_query("Berlin", "", "DE"), "berlin||de")
+        self.assertEqual(normalize_query("Berlin", "", "DE"), "berlin||de")
 
 
 class TestStripGeometry(TestCase):
@@ -103,26 +106,6 @@ class TestStripGeometry(TestCase):
         self.assertEqual(
             strip_geometry([{"display_name": "x"}]), [{"display_name": "x"}]
         )
-
-
-class TestGetClientIp(TestCase):
-    def test_direct(self):
-        request = MagicMock()
-        request.META = {"REMOTE_ADDR": "1.2.3.4"}
-        self.assertEqual(get_client_ip(request), "1.2.3.4")
-
-    def test_x_forwarded_for(self):
-        request = MagicMock()
-        request.META = {
-            "HTTP_X_FORWARDED_FOR": "5.6.7.8, 9.10.11.12",
-            "REMOTE_ADDR": "1.2.3.4",
-        }
-        self.assertEqual(get_client_ip(request), "5.6.7.8")
-
-    def test_no_ip(self):
-        request = MagicMock()
-        request.META = {}
-        self.assertIsNone(get_client_ip(request))
 
 
 def _make_mock_redis():
@@ -261,7 +244,7 @@ class TestTryLocationiq(TestCase):
         self.assertIsNone(provider)
 
     @override_settings(LOCATIONIQ_API_KEY="test-key")
-    @patch("location.queue.requests.get")
+    @patch("location.providers.requests.get")
     def test_empty_result_list_is_success_not_failure(self, mock_get):
         # A valid 200 with an empty list is a real "no matches" answer, not
         # a failure — it must not trigger a Nominatim fallback attempt.
@@ -271,7 +254,7 @@ class TestTryLocationiq(TestCase):
         self.assertEqual(provider, "locationiq")
 
     @override_settings(LOCATIONIQ_API_KEY="test-key")
-    @patch("location.queue.requests.get")
+    @patch("location.providers.requests.get")
     def test_404_is_success_not_failure(self, mock_get):
         # LocationIQ's /autocomplete returns 404 (not 200 + []) when a query
         # has zero matches — this is also a real "no matches" answer and
@@ -282,7 +265,7 @@ class TestTryLocationiq(TestCase):
         self.assertEqual(provider, "locationiq")
 
     @override_settings(LOCATIONIQ_API_KEY="test-key")
-    @patch("location.queue.requests.get")
+    @patch("location.providers.requests.get")
     def test_non_list_body_is_a_failure(self, mock_get):
         mock_get.return_value = MagicMock(
             status_code=200, json=lambda: {"error": "bad"}
@@ -292,8 +275,8 @@ class TestTryLocationiq(TestCase):
         self.assertIsNone(provider)
 
     @override_settings(LOCATIONIQ_API_KEY="test-key", LOCATIONIQ_DAILY_BUDGET=5)
-    @patch("location.queue._locationiq_daily_budget_exceeded", return_value=True)
-    @patch("location.queue.requests.get")
+    @patch("location.providers._locationiq_daily_budget_exceeded", return_value=True)
+    @patch("location.providers.requests.get")
     def test_daily_budget_exceeded_skips_locationiq_entirely(
         self, mock_get, _mock_budget
     ):
@@ -305,10 +288,10 @@ class TestTryLocationiq(TestCase):
 
 class TestLocationiqDailyBudget(TestCase):
     def _seed_today(self, total_requests):
-        from location.models import NominatimPeriodStats
+        from location.models import AutocompletePeriodStats
 
         today_key = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
-        NominatimPeriodStats.objects.create(
+        AutocompletePeriodStats.objects.create(
             period_type="day",
             period_key=today_key,
             provider="locationiq",
@@ -338,7 +321,7 @@ class TestStoreResult(TestCase):
     @override_settings(LOCATION_PROXY_RESULT_TTL_S=300, LOCATION_PROXY_NEGATIVE_TTL_S=8)
     def test_success_uses_positive_ttl(self):
         mock_redis = _make_mock_redis()
-        _store_result(mock_redis, "key1", "job1", [{"a": 1}], "locationiq")
+        store_result(mock_redis, "key1", "job1", [{"a": 1}], "locationiq")
         key, ttl, payload = mock_redis.setex.call_args[0]
         self.assertEqual(key, "key1")
         self.assertEqual(ttl, 300)
@@ -354,14 +337,14 @@ class TestStoreResult(TestCase):
     def test_empty_but_real_result_uses_positive_ttl(self):
         # Distinguishes a legitimate "no matches" ([]) from a failure (None).
         mock_redis = _make_mock_redis()
-        _store_result(mock_redis, "key1", "job1", [], "locationiq")
+        store_result(mock_redis, "key1", "job1", [], "locationiq")
         _, ttl, _ = mock_redis.setex.call_args[0]
         self.assertEqual(ttl, 300)
 
     @override_settings(LOCATION_PROXY_RESULT_TTL_S=300, LOCATION_PROXY_NEGATIVE_TTL_S=8)
     def test_failure_uses_negative_ttl(self):
         mock_redis = _make_mock_redis()
-        _store_result(mock_redis, "key1", "job1", None, None)
+        store_result(mock_redis, "key1", "job1", None, None)
         _, ttl, payload = mock_redis.setex.call_args[0]
         self.assertEqual(ttl, 8)
         self.assertIsNone(json.loads(payload)["results"])
@@ -371,34 +354,34 @@ class TestStoreResult(TestCase):
         # A negative-cached failure must not occupy one of the capped cache
         # slots, and must not be eligible for the sliding TTL.
         mock_redis = _make_mock_redis()
-        _store_result(mock_redis, "key1", "job1", None, None)
+        store_result(mock_redis, "key1", "job1", None, None)
         self.assertNotIn("first_fetched_at", json.loads(mock_redis._store["key1"]))
         self.assertEqual(mock_redis._zsets.get(LOCATIONIQ_LRU_KEY, {}), {})
 
     def test_success_enters_the_lru_index(self):
         mock_redis = _make_mock_redis()
-        _store_result(mock_redis, "key1", "job1", [{"a": 1}], "locationiq")
+        store_result(mock_redis, "key1", "job1", [{"a": 1}], "locationiq")
         self.assertIn("key1", mock_redis._zsets[LOCATIONIQ_LRU_KEY])
 
     def test_result_starts_undelivered(self):
         # The Celery task writes for a *later* poll to collect, so the poll
         # that collects it is the tail of a miss, not a cache hit.
         mock_redis = _make_mock_redis()
-        _store_result(mock_redis, "key1", "job1", [{"a": 1}], "locationiq")
+        store_result(mock_redis, "key1", "job1", [{"a": 1}], "locationiq")
         self.assertFalse(json.loads(mock_redis._store["key1"])["delivered"])
 
     def test_inline_fetch_marks_the_result_delivered(self):
         # The inline path returns the result in the same response, so there is
         # no later poll to consume the marker.
         mock_redis = _make_mock_redis()
-        _store_result(
+        store_result(
             mock_redis, "key1", "job1", [{"a": 1}], "locationiq", delivered=True
         )
         self.assertTrue(json.loads(mock_redis._store["key1"])["delivered"])
 
     def test_failure_carries_no_delivery_marker(self):
         mock_redis = _make_mock_redis()
-        _store_result(mock_redis, "key1", "job1", None, None)
+        store_result(mock_redis, "key1", "job1", None, None)
         self.assertNotIn("delivered", json.loads(mock_redis._store["key1"]))
 
 
@@ -407,7 +390,7 @@ class TestCacheSizeCap(TestCase):
     def test_oldest_entry_is_evicted_once_the_cap_is_exceeded(self):
         mock_redis = _make_mock_redis()
         for i in range(4):
-            _store_result(mock_redis, f"key{i}", "job", [{"i": i}], "locationiq")
+            store_result(mock_redis, f"key{i}", "job", [{"i": i}], "locationiq")
             time.sleep(0.01)  # keep LRU scores distinct
 
         self.assertEqual(mock_redis.zcard(LOCATIONIQ_LRU_KEY), 3)
@@ -423,14 +406,14 @@ class TestCacheSizeCap(TestCase):
         # constantly must survive even though it was written first.
         mock_redis = _make_mock_redis()
         for i in range(3):
-            _store_result(mock_redis, f"key{i}", "job", [{"i": i}], "locationiq")
+            store_result(mock_redis, f"key{i}", "job", [{"i": i}], "locationiq")
             time.sleep(0.01)
 
         # Read the oldest entry, so it becomes the most recently used.
         data = json.loads(mock_redis._store["key0"])
         refresh_cache_entry(mock_redis, "key0", data, time.time())
 
-        _store_result(mock_redis, "key3", "job", [{"i": 3}], "locationiq")
+        store_result(mock_redis, "key3", "job", [{"i": 3}], "locationiq")
 
         self.assertIn("key0", mock_redis._store)
         self.assertNotIn("key1", mock_redis._store)
@@ -439,7 +422,7 @@ class TestCacheSizeCap(TestCase):
     def test_index_never_exceeds_the_cap(self):
         mock_redis = _make_mock_redis()
         for i in range(20):
-            _store_result(mock_redis, f"key{i}", "job", [{"i": i}], "locationiq")
+            store_result(mock_redis, f"key{i}", "job", [{"i": i}], "locationiq")
             self.assertLessEqual(mock_redis.zcard(LOCATIONIQ_LRU_KEY), 5)
 
     @override_settings(LOCATION_PROXY_CACHE_MAX_ENTRIES=2)
@@ -462,7 +445,7 @@ class TestCacheSizeCap(TestCase):
         )
 
         for i in range(2):
-            _store_result(mock_redis, f"other{i}", "job", [{"i": i}], "locationiq")
+            store_result(mock_redis, f"other{i}", "job", [{"i": i}], "locationiq")
 
         # Evicted from the index (so the cap still makes progress) but the
         # in-flight sentinel itself is untouched.
@@ -475,7 +458,7 @@ class TestCacheSizeCap(TestCase):
         # The guard above must not make eviction a no-op for real entries.
         mock_redis = _make_mock_redis()
         for i in range(3):
-            _store_result(mock_redis, f"key{i}", "job", [{"i": i}], "locationiq")
+            store_result(mock_redis, f"key{i}", "job", [{"i": i}], "locationiq")
             time.sleep(0.01)
 
         self.assertNotIn("key0", mock_redis._store)
@@ -638,7 +621,7 @@ class TestCacheCounters(TestCase):
         broken.incr.side_effect = RuntimeError("redis is down")
         record_cache_hit(broken)  # must not raise
 
-    @patch("location.queue.get_redis_conn")
+    @patch("location.cache.get_redis_conn")
     def test_get_cache_stats_reports_hit_rate(self, mock_conn):
         mock_redis = _make_mock_redis()
         mock_conn.return_value = mock_redis
@@ -652,7 +635,7 @@ class TestCacheCounters(TestCase):
         self.assertEqual(today["misses"], 1)
         self.assertEqual(today["hit_rate"], 0.75)
 
-    @patch("location.queue.get_redis_conn")
+    @patch("location.cache.get_redis_conn")
     def test_get_cache_stats_hit_rate_is_none_without_traffic(self, mock_conn):
         mock_conn.return_value = _make_mock_redis()
         self.assertIsNone(get_cache_stats(days=1)[0]["hit_rate"])
@@ -677,7 +660,7 @@ class TestLocationiqFeatureToggle(TestCase):
         _set_locationiq_toggle(active)
 
     @override_settings(LOCATIONIQ_API_KEY="test-key")
-    @patch("location.queue.requests.get")
+    @patch("location.providers.requests.get")
     def test_toggle_off_never_calls_locationiq(self, mock_get):
         self._set_toggle(False)
 
@@ -688,7 +671,7 @@ class TestLocationiqFeatureToggle(TestCase):
         mock_get.assert_not_called()
 
     @override_settings(LOCATIONIQ_API_KEY="test-key")
-    @patch("location.queue.requests.get")
+    @patch("location.providers.requests.get")
     def test_toggle_on_calls_locationiq(self, mock_get):
         self._set_toggle(True)
         mock_get.return_value = MagicMock(status_code=200, json=lambda: [{"a": 1}])
@@ -700,14 +683,14 @@ class TestLocationiqFeatureToggle(TestCase):
         mock_get.assert_called_once()
 
     @override_settings(LOCATIONIQ_API_KEY="test-key")
-    @patch("location.queue._try_nominatim", return_value=([{"n": 1}], "nominatim"))
-    @patch("location.queue.requests.get")
+    @patch("location.providers._try_nominatim", return_value=([{"n": 1}], "nominatim"))
+    @patch("location.providers.requests.get")
     def test_toggle_off_still_serves_results_via_nominatim(
         self, mock_get, _mock_nominatim
     ):
         self._set_toggle(False)
 
-        results, provider = _fetch_results("berlin", "", "en")
+        results, provider = fetch_results("berlin", "", "en")
 
         self.assertEqual(provider, "nominatim")
         self.assertEqual(results, [{"n": 1}])
@@ -723,7 +706,7 @@ class TestLocationiqFeatureToggle(TestCase):
 
 class TestFetchAutocompleteTask(TestCase):
     @patch("location.tasks.log_autocomplete_request")
-    @patch("location.tasks._fetch_results")
+    @patch("location.tasks.fetch_results")
     @patch("location.tasks.get_redis_conn")
     def test_success_stores_result_and_clears_pending(
         self, mock_conn, mock_fetch, mock_log
@@ -744,7 +727,7 @@ class TestFetchAutocompleteTask(TestCase):
         mock_log.assert_called_once_with("locationiq")
 
     @patch("location.tasks.log_autocomplete_request")
-    @patch("location.tasks._fetch_results")
+    @patch("location.tasks.fetch_results")
     @patch("location.tasks.get_redis_conn")
     def test_superseded_generation_does_not_overwrite(
         self, mock_conn, mock_fetch, mock_log
@@ -764,7 +747,7 @@ class TestFetchAutocompleteTask(TestCase):
         mock_log.assert_not_called()
 
     @patch("location.tasks.log_autocomplete_request")
-    @patch("location.tasks._fetch_results", side_effect=RuntimeError("boom"))
+    @patch("location.tasks.fetch_results", side_effect=RuntimeError("boom"))
     @patch("location.tasks.get_redis_conn")
     def test_unexpected_exception_still_resolves_to_terminal_state(
         self, mock_conn, _mock_fetch, mock_log
@@ -958,7 +941,7 @@ class TestLocationAutocompleteView(TestCase):
         )
 
         # 2. the worker finishes and writes the result
-        _store_result(mock_redis, key, "j", [{"display_name": "Berlin"}], "locationiq")
+        store_result(mock_redis, key, "j", [{"display_name": "Berlin"}], "locationiq")
 
         # 3. the poll collects it -> 200, but this is the tail of the miss
         self.assertEqual(
@@ -1046,7 +1029,7 @@ class TestLocationAutocompleteView(TestCase):
         mock_apply_async.assert_not_called()
 
     @override_settings(RATELIMIT_ENABLE=False)
-    @patch("location.location_views._fetch_results")
+    @patch("location.location_views.fetch_results")
     @patch(
         "location.location_views.fetch_autocomplete.apply_async",
         side_effect=Exception("broker down"),
@@ -1076,7 +1059,7 @@ class TestLocationAutocompleteView(TestCase):
         )
 
     @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_STALE_PENDING_S=16)
-    @patch("location.location_views._fetch_results")
+    @patch("location.location_views.fetch_results")
     @patch("location.location_views.get_redis_conn")
     def test_abandoned_sentinel_is_reclaimed_and_fetched_inline(
         self, mock_conn, mock_fetch
@@ -1111,7 +1094,7 @@ class TestLocationAutocompleteView(TestCase):
         )
 
     @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_STALE_PENDING_S=16)
-    @patch("location.location_views._fetch_results")
+    @patch("location.location_views.fetch_results")
     @patch("location.location_views.get_redis_conn")
     def test_young_sentinel_is_left_alone(self, mock_conn, mock_fetch):
         # Still plausibly queued — must keep returning 202 rather than firing
@@ -1129,7 +1112,7 @@ class TestLocationAutocompleteView(TestCase):
         mock_fetch.assert_not_called()
 
     @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_STALE_PENDING_S=16)
-    @patch("location.location_views._fetch_results")
+    @patch("location.location_views.fetch_results")
     @patch("location.location_views.get_redis_conn")
     def test_only_one_request_reclaims_a_given_query(self, mock_conn, mock_fetch):
         # Concurrent pollers must not all fetch the same query; the loser
@@ -1154,7 +1137,7 @@ class TestLocationAutocompleteView(TestCase):
         mock_fetch.assert_called_once()
 
     @override_settings(RATELIMIT_ENABLE=False, LOCATION_PROXY_STALE_PENDING_S=16)
-    @patch("location.location_views._fetch_results")
+    @patch("location.location_views.fetch_results")
     @patch("location.location_views.get_redis_conn")
     def test_sentinel_without_created_at_is_not_reclaimed(self, mock_conn, mock_fetch):
         # Written before created_at existed (mid-deploy) — can't be aged, and

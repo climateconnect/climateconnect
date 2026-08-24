@@ -926,8 +926,13 @@ When `is_test=true`, the subject is prefixed with `[TEST] ` so the organiser can
 |----------|--------|---------------|-------------|
 | `/api/location_autocomplete/` | GET | No | Autocomplete search (LocationIQ, Nominatim fallback) — **polling endpoint, see below** |
 | `/api/get_location/` | POST | No | Resolve a saved location by OSM identifiers, creating it if unknown |
-| `/api/nominatim_request_count/` | POST | No | Legacy fire-and-forget request counter |
-| `/api/nominatim_stats/` | GET | Yes (staff) | Per-provider request statistics |
+| `/api/autocomplete_request_count/` | POST | No | Fire-and-forget counter for browser-side Nominatim calls |
+| `/api/autocomplete_stats/` | GET | Yes (staff) | Per-provider request statistics |
+
+> The last two were called `/api/nominatim_request_count/` and `/api/nominatim_stats/` until both
+> started covering LocationIQ as well. The old paths still resolve to the same views so that a
+> browser holding a pre-rename JS bundle keeps reporting its Nominatim calls; they are deprecated
+> and can be dropped once those bundles have aged out.
 
 #### `GET /api/location_autocomplete/` — asynchronous, must be polled
 
@@ -938,7 +943,7 @@ URL until it returns `200`.
 
 **Gated by the `LOCATIONIQ_AUTOCOMPLETE` feature toggle.** When it is off, the reference client
 does not call this endpoint at all — it calls `nominatim.openstreetmap.org` directly from the
-browser and reports the request to `/api/nominatim_request_count/`, exactly as it did before the
+browser and reports the request to `/api/autocomplete_request_count/`, exactly as it did before the
 LocationIQ migration. The endpoint itself keeps working while the toggle is off (clients running a
 cached JS bundle still reach it) but never calls LocationIQ; it serves the Nominatim fallback
 instead. See `doc/spec/20260804_1202_locationiq_feature_toggle_and_result_caching.md`.
@@ -986,7 +991,7 @@ curl "http://localhost:8000/api/location_autocomplete/?q=berlin" -H "Accept-Lang
 # -> 200 [{"display_name": "Berlin, Deutschland", "geojson": {"type": "MultiPolygon", "coordinates": null}, ...}]
 ```
 
-#### `GET /api/nominatim_stats/` — per-provider usage
+#### `GET /api/autocomplete_stats/` — per-provider usage
 
 Requires Django staff access. Statistics are stored per (period, provider), so every period reports
 combined totals plus a `providers` breakdown. `total_requests` and `avg_req_per_second` are summed
@@ -999,7 +1004,7 @@ queries cost no quota and are deliberately not counted.
 
 Because of that, the no-parameter response also carries a `cache` array with the last 7 days of
 autocomplete cache hits and misses. Without it a working result cache and a drop in traffic look
-identical here, since only upstream calls reach `NominatimPeriodStats`.
+identical here, since only upstream calls reach `AutocompletePeriodStats`.
 
 - **`misses`** — lookups that had to go upstream. Counted once per lookup that actually spends an
   upstream call, never once per poll: at enqueue time for the normal queued path, or inside the
@@ -1020,7 +1025,7 @@ can't be reached — the rest of the response comes from Postgres and is still s
 | `limit` | `1` | Number of **periods** to return (max 365). Only with `period_type`. |
 
 ```jsonc
-// GET /api/nominatim_stats/
+// GET /api/autocomplete_stats/
 {
   "cache": [
     { "day": "2026-08-04", "hits": 812, "misses": 96, "hit_rate": 0.8943 },

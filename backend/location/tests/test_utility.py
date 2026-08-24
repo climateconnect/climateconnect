@@ -322,7 +322,7 @@ class TestGetLocation(TestCase):
 class TestGetLocationWithStrippedGeometry(TestCase):
     """
     Autocomplete responses no longer carry polygon coordinates (they are
-    stripped before caching, see location.queue.strip_geometry). The full
+    stripped before caching, see location.providers.strip_geometry). The full
     geometry must still reach the database, so get_location() re-fetches it
     from the provider when it creates a Location it has never seen before.
     """

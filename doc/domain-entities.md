@@ -711,15 +711,15 @@ Re-registered — cancelled_at reset to NULL, cancelled_by reset to NULL (row re
 **Relationships**:
 - **Referenced by**: `LocationTranslation`, `UserProfile`, `Organization`, `Project`, `Idea`, `Hub` (ManyToMany)
 
-### NominatimRequestLog
+### AutocompleteRequestLog
 
 **Summary**: One row per outgoing autocomplete request to a geocoding provider.
 
 **Description**: Lightweight usage log for the location autocomplete proxy. A row is written every
 time the backend actually calls an upstream provider — cached and de-duplicated queries cost no
 quota and are deliberately not logged, so these counts track **provider consumption rather than
-user traffic**. A Celery Beat task (`aggregate_nominatim_stats`, every 10 minutes) rolls unprocessed
-rows into `NominatimPeriodStats`, marks them processed, and deletes rows older than 7 days.
+user traffic**. A Celery Beat task (`aggregate_autocomplete_stats`, every 10 minutes) rolls unprocessed
+rows into `AutocompletePeriodStats`, marks them processed, and deletes rows older than 7 days.
 
 **Key fields**:
 - `provider` — `nominatim` or `locationiq`; which upstream served the request
@@ -727,13 +727,13 @@ rows into `NominatimPeriodStats`, marks them processed, and deletes rows older t
 - `processed` — whether the aggregation task has consumed this row
 - `created_at` — used for both aggregation bucketing and cleanup
 
-### NominatimPeriodStats
+### AutocompletePeriodStats
 
 **Summary**: Aggregated autocomplete request metrics per period **and provider**.
 
 **Description**: One row per `(period_type, period_key, provider)` — so a single day has one row for
-LocationIQ and one for Nominatim. Written only by `aggregate_nominatim_stats`, read by
-`GET /api/nominatim_stats/` and by the `LOCATIONIQ_DAILY_BUDGET` guard, which uses today's
+LocationIQ and one for Nominatim. Written only by `aggregate_autocomplete_stats`, read by
+`GET /api/autocomplete_stats/` and by the `LOCATIONIQ_DAILY_BUDGET` guard, which uses today's
 LocationIQ total to stop calling LocationIQ once the daily allowance is spent.
 
 **Key fields**:
