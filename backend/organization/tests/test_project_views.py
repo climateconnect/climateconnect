@@ -18,6 +18,7 @@ from organization.models import (
     Organization,
     Project,
     ProjectMember,
+    ProjectParents,
     ProjectSectorMapping,
     ProjectStatus,
     Sector,
@@ -634,6 +635,10 @@ class TestProjectApi(APITestCase):
             user=self.user,
             project=self.project,
             role=self.role,
+        )
+        ProjectParents.objects.create(
+            project=self.project,
+            parent_user=self.user,
         )
 
     @tag("projects")
