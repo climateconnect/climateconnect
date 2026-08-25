@@ -1175,6 +1175,52 @@ class TestProjectApi(APITestCase):
         # assert
         self.assertIn("is_online", res)
 
+    @tag("projects")
+    def test_patch_project_keeps_organization_owner_when_is_personal_project_flag_is_stale(self):
+        self.client.login(username="testuser", password="testpassword")
+
+        organization = self.user.user_profile.organizations.first()
+        if organization is None:
+            organization = self.user.user_profile.organization_set.first()
+
+        if organization is None:
+            organization = self.project.organization_set.first()
+
+        if organization is None:
+            organization = self.project.project_parent.first().parent_organization
+
+        if organization is None:
+            self.fail("Test setup requires an organization for the project owner scenario")
+
+        project_parents = self.project.project_parent.get()
+        project_parents.parent_organization = organization
+        project_parents.save()
+
+        response = self.client.patch(
+            self.url,
+            {"name": "Updated Project Name", "is_personal_project": True},
+            format="json",
+        )
+
+        self.assertContains(response, "successfully updated")
+        project_parents.refresh_from_db()
+        self.assertEqual(project_parents.parent_organization, organization)
+        self.project.refresh_from_db()
+        self.assertEqual(self.project.name, "Updated Project Name")
+
+    @tag("projects")
+    def test_patch_project_rejects_invalid_parent_organization_id(self):
+        self.client.login(username="testuser", password="testpassword")
+
+        response = self.client.patch(
+            self.url,
+            {"parent_organization": 999999},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("parent_organization", response.json())
+
 
 class ProjectLocationHubFilterTest(TestCase):
     """
