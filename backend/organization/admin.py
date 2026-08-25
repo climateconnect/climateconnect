@@ -1,12 +1,12 @@
 from django.contrib import admin
 
+from organization.models.tags import OrganizationFieldTagging
 from organization.models import (
     Comment,
     CommentTranslation,
     EventRegistration,
     EventRegistrationConfig,
     Organization,
-    OrganizationFieldTagging,
     OrganizationFollower,
     OrganizationMember,
     OrganizationSectorMapping,
@@ -37,7 +37,6 @@ from organization.models.members import MembershipRequests
 pass_through_models = (
     OrganizationTags,
     OrganizationTagging,
-    
     Post,
     Comment,
     PostComment,
