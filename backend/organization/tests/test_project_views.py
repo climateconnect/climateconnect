@@ -15,6 +15,7 @@ from climateconnect_api.models import Language, Role
 from hubs.models.hub import Hub
 from location.models import Location, LocationTranslation
 from organization.models import (
+    Organization,
     Project,
     ProjectMember,
     ProjectSectorMapping,
@@ -1179,18 +1180,11 @@ class TestProjectApi(APITestCase):
     def test_patch_project_keeps_organization_owner_when_is_personal_project_flag_is_stale(self):
         self.client.login(username="testuser", password="testpassword")
 
-        organization = self.user.user_profile.organizations.first()
-        if organization is None:
-            organization = self.user.user_profile.organization_set.first()
-
-        if organization is None:
-            organization = self.project.organization_set.first()
-
-        if organization is None:
-            organization = self.project.project_parent.first().parent_organization
-
-        if organization is None:
-            self.fail("Test setup requires an organization for the project owner scenario")
+        organization = Organization.objects.create(
+            name="Owner Organization",
+            url_slug="owner-organization-for-stale-flag-test",
+            language=self.default_language,
+        )
 
         project_parents = self.project.project_parent.get()
         project_parents.parent_organization = organization
@@ -1212,6 +1206,14 @@ class TestProjectApi(APITestCase):
     def test_patch_project_rejects_invalid_parent_organization_id(self):
         self.client.login(username="testuser", password="testpassword")
 
+        project_parents = self.project.project_parent.get()
+        project_parents.parent_organization = Organization.objects.create(
+            name="Existing Organization",
+            url_slug="existing-organization-for-invalid-id-test",
+            language=self.default_language,
+        )
+        project_parents.save()
+
         response = self.client.patch(
             self.url,
             {"parent_organization": 999999},
@@ -1220,6 +1222,8 @@ class TestProjectApi(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("parent_organization", response.json())
+        project_parents.refresh_from_db()
+        self.assertIsNotNone(project_parents.parent_organization)
 
 
 class ProjectLocationHubFilterTest(TestCase):
