@@ -7,7 +7,14 @@ import WebflowPage from "../src/components/webflow/WebflowPage";
 import { retrievePage } from "../src/utils/webflow";
 
 export default function Donate({ bodyContent, headContent }) {
-  return <WebflowPage bodyContent={bodyContent} headContent={headContent} pageKey="donate" />;
+  return (
+    <WebflowPage
+      bodyContent={bodyContent}
+      headContent={headContent}
+      pageKey="donate"
+      showDonationGoal={false}
+    />
+  );
 }
 
 export async function getServerSideProps(ctx) {

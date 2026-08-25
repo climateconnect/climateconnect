@@ -1,11 +1,10 @@
-import { Card, CardContent, CardMedia, Link, Typography } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import Truncate from "react-truncate";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import AppLink from "../general/AppLink";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
-import BrowseContext from "../context/BrowseContext";
+import { getProjectTypes } from "../../../public/data/projectTypes";
 import UserContext from "../context/UserContext";
 import ProjectMetaData from "./ProjectMetaData";
 import EventDateIndicator from "./EventDateIndicator";
@@ -14,6 +13,7 @@ const useStyles = makeStyles((theme) => {
   return {
     wrapper: {
       position: "relative",
+      display: "block",
       height: "100%",
       paddingTop: theme.spacing(0.25),
     },
@@ -50,10 +50,11 @@ const useStyles = makeStyles((theme) => {
       lineHeight: 1.5,
       fontSize: 15,
       color: "rgba(0, 0, 0, 0.87)",
-      ["&span"]: {
-        whiteSpace: "nowrap",
-      },
       wordBreak: "break-word",
+      display: "-webkit-box",
+      WebkitLineClamp: 2,
+      // @ts-ignore - WebkitBoxOrient is deprecated but still required for line-clamp to work
+      WebkitBoxOrient: "vertical",
     },
     button: {
       marginTop: theme.spacing(1),
@@ -106,101 +107,149 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-export default function ProjectPreview({ project, projectRef, hubUrl, className }: any) {
-  const [hovering, setHovering] = React.useState(false);
+export default function ProjectPreview({
+  project,
+  projectRef,
+  hubUrl,
+  className,
+  registeredEventSlugs,
+  analyticsSurface,
+}: any) {
+  // DISABLED: Hover expansion effect causes registration button to jump/shift position (Issue #1885)
+  // Keeping code in place for potential future re-enablement
+  // const [hovering, setHovering] = useState(false);
+  const hovering = false; // Hover effect disabled
   const { locale } = useContext(UserContext);
-  const { projectTypes } = useContext(BrowseContext);
-  const projectType =
-    projectTypes && projectTypes.length > 0
-      ? projectTypes.find((t) => t.type_id === project.project_type)
-      : { name: project.project_type, type_id: project.project_type };
+  const projectTypes = getProjectTypes(locale);
+  const projectType = projectTypes.find((t) => t.type_id === project.project_type) ?? {
+    name: project.project_type,
+    type_id: project.project_type,
+    original_name: project.project_type,
+    help_text: "",
+    icon: "",
+  };
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles({ hovering: hovering });
-  const handleMouseEnter = () => {
-    setHovering(true);
-  };
-  const handleMouseLeave = () => {
-    setHovering(false);
-  };
-  const queryString = hubUrl ? "?hub=" + hubUrl : "";
+
+  // DISABLED: Hover handlers (kept for potential future re-enablement)
+  // const handleMouseEnter = () => {
+  //   setHovering(true);
+  // };
+  // const handleMouseLeave = () => {
+  //   setHovering(false);
+  // };
+
+  const projectUrl = project.is_draft
+    ? `/editProject/${project.url_slug}`
+    : `/projects/${project.url_slug}`;
 
   return (
-    <Link
-      href={
-        project.is_draft
-          ? `${getLocalePrefix(locale)}/editProject/${project.url_slug}`
-          : `${getLocalePrefix(locale)}/projects/${project.url_slug}${queryString}`
-      }
-      className={classes.noUnderline}
+    <AppLink
+      href={projectUrl}
       underline="hover"
+      className={`${classes.wrapper} ${classes.noUnderline}`}
     >
-      <div className={classes.wrapper}>
-        {projectType.type_id === "event" && (
-          <EventDateIndicator project={project} hubUrl={hubUrl} />
-        )}
-        <Card
-          className={`${classes.root} ${className}`}
-          variant="outlined"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          ref={projectRef}
+      {projectType.type_id === "event" && project.start_date && project.end_date && (
+        <EventDateIndicator project={project} hubUrl={hubUrl} />
+      )}
+      <Card
+        className={`${classes.root} ${className}`}
+        variant="outlined"
+        // DISABLED: Hover handlers (kept for potential future re-enablement)
+        // onMouseEnter={handleMouseEnter}
+        // onMouseLeave={handleMouseLeave}
+        ref={projectRef}
+      >
+        <CardMedia
+          /*TODO(undefined) className={classes.media} */
+          title={project.name}
+          image={getImageUrl(project.image)}
         >
-          <CardMedia
-            /*TODO(undefined) className={classes.media} */
-            title={project.name}
-            image={getImageUrl(project.image)}
-          >
-            {project.is_draft ? (
-              <div className={classes.draftTriangle}>
-                <div className={classes.draftText}>Draft</div>
-              </div>
-            ) : (
-              <img
-                src={getImageUrl(project.image)}
-                className={classes.placeholderImg}
-                alt={texts.project_image_of_project + " " + project.name}
-              />
-            )}
-          </CardMedia>
-          <div className={classes.cardContentWrapper}>
-            <CardContentWithDescription project={project} hovering={hovering} />
-            <CardContentWithoutDescription project={project} hovering={hovering} />
-          </div>
-        </Card>
-      </div>
-    </Link>
+          {project.is_draft ? (
+            <div className={classes.draftTriangle}>
+              <div className={classes.draftText}>Draft</div>
+            </div>
+          ) : (
+            <img
+              src={getImageUrl(project.image)}
+              className={classes.placeholderImg}
+              alt={texts.project_image_of_project + " " + project.name}
+            />
+          )}
+        </CardMedia>
+        <div className={classes.cardContentWrapper}>
+          <CardContentWithDescription
+            project={project}
+            hovering={hovering}
+            registeredEventSlugs={registeredEventSlugs}
+            analyticsSurface={analyticsSurface}
+          />
+          <CardContentWithoutDescription
+            project={project}
+            hovering={hovering}
+            registeredEventSlugs={registeredEventSlugs}
+            analyticsSurface={analyticsSurface}
+          />
+        </div>
+      </Card>
+    </AppLink>
   );
 }
 
-const CardContentWithoutDescription = ({ project, hovering }) => {
+const CardContentWithoutDescription = ({
+  project,
+  hovering,
+  registeredEventSlugs,
+  analyticsSurface,
+}) => {
   const classes = useStyles();
+  const isUserRegistered =
+    registeredEventSlugs && project.url_slug
+      ? registeredEventSlugs.has(project.url_slug)
+      : undefined;
   return (
     <CardContent className={classes.cardContent}>
       <div className={classes.projectNameWrapper}>
-        <Typography component="h2">
-          <Truncate lines={2} className={classes.projectName}>
-            {project.name}
-          </Truncate>
+        <Typography component="h2" className={classes.projectName}>
+          {project.name}
         </Typography>
       </div>
-      <ProjectMetaData project={project} hovering={hovering} />
+      <ProjectMetaData
+        project={project}
+        hovering={hovering}
+        isUserRegistered={isUserRegistered}
+        analyticsSurface={analyticsSurface}
+      />
     </CardContent>
   );
 };
 
-const CardContentWithDescription = ({ project, hovering }) => {
+const CardContentWithDescription = ({
+  project,
+  hovering,
+  registeredEventSlugs,
+  analyticsSurface,
+}) => {
   const classes = useStyles({ hovering: hovering });
+  const isUserRegistered =
+    registeredEventSlugs && project.url_slug
+      ? registeredEventSlugs.has(project.url_slug)
+      : undefined;
 
   return (
     <CardContent className={`${classes.cardContentWithDescription} ${classes.cardContent}`}>
       <div className={classes.projectNameWrapper}>
-        <Typography component="h2">
-          <Truncate lines={2} className={classes.projectName}>
-            {project.name}
-          </Truncate>
+        <Typography component="h2" className={classes.projectName}>
+          {project.name}
         </Typography>
       </div>
-      <ProjectMetaData project={project} hovering={hovering} withDescription />
+      <ProjectMetaData
+        project={project}
+        hovering={hovering}
+        withDescription
+        isUserRegistered={isUserRegistered}
+        analyticsSurface={analyticsSurface}
+      />
     </CardContent>
   );
 };

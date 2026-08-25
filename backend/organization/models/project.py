@@ -51,12 +51,16 @@ class Project(models.Model):
         upload_to=project_image_path,
     )
 
+    # Deprecated: project status is no longer used. The column is kept (nullable,
+    # no default) so existing rows and the ProjectStatus table stay intact.
     status = models.ForeignKey(
         "ProjectStatus",
         help_text="Points to project's status",
         verbose_name="Project Status",
         related_name="project_status",
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
 
     project_type = models.CharField(
@@ -110,6 +114,13 @@ class Project(models.Model):
         max_length=4800,
     )
 
+    description_html = models.TextField(
+        help_text="Rich-text HTML description (Tiptap output)",
+        verbose_name="Description HTML",
+        null=True,
+        blank=True,
+    )
+
     # Field not in use. Keeping temporarily for backwards compatibility
     country = models.CharField(
         help_text="Points to a country of the project",
@@ -144,6 +155,8 @@ class Project(models.Model):
         default=False,
     )
 
+    # DEPRECATED: Project skills are deprecated. See issue #1785.
+    # This field is kept for backwards compatibility but should not be used.
     skills = models.ManyToManyField(
         Skill,
         related_name="project_skills",
@@ -170,9 +183,9 @@ class Project(models.Model):
         blank=True,
     )
 
-    rating = models.PositiveSmallIntegerField(
-        help_text="The larger the number, the more to the top this project will be displayed",
-        verbose_name="Rating (1-100)",
+    rating = models.SmallIntegerField(
+        help_text="The larger the number, the more to the top this project will be displayed. Negative values downrank the project.",
+        verbose_name="Rating",
         default=100,
     )
 
@@ -205,6 +218,43 @@ class Project(models.Model):
         "hubs.Hub", related_name="projects_related_hubs", blank=True
     )
 
+    parent_project = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="child_projects",
+        help_text="Parent project for multi-event structures (e.g., festival with sub-events)",
+        db_index=True,
+    )
+
+    has_children = models.BooleanField(
+        default=False,
+        help_text="Flag indicating if this project has child projects (events).",
+        db_index=True,
+    )
+
+    is_online = models.BooleanField(
+        help_text="Whether the project takes place online",
+        verbose_name="Is Online",
+        default=False,
+    )
+
+    devlink_component = models.CharField(
+        help_text=(
+            "Devlink component name from Webflow. Use the full component name "
+            "including the language prefix (e.g. 'EnChErlangenLandingpage'). "
+            "If the component has localized variants, include the En or De prefix "
+            "— the system will swap it automatically based on the user's locale. "
+            "If the component has no language prefix (e.g. 'Wasseraktionswochen'), "
+            "it will be shown as-is for all languages."
+        ),
+        verbose_name="Devlink component name",
+        max_length=128,
+        null=True,
+        blank=True,
+    )
+
     @property
     def cached_ranking(self) -> int:
         """Carful with this property, it might trigger an N+1 query problem"""
@@ -218,16 +268,44 @@ class Project(models.Model):
     @property
     def ranking(self) -> int:
         return ProjectRanking().calculate_ranking(
-            description=self.description,
+            description=self.description_html,
             location=self.loc,
             project_id=self.id,
             project_manually_set_rating=self.rating,
-            total_skills=self.skills.count(),
             project_type=self.project_type,
             start_date=self.start_date,
             end_date=self.end_date,
             created_at=self.created_at,
         )
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete(generate_project_ranking_cache_key(project_id=self.id))
+
+    def clean(self):
+        """Validate parent/child relationships."""
+        super().clean()
+
+        if self.parent_project:
+            # Prevent self-reference
+            if self.parent_project == self:
+                from django.core.exceptions import ValidationError
+
+                raise ValidationError("A project cannot be its own parent")
+
+            # Prevent nesting beyond one level
+            if self.parent_project.parent_project is not None:
+                from django.core.exceptions import ValidationError
+
+                raise ValidationError("Projects can only be nested one level deep")
+
+            # Prevent making a parent if already has children
+            if self.pk and self.child_projects.exists():
+                from django.core.exceptions import ValidationError
+
+                raise ValidationError(
+                    "A project with child projects cannot have a parent"
+                )
 
     class Meta:
         app_label = "organization"

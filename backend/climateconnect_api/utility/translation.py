@@ -52,7 +52,7 @@ def get_attribute_in_correct_language(obj, attr, language_code):
     return getattr(obj, attr)
 
 
-def translate(text, target_lang):
+def translate(text, target_lang, is_html=False):
     if text is None or len(text) == 0:
         return {"text": text}
     if not settings.DEEPL_API_KEY:
@@ -62,13 +62,16 @@ def translate(text, target_lang):
     payload = {"text": text, "target_lang": target_lang}
     if target_lang == "de":
         payload["formality"] = "less"
+    if is_html:
+        payload["tag_handling"] = "html"
 
-    url = "https://api.deepl.com/v2/translate?auth_key=" + settings.DEEPL_API_KEY
-    translation = requests.post(url, payload)
+    url = "https://api.deepl.com/v2/translate"
+    headers = {"Authorization": f"DeepL-Auth-Key {settings.DEEPL_API_KEY}"}
+    translation = requests.post(url, data=payload, headers=headers)
     return json.loads(translation.content)["translations"][0]
 
 
-def translate_text(text, original_lang, target_lang):
+def translate_text(text, original_lang, target_lang, is_html=False):
     ALLOWED_LANGUAGE_CODES = ["en", "de"]
     original_locale = get_locale(original_lang)
     target_locale = get_locale(target_lang)
@@ -89,7 +92,9 @@ def translate_text(text, original_lang, target_lang):
     if isinstance(text, list):
         translation_objects = []
         for element in text:
-            translation_objects.append(translate(element, target_locale))
+            translation_objects.append(
+                translate(element, target_locale, is_html=is_html)
+            )
         print(translation_objects)
         translation = {
             "detected_source_language": original_lang,
@@ -101,7 +106,7 @@ def translate_text(text, original_lang, target_lang):
             ),
         }
     else:
-        translation = translate(text, target_locale)
+        translation = translate(text, target_locale, is_html=is_html)
         # If the source language is actually the target language (person with german locale wrote english text),
         # Switch source language and target language (change original lang from german to english and target lang from english to german)
         # Since this means we just translated a text from german to german, we need to call the translate function again and translate to english
@@ -113,7 +118,7 @@ def translate_text(text, original_lang, target_lang):
             ):
                 target_locale = original_locale
                 original_locale = get_locale(translation["detected_source_language"])
-                translation = translate(text, target_locale)
+                translation = translate(text, target_locale, is_html=is_html)
 
             # If the detected source language is complete different from target_lang or original_lan: adapt original lang
             # Example: If person with german locale writes spanish text the text will be translated to english and source language will be spanish
@@ -142,49 +147,51 @@ def get_translations(
     if depth > 1:
         raise ValueError
     finished_translations = {}
-    for target_language in settings.LOCALES:
-        if not target_language == source_language:
-            finished_translations[target_language] = {"is_manual_translation": False}
-            for key in texts.keys():
-                # If the user manually translated and the translation
-                # isn't an empty string: take the user's translation
-                if (
-                    target_language in translations
-                    and "is_manual_translation" in translations[target_language]
-                    and translations[target_language]["is_manual_translation"]
-                    and key in translations[target_language]
-                    and len(translations[target_language][key]) > 0
-                ):
-                    finished_translations[target_language][key] = translations[
-                        target_language
-                    ][key]
-                    finished_translations["is_manual_translation"] = True
-                # Else use DeepL to translate the text
+    for target_language in Language.objects.exclude(
+        language_code=source_language
+    ).values_list("language_code", flat=True):
+        finished_translations[target_language] = {"is_manual_translation": False}
+        for key in texts.keys():
+            # If the user manually translated and the translation
+            # isn't an empty string: take the user's translation
+            if (
+                target_language in translations
+                and "is_manual_translation" in translations[target_language]
+                and translations[target_language]["is_manual_translation"]
+                and key in translations[target_language]
+                and len(translations[target_language][key]) > 0
+            ):
+                finished_translations[target_language][key] = translations[
+                    target_language
+                ][key]
+                finished_translations["is_manual_translation"] = True
+            # Else use DeepL to translate the text
+            else:
+                # If the key should not be translated, just pass the original
+                # string (We do this for organization names for example)
+                if key in keys_to_ignore_for_translation:
+                    translated_text_object = {
+                        "original_lang": source_language,
+                        "translated_text": texts[key],
+                    }
                 else:
-                    # If the key should not be translated, just pass the original
-                    # string (We do this for organization names for example)
-                    if key in keys_to_ignore_for_translation:
-                        translated_text_object = {
-                            "original_lang": source_language,
-                            "translated_text": texts[key],
-                        }
-                    else:
-                        translated_text_object = translate_text(
-                            texts[key], source_language, target_language
-                        )
-                    # If we got the source language wrong start over
-                    # with the correct source language
-                    if not translated_text_object["original_lang"] == source_language:
-                        return get_translations(
-                            texts,
-                            translations,
-                            translated_text_object["original_lang"],
-                            keys_to_ignore_for_translation,
-                            depth + 1,
-                        )
-                    finished_translations[target_language][key] = (
-                        translated_text_object["translated_text"]
+                    is_html = key == "description_html"
+                    translated_text_object = translate_text(
+                        texts[key], source_language, target_language, is_html=is_html
                     )
+                # If we got the source language wrong start over
+                # with the correct source language
+                if not translated_text_object["original_lang"] == source_language:
+                    return get_translations(
+                        texts,
+                        translations,
+                        translated_text_object["original_lang"],
+                        keys_to_ignore_for_translation,
+                        depth + 1,
+                    )
+                finished_translations[target_language][key] = translated_text_object[
+                    "translated_text"
+                ]
     return {"translations": finished_translations, "source_language": source_language}
 
 
@@ -247,12 +254,26 @@ def edit_translations(items_to_translate, data, item, type):
                     and translation_keys["key"] in passed_lang_translation
                     and len(passed_lang_translation[translation_keys["key"]]) > 0
                 ):
+                    value = passed_lang_translation[translation_keys["key"]]
+                    if translation_keys["key"] == "description_html":
+                        from climateconnect_api.utility.html import (
+                            sanitize_html,
+                            PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                            PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                        )
+
+                        value = sanitize_html(
+                            value,
+                            allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                            allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                        )
                     setattr(
                         db_translation,
                         translation_keys["translation_key"],
-                        passed_lang_translation[translation_keys["key"]],
+                        value,
                     )
                 else:
+                    is_html = translation_keys["key"] == "description_html"
                     setattr(
                         db_translation,
                         translation_keys["translation_key"],
@@ -260,6 +281,7 @@ def edit_translations(items_to_translate, data, item, type):
                             getattr(item, translation_keys["key"]),
                             item.language.language_code,
                             language_code,
+                            is_html=is_html,
                         )["translated_text"],
                     )
 
@@ -285,6 +307,7 @@ def edit_translation(
                 or db_translation.is_manual_translation is False
             ):
                 if translation_keys["key"] in changed_properties:
+                    is_html = translation_keys["key"] == "description_html"
                     setattr(
                         db_translation,
                         translation_keys["translation_key"],
@@ -292,18 +315,33 @@ def edit_translation(
                             getattr(item, translation_keys["key"]),
                             item.language.language_code,
                             language_code,
+                            is_html=is_html,
                         )["translated_text"],
                     )
             else:
+                value = passed_translation[translation_keys["key"]]
+                if translation_keys["key"] == "description_html":
+                    from climateconnect_api.utility.html import (
+                        sanitize_html,
+                        PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                        PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                    )
+
+                    value = sanitize_html(
+                        value,
+                        allowed_tags=PROJECT_DESCRIPTION_ALLOWED_TAGS,
+                        allowed_attributes=PROJECT_DESCRIPTION_ALLOWED_ATTRIBUTES,
+                    )
                 setattr(
                     db_translation,
                     translation_keys["translation_key"],
-                    passed_translation[translation_keys["key"]],
+                    value,
                 )
         elif (
             translation_keys["key"] in changed_properties
             and db_translation.is_manual_translation is False
         ):
+            is_html = translation_keys["key"] == "description_html"
             setattr(
                 db_translation,
                 translation_keys["translation_key"],
@@ -311,6 +349,7 @@ def edit_translation(
                     getattr(item, translation_keys["key"]),
                     item.language.language_code,
                     language_code,
+                    is_html=is_html,
                 )["translated_text"],
             )
 

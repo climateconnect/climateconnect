@@ -1,13 +1,19 @@
 import { Button, Container, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { Theme, useTheme } from "@mui/material/styles";
-import Router from "next/router";
-import React, { useContext, useEffect, useRef } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { useRouter } from "next/router";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Cookies from "universal-cookie";
+import { apiRequest } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
 import { startPrivateChat } from "../../../public/lib/messagingOperations";
+import {
+  parseDirectProjectStubs,
+  parseOrganizationStubs,
+  parseProjectStubs,
+} from "../../../public/lib/parsingOperations";
 import AccountPage from "../account/AccountPage";
 import LoginNudge from "../general/LoginNudge";
-import IdeaPreviews from "../ideas/IdeaPreviews";
 import OrganizationPreviews from "../organization/OrganizationPreviews";
 import ProjectPreviews from "../project/ProjectPreviews";
 import ControlPointSharpIcon from "@mui/icons-material/ControlPointSharp";
@@ -92,8 +98,9 @@ const useStyles = makeStyles((theme) => {
 export default function ProfileRoot({
   profile,
   projects,
+  projectsHasMore,
   organizations,
-  ideas,
+  organizationsHasMore,
   infoMetadata,
   user,
   token,
@@ -105,11 +112,72 @@ export default function ProfileRoot({
   const classes = useStyles();
   const theme = useTheme();
   const isOwnAccount = user && user.url_slug === profile.url_slug;
+  const router = useRouter();
+  const [registeredEvents, setRegisteredEvents] = useState<any>(null);
+
+  // Projects pagination state (see spec 20260728_1030_paginate_projects_on_member_profile)
+  const [allProjects, setAllProjects] = useState(projects || []);
+  const [hasMoreProjects, setHasMoreProjects] = useState(projectsHasMore);
+  const [nextProjectsPage, setNextProjectsPage] = useState(2);
+  const [isLoadingMoreProjects, setIsLoadingMoreProjects] = useState(false);
+
+  // Organizations pagination state
+  const [allOrganizations, setAllOrganizations] = useState(organizations || []);
+  const [hasMoreOrganizations, setHasMoreOrganizations] = useState(organizationsHasMore);
+  const [nextOrganizationsPage, setNextOrganizationsPage] = useState(2);
+  const [isLoadingMoreOrganizations, setIsLoadingMoreOrganizations] = useState(false);
+
+  const handleLoadMoreProjects = async () => {
+    if (isLoadingMoreProjects || !hasMoreProjects) return;
+    setIsLoadingMoreProjects(true);
+    try {
+      const resp = await apiRequest({
+        method: "get",
+        url: `/api/member/${profile.url_slug}/projects/?page=${nextProjectsPage}`,
+        token: new Cookies().get("auth_token"),
+        locale: locale,
+      });
+      if (resp.data) {
+        const newProjects = parseProjectStubs(resp.data.results);
+        setAllProjects((prev) => [...prev, ...newProjects]);
+        setHasMoreProjects(!!resp.data.next);
+        setNextProjectsPage((prev) => prev + 1);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoadingMoreProjects(false);
+    }
+  };
+
+  const handleLoadMoreOrganizations = async () => {
+    if (isLoadingMoreOrganizations || !hasMoreOrganizations) return;
+    setIsLoadingMoreOrganizations(true);
+    try {
+      const resp = await apiRequest({
+        method: "get",
+        url: `/api/member/${profile.url_slug}/organizations/?page=${nextOrganizationsPage}`,
+        token: new Cookies().get("auth_token"),
+        locale: locale,
+      });
+      if (resp.data) {
+        const newOrganizations = parseOrganizationStubs(resp.data.results);
+        setAllOrganizations((prev) => [...prev, ...newOrganizations]);
+        setHasMoreOrganizations(!!resp.data.next);
+        setNextOrganizationsPage((prev) => prev + 1);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoadingMoreOrganizations(false);
+    }
+  };
+
   const handleConnectBtn = async (e) => {
     e.preventDefault();
     try {
       const chat = await startPrivateChat(profile, token, locale);
-      Router.push({
+      router.push({
         pathname: "/chat/" + chat.chat_uuid + "/",
       });
     } catch (e) {
@@ -121,7 +189,6 @@ export default function ProfileRoot({
   };
   const projectsRef = useRef(null);
   const organizationsRef = useRef(null);
-  const ideasRef = useRef(null);
   const scrollDownSmooth = (ref) => {
     ref.current.scrollIntoView({ behavior: "smooth" });
   };
@@ -136,16 +203,36 @@ export default function ProfileRoot({
     if (URL.slice(-14) == "#organizations") {
       scrollDownSmooth(organizationsRef);
     }
-    if (URL.slice(-6) == "#ideas") {
-      scrollDownSmooth(ideasRef);
-    }
   }, []);
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
+
+  // Fetch registered events only for own account on client-side
+  useEffect(() => {
+    if (isOwnAccount && token && !registeredEvents) {
+      apiRequest({
+        method: "get",
+        url: "/api/members/me/registered-events/",
+        token: token,
+        locale: locale,
+      })
+        .then((resp) => {
+          if (resp.data) {
+            setRegisteredEvents(parseDirectProjectStubs(resp.data.results));
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response && err.response.data) {
+            console.log("Error: " + err.response.data.detail);
+          }
+        });
+    }
+  }, [isOwnAccount, token, locale]);
+
   return (
     <AccountPage
       account={profile}
       default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={`${getLocalePrefix(locale)}/editprofile${queryString}`}
+      editHref={appHref("/editprofile", { hubUrl, locale })}
       isOwnAccount={isOwnAccount}
       isOrganization={false}
       infoMetadata={infoMetadata}
@@ -162,13 +249,25 @@ export default function ProfileRoot({
           {texts.send_message}
         </Button>
       )}
+      {isOwnAccount && (
+        <Container className={classes.container}>
+          <div className={classes.sectionHeadlineWithButtonContainer}>
+            <h2 className={classes.title}>{texts.your_registered_events}</h2>
+          </div>
+          {registeredEvents && registeredEvents.length > 0 ? (
+            <ProjectPreviews projects={registeredEvents} hubUrl={hubUrl} isUserRegistered />
+          ) : (
+            <Typography>{texts.no_registered_events_yet}</Typography>
+          )}
+        </Container>
+      )}
       <Container className={classes.container} ref={projectsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <h2 className={classes.title}>
             {isOwnAccount ? texts.your_projects : texts.this_users_projects}
           </h2>
           {isTinyScreen ? (
-            <IconButton href={`${getLocalePrefix(locale)}/share${queryString}`} size="large">
+            <IconButton href={appHref("/share", { hubUrl, locale })} size="large">
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"
@@ -179,15 +278,29 @@ export default function ProfileRoot({
             <Button
               variant="contained"
               color="primary"
-              href={`${getLocalePrefix(locale)}/share${queryString}`}
+              href={appHref("/share", { hubUrl, locale })}
             >
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.share_a_project}
             </Button>
           )}
         </div>
-        {projects && projects.length ? (
-          <ProjectPreviews projects={projects} hubUrl={hubUrl} />
+        {allProjects && allProjects.length ? (
+          <>
+            <ProjectPreviews projects={allProjects} hubUrl={hubUrl} parentHandlesGridItems />
+            {hasMoreProjects && (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleLoadMoreProjects}
+                disabled={isLoadingMoreProjects}
+                fullWidth
+                sx={{ mt: 2 }}
+              >
+                {isLoadingMoreProjects ? texts.loading : texts.load_more}
+              </Button>
+            )}
+          </>
         ) : (
           <Typography>
             {(isOwnAccount ? texts.you_are : texts.user_name_is) +
@@ -196,34 +309,13 @@ export default function ProfileRoot({
           </Typography>
         )}
       </Container>
-      {(isOwnAccount || (ideas && ideas.length > 0)) && (
-        <Container className={classes.container} ref={ideasRef}>
-          <div className={classes.sectionHeadlineWithButtonContainer}>
-            <h2 className={classes.title}>
-              {isOwnAccount ? texts.your_ideas : texts.this_users_ideas}
-            </h2>
-          </div>
-          {ideas && ideas.length ? (
-            <IdeaPreviews ideas={ideas} noCreateCard sendToIdeaPageOnClick />
-          ) : (
-            <Typography>
-              {(isOwnAccount ? texts.you_are : texts.user_name_is) +
-                " " +
-                texts.not_involved_in_any_ideas_yet}
-            </Typography>
-          )}
-        </Container>
-      )}
       <Container className={classes.container} ref={organizationsRef}>
         <div className={classes.sectionHeadlineWithButtonContainer}>
           <h2 className={classes.title}>
             {isOwnAccount ? texts.your_organizations : texts.this_users_organizations}
           </h2>
           {isTinyScreen ? (
-            <IconButton
-              href={`${getLocalePrefix(locale)}/createorganization${queryString}`}
-              size="large"
-            >
+            <IconButton href={appHref("/createorganization", { hubUrl, locale })} size="large">
               <ControlPointSharpIcon
                 className={classes.button}
                 variant="contained"
@@ -234,15 +326,29 @@ export default function ProfileRoot({
             <Button
               variant="contained"
               color="primary"
-              href={`${getLocalePrefix(locale)}/createorganization${queryString}`}
+              href={appHref("/createorganization", { hubUrl, locale })}
             >
               <ControlPointSharpIcon className={classes.innerIcon} />
               {texts.create_an_organization}
             </Button>
           )}
         </div>
-        {organizations && organizations.length > 0 ? (
-          <OrganizationPreviews organizations={organizations} hubUrl={hubUrl} />
+        {allOrganizations && allOrganizations.length > 0 ? (
+          <>
+            <OrganizationPreviews organizations={allOrganizations} parentHandlesGridItems />
+            {hasMoreOrganizations && (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleLoadMoreOrganizations}
+                disabled={isLoadingMoreOrganizations}
+                fullWidth
+                sx={{ mt: 2 }}
+              >
+                {isLoadingMoreOrganizations ? texts.loading : texts.load_more}
+              </Button>
+            )}
+          </>
         ) : (
           <Typography>
             {(isOwnAccount ? texts.you_are : texts.user_name_is) +

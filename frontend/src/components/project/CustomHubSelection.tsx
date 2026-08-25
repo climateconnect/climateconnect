@@ -1,12 +1,13 @@
-import React, { useContext } from "react";
-import { Checkbox, IconButton, Theme, Tooltip, Typography } from "@mui/material";
+import React, { ChangeEvent, ElementType, useContext } from "react";
+import { Checkbox, IconButton, Tooltip, Typography } from "@mui/material";
 import getTexts from "../../../public/texts/texts";
+import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
 import UserContext from "../context/UserContext";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { makeStyles, useTheme } from "@mui/styles";
 import { getBackgroundContrastColor } from "../../../public/lib/themeOperations";
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   text: {
     color: "inherit",
   },
@@ -14,14 +15,17 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   currentHubName: string;
+  // eslint-disable-next-line no-unused-vars
   handleUpdateSelectedHub: (hubName: string) => void;
-  ToolTipIcon?: React.ElementType;
+  ToolTipIcon?: ElementType;
+  typeId?: string;
 };
 
 export default function CustomHubSelection({
   currentHubName,
   handleUpdateSelectedHub,
   ToolTipIcon,
+  typeId,
 }: Props) {
   if (!ToolTipIcon) {
     ToolTipIcon = HelpOutlineIcon;
@@ -30,11 +34,13 @@ export default function CustomHubSelection({
   const theme = useTheme();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ locale: locale, page: "project" });
+  const projectTypeTexts = getProjectTypeTexts(texts);
+  const type = typeId || "project";
 
   const label = { inputProps: { "aria-label": "PRIO1 project checkbox" } };
   const prio1Project = currentHubName == "prio1";
 
-  function handlePrio1ProjectCheckbox(event: React.ChangeEvent<HTMLInputElement>) {
+  function handlePrio1ProjectCheckbox(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.checked) {
       handleUpdateSelectedHub("prio1");
     } else {
@@ -52,8 +58,8 @@ export default function CustomHubSelection({
         checked={prio1Project}
         onChange={handlePrio1ProjectCheckbox}
       />
-      {texts.my_project_is_part_of_the_prio1_project}
-      <Tooltip title={texts.tooltip_my_project_is_part_of_the_prio1_project}>
+      {projectTypeTexts.projectIsPartOfPrio1[type]}
+      <Tooltip title={projectTypeTexts.tooltipProjectIsPartOfPrio1[type]}>
         <IconButton size="large">
           <ToolTipIcon />
         </IconButton>

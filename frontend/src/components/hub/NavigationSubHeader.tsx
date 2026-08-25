@@ -1,10 +1,10 @@
-import { Badge, Button, Container, Link, Theme, Typography, useMediaQuery } from "@mui/material";
+import { Container, Theme, Typography, useMediaQuery } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import getTexts from "../../../public/texts/texts";
 import theme from "../../themes/theme";
 import UserContext from "../context/UserContext";
+import AppLink from "../general/AppLink";
 import HubLinks from "../indexPage/hubsSubHeader/HubLinks";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,10 +34,6 @@ const useStyles = makeStyles((theme) => ({
   allProjectsLink: {
     marginRight: theme.spacing(1.5),
   },
-  climateMatchButton: {
-    background: theme.palette.primary.light,
-    color: "black",
-  },
 }));
 
 export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }: any) {
@@ -52,21 +48,13 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
         <Typography className={classes.path} component="div">
           {!isNarrowScreen && !(isLocationHub && isSmallMediumScreen) && (
             <>
-              <Link
-                className={classes.link}
-                href={getLocalePrefix(locale) + "/browse"}
-                underline="hover"
-              >
+              <AppLink className={classes.link} href="/browse" leaveHub underline="hover">
                 {texts.browse}
-              </Link>
+              </AppLink>
               {" / "}
-              <Link
-                className={classes.link}
-                href={getLocalePrefix(locale) + "/hubs"}
-                underline="hover"
-              >
+              <AppLink className={classes.link} href="/hubs" leaveHub underline="hover">
                 {texts.hubs}
-              </Link>
+              </AppLink>
 
               {hubName && (
                 <>
@@ -76,19 +64,6 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
               )}
             </>
           )}
-          {isLocationHub && isSmallMediumScreen && (
-            <Badge badgeContent={texts.new} color="error">
-              <Button
-                href={`${getLocalePrefix(locale)}/climatematch?from_hub=erlangen`}
-                variant="contained"
-                color="primary"
-                size="small"
-                className={classes.climateMatchButton}
-              >
-                {texts.get_active}
-              </Button>
-            </Badge>
-          )}
         </Typography>
         <Typography component="div" className={classes.rightSideContainer}>
           <HubLinks
@@ -97,7 +72,6 @@ export default function NavigationSubHeader({ hubName, allHubs, isLocationHub }:
             isNarrowScreen={isNarrowScreen}
             showAllProjectsButton
             linkClassName={classes.link}
-            isLocationHub={isLocationHub}
           />
         </Typography>
       </Container>

@@ -41,9 +41,9 @@ export default function OrganizersContainer({
   const texts = getTexts({ page: "project", locale: locale, project: projectData });
   const theme = useTheme();
 
-  const renderSearchOption = (props, option) => {
+  const renderSearchOption = ({ key, ...props }, option) => {
     return (
-      <li {...props}>
+      <li key={key} {...props}>
         <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>

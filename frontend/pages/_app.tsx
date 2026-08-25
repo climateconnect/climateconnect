@@ -1,8 +1,9 @@
 import CssBaseline from "@mui/material/CssBaseline";
-import { Theme, StyledEngineProvider } from "@mui/material/styles";
-import { ThemeProvider } from "@mui/material/styles";
+import { Theme, StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useContext, useState } from "react";
+import App from "next/app";
+import { getAllHubs } from "../public/lib/hubOperations";
 import ReactGA from "react-ga4";
 // Add global styles
 import "react-multi-carousel/lib/styles.css";
@@ -11,33 +12,44 @@ import { apiRequest } from "../public/lib/apiOperations";
 import { getCookieProps } from "../public/lib/cookieOperations";
 import WebSocketService from "../public/lib/webSockets";
 import UserContext from "../src/components/context/UserContext";
+import { HubContext, HubProvider } from "../src/components/context/HubContext";
+import { FeatureToggleProvider } from "../src/components/featureToggle";
+import { FeatureToggles } from "../src/hooks/types/featureToggle";
+import type { CcEnvironment } from "../public/lib/environmentOperations";
 import theme from "../src/themes/theme";
-import { CcLocale } from "../src/types";
-import * as Sentry from "@sentry/react";
-import "../devlink/global.css";
-import { getHubslugFromUrl } from "../public/lib/hubOperations";
-
-// initialize sentry
-
-Sentry.init({
-  dsn: process.env.FRONTEND_SENTRY_DSN,
-  integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
-  // Performance Monitoring
-  tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
-  // Session Replay
-  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-});
+import * as Sentry from "@sentry/nextjs";
+import { CcLocale, DonationGoal, HubListItem } from "../src/types";
+import "../devlink/css/fonts.css";
+import "../devlink/css/normalize.css";
+import "../devlink/css/defaults.css";
+import "../devlink/css/variables.css";
+import "../devlink/css/tags.css";
+import "../devlink/css/classes.css";
+import "../devlink-patches.css";
 
 declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line no-unused-vars
   interface DefaultTheme extends Theme {}
 }
 
 // This is lifted from a Material UI template at https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js.
 
-export default function MyApp({ Component, pageProps = {} }) {
+function AppContent({
+  Component,
+  pageProps = {},
+}: {
+  Component: any;
+  pageProps: {
+    featureToggles?: FeatureToggles;
+    environment?: CcEnvironment;
+    hubs?: HubListItem[];
+    [key: string]: any;
+  };
+}) {
   const router = useRouter();
+  // `hubUrl` is shimmed to read from HubContext so existing consumers of
+  // `UserContext.hubUrl` keep working unchanged during the migration.
+  const { hubUrl: activeHubUrl } = useContext(HubContext);
   // Cookies
   const cookies = new Cookies();
   const token = cookies.get("auth_token");
@@ -79,7 +91,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   const [state, setState] = useState({
     user: token ? {} : (null as any),
     notifications: [] as any[],
-    donationGoal: null as any,
+    donationGoals: [] as DonationGoal[],
   });
 
   const [webSocketClient, setWebSocketClient] = useState<WebSocket | null | undefined>(null);
@@ -119,7 +131,7 @@ export default function MyApp({ Component, pageProps = {} }) {
   };
 
   const hideNotification = (notificationId) => {
-    const notifications = state.notifications;
+    const notifications = state.notifications ?? [];
     setState({
       ...state,
       notifications: notifications.filter((n) => n.id !== notificationId),
@@ -134,13 +146,23 @@ export default function MyApp({ Component, pageProps = {} }) {
     });
   };
 
+  const refreshUser = async () => {
+    const token = cookies.get("auth_token");
+    if (token) {
+      const user = await getLoggedInUser(token);
+      setState((prevState) => ({
+        ...prevState,
+        user: user,
+      }));
+    }
+  };
+
   const signIn = async (token, expiry) => {
     const cookieProps = getCookieProps(expiry);
 
     cookies.set("auth_token", token, cookieProps);
     const user = await getLoggedInUser(
-      cookies.get("auth_token") ? cookies.get("auth_token") : token,
-      cookies
+      cookies.get("auth_token") ? cookies.get("auth_token") : token
     );
     setState({
       ...state,
@@ -155,11 +177,13 @@ export default function MyApp({ Component, pageProps = {} }) {
       if (jssStyles) {
         jssStyles.parentElement.removeChild(jssStyles);
       }
-      let [fetchedDonationGoal, fetchedUser, fetchedNotifications] = await Promise.all([
-        getDonationGoalData(locale),
-        getLoggedInUser(token, cookies),
+      const [fetchedDonationGoals, userResult, fetchedNotifications] = await Promise.all([
+        getDonationGoalsData(locale),
+        getLoggedInUser(token),
         getNotifications(token, locale),
       ]);
+      let fetchedUser = userResult;
+
       if (fetchedUser?.error === "invalid token") {
         const develop = ["develop", "development", "test"].includes(process.env.ENVIRONMENT!);
         const cookieProps: any = {
@@ -175,7 +199,7 @@ export default function MyApp({ Component, pageProps = {} }) {
         ...state,
         user: fetchedUser,
         notifications: fetchedNotifications,
-        donationGoal: fetchedDonationGoal,
+        donationGoals: fetchedDonationGoals,
       });
       setLoading(false);
     })();
@@ -189,7 +213,9 @@ export default function MyApp({ Component, pageProps = {} }) {
       setState({
         ...state,
         user: state.user,
-        notifications: state.notifications?.filter((n) => !notificationsToSetRead.includes(n)),
+        notifications: (state.notifications ?? []).filter(
+          (n) => !notificationsToSetRead.includes(n)
+        ),
       });
 
       setWebSocketClient(client);
@@ -262,6 +288,7 @@ export default function MyApp({ Component, pageProps = {} }) {
     chatSocket: webSocketClient,
     notifications: state.notifications,
     refreshNotifications: refreshNotifications,
+    refreshUser: refreshUser,
     API_URL: API_URL,
     ENVIRONMENT: ENVIRONMENT,
     SOCKET_URL: SOCKET_URL,
@@ -269,11 +296,11 @@ export default function MyApp({ Component, pageProps = {} }) {
     CUSTOM_HUB_URLS: CUSTOM_HUB_URLS,
     setNotificationsRead: setNotificationsRead,
     pathName: pathName,
-    hubUrl: getHubslugFromUrl(router.query),
+    hubUrl: activeHubUrl,
     ReactGA: ReactGA,
     updateCookies: updateCookies,
     socketConnectionState: socketConnectionState,
-    donationGoal: state.donationGoal,
+    donationGoals: state.donationGoals,
     acceptedNecessary: acceptedNecessary,
     locale: locale as CcLocale,
     locales: locales as CcLocale[],
@@ -290,16 +317,60 @@ export default function MyApp({ Component, pageProps = {} }) {
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
-          <UserContext.Provider value={contextValues}>
-            <Component {...pageProps} />
-          </UserContext.Provider>
+          {/*
+           * Feature toggles are opt-in per page via getServerSideProps.
+           * Pages that need SSR feature toggles should call getFeatureTogglesFromRequest
+           * from src/hooks/featureToggles.ts and return { featureToggles, environment }
+           * as props. FeatureToggleProvider picks them up here via pageProps.
+           * Pages without getServerSideProps will still work but toggles resolve
+           * client-side only (isEnabled returns the fallback value on first render).
+           */}
+          <FeatureToggleProvider
+            initialToggles={pageProps.featureToggles}
+            environment={pageProps.environment}
+          >
+            <UserContext.Provider value={contextValues}>
+              <Component {...pageProps} />
+            </UserContext.Provider>
+          </FeatureToggleProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </>
   );
 }
 
+export default function MyApp({
+  Component,
+  pageProps = {},
+}: {
+  Component: any;
+  pageProps: {
+    hubs?: HubListItem[];
+    [key: string]: any;
+  };
+}) {
+  return (
+    <HubProvider initialHubs={pageProps.hubs}>
+      <AppContent Component={Component} pageProps={pageProps} />
+    </HubProvider>
+  );
+}
+
+MyApp.getInitialProps = async (appContext: any) => {
+  // Run the page's own data fetching first so existing pageProps are preserved.
+  const appProps = await App.getInitialProps(appContext);
+  const locale = appContext.router.locale ?? "en";
+  let hubs = null;
+  try {
+    hubs = await getAllHubs(locale);
+  } catch (e) {
+    console.log(e);
+  }
+  return { ...appProps, pageProps: { ...appProps.pageProps, hubs } };
+};
+
 const getNotificationsToSetRead = (notifications, pageProps) => {
+  if (!notifications || notifications.length === 0) return [];
   let notifications_to_set_unread: any[] = [];
   if (pageProps.comments) {
     const comment_ids = pageProps.comments.map((p) => p.id);
@@ -348,7 +419,7 @@ const setNotificationsRead = async (token, notifications, locale) => {
   } else return null;
 };
 
-async function getLoggedInUser(token, cookies) {
+async function getLoggedInUser(token) {
   if (token) {
     try {
       const resp = await apiRequest({
@@ -392,33 +463,34 @@ async function getNotifications(token, locale) {
         console.log("Error in getNotifications: " + err.response.data.detail);
       if (err.response && err.response.data.detail === "Invalid token")
         console.log("invalid token! token:" + token);
-      return null;
+      Sentry.captureException(err, { tags: { feature: "notifications" } });
+      return [];
     }
   } else {
     return [];
   }
 }
 
-async function getDonationGoalData(locale) {
+async function getDonationGoalsData(locale): Promise<DonationGoal[]> {
   if (process.env.DONATION_CAMPAIGN_RUNNING !== "true") {
-    return null;
+    return [];
   }
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/donation_goal_progress/",
+      url: "/api/donation_goals_progresses/",
       locale: locale,
     });
-    const ret = {
-      goal_name: resp?.data?.name,
-      goal_start: resp?.data?.start_date,
-      goal_end: resp?.data?.end_date,
-      goal_amount: resp?.data?.goal_amount,
-      current_amount: resp?.data?.current_amount,
-      hub: resp?.data?.hub?.url_slug,
-      call_to_action_text: resp?.data?.call_to_action_text,
-      call_to_action_link: resp?.data?.call_to_action_link,
-    };
+    const ret: DonationGoal[] = resp?.data?.map((goal) => ({
+      goal_name: goal?.name,
+      goal_start: goal?.start_date,
+      goal_end: goal?.end_date,
+      goal_amount: goal?.goal_amount,
+      current_amount: goal?.current_amount,
+      hub: goal?.hub?.url_slug,
+      call_to_action_text: goal?.call_to_action_text,
+      call_to_action_link: goal?.call_to_action_link,
+    }));
     console.log(ret);
     return ret;
   } catch (err: any) {
@@ -426,6 +498,6 @@ async function getDonationGoalData(locale) {
     if (err.response && err.response.data) {
       console.log(err.response.data);
     } else console.log(err);
-    return null;
+    return [];
   }
 }

@@ -128,7 +128,7 @@ get_user_resource_preference AS (
             from ideas ii
             join hubs_hub hh on hh.id = ii.hub_id
         )
-    ) as reference_table 
+    ) as reference_table
     left join get_user_hub_preference as guhp on reference_table.hub_id = guhp.reference_id
     group by 1, 2
 ), get_user_reference_relevancy_score as (

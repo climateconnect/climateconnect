@@ -1,4 +1,4 @@
-import { Button, Container, Link, Tooltip, Typography, useTheme } from "@mui/material";
+import { Container, Link, Tooltip, Typography, Button } from "@mui/material";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
 import Linkify from "react-linkify";
@@ -17,8 +17,8 @@ import { getDateTimeRange } from "../../../public/lib/dateOperations";
 import ContactCreatorButton from "./Buttons/ContactCreatorButton";
 import FollowButton from "../general/FollowButton";
 import getTexts from "../../../public/texts/texts";
-import GoBackFromProjectPageButton from "./Buttons/GoBackFromProjectPageButton";
 import LikeButton from "./Buttons/LikeButton";
+import RegistrationActionButton from "./Buttons/RegistrationActionButton";
 import MessageContent from "../communication/MessageContent";
 import FollowersDialog from "../dialogs/FollowersDialog";
 import ProjectLikesDialog from "../dialogs/ProjectLikesDialog";
@@ -26,7 +26,11 @@ import projectOverviewStyles from "../../../public/styles/projectOverviewStyles"
 import UserContext from "../context/UserContext";
 import { Project } from "../../types";
 import { ProjectSocialMediaShareButton } from "../shareContent/ProjectSocialMediaShareButton";
+import ProjectAddToCalendarButton from "../calendar/ProjectAddToCalendarButton";
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
+import WasseraktionswochenLink from "../hub/WasseraktionswochenLink";
+import { isWasseraktionswochenSubEvent } from "../../../public/data/wasseraktionswochen_config.js";
+import { getRegistrationUIState } from "../../utils/eventRegistrationHelpers";
 
 type StyleProps = { hasAdminPermissions?: boolean };
 
@@ -82,17 +86,18 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       display: "flex",
       justifyContent: "center",
     },
-    goBackButtonContainer: {
-      position: "absolute",
-      marginLeft: theme.spacing(1),
-      marginTop: theme.spacing(1),
-    },
-    shareButtonContainer: {
+    shareButtonContainer: {},
+    calendarButtonContainer: {},
+    actionButtonsGroup: {
       position: "absolute",
       right: 0,
       bottom: 0,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
       marginRight: theme.spacing(1),
       marginBottom: theme.spacing(1.6),
+      gap: theme.spacing(0.5),
     },
     imageContainer: {
       position: "relative",
@@ -101,11 +106,31 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => {
       height: 40,
       minWidth: 120,
     },
+    registerButton: {
+      height: 40,
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      whiteSpace: "nowrap",
+    },
+    registerButtonMobile: {
+      marginTop: theme.spacing(2),
+      whiteSpace: "nowrap",
+    },
     shortDescription: {
       wordBreak: "break-word",
     },
     summaryHeadline: {
       color: "inherit",
+    },
+    projectTypeContainer: {
+      display: "flex",
+      alignItems: "center",
+    },
+    attendedEventText: {
+      marginLeft: theme.spacing(1),
+    },
+    availableSeatsText: {
+      marginLeft: theme.spacing(0.5),
     },
   };
 });
@@ -124,7 +149,7 @@ const componentDecorator = (href, text, key) => (
 );
 
 type Props = {
-  contactProjectCreatorButtonRef?: React.RefObject<typeof Button>;
+  contactProjectCreatorButtonRef?: RefObject<typeof Button>;
   followers: object; //merge like & follow?
   followingChangePending: boolean; //merge like & follow?
   handleClickContact: Function; //--> Call external function?
@@ -147,6 +172,15 @@ type Props = {
   toggleShowFollowers: Function; //merge like & follow?
   toggleShowLikes: Function; //merge like & follow?
   hubUrl?: string;
+  parentProjectName?: string; // Name of the parent project
+  parentProjectSlug?: string; // Slug of the parent project
+  isWasseraktionswochenEnabled: boolean;
+  handleRegisterClick: () => void;
+  isUserRegistered?: boolean;
+  hasAttended?: boolean;
+  adminCancelled?: boolean;
+  onModifyRegistrationClick?: () => void;
+  eventRegistration?: { available_seats: number | null; max_participants: number | null } | null;
 };
 
 export default function ProjectOverview({
@@ -173,11 +207,24 @@ export default function ProjectOverview({
   toggleShowFollowers,
   toggleShowLikes,
   hubUrl,
+  isWasseraktionswochenEnabled,
+  handleRegisterClick,
+  isUserRegistered,
+  hasAttended,
+  adminCancelled,
+  onModifyRegistrationClick,
+  eventRegistration,
 }: Props) {
   const classes = useStyles({});
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
   const [gotParams, setGotParams] = useState(false);
+  const registrationState = getRegistrationUIState(
+    project,
+    isUserRegistered,
+    hasAttended,
+    adminCancelled
+  );
 
   useEffect(() => {
     if (!gotParams) {
@@ -194,6 +241,9 @@ export default function ProjectOverview({
     project: project,
     screenSize: screenSize,
     hubUrl: hubUrl,
+    isWasseraktionswochenEnabled: isWasseraktionswochenEnabled,
+    showAttendedInPast: registrationState === "attended",
+    isUserRegistered: isUserRegistered,
   };
 
   return (
@@ -216,6 +266,14 @@ export default function ProjectOverview({
           toggleShowFollowers={toggleShowFollowers}
           followingChangePending={followingChangePending}
           numberOfFollowers={numberOfFollowers}
+          isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+          handleRegisterClick={handleRegisterClick}
+          isUserRegistered={isUserRegistered}
+          hasAttended={hasAttended}
+          adminCancelled={adminCancelled}
+          registrationState={registrationState}
+          onModifyRegistrationClick={onModifyRegistrationClick}
+          eventRegistration={eventRegistration}
         />
       )}
 
@@ -248,20 +306,27 @@ export default function ProjectOverview({
   );
 }
 
-function ShortProjectInfo({ project }) {
+function ShortProjectInfo({ project, isWasseraktionswochenEnabled, showAttendedInPast = false }) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+
   return (
     <>
       <Typography component="div" className={classes.shortDescription}>
         <MessageContent content={project.short_description} />
       </Typography>
+      {isWasseraktionswochenEnabled && isWasseraktionswochenSubEvent(project) && (
+        <div style={{ marginTop: "16px", marginBottom: "8px" }}>
+          <WasseraktionswochenLink />
+        </div>
+      )}
       <div className={classes.projectInfoEl}>
         <Typography>
           <Tooltip title={texts.location}>
             <PlaceIcon className={classes.icon} />
           </Tooltip>{" "}
+          {project.is_online && <>{texts.online} · </>}
           {project.location}
           {project.additional_loc_info && <> - {project.additional_loc_info}</>}
         </Typography>
@@ -295,13 +360,28 @@ function ShortProjectInfo({ project }) {
         </Typography>
       </div>
       <div className={classes.projectInfoEl}>
-        <ProjectTypeDisplay projectType={project.project_type} />
+        <div className={classes.projectTypeContainer}>
+          <ProjectTypeDisplay projectType={project.project_type} />
+          {showAttendedInPast && project.project_type?.type_id === "event" && (
+            <Typography component="span" className={classes.attendedEventText}>
+              {"\u2022 "}
+              {texts.you_attended_this_event}
+            </Typography>
+          )}
+        </div>
       </div>
     </>
   );
 }
 
-function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
+function SmallScreenOverview({
+  project,
+  projectAdmin,
+  hubUrl,
+  isWasseraktionswochenEnabled,
+  showAttendedInPast,
+  isUserRegistered,
+}) {
   const classes = useStyles({});
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
@@ -309,20 +389,19 @@ function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
   return (
     <>
       <div className={classes.imageContainer}>
-        {screenSize?.belowTiny && (
-          <GoBackFromProjectPageButton
-            containerClassName={classes.goBackButtonContainer}
-            texts={texts}
-            tinyScreen={screenSize.belowTiny}
-            locale={locale}
+        <div className={classes.actionButtonsGroup}>
+          <ProjectAddToCalendarButton
+            className={classes.calendarButtonContainer}
+            project={project}
+            isUserRegistered={isUserRegistered}
           />
-        )}
-        <ProjectSocialMediaShareButton
-          className={classes.shareButtonContainer}
-          project={project}
-          projectAdmin={projectAdmin}
-          hubUrl={hubUrl}
-        />
+          <ProjectSocialMediaShareButton
+            className={classes.shareButtonContainer}
+            project={project}
+            projectAdmin={projectAdmin}
+            hubUrl={hubUrl}
+          />
+        </div>
         <img
           className={classes.fullWidthImage}
           src={getImageUrl(project.image)}
@@ -333,7 +412,11 @@ function SmallScreenOverview({ screenSize, project, projectAdmin, hubUrl }) {
         <Typography component="h1" variant="h3" className={classes.smallScreenHeader}>
           {project.name}
         </Typography>
-        <ShortProjectInfo project={project} />
+        <ShortProjectInfo
+          project={project}
+          isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+          showAttendedInPast={showAttendedInPast}
+        />
       </div>
     </>
   );
@@ -356,10 +439,17 @@ function LargeScreenOverview({
   toggleShowFollowers,
   followingChangePending,
   numberOfFollowers,
+  isWasseraktionswochenEnabled,
+  handleRegisterClick,
+  isUserRegistered,
+  registrationState,
+  onModifyRegistrationClick,
+  eventRegistration,
 }) {
   const classes = useStyles({ hasAdminPermissions: hasAdminPermissions });
   const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale, project: project });
+
   return (
     <>
       <div className={classes.headerContainer}>
@@ -381,7 +471,11 @@ function LargeScreenOverview({
           >
             {texts.summary}
           </Typography>
-          <ShortProjectInfo project={project} />
+          <ShortProjectInfo
+            project={project}
+            isWasseraktionswochenEnabled={isWasseraktionswochenEnabled}
+            showAttendedInPast={registrationState === "attended"}
+          />
           <div className={classes.infoBottomBar}>
             <LikeButton
               texts={texts}
@@ -393,18 +487,32 @@ function LargeScreenOverview({
               hasAdminPermissions={hasAdminPermissions}
               numberOfLikes={numberOfLikes}
             />
-            <FollowButton
-              isLoggedIn={!!user}
-              followingChangePending={followingChangePending}
-              handleToggleFollow={handleToggleFollowProject}
-              hasAdminPermissions={hasAdminPermissions}
-              isUserFollowing={isUserFollowing}
-              numberOfFollowers={numberOfFollowers}
-              screenSize={screenSize}
+            <RegistrationActionButton
+              registrationState={registrationState}
+              project={project}
               texts={texts}
-              toggleShowFollowers={toggleShowFollowers}
-              showStartIcon={!screenSize.belowMedium}
-              showLinkUnderButton
+              isUserRegistered={isUserRegistered}
+              handleRegisterClick={handleRegisterClick}
+              onModifyRegistrationClick={onModifyRegistrationClick}
+              className={classes.registerButton}
+              showSeatsCount={true}
+              eventRegistration={eventRegistration}
+              analyticsSurface="event_page"
+              fallback={
+                <FollowButton
+                  isLoggedIn={!!user}
+                  followingChangePending={followingChangePending}
+                  handleToggleFollow={handleToggleFollowProject}
+                  hasAdminPermissions={hasAdminPermissions}
+                  isUserFollowing={isUserFollowing}
+                  numberOfFollowers={numberOfFollowers}
+                  screenSize={screenSize}
+                  texts={texts}
+                  toggleShowFollowers={toggleShowFollowers}
+                  showStartIcon={!screenSize.belowMedium}
+                  showLinkUnderButton
+                />
+              }
             />
             {!hasAdminPermissions &&
               (!screenSize.belowMedium ? (

@@ -1,16 +1,51 @@
 import { getLocationFilterKeys } from "../data/locationFilters";
 import { apiRequest } from "./apiOperations";
+import { CcLocale } from "../../src/types";
 
 const CUSTOM_NAME_MAPPINGS = {
   "Scotland (state), Scotland": "Scotland",
 };
 
 //These countries are wrongly categorized as states in Nominatim. We want to show them as countries as this is more clear
-const MAP_STATE_TO_COUNTRY = ["Scotland", "Wales", "England", "Northern Ireland"];
+const MAP_STATE_AS_COUNTRY_CODES = new Set(["gb"]);
+
+const buildLocationName = (firstPart: string, middlePart: string, lastPart: string): string => {
+  const parts: string[] = [];
+
+  if (firstPart) {
+    parts.push(firstPart);
+  }
+
+  const showMiddlePart = middlePart && middlePart !== firstPart && middlePart !== lastPart;
+
+  if (showMiddlePart) {
+    parts.push(middlePart);
+  }
+
+  if (lastPart && lastPart !== firstPart) {
+    parts.push(lastPart);
+  }
+
+  return parts.join(", ");
+};
+
+type DisplayLocation = {
+  name: string;
+  city: string;
+  state: string;
+  country: string;
+};
+
+const DEFAULT_DISPLAY_LOCATION: DisplayLocation = {
+  name: "",
+  city: "",
+  state: "",
+  country: "",
+};
 
 //This function has an equivalent in backend/location/utility.py -> format_location_name
 //We should consider using the same codebase for these
-export function getNameFromLocation(location) {
+export function getDisplayLocationFromLocation(location): DisplayLocation {
   if (location.added_manually)
     return {
       name: location.name,
@@ -18,10 +53,10 @@ export function getNameFromLocation(location) {
       state: location.state,
       country: location.country,
     };
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true")
-    return location.city + "" + location.country;
-  if (!location.address || !location.address.country) return location.display_name;
+  if (!location.address || !location.address.country)
+    return { ...DEFAULT_DISPLAY_LOCATION, name: location.display_name };
   const firstPartOrder = [
+    "hamlet",
     "village",
     "town",
     "city_district",
@@ -42,6 +77,7 @@ export function getNameFromLocation(location) {
   ];
   const middlePartOrder = [
     "city_district",
+    "county",
     "district",
     "suburb",
     "borough",
@@ -52,30 +88,27 @@ export function getNameFromLocation(location) {
   ];
   if (isCountry(location)) {
     return {
+      ...DEFAULT_DISPLAY_LOCATION,
       country: location.address.country,
       name: location.display_name,
     };
   }
-  const middlePartSuffixes = ["city", "state"];
+  const middlePartSuffixes = ["town", "city", "county", "state"];
   const firstPart = getFirstPart(location.address, firstPartOrder);
   const middlePart = getMiddlePart(location.address, middlePartOrder, middlePartSuffixes);
-  const lastPart = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
-    ? location.address.state
-    : location.address.country;
-  const showMiddlePart = firstPart !== middlePart && middlePart !== lastPart;
-  let name =
-    firstPart +
-    ", " +
-    (showMiddlePart ? middlePart : "") +
-    (showMiddlePart && middlePart?.length > 0 ? ", " : "") +
-    lastPart;
+  const lastPart =
+    MAP_STATE_AS_COUNTRY_CODES.has(location?.address?.country_code?.toLowerCase()) &&
+    location?.address?.state
+      ? location.address.state
+      : location.address.country;
+  let name = buildLocationName(firstPart, middlePart, lastPart);
   //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
   if (Object.keys(CUSTOM_NAME_MAPPINGS).includes(name)) {
     name = CUSTOM_NAME_MAPPINGS[name];
   }
   return {
     city: firstPart,
-    state: middlePart,
+    state: location.address?.state || middlePart,
     country: location.address.country,
     name: name,
   };
@@ -100,28 +133,42 @@ const getCityOrCountyName = (address) => {
   return getFirstPart(address, cityElementOrder);
 };
 
-export function getNameFromExactLocation(location) {
-  //If the location object is empty, just return an empty string
-  if (Object.keys(location).length === 0) {
+const getPlaceSpecificName = (location): string => {
+  return location.address[location.class] || location.address[location.type] || "";
+};
+
+const buildStreetAddress = (location): string => {
+  if (!location?.address?.road) {
     return "";
   }
+  const road = location.address.road;
+  const houseNumber = location.address.house_number;
+  return houseNumber ? `${road} ${houseNumber}` : road;
+};
+
+const buildCityAndCountryPart = (city: string, country: string, firstPart: string): string => {
+  const shouldIncludeCity = firstPart !== city && city;
+  return shouldIncludeCity ? `${city}, ${country}` : country;
+};
+
+export function getDisplayLocationFromExactLocation(location): DisplayLocation {
+  //If the location object is empty, just return empty strings
+  if (Object.keys(location).length === 0) {
+    return DEFAULT_DISPLAY_LOCATION;
+  }
   const isConcretePlace = isExactLocation(location);
-  const firstPart =
-    isConcretePlace && (location.address[location.class] || location.address[location.type])
-      ? `${location.address[location.class] || location.address[location.type]}, `
-      : "";
-  const middlePart =
-    isConcretePlace && location.address.road
-      ? `${location.address.road}${
-          location.address.house_number ? " " + location.address.house_number : ""
-        }, `
-      : "";
+  const firstPart = isConcretePlace ? getPlaceSpecificName(location) : "";
+  const middlePart = isConcretePlace ? buildStreetAddress(location) : "";
   const city = getCityOrCountyName(location.address);
-  const country = MAP_STATE_TO_COUNTRY.includes(location?.address?.state)
-    ? location.address.state
-    : location.address.country;
-  const cityAndCountry = `${firstPart != city && `${city}, `}${country}`;
-  let name = firstPart + middlePart + cityAndCountry;
+  const country =
+    MAP_STATE_AS_COUNTRY_CODES.has(location?.address?.country_code?.toLowerCase()) &&
+    location?.address?.state
+      ? location.address.state
+      : location.address.country;
+  const cityAndCountry = buildCityAndCountryPart(city, country, firstPart);
+
+  let name = buildLocationName(firstPart, middlePart, cityAndCountry);
+
   //For certain locations our automatic name generation doesn't work. In this case we want to override the name with a custom one
   if (Object.keys(CUSTOM_NAME_MAPPINGS).includes(name)) {
     name = CUSTOM_NAME_MAPPINGS[name];
@@ -172,8 +219,6 @@ const isCountry = (location) => {
 };
 
 export function isLocationValid(location) {
-  //In legacy mode form control handles validation
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") return true;
   if (!location || typeof location == "string") return false;
   else return true;
 }
@@ -215,13 +260,9 @@ const getLocationType = (location) => {
 };
 
 export function parseLocation(location, isConcretePlace = false) {
-  const location_object = isConcretePlace
-    ? getNameFromExactLocation(location)
-    : getNameFromLocation(location);
-  //don't return anything if in legacy mode
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return location;
-  }
+  const displayLocation = isConcretePlace
+    ? getDisplayLocationFromExactLocation(location)
+    : getDisplayLocationFromLocation(location);
   //don't do anything if location is already parsed
   if (typeof location === "object" && alreadyParsed(location)) {
     return location;
@@ -248,12 +289,19 @@ export function parseLocation(location, isConcretePlace = false) {
     geojson: location.geojson ? location.geojson : generateGeoJson(location),
     place_id: location?.place_id,
     osm_id: location?.osm_id,
-    name: location_object.name,
+    osm_type:
+      typeof location?.osm_type === "string"
+        ? location?.osm_type.charAt(0).toUpperCase()
+        : undefined,
+    osm_class: location?.class,
+    osm_class_type: location?.type,
+    display_name: location?.display_name,
+    name: displayLocation.name,
     lon: location?.lon,
     lat: location?.lat,
-    city: location_object.city,
-    state: location_object.state,
-    country: location_object.country,
+    city: displayLocation.city,
+    state: displayLocation.state,
+    country: displayLocation.country,
     place_name: placeName,
     exact_address: exactAddress,
     additional_info: location?.additionalInfoText || location?.additionalInfo,
@@ -266,6 +314,11 @@ const props = [
   "coordinates",
   "geojson",
   "place_id",
+  "osm_id",
+  "osm_type",
+  "osm_class",
+  "osm_class_type",
+  "display_name",
   "name",
   "city",
   "state",
@@ -305,26 +358,6 @@ export function getLocationFields({
   locationKey,
   texts,
 }) {
-  //in legacy mode, return a city and a country field
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return [
-      {
-        required: true,
-        label: texts.city,
-        type: "text",
-        key: "city",
-        value: values[locationKey].city,
-      },
-      {
-        required: true,
-        label: texts.country,
-        type: "text",
-        key: "country",
-        value: values[locationKey].country,
-      },
-    ];
-  }
-  //normally, just return a location field
   return [
     {
       required: true,
@@ -340,40 +373,44 @@ export function getLocationFields({
 }
 
 export function getLocationValue(values, locationKey) {
-  if (process.env.ENABLE_LEGACY_LOCATION_FORMAT === "true") {
-    return {
-      country: values.country,
-      city: values.city,
-    };
-  }
   return values[locationKey];
 }
 
 /**
- * When filtering by location, the url only holds the place_id, osm_id and loc_type, but not the name. This is used to retrieve the whole location object
+ * When filtering by location, the URL stores identifiers and not full location data.
+ * We resolve it from the backend using OSM-first lookup and place_id fallback.
+ * Either all three OSM identifiers (osm_id, osm_type, osm_class) OR a place_id must be
+ * present for the filter to be considered active.
  */
-export async function getLocationFilteredBy(query) {
-  const required_params = getLocationFilterKeys(true);
-  //Return no if we didn't filter by any location
-  for (const param of required_params) {
-    if (!Object.keys(query).includes(param)) {
-      console.log(`${param} is missing!`);
-      return null;
-    }
+export async function getLocationFilteredBy(query, locale?: CcLocale) {
+  const osmRequired = getLocationFilterKeys(true);
+  const hasOsmComposite = osmRequired.every((param) => Object.keys(query).includes(param));
+  const hasPlaceId = Object.keys(query).includes("place_id");
+
+  // Return null if neither identifier set is present — not filtering by location.
+  if (!hasOsmComposite && !hasPlaceId) {
+    return null;
   }
   const url = `/api/get_location/`;
   const payload = {
-    place: query.place,
-    osm: query.osm,
-    loc_type: query.loc_type,
+    place_id: query.place_id,
+    osm_id: query.osm_id,
+    osm_type: query.osm_type,
+    osm_class: query.osm_class,
   };
   try {
-    const res = await apiRequest({ method: "post", url: url, payload: payload });
+    const res = await apiRequest({
+      method: "post",
+      url: url,
+      payload: payload,
+      locale: locale,
+    });
     const full_location = {
       ...res.data,
-      place_id: query.place,
-      osm_id: query.osm,
-      osm_type: query.loc_type,
+      place_id: res.data?.place_id || query.place_id,
+      osm_id: res.data?.osm_id || query.osm_id,
+      osm_type: res.data?.osm_type || query.osm_type,
+      osm_class: res.data?.osm_class || query.osm_class,
     };
     return full_location;
   } catch (e) {

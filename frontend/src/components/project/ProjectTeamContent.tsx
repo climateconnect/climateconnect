@@ -5,7 +5,8 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import React, { useContext, useEffect } from "react";
 
 import ROLE_TYPES from "../../../public/data/role_types";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import { appHref } from "../../../public/lib/appLink";
+import { HubContext } from "../context/HubContext";
 import getTexts from "../../../public/texts/texts";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
 import UserContext from "../context/UserContext";
@@ -61,13 +62,21 @@ function getTeamWithAdditionalInfo(team, texts) {
   });
 }
 
-export default function TeamContent({ project, handleReadNotifications, hubUrl }) {
+export default function TeamContent({ project, handleReadNotifications }) {
   const { user, locale } = useContext(UserContext);
+  const { hubUrl } = useContext(HubContext);
   const texts = getTexts({ page: "project", locale: locale });
   const classes = useStyles();
-
-  useEffect(async () => {
-    await handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_join_request_approved"));
+  useEffect(() => {
+    const readNotifications = async () => {
+      try {
+        await handleReadNotifications(NOTIFICATION_TYPES.indexOf("project_join_request_approved"));
+      } catch (error) {
+        console.error("Error reading notifications:", error);
+      }
+    };
+    void readNotifications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Not logged in
@@ -87,12 +96,7 @@ export default function TeamContent({ project, handleReadNotifications, hubUrl }
               <Button
                 className={classes.editButton}
                 variant="contained"
-                href={
-                  getLocalePrefix(locale) +
-                  "/manageProjectMembers/" +
-                  project.url_slug +
-                  (hubUrl ? "?hub=" + hubUrl : "")
-                }
+                href={appHref("/manageProjectMembers/" + project.url_slug, { hubUrl, locale })}
               >
                 {texts.manage_members}
               </Button>
@@ -103,7 +107,7 @@ export default function TeamContent({ project, handleReadNotifications, hubUrl }
           profiles={getTeamWithAdditionalInfo(project.team, texts)}
           allowMessage
           showAdditionalInfo={true}
-          hubUrl={hubUrl}
+          parentHandlesGridItems={true}
         />
       </>
     );

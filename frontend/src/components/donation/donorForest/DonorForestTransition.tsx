@@ -98,7 +98,7 @@ export default function DonorForestTransition({ possibleBadges }) {
         <DonorForestExplainer className={classes.explainer} possibleBadges={possibleBadges} />
         <SmallCloud show reverse type={1} className={classes.smallCloud3} white />
         <SmallCloud show type={2} className={classes.smallCloud4} white />
-        <img src="/icons/zepellin.svg" className={classes.zepellin} />
+        <img src="/icons/zepellin.svg" className={classes.zepellin} alt="zepellin" />
         <div className={classes.mountains} />
       </div>
     </div>

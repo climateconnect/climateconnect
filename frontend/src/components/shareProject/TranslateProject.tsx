@@ -1,12 +1,13 @@
 import { Button, Container, TextField, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { apiRequest } from "../../../public/lib/apiOperations";
 import getProjectTexts from "../../../public/texts/project_texts";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import NavigationButtons from "../general/NavigationButtons";
 import ButtonLoader from "../general/ButtonLoader";
+import ProjectDescriptionEditor from "../editProject/ProjectDescriptionEditor";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,25 +59,9 @@ export default function TranslateProject({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
-  const [waitingForTranslation, setWaitingForTranslation] = React.useState(false);
+  const [waitingForTranslation, setWaitingForTranslation] = useState(false);
 
   if (translations[targetLanguage]) console.log(translations[targetLanguage]);
-
-  useEffect(() => {
-    initializeTranslationsObject();
-  }, []);
-
-  const arrayTranslations = ["helpful_connections"];
-
-  const initializeTranslationsObject = () => {
-    if (!translations[targetLanguage]) {
-      const initializedObject = {};
-      for (const key of arrayTranslations) {
-        initializedObject[key] = [];
-      }
-      handleChangeTranslationContent(targetLanguage, { ...initializedObject }, false);
-    }
-  };
 
   const onClickPreviousStep = () => {
     goToPreviousStep();
@@ -111,8 +96,7 @@ export default function TranslateProject({
           texts: {
             name: projectData.name,
             short_description: projectData.short_description,
-            description: projectData.description,
-            helpful_connections: projectData.helpful_connections,
+            description_html: projectData.description_html,
           },
           target_language: "en",
         },
@@ -134,8 +118,6 @@ export default function TranslateProject({
       setWaitingForTranslation(false);
     }
   };
-
-  console.log(projectData?.helpful_connections?.length > 0);
 
   return (
     <Container className={classes.root}>
@@ -182,31 +164,15 @@ export default function TranslateProject({
           />
           <TranslationBlock
             projectData={projectData}
-            projectDataKey="description"
+            projectDataKey="description_html"
             headlineTextKey="project_description"
             rows={15}
             handleOriginalTextChange={handleOriginalTextChange}
             handleTranslationChange={handleTranslationChange}
             translations={translations}
             targetLanguage={targetLanguage}
+            richText
           />
-          {projectData?.helpful_connections?.length > 0 &&
-            projectData.helpful_connections.map((connection, index) => (
-              <TranslationBlock
-                key={index}
-                projectData={projectData}
-                projectDataKey="helpful_connections"
-                headlineTextKey="helpful_connections"
-                rows={1}
-                indexInArray={index}
-                isInArray
-                handleOriginalTextChange={handleOriginalTextChange}
-                handleTranslationChange={handleTranslationChange}
-                translations={translations}
-                targetLanguage={targetLanguage}
-                noHeadline={index > 0}
-              />
-            ))}
         </div>
         <NavigationButtons
           className={classes.block}
@@ -232,37 +198,71 @@ function TranslationBlock({
   isInArray,
   indexInArray,
   noHeadline,
+  richText,
 }) {
   const texts = getProjectTexts({});
   const classes = useStyles();
+
+  const originalContent = isInArray
+    ? projectData[projectDataKey][indexInArray]
+    : projectData[projectDataKey];
+
+  const translationContent =
+    translations[targetLanguage] &&
+    (isInArray
+      ? translations[targetLanguage][projectDataKey][indexInArray]
+      : translations[targetLanguage][projectDataKey]);
+
   return (
     <div className={classes.translationBlock}>
-      <TranslationBlockElement
-        headline={texts[headlineTextKey][targetLanguage]}
-        noHeadline={noHeadline}
-        rows={rows}
-        content={
-          isInArray ? projectData[projectDataKey][indexInArray] : projectData[projectDataKey]
-        }
-        handleContentChange={(event) =>
-          handleOriginalTextChange(event.target.value, projectDataKey)
-        }
-      />
-      <TranslationBlockElement
-        headline={texts[headlineTextKey][targetLanguage]}
-        noHeadline={noHeadline}
-        rows={rows}
-        isTranslation
-        content={
-          translations[targetLanguage] &&
-          (isInArray
-            ? translations[targetLanguage][projectDataKey][indexInArray]
-            : translations[targetLanguage][projectDataKey])
-        }
-        handleContentChange={(event) =>
-          handleTranslationChange(event.target.value, projectDataKey, indexInArray)
-        }
-      />
+      {richText ? (
+        <>
+          <div className={classes.translationBlockElement}>
+            {!noHeadline && (
+              <Typography color="primary" className={classes.sectionHeader}>
+                {texts[headlineTextKey][targetLanguage]}
+              </Typography>
+            )}
+            <ProjectDescriptionEditor
+              descriptionHtml={originalContent || ""}
+              onChange={(html) => handleOriginalTextChange(html, projectDataKey)}
+            />
+          </div>
+          <div className={classes.translationBlockElement}>
+            {!noHeadline && (
+              <Typography color="primary" className={classes.sectionHeader}>
+                {texts[headlineTextKey][targetLanguage]}
+              </Typography>
+            )}
+            <ProjectDescriptionEditor
+              descriptionHtml={translationContent || ""}
+              onChange={(html) => handleTranslationChange(html, projectDataKey, indexInArray)}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <TranslationBlockElement
+            headline={texts[headlineTextKey][targetLanguage]}
+            noHeadline={noHeadline}
+            rows={rows}
+            content={originalContent}
+            handleContentChange={(event) =>
+              handleOriginalTextChange(event.target.value, projectDataKey)
+            }
+          />
+          <TranslationBlockElement
+            headline={texts[headlineTextKey][targetLanguage]}
+            noHeadline={noHeadline}
+            rows={rows}
+            isTranslation
+            content={translationContent}
+            handleContentChange={(event) =>
+              handleTranslationChange(event.target.value, projectDataKey, indexInArray)
+            }
+          />
+        </>
+      )}
     </div>
   );
 }

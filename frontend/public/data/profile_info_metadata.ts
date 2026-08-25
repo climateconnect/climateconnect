@@ -4,6 +4,11 @@ import getTexts from "../texts/texts";
 export default function getProfileInfoMetadata(locale) {
   const texts = getTexts({ page: "profile", locale: locale });
   return {
+    sectors: {
+      name: texts.area_of_interest,
+      key: "sectors",
+      type: "sectors",
+    },
     availability: {
       name: texts.availability,
       key: "availability",
@@ -43,22 +48,6 @@ export default function getProfileInfoMetadata(locale) {
       missingMessage: texts.location_user_profile_missing_message,
       type: "location",
       weight: 0,
-      legacy: {
-        city: {
-          icon: PlaceIcon,
-          iconName: "PlaceIcon",
-          name: texts.city,
-          type: "text",
-          key: "city",
-        },
-        country: {
-          icon: PlaceIcon,
-          iconName: "PlaceIcon",
-          name: texts.country,
-          key: "country",
-          type: "text",
-        },
-      },
     },
   };
 }

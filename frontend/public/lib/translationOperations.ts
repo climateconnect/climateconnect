@@ -41,7 +41,7 @@ export function getProjectTranslationObject(translation) {
     short_description: translation.short_description_translation,
     name: translation.name_translation,
     description: translation.description_translation,
-    helpful_connections: translation.helpful_connections_translation,
+    description_html: translation.description_html_translation,
   };
 }
 

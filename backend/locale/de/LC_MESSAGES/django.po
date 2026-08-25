@@ -20,17 +20,17 @@ msgstr ""
 
 #: organization/views/organization_views.py:283
 #: organization/views/organization_views.py:300
-msgid "Organization not found:"
+msgid "Organisation not found:"
 msgstr "Organisation nicht gefunden:"
 
 #: organization/views/organization_views.py:337
-msgid "Parent organization not found for organization"
+msgid "Parent organisation not found for organisation"
 msgstr "Mutterorganisation der Organisation nicht gefunden"
 
 #: organization/views/organization_views.py:389
-msgid "Passed organization tag id does not exists: "
+msgid "Passed organisation tag id does not exists: "
 msgstr "Dieser Organisationstyp existiert nicht: "
 
 #: organization/views/organization_views.py:392
-msgid "Successfully updated organization."
+msgid "Successfully updated organisation."
 msgstr "Organisation erfolgreich bearbeitet"

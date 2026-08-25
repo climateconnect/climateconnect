@@ -1,8 +1,10 @@
-import { Box, Collapse, Container, Theme, Tooltip, Typography } from "@mui/material";
+import { Box, Collapse, Container, Theme, Tooltip, Typography, Button } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import PlaceIcon from "@mui/icons-material/Place";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { useRouter } from "next/router";
 import getTexts from "../../../public/texts/texts";
+import { getLocalePrefix } from "../../../public/lib/apiOperations";
 import UserContext from "../context/UserContext";
 import MiniOrganizationPreview from "../organization/MiniOrganizationPreview";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
@@ -11,8 +13,14 @@ import ProjectSectorsDisplay from "./ProjectSectorsDisplay";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { Project } from "../../types";
-import BrowseContext from "../context/BrowseContext";
+import { getProjectTypes } from "../../../public/data/projectTypes";
 import ProjectTypeDisplay from "./ProjectTypeDisplay";
+import {
+  shouldShowRegisterButton,
+  getRegisterButtonText,
+  isRegisterButtonDisabled,
+} from "../../utils/eventRegistrationHelpers";
+import { trackGA4Event } from "../../utils/analytics";
 
 const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
   creatorImage: {
@@ -87,14 +95,51 @@ const useStyles = makeStyles<Theme, { hovering?: boolean }>((theme) => ({
     marginLeft: 2,
     marginRight: 6,
   },
+  registerButton: {
+    marginLeft: "auto",
+    fontSize: 11,
+    padding: "4px 12px",
+    height: 24,
+    whiteSpace: "nowrap",
+  },
 }));
 
-type Props = { project: Project; hovering: boolean; withDescription?: boolean };
-export default function ProjectMetaData({ project, hovering, withDescription }: Props) {
-  const { locale } = useContext(UserContext);
+type Props = {
+  project: Project;
+  hovering: boolean;
+  withDescription?: boolean;
+  isUserRegistered?: boolean;
+  analyticsSurface?: "browse_card" | "similar_projects_sidebar";
+};
+export default function ProjectMetaData({
+  project,
+  hovering,
+  withDescription,
+  isUserRegistered: isUserRegisteredProp,
+  analyticsSurface,
+}: Props) {
+  const { locale, user } = useContext(UserContext);
   const texts = getTexts({ page: "project", locale: locale });
   const project_parent = project.project_parents![0];
-  const main_project_sector = project.sectors!.map((t) => t.name)[0];
+  const main_project_sector = project
+    .sectors!.map((t: any) => t.sector?.name ?? t.name)
+    .filter(Boolean)[0];
+
+  // Use prop if provided, otherwise compute from user context as fallback
+  // The prop should now always be passed from parent components
+  let isUserRegistered: boolean | undefined;
+  if (isUserRegisteredProp !== undefined) {
+    // Use the explicit prop (computed from registeredEventSlugs in parent)
+    isUserRegistered = isUserRegisteredProp;
+  } else if (user?.registered_event_slugs) {
+    // Fallback: compute from user context if prop not provided
+    const registeredEventSlugs = new Set(user.registered_event_slugs);
+    isUserRegistered = project.url_slug ? registeredEventSlugs.has(project.url_slug) : false;
+  } else {
+    // No user or no registration data
+    isUserRegistered = undefined;
+  }
+
   if (withDescription) {
     return (
       <WithDescription
@@ -104,6 +149,8 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
         hovering={hovering}
         main_project_sector={main_project_sector}
         texts={texts}
+        isUserRegistered={isUserRegistered}
+        analyticsSurface={analyticsSurface}
       />
     );
   }
@@ -115,6 +162,8 @@ export default function ProjectMetaData({ project, hovering, withDescription }: 
       project={project}
       main_project_sector={main_project_sector}
       texts={texts}
+      isUserRegistered={isUserRegistered}
+      analyticsSurface={analyticsSurface}
     />
   );
 }
@@ -125,6 +174,9 @@ const WithDescription = ({
   hovering,
   project,
   main_project_sector,
+  texts,
+  isUserRegistered,
+  analyticsSurface,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -138,7 +190,7 @@ const WithDescription = ({
           <LocationDisplay
             textClassName={classes.metadataText}
             iconClassName={classes.cardIcon}
-            location={project.location}
+            location={project.is_online ? texts.online : project.location}
           />
           {/* Defer to MUI's best guess on height calculation for timeout: https://material-ui.com/api/collapse/ */}
           <Collapse in={hovering} timeout="auto">
@@ -153,7 +205,11 @@ const WithDescription = ({
               iconClassName={classes.cardIcon}
             />
           )}
-          <AdditionalPreviewInfo project={project} />
+          <AdditionalPreviewInfo
+            project={project}
+            isUserRegistered={isUserRegistered}
+            analyticsSurface={analyticsSurface}
+          />
         </Box>
       </Container>
       {hovering && (
@@ -174,6 +230,8 @@ const WithOutDescription = ({
   project,
   main_project_sector,
   texts,
+  isUserRegistered,
+  analyticsSurface,
 }: any) => {
   const classes = useStyles({});
   return (
@@ -187,20 +245,26 @@ const WithOutDescription = ({
           <Tooltip title={texts.location}>
             <PlaceIcon className={classes.cardIcon} />
           </Tooltip>
-          <Typography className={classes.metadataText}>{project.location}</Typography>
+          <Typography className={classes.metadataText}>
+            {project.is_online ? texts.online : project.location}
+          </Typography>
           <ProjectSectorsDisplay
             main_project_sector={main_project_sector}
             projectSectorClassName={classes.metadataText}
             iconClassName={classes.cardIcon}
           />
-          <AdditionalPreviewInfo project={project} />
+          <AdditionalPreviewInfo
+            project={project}
+            isUserRegistered={isUserRegistered}
+            analyticsSurface={analyticsSurface}
+          />
         </Box>
       </Container>
     </Box>
   );
 };
 
-const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_parent }) => {
+export const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_parent }) => {
   const collaborating_organizations = collaborating_organization.slice(0, 2); // only show 2 collaborating orgs
   const classes = useStyles({});
   return (
@@ -245,30 +309,79 @@ const CreatorAndCollaboratorPreviews = ({ collaborating_organization, project_pa
   );
 };
 
-const AdditionalPreviewInfo = ({ project }) => {
+const AdditionalPreviewInfo = ({ project, isUserRegistered, analyticsSurface }) => {
   const classes = useStyles({});
-  const { projectTypes } = useContext(BrowseContext);
-  const projectType =
-    projectTypes && projectTypes.length > 0
-      ? projectTypes.find((t) => t.type_id === project.project_type)
-      : { name: project.project_type, type_id: project.project_type };
+  const { locale, user, ReactGA } = useContext(UserContext);
+  const projectTypes = getProjectTypes(locale);
+  const texts = getTexts({ page: "project", locale });
+  const router = useRouter();
+
+  const projectType = projectTypes.find((t) => t.type_id === project.project_type) ?? {
+    name: project.project_type,
+    type_id: project.project_type,
+    original_name: project.project_type,
+    help_text: "",
+    icon: "",
+  };
+
+  const showRegisterButton = shouldShowRegisterButton(project);
+
+  const getRegisterButtonConfig = () => {
+    // Don't show button if registration is not enabled for this event
+    if (!showRegisterButton) return null;
+
+    // For logged-in users, wait until registration status is known to avoid
+    // flashing "Register Now" when the user is actually registered.
+    if (user && isUserRegistered === undefined) return null;
+
+    // Anonymous users can safely be treated as not registered.
+    const resolvedIsUserRegistered = isUserRegistered ?? false;
+
+    const buttonText = getRegisterButtonText(project, texts, resolvedIsUserRegistered);
+    const disabled = isRegisterButtonDisabled(project, resolvedIsUserRegistered);
+
+    return {
+      label: buttonText,
+      disabled: disabled,
+      variant: disabled ? "outlined" : "contained",
+      color: disabled ? "secondary" : "primary",
+    };
+  };
+
+  const buttonConfig = getRegisterButtonConfig();
+
+  // Fire button impression event on mount when register button is visible
+  useEffect(() => {
+    if (analyticsSurface && buttonConfig) {
+      trackGA4Event(
+        "event_registration_button_impression",
+        {
+          surface: analyticsSurface,
+          event_slug: project.url_slug,
+          registration_status: project.registration_config?.status ?? "open",
+        },
+        ReactGA
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box className={classes.additionalInfoContainer}>
-      {project.number_of_comments > 0 && (
+      {(project.number_of_comments ?? 0) > 0 && (
         <Box className={classes.additionalInfoIcon}>
           <ModeCommentIcon />
           <span className={classes.additionalInfoCounter}> {project.number_of_comments} </span>
         </Box>
       )}
-      {project.number_of_likes > 2 && (
+      {(project.number_of_likes ?? 0) > 2 && (
         <Box className={classes.additionalInfoIcon}>
           <FavoriteIcon />
           <span className={classes.additionalInfoCounter}> {project.number_of_likes}</span>
         </Box>
       )}
       <Box className={classes.additionalInfoIcon}>
-        {(project.number_of_comments > 0 || project.number_of_likes > 2) && (
+        {((project.number_of_comments ?? 0) > 0 || (project.number_of_likes ?? 0) > 2) && (
           <>
             {" • "}
             <div className={classes.horizontalSpacing} />
@@ -278,8 +391,27 @@ const AdditionalPreviewInfo = ({ project }) => {
           projectType={projectType}
           iconClassName={classes.typeIcon}
           textClassName={classes.metadataText}
+          hasChildren={project.has_children}
         />
       </Box>
+      {buttonConfig && (
+        <Button
+          className={classes.registerButton}
+          variant={buttonConfig.variant as any}
+          color={buttonConfig.color as any}
+          size="small"
+          disabled={buttonConfig.disabled}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (!buttonConfig.disabled) {
+              router.push(`${getLocalePrefix(locale)}/projects/${project.url_slug}/register`);
+            }
+          }}
+        >
+          {buttonConfig.label}
+        </Button>
+      )}
     </Box>
   );
 };

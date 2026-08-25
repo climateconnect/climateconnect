@@ -9,8 +9,9 @@ import InfoIcon from "@mui/icons-material/Info";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { getLocalePrefix } from "./apiOperations";
+import { appHref } from "./appLink";
 import { getCustomHubData } from "../data/customHubData";
+import { WASSERAKTIONSWOCHEN_PATH } from "../data/wasseraktionswochen_config";
 
 const ERLANGEN_SLUG = "erlangen";
 const ERLANGEN_DONATE = "https://www.climatehub.earth/300";
@@ -23,91 +24,163 @@ const COMMON_LINKS = {
     onlyShowIconOnMobile: true,
     icon: NotificationsIcon,
     alwaysDisplayDirectly: true,
-    onlyShowLoggedIn: true,
-    // Fixed issue where missing href caused redirection issues on mobile.
     onlyShowOnNormalScreen: true,
   },
-  SHARE: {
-    href: "/share",
-    mediumScreenText: "share",
+  SHARE: (hubUrl?: string) => ({
+    href: appHref("/share", { hubUrl }),
     iconForDrawer: AddCircleIcon,
     icon: AddCircleOutlineIcon,
+    hideDesktopIconUnderSm: true,
     isFilledInHeader: true,
     className: "shareProjectButton",
     vanillaIfLoggedOut: true,
-  },
-  AUTH_LINKS: (path_to_redirect, texts, queryString) => [
-    {
-      href: `/signin?redirect=${encodeURIComponent(path_to_redirect)}${
-        queryString ? `&${queryString}` : ""
-      }`,
-      text: texts.log_in,
-      iconForDrawer: AccountCircleIcon,
-      isOutlinedInHeader: true,
-      onlyShowLoggedOut: true,
-    },
-    {
-      href: `/signup${queryString ? `?${queryString}` : ""}`,
-      text: texts.sign_up,
-      iconForDrawer: AccountCircleIcon,
-      isOutlinedInHeader: true,
-      onlyShowLoggedOut: true,
-      alwaysDisplayDirectly: true,
-    },
-  ],
-};
-
-const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPage, hubUrl) => {
-  const isOnLandingPage = path_to_redirect == `/hubs/${hubUrl}`; // Detect if we are on the landing page
-  {
+  }),
+  AUTH_LINKS: (path_to_redirect, texts, hubUrl?: string) => {
+    const loginPath = `/login?redirect=${encodeURIComponent(path_to_redirect)}`;
     return [
       {
-        href: "/browse",
-        text: isLocationHub
-          ? isOnLandingPage || hasHubLandingPage
-            ? texts.climate_connect
-            : texts.projects_worldwide
-          : texts.browse,
-        iconForDrawer: HomeIcon,
-        showJustIconUnderSm: HomeIcon,
-        showStaticLinksInDropdown:
-          isLocationHub && (hasHubLandingPage || isOnLandingPage) ? true : false,
-      },
-      {
-        href: isOnLandingPage
-          ? `/hubs/${hubUrl}/browse`
-          : hasHubLandingPage
-          ? `/hubs/${hubUrl}/`
-          : "/about",
-        text: isOnLandingPage
-          ? texts.return_to_climatehub_projects
-          : isLocationHub && hasHubLandingPage
-          ? texts.about_climatehub
-          : texts.about,
-        iconForDrawer: InfoIcon,
-        showStaticLinksInDropdown: isOnLandingPage
-          ? false
-          : isLocationHub && hasHubLandingPage
-          ? false
-          : true,
-        hideOnStaticPages: true,
-      },
-      {
-        href: hubUrl === ERLANGEN_SLUG ? ERLANGEN_DONATE : "/donate",
-        isExternalLink: hubUrl === ERLANGEN_SLUG,
-        text: texts.donate,
-        iconForDrawer: FavoriteBorderIcon,
+        href: appHref(loginPath, { hubUrl }),
+        text: texts.auth_log_in,
+        iconForDrawer: AccountCircleIcon,
         isOutlinedInHeader: true,
-        icon: FavoriteBorderIcon,
-        hideDesktopIconUnderSm: true,
-        vanillaIfLoggedOut: true,
-        hideOnStaticPages: true,
-        alwaysDisplayDirectly: "loggedIn",
-        // We can use more than one className here
-        className: "btnColor buttonMarginLeft",
+        onlyShowLoggedOut: true,
       },
+    ];
+  },
+};
+
+const isWasseraktionswochenPage = (pathToRedirect) =>
+  typeof pathToRedirect === "string" && pathToRedirect.startsWith(WASSERAKTIONSWOCHEN_PATH);
+
+const getBrowseLinkText = ({ texts, isLocationHub, isOnLandingPage, hasHubLandingPage }) => {
+  if (!isLocationHub) {
+    return texts.browse;
+  }
+  if (isOnLandingPage || hasHubLandingPage) {
+    return texts.climate_connect;
+  }
+  return texts.projects_worldwide;
+};
+
+const shouldShowStaticLinksForBrowse = ({ isLocationHub, hasHubLandingPage, isOnLandingPage }) => {
+  return Boolean(isLocationHub && (hasHubLandingPage || isOnLandingPage));
+};
+
+const buildBrowseLink = ({ texts, isLocationHub, isOnLandingPage, hasHubLandingPage }) => ({
+  href: "/browse",
+  text: getBrowseLinkText({ texts, isLocationHub, isOnLandingPage, hasHubLandingPage }),
+  iconForDrawer: HomeIcon,
+  showJustIconUnderSm: HomeIcon,
+  showStaticLinksInDropdown: shouldShowStaticLinksForBrowse({
+    isLocationHub,
+    hasHubLandingPage,
+    isOnLandingPage,
+  }),
+});
+
+const getAboutLinkHref = ({ isOnLandingPage, hasHubLandingPage, hubUrl }) => {
+  if (isOnLandingPage && hubUrl) {
+    return `/hubs/${hubUrl}/browse`;
+  }
+  if (hasHubLandingPage && hubUrl) {
+    return `/hubs/${hubUrl}/`;
+  }
+  return "/about";
+};
+
+const getAboutLinkText = ({ texts, isLocationHub, hasHubLandingPage, isOnLandingPage }) => {
+  if (isOnLandingPage) {
+    return texts.return_to_climatehub_projects;
+  }
+  if (isLocationHub && hasHubLandingPage) {
+    return texts.about_climatehub;
+  }
+  return texts.about;
+};
+
+const shouldShowStaticLinksForAbout = ({ isOnLandingPage, isLocationHub, hasHubLandingPage }) => {
+  if (isOnLandingPage) {
+    return false;
+  }
+  if (isLocationHub && hasHubLandingPage) {
+    return false;
+  }
+  return true;
+};
+
+const buildAboutLink = ({ texts, isLocationHub, hasHubLandingPage, isOnLandingPage, hubUrl }) => ({
+  href: getAboutLinkHref({ isOnLandingPage, hasHubLandingPage, hubUrl }),
+  text: getAboutLinkText({ texts, isLocationHub, hasHubLandingPage, isOnLandingPage }),
+  iconForDrawer: InfoIcon,
+  showStaticLinksInDropdown: shouldShowStaticLinksForAbout({
+    isOnLandingPage,
+    isLocationHub,
+    hasHubLandingPage,
+  }),
+  hideOnStaticPages: true,
+});
+
+const getDonateHref = (hubUrl) => (hubUrl === ERLANGEN_SLUG ? ERLANGEN_DONATE : "/donate");
+
+const isDonateExternal = (hubUrl) => hubUrl === ERLANGEN_SLUG;
+
+const buildDonateLink = ({ texts, hubUrl }) => ({
+  href: getDonateHref(hubUrl),
+  isExternalLink: isDonateExternal(hubUrl),
+  text: texts.donate,
+  iconForDrawer: FavoriteBorderIcon,
+  isOutlinedInHeader: true,
+  icon: FavoriteBorderIcon,
+  hideDesktopIconUnderSm: true,
+  vanillaIfLoggedOut: true,
+  hideOnStaticPages: true,
+  alwaysDisplayDirectly: "loggedIn",
+  className: "btnColor buttonMarginLeft",
+});
+
+const getWasseraktionswochenLinks = ({ path_to_redirect, texts, hubUrl, hasHubLandingPage }) => {
+  return [
+    buildAboutLink({
+      texts,
+      isLocationHub: true,
+      hasHubLandingPage,
+      isOnLandingPage: false,
+      hubUrl,
+    }),
+    buildDonateLink({ texts, hubUrl }),
+    {
+      ...COMMON_LINKS.SHARE(hubUrl),
+      text: texts.share_a_project,
+      hideOnMediumScreen: false,
+      onlyShowIconOnNormalScreen: true,
+    },
+    {
+      type: "languageSelect",
+    },
+    {
+      ...COMMON_LINKS.NOTIFICATIONS,
+      text: texts.inbox,
+    },
+    ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, hubUrl),
+  ];
+};
+
+const getDefaultLinks = (
+  path_to_redirect,
+  texts,
+  isLocationHub,
+  hasHubLandingPage,
+  hubUrl,
+  isOnLandingPage
+) => {
+  const authHubUrl = isLocationHub ? hubUrl : undefined;
+  {
+    return [
+      buildBrowseLink({ texts, isLocationHub, isOnLandingPage, hasHubLandingPage }),
+      buildAboutLink({ texts, isLocationHub, hasHubLandingPage, isOnLandingPage, hubUrl }),
+      buildDonateLink({ texts, hubUrl }),
       {
-        ...COMMON_LINKS.SHARE,
+        ...COMMON_LINKS.SHARE(isLocationHub ? hubUrl : undefined),
         text: texts.share_a_project,
         hideOnMediumScreen: isLocationHub,
       },
@@ -118,60 +191,79 @@ const getDefaultLinks = (path_to_redirect, texts, isLocationHub, hasHubLandingPa
         ...COMMON_LINKS.NOTIFICATIONS,
         text: texts.inbox,
       },
-      ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, ""),
+      ...COMMON_LINKS.AUTH_LINKS(path_to_redirect, texts, authHubUrl),
     ];
   }
 };
 
 const getLinks = (
-  path_to_redirect,
-  texts,
-  isLocationHub,
-  isCustomHub,
-  hasHubLandingPage,
-  hubUrl
+  path_to_redirect: string,
+  texts: Record<string, string>,
+  isLocationHub: boolean | undefined,
+  isCustomHub: boolean | undefined,
+  hasHubLandingPage: boolean | undefined,
+  hubUrl?: any,
+  isLandingPage?: boolean
 ) => {
+  if (isWasseraktionswochenPage(path_to_redirect)) {
+    return getWasseraktionswochenLinks({
+      path_to_redirect,
+      texts,
+      hubUrl,
+      hasHubLandingPage,
+    });
+  }
+  const effectiveIsLocationHub = isLocationHub || isCustomHub;
   return isCustomHub
     ? getCustomHubData({ hubUrl, texts, path_to_redirect })?.headerLinks
     : getDefaultLinks(
         path_to_redirect,
         texts,
-        isLocationHub || isCustomHub,
+        effectiveIsLocationHub,
         hasHubLandingPage,
-        hubUrl
+        hubUrl,
+        !!isLandingPage
       );
 };
 
-const getLoggedInLinks = ({ loggedInUser, texts, queryString }) => {
+const getLoggedInLinks = ({
+  loggedInUser,
+  texts,
+  hubUrl,
+}: {
+  loggedInUser: any;
+  texts: any;
+  hubUrl?: string;
+}) => {
   return [
     {
-      href: "/profiles/" + loggedInUser.url_slug + queryString,
+      href: appHref("/profiles/" + loggedInUser.url_slug, { hubUrl }),
       text: texts.my_profile,
       iconForDrawer: AccountCircleIcon,
     },
     {
-      href: "/inbox",
+      href: appHref("/inbox", { hubUrl }),
       text: texts.inbox,
       iconForDrawer: MailOutlineIcon,
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug + (queryString || "/") + "#projects",
+      href: appHref(`/profiles/${loggedInUser.url_slug}#projects`, { hubUrl }),
       text: texts.my_projects,
       iconForDrawer: GroupWorkIcon,
     },
     {
-      href: "/profiles/" + loggedInUser.url_slug + (queryString || "/") + "#organizations",
+      href: appHref(`/profiles/${loggedInUser.url_slug}#organizations`, { hubUrl }),
       text: texts.my_organizations,
       iconForDrawer: GroupWorkIcon,
     },
     {
-      href: "/settings" + queryString,
+      href: appHref("/settings", { hubUrl }),
       text: texts.settings,
       iconForDrawer: SettingsIcon,
     },
     {
       avatar: true,
-      href: "/profiles/" + loggedInUser.url_slug + queryString,
+      href: appHref("/profiles/" + loggedInUser.url_slug, { hubUrl }),
       src: loggedInUser.image,
       alt: texts.profile_image_of + " " + loggedInUser.name,
       showOnMobileOnly: true,
@@ -251,7 +343,12 @@ const getStaticLinkFromItem = (locale, item) => {
   if (item.isExternalLink) {
     return item.href;
   }
-  return `${getLocalePrefix(locale)}${item.href}`;
+  // Static / hub-switcher targets are global or hub-route destinations, so the
+  // active `?hub=` must never be appended (Category C). `appHref` applies the
+  // locale prefix and — because hub routes (`/hubs/...`) already convey the hub
+  // in their path — skips `?hub=` automatically, preventing a stale
+  // `?hub=<old>` from leaking onto a different hub.
+  return appHref(item.href, { leaveHub: true, locale });
 };
 
 export { getLinks, getLoggedInLinks, getStaticLinks, getStaticLinkFromItem, COMMON_LINKS };

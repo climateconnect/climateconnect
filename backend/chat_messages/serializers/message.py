@@ -1,7 +1,6 @@
-from ideas.serializers.idea import IdeaMinimalSerializer
-from climateconnect_api.serializers.role import RoleSerializer
+from django.utils import timezone
 from rest_framework import serializers
-from ideas.models import Idea
+
 from chat_messages.models import (
     Message,
     MessageParticipants,
@@ -9,8 +8,10 @@ from chat_messages.models import (
     Participant,
 )
 from climateconnect_api.models import UserProfile
+from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
-from django.utils import timezone
+from ideas.models import Idea
+from ideas.serializers.idea import IdeaMinimalSerializer
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -19,7 +20,16 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ("id", "content", "sent_at", "read_at", "updated_at", "sender")
+        fields = (
+            "id",
+            "content",
+            "sent_at",
+            "read_at",
+            "updated_at",
+            "sender",
+            "origin_type",
+            "origin_id",
+        )
 
     def get_sender(self, obj):
         user_profile = UserProfile.objects.filter(user=obj.sender)[0]

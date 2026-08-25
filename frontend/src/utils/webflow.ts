@@ -1,5 +1,5 @@
 import axios from "axios";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 
 const WEBFLOW_BASE_LINK = "https://climateconnect.webflow.io/hub-texts/";
 const DESCRIPTION_WEBFLOW_LINKS = {

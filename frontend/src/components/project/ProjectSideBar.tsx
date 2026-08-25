@@ -8,6 +8,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import HubSupporters from "../hub/HubSupporters";
+import { getWasseraktionswochenUrl } from "../../../public/data/wasseraktionswochen_config.js";
 
 type useStylesProps = {
   isSmallScreen: boolean;
@@ -71,33 +72,55 @@ export default function ProjectSideBar({
   isSmallScreen,
   hubSupporters,
   hubName,
+  siblingProjects,
+  isWasseraktionswochenEnabled,
+  registeredEventSlugs,
+  hubUrl,
 }) {
   const classes = useStyles({
     isSmallScreen: isSmallScreen,
   });
-
   const link = getLocalePrefix(locale) + "/browse";
   const shouldDisplayOneProjectInRow = !isSmallScreen;
+
+  // Determine what to show: siblings or similar projects
+  const showingSiblings =
+    isWasseraktionswochenEnabled && siblingProjects && siblingProjects.length > 0;
+  const projectsToDisplay = showingSiblings ? siblingProjects : similarProjects;
+  const hasProjectsToDisplay = !!projectsToDisplay?.length;
+  const headerText = showingSiblings
+    ? texts.events_in_this_series
+    : texts.you_may_also_like_these_projects;
+
+  // For Wasseraktionswochen events, link to the special event page
+  const showAllLink = showingSiblings ? getWasseraktionswochenUrl(locale) : link;
+  const showAllText = showingSiblings ? texts.show_all_events : texts.view_all_projects;
 
   return (
     <>
       {isSmallScreen ? (
         <>
-          <Divider className={classes.divider} />
-          <Typography
-            component="h2"
-            variant="h6"
-            color="background.default_contrastText"
-            className={classes.subHeader}
-          >
-            {texts.you_may_also_like_these_projects}
-          </Typography>
+          {hasProjectsToDisplay && (
+            <>
+              <Divider className={classes.divider} />
+              <Typography
+                component="h2"
+                variant="h6"
+                color="background.default_contrastText"
+                className={classes.subHeader}
+              >
+                {headerText}
+              </Typography>
+            </>
+          )}
         </>
       ) : (
         <>
-          <IconButton size="small" onClick={handleHideContent}>
-            <MenuIcon />
-          </IconButton>
+          {hasProjectsToDisplay && (
+            <IconButton size="small" onClick={handleHideContent}>
+              <MenuIcon />
+            </IconButton>
+          )}
         </>
       )}
       <div
@@ -107,7 +130,7 @@ export default function ProjectSideBar({
             : classes.largeSimilarProjectsContainer
         }
       >
-        {isSmallScreen && (
+        {isSmallScreen && hasProjectsToDisplay && (
           <Button className={classes.expandButton} onClick={handleHideContent}>
             {showSimilarProjects ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </Button>
@@ -120,17 +143,29 @@ export default function ProjectSideBar({
                 containerClass={classes.supporterSliderWidth}
                 mobileVersion={isSmallScreen}
                 hubName={hubName}
+                hubUrl={hubUrl}
               />
             )}
-            <ProjectPreviews
-              displayOnePreviewInRow={shouldDisplayOneProjectInRow}
-              projects={similarProjects}
-              hubUrl={hubName}
-            />
-            <Button variant="outlined" className={classes.showAllProjectsButton} href={link}>
-              <SearchIcon />
-              {texts.view_all_projects}
-            </Button>
+
+            {hasProjectsToDisplay && (
+              <>
+                <ProjectPreviews
+                  displayOnePreviewInRow={shouldDisplayOneProjectInRow}
+                  projects={projectsToDisplay}
+                  hubUrl={hubName}
+                  registeredEventSlugs={registeredEventSlugs}
+                  analyticsSurface="similar_projects_sidebar"
+                />
+                <Button
+                  variant="outlined"
+                  className={classes.showAllProjectsButton}
+                  href={showAllLink}
+                >
+                  <SearchIcon />
+                  {showAllText}
+                </Button>
+              </>
+            )}
           </>
         )}
       </div>

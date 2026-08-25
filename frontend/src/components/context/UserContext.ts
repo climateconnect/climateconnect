@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { CcLocale, User } from "../../types";
+import { CcLocale, DonationGoal, User } from "../../types";
 
 const UserContext = createContext<{
   user: User | null;
@@ -10,10 +10,11 @@ const UserContext = createContext<{
   pathName: string;
   acceptedNecessary?: boolean;
   socketConnectionState?: any;
-  donationGoal?: any;
+  donationGoals: DonationGoal[];
   chatSocket?: any;
   signIn?: any;
   refreshNotifications?: any;
+  refreshUser?: () => Promise<void>;
   API_URL?: any;
   ENVIRONMENT?: any;
   SOCKET_URL?: any;

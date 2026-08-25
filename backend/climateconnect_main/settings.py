@@ -12,17 +12,18 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import ssl
+import sys
 from datetime import timedelta
 
-from dotenv import find_dotenv, load_dotenv
-
-from climateconnect_main.utility.general import get_allowed_hosts
+import django.conf
 import sentry_sdk
+from dotenv import find_dotenv, load_dotenv
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.celery import CeleryIntegration
-import django.conf
+from sentry_sdk.scrubber import EventScrubber, DEFAULT_PII_DENYLIST
 
+from climateconnect_main.utility.general import get_allowed_hosts
 
 load_dotenv(find_dotenv(".backend_env"))
 
@@ -63,6 +64,8 @@ CUSTOM_APPS = [
     "location",
     "ideas",
     "climate_match",
+    "feature_toggles",
+    "auth_app",
 ]
 
 LIBRARY_APPS = [
@@ -73,6 +76,7 @@ LIBRARY_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "drf_spectacular",
     "knox",
     "corsheaders",
     "channels",
@@ -89,6 +93,7 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 SECURITY_MIDDLEWARE = [
+    "climateconnect_main.middleware.AzureHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
 ]
 
@@ -117,14 +122,40 @@ CORS_ORIGIN_WHITELIST = [
     "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
     "https://alpha.climateconnect.earth",
     "https://climateconnect.earth",
+    "https://climatehub.org",
     "https://test3425.climateconnect.earth",
     "https://www.climateconnect.earth",
+    "https://www.climatehub.org",
     "https://www.cc-test-domain.com",
     "https://cc-test-domain.com",
     "http://cc-test-domain.com",
     "https://test-climateconnect-frontend.azurewebsites.net",
     "https://climateconnect-frontend-slot2.azurewebsites.net",
+    "https://climateconnect-frontend-slot2-b4ege4evbjeeabeb.germanywestcentral-01.azurewebsites.net",
+    "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
 ]
+
+# Django 4.x requires CSRF_TRUSTED_ORIGINS for cross-origin POST requests.
+# Must include scheme (https://) - this was not required in Django 3.x.
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "https://frontend-dot-inbound-lexicon-271522.ey.r.appspot.com",
+    "https://alpha.climateconnect.earth",
+    "https://climateconnect.earth",
+    "https://climatehub.org",
+    "https://test3425.climateconnect.earth",
+    "https://www.climateconnect.earth",
+    "https://api.climateconnect.earth",
+    "https://api.climatehub.org",
+    "https://www.cc-test-domain.com",
+    "https://cc-test-domain.com",
+    "http://cc-test-domain.com",
+    "https://test-climateconnect-frontend.azurewebsites.net",
+    "https://climateconnect-frontend-slot2.azurewebsites.net",
+    "https://climateconnect-frontend-slot2-b4ege4evbjeeabeb.germanywestcentral-01.azurewebsites.net",
+    "https://climate-backend-appserv-slot2-bydthgcjexgab2fx.germanywestcentral-01.azurewebsites.net",
+]
+
 APPEND_SLASH = False
 
 ROOT_URLCONF = "climateconnect_main.urls"
@@ -187,14 +218,19 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 if env("ENVIRONMENT") not in ("development", "test"):
-    DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
-    STATICFILES_STORAGE = "storages.backends.azure_storage.AzureStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        },
+    }
     AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME")
     AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY")
     AZURE_CONTAINER = env("AZURE_CONTAINER")
@@ -211,7 +247,7 @@ STATIC_URL = (
 STATIC_ROOT = (
     env("STATIC_ROOT") if env("ENVIRONMENT") in ("development", "test") else "static/"
 )
-MEDIA_ROOT = env("MEDIA_ROOT")
+MEDIA_ROOT = env("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
@@ -222,6 +258,16 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 200,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "ClimateConnect API",
+    "DESCRIPTION": "API for Climate Connect platform - connecting climate activists, organizations, and projects to solve the climate crisis",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SCHEMA_PATH_PREFIX": r"/api/",
 }
 
 
@@ -236,6 +282,8 @@ NEW_EMAIL_VERIFICATION_TEMPLATE_ID_DE = env("NEW_EMAIL_VERIFICATION_TEMPLATE_ID_
 EMAIL_VERIFICATION_TEMPLATE_ID_DE = env("EMAIL_VERIFICATION_TEMPLATE_ID_DE")
 RESET_PASSWORD_TEMPLATE_ID = env("RESET_PASSWORD_TEMPLATE_ID", "")
 RESET_PASSWORD_TEMPLATE_ID_DE = env("RESET_PASSWORD_TEMPLATE_ID_DE")
+LOGIN_CODE_EMAIL_TEMPLATE_ID = env("LOGIN_CODE_EMAIL_TEMPLATE_ID", default="")
+LOGIN_CODE_EMAIL_TEMPLATE_ID_DE = env("LOGIN_CODE_EMAIL_TEMPLATE_ID_DE", default="")
 FEEDBACK_TEMPLATE_ID = env("FEEDBACK_TEMPLATE_ID")
 PRIVATE_MESSAGE_TEMPLATE_ID = env("PRIVATE_MESSAGE_TEMPLATE_ID")
 PRIVATE_MESSAGE_TEMPLATE_ID_DE = env("PRIVATE_MESSAGE_TEMPLATE_ID_DE")
@@ -267,10 +315,29 @@ ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID = env("ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_
 ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID_DE = env(
     "ORG_PUBLISHED_NEW_PROJECT_TEMPLATE_ID_DE"
 )
+EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID = env(
+    "EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID", ""
+)
+EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE = env(
+    "EVENT_REGISTRATION_CONFIRMATION_TEMPLATE_ID_DE", ""
+)
+EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID = env("EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID", "")
+EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE = env(
+    "EVENT_ORGANIZER_MESSAGE_TEMPLATE_ID_DE", ""
+)
+ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID = env("ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID", "")
+ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE = env(
+    "ADMIN_CANCEL_REGISTRATION_TEMPLATE_ID_DE", ""
+)
+ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID = env(
+    "ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID", ""
+)
+ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID_DE = env(
+    "ADMIN_REGISTRATION_NOTIFICATION_TEMPLATE_ID_DE", ""
+)
 
 FRONTEND_URL = env("FRONTEND_URL", "")
 LOCATION_SERVICE_BASE_URL = env("LOCATION_SERVICE_BASE_URL")
-ENABLE_LEGACY_LOCATION_FORMAT = env("ENABLE_LEGACY_LOCATION_FORMAT")
 DEEPL_API_KEY = env("DEEPL_API_KEY")
 
 ASGI_APPLICATION = "climateconnect_main.routing.application"
@@ -295,7 +362,12 @@ CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 if env("ENVIRONMENT") == "production":
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
 CELERY_TIMEZONE = "UTC"
-LOCALES = ["en", "de"]
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+NOMINATIM_LOOKUP_URL = "https://nominatim.openstreetmap.org/lookup"
+CUSTOM_USER_AGENT = "ClimateConnect/1.0 (contact@climateconnect.earth)"
 
 LOCALE_PATHS = [
     BASE_DIR + "/translations",
@@ -309,6 +381,9 @@ LOGGING = {
     "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
     "loggers": {"django": {"handlers": ["console"], "level": "INFO"}},
 }
+
+# Custom test runner to set up global test data
+TEST_RUNNER = "climateconnect_main.test_runner.ClimateConnectTestRunner"
 
 # Setting up cache
 CACHES = {
@@ -329,26 +404,113 @@ CACHE_BACHED_RANK_REQUEST = env("CACHE_BACHED_RANK_REQUEST", "False") == "true"
 SENTRY_DSN = env("SENTRY_DSN")
 SENTRY_ENVIRONMENT = env("SENTRY_ENVIRONMENT")
 
+# Request body fields that contain PII. Redacted to "[REDACTED]" in Sentry
+# events by _sentry_before_send regardless of which endpoint received them.
+# Field names verified against actual request.data usage in views (June 2026).
+_SENTRY_PII_FIELDS = frozenset(
+    {
+        # Identity
+        "username",  # LoginView (email used as username)
+        "email",  # SignUpView, SendResetPasswordEmail, UserAccountSettingsView
+        "email_address",  # ReceiveFeedback (unauthenticated users)
+        "first_name",  # SignUpView, EditUserProfile
+        "last_name",  # SignUpView, EditUserProfile
+        "biography",  # EditUserProfile
+        # Profile images (base64 data URLs)
+        "image",  # EditUserProfile, IdeaView
+        "thumbnail_image",  # EditUserProfile, IdeaView
+        "background_image",  # EditUserProfile
+        # Credentials
+        "password",  # LoginView, SignUpView, UserAccountSettingsView
+        "old_password",  # UserAccountSettingsView
+        "new_password",  # SetNewPassword
+        "confirm_password",  # UserAccountSettingsView
+        "password_reset_key",  # SetNewPassword (enables password change)
+        "session_key",  # VerifyTokenView (OTP session)
+        "code",  # VerifyTokenView (6-digit OTP code)
+        # Communication
+        "message_content",  # SendChatMessage
+        "message",  # RequestJoinProject, ReceiveFeedback, AdminCancelRegistration
+        "content",  # ProjectCommentView, IdeaCommentsView
+        # Registration answers (organiser-defined fields can request arbitrary PII)
+        "custom_field_answers",
+        # Local variable names (Celery tasks, email utilities)
+        "user",  # Django User object in stack frames (has .email, .first_name, .last_name)
+        "Email",  # Mailjet API payload key (case-sensitive match for nested dicts)
+    }
+)
+
+
+# Combined PII denylist for EventScrubber: Sentry's default PII keys
+# (IP addresses) plus our field names (identity, credentials, messages).
+# The scrubber runs on the ENTIRE event payload — request data, local
+# variables in stack frames, breadcrumbs, exception values. This catches
+# PII in Celery task failures (e.g. email sending) where local variables
+# like `email` or `user_name` would otherwise leak into Sentry.
+# NOTE: scrubbing is by exact key name. A variable named `recipient_email`
+# would NOT be caught. This is a known limitation — same as _SENTRY_PII_FIELDS.
+_PII_DENYLIST = list(DEFAULT_PII_DENYLIST) + list(_SENTRY_PII_FIELDS)
+
+_SENTRY_REDACTED = "[REDACTED]"
+
+
+def _sentry_before_send(event, hint):
+    """GDPR data minimisation — redact PII fields in Sentry events.
+
+    Always strips: headers, cookies, user object.
+    Replaces known PII fields with "[REDACTED]" so the data structure
+    is preserved for debugging without exposing personal info.
+    custom_field_answers is removed entirely — organiser-defined fields
+    can request arbitrary PII (phone, dietary needs, etc.) and cannot
+    be filtered by field name.
+    """
+    request = event.get("request")
+    if request:
+        request.pop("headers", None)
+        request.pop("cookies", None)
+        data = request.get("data")
+        if isinstance(data, dict):
+            for field in _SENTRY_PII_FIELDS:
+                if field in data:
+                    data[field] = _SENTRY_REDACTED
+    event.pop("user", None)
+    return event
+
+
 sentry_sdk.init(
     dsn=SENTRY_DSN,
     integrations=[DjangoIntegration(), CeleryIntegration(), RedisIntegration()],
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production,
-    traces_sample_rate=1.0,
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
-    send_default_pii=True,
-    # By default the SDK will try to use the SENTRY_RELEASE
-    # environment variable, or infer a git commit
-    # SHA as release, however you may want to set
-    # something more human-readable.
-    # release="myapp@1.0.0",
-    # SENTRY ENVIRONMENT for local env is "development"
-    # and for prod env is "production"
+    traces_sample_rate=0.2,
+    # GDPR data minimisation — do not send PII to Sentry.
+    # Disables automatic collection of IP, user agent, headers, cookies, user info.
+    send_default_pii=False,
+    # GDPR — scrub residual PII patterns (emails, phone numbers, credit cards)
+    # from error messages and event data.
+    event_scrubber=EventScrubber(pii_denylist=_PII_DENYLIST),
+    # GDPR — strip PII fields from request bodies, keep rest for debugging.
+    before_send=_sentry_before_send,
     environment=SENTRY_ENVIRONMENT,
 )
 
 CLIMATE_CONNECT_CONTACT_EMAIL = env(
-    "CLIMATE_CONNECT_CONTACT_EMAIL", "contact@climateconnect.earth"
+    "CLIMATE_CONNECT_CONTACT_EMAIL", "contact@climatehub.org"
 )
+# --- GLOBAL TEST SETTINGS ---
+# This ensures that tests don't require a running Redis/RabbitMQ broker
+if "test" in sys.argv or env("ENVIRONMENT") == "test":
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
+    # Never call the real Nominatim API from tests.
+    NOMINATIM_LOOKUP_URL = "http://testserver/nominatim/lookup"
+
+# --- END GLOBAL TEST SETTINGS ---

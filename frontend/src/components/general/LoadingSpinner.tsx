@@ -1,5 +1,5 @@
 import { Theme, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import CircularProgress from "@mui/material/CircularProgress";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext } from "react";
@@ -34,6 +34,7 @@ type Props = {
  */
 const LoadingSpinner = ({ isLoading = false, className, color, noMarginTop, message }: Props) => {
   const classes = useStyles({ color: color, noMarginTop: noMarginTop });
+  const loadingContext = useContext(LoadingContext);
 
   // A short-circuit isLoading prop will bypass the loading context.
   if (isLoading) {
@@ -52,8 +53,6 @@ const LoadingSpinner = ({ isLoading = false, className, color, noMarginTop, mess
       </Grid>
     );
   }
-
-  const loadingContext = useContext(LoadingContext);
   if (!loadingContext.spinning) {
     return null;
   }

@@ -23,10 +23,12 @@ function CommentNotification({ link, object_commented_on, comment_text, is_reply
   );
 }
 
-export const ProjectCommentNotification = ({ notification }) => {
+export const ProjectCommentNotification = ({ notification, hubUrl }) => {
+  const baseUrl = `/projects/${notification.project.url_slug}`;
+  const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}#comments` : `${baseUrl}#comments`;
   return (
     <CommentNotification
-      link={"/projects/" + notification.project.url_slug + "/#comments"}
+      link={notifLink}
       object_commented_on={notification.project}
       comment_text={notification.project_comment.content}
       is_reply={false}
@@ -35,34 +37,12 @@ export const ProjectCommentNotification = ({ notification }) => {
   );
 };
 
-export const IdeaCommentNotification = ({ notification }) => {
+export const ProjectCommentReplyNotification = ({ notification, hubUrl }) => {
+  const baseUrl = `/projects/${notification.project.url_slug}`;
+  const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}#comments` : `${baseUrl}#comments`;
   return (
     <CommentNotification
-      link={`/hubs/${notification.idea.hub_url_slug}/browse?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
-      object_commented_on={notification.idea}
-      comment_text={notification?.idea_comment?.content}
-      is_reply={false}
-      notification={notification}
-    />
-  );
-};
-
-export const IdeaCommentReplyNotification = ({ notification }) => {
-  return (
-    <CommentNotification
-      link={`/hubs/${notification.idea.hub_url_slug}/browse?idea=${notification.idea.url_slug}&show_comments=true#ideas`}
-      object_commented_on={notification.idea}
-      comment_text={notification?.idea_comment?.content}
-      is_reply={true}
-      notification={notification}
-    />
-  );
-};
-
-export const ProjectCommentReplyNotification = ({ notification }) => {
-  return (
-    <CommentNotification
-      link={"/projects/" + notification.project.url_slug + "/#comments"}
+      link={notifLink}
       object_commented_on={notification.project}
       comment_text={notification?.project_comment?.content}
       is_reply={true}

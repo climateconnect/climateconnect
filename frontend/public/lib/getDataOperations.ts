@@ -21,21 +21,20 @@ export async function getDataFromServer({
     url += `&idea=${idea}`;
   }
 
-  // Handle query params as well
+  // Handle query params as well. Invariant: `urlEnding` is a `URLSearchParams.toString()`
+  // result (no leading `?`, no leading `&`, params already encoded). If a caller
+  // passes a hand-built string, strip any leading `&` / `?` here to keep the URL valid.
   if (urlEnding) {
-    // &category=Lowering%20food%20waste&
-    url += urlEnding;
+    const cleanEnding = urlEnding.replace(/^[?&]+/, "");
+    if (cleanEnding) url += `&${cleanEnding}`;
   }
 
   try {
-    console.log(`Getting data for ${type} at ${url}`);
-
     const resp = location
       ? await apiRequest({ method: "post", url, payload: location, token, locale })
       : await apiRequest({ method: "get", url, token, locale });
 
     if (resp.data.length === 0) {
-      console.log(`No data of type ${type} found...`);
       return null;
     } else {
       return {
@@ -76,5 +75,58 @@ export async function loadMoreData({ type, page, urlEnding, token, locale, hubUr
     console.log("error");
     console.log(e);
     throw e;
+  }
+}
+
+export async function getUpcomingEvents({
+  token,
+  locale,
+  hubUrl,
+  filters,
+  location,
+}: {
+  token?: string;
+  locale?: string;
+  hubUrl?: string;
+  filters?: any;
+  location?: any;
+}): Promise<any[]> {
+  let url = "/api/events/upcoming/?";
+
+  if (hubUrl) {
+    url += `hub=${hubUrl}&`;
+  }
+
+  if (filters?.search) {
+    url += `search=${encodeURIComponent(filters.search)}&`;
+  }
+
+  if (filters?.sectors?.length) {
+    url += `sectors=${filters.sectors.join(",")}&`;
+  }
+
+  if (filters?.start_date) {
+    url += `start_date=${filters.start_date}&`;
+  }
+
+  if (location) {
+    url += `place_id=${location.place_id}&osm_id=${location.osm_id}&osm_type=${location.osm_type}&osm_class=${location.osm_class}&`;
+  }
+
+  try {
+    const apiLocale = locale as "en" | "de" | undefined;
+    const resp = location
+      ? await apiRequest({ method: "post", url, payload: location, token, locale: apiLocale })
+      : await apiRequest({ method: "get", url, token, locale: apiLocale });
+
+    return resp.data || [];
+  } catch (err: any) {
+    if (err.response && err.response.data) {
+      console.log("Error getting upcoming events:");
+      console.log(err.response.data);
+    } else {
+      console.log(err);
+    }
+    return [];
   }
 }

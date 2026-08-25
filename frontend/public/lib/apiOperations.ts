@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, Method } from "axios";
-import Router from "next/router";
+import { default as router } from "next/router";
 import { CcLocale } from "../../src/types";
+import { getLocaleHeader } from "../../src/utils/locationUtils";
 import tokenConfig from "../config/tokenConfig";
 import type { UrlObject } from "url";
 import { ParsedUrlQueryInput } from "querystring";
@@ -19,18 +20,16 @@ type Args = {
 export const apiRequest = async <T = any>(args: Args) => {
   const { method, url, token, payload, locale, headers = {} } = args;
 
-  const acceptLanguageHeadersByLocale = {
-    de: "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-    en: "en-US,en;q=0.9,de-DE;q=0.8,de;q=0.7",
-  };
-
-  if (locale && acceptLanguageHeadersByLocale[locale]) {
-    headers["Accept-Language"] = acceptLanguageHeadersByLocale[locale];
+  if (locale) {
+    Object.assign(headers, getLocaleHeader(locale));
   }
   const config: AxiosRequestConfig = tokenConfig(token, headers);
+  const lowerMethod = method.toLowerCase();
 
   const requestPromise: Promise<AxiosResponse<T>> = payload
-    ? axios[method](process.env.API_URL + url, payload, config)
+    ? lowerMethod === "delete"
+      ? axios.delete(process.env.API_URL + url, { ...config, data: payload })
+      : axios[method](process.env.API_URL + url, payload, config)
     : axios[method](process.env.API_URL + url, config);
 
   // Handle promise result wherever this method is called, either on a try catch block or with .then | .catch methods.
@@ -46,8 +45,10 @@ const config: AxiosRequestConfig = {
 
 export const resendEmail = async <T = any>(
   email: string,
+  /* eslint-disable no-unused-vars */
   onSuccess: (resp: AxiosResponse<T>) => void,
   onError: (err: AxiosError) => void
+  /* eslint-enable no-unused-vars */
 ) => {
   axios
     .post<T>(process.env.API_URL + "/api/resend_verification_email/", { email }, config)
@@ -69,7 +70,7 @@ export const redirect = (
     hash,
   };
 
-  Router.push(payload);
+  router.push(payload);
 };
 
 export const sendToLogin = async (

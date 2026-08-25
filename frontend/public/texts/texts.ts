@@ -4,7 +4,6 @@ import getAboutTexts from "./about_texts";
 import account_texts from "./account_texts.json";
 import activate_email from "./activate_email.json";
 import chat_texts from "./chat_texts.json";
-import getClimatematchTexts from "./climatematch_texts";
 import getCommunicationTexts from "./communication_texts";
 import cookie_texts from "./cookie_texts.json";
 import getDashboardTexts from "./dashboard_texts";
@@ -28,7 +27,6 @@ type Page =
   | "account"
   | "activate_email"
   | "chat"
-  | "climatematch"
   | "cookie"
   | "communication"
   | "dashboard"
@@ -53,16 +51,15 @@ type Args<P extends Page> = {
   idea?: any;
   isNarrowScreen?: boolean;
   locale: CcLocale;
-  location?: string;
   organization?: string;
   page: P;
   profile?: string;
   project?: Project;
   url_slug?: string;
   user?: User;
-  climateMatchQuestion?: string;
   hubAmbassador?: string;
   creator?: string;
+  subHubName?: string;
 };
 
 export default function getTexts<P extends Page>({
@@ -73,16 +70,15 @@ export default function getTexts<P extends Page>({
   idea,
   isNarrowScreen,
   locale,
-  location,
   organization,
   page,
   profile,
   project,
   url_slug,
   user,
-  climateMatchQuestion,
   hubAmbassador,
   creator,
+  subHubName,
 }: Args<P>) {
   // These are the multiple text files for various translations. They're
   // split up to reduce the amount of work required to download
@@ -91,16 +87,16 @@ export default function getTexts<P extends Page>({
     account: account_texts,
     activate_email: activate_email,
     chat: chat_texts,
-    climatematch: getClimatematchTexts({ location: location, question: climateMatchQuestion }),
     cookie: cookie_texts,
     communication: getCommunicationTexts(),
-    dashboard: getDashboardTexts({ user: user, location: location }),
+    dashboard: getDashboardTexts({ user: user, hubName: hubName }),
     donate: getDonateTexts({ classes: classes, goal: goal /*locale*/ }),
     faq: getFaqTexts({ classes: classes, locale: locale }),
     filter_and_search: getFilterAndSearchTexts({
       filterType: filterType,
       hubName: hubName,
       locale: locale,
+      subHubName: subHubName,
     }),
     general: general_texts,
     hub: getHubTexts({ hubName: hubName, hubAmbassador: hubAmbassador }),

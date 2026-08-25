@@ -14,10 +14,8 @@ def translate_project(project: Project) -> None:
         "source_language": "en",
     }
 
-    if project.description:
-        data["description"] = project.description
-    if project.helpful_connections:
-        data["helpful_connections"] = project.helpful_connections
+    if project.description_html:
+        data["description_html"] = project.description_html
     try:
         translations = get_project_translations(data)
     except ValueError:
@@ -35,12 +33,8 @@ def translate_project(project: Project) -> None:
                 is_manual_translation=False,
             )
 
-            if "description" in texts:
-                translation.description_translation = texts["description"]
-            if "helpful_connections" in texts:
-                translation.helpful_connections_translation = texts[
-                    "helpful_connections"
-                ]
+            if "description_html" in texts:
+                translation.description_html_translation = texts["description_html"]
 
             translation.save()
             print(

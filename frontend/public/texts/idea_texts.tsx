@@ -1,6 +1,5 @@
 import React from "react";
 import DateDisplay from "../../src/components/general/DateDisplay";
-import { SHORT_DESCRIPTION_MAX_LENGTH } from "../../src/components/ideas/createIdea/IdeaInfoStep";
 
 const ONE_WEEK_IN_MINISECONDS = 1000 * 60 * 60 * 24 * 7;
 
@@ -69,11 +68,11 @@ export default function getIdeaTexts({ idea, creator }) {
       de: "Persönliche Idee",
     },
     organizations_idea: {
-      en: "Organization's idea",
+      en: "Organisation's idea",
       de: "Idee einer Organisation",
     },
     choose_your_organization: {
-      en: "Choose your organization",
+      en: "Choose your organisation",
       de: "Wähle deine Organisation",
     },
     create_idea_add_metadata_motivation_text: {
@@ -191,10 +190,6 @@ export default function getIdeaTexts({ idea, creator }) {
     you_have_successfully_joined_the_idea_click_open_groupchat: {
       en: 'You have joined! Click on "Open Group Chat" to chat with the others.',
       de: 'Du machst jetzt mit! Klicke auf "Gruppenchat öffnen", um mit den anderen zu reden.',
-    },
-    idea_description_max_length_reached: {
-      en: `You can only use up to ${SHORT_DESCRIPTION_MAX_LENGTH} characters in you idea's description.`,
-      de: `Die Beschreibung deiner Idee kann nur bis zu ${SHORT_DESCRIPTION_MAX_LENGTH} Zeichen lang sein.`,
     },
     idea_has_been_created: {
       en: "Congratulations, your idea has been created!",

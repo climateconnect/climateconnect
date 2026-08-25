@@ -5,7 +5,7 @@ import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import getTexts from "../../../../public/texts/texts";
 import theme from "../../../themes/theme";
 import UserContext from "../../context/UserContext";
-import GoBackFromProjectPageButton from "../../project/Buttons/GoBackFromProjectPageButton";
+import GoBackButton from "../../general/GoBackButton";
 import HubLinks from "./HubLinks";
 const PRIO1_SLUG = "prio1";
 
@@ -51,7 +51,14 @@ const useStyles = makeStyles<Theme, StyleProps>((theme: Theme) => ({
   },
 }));
 
-export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub, hubSlug }: any) {
+export default function HubsSubHeader({
+  hubs,
+  onlyShowDropDown,
+  isCustomHub,
+  hubSlug,
+  project,
+  defaultBackUrl,
+}: any) {
   const classes = useStyles({ hubSlug: hubSlug });
   const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const { locale } = useContext(UserContext);
@@ -60,13 +67,15 @@ export default function HubsSubHeader({ hubs, onlyShowDropDown, isCustomHub, hub
     <div className={classes.root}>
       <Container className={classes.container}>
         <div>
-          {!isNarrowScreen && onlyShowDropDown && (
-            <GoBackFromProjectPageButton
+          {onlyShowDropDown && (
+            <GoBackButton
               /*TODO(undefined) containerClassName={classes.goBackButtonContainer} */
               texts={texts}
               locale={locale}
               tinyScreen={isNarrowScreen}
               hubSlug={hubSlug}
+              project={project}
+              defaultBackUrl={defaultBackUrl}
             />
           )}
         </div>

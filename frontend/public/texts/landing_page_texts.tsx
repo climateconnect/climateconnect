@@ -62,23 +62,23 @@ export default function getLandingPageTexts({ classes, isNarrowScreen }) {
       de: "Entdecke Klimaschutz-Projekte",
     },
     find_a_climate_action_organization_and_get_involved: {
-      en: "Find a climate action organization and get involved",
+      en: "Find a climate action organisation and get involved",
       de: "Finde eine Klimaschutzorganisation und bringe dich ein",
     },
     find_a_climate_action_organization_and_get_involved_text: {
       en: `Find nonprofits, associations, companies, institutes, NGOs, local governments and other
-      types of organizations taking climate action!`,
+      types of organisations taking climate action!`,
       de: `Finde Non-Profit-Organisationen, Verbände, Unternehmen, Institute, Nicht-Regierungs-Organisationen, lokale Regierungen und
       andere Arten von Organisationen, die sich für den Klimaschutz einseten!`,
     },
     find_a_climate_action_organization_and_get_involved_additional_text: {
-      en: `You can directly contact the organization's representative to exchange knowledge,
+      en: `You can directly contact the organisation's representative to exchange knowledge,
       find volunteering opportunities or job opportunites.`,
       de: `Du kannst direkt den Repräsentanten der Organisation kontaktieren um Wissen auszutauschen und
       zu lernen, wie du dich einbringen kannst.`,
     },
     explore_all_organizations: {
-      en: "Explore all organizations",
+      en: "Explore all organisations",
       de: "Entdecke alle Organisationen",
     },
     who_we_are: {

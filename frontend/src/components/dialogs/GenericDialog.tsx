@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Dialog,
   DialogTitle,
@@ -9,7 +10,7 @@ import {
 } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import CloseIcon from "@mui/icons-material/Close";
-import PropTypes from "prop-types";
+import { string, func, bool } from "prop-types";
 import React, { PropsWithChildren } from "react";
 import theme from "../../themes/theme";
 
@@ -49,11 +50,16 @@ const useStyles = makeStyles<
     marginRight: props.closeButtonRightSide ? theme.spacing(5) : theme.spacing(2),
     fontSize: 20,
     color: theme.palette.text.primary,
+    flex: 1,
   }),
-  dialogTitle: {
+  dialogTitle: (props) => ({
     display: "flex",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: props.fullScreen ? "flex-start" : "flex-start",
+  }),
+  applyButtonArea: {
+    marginLeft: "auto",
+    flexShrink: 0,
   },
   saveIconButton: {
     background: theme.palette.primary.main,
@@ -66,11 +72,13 @@ const useStyles = makeStyles<
 }));
 
 type Props = PropsWithChildren<{
+  activeFilterCount?: number;
   applyText?: string;
   fullScreen?: boolean;
   maxWidth?: "sm" | "lg";
   onApply?: () => void;
-  onClose: (arg: false | React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  // eslint-disable-next-line no-unused-vars
+  onClose: ((arg: false) => void) | (() => void);
   open: boolean;
   title: string;
   topBarFixed?: boolean;
@@ -84,14 +92,11 @@ type Props = PropsWithChildren<{
   closeButtonRightStyle?: string;
   showApplyAtBottom?: boolean;
   buttonAsLink?: string;
+  PaperProps?: any;
 }>;
-/**
- * Simple base wrapper on top of the Material UI (MUI)
- * core Dialog component. This component
- * should only be used by other "*Dialog" components, like
- * "ProjectRequestersDialog".
- */
+
 export default function GenericDialog({
+  activeFilterCount,
   applyText,
   children,
   fullScreen,
@@ -111,6 +116,7 @@ export default function GenericDialog({
   closeButtonRightStyle,
   showApplyAtBottom,
   buttonAsLink,
+  PaperProps,
 }: Props) {
   const classes = useStyles({
     useApplyButton,
@@ -124,6 +130,9 @@ export default function GenericDialog({
     onClose(false);
   };
 
+  const applyBadgeContent =
+    activeFilterCount !== undefined && activeFilterCount > 0 ? activeFilterCount : undefined;
+
   return (
     <Dialog
       className={`${classes.dialog} ${topBarFixed && classes.noScrollDialog}`}
@@ -134,44 +143,58 @@ export default function GenericDialog({
       classes={{
         paper: paperClassName,
       }}
+      PaperProps={PaperProps}
+      closeAfterTransition={false}
     >
       <DialogTitle className={classes.dialogTitle}>
         {onClose && !closeButtonRightSide && (
           <IconButton
             aria-label="close"
             className={classes.closeButtonLeft}
-            onClick={onClose}
+            onClick={() => onClose(false)}
             size={closeButtonSmall ? "small" : undefined}
           >
             <CloseIcon />
           </IconButton>
         )}
-        <Typography component="h2" className={`${titleTextClassName} ${classes.titleText}`}>
-          {title}
-        </Typography>
+        <Typography className={`${titleTextClassName} ${classes.titleText}`}>{title}</Typography>
         {useApplyButton && applyText && !showApplyAtBottom && (
-          <>
+          <div className={classes.applyButtonArea}>
             {applyIcon && isSmallScreen ? (
-              <IconButton onClick={onApply} className={classes.saveIconButton} size="large">
-                <applyIcon.icon />
-              </IconButton>
-            ) : (
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.applyButton}
-                onClick={onApply}
+              <Badge
+                badgeContent={applyBadgeContent}
+                color="secondary"
+                max={9}
+                aria-label={applyBadgeContent ? `${applyBadgeContent} active filters` : undefined}
               >
-                {applyText}
-              </Button>
+                <IconButton onClick={onApply} className={classes.saveIconButton} size="large">
+                  <applyIcon.icon />
+                </IconButton>
+              </Badge>
+            ) : (
+              <Badge
+                badgeContent={applyBadgeContent}
+                color="secondary"
+                max={9}
+                aria-label={applyBadgeContent ? `${applyBadgeContent} active filters` : undefined}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.applyButton}
+                  onClick={onApply}
+                >
+                  {applyText}
+                </Button>
+              </Badge>
             )}
-          </>
+          </div>
         )}
         {onClose && closeButtonRightSide && (
           <IconButton
             aria-label="close"
             className={`classes.closeButtonRight ${closeButtonRightStyle}`}
-            onClick={onClose}
+            onClick={() => onClose(false)}
             size={closeButtonSmall ? "small" : undefined}
           >
             <CloseIcon />
@@ -218,10 +241,10 @@ export default function GenericDialog({
 }
 
 GenericDialog.propTypes = {
-  applyText: PropTypes.string,
-  onApply: PropTypes.func,
-  onClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
-  title: PropTypes.string.isRequired,
-  useApplyButton: PropTypes.bool,
+  applyText: string,
+  onApply: func,
+  onClose: func.isRequired,
+  open: bool.isRequired,
+  title: string.isRequired,
+  useApplyButton: bool,
 };

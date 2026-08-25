@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import Carousel from "react-multi-carousel";
-import { Theme, useMediaQuery, Link, Typography, Button } from "@mui/material";
+import { Theme, useMediaQuery, Typography, Button } from "@mui/material";
 import UserContext from "../context/UserContext";
 import { getImageUrl } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import { getLocalePrefix } from "../../../public/lib/apiOperations";
+import AppLink from "../general/AppLink";
 import HubSupportersDialog from "../dialogs/HubSupportersDialog";
 import { Supporter } from "../../types";
 
@@ -15,6 +15,7 @@ type HubSupporter = {
   containerClass?: string;
   mobileVersion?: boolean;
   hubName: string;
+  hubUrl?: string;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -23,9 +24,9 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     paddingRight: "5px",
     paddingLeft: "5px",
+    paddingBottom: "20px",
     width: 320,
     [`@media (min-width: 900px) and (max-width: 1200px)`]: {
-      marginLeft: "20px",
       alignSelf: "end",
     },
   },
@@ -39,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
     borderRadius: "4px",
     position: "relative",
-    marginBottom: "20px",
   },
   customDot: {
     bottom: "-16px",
@@ -62,6 +62,19 @@ const useStyles = makeStyles((theme) => ({
   supporterImg: {
     borderRadius: "50%",
   },
+  supporterImgStandaloneContainer: {
+    width: 310,
+    height: 92,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  supporterImgStandalone: {
+    maxWidth: "100%",
+    maxHeight: "100%",
+    objectFit: "contain",
+  },
   supporterName: {
     fontSize: "17px",
     fontWeight: "600",
@@ -69,14 +82,14 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     wordBreak: "break-word",
   },
-  supporterSubtitle: (containerClass) => ({
+  supporterSubtitle: {
     margin: 0,
     fontSize: "12px",
     fontWeight: "normal",
     color: "#484848",
     overflow: "hidden",
     wordBreak: "break-word",
-  }),
+  },
   carouselEntry: {
     padding: " 8px",
     display: "flex",
@@ -123,6 +136,7 @@ const HubSupporters = ({
   containerClass,
   mobileVersion,
   hubName,
+  hubUrl,
 }: HubSupporter) => {
   const classes = useStyles({ containerClass: containerClass });
   const isSmallOrMediumScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
@@ -132,6 +146,7 @@ const HubSupporters = ({
   const toggleOpenSupportersDialog = () => {
     setOpenSupportersDialog(!openSupportersDialog);
   };
+
   return (
     <>
       {!isSmallOrMediumScreen && !mobileVersion ? (
@@ -140,7 +155,6 @@ const HubSupporters = ({
           texts={texts}
           containerClass={containerClass}
           supportersList={supportersList}
-          locale={locale}
         />
       ) : (
         <>
@@ -156,6 +170,7 @@ const HubSupporters = ({
             open={openSupportersDialog}
             onClose={toggleOpenSupportersDialog}
             hubName={hubName}
+            hubUrl={hubUrl}
           />
         </>
       )}
@@ -165,41 +180,46 @@ const HubSupporters = ({
 
 export default HubSupporters;
 
-const CarouselItem = ({ supporter, classes, locale }) => {
+const CarouselItem = ({ supporter, classes }) => {
+  const organizationHref = `/organizations/${supporter?.organization_url_slug}`;
   return (
     <div className={classes.carouselEntry} key={supporter.name}>
-      <div className={classes.itemContainer}>
-        <img
-          src={getImageUrl(supporter?.logo)}
-          width={76}
-          height={76}
-          alt={supporter.name}
-          className={classes.supporterImg}
-        />
-        <div>
-          <p className={classes.supporterName}>
-            {supporter?.organization_url_slug ? (
-              <Link
-                href={
-                  getLocalePrefix(locale) + "/organizations/" + supporter?.organization_url_slug
-                }
-                underline="none"
-                className={classes.supporterName}
-              >
-                {supporter?.name}
-              </Link>
-            ) : (
-              supporter?.name
-            )}
-          </p>
-          <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
+      {supporter?.standalone_image ? (
+        <div className={classes.supporterImgStandaloneContainer}>
+          <img
+            src={getImageUrl(supporter?.standalone_image)}
+            alt={supporter.name}
+            className={classes.supporterImgStandalone}
+          />
         </div>
-      </div>
+      ) : (
+        <div className={classes.itemContainer}>
+          <img
+            src={getImageUrl(supporter?.logo)}
+            width={76}
+            height={76}
+            alt={supporter.name}
+            className={classes.supporterImg}
+          />
+          <div>
+            <p className={classes.supporterName}>
+              {supporter?.organization_url_slug ? (
+                <AppLink href={organizationHref} underline="none" className={classes.supporterName}>
+                  {supporter?.name}
+                </AppLink>
+              ) : (
+                supporter?.name
+              )}
+            </p>
+            <p className={classes.supporterSubtitle}>{supporter.subtitle}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-const HubSupportersSlider = ({ classes, texts, containerClass, supportersList, locale }) => {
+const HubSupportersSlider = ({ classes, texts, containerClass, supportersList }) => {
   const responsive = {
     all: {
       breakpoint: { max: 10000, min: 0 },
@@ -226,7 +246,6 @@ const HubSupportersSlider = ({ classes, texts, containerClass, supportersList, l
                 key={supporter?.organization_url_slug}
                 supporter={supporter}
                 classes={classes}
-                locale={locale}
               />
             ))}
         </Carousel>

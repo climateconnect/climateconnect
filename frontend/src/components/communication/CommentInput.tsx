@@ -63,7 +63,7 @@ function CommentInput({
   useIconButton,
 }: any) {
   const classes = useStyles();
-  const [curComment, setCurComment] = React.useState("");
+  const [curComment, setCurComment] = useState("");
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "communication", locale: locale });
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));

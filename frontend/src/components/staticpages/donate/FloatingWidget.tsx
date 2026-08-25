@@ -1,6 +1,6 @@
 import { Container } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import React from "react";
+import React, { useState } from "react";
 import BottomOfPage from "../../hooks/BottomOfPage";
 import ElementOnScreen from "../../hooks/ElementOnScreen";
 import ElementSpaceToTop from "../../hooks/ElementSpaceToTop";
@@ -43,9 +43,9 @@ const useStyles = makeStyles((theme) => {
 
 export default function FloatingWidget({ goal_name, current_amount, goal_amount }) {
   const classes = useStyles();
-  const [el, setEl] = React.useState<HTMLDivElement | null>(null);
-  const [isFixed, setIsFixed] = React.useState(false);
-  const [isAtBottom, setIsAtBottom] = React.useState(false);
+  const [el, setEl] = useState<HTMLDivElement | null>(null);
+  const [isFixed, setIsFixed] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(false);
   const trigger = ElementOnScreen({ el: el });
   const spaceToTop = ElementSpaceToTop({ /*initTopOfPage: true,*/ el });
   const atBottomOfPage = BottomOfPage({ initBottomOfPage: false, marginToTrigger: 363 });

@@ -44,6 +44,7 @@ const useStyles = makeStyles<
   },
   popper: {
     width: "67px",
+    zIndex: 99,
   },
 }));
 
@@ -109,8 +110,9 @@ export default function LanguageSelect({
 
   const hoverButtonProps: any = {};
 
-  if (!isNarrowScreen) {
-    (hoverButtonProps.onMouseEnter = handleOpen), (hoverButtonProps.onMouseLeave = handleClose);
+  if (!isMediumScreen) {
+    hoverButtonProps.onMouseEnter = handleOpen;
+    hoverButtonProps.onMouseLeave = handleClose;
   }
 
   // TODO: this could be generalized into a HoverButton component,
@@ -145,7 +147,7 @@ export default function LanguageSelect({
       >
         {locale}
       </Button>
-      {isNarrowScreen ? (
+      {isMediumScreen ? (
         <StyledMenu
           id="language-select"
           className={classes.popover}

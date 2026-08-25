@@ -1,4 +1,4 @@
-import { Box, CardContent, Tooltip, Typography } from "@mui/material";
+import { Box, CardContent, Typography } from "@mui/material";
 import React, { useState } from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import LocationDisplay from "../project/LocationDisplay";
@@ -44,8 +44,10 @@ const useStyles = makeStyles((theme) => {
     },
     contentWrapper: {
       padding: 0,
-      display: "grid",
-      gridTemplateRows: "min-content",
+      display: "flex",
+      flexDirection: "column",
+      flex: 1,
+      overflow: "hidden",
     },
     placeIcon: {
       color: theme.palette.background.default_contrastText,
@@ -67,6 +69,7 @@ const useStyles = makeStyles((theme) => {
 
 export default function OrganizationPreviewBody({ organization }) {
   const classes = useStyles();
+  // eslint-disable-next-line no-unused-vars
   const [linesOfText, setLinesOfText] = useState(5);
 
   return (

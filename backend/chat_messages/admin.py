@@ -6,10 +6,17 @@ from chat_messages.models.message import (
     MessageReceiver,
 )
 
-pass_through_models = (MessageParticipants, Participant, MessageReceiver)
+pass_through_models = (MessageParticipants, Participant)
 
 for model in pass_through_models:
     admin.site.register(model, admin.ModelAdmin)
+
+
+class MessageReceiverAdmin(admin.ModelAdmin):
+    raw_id_fields = ("receiver", "message")
+
+
+admin.site.register(MessageReceiver, MessageReceiverAdmin)
 
 
 class MessageAdmin(admin.ModelAdmin):

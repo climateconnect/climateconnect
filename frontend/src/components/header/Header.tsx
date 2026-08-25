@@ -9,7 +9,7 @@ import {
   IconButton,
   Link,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   MenuItem,
@@ -25,10 +25,11 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import MenuIcon from "@mui/icons-material/Menu";
 import noop from "lodash/noop";
-import React, { useContext, useState } from "react";
+import React, { Fragment, useEffect, useContext, useRef, useState } from "react";
 import { getStaticPageLinks } from "../../../public/data/getStaticPageLinks"; // Relative imports
 import { getLocalePrefix } from "../../../public/lib/apiOperations";
-import { getImageUrl } from "../../../public/lib/imageOperations";
+import { appHref } from "../../../public/lib/appLink";
+import { getImageUrl, getLogoSrc } from "../../../public/lib/imageOperations";
 import getTexts from "../../../public/texts/texts";
 import Notification from "../communication/notifications/Notification";
 import NotificationsBox from "../communication/notifications/NotificationsBox";
@@ -295,6 +296,7 @@ export default function Header({
     CUSTOM_HUB_URLS,
     LOCATION_HUBS,
   } = useContext(UserContext);
+
   const texts = getTexts({ page: "navigation", locale: locale });
   const [anchorEl, setAnchorEl] = useState<false | null | HTMLElement>(false);
   const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("sm"));
@@ -303,7 +305,15 @@ export default function Header({
   const isCustomHub = customHubUrls.includes(hubUrl);
   const isLocationHub = LOCATION_HUBS.includes(hubUrl);
 
-  const LINKS = getLinks(pathName, texts, isLocationHub, isCustomHub, hasHubLandingPage, hubUrl);
+  const LINKS = getLinks(
+    pathName,
+    texts,
+    isLocationHub,
+    isCustomHub,
+    hasHubLandingPage,
+    hubUrl,
+    isLandingPage
+  );
   const classes = useStyles({
     fixedHeader: fixedHeader,
     transparentHeader: transparentHeader,
@@ -323,8 +333,16 @@ export default function Header({
   const localePrefix = getLocalePrefix(locale);
 
   const onNotificationsClose = () => setAnchorEl(null);
+
+  useEffect(() => {
+    if (!anchorEl) return;
+    const handleScroll = () => setAnchorEl(null);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [anchorEl]);
+
   const getLogo = () => {
-    let imageUrl = "/images";
+    const imageUrl = "/images";
     if (isCustomHub) {
       return `${imageUrl}/hub_logos/ch_${hubUrl}_logo.svg`;
     }
@@ -336,19 +354,22 @@ export default function Header({
       }.svg`;
     }
 
-    return loadDefaultLogo(transparentHeader, isMediumScreen);
+    return loadDefaultLogo(transparentHeader, isMediumScreen, locale);
   };
 
   const loadFallbackLogo = (
     ev // TODO: implementing better with re-rendering after screen size change
-  ) => (ev.target.src = loadDefaultLogo(transparentHeader, isMediumScreen));
+  ) => (ev.target.src = loadDefaultLogo(transparentHeader, isMediumScreen, locale));
 
-  const loadDefaultLogo = (transparentHeader?: boolean, isMediumScreen?: boolean): string => {
+  const loadDefaultLogo = (
+    transparentHeader?: boolean,
+    isMediumScreen?: boolean,
+    locale?: string
+  ): string => {
     if (isMediumScreen) {
       return transparentHeader ? "/images/logo_white_no_text.svg" : "/images/logo_no_text.svg";
-    } else {
-      return transparentHeader ? "/images/logo_white.png" : "/images/logo.svg";
     }
+    return getLogoSrc(transparentHeader ? "white" : "normal", locale);
   };
 
   const logo = getLogo();
@@ -360,11 +381,10 @@ export default function Header({
   };
   const logoLink = getLogoLink();
   const poweredByLogoMap: Record<string, string> = {
-    prio1: "/images/logo_white.png",
-    perth: "/images/logo.svg",
+    prio1: getLogoSrc("white", locale),
+    perth: getLogoSrc("normal", locale),
   };
-  const poweredByLogoSrc =
-    poweredByLogoMap[hubUrl?.toLowerCase() ?? ""] || "/images/logo_white.png";
+  const poweredByLogoSrc = poweredByLogoMap[hubUrl?.toLowerCase() ?? ""] || getLogoSrc("white");
 
   return (
     <Box
@@ -457,7 +477,6 @@ function NormalScreenLinks({
   const isSmallMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   const isMediumScreen = useMediaQuery<Theme>(theme.breakpoints.down("lg"));
   const STATIC_PAGE_LINKS = getStaticPageLinks(texts, locale, isCustomHub && hubUrl);
-
   return (
     <Box className={classes.linkContainer}>
       {LINKS.filter(
@@ -481,7 +500,7 @@ function NormalScreenLinks({
           !(isStaticPage && link.hideOnStaticPages)
         )
           return (
-            <React.Fragment key={index}>
+            <Fragment key={index}>
               <span>
                 {link.type === "languageSelect" ? (
                   <LanguageSelect
@@ -516,11 +535,12 @@ function NormalScreenLinks({
                         </Typography>
                         <Divider />
                         {notifications && notifications.length > 0 ? (
-                          notifications.map((n, index) => (
-                            <Notification key={index} notification={n} />
-                          ))
+                          notifications.map((n, index) => {
+                            console.log("notif in map", hubUrl);
+                            return <Notification key={index} notification={n} hubUrl={hubUrl} />;
+                          })
                         ) : (
-                          <Notification key={index} isPlaceholder />
+                          <Notification key={index} isPlaceholder hubUrl={hubUrl} />
                         )}
                       </NotificationsBox>
                     )}
@@ -542,10 +562,10 @@ function NormalScreenLinks({
                   </Button>
                 )}
               </span>
-            </React.Fragment>
+            </Fragment>
           );
       })}
-      {loggedInUser && (
+      {loggedInUser && loggedInUser.url_slug && (
         <LoggedInNormalScreen
           loggedInUser={loggedInUser}
           handleLogout={handleLogout}
@@ -553,7 +573,6 @@ function NormalScreenLinks({
           texts={texts}
           localePrefix={localePrefix}
           getLoggedInLinks={getLoggedInLinks}
-          isCustomHub={isCustomHub}
           hubUrl={hubUrl}
           classes={classes}
         />
@@ -579,12 +598,11 @@ const LoggedInNormalScreen = ({
   texts,
   localePrefix,
   getLoggedInLinks,
-  isCustomHub,
   hubUrl,
   classes,
 }) => {
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const anchorRef = useRef(null);
 
   const handleToggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -599,7 +617,6 @@ const LoggedInNormalScreen = ({
     src: getImageUrl(loggedInUser.image),
     alt: loggedInUser.name,
   };
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
   return (
     <ClickAwayListener onClickAway={handleCloseMenu}>
       <Box className={classes.loggedInRoot}>
@@ -628,7 +645,7 @@ const LoggedInNormalScreen = ({
         >
           <Paper>
             <MenuList>
-              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString })
+              {getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, hubUrl })
                 .filter((link) => !link.showOnMobileOnly)
                 .map((link, index) => {
                   const menuItemProps: any = {
@@ -689,7 +706,6 @@ function NarrowScreenLinks({
       !(loggedInUser && link.onlyShowLoggedOut) &&
       !(!loggedInUser && link.onlyShowLoggedIn)
   );
-  const queryString = hubUrl ? `?hub=${hubUrl}` : "";
 
   return (
     <>
@@ -712,7 +728,7 @@ function NarrowScreenLinks({
             buttonProps.className = classes.marginRight;
           }
           return (
-            <React.Fragment key={index}>
+            <Fragment key={index}>
               {link.onlyShowIconOnMobile ? (
                 <>
                   <IconButton
@@ -745,10 +761,10 @@ function NarrowScreenLinks({
                       <Divider />
                       {notifications && notifications.length > 0 ? (
                         notifications.map((n, index) => (
-                          <Notification key={index} notification={n} />
+                          <Notification key={index} notification={n} hubUrl={hubUrl} />
                         ))
                       ) : (
-                        <Notification key={index} isPlaceholder />
+                        <Notification key={index} isPlaceholder hubUrl={hubUrl} />
                       )}
                     </NotificationsBox>
                   )}
@@ -768,7 +784,7 @@ function NarrowScreenLinks({
                   )}
                 </span>
               )}
-            </React.Fragment>
+            </Fragment>
           );
         })}
         <span>
@@ -790,94 +806,38 @@ function NarrowScreenLinks({
           onClose={closeDrawer}
           disableBackdropTransition={true}
         >
-          <List /*TODO(unused) styles={{ height: "100vh" }} */>
-            <ListItem className={classes.languageSelectMobile}>
-              <LanguageSelect
-                transparentHeader={transparentHeader}
-                isCustomHub={isCustomHub}
-                isLandingPage={isLandingPage}
-              />
-            </ListItem>
-            {LINKS.filter(
-              (link) =>
-                (!link.alwaysDisplayDirectly ||
-                  !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
-                !(loggedInUser && link.onlyShowLoggedOut) &&
-                !(!loggedInUser && link.onlyShowLoggedIn) &&
-                !link.onlyShowOnNormalScreen
-            ).map((link, index) => {
-              const Icon = link.iconForDrawer;
-              if (link.type !== "languageSelect") {
-                if (link?.showStaticLinksInDropdown && isCustomHub) {
-                  return (
-                    <NarrowScreenDropdownMenu
-                      locale={locale}
-                      classes={classes}
-                      Icon={Icon}
-                      link={link}
-                      STATIC_PAGE_LINKS={STATIC_PAGE_LINKS}
-                      closeDrawer={closeDrawer}
-                    />
-                  );
-                } else {
-                  return (
-                    <Link
-                      href={localePrefix + link.href}
-                      key={index}
-                      underline="hover"
-                      className={classes.linkUnderline}
-                    >
-                      <ListItem button component="a" onClick={closeDrawer}>
-                        <ListItemIcon>
-                          <Icon className={classes.drawerItem} />
-                        </ListItemIcon>
-                        <ListItemText primary={link.text} className={classes.drawerItem} />
-                      </ListItem>
-                    </Link>
-                  );
-                }
-              }
-            })}
-            {loggedInUser &&
-              getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, queryString }).map(
-                (link, index) => {
-                  const Icon: any = link.iconForDrawer;
-                  const avatarProps = {
-                    className: classes.loggedInAvatarMobile,
-                    src: getImageUrl(loggedInUser.image),
-                    alt: loggedInUser.name,
-                  };
-                  if (link.avatar)
+          <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+            <List sx={{ flexGrow: 1 }}>
+              <ListItemButton className={classes.languageSelectMobile}>
+                <LanguageSelect
+                  transparentHeader={transparentHeader}
+                  isCustomHub={isCustomHub}
+                  isLandingPage={isLandingPage}
+                />
+              </ListItemButton>
+              {LINKS.filter(
+                (link) =>
+                  (!link.alwaysDisplayDirectly ||
+                    !(loggedInUser && link.alwaysDisplayDirectly === "loggedIn")) &&
+                  !(loggedInUser && link.onlyShowLoggedOut) &&
+                  !(!loggedInUser && link.onlyShowLoggedIn) &&
+                  !link.onlyShowOnNormalScreen
+              ).map((link, index) => {
+                const Icon = link.iconForDrawer;
+                if (link.type !== "languageSelect") {
+                  if (link?.showStaticLinksInDropdown && isCustomHub) {
                     return (
-                      <div className={classes.mobileAvatarContainer}>
-                        <Link
-                          href={localePrefix + "/profiles/" + loggedInUser.url_slug + queryString}
-                          underline="hover"
-                        >
-                          {loggedInUser?.badges?.length > 0 ? (
-                            <ProfileBadge
-                              badge={loggedInUser?.badges[0]}
-                              size="medium"
-                              className={classes.badge}
-                            >
-                              <Avatar {...avatarProps} />
-                            </ProfileBadge>
-                          ) : (
-                            <Avatar {...avatarProps} />
-                          )}
-                        </Link>
-                      </div>
+                      <NarrowScreenDropdownMenu
+                        key={index}
+                        locale={locale}
+                        classes={classes}
+                        Icon={Icon}
+                        link={link}
+                        STATIC_PAGE_LINKS={STATIC_PAGE_LINKS}
+                        closeDrawer={closeDrawer}
+                      />
                     );
-                  else if (link.isLogoutButton)
-                    return (
-                      <ListItem button component="a" key={index} onClick={handleLogout}>
-                        <ListItemIcon>
-                          <Icon className={classes.drawerItem} />
-                        </ListItemIcon>
-                        <ListItemText primary={link.text} className={classes.drawerItem} />
-                      </ListItem>
-                    );
-                  else
+                  } else {
                     return (
                       <Link
                         href={localePrefix + link.href}
@@ -885,17 +845,107 @@ function NarrowScreenLinks({
                         underline="hover"
                         className={classes.linkUnderline}
                       >
-                        <ListItem button component="a" onClick={closeDrawer}>
+                        <ListItemButton component="a" onClick={closeDrawer}>
                           <ListItemIcon>
                             <Icon className={classes.drawerItem} />
                           </ListItemIcon>
                           <ListItemText primary={link.text} className={classes.drawerItem} />
-                        </ListItem>
+                        </ListItemButton>
                       </Link>
                     );
+                  }
                 }
-              )}
-          </List>
+              })}
+              {loggedInUser &&
+                loggedInUser.url_slug &&
+                getLoggedInLinks({ loggedInUser: loggedInUser, texts: texts, hubUrl }).map(
+                  (link, index) => {
+                    const Icon: any = link.iconForDrawer;
+                    const avatarProps = {
+                      className: classes.loggedInAvatarMobile,
+                      src: getImageUrl(loggedInUser.image),
+                      alt: loggedInUser.name,
+                    };
+                    if (link.avatar)
+                      return (
+                        <div className={classes.mobileAvatarContainer} key={index}>
+                          <Link
+                            href={appHref("/profiles/" + loggedInUser.url_slug, { hubUrl, locale })}
+                            underline="hover"
+                          >
+                            {loggedInUser?.badges?.length > 0 ? (
+                              <ProfileBadge
+                                badge={loggedInUser?.badges[0]}
+                                size="medium"
+                                className={classes.badge}
+                              >
+                                <Avatar {...avatarProps} />
+                              </ProfileBadge>
+                            ) : (
+                              <Avatar {...avatarProps} />
+                            )}
+                          </Link>
+                        </div>
+                      );
+                    else if (link.isLogoutButton)
+                      return (
+                        <ListItemButton component="a" key={index} onClick={handleLogout}>
+                          <ListItemIcon>
+                            <Icon className={classes.drawerItem} />
+                          </ListItemIcon>
+                          <ListItemText primary={link.text} className={classes.drawerItem} />
+                        </ListItemButton>
+                      );
+                    else
+                      return (
+                        <Link
+                          href={localePrefix + link.href}
+                          key={index}
+                          underline="hover"
+                          className={classes.linkUnderline}
+                        >
+                          <ListItemButton component="a" onClick={closeDrawer}>
+                            <ListItemIcon>
+                              <Icon className={classes.drawerItem} />
+                            </ListItemIcon>
+                            <ListItemText primary={link.text} className={classes.drawerItem} />
+                          </ListItemButton>
+                        </Link>
+                      );
+                  }
+                )}
+            </List>
+            <List>
+              <Divider />
+              <Link
+                href={localePrefix + "/imprint"}
+                underline="hover"
+                className={classes.linkUnderline}
+              >
+                <ListItemButton component="a" onClick={closeDrawer}>
+                  <ListItemText primary={texts.imprint} className={classes.drawerItem} />
+                </ListItemButton>
+              </Link>
+              <Link
+                href={localePrefix + "/privacy"}
+                underline="hover"
+                className={classes.linkUnderline}
+              >
+                <ListItemButton component="a" onClick={closeDrawer}>
+                  <ListItemText primary={texts.privacy} className={classes.drawerItem} />
+                </ListItemButton>
+              </Link>
+              <Link
+                href={localePrefix + "/terms"}
+                underline="hover"
+                className={classes.linkUnderline}
+              >
+                <ListItemButton component="a" onClick={closeDrawer}>
+                  <ListItemText primary={texts.terms} className={classes.drawerItem} />
+                </ListItemButton>
+              </Link>
+            </List>
+          </Box>
         </SwipeableDrawer>
       </Box>
     </>
@@ -910,18 +960,17 @@ const NarrowScreenDropdownMenu = ({
   STATIC_PAGE_LINKS,
   closeDrawer,
 }) => {
-  const localePrefix = getLocalePrefix(locale);
   const [openDropdownInMobile, setOpenDropdownInMobile] = useState(false);
   const toggleDropdownInMobile = setOpenDropdownInMobile.bind(null, !openDropdownInMobile);
   return (
     <>
-      <ListItem button component="a" onClick={toggleDropdownInMobile}>
+      <ListItemButton component="a" onClick={toggleDropdownInMobile}>
         <ListItemIcon>
           <Icon className={classes.drawerItem} />
         </ListItemIcon>
         <ListItemText primary={link.text} className={classes.drawerItem} />
         <ArrowDropDownIcon className={classes.drawerItem} />
-      </ListItem>
+      </ListItemButton>
       <div
         className={`${classes.dropDownBgColorInMobile} ${classes.dropdownMenuInMobile} ${
           openDropdownInMobile ? classes.dropdownMenuInMobileOpen : ""
@@ -936,9 +985,9 @@ const NarrowScreenDropdownMenu = ({
               className={classes.linkUnderline}
               target={link.target || "_self"}
             >
-              <ListItem button component="a" onClick={closeDrawer}>
+              <ListItemButton component="a" onClick={closeDrawer}>
                 <ListItemText primary={link.text} className={classes.drawerItem} />
-              </ListItem>
+              </ListItemButton>
             </Link>
           );
         })}
@@ -952,7 +1001,6 @@ const getLinkButtonProps = ({
   index,
   loggedInUser,
   classes,
-  transparentHeader,
   toggleShowNotifications,
   isNarrowScreen,
   linksOutsideDrawer,

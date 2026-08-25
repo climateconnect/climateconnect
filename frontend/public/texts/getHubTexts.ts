@@ -16,11 +16,11 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       de: "Finde inspirierende Klimaschutz-Ideen aus " + hubName,
     },
     search_for_organizations_in_sector: {
-      en: "Search for climate organizations in the " + hubName + " sector",
+      en: "Search for climate organisations in the " + hubName + " sector",
       de: "Durchsuche Klimaschutzorganisationen im Bereich " + hubName,
     },
     search_organization_in_location: {
-      en: "Search organizations in " + hubName,
+      en: "Search organisations in " + hubName,
       de: "Suche Organisationen in " + hubName,
     },
     search_profiles_in_location: {
@@ -29,9 +29,9 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
     },
     more_info_about_hub_coming_soon: {
       en:
-        "More Info coming soon! Have a look at the projects and solutions submitted by Climate Connect users below!",
+        "More Info coming soon! Have a look at the projects and solutions submitted by ClimateHub Network users below!",
       de:
-        "Mehr Infos kommen in Kürze! Schau dir unten die Projekte und Lösungen an, die von Climate Connect Nutzern erstellt wurden!",
+        "Mehr Infos kommen in Kürze! Schau dir unten die Projekte und Lösungen an, die von ClimateHub Netzwerk Nutzern erstellt wurden!",
     },
     less_info: {
       en: "Less Info",
@@ -46,8 +46,8 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       de: "Zeige Projekte",
     },
     browse_explainer_text: {
-      en: "Find impactful climate change solutions created by Climate Connect users.",
-      de: "Finde wirksame Klimaschutzprojekte von anderen Climate Connect Nutzer:innen.",
+      en: "Find impactful climate change solutions created by ClimateHub Network users.",
+      de: "Finde wirksame Klimaschutzprojekte von anderen ClimateHub Netzwerk Nutzer:innen.",
     },
     loading_chart: {
       en: "Loading Chart",
@@ -77,13 +77,13 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
     },
     hubs_overview_largescreen_explainer_text_first_part: {
       en: `On the hub pages you can find information on how to effectively fight climate change in each
-        sector. You can find concrete and impactful solutions created by Climate Connect users. Get
+        sector. You can find concrete and impactful solutions created by ClimateHub Network users. Get
         inspired and see possible actions how to fight climate change and get involved in a project
         you like. Who knows, maybe you will even find a really cool project that is already working
         great somewhere else and can reproduce it in your home town! Contact the solutions'
         creators directly on the solutions' pages to start a conversation!`,
       de: `In den Hubs findest du Informationen, wie der Klimawandel in jedem Bereich bekämpft werden kann.
-        Dort findest du konkrete und wirkungsvolle Lösungen, die von Climate Connect Nutzern erstellt wurden.
+        Dort findest du konkrete und wirkungsvolle Lösungen, die von ClimateHub Netzwerk Nutzern erstellt wurden.
         Lass dich inspirieren, finde Aktionen, die zeigen, wie du den Klimawandel bekämpfen kannst und
         engagiere dich in einem Projekt, das dir gefällt. Wer weiß, vielleicht findest du ja auch ein richtig cooles
         Projekt, das woanders schon erfolgreich ist und du kannst es in deiner Stadt reproduzieren! Kontaktiere
@@ -100,10 +100,10 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       de: "Finde Klimaprojekte in jedem Sektor in unseren Hubs",
     },
     find_climate_projects_in_each_sector_in_our_hubs_text: {
-      en: `Discover facts and concrete climate actions, projects and solutions Climate Connect users
+      en: `Discover facts and concrete climate actions, projects and solutions ClimateHub Network users
       are working on by visiting the Hubs. Get a rundown of every main field of action in the fight
       against climate change.`,
-      de: `Entdecke Fakten und konkrete Klima-Aktionen, -Projekte und -Lösungen, an denen Climate Connect Nutzer
+      de: `Entdecke Fakten und konkrete Klima-Aktionen, -Projekte und -Lösungen, an denen ClimateHub Netzwerk Nutzer
       arbeiten, indem du die Hubs besuchst. Verschaffe dir damit einen Überblick über alle wichtigen
       Handlungsfelder im Kampf gegen den Klimawandel.`,
     },
@@ -152,12 +152,32 @@ export default function getHubTexts({ hubName, hubAmbassador }) {
       de: `Du siehst Projekte, Ideen und Events zum Thema "${hubName}"`,
     },
     you_are_seeing_organizations_related_to: {
-      en: `You are seeing organizations working on the topic "${hubName}"`,
+      en: `You are seeing organisations working on the topic "${hubName}"`,
       de: `Du siehst Organisationen, die am Thema "${hubName}" arbeiten`,
     },
     you_are_seeing_members_related_to: {
       en: `You are seeing people interested in the topic "${hubName}"`,
       de: `Du siehst Menschen, die sich für das Thema "${hubName}" interessieren`,
+    },
+    you_are_seeing_events_related_to: {
+      en: `You are seeing events related to the topic "${hubName}"`,
+      de: `Du siehst Events zum Thema "${hubName}"`,
+    },
+    upcoming_events: {
+      en: "Upcoming events",
+      de: "Kommende Events",
+    },
+    event_calendar: {
+      en: "Event Calendar",
+      de: "Eventkalender",
+    },
+    more_upcoming_events: {
+      en: "More upcoming events",
+      de: "Weitere anstehende Events",
+    },
+    search_events: {
+      en: "Search events",
+      de: "Events suchen",
     },
   };
 

@@ -9,8 +9,6 @@ import getTexts from "../../../../public/texts/texts";
 import { getFragmentsWithMentions } from "../../../utils/mentions_markdown";
 import UserContext from "../../context/UserContext";
 import {
-  IdeaCommentNotification,
-  IdeaCommentReplyNotification,
   ProjectCommentNotification,
   ProjectCommentReplyNotification,
 } from "./CommentNotifications";
@@ -76,56 +74,92 @@ const NOTIFICATION_TYPES = [
 export default function Notification({
   notification,
   isPlaceholder,
+  hubUrl,
 }: {
   notification?: any;
   isPlaceholder?: boolean;
+  hubUrl?: string;
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale, idea: notification?.idea });
   if (isPlaceholder) {
-    return <PlaceholderNotification />;
+    return <PlaceholderNotification hubUrl={hubUrl} />;
   }
 
   const type = NOTIFICATION_TYPES[notification.notification_type];
   if (type === "private_message") {
-    return <PrivateMessageNotification notification={notification} />;
+    return <PrivateMessageNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "project_comment") {
-    return <ProjectCommentNotification notification={notification} />;
+    return <ProjectCommentNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "reply_to_project_comment") {
-    return <ProjectCommentReplyNotification notification={notification} />;
+    return <ProjectCommentReplyNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "project_follower") {
-    return <ProjectFollowerNotification notification={notification} />;
+    return <ProjectFollowerNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "group_message") {
-    return <GroupMessageNotification notification={notification} />;
+    return <GroupMessageNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "join_project_request") {
-    return <JoinProjectRequestNotification notification={notification} />;
+    return <JoinProjectRequestNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "project_join_request_approved") {
-    return <JoinProjectRequestApprovedNotification notification={notification} />;
+    return <JoinProjectRequestApprovedNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "mention") {
-    return <MentionNotification notification={notification} texts={texts} locale={locale} />;
-  } else if (type === "idea_comment") {
-    return <IdeaCommentNotification notification={notification} />;
-  } else if (type === "reply_to_idea_comment") {
-    return <IdeaCommentReplyNotification notification={notification} />;
-  } else if (type === "person_joined_idea") {
-    return <PersonJoinedIdeaNotification notification={notification} />;
+    return (
+      <MentionNotification
+        notification={notification}
+        texts={texts}
+        locale={locale}
+        hubUrl={hubUrl}
+      />
+    );
+  } else if (
+    type === "idea_comment" ||
+    type === "reply_to_idea_comment" ||
+    type === "person_joined_idea"
+  ) {
+    // Ideas used to have their own hub browse URL with an `?idea=...#ideas`
+    // anchor. The browse refactor dropped that anchor system, so we fall
+    // back to the related project's page instead of rendering an empty
+    // notification. The notification payload may carry `notification.project`
+    // (the parent project) or `notification.idea` (the idea itself, which
+    // is a project of type "idea" in our model).
+    const relatedProject = notification.project || notification.idea;
+    if (relatedProject?.url_slug) {
+      const baseUrl = `/projects/${relatedProject.url_slug}`;
+      const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
+      // For the "person joined" variant we have a dedicated text entry;
+      // for the comment variants we use a generic message because no
+      // dedicated text entry exists and adding one is out of scope here.
+      const primaryText =
+        type === "person_joined_idea" ? texts.joined_your_idea : "commented on your idea";
+      return (
+        <GenericNotification
+          link={notifLink}
+          primaryText={primaryText}
+          notification={notification}
+        />
+      );
+    }
+    return <></>;
   } else if (type === "project_like") {
-    return <ProjectLikeNotification notification={notification} />;
+    return <ProjectLikeNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "organization_follower") {
-    return <OrganizationFollowerNotification notification={notification} />;
+    return <OrganizationFollowerNotification notification={notification} hubUrl={hubUrl} />;
   } else if (type === "org_project_published") {
-    return <OrgProjectSharedNotification notification={notification} />;
+    return <OrgProjectSharedNotification notification={notification} hubUrl={hubUrl} />;
   } else return <></>;
 }
 
-const JoinProjectRequestNotification = ({ notification }) => {
+const JoinProjectRequestNotification = ({ notification, hubUrl }) => {
   const requester = notification.membership_requester;
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
   const requesterName = requester?.first_name + " " + requester?.last_name;
+  const baseUrl = `/projects/${notification?.project?.url_slug}`;
+  const notifLink = hubUrl
+    ? `${baseUrl}?hub=${hubUrl}&show_join_requests=true`
+    : `${baseUrl}?show_join_requests=true`;
   return (
     <GenericNotification
-      link={`/projects/${notification?.project?.url_slug}?show_join_requests=true`}
+      link={notifLink}
       avatar={{
         alt: requesterName,
         image: requester?.thumbnail_image,
@@ -136,12 +170,14 @@ const JoinProjectRequestNotification = ({ notification }) => {
   );
 };
 
-const JoinProjectRequestApprovedNotification = ({ notification }) => {
+const JoinProjectRequestApprovedNotification = ({ notification, hubUrl }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", project: notification.project, locale: locale });
+  const baseUrl = `/projects/${notification.project.url_slug}`;
+  const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}#team` : `${baseUrl}#team`;
   return (
     <GenericNotification
-      link={`/projects/${notification.project.url_slug}#team`}
+      link={notifLink}
       notificationIcon={{
         icon: GroupIcon,
       }}
@@ -151,34 +187,15 @@ const JoinProjectRequestApprovedNotification = ({ notification }) => {
   );
 };
 
-const PersonJoinedIdeaNotification = ({ notification }) => {
-  const supporter = notification.idea_supporter;
-  const { locale } = useContext(UserContext);
-  const texts = getTexts({ page: "notification", locale: locale, idea: notification.idea });
-  //TODO: Link to group chat
-  return (
-    <GenericNotification
-      link={`/chat/${notification.idea_supporter_chat}`}
-      avatar={{
-        alt: supporter?.first_name + " " + supporter?.last_name,
-        image: supporter?.thumbnail_image,
-      }}
-      primaryText={
-        supporter?.first_name + " " + supporter?.last_name + " " + texts.joined_your_idea
-      }
-      secondaryText={texts.send_a_Message_to_welcome_them_in_the_group_chat}
-      notification={notification}
-    />
-  );
-};
-
-const PrivateMessageNotification = ({ notification }) => {
+const PrivateMessageNotification = ({ notification, hubUrl }) => {
   const sender = notification.last_message.sender;
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
+  const baseUrl = `/chat/${notification.chat_uuid}/`;
+  const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
   return (
     <GenericNotification
-      link={`/chat/${notification.chat_uuid}/`}
+      link={notifLink}
       avatar={{
         alt: sender?.first_name + " " + sender?.last_name,
         image: sender?.thumbnail_image,
@@ -190,14 +207,16 @@ const PrivateMessageNotification = ({ notification }) => {
   );
 };
 
-const GroupMessageNotification = ({ notification }) => {
+const GroupMessageNotification = ({ notification, hubUrl }) => {
   const group_title = notification.chat_title;
   const sender = notification.last_message.sender;
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
+  const baseUrl = `/chat/${notification.chat_uuid}/`;
+  const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
   return (
     <GenericNotification
-      link={`/chat/${notification.chat_uuid}/`}
+      link={notifLink}
       notificationIcon={{
         icon: GroupIcon,
       }}
@@ -210,19 +229,19 @@ const GroupMessageNotification = ({ notification }) => {
   );
 };
 
-const PlaceholderNotification = () => {
+const PlaceholderNotification = ({ hubUrl }) => {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
+  const baseUrl = `${getLocalePrefix(locale)}/inbox`;
+  const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
   return (
-    <Link href={getLocalePrefix(locale) + "/inbox"} underline="none" color="inherit">
+    <Link href={notifLink} underline="none" color="inherit">
       <StyledMenuItem>
         <ListItemText className={classes.listItemText} disableTypography>
           {texts.placeholderNotification}
           <div>
-            <Link className={classes.goToInboxText} underline="hover">
-              {texts.go_to_inbox}
-            </Link>
+            <span className={classes.goToInboxText}>{texts.go_to_inbox}</span>
           </div>
         </ListItemText>
       </StyledMenuItem>
@@ -230,30 +249,34 @@ const PlaceholderNotification = () => {
   );
 };
 
-const MentionNotification = ({ notification, texts, locale }) => {
-  const entityType = notification.project_comment ? "project" : "idea";
-  const commentProp = `${entityType}_comment`;
-
-  // TODO: need to refactor this to suport the correct
-  // notifications when a user has requested to join a project. See
-  // https://github.com/climateconnect/climateconnect/issues/898
-  const sender = notification[commentProp] ? notification[commentProp].author_user : "Anonymous";
+const MentionNotification = ({ notification, texts, locale, hubUrl }) => {
+  const sender = notification.project_comment
+    ? notification.project_comment.author_user
+    : "Anonymous";
 
   let urlEnding;
-  if (!notification.idea && !notification.project) {
-    urlEnding = null;
+  if (notification.project) {
+    urlEnding = `/projects/${notification.project.url_slug}/#comments`;
   } else {
-    urlEnding =
-      entityType === "project"
-        ? `/projects/${notification.project.url_slug}/#comments`
-        : `/hubs/${notification.idea.hub_url_slug}/browse?idea=${notification.idea.url_slug}#ideas`;
+    urlEnding = null;
   }
 
-  const previewText = getFragmentsWithMentions(notification[commentProp]?.content, false, locale);
+  const previewText = getFragmentsWithMentions(
+    notification.project_comment?.content,
+    false,
+    locale
+  );
+
+  let notifLink = urlEnding && getLocalePrefix(locale) + urlEnding;
+  if (notifLink && hubUrl) {
+    const [pathAndQuery, hash] = notifLink.split("#");
+    const separator = pathAndQuery.includes("?") ? "&" : "?";
+    notifLink = `${pathAndQuery}${separator}hub=${hubUrl}${hash ? `#${hash}` : ""}`;
+  }
 
   return (
     <GenericNotification
-      link={urlEnding && getLocalePrefix(locale) + urlEnding}
+      link={notifLink}
       notificationIcon={{ icon: AlternateEmailIcon }}
       primaryText={
         sender.first_name +
@@ -268,14 +291,18 @@ const MentionNotification = ({ notification, texts, locale }) => {
   );
 };
 
-const ProjectFollowerNotification = ({ notification }) => {
+const ProjectFollowerNotification = ({ notification, hubUrl }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
   const followerName =
     notification.project_follower.first_name + " " + notification.project_follower.last_name;
+  const baseUrl = `/projects/${notification.project.url_slug}`;
+  const notifLink = hubUrl
+    ? `${baseUrl}?hub=${hubUrl}&show_followers=true`
+    : `${baseUrl}?show_followers=true`;
   return (
     <GenericNotification
-      link={`/projects/${notification.project.url_slug}?show_followers=true`}
+      link={notifLink}
       avatar={{
         alt: followerName,
         image: notification.project_follower.thumbnail_image,
@@ -287,14 +314,18 @@ const ProjectFollowerNotification = ({ notification }) => {
   );
 };
 
-const ProjectLikeNotification = ({ notification }) => {
+const ProjectLikeNotification = ({ notification, hubUrl }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale, project: notification.project });
   const likingUserName =
     notification.project_like.first_name + " " + notification.project_like.last_name;
+  const baseUrl = `/projects/${notification.project.url_slug}`;
+  const notifLink = hubUrl
+    ? `${baseUrl}?hub=${hubUrl}&show_likes=true`
+    : `${baseUrl}?show_likes=true`;
   return (
     <GenericNotification
-      link={`/projects/${notification.project.url_slug}?show_likes=true`}
+      link={notifLink}
       avatar={{
         alt: likingUserName,
         image: notification.project_like.thumbnail_image,
@@ -305,16 +336,20 @@ const ProjectLikeNotification = ({ notification }) => {
     />
   );
 };
-const OrganizationFollowerNotification = ({ notification }) => {
+const OrganizationFollowerNotification = ({ notification, hubUrl }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
   const followerName =
     notification.organization_follower.first_name +
     " " +
     notification.organization_follower.last_name;
+  const baseUrl = `/organizations/${notification.organization.url_slug}`;
+  const notifLink = hubUrl
+    ? `${baseUrl}?hub=${hubUrl}&show_followers=true`
+    : `${baseUrl}?show_followers=true`;
   return (
     <GenericNotification
-      link={`/organizations/${notification.organization.url_slug}?show_followers=true`}
+      link={notifLink}
       avatar={{
         alt: followerName,
         image: notification.organization_follower.thumbnail_image,
@@ -325,15 +360,16 @@ const OrganizationFollowerNotification = ({ notification }) => {
     />
   );
 };
-const OrgProjectSharedNotification = ({ notification }) => {
+const OrgProjectSharedNotification = ({ notification, hubUrl }) => {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "notification", locale: locale });
 
   const projectName = notification.project.name;
-
+  const baseUrl = `/projects/${notification.project.url_slug}`;
+  const notifLink = hubUrl ? `${baseUrl}?hub=${hubUrl}` : baseUrl;
   return (
     <GenericNotification
-      link={`/projects/${notification.project.url_slug}`}
+      link={notifLink}
       avatar={{
         alt: projectName,
         image: notification.project.image,

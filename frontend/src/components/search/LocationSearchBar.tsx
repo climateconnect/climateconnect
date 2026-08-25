@@ -3,22 +3,21 @@ import Autocomplete from "@mui/material/Autocomplete";
 import makeStyles from "@mui/styles/makeStyles";
 import axios from "axios";
 import { debounce } from "lodash";
-import React, { useContext, useEffect } from "react";
+import React, { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import { apiRequest } from "../../../public/lib/apiOperations";
 import {
-  getNameFromLocation,
-  getNameFromExactLocation,
+  getDisplayLocationFromLocation,
+  getDisplayLocationFromExactLocation,
   isExactLocation,
 } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
+import { getLocaleHeader } from "../../utils/locationUtils";
 
 const useStyles = makeStyles((theme) => ({
-  additionalInfos: (props: any) => ({
+  additionalInfos: {
     width: "100%",
-    marginTop: props.hideHelperText ? 0 : theme.spacing(2),
-  }),
-  formHelperText: {
-    marginTop: theme.spacing(-2),
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -26,6 +25,7 @@ type Props = {
   label?: any;
   required?: boolean;
   helperText?: string;
+  error?: boolean;
   inputClassName?;
   smallInput?;
   onSelect?;
@@ -51,6 +51,7 @@ export default function LocationSearchBar({
   label,
   required,
   helperText,
+  error,
   inputClassName,
   smallInput,
   onSelect,
@@ -79,21 +80,20 @@ export default function LocationSearchBar({
       return inputValue ? inputValue : "";
     } else if (typeof newValue === "object") {
       if (enableExactLocation) {
-        const nameObj = getNameFromExactLocation(newValue);
-        return nameObj === "" ? nameObj : nameObj.name;
+        return getDisplayLocationFromExactLocation(newValue).name ?? "";
       } else {
-        return newValue.name ? newValue.name : newValue.simple_name;
+        return newValue.simple_name ?? newValue.name ?? "";
       }
     } else {
       return newValue;
     }
   };
 
-  const [options, setOptions] = React.useState<{ simple_name: string }[]>([]);
+  const [options, setOptions] = useState<{ simple_name: string }[]>([]);
   // If no 'open' prop is passed to the component, the component handles its 'open' state with this internal state
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
-  const [searchValue, setSearchValue] = React.useState("");
-  const [inputValue, setInputValue] = React.useState(getValue(value ? value : initialValue, ""));
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [inputValue, setInputValue] = useState(getValue(value ? value : initialValue, ""));
   useEffect(
     function () {
       if (inputValue?.length > 0 && value?.length === 0) {
@@ -104,7 +104,7 @@ export default function LocationSearchBar({
     },
     [value]
   );
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const HUB_COUNTRY_RESTRICTIONS = {
     perth: "gb",
   };
@@ -114,24 +114,24 @@ export default function LocationSearchBar({
     perthshire: "Perth and Kinross",
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true;
 
     (async () => {
       if (searchValue) {
-        const config = {
-          method: "GET",
-          mode: "no-cors",
-          referrerPolicy: "origin",
-        };
         const searchParam = ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           ? ALIAS_FOR_SEARCH[searchValue.toLowerCase()]
           : searchValue;
-        let url = `https://nominatim.openstreetmap.org/search?q=${searchParam}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001&accept-language=en-US,en;q=0.9`;
+        let url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          searchParam
+        )}&format=json&addressdetails=1&polygon_geojson=1&polygon_threshold=0.001`;
         if (Object.keys(HUB_COUNTRY_RESTRICTIONS).includes(hubUrl)) {
           url += "&countrycodes=" + HUB_COUNTRY_RESTRICTIONS[hubUrl];
         }
-        const response = await axios(url, config as any);
+        const response = await axios.get(url, { headers: getLocaleHeader(locale) });
+        // Fire-and-forget: count this Nominatim request for rate monitoring.
+        // Placed after the Nominatim call so we only track successful API usage.
+        apiRequest({ method: "post", url: "/api/nominatim_request_count/" }).catch(() => {});
         const bannedClasses = [
           "tourism",
           "railway",
@@ -155,6 +155,10 @@ export default function LocationSearchBar({
             state: "",
             place_id: 1,
             osm_id: -1,
+            osm_type: "relation",
+            class: "global",
+            osm_class: "global",
+            osm_class_type: "global",
             lon: -1,
             lat: -1,
           },
@@ -195,18 +199,26 @@ export default function LocationSearchBar({
               data.push(option);
             }
           }
-          const options = data.map((o) => {
-            const nameObj = getNameFromExactLocation(o);
-            return {
-              ...o,
-              simple_name: enableExactLocation
-                ? nameObj === ""
-                  ? nameObj
-                  : nameObj.name
-                : getNameFromLocation(o).name,
-              key: o.place_id,
-            };
-          });
+
+          const getSimpleName = (location, enableExactLocation: boolean = false): string => {
+            if (!enableExactLocation) {
+              return getDisplayLocationFromLocation(location).name;
+            }
+
+            return getDisplayLocationFromExactLocation(location).name;
+          };
+
+          const options = data.map((option) => ({
+            ...option,
+            // Nominatim returns "class" but our app uses "osm_class" consistently.
+            // Same with "type" and "osm_class_type".
+            osm_class: option.osm_class ?? option.class,
+            osm_class_type: option.osm_class_type ?? option.type,
+            simple_name: getSimpleName(option, enableExactLocation),
+            key: `${option.osm_id || "na"}-${option.osm_type}-${
+              option.osm_class ?? option.class ?? "na"
+            }`,
+          }));
           setOptions(getOptionsWithoutRedundancies(options));
           setLoading(false);
         }
@@ -218,7 +230,7 @@ export default function LocationSearchBar({
     return () => {
       active = false;
     };
-  }, [searchValue]);
+  }, [searchValue, locale, hubUrl]);
 
   const getOptionsWithoutRedundancies = (options) => {
     //For the classes_without_hierarchy we simply return the first element if there is a redundancy
@@ -260,7 +272,12 @@ export default function LocationSearchBar({
   };
 
   const renderSearchOption = (props, option) => {
-    return <li {...props}>{option}</li>;
+    const { key, ...optionProps } = props;
+    return (
+      <li key={key} {...optionProps}>
+        {option}
+      </li>
+    );
   };
 
   const handleInputChange = (event) => {
@@ -273,7 +290,7 @@ export default function LocationSearchBar({
     setSearchValueThrottled(event.target.value);
   };
 
-  const setSearchValueThrottled = React.useMemo(
+  const setSearchValueThrottled = useMemo(
     () =>
       debounce((value) => {
         setSearchValue(value);
@@ -327,21 +344,18 @@ export default function LocationSearchBar({
             {...params}
             label={label}
             required={required}
+            error={error}
             variant="outlined"
             onChange={handleInputChange}
             helperText={helperText}
             size={smallInput && "small"}
             inputRef={locationInputRef}
+            // @ts-ignore - contrast is a custom color defined in theme
             color={color || "contrast"}
             InputProps={{
               ...params.InputProps,
-              endAdornment: <React.Fragment>{params.InputProps.endAdornment}</React.Fragment>,
+              endAdornment: <Fragment>{params.InputProps.endAdornment}</Fragment>,
               className: `${textFieldClassName}`,
-            }}
-            FormHelperTextProps={{
-              classes: {
-                root: classes.formHelperText,
-              },
             }}
           />
         )}
@@ -349,9 +363,10 @@ export default function LocationSearchBar({
       {enableAdditionalInfo && (
         <TextField
           label={texts.additional_infos_for_location}
+          // @ts-ignore - contrast is a custom color defined in theme
           color={color || "contrast"}
           className={classes.additionalInfos}
-          value={additionalInfoText}
+          value={additionalInfoText ?? ""}
           onChange={handleChangeAdditionalInfoText}
         />
       )}

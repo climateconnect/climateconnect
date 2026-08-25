@@ -25,7 +25,7 @@ msgstr ""
 #: organization/utility/follow.py:109
 #, fuzzy
 #| msgid "Organization not found:"
-msgid "Organization not found."
+msgid "Organisation not found."
 msgstr "Organisation nicht gefunden:"
 
 #: organization/utility/follow.py:111
@@ -33,7 +33,7 @@ msgid "Project not found."
 msgstr "Projekt nicht gefunden."
 
 #: organization/utility/follow.py:120
-msgid "You're already following this organization."
+msgid "You're already following this organisation."
 msgstr "Du folgst dieser Organisation bereits."
 
 #: organization/utility/follow.py:122
@@ -42,7 +42,7 @@ msgstr "Du folgst diesem Projekt bereits"
 
 #: organization/utility/follow.py:136
 msgid ""
-"You are now following this organization. You will be notified when they post "
+"You are now following this organisation. You will be notified when they post "
 "an update!"
 msgstr ""
 "Du folgst der Organisation jetzt. Du wirst benachrichtigt, wenn sie ein "
@@ -56,7 +56,7 @@ msgstr ""
 "Du folgst dem Projekt jetzt. Du wirst benachrichtigt, es ein Update gibt."
 
 #: organization/utility/follow.py:157
-msgid "You weren't following this organization."
+msgid "You weren't following this organisation."
 msgstr "Du hast dieser Organisation nicht gefolgt"
 
 #: organization/utility/follow.py:159
@@ -64,7 +64,7 @@ msgid "You weren't following this project."
 msgstr "Du hast diesem Projekt nicht gefolgt"
 
 #: organization/utility/follow.py:167
-msgid "You are not following this organization anymore."
+msgid "You are not following this organisation anymore."
 msgstr "Du folgst dieser Organisation nicht mehr"
 
 #: organization/utility/follow.py:169
@@ -77,26 +77,26 @@ msgstr "Ungültiger Wert für die Variable \"following\""
 
 #: organization/utility/organization.py:180
 msgid ""
-"Someone has already created the organization {}. Please join the "
-"organization or use a different name. If you're having problems please "
+"Someone has already created the organisation {}. Please join the "
+"organisation or use a different name. If you're having problems please "
 "contact support@climateconnect.earth"
 msgstr "Jemand hat die Organisation {} bereits erstellt. Bitte trete der Organisation bei oder verwende einen anderen Namen. Falls du Probleme hast, wende dich bitte an support@climateconnect.earth"
 
 #: organization/views/organization_views.py:478
 #: organization/views/organization_views.py:500
-msgid "Organization not found:"
+msgid "Organisation not found:"
 msgstr "Organisation nicht gefunden:"
 
 #: organization/views/organization_views.py:566
-msgid "Parent organization not found for organization"
+msgid "Parent organisation not found for organisation"
 msgstr "Mutterorganisation der Organisation nicht gefunden"
 
 #: organization/views/organization_views.py:613
-msgid "Passed organization tag id does not exists: "
+msgid "Passed organisation tag id does not exists: "
 msgstr "Dieser Organisationstyp existiert nicht: "
 
 #: organization/views/organization_views.py:619
-msgid "Successfully updated organization."
+msgid "Successfully updated organisation."
 msgstr "Organisation erfolgreich bearbeitet"
 
 #~ msgid "The name {} is already in use. Please use another name."

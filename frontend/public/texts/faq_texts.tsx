@@ -23,11 +23,11 @@ export default function getFaqTexts({ classes, locale }) {
           {"Can't find the answer to your question? Contact "}
           <Link
             className={classes?.topText}
-            href="mailto:contact@climateconnect.earth"
+            href="mailto:contact@climatehub.org"
             target="_blank"
             underline="hover"
           >
-            contact@climateconnect.earth
+            contact@climatehub.org
           </Link>
         </>
       ),
@@ -36,11 +36,11 @@ export default function getFaqTexts({ classes, locale }) {
           Du kannst die Antwort auf deine Frage nicht finden? Schreibe einfach an{" "}
           <Link
             className={classes?.topText}
-            href="mailto:contact@climateconnect.earth"
+            href="mailto:contact@climatehub.org"
             target="_blank"
             underline="hover"
           >
-            contact@climateconnect.earth
+            contact@climatehub.org
           </Link>
         </>
       ),

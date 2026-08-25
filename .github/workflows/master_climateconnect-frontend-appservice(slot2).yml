@@ -7,6 +7,14 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'doc/**'
+      - '.github/agents/**'
+      - '*.md'
+      - 'CONTRIBUTING.md'
+      - 'README.md'
+      - 'GLOSSARY.md'
+      - 'AGENTS.md'
   workflow_dispatch:
 
 jobs:
@@ -17,20 +25,31 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
-          node-version: '20.x'
+          node-version: '22.x'
 
-      - name: npm install, build, and test
+      - name: Cache node modules
+        uses: actions/cache@v6
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: yarn install, webflow devlink export and build
         run: |
           cd frontend
-          yarn --production
-          npx webflow devlink sync
+          corepack enable
+          yarn install --immutable
+          yarn devlink-sync
           yarn build
         env:
+          BUILD_SHA: ${{ github.sha }}
+          BUILD_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
           API_HOST: ${{ secrets.API_HOST }}
           CUSTOM_HUB_URLS: ${{ secrets.CUSTOM_HUB_URLS }}
           API_URL: ${{ secrets.API_URL }}
@@ -43,15 +62,41 @@ jobs:
           LETS_ENCRYPT_FILE_CONTENT: ${{ secrets.LETS_ENCRYPT_FILE_CONTENT }}
           LOCATION_HUBS: ${{ secrets.LOCATION_HUBS }}
           SOCKET_URL: ${{ secrets.SOCKET_URL }}
+          WASSERAKTIONSWOCHEN_FEATURE: ${{ secrets.WASSERAKTIONSWOCHEN_FEATURE }}
+          CLIMATEORG_ACTIVE: ${{ secrets.CLIMATEORG_ACTIVE }}
           WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_API_TOKEN }}
           WEBFLOW_SITE_ID: ${{ secrets.WEBFLOW_SITE_ID}}
+          FRONTEND_SENTRY_DSN: ${{ secrets.FRONTEND_SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
+      - name: Write build env
+        run: |
+          echo '{
+            "sha": "${{ github.sha }}",
+            "ref": "${{ github.ref_name }}",
+            "built_at": "${{ github.event.head_commit.timestamp }}",
+            "API_HOST": "${{ secrets.API_HOST }}",
+            "API_URL": "${{ secrets.API_URL }}",
+            "BASE_URL": "${{ secrets.BASE_URL }}",
+            "BASE_URL_HOST": "${{ secrets.BASE_URL_HOST }}",
+            "CLIMATEORG_ACTIVE": "${{ secrets.CLIMATEORG_ACTIVE }}",
+            "CUSTOM_HUB_URLS": "${{ secrets.CUSTOM_HUB_URLS }}",
+            "DONATION_CAMPAIGN_RUNNING": "${{ secrets.DONATION_CAMPAIGN_RUNNING }}",
+            "FRONTEND_SENTRY_DSN": "${{ secrets.FRONTEND_SENTRY_DSN }}",
+            "GOOGLE_ANALYTICS_CODE": "${{ secrets.GOOGLE_ANALYTICS_CODE }}",
+            "LATEST_NEWSLETTER_LINK": "${{ secrets.LATEST_NEWSLETTER_LINK }}",
+            "LETS_ENCRYPT_FILE_CONTENT": "${{ secrets.LETS_ENCRYPT_FILE_CONTENT }}",
+            "LOCATION_HUBS": "${{ secrets.LOCATION_HUBS }}",
+            "SOCKET_URL": "${{ secrets.SOCKET_URL }}",
+            "WASSERAKTIONSWOCHEN_FEATURE": "${{ secrets.WASSERAKTIONSWOCHEN_FEATURE }}",
+            "WEBFLOW_SITE_ID": "${{ secrets.WEBFLOW_SITE_ID }}"
+          }' > frontend/build_info.json
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: node-app
           path: release.zip
@@ -68,15 +113,15 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: node-app
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
+
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4872F38E7EC34E84A6DC4282AD368DAE }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_03DE6874FBFC4E709867040CB9136FD8 }}
@@ -89,4 +134,4 @@ jobs:
           app-name: 'climateconnect-frontend-appservice'
           slot-name: 'slot2'
           package: .
-          
+          clean: true

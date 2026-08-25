@@ -56,9 +56,9 @@ export default function ManageMembers({
   const classes = useStyles();
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
-  const renderSearchOption = (props, option) => {
+  const renderSearchOption = ({ key, ...props }, option) => {
     return (
-      <li {...props}>
+      <li key={key} {...props}>
         <IconButton size="large">
           <AddCircleOutlineIcon />
         </IconButton>

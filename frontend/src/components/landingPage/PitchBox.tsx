@@ -246,7 +246,7 @@ const PitchElement = ({ image, headline, text, alternate, children }: any) => {
       </div>
       {alternate && (
         <div className={classes.pitchElementImageContainer}>
-          <img src={image} className={classes.pitchElementImage} />
+          <img src={image} className={classes.pitchElementImage} alt="pitch Image" />
         </div>
       )}
     </div>

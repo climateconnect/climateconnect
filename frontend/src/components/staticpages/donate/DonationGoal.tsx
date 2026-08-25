@@ -1,10 +1,6 @@
-import { Container, LinearProgress, Theme, Typography, useMediaQuery } from "@mui/material";
+import { Container, LinearProgress, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { String } from "lodash";
-import React, { useContext } from "react";
-import getTexts from "../../../../public/texts/texts";
-import theme from "../../../themes/theme";
-import UserContext from "../../context/UserContext";
+import React from "react";
 
 type StyleProps = {
   embedded: boolean;
@@ -81,7 +77,6 @@ export default function DonationGoal({
   className,
   current,
   goal,
-  name,
   embedded,
   barColor,
   barOnly,
@@ -98,9 +93,6 @@ export default function DonationGoal({
     textMarginLeft:
       current / goal < 0.9 ? `${(current / goal) * 100 + 1}%` : `${(current / goal) * 100 - 25}%`,
   });
-  const { locale } = useContext(UserContext);
-  const isNarrowScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
-  const texts = getTexts({ page: "donate", locale: locale, classes: classes, goal: goal });
   return (
     <div className={`${className} ${classes.root}`}>
       <Container className={classes.container}>

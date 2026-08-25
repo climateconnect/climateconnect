@@ -9,6 +9,7 @@ from hubs.models import Hub
 from climateconnect_api.utility.translation import get_user_lang_code, get_user_lang_url
 from django.conf import settings
 from mailjet_rest import Client
+from user_agents import parse as parse_user_agent
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,64 @@ mailjet_send_api = Client(
     auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE), version="v3.1"
 )
 mailjet_api = Client(auth=(settings.MJ_APIKEY_PUBLIC, settings.MJ_APIKEY_PRIVATE))
+
+
+def get_formatted_user_agent_info(user_agent_string):
+    """
+    Parse user agent string and return formatted browser and OS information.
+
+    Args:
+        user_agent_string: Raw user agent string from HTTP headers
+
+    Returns:
+        Dictionary with formatted browser and OS info, or None if parsing fails
+    """
+    if not user_agent_string:
+        return None
+
+    try:
+        user_agent = parse_user_agent(user_agent_string)
+
+        # Build browser info
+        browser_name = user_agent.browser.family
+        browser_version = user_agent.browser.version_string
+        browser_info = (
+            f"{browser_name} {browser_version}" if browser_version else browser_name
+        )
+
+        # Build OS info
+        os_name = user_agent.os.family
+        os_version = user_agent.os.version_string
+        os_info = f"{os_name} {os_version}" if os_version else os_name
+
+        # Build device info
+        device_info = None
+        if user_agent.is_mobile:
+            device_type = "Mobile"
+            if user_agent.device.family and user_agent.device.family != "Other":
+                device_info = f"{device_type} - {user_agent.device.family}"
+            else:
+                device_info = device_type
+        elif user_agent.is_tablet:
+            device_type = "Tablet"
+            if user_agent.device.family and user_agent.device.family != "Other":
+                device_info = f"{device_type} - {user_agent.device.family}"
+            else:
+                device_info = device_type
+        elif user_agent.is_pc:
+            device_info = "Desktop"
+        elif user_agent.is_bot:
+            device_info = "Bot"
+
+        return {
+            "browser": browser_info,
+            "os": os_info,
+            "device": device_info,
+            "raw": user_agent_string,
+        }
+    except Exception as e:
+        logger.warning(f"Failed to parse user agent: {e}")
+        return None
 
 
 def get_template_id(template_key, lang_code):
@@ -33,10 +92,17 @@ def check_send_email_notification(user):
     return not recent_email_notification.exists()
 
 
-def get_email_data(hub_url):
+FROM_NAMES_BY_LANGUAGE = {
+    "en": "ClimateHub Network",
+    "de": "ClimateHub Netzwerk",
+}
+
+
+def get_email_data(hub_url, lang_code="en"):
+    from_name = FROM_NAMES_BY_LANGUAGE.get(lang_code, FROM_NAMES_BY_LANGUAGE["en"])
     email_data = {
         "from_email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-        "from_name": "Climate Connect",
+        "from_name": from_name,
     }
     if hub_url:
         try:
@@ -58,6 +124,7 @@ def send_email(
     should_send_email_setting,
     notification,
     hub_url=None,
+    attachments=None,
 ):
     # if not check_send_email_notification(user):
     #    return
@@ -74,7 +141,7 @@ def send_email(
     subject = subjects_by_language[lang_code]
     template_id = get_template_id(template_key=template_key, lang_code=lang_code)
 
-    email_data = get_email_data(hub_url)
+    email_data = get_email_data(hub_url, lang_code=lang_code)
     data = {
         "Messages": [
             {
@@ -84,7 +151,7 @@ def send_email(
                     ],  # from_email if from_email else settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
                     "Name": email_data[
                         "from_name"
-                    ],  # from_name if from_name else "Climate Connect",
+                    ],  # from_name if from_name else "ClimateHub Network",
                 },
                 "To": [
                     {
@@ -97,12 +164,15 @@ def send_email(
                 "Variables": variables,
                 "Subject": subject,
                 "TemplateErrorReporting": {
-                    "Email": "christoph.stoll@climateconnect.earth",
-                    "Name": "Christoph Stoll",
+                    "Email": "harald.walker@climateconnect.earth",
+                    "Name": "Harald Walker",
                 },
             }
         ]
     }
+
+    if attachments:
+        data["Messages"][0]["Attachments"] = attachments
 
     try:
         mail = mailjet_send_api.send.create(data=data)
@@ -157,8 +227,8 @@ def send_user_verification_email(user, verification_key, hub_url=None):
     url = get_user_verification_url(verification_key, lang_url, hub_url)
 
     subjects_by_language = {
-        "en": "Welcome to Climate Connect! Verify your email address",
-        "de": "Willkommen bei Climate Connect! Verifiziere deine Email-Adresse!",
+        "en": "Welcome to the ClimateHub Network! Verify your email address",
+        "de": "Willkommen beim ClimateHub Netzwerk! Verifiziere deine E-Mail-Adresse!",
     }
 
     variables = {"FirstName": user.first_name, "url": url}
@@ -198,8 +268,8 @@ def send_password_link(user, password_reset_key, hub_url=None):
     url = get_reset_password_url(password_reset_key, lang_url, hub_url)
 
     subjects_by_language = {
-        "en": "Reset your Climate Connect password",
-        "de": "Setze deine Climate Connect Passwort zurück",
+        "en": "Reset your password",
+        "de": "Setze dein Passwort zurück",
     }
 
     variables = {"FirstName": user.first_name, "url": url}
@@ -214,25 +284,44 @@ def send_password_link(user, password_reset_key, hub_url=None):
     )
 
 
-def send_feedback_email(email, message, send_response):
+def send_feedback_email(email, message, send_response, user_agent=None, path=None):
+    # Parse user agent to get readable browser and OS info
+    user_agent_info = get_formatted_user_agent_info(user_agent) if user_agent else None
+
+    # Build template variables with parsed info
+    variables = {
+        "text": str(message),
+        "sendReply": str(send_response),
+        "email": str(email if email else ""),
+        "path": str(path if path else ""),
+    }
+
+    # Add parsed user agent info if available
+    if user_agent_info:
+        variables["browser"] = user_agent_info["browser"]
+        variables["os"] = user_agent_info["os"]
+        variables["device"] = user_agent_info["device"] or ""
+        variables["userAgent"] = user_agent_info["raw"]  # Keep raw for debugging
+    else:
+        variables["userAgent"] = str(user_agent if user_agent else "")
+
     data = {
         "Messages": [
             {
                 "From": {
                     "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "Climate Connect",
+                    "Name": "ClimateHub Network",
                 },
                 "To": [
-                    {"Email": "contact@climateconnect.earth", "Name": "Climate Connect"}
+                    {
+                        "Email": "feedback@climatehub.org",
+                        "Name": "ClimateHub Network",
+                    }
                 ],
                 "TemplateID": int(settings.FEEDBACK_TEMPLATE_ID),
                 "TemplateLanguage": True,
-                "Subject": "Climate Connect User Feedback",
-                "Variables": {
-                    "text": str(message),
-                    "sendReply": str(send_response),
-                    "email": str(email if email else ""),
-                },
+                "Subject": "ClimateHub Network User Feedback",
+                "Variables": variables,
             }
         ]
     }
@@ -295,11 +384,11 @@ def send_test_mail_to_engineering_email(subject, text_body):
             {
                 "From": {
                     "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "Climate Connect",
+                    "Name": "ClimateHub",
                 },
                 "To": [
                     {
-                        "Email": "engineering@climateconnect.earth",
+                        "Email": "engineering@climatehub.org",
                         "Name": f"Engineering",
                     }
                 ],
@@ -329,21 +418,22 @@ def send_email_reminder_for_unread_notifications(
     }
     subject = subject_by_language.get(language_code, "en")
     website_link_by_language = {
-        "en": "https://climateconnect.earth/inbox",
-        "de": "https://climateconnect.earth/de/inbox",
+        "en": "https://climatehub.org/inbox",
+        "de": "https://climatehub.org/de/inbox",
     }
     website_link = website_link_by_language.get(language_code, "en")
     email_text_by_language = {
-        "en": f"<p>Dear {user.first_name},</p><p>You have {total_notifications} unread {'messages' if total_notifications > 1 else 'message'} from other climate protectors. Please respond to the people who reached out. <br />We can only effectively fight the climate crisis if we work together and exchange knowledge.</p> <p><b><a href={website_link}>Click here</a> to check your inbox.</b></p><p>See you soon,</p><p>The Climate Connect Team</p>",  # NOQA
-        "de": f"<p>Hallo {user.first_name},</p><p>Du hast {total_notifications} ungelesene {'Nachrichten' if total_notifications > 1 else 'Nachricht'} von anderen Klimaschützer*innen. Bitte beantworte die Nachrichten.<br />Nur gemeinsam und durch Zusammenarbeit und Wissensaustausch können wir das 1,5 Grad Ziel erreichen.</p><p><b><a href={website_link}>Klicke hier</a>, um deinen Posteingang anzusehen.</b></p><p>Bis bald,</p><p>Deine Climate Connect Team</p>",  # NOQA
+        "en": f"<p>Dear {user.first_name},</p><p>You have {total_notifications} unread {'messages' if total_notifications > 1 else 'message'} from other climate protectors. Please respond to the people who reached out. <br />We can only effectively fight the climate crisis if we work together and exchange knowledge.</p> <p><b><a href={website_link}>Click here</a> to check your inbox.</b></p><p>See you soon,</p><p>your team of the ClimateHub Network</p>",  # NOQA
+        "de": f"<p>Hallo {user.first_name},</p><p>Du hast {total_notifications} ungelesene {'Nachrichten' if total_notifications > 1 else 'Nachricht'} von anderen Klimaschützer*innen. Bitte beantworte die Nachrichten.<br />Nur gemeinsam und durch Zusammenarbeit und Wissensaustausch können wir das 1,5 Grad Ziel erreichen.</p><p><b><a href={website_link}>Klicke hier</a>, um deinen Posteingang anzusehen.</b></p><p>Bis bald,</p><p>Dein Team vom ClimateHub Netzwerk</p>",  # NOQA
     }
     email_text = email_text_by_language.get(language_code, "en")
+    from_name = FROM_NAMES_BY_LANGUAGE.get(language_code, FROM_NAMES_BY_LANGUAGE["en"])
     data = {
         "Messages": [
             {
                 "From": {
                     "Email": settings.CLIMATE_CONNECT_SUPPORT_EMAIL,
-                    "Name": "Climate Connect",
+                    "Name": from_name,
                 },
                 "To": [
                     {"Email": user.email, "Name": f"{user.first_name} {user.last_name}"}

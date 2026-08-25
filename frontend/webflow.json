@@ -1,0 +1,18 @@
+{
+  "siteId": "615d9a37fbb2467a53e09161",
+  "devlink-export": {
+    "rootDir": "./devlink",
+    "cssScopes": true,
+    "ts": true,
+    "components": ".*",
+    "componentGroups": ".*",
+    "relativeHrefRoot": "/"
+  },
+  "telemetry": {
+    "global": {
+      "allowTelemetry": true,
+      "lastPrompted": 1775634167164,
+      "version": "1.13.0"
+    }
+  }
+}

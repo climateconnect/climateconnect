@@ -14,29 +14,45 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.contrib import admin
-from django.urls import path, include
-from climateconnect_api.views import (
-    badge_views,
-    status_views,
-    user_views,
-    common_views,
-    settings_views,
-    role_views,
-    faq_views,
-    notifications_views,
-    donation_views,
-    translation_views,
-)
-from knox import views as knox_views
+import django
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from knox import views as knox_views
 
+from climateconnect_api.views import (
+    badge_views,
+    common_views,
+    donation_views,
+    faq_views,
+    notifications_views,
+    role_views,
+    settings_views,
+    status_views,
+    translation_views,
+    user_views,
+)
+
+# Customize admin site to show Django version
+admin.site.site_header = (
+    f"ClimateHub Network Administration (Django {django.get_version()})"
+)
+admin.site.site_title = "ClimateHub Network Admin"
 
 urls = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("admin/", admin.site.urls),
+    # OpenAPI Schema and Documentation
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
     path("ping/", status_views.PingPongView.as_view(), name="ping-pong-api"),
+    path("api/version/", status_views.BuildInfoView.as_view(), name="build-info-api"),
     # User views
     path("login/", user_views.LoginView.as_view(), name="login-api"),
     path("logout/", knox_views.LogoutView.as_view(), name="logout-api"),
@@ -65,6 +81,11 @@ urls = [
         "api/member/<str:url_slug>/organizations/",
         user_views.ListMemberOrganizationsView.as_view(),
         name="get-organizations-of-member-api",
+    ),
+    path(
+        "api/members/me/registered-events/",
+        user_views.ListMemberRegisteredEventsView.as_view(),
+        name="member-registered-events-api",
     ),
     path(
         "api/members/",
@@ -144,6 +165,11 @@ urls = [
         name="get-donations-this-month",
     ),
     path(
+        "api/donation_goals_progresses/",
+        donation_views.GetDonationGoalsProgresses.as_view(),
+        name="get-donations-this-month",
+    ),
+    path(
         "api/translate/",
         translation_views.TranslateTextView.as_view(),
         name="translate-testing-api",
@@ -174,6 +200,10 @@ urls = [
     path("api/", include("ideas.urls")),
     # Climate match APIs
     path("api/", include("climate_match.urls")),
+    # Feature toggle APIs
+    path("api/", include("feature_toggles.urls")),
+    # Auth app APIs
+    path("api/", include("auth_app.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns = urls

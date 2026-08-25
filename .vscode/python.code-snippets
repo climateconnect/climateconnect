@@ -1,0 +1,178 @@
+{
+  "Django Model": {
+    "prefix": "ccmodel",
+    "body": [
+      "from django.db import models",
+      "from django.contrib.auth.models import User",
+      "",
+      "",
+      "class ${1:ModelName}(models.Model):",
+      "    \"\"\"",
+      "    ${2:Description of the model}",
+      "    \"\"\"",
+      "    created_at = models.DateTimeField(auto_now_add=True, db_index=True)",
+      "    updated_at = models.DateTimeField(auto_now=True)",
+      "    ",
+      "    ${3:# Add fields here}",
+      "    ",
+      "    class Meta:",
+      "        ordering = [\"-created_at\"]",
+      "        verbose_name = \"${4:singular name}\"",
+      "        verbose_name_plural = \"${5:plural name}\"",
+      "    ",
+      "    def __str__(self):",
+      "        return ${6:self.name}"
+    ],
+    "description": "Create a Django model with common fields"
+  },
+
+  "Django Serializer": {
+    "prefix": "ccserializer",
+    "body": [
+      "from rest_framework import serializers",
+      "from ${1:app}.models import ${2:Model}",
+      "",
+      "",
+      "class ${2}Serializer(serializers.ModelSerializer):",
+      "    \"\"\"",
+      "    ${3:Description of the serializer}",
+      "    \"\"\"",
+      "    ${4:# Add extra fields here}",
+      "    ",
+      "    class Meta:",
+      "        model = ${2}",
+      "        fields = [${5:\"__all__\"}]",
+      "        read_only_fields = [\"id\", \"created_at\", \"updated_at\"]"
+    ],
+    "description": "Create a DRF ModelSerializer"
+  },
+
+  "Django ViewSet": {
+    "prefix": "ccviewset",
+    "body": [
+      "from rest_framework import viewsets",
+      "from rest_framework.permissions import IsAuthenticated",
+      "from ${1:app}.models import ${2:Model}",
+      "from ${1:app}.serializers import ${2}Serializer",
+      "",
+      "",
+      "class ${2}ViewSet(viewsets.ModelViewSet):",
+      "    \"\"\"",
+      "    ${3:Description of the viewset}",
+      "    \"\"\"",
+      "    serializer_class = ${2}Serializer",
+      "    permission_classes = [IsAuthenticated]",
+      "    ${4:filterset_fields = []}",
+      "    ",
+      "    def get_queryset(self):",
+      "        return ${2}.objects.${5:all}()"
+    ],
+    "description": "Create a DRF ViewSet"
+  },
+
+  "Celery Task": {
+    "prefix": "cctask",
+    "body": [
+      "from climateconnect_main.celery import app",
+      "import logging",
+      "",
+      "logger = logging.getLogger(__name__)",
+      "",
+      "",
+      "@app.task",
+      "def ${1:task_name}(${2:params}):",
+      "    \"\"\"",
+      "    ${3:Description of the task}",
+      "    \"\"\"",
+      "    try:",
+      "        ${4:# Task implementation}",
+      "        logger.info(f\"Task ${1} completed successfully\")",
+      "    except Exception as e:",
+      "        logger.error(f\"Task ${1} failed: {str(e)}\")",
+      "        raise"
+    ],
+    "description": "Create a Celery task"
+  },
+
+  "Django Test Case": {
+    "prefix": "cctest",
+    "body": [
+      "from django.test import TestCase",
+      "from django.contrib.auth.models import User",
+      "from rest_framework.test import APIClient",
+      "from rest_framework import status",
+      "",
+      "",
+      "class ${1:TestCase}(TestCase):",
+      "    \"\"\"",
+      "    ${2:Description of test case}",
+      "    \"\"\"",
+      "    ",
+      "    def setUp(self):",
+      "        self.client = APIClient()",
+      "        self.user = User.objects.create_user(",
+      "            username='testuser',",
+      "            email='test@example.com',",
+      "            password='testpass123'",
+      "        )",
+      "        self.client.force_authenticate(user=self.user)",
+      "    ",
+      "    def test_${3:test_name}(self):",
+      "        \"\"\"${4:Test description}\"\"\"",
+      "        ${5:# Test implementation}",
+      "        self.assertEqual(${6:actual}, ${7:expected})"
+    ],
+    "description": "Create a Django test case"
+  },
+
+  "Django Permission Class": {
+    "prefix": "ccpermission",
+    "body": [
+      "from rest_framework import permissions",
+      "",
+      "",
+      "class ${1:PermissionName}(permissions.BasePermission):",
+      "    \"\"\"",
+      "    ${2:Description of the permission}",
+      "    \"\"\"",
+      "    ",
+      "    def has_permission(self, request, view):",
+      "        ${3:# Check if user has permission to access view}",
+      "        return ${4:True}",
+      "    ",
+      "    def has_object_permission(self, request, view, obj):",
+      "        ${5:# Check if user has permission to access object}",
+      "        return ${6:True}"
+    ],
+    "description": "Create a DRF permission class"
+  },
+
+  "Django API View": {
+    "prefix": "ccapiview",
+    "body": [
+      "from rest_framework.views import APIView",
+      "from rest_framework.response import Response",
+      "from rest_framework import status",
+      "from rest_framework.permissions import IsAuthenticated",
+      "",
+      "",
+      "class ${1:ViewName}(APIView):",
+      "    \"\"\"",
+      "    ${2:Description of the view}",
+      "    \"\"\"",
+      "    permission_classes = [IsAuthenticated]",
+      "    ",
+      "    def ${3|get,post,put,patch,delete|}(self, request, ${4:*args, **kwargs}):",
+      "        try:",
+      "            ${5:# Implementation}",
+      "            return Response(${6:data}, status=status.HTTP_200_OK)",
+      "        except Exception as e:",
+      "            return Response(",
+      "                {'error': str(e)},",
+      "                status=status.HTTP_400_BAD_REQUEST",
+      "            )"
+    ],
+    "description": "Create a DRF APIView"
+  }
+}
+

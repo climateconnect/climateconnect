@@ -2,6 +2,16 @@
 
 The client and server code for the web platform on https://climateconnect.earth.
 
+## Table of Contents
+1. [Development setup](#development-setup)  
+1.1. [One-click setup using VSCode Dev Containers](#one-click-setup-using-vscode-dev-containers)  
+1.2. [Manual Setup](#manual-setup)  
+1.3. [Project Dependencies](#project-dependencies)  
+1.3.1. [Backend](#backend)   
+1.3.2. [Frontend](#frontend)  
+1.4. [Deploy](#deploy)
+2. [Documentation](#documentation)
+
 # Development setup
 
 Climate Connect depends on PostgreSQL/PostGIS and Redis.
@@ -68,9 +78,12 @@ Run `./install_deps.sh` to install the JavaScript dependencies and the Python de
 
 #### First Time Setup
 
+> For full backend development guidance (venv-per-Django pattern, devcontainer, manual system deps, broken-venv recovery), see [`doc/backend-development.md`](doc/backend-development.md).
+
 1.  Go to backend directory: `cd backend`
 1. Make sure `pdm` is installed: https://pdm.fming.dev/latest/#recommended-installation-method
 1.  Run `make install` to install all backend libraries.
+    - _This also installs `pre-commit`, which runs Black and Ruff on staged backend files before each commit. See [Testing and Code Health](#testing-and-code-health)._
 1.  Create `.backend_env` to set environment variables.
     - You can use the script [./initial_dev_setup.sh](./initial_dev_setup.sh) as inspiration.
     - You can find up-to-date sample env variables in [`backend/local-env-setup.md`](https://github.com/climateconnect/climateconnect/blob/master/backend/local-env-setup.md).
@@ -167,6 +180,18 @@ make format directory
 
 More configuration for Black can be found in the `pyproject.toml` file.
 
+#### Pre-commit Hooks
+
+Backend linting (ruff) and formatting (Black) are enforced at commit time via [pre-commit](https://pre-commit.com). The hook is configured in `.pre-commit-config.yaml` and runs automatically on staged `backend/` files — frontend-only commits are not affected.
+
+To run the hooks manually on all backend files:
+
+```sh
+cd backend && pdm run pre-commit run --all-files
+```
+
+CI remains the source of truth for merge eligibility.
+
 ### Frontend
 
 1. `cd frontend`.
@@ -239,3 +264,13 @@ Currently the project is utilizing credits to deploy onto Azure. That deployment
 1. Make sure your `ENVIRONMENT` env variable is set to `production` when deploying to the production server
 2. Follow steps 1-5 of the "Getting started
    locally - backend" (above in this file)
+
+# Documentation
+[Architecture](doc/architecture.md)  
+[Domain Entities](doc/domain-entities.md)  
+[Environment Variables](doc/environment-variables.md)  
+[**API Documentation Guide**](doc/api-documentation.md) - Complete guide to using the ClimateConnect API  
+[API Interactive Docs (Swagger UI)](http://localhost:8000/api/docs/) - Test API endpoints interactively (local development)
+
+## Production API Documentation
+For production environment, visit: `https://climateconnect.earth/api/docs/`  

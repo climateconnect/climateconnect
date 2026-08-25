@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Badge, Button, useMediaQuery, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -6,7 +6,7 @@ import React, { useContext, useState } from "react";
 import getTexts from "../../../public/texts/texts";
 import UserContext from "../context/UserContext";
 import FilterSearchBar from "../filter/FilterSearchBar";
-import { BrowseTab } from "../../types";
+import { BrowseEntity } from "../../types";
 import { FilterContext } from "../context/FilterContext";
 
 type MakeStylesProps = {
@@ -55,10 +55,10 @@ type Props = {
   filtersExpanded: boolean;
   onSubmit: Function;
   setFiltersExpanded: Function;
-  type: BrowseTab;
-  customSearchBarLabels: any;
-  hideFilterButton: boolean;
-  applyBackgroundColor: boolean;
+  type: BrowseEntity;
+  customSearchBarLabels?: Record<BrowseEntity, string>;
+  applyBackgroundColor?: boolean;
+  activeFilterCount?: number;
 };
 
 export default function FilterSection({
@@ -67,29 +67,31 @@ export default function FilterSection({
   setFiltersExpanded,
   type,
   customSearchBarLabels,
-  hideFilterButton,
-  applyBackgroundColor,
+  applyBackgroundColor = false,
+  activeFilterCount = 0,
 }: Props) {
-  const classes = useStyles({
-    applyBackgroundColor: applyBackgroundColor,
-  });
   const { locale } = useContext(UserContext);
   const { filters } = useContext(FilterContext);
   const [value, setValue] = useState(filters.search || "");
-
   const texts = getTexts({ page: "filter_and_search", locale: locale });
-  const searchBarLabels = {
+  const isNarrowScreen = useMediaQuery<Theme>((theme) => theme.breakpoints.down("md"));
+  const classes = useStyles({
+    applyBackgroundColor: applyBackgroundColor,
+  });
+  const defaultSearchBarLabels = {
     projects: texts.search_projects,
     organizations: texts.search_organizations,
     members: texts.search_active_people,
   };
+
+  const searchBarLabel = customSearchBarLabels?.[type] ?? defaultSearchBarLabels[type];
 
   const InputLabelClasses = {
     root: classes.inputLabel,
     notchedOutline: classes.inputLabel,
   };
 
-  const onClickExpandFilters = () => {
+  const handleToggleFilters = () => {
     setFiltersExpanded(!filtersExpanded);
   };
 
@@ -97,6 +99,7 @@ export default function FilterSection({
     e.preventDefault();
     setValue(e.target.value);
   };
+  const FilterIcon = filtersExpanded ? HighlightOffIcon : TuneIcon;
 
   return (
     <>
@@ -105,31 +108,30 @@ export default function FilterSection({
           <FilterSearchBar
             className={classes.filterSearchbar}
             InputLabelClasses={InputLabelClasses}
-            label={customSearchBarLabels ? customSearchBarLabels[type] : searchBarLabels[type]}
-            // Pass submit handler through to
-            // the underlying search bar.
+            label={searchBarLabel}
             onSubmit={onSubmit}
             type={type}
             value={value}
             onChange={handleChangeValue}
           />
         </div>
-        {!hideFilterButton && (
-          <Button
-            variant="outlined"
-            color="grey"
-            className={classes.filterButton}
-            onClick={onClickExpandFilters}
-            startIcon={
-              filtersExpanded ? (
-                <HighlightOffIcon className={classes.icon} />
-              ) : (
-                <TuneIcon className={classes.icon} />
-              )
-            }
+        {isNarrowScreen && (
+          <Badge
+            badgeContent={activeFilterCount > 0 ? activeFilterCount : null}
+            color="secondary"
+            max={9}
+            aria-label={activeFilterCount > 0 ? `${activeFilterCount} active filters` : undefined}
           >
-            Filter
-          </Button>
+            <Button
+              variant="outlined"
+              color="grey"
+              className={classes.filterButton}
+              onClick={handleToggleFilters}
+              startIcon={<FilterIcon className={classes.icon} />}
+            >
+              Filter
+            </Button>
+          </Badge>
         )}
       </div>
     </>

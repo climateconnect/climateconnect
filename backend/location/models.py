@@ -1,8 +1,12 @@
+import logging
+
 from django.contrib.gis.db import models
+from django.utils import timezone as tz
 from climateconnect_api.models.language import Language
 
+logger = logging.getLogger(__name__)
 
-# Create your models here.
+
 class Location(models.Model):
     name = models.CharField(
         help_text="Points to the (shortened) name of the location",
@@ -13,6 +17,14 @@ class Location(models.Model):
     place_name = models.CharField(
         help_text="If it is a specific place (e.g. city hall) this contains the name of the place",
         verbose_name="Place Name",
+        max_length=1024,
+        blank=True,
+        null=True,
+    )
+
+    display_name = models.CharField(
+        help_text="Nominatim's full display name of the location",
+        verbose_name="Display Name",
         max_length=1024,
         blank=True,
         null=True,
@@ -62,9 +74,34 @@ class Location(models.Model):
 
     osm_id = models.BigIntegerField(
         help_text="The internal id of this location openstreetmaps",
-        verbose_name="OSM ID",
+        verbose_name="Osm ID",
         blank=True,
         null=True,
+    )
+
+    osm_type = models.CharField(
+        help_text="The internal type of this location openstreetmaps",
+        verbose_name="Osm Type",
+        blank=True,
+        null=True,
+        choices=[("N", "node"), ("W", "way"), ("R", "relation")],
+        max_length=1,
+    )
+
+    osm_class = models.CharField(
+        help_text="The internal class of this location in openstreetmaps",
+        verbose_name="Osm Class",
+        blank=True,
+        null=True,
+        max_length=100,
+    )
+
+    osm_class_type = models.CharField(
+        help_text="The internal type specifying the osm_class of this location in openstreetmaps",
+        verbose_name="Osm Class Type",
+        blank=True,
+        null=True,
+        max_length=100,
     )
 
     place_id = models.BigIntegerField(
@@ -89,6 +126,14 @@ class Location(models.Model):
     class Meta:
         verbose_name = "Location"
         verbose_name_plural = "Location"
+        indexes = [
+            models.Index(
+                fields=["osm_id", "osm_type", "osm_class"],
+                name="location_loc_osm_id_b7b8a5_idx",
+            ),
+            models.Index(fields=["place_id"], name="location_place_id_idx"),
+        ]
+        app_label = "location"
 
     def __str__(self):
         return "%s" % (self.name)
@@ -147,8 +192,78 @@ class LocationTranslation(models.Model):
         verbose_name = "Location translation"
         verbose_name_plural = "Location translations"
         unique_together = [["location", "language"]]
+        app_label = "location"
 
     def __str__(self):
         return "{}: {} of location {}".format(
             self.id, self.language.name, self.location.name
         )
+
+
+class NominatimRequestLog(models.Model):
+    """
+    Lightweight log of individual Nominatim autocomplete requests.
+
+    One row per request. A periodic Celery task reads unprocessed rows,
+    computes day/week/month aggregates into NominatimPeriodStats, and
+    marks them as processed. Rows older than 7 days are cleaned up.
+    """
+
+    created_at = models.DateTimeField(default=tz.now, db_index=True)
+    processed = models.BooleanField(default=False, db_index=True)
+    minute_key = models.BigIntegerField(
+        help_text="Epoch minutes (epoch_seconds // 60) for grouping",
+        db_index=True,
+    )
+
+    class Meta:
+        app_label = "location"
+        verbose_name = "nominatim request log"
+        verbose_name_plural = "nominatim request logs"
+
+    def __str__(self):
+        return f"request at {self.created_at}"
+
+
+class NominatimPeriodStats(models.Model):
+    """
+    Persistent per-period (day / ISO-week / calendar-month) aggregation of
+    Nominatim autocomplete request metrics.
+
+    One row per (period_type, period_key) combination.  Updated by a periodic
+    Celery task that reads and aggregates raw NominatimRequestLog rows.
+    """
+
+    class PeriodType(models.TextChoices):
+        DAY = "day", "Day"
+        WEEK = "week", "ISO Week"
+        MONTH = "month", "Calendar Month"
+
+    period_type = models.CharField(
+        max_length=5,
+        choices=PeriodType.choices,
+    )
+    period_key = models.CharField(
+        max_length=10,
+        help_text="YYYY-MM-DD, YYYY-Www, or YYYY-MM",
+    )
+    total_requests = models.PositiveIntegerField(default=0)
+    avg_req_per_second = models.FloatField(default=0)
+    peak_req_per_second = models.PositiveIntegerField(
+        default=0,
+        help_text="Maximum number of requests that arrived in the same second",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "location"
+        verbose_name = "nominatim period stats"
+        verbose_name_plural = "nominatim period stats"
+        unique_together = [("period_type", "period_key")]
+        indexes = [
+            models.Index(fields=["period_type", "period_key"]),
+        ]
+
+    def __str__(self):
+        return f"{self.period_type}:{self.period_key} reqs={self.total_requests}"

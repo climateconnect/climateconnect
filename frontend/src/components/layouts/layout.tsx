@@ -1,7 +1,7 @@
 import { Container, Theme, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import Alert from "@mui/material/Alert";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getParams } from "../../../public/lib/generalOperations";
 import { getMessageFromUrl } from "../../../public/lib/parsingOperations";
 import theme from "../../themes/theme";
@@ -52,9 +52,9 @@ export default function Layout({
     donationCampaignRunning: !!process.env.DONATION_CAMPAIGN_RUNNING,
     customTheme_default_contrastText: customTheme?.palette?.background?.default_contrastText,
   });
-  const [hideAlertMessage, setHideAlertMessage] = React.useState(false);
-  const [initialMessageType, setInitialMessageType] = React.useState(null as string | null);
-  const [initialMessage, setInitialMessage] = React.useState("");
+  const [hideAlertMessage, setHideAlertMessage] = useState(false);
+  const [initialMessageType, setInitialMessageType] = useState(null as string | null);
+  const [initialMessage, setInitialMessage] = useState("");
 
   useEffect(() => {
     const params = getParams(window.location.href);
