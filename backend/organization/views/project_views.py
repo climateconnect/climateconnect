@@ -3,6 +3,7 @@ import re
 import traceback
 import zoneinfo
 from datetime import datetime
+from datetime import timezone as dt_timezone
 
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
@@ -542,8 +543,8 @@ class EventCalendarCountsView(APIView):
         month_end_local = (
             month_start_local + relativedelta(months=1) - relativedelta(days=1)
         ).replace(hour=23, minute=59, second=59)
-        month_start = month_start_local.astimezone(timezone.utc)
-        month_end = month_end_local.astimezone(timezone.utc)
+        month_start = month_start_local.astimezone(dt_timezone.utc)
+        month_end = month_end_local.astimezone(dt_timezone.utc)
 
         queryset = Project.objects.filter(
             is_draft=False,
