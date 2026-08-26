@@ -635,7 +635,6 @@ class OrganizationAPIView(APIView):
             )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # Adapt to Sectors
     def patch(self, request, url_slug, format=None):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))
@@ -1034,7 +1033,6 @@ class ListOrganizationMembersAPIView(ListAPIView):
         ).order_by("id")
 
 
-# TODO: rename this view to ListOrganizationTags
 class ListOrganizationTags(ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = OrganizationTagsSerializer

@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from organization.models.tags import OrganizationFieldTagging
 from organization.models import (
     Comment,
     CommentTranslation,
@@ -43,7 +42,6 @@ pass_through_models = (
     ProjectComment,
     ProjectCollaborators,
     ProjectFollower,
-    OrganizationFieldTagging,
     PostTranslation,
     CommentTranslation,
     ProjectLike,
