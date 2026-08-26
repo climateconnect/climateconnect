@@ -3,7 +3,6 @@ import zoneinfo
 
 from dateutil.parser import parse as dateutil_parse
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.utils import translation as dj_translation
@@ -18,6 +17,7 @@ from organization.models import Project
 from organization.models.type import ProjectTypesChoices
 from organization.utility.ical_feed import (
     build_feed_calendar,
+    build_feed_url,
     canonicalize_query,
     resolve_lang_code,
     sign_feed_token,
@@ -162,20 +162,6 @@ class EventFeedTokenView(APIView):
 
         feed_params = {**params, "token": token}
         feed_qs = urllib.parse.urlencode(sorted(feed_params.items()))
-
-        frontend_url = settings.FRONTEND_URL or ""
-        hub_slug = params.get("hub")
-        if hub_slug:
-            hub_obj = Hub.objects.filter(url_slug=hub_slug).first()
-            if hub_obj and hub_obj.parent_hub:
-                url = f"{frontend_url}/hubs/{hub_obj.parent_hub.url_slug}/{hub_obj.url_slug}/events/feed.ics?{feed_qs}"
-            elif hub_obj:
-                url = (
-                    f"{frontend_url}/hubs/{hub_obj.url_slug}/events/feed.ics?{feed_qs}"
-                )
-            else:
-                url = f"{frontend_url}/events/feed.ics?{feed_qs}"
-        else:
-            url = f"{frontend_url}/events/feed.ics?{feed_qs}"
+        url = build_feed_url(feed_qs, hub_slug=params.get("hub"))
 
         return JsonResponse({"url": url})

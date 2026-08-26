@@ -1,13 +1,16 @@
+import base64
 import hashlib
 import hmac
 import time
 import urllib.parse
 
 from django.conf import settings
+from django.utils.translation import get_supported_language_variant
 from icalendar import Calendar, Event as IcalEvent
 
 from organization.utility.email import get_location_name
 from organization.utility.project import get_project_name, get_project_short_description
+from climateconnect_api.utility.translation import get_user_lang_url
 
 PRODID = "-//Climate Hub Network//EN"
 
@@ -46,8 +49,6 @@ def sign_feed_token(canonical_query: str, expiry_seconds: int = 365 * 24 * 3600)
     expiry = int(time.time()) + expiry_seconds
     message = canonical_query.encode("utf-8")
     sig = hmac.new(key, message, hashlib.sha256).digest()
-    import base64
-
     sig_b64 = base64.urlsafe_b64encode(sig).rstrip(b"=").decode("ascii")
     return f"{sig_b64}.{expiry}"
 
@@ -68,8 +69,6 @@ def verify_feed_token(canonical_query: str, token: str) -> bool:
     message = canonical_query.encode("utf-8")
     expected = hmac.new(key, message, hashlib.sha256).digest()
 
-    import base64
-
     padding = 4 - len(sig_b64) % 4
     if padding != 4:
         sig_b64 += "=" * padding
@@ -81,7 +80,7 @@ def verify_feed_token(canonical_query: str, token: str) -> bool:
     return hmac.compare_digest(expected, provided)
 
 
-def build_vevent(project, lang_code: str) -> IcalEvent:
+def build_vevent(project, lang_code: str, extra_description: str = "") -> IcalEvent:
     event = IcalEvent()
     event.add("uid", f"{project.id}@climatehub.org")
     event.add("summary", get_project_name(project, lang_code))
@@ -92,8 +91,6 @@ def build_vevent(project, lang_code: str) -> IcalEvent:
     location = get_location_name(project, lang_code)
     if location:
         event.add("location", location)
-
-    from climateconnect_api.utility.translation import get_user_lang_url
 
     event_url = (
         settings.FRONTEND_URL
@@ -106,6 +103,8 @@ def build_vevent(project, lang_code: str) -> IcalEvent:
     short_desc = get_project_short_description(project, lang_code)
     if short_desc:
         description_parts.append(short_desc.strip())
+    if extra_description:
+        description_parts.append(extra_description.strip())
 
     url_cta = (
         "Visit the following link to see event details or change your registration:"
@@ -167,8 +166,6 @@ def resolve_lang_code(request) -> str:
 
     accept = request.META.get("HTTP_ACCEPT_LANGUAGE", "")
     if accept:
-        from django.utils.translation import get_supported_language_variant
-
         try:
             return get_supported_language_variant(
                 accept.split(",")[0].split(";")[0].strip()
@@ -177,3 +174,22 @@ def resolve_lang_code(request) -> str:
             pass
 
     return "en"
+
+
+def build_feed_url(feed_qs: str, hub_slug: str = None) -> str:
+    from django.conf import settings
+
+    frontend_url = settings.FRONTEND_URL or ""
+    if hub_slug:
+        from hubs.models.hub import Hub
+
+        hub_obj = Hub.objects.filter(url_slug=hub_slug).first()
+        if hub_obj and hub_obj.parent_hub:
+            path = f"/hubs/{hub_obj.parent_hub.url_slug}/{hub_obj.url_slug}/events/feed.ics"
+        elif hub_obj:
+            path = f"/hubs/{hub_obj.url_slug}/events/feed.ics"
+        else:
+            path = "/events/feed.ics"
+    else:
+        path = "/events/feed.ics"
+    return f"{frontend_url}{path}?{feed_qs}"

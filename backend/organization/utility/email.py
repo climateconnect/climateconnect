@@ -842,33 +842,16 @@ def generate_event_ics_attachment(project, lang_code, registration=None, tz=None
 
     from organization.utility.ical_feed import PRODID, build_vevent
 
+    extra_desc = ""
+    if registration and tz:
+        extra_desc = _build_field_answers_text(registration, lang_code, tz) or ""
+
     cal = Calendar()
     cal.add("prodid", PRODID)
     cal.add("version", "2.0")
     cal.add("method", "PUBLISH")
 
-    event = build_vevent(project, lang_code)
-
-    if registration and tz:
-        event_url = (
-            settings.FRONTEND_URL
-            + get_user_lang_url(lang_code)
-            + "/projects/"
-            + project.url_slug
-        )
-        field_answers_text = _build_field_answers_text(registration, lang_code, tz)
-        if field_answers_text:
-            existing_desc = str(event.get("description", ""))
-            url_cta = (
-                "Visit the following link to see event details or change your registration:"
-                if lang_code == "en"
-                else "Besuche folgenden Link, um die Details der Veranstaltung zu sehen"
-                " oder deine Anmeldung zu ändern:"
-            )
-            event["description"] = existing_desc.replace(
-                f"{url_cta}\n{event_url}",
-                f"{field_answers_text}\n\n{url_cta}\n{event_url}",
-            )
+    event = build_vevent(project, lang_code, extra_description=extra_desc)
 
     cal.add_component(event)
 
