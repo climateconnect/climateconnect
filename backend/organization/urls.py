@@ -1,6 +1,7 @@
 from django.urls import path
 
 from organization.views import (
+    event_calendar_feed_views,
     event_registration_views,
     organization_views,
     project_views,
@@ -100,6 +101,18 @@ urlpatterns = [
         "events/upcoming/",
         project_views.ListUpcomingEventsView.as_view(),
         name="events-upcoming",
+    ),
+    # iCal subscription feed (signed, anonymous, hub-scoped)
+    path(
+        "events/feed.ics/",
+        event_calendar_feed_views.EventCalendarFeedView.as_view(),
+        name="events-feed-ics",
+    ),
+    # Token issuance for iCal subscription feed
+    path(
+        "event-feed-token/",
+        event_calendar_feed_views.EventFeedTokenView.as_view(),
+        name="event-feed-token",
     ),
     path(
         "projects/<str:url_slug>/",
