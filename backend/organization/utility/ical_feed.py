@@ -133,9 +133,9 @@ def build_feed_calendar(events, lang_code: str, hub=None, filters_summary=""):
     cal.add("refresh-interval;value=duration", "PT1H")
 
     if hub:
-        cal_name = f"Climate Connect \u2014 {get_hub_name(hub, lang_code)}"
+        cal_name = f"Climate Hub {get_hub_name(hub, lang_code)} \u2014 Events"
     else:
-        cal_name = "Climate Connect \u2014 All hub events"
+        cal_name = "Climate Hub \u2014 Events"
     cal.add("x-wr-calname", cal_name)
 
     if filters_summary:
