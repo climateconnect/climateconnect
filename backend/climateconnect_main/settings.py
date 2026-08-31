@@ -279,6 +279,8 @@ STATIC_ROOT = (
 )
 MEDIA_ROOT = env("MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
+# Images are sent as base64 JSON; 10 MB gives headroom above the ~33% base64 overhead
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 REST_KNOX = {"TOKEN_TTL": timedelta(days=120)}
 REST_FRAMEWORK = {
