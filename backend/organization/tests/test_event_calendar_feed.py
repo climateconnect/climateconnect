@@ -181,7 +181,7 @@ class TestEventCalendarFeed(APITestCase):
         )
 
         self.sector = Sector.objects.create(
-            name="Energy", name_de_translation="Energie", key="energy"
+            name="Test Energy", name_de_translation="Test Energie", key="test_energy"
         )
         ProjectSectorMapping.objects.create(project=self.event1, sector=self.sector)
 
@@ -301,7 +301,7 @@ class TestEventCalendarFeed(APITestCase):
     @patch("organization.views.event_calendar_feed_views.timezone.now")
     def test_sectors_filter(self, mock_now):
         mock_now.return_value = FIXED_NOW
-        url = self._signed_url({"sectors": "Energy"})
+        url = self._signed_url({"sectors": "Test Energy"})
         response = self.client.get(url)
         body = response.content.decode()
         self.assertIn("Future Event Alpha", body)
