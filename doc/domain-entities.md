@@ -14,11 +14,10 @@ This document provides comprehensive documentation of the main domain entities i
 4. [Hub Entities](#4-hub-entities-hubs)
 5. [Idea Entities](#5-idea-entities-ideas)
 6. [Location Entities](#6-location-entities-location)
-7. [Climate Match Entities](#7-climate-match-entities-climate_match)
-8. [Auth Entities](#8-auth-entities-auth_app)
-9. [Cross-Cutting Patterns](#9-cross-cutting-patterns)
-10. [Entity Relationship Summary](#10-entity-relationship-summary)
-11. [Key Design Principles](#11-key-design-principles)
+7. [Auth Entities](#7-auth-entities-auth_app)
+8. [Cross-Cutting Patterns](#8-cross-cutting-patterns)
+9. [Entity Relationship Summary](#9-entity-relationship-summary)
+10. [Key Design Principles](#10-key-design-principles)
 
 ---
 
@@ -746,58 +745,7 @@ LocationIQ total to stop calling LocationIQ once the daily allowance is spent.
 
 ---
 
-## 7. Climate Match Entities (climate_match)
-
-### Question
-
-**Summary**: Questionnaire questions for climate matching algorithm.
-
-**Description**: Represents survey questions used to match users with relevant projects, organizations, and hubs. Questions have dynamic answer types defined via ContentType (multiple choice, text, scale, etc.) and support translations. Used in intelligent matching algorithms.
-
-**Relationships**:
-- **ForeignKey**: `Language`, `ContentType` (answer_type - polymorphic answer format)
-- **Referenced by**: `QuestionTranslation`, `Answer`, `UserQuestionAnswer`
-
----
-
-### Answer
-
-**Summary**: Predefined answer options for questions.
-
-**Description**: Possible answers for multiple-choice and scale-type questions. Linked to metadata that weights answers for matching algorithms. Supports translations for multilingual questionnaires.
-
-**Relationships**:
-- **ForeignKey**: `Question`, `Language`
-- **ManyToMany**: `AnswerMetaData` (weighting for matching)
-- **Referenced by**: `AnswerTranslation`, `UserQuestionAnswer`
-
----
-
-### AnswerMetaData
-
-**Summary**: Weighting data for intelligent matching.
-
-**Description**: Contains metadata that weights user answers for matching algorithms. Links answers to specific resources (projects, organizations, sectors, skills) via ContentType polymorphic relationships. Enables sophisticated matching logic.
-
-**Relationships**:
-- **ForeignKey**: `ContentType` (resource_type - polymorphic to match targets)
-- **ManyToMany with**: `Answer`, `UserQuestionAnswer`
-
----
-
-### UserQuestionAnswer
-
-**Summary**: User responses to climate match questionnaire.
-
-**Description**: Records user answers to questionnaire questions. Can store predefined answers or free-text responses. Hub-scoped to enable different matching profiles for different communities. Links to metadata for matching algorithm processing.
-
-**Relationships**:
-- **ForeignKey**: `User`, `Question`, `Answer` (predefined_answer - nullable), `Hub`
-- **ManyToMany**: `AnswerMetaData` (answers - weighted metadata)
-
----
-
-## 8. Auth Entities (auth_app)
+## 7. Auth Entities (auth_app)
 
 > Added in US-2 (Auth Unification epic). Pure data layer — no API endpoints yet.
 
@@ -858,7 +806,7 @@ LocationIQ total to stop calling LocationIQ once the daily allowance is spent.
 
 ---
 
-## 9. Cross-Cutting Patterns
+## 8. Cross-Cutting Patterns
 
 ### Translation Support
 
@@ -892,7 +840,6 @@ Hubs are a central organizing principle connecting:
 - Projects and Organizations (via `related_hubs` ManyToMany)
 - Ideas (via `main_hub` and `hub_shared_in`)
 - Donations (via `DonationGoal.hub`)
-- Climate Match (via `UserQuestionAnswer.hub`)
 - Geographic and sector filters
 
 ### Skill & Role-Based Access
@@ -1003,14 +950,6 @@ MessageParticipants (Chat)
 ├── Messages (Message)
 ├── Participants (Participant with Roles)
 └── Message Receivers (MessageReceiver)
-
-ClimateMatch
-├── Question
-│   ├── Answers (predefined options)
-│   │   └── AnswerMetaData (ManyToMany - matching weights)
-│   └── UserQuestionAnswer (user responses)
-│       ├── Hub (ForeignKey - scoped matching)
-│       └── AnswerMetaData (ManyToMany - selected weights)
 ```
 
 ---
@@ -1026,7 +965,6 @@ ClimateMatch
 7. **Notification System**: Event-driven notifications for platform activity
 8. **Soft Deletion**: Preserve data integrity for comments and posts
 9. **Hierarchical Structures**: Parent-child relationships for organizations, hubs, tags, skills, sectors
-10. **Matching Intelligence**: ClimateMatch system with weighted metadata for user-project-organization matching
 
 ---
 
@@ -1037,7 +975,7 @@ ClimateMatch
 - **Mapping/Junction Tables**: 15+ models for many-to-many relationships
 - **Total**: 100+ database tables
 
-This architecture supports a comprehensive climate action platform with social networking, project management, real-time messaging, gamification, multilingual support, and intelligent matching capabilities.
+This architecture supports a comprehensive climate action platform with social networking, project management, real-time messaging, gamification, and multilingual support.
 
 ## Version History
 
