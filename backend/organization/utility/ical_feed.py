@@ -1,7 +1,6 @@
 import base64
 import hashlib
 import hmac
-import time
 import urllib.parse
 
 from django.conf import settings
@@ -44,36 +43,26 @@ def canonicalize_query(params: dict) -> str:
     return urllib.parse.urlencode(sorted_items)
 
 
-def sign_feed_token(canonical_query: str, expiry_seconds: int = 365 * 24 * 3600) -> str:
+def sign_feed_token(canonical_query: str) -> str:
     key = settings.ICAL_FEED_SIGNING_KEY.encode("utf-8")
-    expiry = int(time.time()) + expiry_seconds
     message = canonical_query.encode("utf-8")
     sig = hmac.new(key, message, hashlib.sha256).digest()
-    sig_b64 = base64.urlsafe_b64encode(sig).rstrip(b"=").decode("ascii")
-    return f"{sig_b64}.{expiry}"
+    return base64.urlsafe_b64encode(sig).rstrip(b"=").decode("ascii")
 
 
 def verify_feed_token(canonical_query: str, token: str) -> bool:
-    if not token or "." not in token:
-        return False
-    try:
-        sig_b64, expiry_str = token.rsplit(".", 1)
-        expiry = int(expiry_str)
-    except (ValueError, TypeError):
-        return False
-
-    if int(time.time()) > expiry:
+    if not token:
         return False
 
     key = settings.ICAL_FEED_SIGNING_KEY.encode("utf-8")
     message = canonical_query.encode("utf-8")
     expected = hmac.new(key, message, hashlib.sha256).digest()
 
-    padding = 4 - len(sig_b64) % 4
+    padding = 4 - len(token) % 4
     if padding != 4:
-        sig_b64 += "=" * padding
+        token += "=" * padding
     try:
-        provided = base64.urlsafe_b64decode(sig_b64)
+        provided = base64.urlsafe_b64decode(token)
     except Exception:
         return False
 

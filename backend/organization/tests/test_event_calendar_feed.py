@@ -29,15 +29,10 @@ class TestEventFeedToken(TestCase):
         token = sign_feed_token(canonical)
         self.assertTrue(verify_feed_token(canonical, token))
 
-    def test_expired_rejected(self):
-        canonical = canonicalize_query({"hub": "berlin"})
-        token = sign_feed_token(canonical, expiry_seconds=-1)
-        self.assertFalse(verify_feed_token(canonical, token))
-
     def test_tampered_rejected(self):
         canonical = canonicalize_query({"hub": "berlin"})
         token = sign_feed_token(canonical)
-        tampered = token[:-5] + "XXXXX"
+        tampered = token[:-4] + "XXXX"
         self.assertFalse(verify_feed_token(canonical, tampered))
 
     def test_extra_params_rejected_on_verify(self):
@@ -213,13 +208,6 @@ class TestEventCalendarFeed(APITestCase):
 
     def test_invalid_token_returns_403(self):
         url = f"{self.url}?hub=berlin&token=invalid.token"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_expired_token_returns_403(self):
-        canonical = canonicalize_query({"hub": "berlin"})
-        token = sign_feed_token(canonical, expiry_seconds=-1)
-        url = f"{self.url}?hub=berlin&token={token}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
