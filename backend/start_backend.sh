@@ -5,6 +5,9 @@ apt-get update -qq && apt-get install binutils libproj-dev gdal-bin -yqq
 # Install pdm
 pip install pdm
 
+# Go to backend folder
+cd backend
+
 # install dependencies
 pdm install
 
