@@ -97,6 +97,9 @@ jobs:
           cd frontend
           yarn workspaces focus --all --production
 
+      - name: Prune unnecessary files from node_modules
+        run: node frontend/scripts/node-prune.mjs
+
       - name: Zip artifact for deployment
         run: zip -r release.zip frontend/
 
