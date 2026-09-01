@@ -111,8 +111,9 @@ export default function SubscribeToCalendarButton({
     }
   };
 
-  const googleCalendarUrl = feedUrl
-    ? `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(feedUrl)}`
+  const webcalFeedUrl = feedUrl ? feedUrl.replace(/^https?:\/\//, "webcal://") : "";
+  const googleCalendarUrl = webcalFeedUrl
+    ? `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcalFeedUrl)}`
     : "";
 
   return (
