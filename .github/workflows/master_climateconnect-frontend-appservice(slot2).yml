@@ -35,8 +35,8 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v6
         with:
-          path: node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: frontend/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('frontend/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
 
@@ -91,6 +91,11 @@ jobs:
             "WASSERAKTIONSWOCHEN_FEATURE": "${{ secrets.WASSERAKTIONSWOCHEN_FEATURE }}",
             "WEBFLOW_SITE_ID": "${{ secrets.WEBFLOW_SITE_ID }}"
           }' > frontend/build_info.json
+
+      - name: Strip dev dependencies for deployment
+        run: |
+          cd frontend
+          yarn workspaces focus --all --production
 
       - name: Zip artifact for deployment
         run: zip -r release.zip frontend/
