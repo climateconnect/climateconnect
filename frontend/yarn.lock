@@ -7746,7 +7746,6 @@ __metadata:
     mui-tiptap: "npm:^1.30.0"
     next: "npm:15.5.23"
     next-cookies: "npm:^2.0.3"
-    object-path: "npm:^0.11.8"
     prettier: "npm:2.2.0"
     prop-types: "npm:^15.7.2"
     qrcode: "npm:^1.5.4"
@@ -7754,7 +7753,6 @@ __metadata:
     react-avatar-editor: "npm:15.0.0"
     react-dom: "npm:19.2.7"
     react-ga4: "npm:^2.0.0"
-    react-google-charts: "npm:^3.0.15"
     react-linkify: "npm:^1.0.0-alpha"
     react-mentions: "npm:^4.3.0"
     react-minimal-pie-chart: "npm:^9.1.1"
@@ -13463,13 +13461,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-path@npm:^0.11.8":
-  version: 0.11.8
-  resolution: "object-path@npm:0.11.8"
-  checksum: 10c0/73b1f33bb30a7032d8cce2e3dcffd82b80a83d8304e80b4f83b4f456165625de9907f1ca7f7441d4dfb5e73429ace1e5bf9d9315636ac0aacc76392cc21d1672
-  languageName: node
-  linkType: hard
-
 "object-treeify@npm:1.1.33":
   version: 1.1.33
   resolution: "object-treeify@npm:1.1.33"
@@ -14482,19 +14473,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-google-charts@npm:^3.0.15":
-  version: 3.0.15
-  resolution: "react-google-charts@npm:3.0.15"
-  dependencies:
-    react-load-script: "npm:^0.0.6"
-  peerDependencies:
-    prop-types: ">=15"
-    react: ">=16.3.0"
-    react-dom: ">=16.3.0"
-  checksum: 10c0/0ea35e6f7d664cb3cc46e4214aa6002286867c850121f0c4e87d457fb140de0cacf17a6cc18c5eee81f06fddd8486e5f13708a05d4031bfade6c27519dd6f140
-  languageName: node
-  linkType: hard
-
 "react-is-18@npm:react-is@^18.3.1":
   version: 18.3.1
   resolution: "react-is@npm:18.3.1"
@@ -14537,16 +14515,6 @@ __metadata:
     linkify-it: "npm:^2.0.3"
     tlds: "npm:^1.199.0"
   checksum: 10c0/1ac770f16ea4d7452c2d90a5506e01b5bc0badd519ae89ff3159c65a3609c6600689db3fca70935af07fb6f56d85d63ee861459cc2257d13d935a2b629737a76
-  languageName: node
-  linkType: hard
-
-"react-load-script@npm:^0.0.6":
-  version: 0.0.6
-  resolution: "react-load-script@npm:0.0.6"
-  peerDependencies:
-    prop-types: ">=15"
-    react: ">=0.14.9"
-  checksum: 10c0/c4bd4ef76d888a415951e153777b2020c7d85317bf6783c6032cb518d8989aca17350b63917d0a28433fcb84b2a4c147b9d3fce201ba8932ef9441e1c2436395
   languageName: node
   linkType: hard
 
