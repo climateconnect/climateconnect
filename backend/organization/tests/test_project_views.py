@@ -15,8 +15,10 @@ from climateconnect_api.models import Language, Role
 from hubs.models.hub import Hub
 from location.models import Location, LocationTranslation
 from organization.models import (
+    Organization,
     Project,
     ProjectMember,
+    ProjectParents,
     ProjectSectorMapping,
     ProjectStatus,
     Sector,
@@ -634,6 +636,10 @@ class TestProjectApi(APITestCase):
             project=self.project,
             role=self.role,
         )
+        ProjectParents.objects.create(
+            project=self.project,
+            parent_user=self.user,
+        )
 
     @tag("projects")
     def test_get_project_by_url_slug(self):
@@ -1174,6 +1180,55 @@ class TestProjectApi(APITestCase):
 
         # assert
         self.assertIn("is_online", res)
+
+    @tag("projects")
+    def test_patch_project_keeps_organization_owner_when_is_personal_project_flag_is_stale(self):
+        self.client.login(username="testuser", password="testpassword")
+
+        organization = Organization.objects.create(
+            name="Owner Organization",
+            url_slug="owner-organization-for-stale-flag-test",
+            language=self.default_language,
+        )
+
+        project_parents = self.project.project_parent.get()
+        project_parents.parent_organization = organization
+        project_parents.save()
+
+        response = self.client.patch(
+            self.url,
+            {"name": "Updated Project Name", "is_personal_project": True},
+            format="json",
+        )
+
+        self.assertContains(response, "successfully updated")
+        project_parents.refresh_from_db()
+        self.assertEqual(project_parents.parent_organization, organization)
+        self.project.refresh_from_db()
+        self.assertEqual(self.project.name, "Updated Project Name")
+
+    @tag("projects")
+    def test_patch_project_rejects_invalid_parent_organization_id(self):
+        self.client.login(username="testuser", password="testpassword")
+
+        project_parents = self.project.project_parent.get()
+        project_parents.parent_organization = Organization.objects.create(
+            name="Existing Organization",
+            url_slug="existing-organization-for-invalid-id-test",
+            language=self.default_language,
+        )
+        project_parents.save()
+
+        response = self.client.patch(
+            self.url,
+            {"parent_organization": 999999},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("parent_organization", response.json())
+        project_parents.refresh_from_db()
+        self.assertIsNotNone(project_parents.parent_organization)
 
 
 class ProjectLocationHubFilterTest(TestCase):
