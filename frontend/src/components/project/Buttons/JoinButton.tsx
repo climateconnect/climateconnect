@@ -85,6 +85,7 @@ export default function JoinButton({
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleClick = () => {
+    if (requestedToJoin) return;
     if (useConfirmation) {
       setDialogOpen(true);
     } else {

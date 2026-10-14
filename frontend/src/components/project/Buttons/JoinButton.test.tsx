@@ -127,3 +127,26 @@ describe("JoinButton with confirmation toggle off", () => {
     expect(handler).toHaveBeenCalledWith();
   });
 });
+
+describe("JoinButton when already requested", () => {
+  it("does not open the dialog or send on click", () => {
+    setToggle(true);
+    const handler = jest.fn();
+    render(
+      <ThemeProvider theme={theme}>
+        <StylesThemeProvider theme={theme}>
+          <UserContext.Provider value={{ locale: "en", user: { url_slug: "me" } } as any}>
+            <JoinButton
+              handleSendProjectJoinRequest={handler}
+              requestedToJoin
+              screenSize={{ belowSmall: true }}
+            />
+          </UserContext.Provider>
+        </StylesThemeProvider>
+      </ThemeProvider>
+    );
+    fireEvent.click(screen.getByRole("button").parentElement as HTMLElement);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(handler).not.toHaveBeenCalled();
+  });
+});
