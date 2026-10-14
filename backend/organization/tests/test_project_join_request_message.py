@@ -27,7 +27,7 @@ class ProjectJoinRequestMessageTest(TestCase):
         self.project = Project.objects.create(name="P", url_slug="p-slug")
         self.client.force_login(self.user)
         self.url = reverse(
-            "request-join-entity",
+            "organization:request-join-entity",
             kwargs={"url_slug": "p-slug", "user_slug": "joiner-slug"},
         )
 
