@@ -91,12 +91,13 @@ export default function JoinRequestDialog({ open, onClose, onSend }: Props) {
           {codePointLength(message)} / {JOIN_REQUEST_MESSAGE_MAX_LENGTH}
         </Counter>
       </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2 }}>
+      <DialogActions sx={{ px: { xs: 2, sm: 3 }, pb: 2 }}>
         <Button onClick={handleClose} disabled={sending}>
           {texts.cancel}
         </Button>
         <Button
           variant="contained"
+          sx={{ whiteSpace: "nowrap" }}
           onClick={handleSend}
           disabled={sending}
           startIcon={sending ? <CircularProgress size={16} color="inherit" /> : undefined}
