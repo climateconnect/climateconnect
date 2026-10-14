@@ -34,6 +34,9 @@ class ProjectJoinRequestMessageTest(TestCase):
     def _post(self, data, toggle=True):
         data = {"user_availability": self.availability.id, **data}
         with patch(TOGGLE_PATH, return_value=toggle), patch(
+            "organization.views.project_views.get_project_admin_creators",
+            return_value=[],
+        ), patch(
             "organization.views.project_views.create_project_join_request_notification"
         ):
             return self.client.post(self.url, data, content_type="application/json")
