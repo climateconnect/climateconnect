@@ -130,6 +130,12 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       {
+        source: "/zukunftlive",
+        destination:
+          "https://climatehub.org/de/projects/mit-doktor-whatson-und-dem-climatehub-potsdam?hub=potsdam",
+        permanent: true,
+      },
+      {
         source: "/hubs/prio1",
         destination: "/hubs/prio1/browse",
         permanent: false,
