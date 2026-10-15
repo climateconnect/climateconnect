@@ -1048,6 +1048,10 @@ class PersonalOrganizationsView(ListAPIView):
         if not UserProfile.objects.filter(user=request.user).exists():
             raise NotFound(detail="Profile not found.", code=status.HTTP_404_NOT_FOUND)
         user_organization_members = OrganizationMember.objects.filter(user=request.user)
+        if request.query_params.get("exclude_drafts") in ("true", "True", "1"):
+            user_organization_members = user_organization_members.filter(
+                organization__is_draft=False
+            )
         serializer = UserOrganizationSerializer(
             user_organization_members,
             many=True,
