@@ -40,12 +40,12 @@ export function parseOrganization(organization, editMode: boolean = false) {
   return org;
 }
 
-export async function getUserOrganizations(token, locale) {
+export async function getUserOrganizations(token, locale, excludeDrafts = false) {
   if (!token) return [];
   try {
     const resp = await apiRequest({
       method: "get",
-      url: "/api/my_organizations/",
+      url: "/api/my_organizations/" + (excludeDrafts ? "?exclude_drafts=true" : ""),
       token: token,
       locale: locale,
     });
