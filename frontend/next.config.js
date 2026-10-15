@@ -125,6 +125,11 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       {
+        source: "/ewt",
+        destination: "https://climatehub.org/de/projects/energiewendetag-marburg?hub=marburg",
+        permanent: true,
+      },
+      {
         source: "/hubs/prio1",
         destination: "/hubs/prio1/browse",
         permanent: false,
