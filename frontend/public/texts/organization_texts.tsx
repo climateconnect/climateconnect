@@ -448,6 +448,12 @@ export default function getOrganizationTexts({ organization, locale, user, hubNa
       en: "Publish",
       de: "Veröffentlichen",
     },
+    draft_organization_notice: {
+      en:
+        "This organisation is a draft and not visible on the platform yet. An admin can publish it by editing the organisation.",
+      de:
+        "Diese Organisation ist ein Entwurf und noch nicht auf der Plattform sichtbar. Ein Admin kann sie veröffentlichen, indem er die Organisation bearbeitet.",
+    },
     delete_draft: {
       en: "Delete Draft",
       de: "Entwurf löschen",
