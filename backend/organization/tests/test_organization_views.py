@@ -1660,7 +1660,9 @@ class TestOrganizationPublishTransition(APITestCase):
         self.draft_org.save()
         OrganizationSectorMapping.objects.create(
             organization=self.draft_org,
-            sector=Sector.objects.create(name="Energy", key="energy"),
+            sector=Sector.objects.get_or_create(
+                key="energy", defaults={"name": "Energy"}
+            )[0],
         )
         OrganizationTagging.objects.create(
             organization=self.draft_org,
