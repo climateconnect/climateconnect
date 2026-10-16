@@ -37,6 +37,14 @@ export default function getOrganizationTexts({ organization, locale, user, hubNa
       en: "Please specify your location",
       de: "Bitte gib einen Standort an",
     },
+    short_description_required_error: {
+      en: "Please add a short description of your organisation",
+      de: "Bitte füge eine Kurzbeschreibung deiner Organisation hinzu",
+    },
+    sectors_required_error: {
+      en: "Please choose at least one sector for your organisation",
+      de: "Bitte wähle mindestens einen Sektor für deine Organisation aus",
+    },
     how_to_summarize_organization: {
       en:
         "Give a short summary or what your organisation is doing. Below you'll have more space to describe it. (",

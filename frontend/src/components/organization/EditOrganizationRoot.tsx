@@ -118,7 +118,7 @@ export default function EditOrganizationRoot({
   const [loadingSaveDraft, setLoadingSaveDraft] = useState(false);
 
   const saveChanges = async (editedOrg, isTranslationsStep, isDraftSave = false) => {
-    const error = verifyChanges(editedOrg, texts, isDraftSave).error;
+    const error = verifyChanges(editedOrg, texts, isDraftSave, !!organization.is_draft).error;
     //verify location is valid and notify user if it's not
     if (
       editedOrg?.info?.location !== organization?.info?.location &&
@@ -437,7 +437,7 @@ const parseForRequest = async (org) => {
   return parsedOrg;
 };
 
-const verifyChanges = (newOrg, texts, isDraftSave = false) => {
+const verifyChanges = (newOrg, texts, isDraftSave = false, isPublishingDraft = false) => {
   // Drafts only require a name - everything else can be filled in later.
   if (isDraftSave) {
     if (!newOrg.name) {
@@ -452,6 +452,11 @@ const verifyChanges = (newOrg, texts, isDraftSave = false) => {
   };
   const requiredInfoPropErrors = {
     location: texts.location_required_error,
+    // Publishing a draft must meet the same requirements as creating an organisation
+    ...(isPublishingDraft && {
+      short_description: texts.short_description_required_error,
+      sectors: texts.sectors_required_error,
+    }),
   };
   for (const prop of Object.keys(requiredPropErrors)) {
     if (!newOrg[prop] || (Array.isArray(newOrg[prop]) && newOrg[prop].length <= 0)) {

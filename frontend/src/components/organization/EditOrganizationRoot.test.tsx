@@ -199,6 +199,7 @@ describe("EditOrganizationRoot draft publishing", () => {
   const publishableDraftOrganization = {
     ...draftOrganization,
     image: "http://example.com/image.png",
+    info: { ...draftOrganization.info, sectors: [{ key: "energy" }] },
   };
   const user = { url_slug: "test-user" };
 
@@ -248,6 +249,23 @@ describe("EditOrganizationRoot draft publishing", () => {
         hub: undefined,
       },
     });
+  });
+
+  it("does not publish a draft without sectors", async () => {
+    const { getByTestId } = renderComponent({
+      organization: {
+        ...publishableDraftOrganization,
+        info: { ...publishableDraftOrganization.info, sectors: [] },
+      },
+      user,
+    });
+
+    fireEvent.click(getByTestId("submit-button"));
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(
+      (apiRequest as jest.Mock).mock.calls.find(([opts]) => opts.method === "patch")
+    ).toBeUndefined();
   });
 
   it("saving as draft does not change is_draft and redirects to the user's profile", async () => {
