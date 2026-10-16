@@ -18,6 +18,8 @@ from organization.models import (
     Organization,
     OrganizationMember,
     OrganizationSectorMapping,
+    OrganizationTagging,
+    OrganizationTags,
     OrganizationTranslation,
     Sector,
 )
@@ -1650,6 +1652,21 @@ class TestOrganizationPublishTransition(APITestCase):
 
     @tag("organizations", "draft")
     def test_patch_publishes_draft_organization(self):
+        self.draft_org.image = "organization_images/test.png"
+        self.draft_org.location = Location.objects.create(
+            name="Test Location", city="Berlin", country="Germany", place_id=1
+        )
+        self.draft_org.short_description = "Short description"
+        self.draft_org.save()
+        OrganizationSectorMapping.objects.create(
+            organization=self.draft_org,
+            sector=Sector.objects.create(name="Energy", key="energy"),
+        )
+        OrganizationTagging.objects.create(
+            organization=self.draft_org,
+            organization_tag=OrganizationTags.objects.create(name="NGO"),
+        )
+
         response = self.client.patch(
             self._url(self.draft_org), {"is_draft": False}, format="json"
         )
@@ -1657,6 +1674,16 @@ class TestOrganizationPublishTransition(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.draft_org.refresh_from_db()
         self.assertFalse(self.draft_org.is_draft)
+
+    @tag("organizations", "draft")
+    def test_patch_cannot_publish_incomplete_draft(self):
+        response = self.client.patch(
+            self._url(self.draft_org), {"is_draft": False}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.draft_org.refresh_from_db()
+        self.assertTrue(self.draft_org.is_draft)
 
     @tag("organizations", "draft")
     def test_patch_cannot_revert_published_organization_to_draft(self):
