@@ -1520,6 +1520,20 @@ class TestCreateOrganizationViewDraft(APITestCase):
         self.assertTrue(organization.is_draft)
 
     @tag("organizations", "draft")
+    def test_post_draft_without_team_members_makes_creator_admin(self):
+        Role.objects.create(name="Admin", role_type=Role.ALL_TYPE)
+
+        response = self.client.post(
+            self.url, {"name": "Adminless Draft", "is_draft": True}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        organization = Organization.objects.get(name="Adminless Draft")
+        member = OrganizationMember.objects.get(organization=organization)
+        self.assertEqual(member.user, self.user)
+        self.assertEqual(member.role.role_type, Role.ALL_TYPE)
+
+    @tag("organizations", "draft")
     def test_post_draft_without_source_language_sets_fallback_language(self):
         # Regression: a draft created without source_language had no language,
         # which crashed edit_translations on the next PATCH.

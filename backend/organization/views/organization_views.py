@@ -519,6 +519,19 @@ class CreateOrganizationView(APIView):
                         )
                         logger.info("Organization member created {}".format(user.id))
 
+                # A draft may be created without team_members; make sure it
+                # always has an admin (the creator) so it can be edited and published.
+                if not OrganizationMember.objects.filter(
+                    organization=organization, role__role_type=Role.ALL_TYPE
+                ).exists():
+                    OrganizationMember.objects.update_or_create(
+                        user=request.user,
+                        organization=organization,
+                        defaults={
+                            "role": roles.filter(role_type=Role.ALL_TYPE).first()
+                        },
+                    )
+
                 # Create organization tags
                 if "sectors" in request.data:
                     _sector_keys = request.data["sectors"]
