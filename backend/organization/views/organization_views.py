@@ -660,6 +660,32 @@ class OrganizationAPIView(APIView):
             )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @staticmethod
+    def _missing_publish_fields(organization, data):
+        """Fields a draft needs before it can be published (same as on creation)."""
+
+        def has(key, existing):
+            return bool(data[key]) if key in data else bool(existing)
+
+        checks = {
+            "image": has("image", organization.image),
+            "location": has("location", organization.location),
+            "short_description": has(
+                "short_description", organization.short_description
+            ),
+            "sectors": has(
+                "sectors",
+                OrganizationSectorMapping.objects.filter(
+                    organization=organization
+                ).exists(),
+            ),
+            "types": has(
+                "types",
+                OrganizationTagging.objects.filter(organization=organization).exists(),
+            ),
+        }
+        return [field for field, ok in checks.items() if not ok]
+
     def patch(self, request, url_slug, format=None):
         try:
             organization = Organization.objects.get(url_slug=str(url_slug))
@@ -687,6 +713,16 @@ class OrganizationAPIView(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            if organization.is_draft and not new_is_draft:
+                missing = self._missing_publish_fields(organization, request.data)
+                if missing:
+                    return Response(
+                        {
+                            "message": _("Required information missing to publish: ")
+                            + ", ".join(missing)
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
             organization.is_draft = new_is_draft
 
         pass_through_params = [
