@@ -2,6 +2,7 @@ from django.utils.translation import get_language
 from rest_framework import serializers
 
 from climateconnect_api.models.role import Role
+from climateconnect_main.utility.image_variants import ImageVariantsField
 from climateconnect_api.models.user import UserProfile
 from climateconnect_api.serializers.role import RoleSerializer
 from climateconnect_api.serializers.user import UserProfileStubSerializer
@@ -50,6 +51,7 @@ class OrganizationStubSerializer(serializers.ModelSerializer):
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
+    image_variants = ImageVariantsField()
     sectors = serializers.SerializerMethodField()
     types = serializers.SerializerMethodField()
     parent_organization = serializers.SerializerMethodField()
@@ -73,6 +75,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "name",
             "url_slug",
             "image",
+            "image_variants",
             "background_image",
             "parent_organization",
             "child_organizations",
