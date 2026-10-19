@@ -142,9 +142,7 @@ describe("resolveVariantUrl", () => {
 
   it("falls through to the next candidate when the first is missing", () => {
     const partial: ImageVariants = { image: { "600": FULL_VARIANTS.image["600"] } };
-    expect(resolveVariantUrl(partial, HERO_SOURCES, ORIGINAL)).toBe(
-      FULL_VARIANTS.image["600"]
-    );
+    expect(resolveVariantUrl(partial, HERO_SOURCES, ORIGINAL)).toBe(FULL_VARIANTS.image["600"]);
   });
 
   it("falls back to the original when no variant exists", () => {
@@ -160,9 +158,7 @@ describe("resolveVariantUrl", () => {
 
   it("falls back to the 600px image for cards on rows with no thumbnail", () => {
     const noThumb: ImageVariants = { image: FULL_VARIANTS.image };
-    expect(resolveVariantUrl(noThumb, CARD_SOURCES, ORIGINAL)).toBe(
-      FULL_VARIANTS.image["600"]
-    );
+    expect(resolveVariantUrl(noThumb, CARD_SOURCES, ORIGINAL)).toBe(FULL_VARIANTS.image["600"]);
   });
 
   it("routes a relative variant path through getImageUrl", () => {

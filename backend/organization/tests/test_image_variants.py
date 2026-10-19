@@ -829,8 +829,6 @@ class TestOrphanCleanup(APITestCase):
         old_name = self.project.image.name  # e.g. "projects/1/old_image.png"
         config = IMAGE_VARIANT_CONFIGS["Project"]
         widths = config["image"]["widths"]
-        from climateconnect_main.utility.image_variants import _variant_filename
-
         old_variant_paths = [
             _variant_filename(old_name, w) for w in widths
         ]
@@ -938,8 +936,6 @@ class TestOrphanCleanup(APITestCase):
         old_variant_paths = [_variant_filename(old_name, w) for w in widths]
 
         # Patch storage.delete to raise
-        original_delete = self.project.image.storage.delete
-
         def raising_delete(name):
             raise RuntimeError("Azure storage error")
 
