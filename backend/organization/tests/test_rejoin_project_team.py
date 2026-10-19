@@ -62,13 +62,15 @@ class RejoinProjectTeamBase(APITestCase):
 
     def _leave(self):
         self.client.force_authenticate(self.user)
-        return self.client.post(reverse("leave-project", kwargs={"url_slug": "rejoin"}))
+        return self.client.post(
+            reverse("organization:leave-project", kwargs={"url_slug": "rejoin"})
+        )
 
     def _request_join(self):
         self.client.force_authenticate(self.user)
         return self.client.post(
             reverse(
-                "request-join-entity",
+                "organization:request-join-entity",
                 kwargs={"url_slug": "rejoin", "user_slug": "joiner"},
             ),
             {"user_availability": self.availability.id, "message": "hi"},
@@ -80,7 +82,7 @@ class RejoinProjectTeamBase(APITestCase):
         self.client.force_authenticate(self.admin)
         return self.client.delete(
             reverse(
-                "update-project-member-api",
+                "organization:update-project-member-api",
                 kwargs={"url_slug": "rejoin", "pk": member.id},
             )
         )
