@@ -24,7 +24,7 @@ class RejoinProjectTeamBase(APITestCase):
     def setUp(self):
         self.availability = Availability.objects.create(name="1-3 h", key="1-3-h")
         self.admin_role = Role.objects.create(
-            name="Admin_rejoin", role_type=Role.ALL_TYPE
+            name="Administrator", role_type=Role.ALL_TYPE
         )
         self.member_role, _ = Role.objects.get_or_create(
             name="Member", defaults={"role_type": Role.READ_ONLY_TYPE}
