@@ -136,6 +136,11 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       {
+        source: "/naechsterhalt",
+        destination: "https://climatehub.org/de/projects/nachster-halt-zukunft?hub=erlangen",
+        permanent: true,
+      },
+      {
         source: "/hubs/prio1",
         destination: "/hubs/prio1/browse",
         permanent: false,
