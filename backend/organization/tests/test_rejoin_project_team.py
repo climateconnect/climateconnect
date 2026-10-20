@@ -162,6 +162,19 @@ class TestRejoinAfterEnding(RejoinProjectTeamBase):
             ProjectMember.objects.get(user=self.user, project=self.project).is_active
         )
 
+    def test_admin_removal_rolls_back_if_cleanup_fails(self):
+        self._join_as_member()
+        with mock.patch(
+            "organization.views.project_views.remove_approved_membership_request",
+            side_effect=Exception("boom"),
+        ):
+            res = self._remove_by_admin()
+        self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertTrue(
+            ProjectMember.objects.filter(user=self.user, project=self.project).exists()
+        )
+        self.assertTrue(MembershipRequests.objects.filter(user=self.user).exists())
+
 
 class TestReactivationOnApproval(RejoinProjectTeamBase):
     def test_approve_reactivates_inactive_member_as_member(self):
