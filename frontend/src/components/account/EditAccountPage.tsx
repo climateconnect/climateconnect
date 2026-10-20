@@ -52,8 +52,10 @@ const useStyles = makeStyles<Theme, { background_image?: string; isDragOver?: bo
       // outlineOffset stays 0 (not negative) so the ring sits flush against the
       // edge instead of drawing a few pixels inside it, over the image itself.
       outline: (props) => (props.isDragOver ? `3px dashed ${theme.palette.primary.main}` : "none"),
+      // Return undefined (not "transparent") when idle: dynamic rules are injected
+      // after static ones and would otherwise override classes.backgroundColor (grey placeholder).
       backgroundColor: (props) =>
-        props.isDragOver ? alpha(theme.palette.primary.main, 0.1) : "transparent",
+        props.isDragOver ? alpha(theme.palette.primary.main, 0.1) : undefined,
       // Keyboard focus ring should match the project's brand color rather
       // than the browser's default blue.
       "&:focus-visible": {
