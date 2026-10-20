@@ -9,7 +9,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from climateconnect_api.models import Availability, Role, UserProfile
+from climateconnect_api.models import Availability, Language, Role, UserProfile
 from climateconnect_api.models.notification import Notification, UserNotification
 from organization.models import Project, ProjectMember
 from organization.models.members import MembershipRequests
@@ -32,8 +32,16 @@ class RejoinProjectTeamBase(APITestCase):
         self.project = Project.objects.create(name="Rejoin", url_slug="rejoin")
         self.admin = User.objects.create_user(username="admin", password="pw")
         self.user = User.objects.create_user(username="joiner", password="pw")
-        UserProfile.objects.create(user=self.user, url_slug="joiner", name="Joiner")
-        UserProfile.objects.create(user=self.admin, url_slug="admin", name="Admin")
+        language = Language.objects.get(language_code="en")
+        for user, slug in ((self.user, "joiner"), (self.admin, "admin")):
+            UserProfile.objects.create(
+                user=user, url_slug=slug, name=slug, language=language
+            )
+        email_patcher = mock.patch(
+            "organization.utility.notification.send_join_project_request_email"
+        )
+        email_patcher.start()
+        self.addCleanup(email_patcher.stop)
         ProjectMember.objects.create(
             user=self.admin,
             project=self.project,
