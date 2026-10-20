@@ -33,6 +33,7 @@ class RejoinProjectTeamBase(APITestCase):
         self.admin = User.objects.create_user(username="admin", password="pw")
         self.user = User.objects.create_user(username="joiner", password="pw")
         UserProfile.objects.create(user=self.user, url_slug="joiner", name="Joiner")
+        UserProfile.objects.create(user=self.admin, url_slug="admin", name="Admin")
         ProjectMember.objects.create(
             user=self.admin,
             project=self.project,
