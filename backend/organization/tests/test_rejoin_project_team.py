@@ -168,8 +168,9 @@ class TestRejoinAfterEnding(RejoinProjectTeamBase):
             "organization.views.project_views.remove_approved_membership_request",
             side_effect=Exception("boom"),
         ):
-            res = self._remove_by_admin()
-        self.assertEqual(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # the view has no exception handler, so the test client re-raises
+            with self.assertRaisesMessage(Exception, "boom"):
+                self._remove_by_admin()
         self.assertTrue(
             ProjectMember.objects.filter(user=self.user, project=self.project).exists()
         )
