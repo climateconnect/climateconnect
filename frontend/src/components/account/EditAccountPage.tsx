@@ -52,10 +52,6 @@ const useStyles = makeStyles<Theme, { background_image?: string; isDragOver?: bo
       // outlineOffset stays 0 (not negative) so the ring sits flush against the
       // edge instead of drawing a few pixels inside it, over the image itself.
       outline: (props) => (props.isDragOver ? `3px dashed ${theme.palette.primary.main}` : "none"),
-      // Return undefined (not "transparent") when idle: dynamic rules are injected
-      // after static ones and would otherwise override classes.backgroundColor (grey placeholder).
-      backgroundColor: (props) =>
-        props.isDragOver ? alpha(theme.palette.primary.main, 0.1) : undefined,
       // Keyboard focus ring should match the project's brand color rather
       // than the browser's default blue.
       "&:focus-visible": {
@@ -69,6 +65,11 @@ const useStyles = makeStyles<Theme, { background_image?: string; isDragOver?: bo
     }),
     backgroundColor: {
       backgroundColor: "#e0e0e0",
+    },
+    // Static class (declared after backgroundColor so it wins) instead of a dynamic
+    // function value: JSS may not remove the property again when the function returns undefined.
+    dragOverBackground: {
+      backgroundColor: alpha(theme.palette.primary.main, 0.1),
     },
     backgroundImageButton: {
       fontSize: "2.5rem",
@@ -708,7 +709,7 @@ export default function EditAccountPage({
         <div
           className={`${classes.backgroundContainer} ${
             editedAccount.background_image ? classes.backgroundImage : classes.backgroundColor
-          }`}
+          } ${isDragOver ? classes.dragOverBackground : ""}`}
           onClick={editedAccount.background_image ? () => void 0 : onClickBackgroundImage}
           onKeyDown={onKeyDown}
           onDragOver={onDragOver}
