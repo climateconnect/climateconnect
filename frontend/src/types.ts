@@ -203,6 +203,7 @@ export type Organization = {
   image?: string;
   image_variants?: ImageVariants;
   background_image?: string;
+  is_draft?: boolean;
 };
 
 export type CcLocale = "en" | "de";
