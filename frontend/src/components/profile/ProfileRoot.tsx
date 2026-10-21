@@ -43,7 +43,7 @@ const SectionTitle = styled("h2")(({ theme }) => ({
 
 const InnerIcon = styled(ControlPointSharpIcon)(({ theme }) => ({
   marginRight: theme.spacing(0.5),
-  marginLeft: -theme.spacing(1),
+  marginLeft: theme.spacing(-1),
 }));
 
 export default function ProfileRoot({

@@ -55,6 +55,10 @@ const CloseButtonLeft = styled(IconButton)(({ theme }) => ({
   color: theme.palette.grey[500],
 }));
 
+const CloseButtonRight = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.grey[500],
+}));
+
 const TitleText = styled(Typography, {
   shouldForwardProp: (p) => typeof p !== "string" || !p.startsWith("$"),
 })<{ $closeButtonRightSide?: boolean }>(({ theme, $closeButtonRightSide }) => ({
@@ -191,14 +195,14 @@ export default function GenericDialog({
           </ApplyButtonArea>
         )}
         {onClose && closeButtonRightSide && (
-          <IconButton
+          <CloseButtonRight
             aria-label="close"
-            className={`classes.closeButtonRight ${closeButtonRightStyle}`}
+            className={closeButtonRightStyle}
             onClick={() => onClose(false)}
             size={closeButtonSmall ? "small" : undefined}
           >
             <CloseIcon />
-          </IconButton>
+          </CloseButtonRight>
         )}
       </StyledDialogTitle>
       <DialogContentArea

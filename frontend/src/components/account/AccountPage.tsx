@@ -140,7 +140,7 @@ const InfoIcon = styled(PlaceIcon)(({ theme }) => ({
 
 const InnerIcon = styled(EditSharpIcon)(({ theme }) => ({
   marginRight: theme.spacing(0.5),
-  marginLeft: -theme.spacing(1),
+  marginLeft: theme.spacing(-1),
 }));
 
 const StyledDetailledDescription = styled(DetailledDescription)(({ theme }) => ({

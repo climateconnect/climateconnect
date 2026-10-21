@@ -101,15 +101,12 @@ const SaveAsDraftButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(1),
 }));
 
-const ActionBar = styled(AppBar, {
-  shouldForwardProp: (prop) => prop !== "$visibleFooterHeight",
-})<{ $visibleFooterHeight?: number }>(({ $visibleFooterHeight }) => ({
+const ActionBar = styled(AppBar)({
   backgroundColor: "#ECECEC",
   top: "auto",
-  bottom: $visibleFooterHeight,
   boxShadow: "-3px -3px 6px #00000029",
   zIndex: 1,
-}));
+});
 
 const ContainerButtonsActionBar = styled(Toolbar)({
   display: "flex",
@@ -522,7 +519,7 @@ function TranslationActionButtonBar({
           </SubmitOptions>
         </TopButtonRow>
       ) : (
-        <ActionBar $visibleFooterHeight={visibleFooterHeight} position="fixed" elevation={0}>
+        <ActionBar style={{ bottom: visibleFooterHeight }} position="fixed" elevation={0}>
           <ContainerButtonsActionBar variant="dense">
             {" "}
             <TopButtonRow>
