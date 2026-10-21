@@ -1,9 +1,6 @@
 import { Box, CircularProgress, Link, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect, useState } from "react";
-import EventIcon from "@mui/icons-material/Event";
-import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
@@ -45,6 +42,10 @@ const useStyles = makeStyles((theme) => ({
     overflowWrap: "anywhere",
     wordBreak: "break-word",
   },
+  originContextIcon: {
+    width: 16,
+    height: 16,
+  },
   originContextText: {
     display: "inline",
   },
@@ -56,10 +57,11 @@ const PROJECT_TYPE_ORIGIN_TEXT_KEYS = {
   PR: "chat_message_origin_project",
 };
 
-const PROJECT_TYPE_ORIGIN_ICONS = {
-  EV: EventIcon,
-  ID: LightbulbOutlinedIcon,
-  PR: WorkOutlineIcon,
+// Same icon images as ProjectTypeDisplay (used by ProjectPreview)
+const PROJECT_TYPE_ORIGIN_ICON_IDS = {
+  EV: "event",
+  ID: "idea",
+  PR: "project",
 };
 
 export default function Message({ message, classes, isPrivateChat }) {
@@ -103,10 +105,10 @@ export default function Message({ message, classes, isPrivateChat }) {
     originName = originContext.project_name;
     originHref = `${getLocalePrefix(locale)}/projects/${originContext.project_url_slug}`;
   }
-  const OriginIcon =
+  const originIconId =
     originContext?.type === "project"
-      ? PROJECT_TYPE_ORIGIN_ICONS[originContext.project_type] ?? PROJECT_TYPE_ORIGIN_ICONS.PR
-      : EventIcon;
+      ? PROJECT_TYPE_ORIGIN_ICON_IDS[originContext.project_type] ?? PROJECT_TYPE_ORIGIN_ICON_IDS.PR
+      : PROJECT_TYPE_ORIGIN_ICON_IDS.EV;
   const originParts = originTemplate.split(/\{(?:event_name|project_name)\}/);
 
   return (
@@ -134,9 +136,10 @@ export default function Message({ message, classes, isPrivateChat }) {
         <MessageContent content={message.content} received={received} />
         {originContext && (
           <Box className={ownClasses.originContext}>
-            <OriginIcon
-              fontSize="inherit"
-              sx={(theme) => ({ color: received ? "inherit" : theme.palette.text.primary })}
+            <img
+              src={`/images/project_types/${originIconId}.png`}
+              alt=""
+              className={ownClasses.originContextIcon}
             />
             <Typography
               variant="caption"
