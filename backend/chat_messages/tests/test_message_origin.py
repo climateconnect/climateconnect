@@ -122,7 +122,7 @@ class TestProjectOriginView(APITestCase):
             origin_type="project",
             origin_id=self.project.id,
         )
-        self.url = reverse("organization:project-origin", args=[self.project.id])
+        self.url = reverse("chat_messages:project-origin", args=[self.project.id])
 
     def test_participant_gets_context(self):
         self.client.force_authenticate(self.sender)
@@ -147,7 +147,7 @@ class TestProjectOriginView(APITestCase):
 
     def test_unknown_project_404(self):
         self.client.force_authenticate(self.sender)
-        url = reverse("organization:project-origin", args=[999999])
+        url = reverse("chat_messages:project-origin", args=[999999])
         self.assertEqual(self.client.get(url).status_code, 404)
 
     def test_anonymous_unauthorized(self):

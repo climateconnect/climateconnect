@@ -2,6 +2,8 @@ import { Box, CircularProgress, Link, Tooltip, Typography } from "@mui/material"
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect, useState } from "react";
 import EventIcon from "@mui/icons-material/Event";
+import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
@@ -54,6 +56,12 @@ const PROJECT_TYPE_ORIGIN_TEXT_KEYS = {
   PR: "chat_message_origin_project",
 };
 
+const PROJECT_TYPE_ORIGIN_ICONS = {
+  EV: EventIcon,
+  ID: LightbulbOutlinedIcon,
+  PR: WorkOutlineIcon,
+};
+
 export default function Message({ message, classes, isPrivateChat }) {
   const ownClasses = useStyles();
   const { user, locale } = useContext(UserContext);
@@ -95,6 +103,10 @@ export default function Message({ message, classes, isPrivateChat }) {
     originName = originContext.project_name;
     originHref = `${getLocalePrefix(locale)}/projects/${originContext.project_url_slug}`;
   }
+  const OriginIcon =
+    originContext?.type === "project"
+      ? PROJECT_TYPE_ORIGIN_ICONS[originContext.project_type] ?? PROJECT_TYPE_ORIGIN_ICONS.PR
+      : EventIcon;
   const originParts = originTemplate.split(/\{(?:event_name|project_name)\}/);
 
   return (
@@ -122,7 +134,7 @@ export default function Message({ message, classes, isPrivateChat }) {
         <MessageContent content={message.content} received={received} />
         {originContext && (
           <Box className={ownClasses.originContext}>
-            <EventIcon
+            <OriginIcon
               fontSize="inherit"
               sx={(theme) => ({ color: received ? "inherit" : theme.palette.text.primary })}
             />
