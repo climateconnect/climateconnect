@@ -10,8 +10,12 @@ Covers acceptance criteria:
 """
 
 
+import shutil
+import tempfile
 from base64 import b64encode
 from unittest.mock import patch as mock_patch
+
+from django.test import override_settings
 
 from django.core.files.base import ContentFile
 from io import BytesIO
@@ -21,6 +25,47 @@ from rest_framework.test import APITestCase
 from climateconnect_api.models import Language, UserProfile
 from organization.models import Organization, Project
 from django.core.management import call_command
+
+
+# ---------------------------------------------------------------------------
+# Test media root
+# ---------------------------------------------------------------------------
+
+
+class TempMediaRootMixin:
+    """Give each test class its own ``MEDIA_ROOT``.
+
+    These tests write real files through the storage backend, and ``MEDIA_ROOT``
+    comes from the environment pointing at the developer's media directory, so
+    without an override every run litters it with test images.
+
+    The directory has to be created **per class, in the process that runs it**.
+    ``manage.py test --parallel`` (what CI runs) forks workers that inherit
+    module-level state, and the cloned test databases hand out colliding primary
+    keys — so one shared directory means two workers writing
+    ``projects/42/image.jpeg`` at the same time, deleting each other's variants,
+    tripping ``storage.save()``'s collision-suffix path, and a module-level
+    teardown removing a directory other workers are still using. Django assigns
+    a whole TestCase class to one worker, so per-class isolation is enough.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls._media_root = tempfile.mkdtemp(prefix="cc-image-variants-tests-")
+        cls._media_override = override_settings(MEDIA_ROOT=cls._media_root)
+        cls._media_override.enable()
+        try:
+            super().setUpClass()
+        except Exception:
+            cls._media_override.disable()
+            shutil.rmtree(cls._media_root, ignore_errors=True)
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        cls._media_override.disable()
+        shutil.rmtree(cls._media_root, ignore_errors=True)
 
 
 # ---------------------------------------------------------------------------
@@ -67,7 +112,7 @@ def make_png_with_alpha(width=400, height=300):
 # ---------------------------------------------------------------------------
 
 
-class TestGenerateWebPVariant(APITestCase):
+class TestGenerateWebPVariant(TempMediaRootMixin, APITestCase):
 
     def setUp(self):
         self.default_language = Language.objects.get_or_create(
@@ -208,7 +253,7 @@ class TestGenerateWebPVariant(APITestCase):
 # ---------------------------------------------------------------------------
 
 
-class TestGenerateAndStoreVariants(APITestCase):
+class TestGenerateAndStoreVariants(TempMediaRootMixin, APITestCase):
 
     def setUp(self):
         self.default_language = Language.objects.get_or_create(
@@ -416,7 +461,7 @@ class TestGenerateAndStoreVariants(APITestCase):
 # ---------------------------------------------------------------------------
 
 
-class TestImageVariantsSerialization(APITestCase):
+class TestImageVariantsSerialization(TempMediaRootMixin, APITestCase):
     """The API must expose URLs even though the column stores paths."""
 
     def setUp(self):
@@ -490,7 +535,7 @@ class TestImageVariantsSerialization(APITestCase):
 # ---------------------------------------------------------------------------
 
 
-class TestSignalDispatch(APITestCase):
+class TestSignalDispatch(TempMediaRootMixin, APITestCase):
     """Tests that Celery tasks fire only on changed image fields."""
 
     def setUp(self):
@@ -586,7 +631,7 @@ class TestSignalDispatch(APITestCase):
 # ---------------------------------------------------------------------------
 
 
-class TestBackfillCommand(APITestCase):
+class TestBackfillCommand(TempMediaRootMixin, APITestCase):
 
     def setUp(self):
         self.default_language = Language.objects.get_or_create(
@@ -793,7 +838,7 @@ class TestBackfillCommand(APITestCase):
 # ---------------------------------------------------------------------------
 
 
-class TestOrphanCleanup(APITestCase):
+class TestOrphanCleanup(TempMediaRootMixin, APITestCase):
     """Tests that replacing an image deletes stale variant files."""
 
     def setUp(self):

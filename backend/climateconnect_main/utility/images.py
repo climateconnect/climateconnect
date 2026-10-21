@@ -21,7 +21,37 @@ WEBP_QUALITY = 80
 WEBP_METHOD = 6
 
 
-def generate_webp_variant(field_file, max_width=None, quality=WEBP_QUALITY, method=WEBP_METHOD):
+def read_source_bytes(field_file):
+    """Read a ``FieldFile``'s bytes through its storage backend.
+
+    Deliberately uses ``storage.open()`` rather than ``field_file.open()``:
+    ``FieldFile.open()`` caches the handle on the field and a ``with`` block then
+    closes it, so a *second* call reaches ``File.open()`` on a closed handle and
+    can only recover by reopening an absolute path. That makes repeated variant
+    generation on one field depend on filesystem state it should not care about.
+    Going through storage keeps every read independent and storage-agnostic.
+
+    Returns ``None`` (and logs) when the file cannot be read.
+    """
+    try:
+        with field_file.storage.open(field_file.name, "rb") as fh:
+            return fh.read()
+    except Exception as exc:
+        logger.error(
+            "read_source_bytes: could not read %s: %s",
+            getattr(field_file, "name", "<unknown>"),
+            exc,
+        )
+        return None
+
+
+def generate_webp_variant(
+    field_file,
+    max_width=None,
+    quality=WEBP_QUALITY,
+    method=WEBP_METHOD,
+    source_bytes=None,
+):
     """Generate a resized WebP variant from an ``ImageField`` value.
 
     Parameters
@@ -39,6 +69,11 @@ def generate_webp_variant(field_file, max_width=None, quality=WEBP_QUALITY, meth
     method : int
         WebP encoding method (0–6, slower = better).  Defaults to
         :data:`WEBP_METHOD`.
+    source_bytes : bytes | None
+        The original image's bytes, when the caller has already read them.
+        Generating several widths for one field would otherwise download the
+        original once per width — on Azure that is a real egress cost during a
+        backfill.  When ``None`` the bytes are read via :func:`read_source_bytes`.
 
     Returns
     -------
@@ -50,8 +85,13 @@ def generate_webp_variant(field_file, max_width=None, quality=WEBP_QUALITY, meth
     if not field_file:
         return None
 
+    if source_bytes is None:
+        source_bytes = read_source_bytes(field_file)
+    if source_bytes is None:
+        return None
+
     try:
-        with field_file.open("rb") as fh:
+        with io.BytesIO(source_bytes) as fh:
             image = Image.open(fh)
             # Respect EXIF orientation so the variant is correctly oriented.
             image = ImageOps.exif_transpose(image)

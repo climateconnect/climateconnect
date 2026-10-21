@@ -11,7 +11,7 @@ Provides:
 * :func:`generate_and_store_variants` — generates WebP variants for an
   instance and persists them in ``image_variants``.
 
-This module is intentionally storage-agnostic (uses ``FieldFile.open()``,
+This module is intentionally storage-agnostic (reads through ``storage.open()``,
 never ``.path``) so it works on Azure Blob Storage.
 """
 
@@ -264,7 +264,10 @@ def generate_and_store_variants(instance, field_names=None):
         Subset of image fields to process.  If ``None``, all configured
         image fields are processed.
     """
-    from climateconnect_main.utility.images import generate_webp_variant
+    from climateconnect_main.utility.images import (
+        generate_webp_variant,
+        read_source_bytes,
+    )
 
     model_name = instance.__class__.__name__
     config = IMAGE_VARIANT_CONFIGS.get(model_name)
@@ -292,8 +295,16 @@ def generate_and_store_variants(instance, field_names=None):
         previous = instance.image_variants.get(field_name, {})
         variants = {}
 
+        # Read the original once, not once per width — on Azure each read is a
+        # blob download, and a backfill does this for every row in the table.
+        source_bytes = read_source_bytes(field_file)
+        if source_bytes is None:
+            continue
+
         for width in widths:
-            content_file = generate_webp_variant(field_file, max_width=width)
+            content_file = generate_webp_variant(
+                field_file, max_width=width, source_bytes=source_bytes
+            )
             if content_file is None:
                 continue
 
