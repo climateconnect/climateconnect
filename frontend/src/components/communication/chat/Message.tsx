@@ -1,7 +1,8 @@
 import { Box, CircularProgress, Link, Tooltip, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import React, { useContext, useEffect, useState } from "react";
-import BusinessIcon from "@mui/icons-material/Business";
+// Same organization icon as in MobilePageNav
+import Groups2Icon from "@mui/icons-material/Groups2";
 import Cookies from "universal-cookie";
 import { getLocalePrefix } from "../../../../public/lib/apiOperations";
 import { getDateTime } from "../../../../public/lib/dateOperations";
@@ -65,25 +66,16 @@ const PROJECT_TYPE_ORIGIN_ICON_IDS = {
   PR: "project",
 };
 
-export default function Message({ message, classes, isPrivateChat, previousMessage = null }) {
+export default function Message({ message, classes, isPrivateChat }) {
   const ownClasses = useStyles();
   const { user, locale } = useContext(UserContext);
   const texts = getTexts({ page: "chat", locale: locale });
   const received = message.sender.url_slug !== user.url_slug;
   const sent_date = getDateTime(message.sent_at);
   const [originContext, setOriginContext] = useState<OriginContext | null>(null);
-  // Show the organization chip only when the origin differs from the previous message
-  const isRepeatedOrganizationOrigin =
-    message.origin_type === "organization" &&
-    previousMessage?.origin_type === "organization" &&
-    previousMessage?.origin_id === message.origin_id;
 
   useEffect(() => {
-    if (
-      !isSupportedOriginType(message.origin_type) ||
-      !message.origin_id ||
-      isRepeatedOrganizationOrigin
-    ) {
+    if (!isSupportedOriginType(message.origin_type) || !message.origin_id) {
       setOriginContext(null);
       return;
     }
@@ -99,7 +91,7 @@ export default function Message({ message, classes, isPrivateChat, previousMessa
     return () => {
       active = false;
     };
-  }, [locale, message.origin_id, message.origin_type, isRepeatedOrganizationOrigin]);
+  }, [locale, message.origin_id, message.origin_type]);
 
   let originTemplate = "";
   let originName = "";
@@ -151,9 +143,11 @@ export default function Message({ message, classes, isPrivateChat, previousMessa
         {originContext && (
           <Box className={ownClasses.originContext}>
             {originContext.type === "organization" ? (
-              <BusinessIcon
-                fontSize="inherit"
-                sx={(theme) => ({ color: received ? "inherit" : theme.palette.text.primary })}
+              <Groups2Icon
+                sx={(theme) => ({
+                  fontSize: 16,
+                  color: received ? "inherit" : theme.palette.text.primary,
+                })}
               />
             ) : (
               <img
