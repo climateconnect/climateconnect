@@ -290,7 +290,7 @@ ClimateConnect API supports two authentication methods:
 - `GET /api/my_profile/` - Your profile
 - `POST /api/projects/` - Create project
 - `PUT /api/projects/{slug}/` - Update project
-- `POST /api/send_message/` - Send chat message. Optional `origin_organization_url_slug` tags the message with `origin_type="organization"` (validated server-side: 400 if unknown or no org admin in the chat) and adds all org admins to the chat as participants. The WebSocket payload accepts the same field (invalid origin → delivered untagged)
+- `POST /api/send_message/` - Send chat message.
 - `GET /api/notifications/` - Your notifications
 - Most `POST`, `PUT`, `PATCH`, `DELETE` operations
 
@@ -653,6 +653,8 @@ Allows the authenticated member to cancel their own registration for an upcoming
 #### Project-origin chat messages and `GET /api/project-origin/{project_id}/` (issue #2296)
 
 `POST /api/chat/{chat_uuid}/send_message/` and the chat WebSocket payload accept an optional `origin_project_url_slug`. The server validates that the project exists and that another active chat participant is an admin (`Role.ALL_TYPE` / `READ_WRITE_TYPE`) of it, then stores `origin_type="project"`, `origin_id=<project id>`. The client never sends a raw `origin_id`. Invalid origin: the POST returns 400 with `detail`; over the socket the message is saved without origin and a warning is logged.
+
+The same endpoints accept an optional `origin_organization_url_slug` (organization page contact). The server validates that the organization exists and that another active chat participant is an admin of it, then stores `origin_type="organization"`, `origin_id=<organization id>`. Nobody is added to the chat. At most one of the project/organization slugs may be set (400 otherwise). Invalid origin: the POST returns 400 with `detail`; over the socket the message is saved without origin.
 
 `GET /api/project-origin/{project_id}/` (auth required) returns `{ "project_name", "project_url_slug", "project_type" }` (`project_type` is `PR`, `ID` or `EV`). 403 unless the user is an active participant of a chat containing a message with this origin, or a project admin; 404 if the project does not exist; 401 if unauthenticated.
 

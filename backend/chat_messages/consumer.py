@@ -12,8 +12,6 @@ from chat_messages.models import (
 from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
 from chat_messages.utility.message_origin import (
-    ORIGIN_TYPE_ORGANIZATION,
-    add_organization_admins_to_chat,
     resolve_message_origin,
 )
 from chat_messages.utility.notification import create_chat_message_notification
@@ -75,8 +73,6 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
         except ValidationError:
             # No clean error path on a socket; keep the message, drop the origin.
             logger.warning("Ignoring invalid message origin for chat %s", chat_uuid)
-        if origin_type == ORIGIN_TYPE_ORGANIZATION:
-            add_organization_admins_to_chat(origin_id, chat)
         # Only select active participant IDs
         receiver_user_ids = Participant.objects.filter(
             chat=chat, is_active=True

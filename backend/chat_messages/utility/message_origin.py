@@ -90,23 +90,3 @@ def resolve_project_origin(user, chat, project_url_slug):
     if not has_admin_in_chat:
         raise ValidationError("Invalid origin: project does not match this chat.")
     return ORIGIN_TYPE_PROJECT, project.id
-
-
-def add_organization_admins_to_chat(organization_id, chat):
-    """
-    Make every organization admin an active participant of the chat so they are
-    notified and can reply. Idempotent; existing active participants are untouched.
-    """
-    admin_user_ids = OrganizationMember.objects.filter(
-        organization_id=organization_id,
-        role__role_type__in=ADMIN_ROLE_TYPES,
-    ).values_list("user", flat=True)
-    chat_role = Role.objects.filter(role_type=Role.READ_WRITE_TYPE).first()
-    for user_id in admin_user_ids:
-        participant, created = Participant.objects.get_or_create(
-            chat=chat, user_id=user_id, defaults={"role": chat_role}
-        )
-        if not created and not participant.is_active:
-            participant.is_active = True
-            participant.role = chat_role
-            participant.save()

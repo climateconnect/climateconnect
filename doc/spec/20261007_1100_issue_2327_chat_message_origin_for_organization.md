@@ -1,6 +1,6 @@
 # Include chat message origin when contacting from an organization page
 
-**Status**: Draft — not implemented
+**Status**: Implemented (scope reduced to the issue, see Log)
 **Type**: Full stack — feature
 **Date created**: 2026-10-07
 **GitHub Issue**: #2327 — "Include chat message origin when reacting on an organisation page"
@@ -44,7 +44,6 @@ A user who clicks "Contact" on an organization page starts a private chat with t
 | Resolver                       | New `GET /api/organization-origin/<organization_id>/` returning `{organization_name, organization_url_slug}`                                                                                    | Mirrors `event-registration-origin` and #2296 `project-origin`; embedding in `MessageSerializer` stays a later cross-type refactor                            |
 | Chip link                      | Links to the organization page (`/organizations/<slug>`, locale-prefixed)                                                                                                                       | Same as #2296                                                                                                                                                 |
 | Deleted organization           | Resolver 404 → chip omitted                                                                                                                                                                     | `origin_id` is deliberately not a FK                                                                                                                          |
-| Other org admins               | **Added as participants** of the chat on the first org-origin message (AC-14); they are notified through the existing chat notification flow and can reply                                      | Decided by product: no new Notification type; admins must learn about and be able to answer the contact                                                       |
 
 ## Acceptance Criteria
 
@@ -65,15 +64,6 @@ A user who clicks "Contact" on an organization page starts a private chat with t
 - [ ] **AC-10**: Contact entry points on the profile page and hub-ambassador boxes, and the project-page drawer, are unchanged; the full chat page shows received chips automatically.
 - [ ] **AC-11**: The `?hub=` behaviour on the chat link is preserved exactly as today.
 
-### Other organization admins (via chat participation)
-
-No new notification type and no separate notification. Admins are reached by the **existing** chat notification/email flow by becoming participants of the chat.
-
-- [ ] **AC-14**: When a message with `origin_type="organization"` is stored (POST and WebSocket paths), every active organization admin (`Role.ALL_TYPE` / `READ_WRITE_TYPE`) who is not yet an active participant is added as an active `Participant` of the chat (idempotent; sender never duplicated). They then receive the message, in-app notification and email through the existing `create_chat_message_notification` / `create_email_notification` path (the chat becomes a group chat, notification type 8, when it has more than 2 participants).
-- [ ] **AC-15**: Admins can read and reply in the chat like any participant. Replies carry no origin unless sent from the org page; the chip is still shown to everyone from the stored message origin.
-- [ ] **AC-16**: The origin validation (AC-3) is evaluated _before_ admins are added, so it uses the creator-as-participant rule; adding participants only happens after validation succeeds. Existing chat-list/unread logic needs no change (verify by test).
-- [ ] **AC-17**: When the chat page is opened with `origin_organization` and the organization resolves, a short note is shown above the message input: "Your message will be visible to all admins of {organization}." / "Deine Nachricht ist für alle Admins von {organization} sichtbar." Shown for the whole visit with the param (also after the first message); not shown without the param or if the resolver returns 404. Text key `chat_message_origin_organization_admins_note` in `public/texts/chat_texts.json` (en + de); styled with `sx`/`styled`.
-
 ### Docs & verification
 
 - [ ] **AC-12**: Updated `doc/api-documentation.md` (new endpoint, new `origin_organization_url_slug` param on `send_message` and socket payload), `doc/domain-entities.md` (`origin_type="organization"` now live), and the contact-chat flow under `doc/mosy/flows/`.
@@ -82,7 +72,7 @@ No new notification type and no separate notification. Admins are reached by the
 ## Reused from #2296 (do not rebuild)
 
 - Shared origin-validation helper and constants module (add an organization resolver next to the project one).
-- Generalised origin fetch + cache keyed by `${type}:${id}` and the "chip only on origin change" logic.
+- Generalised origin fetch + cache keyed by `${type}:${id}`; the chip shows on every tagged message.
 - The POST/socket payload wiring pattern and `origin` union (extend with `organization`); the chat page builds the same payload the project drawer does.
 
 ## Implementation plan
@@ -91,9 +81,8 @@ No new notification type and no separate notification. Admins are reached by the
 
 1. `resolve_organization_origin(user, chat, organization_url_slug) -> tuple[str, int]` in `chat_messages/utility/message_origin.py`. Use `OrganizationMember` with its real related names (`organization_member`, `org_member`).
 2. Wire into `SendChatMessage.post` and `DirectMessageConsumer.new_message`, as for projects (single optional-param handling that dispatches on whichever `origin_*_url_slug` is present; reject a request that sets more than one).
-3. `OrganizationOriginView` in `organization/views/` and URL `organization-origin/<int:organization_id>/` in `organization/urls.py` next to `event-registration-origin`.
-4. `add_organization_admins_to_chat(organization, chat)` in `chat_messages/utility/message_origin.py`, called from both send paths after validation and before receivers/notifications are computed. No new `Notification` type, no migration.
-5. Docs per AC-12.
+3. `OrganizationOriginView` in `chat_messages/views/message_origin_views.py` and URL `organization-origin/<int:organization_id>/` in `chat_messages/urls.py` next to `project-origin`.
+4. Docs per AC-12.
 
 ### Frontend
 
@@ -108,27 +97,26 @@ No new notification type and no separate notification. Admins are reached by the
 - POST with valid slug → stored `origin_type="organization"`, `origin_id=org.id`; serializer returns both.
 - POST without param → origin empty (regression). Unknown slug → 400. Org whose admin is not in the chat → 400. Both a project and an organization slug → 400.
 - Consumer path: valid / invalid / absent.
-- Admin participation: admins added once (idempotent), sender not duplicated, admins receive `MessageReceiver` rows and the existing notification/email; untagged and project-origin messages add nobody; admins can post replies.
+- No participants are added for organization-tagged messages (POST and consumer).
 - `OrganizationOriginView`: 200 participant, 200 org admin, 403 unrelated, 404 unknown, 401 anonymous.
 
 **Frontend** (jest):
 
 - Organization page: contact click navigates to `/chat/<uuid>/?origin_organization=<slug>` (and keeps `hub`).
-- Chat page: admin note shown with the param (en/de), hidden without it and on resolver 404; with the query param, POST and socket payloads include `origin_organization_url_slug`; without it they do not; 400 on origin → retried untagged.
-- `Message` tests: organization chip text/link per locale; hidden on consecutive same-origin messages; 404 → no chip; existing chips unchanged.
+- Chat page: with the query param, POST and socket payloads include `origin_organization_url_slug`; without it they do not; 400 on origin → retried untagged.
+- `Message` tests: organization chip text/link per locale; shown on every tagged message; 404 → no chip; existing chips unchanged.
 
-**Manual**: user A contacts an organization of user B from its page; B sees the chip (inbox and `/chat/<uuid>`), live and after reload; a second message shows no repeated chip; deleting the organization removes the chip with messages intact.
+**Manual**: user A contacts an organization of user B from its page; B sees the chip (inbox and `/chat/<uuid>`), live and after reload; a second message shows the chip again; deleting the organization removes the chip with messages intact.
 
 ## Out of scope
 
 - Profile and hub-ambassador contact origins (`origin_type="hub"` and a user-profile type remain reserved).
-- A new Notification type or a separate admin-only notification.
-- Admins joining by any route other than the first org-origin message.
+- A new Notification type, or reaching other org admins (adding them to the chat was removed, see Log).
 
 ## Open questions
 
 1. ~~Drawer vs. chat page~~ — **Resolved 2026-10-07**: no drawer on the organization page; the chat page stays the composer and the origin travels as a query param.
-2. ~~Recipient~~ — **Resolved 2026-10-07**: other org admins join the chat and can reply; no new Notification type (AC-14–16). The sender is told about this on the chat page (AC-17).
+2. ~~Recipient~~ — **Resolved 2026-10-21**: only the existing chat participants; other org admins are not involved (see Log).
 3. ~~Merge order~~ — **Resolved 2026-10-07**: #2296 is merged first; this spec builds on it.
 
 ## Log
@@ -137,3 +125,4 @@ No new notification type and no separate notification. Admins are reached by the
 - 2026-10-07 — Q1/Q3 answered: no drawer on the org page (origin passed via `?origin_organization=` to the existing chat page); #2296 merges first.
 - 2026-10-07 — Revised after feedback: no new Notification type; admins are added as chat participants (so they are notified through the existing flow) and may reply. Replaced AC-14–16.
 - 2026-10-07 11:00 UTC — Spec drafted from issue #2327, modelled on the #2296 spec. Key divergence found in code: the organization page navigates to the full chat page (no drawer), (superseded: no drawer, see later log entries).
+- 2026-10-21 — Scope reduced to the issue: removed the "other org admins join the chat" decision, AC-14–17, the admin note and `add_organization_admins_to_chat`. It was not requested in #2327 and exposed private DM history to admins, let them outrank the original participants and fragmented repeat chats. Reaching other admins needs a separate issue and privacy review. Chip now shows on every tagged message, as for projects.

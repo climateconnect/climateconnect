@@ -315,28 +315,20 @@ class TestSendMessageOrganizationOrigin(OrganizationOriginFixtureMixin, APITestC
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_other_admins_join_once_and_receive_message(self):
+    def test_origin_message_adds_no_participants(self):
         self._post(origin_organization_url_slug=self.org.url_slug)
         self._post(origin_organization_url_slug=self.org.url_slug)
-        participants = Participant.objects.filter(chat=self.chat, is_active=True)
+        participants = Participant.objects.filter(chat=self.chat)
         self.assertEqual(
             set(participants.values_list("user_id", flat=True)),
-            {self.sender.id, self.creator.id, self.second_admin.id},
+            {self.sender.id, self.creator.id},
         )
-        self.assertEqual(participants.count(), 3)
-        self.assertFalse(participants.filter(user=self.member).exists())
-        self.assertEqual(
-            MessageReceiver.objects.filter(receiver=self.second_admin).count(), 2
+        self.assertFalse(
+            MessageReceiver.objects.filter(receiver=self.second_admin).exists()
         )
-
-    def test_added_admin_can_reply(self):
-        self._post(origin_organization_url_slug=self.org.url_slug)
-        self.client.force_authenticate(self.second_admin)
-        response = self._post()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_rejected_message_adds_nobody(self):
-        # Too short first message: 411 must not leave admins added to the chat.
+        # Too short first message: 411 must not change the chat's participants.
         with (
             mock_patch("chat_messages.views.message_views.create_email_notification"),
             mock_patch("chat_messages.views.message_views.create_user_notification"),
@@ -378,10 +370,8 @@ class TestConsumerOrganizationOrigin(
         message = Message.objects.get(message_participant=self.chat)
         self.assertEqual(message.origin_type, "organization")
         self.assertEqual(message.origin_id, self.org.id)
-        self.assertTrue(
-            Participant.objects.filter(
-                chat=self.chat, user=self.second_admin, is_active=True
-            ).exists()
+        self.assertFalse(
+            Participant.objects.filter(chat=self.chat, user=self.second_admin).exists()
         )
 
     def test_invalid_origin_delivers_untagged(self):

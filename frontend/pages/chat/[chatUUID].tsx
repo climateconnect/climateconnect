@@ -327,14 +327,6 @@ export default function Chat({
           handleChatWindowClose={handleChatWindowClose}
           leaveChat={requestLeaveChat}
           relatedIdea={idea}
-          inputNote={
-            activeOriginSlug && originOrganization
-              ? (texts.chat_message_origin_organization_admins_note as string).replace(
-                  "{organization_name}",
-                  originOrganization.name
-                )
-              : ""
-          }
         />
       ) : (
         <PageNotFound itemName="Chat" returnText={texts.return_to_inbox} returnLink="/inbox" />

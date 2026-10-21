@@ -64,3 +64,14 @@
 - **Notes**:
    - Every message sent from the drawer shows the chip, with the same event icon as the registration chip.
    - If the project is deleted, the resolver returns 404 and the chip is omitted; messages are untouched.
+
+## 7. Contact From an Organization Page Flow (introduced in [#2327](https://github.com/climateconnect/climateconnect/issues/2327))
+- **Trigger**: Logged-in user clicks "Contact" on an organization page
+- **Actions**:
+   1. The user is taken to the private chat with the organization's creator at `/chat/<uuid>/?origin_organization=<url_slug>` (`hub` kept when set).
+   2. Every message sent from the chat page while the param is present carries `origin_organization_url_slug` (POST `send_message` or WebSocket payload).
+   3. The backend validates the organization and that an organization admin is in the chat, then stores `origin_type="organization"` and `origin_id=<organization id>`.
+   4. Both participants see a chip ("This message is about the organization {name}") linking to the organization page, resolved through `GET /api/organization-origin/{id}/`.
+- **Notes**:
+   - No other participants are added to the chat.
+   - If the organization is deleted, the resolver returns 404 and the chip is omitted; messages are untouched.

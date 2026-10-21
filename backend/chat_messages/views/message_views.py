@@ -31,8 +31,6 @@ from chat_messages.utility.chat_setup import (
     set_read,
 )
 from chat_messages.utility.message_origin import (
-    ORIGIN_TYPE_ORGANIZATION,
-    add_organization_admins_to_chat,
     resolve_message_origin,
 )
 from chat_messages.utility.notification import create_chat_message_notification
@@ -438,8 +436,6 @@ class SendChatMessage(APIView):
                     },
                     status=status.HTTP_411_LENGTH_REQUIRED,
                 )
-            if origin_type == ORIGIN_TYPE_ORGANIZATION:
-                add_organization_admins_to_chat(origin_id, chat)
             receiver_user_ids = Participant.objects.filter(
                 chat=chat, is_active=True
             ).values_list("user", flat=True)
