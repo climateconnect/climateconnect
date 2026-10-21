@@ -125,6 +125,22 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       {
+        source: "/ewt",
+        destination: "https://climatehub.org/de/projects/energiewendetag-marburg?hub=marburg",
+        permanent: true,
+      },
+      {
+        source: "/zukunftlive",
+        destination:
+          "https://climatehub.org/de/projects/mit-doktor-whatson-und-dem-climatehub-potsdam?hub=potsdam",
+        permanent: true,
+      },
+      {
+        source: "/naechsterhalt",
+        destination: "https://climatehub.org/de/projects/nachster-halt-zukunft?hub=erlangen",
+        permanent: true,
+      },
+      {
         source: "/hubs/prio1",
         destination: "/hubs/prio1/browse",
         permanent: false,
@@ -164,6 +180,19 @@ module.exports = withBundleAnalyzer({
         has: [{ type: "host", value: "potsdam.climateconnect.earth" }],
         destination: `https://climatehub.org/de/projects/stadtgrun-fassadenbegrunung?hub=potsdam&utm_source=subdomain&utm_medium=redirect&utm_campaign=potsdam&utm_content=fassadenbegruenung`,
         permanent: true,
+      },
+      // Kassel project shortcuts on kassel.climatehub.org
+      {
+        source: "/hitzefrei",
+        has: [{ type: "host", value: "kassel.climatehub.org" }],
+        destination: `https://climatehub.org/de/projects/kassel-hitzefrei-kickoff?hub=kassel`,
+        permanent: true,
+      },
+      {
+        source: "/100",
+        has: [{ type: "host", value: "marburg.climatehub.org" }],
+        destination: `https://www.climatehub.earth/mr/crowdfunding`,
+        permanent: false,
       },
       // 2. Cross-domain subdomain redirects (German first, then English fallback)
       // Must be permanent: false (302) — 301s are cached by browsers, breaking language switching.
