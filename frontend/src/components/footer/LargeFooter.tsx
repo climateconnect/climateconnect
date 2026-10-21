@@ -82,7 +82,7 @@ const NewsletterBox = styled("div")(({ theme }) => ({
     borderRadius: theme.spacing(2),
     borderTopLeftRadius: 0,
     "&:after": {
-      content: " ''",
+      content: "''",
       position: "absolute",
       width: 0,
       height: 0,

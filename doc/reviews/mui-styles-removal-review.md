@@ -24,7 +24,7 @@ The branch removes the legacy `@mui/styles` (JSS: `makeStyles`, `withStyles`, `S
 
 We scanned the whole diff with scripts and read about 60 files closely. Places that depend on the old JSS ordering or on the outer theme are handled deliberately, usually with a comment explaining why.
 
-Seven findings remain: one medium issue introduced by the branch, two low-severity bugs that predate the branch (the branch carries them over), and four cleanup items. In addition, the review uncovered a functional bug in `VisibleFooterHeight` that predates the branch. None of the findings has been fixed yet.
+Eight findings remain open: one medium issue introduced by the branch, two low-severity bugs that predate the branch (the branch carries them over), and four cleanup items. In addition, the review uncovered a functional bug in `VisibleFooterHeight` that predates the branch. A ninth finding, an emotion runtime error found during manual testing, has been fixed.
 
 **Checks after the merge:** `yarn check-types` passes · `eslint src pages public` clean · Jest **948/948 tests in 69 suites pass** · `yarn install --immutable` consistent · no `@mui/styles` left in `package.json` or `yarn.lock`.
 
@@ -164,6 +164,18 @@ The component wraps its whole dialog in emotion's `<ClassNames>` render prop and
 
 **Fix:** rename them to `$textColor`, `$noSpacingTop`, … and use the shared filter from finding 6.
 
+### 9. [BUG · Low · introduced by branch · FIXED] Emotion runtime error for an unquoted `content` value
+
+**File:** `frontend/src/components/footer/LargeFooter.tsx:85`
+
+Found during manual testing. In development, Next.js showed:
+
+> You seem to be using a value for 'content' without quotes, try replacing it with `content: '" ''"'`
+
+The newsletter box's `&:after` pseudo-element used `content: " ''"`, with a space before the quotes. Emotion's dev-mode check only accepts `content` values that are quoted strings or CSS keywords, and the leading space makes this value neither. JSS never checked `content`, so the value worked unchanged on master. The CSS output is the same either way, because whitespace before the quotes has no meaning, so production rendering was unaffected. It was a dev-only error overlay. No other `content` value in `src`, `pages` or `public` has this problem.
+
+**Fix (applied):** `content: "''"`, matching the `&:before` rule next to it.
+
 ---
 
 ## Recommended next steps
@@ -175,9 +187,10 @@ The component wraps its whole dialog in emotion's `<ClassNames>` render prop and
 | 3   | GenericDialog close button          | Fix before merge (small change)                                                                                                              |
 | 4   | `-theme.spacing(1)`                 | Fix and check visually (icons shift by 8px)                                                                                                  |
 | 5–8 | Cleanup                             | Follow-up PR is fine                                                                                                                         |
+| 9   | Unquoted `content` in LargeFooter   | Fixed                                                                                                                                        |
 
 ## Verification notes
 
 - Findings 1, 2, 3 and 4 were reproduced or confirmed by reading the code in the main session. `theme.spacing(8) === "64px"` was confirmed by running it in Jest.
 - Findings 5–8 were confirmed by reading the cited code. The suggested fixes have not been prototyped.
-- None of the findings has been fixed on the branch yet.
+- Finding 9 was reported from manual testing and has been fixed. Findings 1–8 have not been fixed on the branch yet.
