@@ -1,6 +1,7 @@
 import json
 import logging
 from django.utils import timezone
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from chat_messages.models import (
     Message,
@@ -20,7 +21,6 @@ from climateconnect_api.utility.notification import (
     create_user_notification,
     create_email_notification,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,8 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
                 },
             )
 
-    async def new_message(self, chat_uuid, user, message_content, data=None):
+    @database_sync_to_async
+    def new_message(self, chat_uuid, user, message_content, data=None):
         try:
             chat = MessageParticipants.objects.get(chat_uuid=chat_uuid)
         except MessageParticipants.DoesNotExist:
@@ -80,7 +81,7 @@ class DirectMessageConsumer(AsyncWebsocketConsumer):
         receiver_user_ids = Participant.objects.filter(
             chat=chat, is_active=True
         ).values_list("user", flat=True)
-        receiver_users = User.objects.filter(id__in=receiver_user_ids)
+        receiver_users = list(User.objects.filter(id__in=receiver_user_ids))
         message = Message.objects.create(
             content=message_content,
             sender=user,

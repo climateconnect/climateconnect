@@ -1,47 +1,77 @@
 import { apiRequest } from "./apiOperations";
 
+export type EventRegistrationOriginContext = {
+  type: "event_registration";
+  event_name: string;
+  event_url_slug: string;
+};
+
+export type ProjectOriginContext = {
+  type: "project";
+  project_name: string;
+  project_url_slug: string;
+  // Short project type id as stored on the backend: PR (project), ID (idea), EV (event)
+  project_type: string;
+};
+
 export type OrganizationOriginContext = {
+  type: "organization";
   organization_name: string;
   organization_url_slug: string;
 };
 
-const organizationOriginCache = new Map<number, OrganizationOriginContext | null>();
-const pendingOrganizationOrigins = new Map<number, Promise<OrganizationOriginContext | null>>();
+export type OriginContext =
+  | EventRegistrationOriginContext
+  | ProjectOriginContext
+  | OrganizationOriginContext;
+export type OriginType = OriginContext["type"];
 
-// Resolves to null (no chip / no note) if the organization is gone or not accessible.
-export const fetchOrganizationOriginContext = async (
-  organizationId: number,
+// eslint-disable-next-line no-unused-vars
+const ORIGIN_URLS: Record<OriginType, (id: number) => string> = {
+  event_registration: (id) => `/api/event-registration-origin/${id}/`,
+  project: (id) => `/api/project-origin/${id}/`,
+  organization: (id) => `/api/organization-origin/${id}/`,
+};
+
+export const isSupportedOriginType = (originType?: string): originType is OriginType =>
+  !!originType && originType in ORIGIN_URLS;
+
+const originContextCache = new Map<string, OriginContext | null>();
+const pendingOriginContextRequests = new Map<string, Promise<OriginContext | null>>();
+
+export const fetchOriginContext = async (
+  originType: OriginType,
+  originId: number,
   token?: string,
   locale?: string
-): Promise<OrganizationOriginContext | null> => {
-  if (!organizationId || organizationId <= 0) return null;
-  if (organizationOriginCache.has(organizationId)) {
-    return organizationOriginCache.get(organizationId) ?? null;
-  }
-  const pending = pendingOrganizationOrigins.get(organizationId);
+): Promise<OriginContext | null> => {
+  if (!originId || originId <= 0) return null;
+  const key = `${originType}:${originId}`;
+  if (originContextCache.has(key)) return originContextCache.get(key) ?? null;
+  const pending = pendingOriginContextRequests.get(key);
   if (pending) return pending;
 
   const request = apiRequest({
     method: "get",
-    url: `/api/organization-origin/${organizationId}/`,
+    url: ORIGIN_URLS[originType](originId),
     token,
     locale,
   })
     .then((response) => {
-      const data = response.data as OrganizationOriginContext;
-      organizationOriginCache.set(organizationId, data);
+      const data = { ...response.data, type: originType } as OriginContext;
+      originContextCache.set(key, data);
       return data;
     })
     .catch((error) => {
-      console.warn("Failed to resolve organization origin context", error);
-      organizationOriginCache.set(organizationId, null);
+      console.warn(`Failed to resolve ${originType} origin context`, error);
+      originContextCache.set(key, null);
       return null;
     })
     .finally(() => {
-      pendingOrganizationOrigins.delete(organizationId);
+      pendingOriginContextRequests.delete(key);
     });
 
-  pendingOrganizationOrigins.set(organizationId, request);
+  pendingOriginContextRequests.set(key, request);
   return request;
 };
 

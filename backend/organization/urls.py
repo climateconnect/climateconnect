@@ -271,14 +271,4 @@ urlpatterns = [
         event_registration_views.AdminCancelRegistrationView.as_view(),
         name="admin-cancel-guest-registration",
     ),
-    path(
-        "event-registration-origin/<int:registration_id>/",
-        event_registration_views.EventRegistrationOriginView.as_view(),
-        name="event-registration-origin",
-    ),
-    path(
-        "organization-origin/<int:organization_id>/",
-        event_registration_views.OrganizationOriginView.as_view(),
-        name="organization-origin",
-    ),
 ]

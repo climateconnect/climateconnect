@@ -2,12 +2,18 @@ from rest_framework.exceptions import ValidationError
 
 from chat_messages.models import Participant
 from climateconnect_api.models import Role
-from organization.models import Organization, OrganizationMember
+from organization.models import (
+    Organization,
+    OrganizationMember,
+    Project,
+    ProjectMember,
+)
 
 ORIGIN_TYPE_ORGANIZATION = "organization"
+ORIGIN_TYPE_PROJECT = "project"
 ORIGIN_TYPE_EVENT_REGISTRATION = "event_registration"
 
-ORG_ADMIN_ROLE_TYPES = [Role.ALL_TYPE, Role.READ_WRITE_TYPE]
+ADMIN_ROLE_TYPES = [Role.ALL_TYPE, Role.READ_WRITE_TYPE]
 
 # Request fields by which a client can ask for an origin context.
 ORIGIN_SLUG_FIELDS = ("origin_organization_url_slug", "origin_project_url_slug")
@@ -28,6 +34,8 @@ def resolve_message_origin(user, chat, data):
         return resolve_organization_origin(
             user, chat, data["origin_organization_url_slug"]
         )
+    if requested[0] == "origin_project_url_slug":
+        return resolve_project_origin(user, chat, data["origin_project_url_slug"])
     raise ValidationError("Invalid origin: unsupported origin type.")
 
 
@@ -51,11 +59,37 @@ def resolve_organization_origin(user, chat, organization_url_slug):
     has_admin_in_chat = OrganizationMember.objects.filter(
         organization=organization,
         user__in=other_participants.values("user"),
-        role__role_type__in=ORG_ADMIN_ROLE_TYPES,
+        role__role_type__in=ADMIN_ROLE_TYPES,
     ).exists()
     if not has_admin_in_chat:
         raise ValidationError("Invalid origin: organization does not match this chat.")
     return ORIGIN_TYPE_ORGANIZATION, organization.id
+
+
+def resolve_project_origin(user, chat, project_url_slug):
+    """
+    Validate a client-requested project context for a chat message and resolve it
+    to an (origin_type, origin_id) tuple. Never trusts a raw origin_id from the client.
+
+    Raises ValidationError if the project doesn't exist or none of the other active
+    participants of the chat is an admin of the project.
+    """
+    try:
+        project = Project.objects.get(url_slug=project_url_slug)
+    except Project.DoesNotExist:
+        raise ValidationError("Invalid origin: project not found.")
+
+    other_participants = Participant.objects.filter(chat=chat, is_active=True).exclude(
+        user=user
+    )
+    has_admin_in_chat = ProjectMember.objects.filter(
+        project=project,
+        user__in=other_participants.values("user"),
+        role__role_type__in=ADMIN_ROLE_TYPES,
+    ).exists()
+    if not has_admin_in_chat:
+        raise ValidationError("Invalid origin: project does not match this chat.")
+    return ORIGIN_TYPE_PROJECT, project.id
 
 
 def add_organization_admins_to_chat(organization_id, chat):
@@ -65,7 +99,7 @@ def add_organization_admins_to_chat(organization_id, chat):
     """
     admin_user_ids = OrganizationMember.objects.filter(
         organization_id=organization_id,
-        role__role_type__in=ORG_ADMIN_ROLE_TYPES,
+        role__role_type__in=ADMIN_ROLE_TYPES,
     ).values_list("user", flat=True)
     chat_role = Role.objects.filter(role_type=Role.READ_WRITE_TYPE).first()
     for user_id in admin_user_ids:
