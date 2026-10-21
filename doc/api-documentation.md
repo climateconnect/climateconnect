@@ -613,6 +613,13 @@ Registers the authenticated user as a participant for an event that has `EventRe
 | 403 Forbidden | Registration was cancelled by an admin — member may not self-re-register |
 | 404 Not Found | `{slug}` does not match any project |
 
+Seat refusal bodies (machine-readable count alongside the English `message`, so clients can localise):
+```json
+{ "message": "Only 2 seats left for this event.", "available_seats": 2 }
+{ "message": "You can book at most 3 seats per registration.", "max_seats_per_registration": 3 }
+```
+An invalid value (`0`, negative, non-integer) returns the standard field error `{"number_of_seats": ["..."]}`.
+
 **Response body** (both 200 and 201):
 ```json
 {
@@ -691,7 +698,8 @@ Allows an event organiser (or team admin) to update `max_participants`, `registr
 **Editable fields**:
 | Field | Type | Notes |
 |---|---|---|
-| `max_participants` | Positive integer or `null` | Must be ≥ 1 and ≥ current participant count; `null` = unlimited |
+| `max_participants` | Positive integer or `null` | Must be ≥ 1 and ≥ current booked seats (sum of `number_of_seats` over active registrations); `null` = unlimited |
+| `max_seats_per_registration` | Positive integer | Optional, ≥ 1 (default 1). Omitted → stored value kept. Lowering it never changes existing registrations |
 | `registration_end_date` | ISO 8601 datetime | Must be > `now()` and ≤ event `end_date` |
 | `status` | `"open"` or `"closed"` | Organiser may manually open or close registration; `"full"` and `"ended"` are system-managed and are rejected with 400 |
 | `notify_admins` | boolean | Whether team admins receive notification emails on registration changes |
