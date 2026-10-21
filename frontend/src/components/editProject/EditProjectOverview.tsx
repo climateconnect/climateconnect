@@ -8,7 +8,7 @@ import {
   TextField,
   Grid,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { alpha, styled } from "@mui/material/styles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import React, { RefObject, useContext, useRef, useState } from "react";
 import SelectField from "../general/SelectField";
@@ -21,12 +21,14 @@ import {
 } from "../../../public/lib/imageOperations";
 import projectOverviewStyles from "../../../public/styles/projectOverviewStyles";
 import getTexts from "../../../public/texts/texts";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import UploadImageDialog from "../dialogs/UploadImageDialog";
 import ProjectLocationSearchBar from "../shareProject/ProjectLocationSearchBar";
 import { Project, Sector } from "../../types";
 import CustomHubSelection from "../project/CustomHubSelection";
 import getProjectTypeTexts from "../../../public/data/projectTypeTexts";
+import useImageDrop from "../../hooks/useImageDrop";
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
@@ -87,13 +89,24 @@ const ImageZoneWrapper = styled("label")({
   position: "relative",
 });
 
-const ImageZone = styled("div")({
+const ImageZone = styled("div", {
+  shouldForwardProp: (prop) => prop !== "$isDragOver",
+})<{ $isDragOver?: boolean }>(({ theme, $isDragOver }) => ({
   cursor: "pointer",
-  border: "1px dashed #000",
+  // Drag-over re-colors this existing dashed border instead of layering a
+  // second outline on top of it, which looked like a double border.
+  border: $isDragOver ? `1px dashed ${theme.palette.primary.main}` : "1px dashed #000",
   width: "100%",
   paddingBottom: "56.25%",
   backgroundSize: "contain",
-});
+  backgroundColor: $isDragOver ? alpha(theme.palette.primary.main, 0.08) : "transparent",
+  // Keyboard focus ring should match the project's brand color rather
+  // than the browser's default blue.
+  "&:focus-visible": {
+    outline: `2px solid ${theme.palette.primary.main}`,
+    outlineOffset: 2,
+  },
+}));
 
 const AddPhotoContainer = styled("div")({
   position: "absolute",
@@ -530,11 +543,14 @@ const InputImage = ({
   setIsImgLoading,
 }) => {
   const inputFileRef = useRef(null as HTMLInputElement | null);
+  const { showFeedbackMessage } = useContext(FeedbackContext);
 
-  const onImageChange = async (event) => {
-    const file = event.target.files[0];
+  const handleImageFile = async (file: File) => {
     if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      alert(texts.please_upload_either_a_png_or_a_jpg_file);
+      showFeedbackMessage({
+        message: texts.please_upload_either_a_png_or_a_jpg_file,
+        error: true,
+      });
       return;
     }
     try {
@@ -548,6 +564,16 @@ const InputImage = ({
       setIsImgLoading(false);
     }
   };
+
+  const onImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    handleImageFile(file);
+  };
+
+  const { isDragOver, onDragOver, onDragLeave, onDrop, onPaste } = useImageDrop({
+    onFileSelected: handleImageFile,
+  });
 
   const onUploadImageClick = (event) => {
     event.preventDefault();
@@ -583,7 +609,17 @@ const InputImage = ({
           onChange={onImageChange}
           accept=".png,.jpeg,.jpg"
         />
-        <ImageZone style={project.image ? { backgroundImage: `url(${project.image})` } : undefined}>
+        <ImageZone
+          style={project.image ? { backgroundImage: `url(${project.image})` } : undefined}
+          $isDragOver={isDragOver}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+          onPaste={onPaste}
+          tabIndex={0}
+          data-testid="edit-project-image-drop-zone"
+          data-drag-over={isDragOver}
+        >
           <AddPhotoWrapper>
             <AddPhotoContainer>
               <PhotoIcon />

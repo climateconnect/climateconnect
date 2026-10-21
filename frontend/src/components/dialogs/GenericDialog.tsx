@@ -21,6 +21,14 @@ const StyledDialog = styled(Dialog, {
     padding: $fullScreen ? 0 : theme.spacing(8),
   },
   ...($topBarFixed && { overflow: "hidden" }),
+  // MUI's FocusTrap moves focus onto this Paper (tabIndex={-1}) whenever the
+  // dialog opens. Chrome shows a focus-visible ring on it when the dialog was
+  // opened via a keyboard action (e.g. pasting an image with Ctrl/Cmd+V), so
+  // it needs to match the brand color instead of the browser's default blue.
+  "& .MuiDialog-paper:focus-visible": {
+    outline: `2px solid ${theme.palette.primary.main}`,
+    outlineOffset: -2,
+  },
 }));
 
 const StyledDialogTitle = styled(DialogTitle)({

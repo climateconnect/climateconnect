@@ -1,5 +1,5 @@
 import { Button, Checkbox, Chip, Container, Link, TextField, Typography } from "@mui/material";
-import { styled, Theme } from "@mui/material/styles";
+import { alpha, styled, Theme } from "@mui/material/styles";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -12,6 +12,7 @@ import {
 } from "../../../public/lib/imageOperations";
 import { parseLocation } from "../../../public/lib/locationOperations";
 import getTexts from "../../../public/texts/texts";
+import FeedbackContext from "../context/FeedbackContext";
 import UserContext from "../context/UserContext";
 import MultiLevelSelectDialog from "../dialogs/MultiLevelSelectDialog";
 import ButtonLoader from "../general/ButtonLoader";
@@ -27,11 +28,13 @@ import SelectField from "../general/SelectField";
 import RequiredFieldsNotice from "../general/RequiredFieldsNotice";
 import { AvatarImage, UserAvatar } from "./UserAvatar";
 import CloseIcon from "@mui/icons-material/Close";
+import useImageDrop from "../../hooks/useImageDrop";
 const DEFAULT_BACKGROUND_IMAGE = "/images/background1.jpg";
+const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg"];
 
 const BackgroundContainer = styled("div", {
   shouldForwardProp: (prop) => typeof prop === "string" && !prop.startsWith("$"),
-})<{ $hasImage: boolean }>(({ $hasImage }) => ({
+})<{ $hasImage: boolean; $isDragOver?: boolean }>(({ theme, $hasImage, $isDragOver }) => ({
   width: "100%",
   height: 305,
   position: "relative",
@@ -39,6 +42,15 @@ const BackgroundContainer = styled("div", {
   ...($hasImage
     ? { backgroundPosition: "center", backgroundSize: "cover" }
     : { backgroundColor: "#e0e0e0" }),
+  ...($isDragOver && { backgroundColor: alpha(theme.palette.primary.main, 0.1) }),
+  // outlineOffset stays 0 (not negative) so the ring sits flush against the
+  // edge instead of drawing a few pixels inside it, over the image itself.
+  outline: $isDragOver ? `3px dashed ${theme.palette.primary.main}` : "none",
+  // Keyboard focus ring should match the project's brand color rather
+  // than the browser's default blue.
+  "&:focus-visible": {
+    outline: `3px solid ${theme.palette.primary.main}`,
+  },
 }));
 
 const BackgroundImageButton = styled(AddAPhotoIcon)({
@@ -230,8 +242,12 @@ export default function EditAccountPage({
   type,
   checkTranslationsRef,
   sectorsTitle,
+  secondarySubmitMessage,
+  onSecondarySubmit,
+  loadingSecondarySubmit,
 }: any) {
   const { locale } = useContext(UserContext);
+  const { showFeedbackMessage } = useContext(FeedbackContext);
   const texts = getTexts({ page: "account", locale: locale });
   const organizationTexts = getTexts({ page: "organization", locale: locale });
   const imageInputFileRef = useRef<HTMLInputElement | null>(null);
@@ -583,9 +599,13 @@ export default function EditAccountPage({
     });
   };
   const [isLoading, setIsLoading] = useState(false);
-  const onBackgroundChange = async (backgroundEvent) => {
-    const file = backgroundEvent.target.files[0];
-    if (!file) {
+
+  const handleBackgroundImageFile = async (file: File) => {
+    if (!file || !file.type || !ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      showFeedbackMessage({
+        message: texts.please_upload_either_a_png_or_a_jpg_file,
+        error: true,
+      });
       return;
     }
 
@@ -605,6 +625,17 @@ export default function EditAccountPage({
       setIsLoading(false);
     }
   };
+
+  const onBackgroundChange = async (backgroundEvent) => {
+    const file = backgroundEvent.target.files[0];
+    if (!file) return;
+    handleBackgroundImageFile(file);
+  };
+
+  const { isDragOver, onDragOver, onDragLeave, onDrop, onPaste, onKeyDown } = useImageDrop({
+    onFileSelected: handleBackgroundImageFile,
+    onActivate: () => imageInputFileRef.current?.click(),
+  });
 
   const handleTypeDelete = (typeToDelete) => {
     const tempEditedAccount = { ...editedAccount };
@@ -682,12 +713,23 @@ export default function EditAccountPage({
 
         <BackgroundContainer
           $hasImage={!!editedAccount.background_image}
+          $isDragOver={isDragOver}
           style={
             editedAccount.background_image
               ? { backgroundImage: `url(${editedAccount.background_image})` }
               : undefined
           }
           onClick={editedAccount.background_image ? () => void 0 : onClickBackgroundImage}
+          onKeyDown={onKeyDown}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+          onPaste={onPaste}
+          tabIndex={0}
+          role="button"
+          aria-label={texts.add_background_image}
+          data-testid="background-drop-zone"
+          data-drag-over={isDragOver}
         >
           <BackgroundImageButtonContainer>
             <BackgroundImageButton
@@ -821,6 +863,17 @@ export default function EditAccountPage({
                   ref={checkTranslationsRef}
                 >
                   {texts.check_translations}
+                </Button>
+              )}
+              {onSecondarySubmit && !!editedAccount.name?.trim() && (
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="grey"
+                  onClick={() => onSecondarySubmit(editedAccount)}
+                  disabled={loadingSecondarySubmit || loadingSubmit}
+                >
+                  {loadingSecondarySubmit ? <ButtonLoader /> : secondarySubmitMessage}
                 </Button>
               )}
             </CheckTranslationsButtonContainer>

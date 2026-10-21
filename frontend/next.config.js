@@ -125,6 +125,22 @@ module.exports = withBundleAnalyzer({
         permanent: true,
       },
       {
+        source: "/ewt",
+        destination: "https://climatehub.org/de/projects/energiewendetag-marburg?hub=marburg",
+        permanent: true,
+      },
+      {
+        source: "/zukunftlive",
+        destination:
+          "https://climatehub.org/de/projects/mit-doktor-whatson-und-dem-climatehub-potsdam?hub=potsdam",
+        permanent: true,
+      },
+      {
+        source: "/naechsterhalt",
+        destination: "https://climatehub.org/de/projects/nachster-halt-zukunft?hub=erlangen",
+        permanent: true,
+      },
+      {
         source: "/hubs/prio1",
         destination: "/hubs/prio1/browse",
         permanent: false,
@@ -175,7 +191,7 @@ module.exports = withBundleAnalyzer({
       {
         source: "/100",
         has: [{ type: "host", value: "marburg.climatehub.org" }],
-        destination: `www.climatehub.earth/mr/crowdfunding`,
+        destination: `https://www.climatehub.earth/mr/crowdfunding`,
         permanent: false,
       },
       // 2. Cross-domain subdomain redirects (German first, then English fallback)

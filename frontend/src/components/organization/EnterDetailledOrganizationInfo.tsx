@@ -35,6 +35,8 @@ export default function EnterDetailledOrganizationInfo({
   handleSetLocationOptionsOpen,
   loadingSubmit,
   allSectors,
+  handleSaveAsDraft,
+  loadingSubmitDraft,
 }) {
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
@@ -77,6 +79,9 @@ export default function EnterDetailledOrganizationInfo({
         existingUrlSlug={existingUrlSlug}
         loadingSubmit={loadingSubmit}
         allSectors={allSectors}
+        onSecondarySubmit={handleSaveAsDraft}
+        secondarySubmitMessage={texts.save_as_draft}
+        loadingSecondarySubmit={loadingSubmitDraft}
       />
     </div>
   );

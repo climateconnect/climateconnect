@@ -1,4 +1,4 @@
-import { Button, Container, Divider, Typography, useMediaQuery } from "@mui/material";
+import { Alert, Button, Container, Divider, Typography, useMediaQuery } from "@mui/material";
 import { styled, Theme } from "@mui/material/styles";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -313,118 +313,127 @@ function OrganizationLayout({
   const isTinyScreen = useMediaQuery<Theme>(theme.breakpoints.down("sm"));
   const isSmallScreen = useMediaQuery<Theme>(theme.breakpoints.down("md"));
   return (
-    <AccountPage
-      numberOfFollowers={numberOfFollowers}
-      handleFollow={handleFollow}
-      followingChangePending={followingChangePending}
-      isUserFollowing={isUserFollowing}
-      account={organization}
-      default_background={DEFAULT_BACKGROUND_IMAGE}
-      editHref={`${getLocalePrefix(locale)}/editOrganization/${organization.url_slug}${
-        hubUrl ? `?hub=${hubUrl}` : ""
-      }`}
-      /*TODO(unused) type="organization" */
-      infoMetadata={infoMetadata}
-      isOwnAccount={canEdit}
-      isOrganization={true}
-      editText={texts.edit_organization}
-      isSmallScreen={isSmallScreen}
-      hubUrl={hubUrl}
-    >
-      {!user && <StyledLoginNudge whatToDo={texts.to_see_this_organizations_full_information} />}
-      <Container>
-        {user && !canEdit && (
-          <Button variant="contained" color="primary" onClick={handleConnectBtn}>
-            {texts.send_message}
-          </Button>
-        )}
-        <SectionHeadlineWithButtonContainer>
-          <SectionHeadline color="primary" component="h2">
-            {texts.this_organizations_projects}
-          </SectionHeadline>
-          {isTinyScreen ? (
-            <IconButton
-              href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
-              size="large"
-            >
-              <ShareProjectButtonIcon
-                /*TODO(unused) variant="contained" */
-                color="primary"
-              />
-            </IconButton>
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
-            >
-              <ShareProjectInnerIcon />
-              {texts.share_a_project}
+    <>
+      {organization.is_draft && (
+        <Container>
+          <Alert severity="info" sx={{ my: 2 }}>
+            {texts.draft_organization_notice}
+          </Alert>
+        </Container>
+      )}
+      <AccountPage
+        numberOfFollowers={numberOfFollowers}
+        handleFollow={handleFollow}
+        followingChangePending={followingChangePending}
+        isUserFollowing={isUserFollowing}
+        account={organization}
+        default_background={DEFAULT_BACKGROUND_IMAGE}
+        editHref={`${getLocalePrefix(locale)}/editOrganization/${organization.url_slug}${
+          hubUrl ? `?hub=${hubUrl}` : ""
+        }`}
+        /*TODO(unused) type="organization" */
+        infoMetadata={infoMetadata}
+        isOwnAccount={canEdit}
+        isOrganization={true}
+        editText={texts.edit_organization}
+        isSmallScreen={isSmallScreen}
+        hubUrl={hubUrl}
+      >
+        {!user && <StyledLoginNudge whatToDo={texts.to_see_this_organizations_full_information} />}
+        <Container>
+          {user && !canEdit && (
+            <Button variant="contained" color="primary" onClick={handleConnectBtn}>
+              {texts.send_message}
             </Button>
           )}
-        </SectionHeadlineWithButtonContainer>
-        {allProjects && allProjects.length ? (
-          <>
-            <ProjectPreviews projects={allProjects} hubUrl={hubUrl} parentHandlesGridItems />
-            {hasMoreProjects && (
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleLoadMoreProjects}
-                disabled={isLoadingMore}
-                fullWidth
-                sx={{ mt: 2 }}
-              >
-                {isLoadingMore ? texts.loading : texts.load_more}
-              </Button>
-            )}
-          </>
-        ) : (
-          <NoContentYet>{texts.this_organization_has_not_listed_any_projects_yet}</NoContentYet>
-        )}
-      </Container>
-      <StyledDivider />
-      <Container>
-        <SectionHeadlineWithButtonContainer>
-          <SectionHeadline color="primary" component="h2">
-            {texts.members_of_organization}
-          </SectionHeadline>
-          {canEdit &&
-            (isTinyScreen ? (
+          <SectionHeadlineWithButtonContainer>
+            <SectionHeadline color="primary" component="h2">
+              {texts.this_organizations_projects}
+            </SectionHeadline>
+            {isTinyScreen ? (
               <IconButton
-                href={`${getLocalePrefix(locale)}/manageOrganizationMembers/${
-                  organization.url_slug
-                }${hubUrl ? `?hub=${hubUrl}` : ""}`}
+                href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
                 size="large"
               >
-                <ManageMembersButtonIcon color="primary" />
+                <ShareProjectButtonIcon
+                  /*TODO(unused) variant="contained" */
+                  color="primary"
+                />
               </IconButton>
             ) : (
               <Button
                 variant="contained"
                 color="primary"
-                href={`${getLocalePrefix(locale)}/manageOrganizationMembers/${
-                  organization.url_slug
-                }${hubUrl ? `?hub=${hubUrl}` : ""}`}
+                href={`${getLocalePrefix(locale)}/share${hubUrl ? `?hub=${hubUrl}` : ""}`}
               >
-                <ManageMembersInnerIcon />
-                {texts.manage_members}
+                <ShareProjectInnerIcon />
+                {texts.share_a_project}
               </Button>
-            ))}
-        </SectionHeadlineWithButtonContainer>
-        {members && members.length ? (
-          <ProfilePreviews
-            profiles={membersWithAdditionalInfo}
-            showAdditionalInfo
-            hubUrl={hubUrl}
-          />
-        ) : (
-          <Typography>
-            {texts.none_of_the_members_of_this_organization_has_signed_up_yet}
-          </Typography>
-        )}
-      </Container>
-    </AccountPage>
+            )}
+          </SectionHeadlineWithButtonContainer>
+          {allProjects && allProjects.length ? (
+            <>
+              <ProjectPreviews projects={allProjects} hubUrl={hubUrl} parentHandlesGridItems />
+              {hasMoreProjects && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleLoadMoreProjects}
+                  disabled={isLoadingMore}
+                  fullWidth
+                  sx={{ mt: 2 }}
+                >
+                  {isLoadingMore ? texts.loading : texts.load_more}
+                </Button>
+              )}
+            </>
+          ) : (
+            <NoContentYet>{texts.this_organization_has_not_listed_any_projects_yet}</NoContentYet>
+          )}
+        </Container>
+        <StyledDivider />
+        <Container>
+          <SectionHeadlineWithButtonContainer>
+            <SectionHeadline color="primary" component="h2">
+              {texts.members_of_organization}
+            </SectionHeadline>
+            {canEdit &&
+              (isTinyScreen ? (
+                <IconButton
+                  href={`${getLocalePrefix(locale)}/manageOrganizationMembers/${
+                    organization.url_slug
+                  }${hubUrl ? `?hub=${hubUrl}` : ""}`}
+                  size="large"
+                >
+                  <ManageMembersButtonIcon color="primary" />
+                </IconButton>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  href={`${getLocalePrefix(locale)}/manageOrganizationMembers/${
+                    organization.url_slug
+                  }${hubUrl ? `?hub=${hubUrl}` : ""}`}
+                >
+                  <ManageMembersInnerIcon />
+                  {texts.manage_members}
+                </Button>
+              ))}
+          </SectionHeadlineWithButtonContainer>
+          {members && members.length ? (
+            <ProfilePreviews
+              profiles={membersWithAdditionalInfo}
+              showAdditionalInfo
+              hubUrl={hubUrl}
+            />
+          ) : (
+            <Typography>
+              {texts.none_of_the_members_of_this_organization_has_signed_up_yet}
+            </Typography>
+          )}
+        </Container>
+      </AccountPage>
+    </>
   );
 }
 

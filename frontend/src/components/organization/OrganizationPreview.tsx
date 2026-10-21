@@ -18,6 +18,8 @@ const Wrapper = styled(AppLink)({
 const PreviewCard = styled(Card)({
   display: "flex",
   flexDirection: "column",
+  position: "relative",
+  overflow: "hidden",
   "&:hover": {
     cursor: "pointer",
     backgroundColor: "#f1f1f1",
@@ -35,6 +37,28 @@ const PreviewCard = styled(Card)({
   height: "100%",
   boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;",
   padding: "0 14px",
+});
+
+const DraftTriangle = styled("div")(({ theme }) => ({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: 0,
+  height: 0,
+  borderTop: "100px solid " + theme.palette.primary.main,
+  borderRight: "100px solid transparent",
+  zIndex: 1,
+}));
+
+const DraftText = styled("div")({
+  transform: "rotate(-45deg)",
+  display: "block",
+  fontWeight: "bold",
+  textTransform: "uppercase",
+  marginTop: "-56px",
+  marginLeft: "10px",
+  fontSize: "20px",
+  color: "white",
 });
 
 const Footer = styled(CardActions)({
@@ -69,9 +93,18 @@ const ProjectsIcon = styled(AssignmentSharp)(({ theme }) => ({
 }));
 
 export default function OrganizationPreview({ organization }: { organization: any }) {
+  const organizationUrl = organization.is_draft
+    ? `/editOrganization/${organization.url_slug}`
+    : `/organizations/${organization.url_slug}`;
+
   return (
-    <Wrapper href={`/organizations/${organization.url_slug}`} underline="hover">
+    <Wrapper href={organizationUrl} underline="hover">
       <PreviewCard variant="outlined">
+        {organization.is_draft && (
+          <DraftTriangle>
+            <DraftText>Draft</DraftText>
+          </DraftTriangle>
+        )}
         <OrganizationPreviewHeader organization={organization} />
         <OrganizationPreviewBody organization={organization} />
         <Footer>
