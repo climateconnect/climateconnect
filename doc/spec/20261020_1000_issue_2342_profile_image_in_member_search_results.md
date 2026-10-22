@@ -1,6 +1,6 @@
 # Show profile image (and location) in member search results
 
-**Status**: DRAFT
+**Status**: READY FOR IMPLEMENTATION
 **Type**: Frontend — UI enhancement
 **Date created**: 2026-10-20
 
@@ -107,7 +107,7 @@ None. Optionally note that `/api/members/` responses are cached (`cache_page`), 
 
 ## Open Questions
 
-1. **Location display**: the issue asks for feedback before showing location. Proposal: include it (AC 2) as it is the strongest disambiguator after the image and is already in the payload. Confirm with the issue author (HaraldWalker).
+1. ~~**Location display**~~ **Resolved**: the issue author gave positive feedback, so location is shown (AC 2).
 2. Should unverified or hub-restricted members be searchable? Out of scope; unchanged.
 
 ---
