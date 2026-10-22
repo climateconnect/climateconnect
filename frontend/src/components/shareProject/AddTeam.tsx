@@ -107,7 +107,7 @@ export default function AddTeam({
   };
 
   const renderSearchOption = (props, option) => (
-    <MemberSearchOption liProps={props} option={option} />
+    <MemberSearchOption key={props.key} liProps={props} option={option} />
   );
 
   const backgroundContrastColor = getBackgroundContrastColor(theme);

@@ -56,7 +56,7 @@ export default function ManageMembers({
   const { locale } = useContext(UserContext);
   const texts = getTexts({ page: "organization", locale: locale });
   const renderSearchOption = (props, option) => (
-    <MemberSearchOption liProps={props} option={option} />
+    <MemberSearchOption key={props.key} liProps={props} option={option} />
   );
 
   const handleAddMember = (member) => {

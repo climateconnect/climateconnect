@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { createTheme } from "@mui/material/styles";
+// TODO: MiniProfilePreview still uses makeStyles, which needs this provider; drop it once migrated (#2290)
 import { ThemeProvider } from "@mui/styles";
 import React from "react";
 import MemberSearchOption from "./MemberSearchOption";

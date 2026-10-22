@@ -48,6 +48,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type MentionSuggestion = {
+  first_name: string;
+  last_name: string;
+  thumbnail_image?: string | null;
+  location?: string | null;
+};
+
+export const renderMentionSuggestion = (suggestion: MentionSuggestion) => (
+  <MiniProfilePreview profile={suggestion} nolink size="medium" title={suggestion.location} />
+);
+
 export default function InputWithMentions({ baseUrl, value, onChange, placeholder, onKeyDown }) {
   const classes = useStyles();
   const { locale } = useContext(UserContext);
@@ -92,14 +103,7 @@ export default function InputWithMentions({ baseUrl, value, onChange, placeholde
             trigger="@"
             markup={`@@@____id__^^____display__@@@^^^`}
             data={lookupUsers}
-            renderSuggestion={(suggestion: any) => (
-              <MiniProfilePreview
-                profile={suggestion}
-                nolink
-                size="medium"
-                title={suggestion.location}
-              />
-            )}
+            renderSuggestion={renderMentionSuggestion}
             /*TODO(unused) allowSpaceInQuery */
           />
         </MentionsInput>

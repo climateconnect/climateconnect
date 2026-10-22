@@ -55,7 +55,7 @@ export default function UserSearchField({ cancelUserSearch, setErrorMessage }) {
   const getUsersToFilterOut = () => [user, ...newChatMembers];
 
   const renderSearchOption = (props, option) => (
-    <MemberSearchOption liProps={props} option={option} />
+    <MemberSearchOption key={props.key} liProps={props} option={option} />
   );
   const handleRemoveMember = (member) => {
     setNewChatMembers([...newChatMembers.filter((m) => m.id !== member.id)]);
