@@ -616,7 +616,12 @@ class TestSeatsEmails(_SeatsTestBase):
 
 
 class TestSeatsConcurrency(TransactionTestCase):
-    serialized_rollback = True
+    """
+    TransactionTestCase so both threads see committed rows. No
+    serialized_rollback: other TransactionTestCases flush the DB and
+    content types get recreated with new ids, so restoring the snapshot
+    would collide on their unique key.
+    """
 
     @tag("event_registration", "seats", "concurrency")
     def test_concurrent_multi_seat_signups_never_overbook(self):
