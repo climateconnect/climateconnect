@@ -8,7 +8,7 @@ export default function VisibleFooterHeight({ footerHeightProp }: any) {
     let ticking = false;
     const updateVisibleFooterHeight = () => {
       const scrollYInverted = document.body.offsetHeight - window.innerHeight - scrollY;
-      const footerHeight = footerHeightProp ? footerHeightProp : theme.spacing(8);
+      const footerHeight = footerHeightProp ? footerHeightProp : parseInt(theme.spacing(8), 10);
       if (scrollYInverted > footerHeight) setVisibleFooterHeight(0);
       else if (scrollYInverted === footerHeight) setVisibleFooterHeight(footerHeight);
       else setVisibleFooterHeight(footerHeight - scrollYInverted);
