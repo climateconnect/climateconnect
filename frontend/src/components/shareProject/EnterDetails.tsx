@@ -90,6 +90,7 @@ export default function EnterDetails({
     end_date: "",
     location: "",
     max_participants: "",
+    max_seats_per_registration: "",
     registration_end_date: "",
     description_html: "",
   });
@@ -147,6 +148,21 @@ export default function EnterDetails({
       setErrors((prev) => ({
         ...prev,
         max_participants: texts.max_participants_must_be_greater_than_0,
+      }));
+      return false;
+    }
+
+    // Optional, never required at publish; when given it must be a whole number ≥ 1.
+    const maxSeats = project.max_seats_per_registration;
+    if (
+      maxSeats !== null &&
+      maxSeats !== undefined &&
+      maxSeats !== "" &&
+      (!Number.isInteger(Number(maxSeats)) || Number(maxSeats) < 1)
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        max_seats_per_registration: texts.max_seats_per_registration_must_be_at_least_1,
       }));
       return false;
     }
@@ -358,6 +374,7 @@ export default function EnterDetails({
                 handleSetProjectData={handleSetProjectData}
                 errors={{
                   max_participants: errors.max_participants,
+                  max_seats_per_registration: errors.max_seats_per_registration,
                   registration_end_date: errors.registration_end_date,
                 }}
                 fieldErrors={fieldErrors}

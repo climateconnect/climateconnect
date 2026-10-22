@@ -7,6 +7,8 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  MenuItem,
+  TextField,
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -22,6 +24,7 @@ import getTexts from "../../../public/texts/texts";
 import { Project, RegistrationFieldAnswerValue } from "../../types";
 import UserContext from "../context/UserContext";
 import { trackGA4Event } from "../../utils/analytics";
+import { formatSeatCount, getSelectableSeatMax } from "../../utils/eventRegistrationHelpers";
 import MiniProfilePreview from "../profile/MiniProfilePreview";
 import AuthEmailStep from "../auth/AuthEmailStep";
 import AuthPasswordLogin from "../auth/AuthPasswordLogin";
@@ -158,6 +161,11 @@ const HelperText = styled(Typography)(({ theme }) => ({
   paddingLeft: theme.spacing(1),
 }));
 
+const SeatSelector = styled(TextField)(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+  maxWidth: 240,
+}));
+
 const RegisterButton = styled(Button)({
   whiteSpace: "nowrap",
 });
@@ -173,7 +181,8 @@ type Props = {
   open: boolean;
   onClose: () => void;
   project: Project;
-  onRegistrationSuccess?: () => void;
+  /** Called after a successful registration with the number of seats booked. */
+  onRegistrationSuccess?: (_numberOfSeats: number) => void;
 };
 
 type RegistrationState = "initial" | "success" | "error";
@@ -194,6 +203,9 @@ export default function EventRegistrationModal({
   const [loading, setLoading] = useState(false);
   // Per-field server-side errors, keyed by field ID
   const [fieldServerErrors, setFieldServerErrors] = useState<Record<number, string>>({});
+  const [numberOfSeats, setNumberOfSeats] = useState(1);
+  // Seats left as reported by a capacity refusal — fresher than the page data.
+  const [serverSeatsLeft, setServerSeatsLeft] = useState<number | null>(null);
 
   // Ref to the custom fields form so we can call validate() on submit
   const answersFormRef = useRef<RegistrationFieldAnswersFormHandle>(null);
@@ -212,6 +224,16 @@ export default function EventRegistrationModal({
   const hasRequiredCustomFields =
     showCustomFields &&
     (project.registration_config?.fields?.some((field) => field.is_required) ?? false);
+
+  // Seat selector (only when the organiser allows more than one seat per registration)
+  const maxSeatsPerRegistration = project.registration_config?.max_seats_per_registration ?? 1;
+  const showSeatSelector = maxSeatsPerRegistration > 1;
+  const selectableSeatMax = getSelectableSeatMax(
+    maxSeatsPerRegistration,
+    serverSeatsLeft ?? project.registration_config?.available_seats
+  );
+  // Clamp at render so a lowered cap (e.g. after a refusal) never leaves an invalid choice.
+  const selectedSeats = Math.min(numberOfSeats, selectableSeatMax);
 
   const eventDateText =
     project.start_date && project.end_date
@@ -311,7 +333,9 @@ export default function EventRegistrationModal({
     setFieldServerErrors({});
 
     // Build the API payload
+    const bookedSeats = showSeatSelector ? selectedSeats : 1;
     const payload: {
+      number_of_seats?: number;
       answers?: {
         field: number;
         value_boolean?: boolean;
@@ -320,6 +344,10 @@ export default function EventRegistrationModal({
         value_text?: string;
       }[];
     } = {};
+    // Omitted for single-seat events — the backend defaults to one seat.
+    if (showSeatSelector) {
+      payload.number_of_seats = bookedSeats;
+    }
     if (showCustomFields && answers && answers.length > 0) {
       payload.answers = answers.map((a) => {
         const entry: {
@@ -356,7 +384,7 @@ export default function EventRegistrationModal({
           ReactGA
         );
         if (onRegistrationSuccess) {
-          onRegistrationSuccess();
+          onRegistrationSuccess(bookedSeats);
         }
       }
     } catch (error: any) {
@@ -367,6 +395,23 @@ export default function EventRegistrationModal({
         // Also surface a top-level message so the user knows what happened
         setErrorMessage(responseData.message || texts.registration_failed_please_try_again);
         // Stay on "initial" so the user can correct the field errors
+        return;
+      }
+      // Not enough seats left: stay on the form so the user can pick fewer seats.
+      if (typeof responseData?.available_seats === "number" && responseData.available_seats > 0) {
+        const seatsLeft = responseData.available_seats;
+        setServerSeatsLeft(seatsLeft);
+        setErrorMessage(
+          (seatsLeft === 1
+            ? texts.not_enough_seats_left_one
+            : texts.not_enough_seats_left_other
+          ).replace("{count}", String(seatsLeft))
+        );
+        return;
+      }
+      if (responseData?.available_seats === 0) {
+        setState("error");
+        setErrorMessage(texts.event_is_fully_booked_message);
         return;
       }
       setState("error");
@@ -455,6 +500,8 @@ export default function EventRegistrationModal({
     setState("initial");
     setErrorMessage("");
     setFieldServerErrors({});
+    setNumberOfSeats(1);
+    setServerSeatsLeft(null);
     setEmail("");
     setAuthStep("email");
     onClose();
@@ -476,6 +523,24 @@ export default function EventRegistrationModal({
             : texts.confirm_your_registration_for}
         </ConfirmationMessage>
       </UserInfo>
+
+      {showSeatSelector && (
+        <SeatSelector
+          select
+          variant="outlined"
+          size="small"
+          label={texts.how_many_seats}
+          value={selectedSeats}
+          onChange={(e) => setNumberOfSeats(Number(e.target.value))}
+          inputProps={{ "data-testid": "seat-count-select" }}
+        >
+          {Array.from({ length: selectableSeatMax }, (_, i) => i + 1).map((count) => (
+            <MenuItem key={count} value={count}>
+              {formatSeatCount(count, texts)}
+            </MenuItem>
+          ))}
+        </SeatSelector>
+      )}
 
       {showCustomFields && (
         <CustomFieldsScrollable>
