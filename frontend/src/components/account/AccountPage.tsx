@@ -19,11 +19,15 @@ import IconButton from "@mui/material/IconButton";
 
 import ConfirmDialog from "../dialogs/ConfirmDialog";
 import FollowersDialog from "../dialogs/FollowersDialog";
+import {
+  BACKGROUND_SOURCES,
+  BACKGROUND_SOURCES_SMALL,
+  resolveVariantUrl,
+} from "../general/ResponsiveImage";
 import { useLongPress } from "use-long-press";
 import { getParams } from "../../../public/lib/generalOperations";
 import FollowButton from "../general/FollowButton";
 import { NOTIFICATION_TYPES } from "../communication/notifications/Notification";
-
 import SelectWithText from "./SelectWithText";
 import SubTitleWithContent from "../general/SubTitleWithContent";
 import { UserAvatar } from "./UserAvatar";
@@ -468,13 +472,21 @@ export default function AccountPage({
   const location = locationKeys.length > 0 ? account.info[locationKeys[0]] : null;
   const locationAdditionalText = location?.additionalText ? location.additionalText : "";
 
+  // Header banner is a CSS background, so the variant has to be picked here
+  // rather than by <picture>. Small screens never need the 1200px file.
+  const backgroundUrl = account.background_image
+    ? resolveVariantUrl(
+        account.image_variants,
+        isSmallScreen ? BACKGROUND_SOURCES_SMALL : BACKGROUND_SOURCES,
+        account.background_image
+      )
+    : default_background;
+
   return (
     <Container maxWidth="lg" className={classes.noPadding}>
       <div
         style={{
-          background: `url(${
-            account.background_image ? account.background_image : default_background
-          })`,
+          background: `url(${backgroundUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           width: "100%",
